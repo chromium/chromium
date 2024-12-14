@@ -802,7 +802,6 @@
 <translation id="2399868464369312507">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయడానికి Google Chrome ట్రై చేస్తోంది.</translation>
 <translation id="2400600116338235695">సీరియల్ పోర్ట్‌లకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="2404884497378469141">మీ ఫైళ్లను మళ్లీ కాపీ చేయడానికి ట్రై చేయండి</translation>
-<translation id="2412310121876768057">తదుపరిసారి కార్డ్‌ను ఆటోఫిల్ చేయాలా?</translation>
 <translation id="2413155254802890957">పాతది</translation>
 <translation id="2413528052993050574">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం ఉపసంహరించబడి ఉండవచ్చు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="2414886740292270097">ముదురు</translation>
@@ -1300,7 +1299,6 @@
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" />‌లో <ph name="CURRENT_CITATION" />‌వ సైటేషన్, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">ప్రాక్సీ సెట్టింగ్‌లను మార్చు...</translation>
 <translation id="335809815767823">ఎగుమతి చేయబడింది</translation>
-<translation id="3359387651158939842">మీరు Google Payతో ఉపయోగించడానికి మీ కార్డ్‌ను సేవ్ చేసినప్పుడు భవిష్యత్తులో కొనుగోళ్లు చేయడం కోసం ఆటోఫిల్ చేయండి</translation>
 <translation id="3359565626472459400">వివాహ సంబంధమైనవి</translation>
 <translation id="3360103848165129075">చెల్లింపు హ్యాండ్లర్ షీట్</translation>
 <translation id="3360306038446926262">విండోలు</translation>
@@ -1396,6 +1394,7 @@
 <translation id="351522771072578657">మీరు ప్రస్తుతం మెనూలో ఉన్నారు</translation>
 <translation id="3517264445792388751">ఫైల్ సిస్టమ్‌ను మీ అడ్మినిస్ట్రేటర్ డిజేబుల్ చేశారు</translation>
 <translation id="3518941727116570328">అనేక వస్తువులను హ్యాండిల్ చేయడం</translation>
+<translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" />‌ని అడగండి</translation>
 <translation id="3525130752944427905">10 x 14 అంగుళాలు</translation>
 <translation id="3525435918300186947">MIDI పరికరాలను కంట్రోల్ చేసి, రీప్రోగ్రామ్ చేయాలా?</translation>
 <translation id="3527181387426738155">మ్యూజిక్ &amp; ఆడియో</translation>
@@ -1453,7 +1452,6 @@
 <translation id="3605899229568538311">5 x 5 అంగుళాలు</translation>
 <translation id="3606917451836803637">టీవీ షోలు &amp; ప్రోగ్రామ్‌లు</translation>
 <translation id="3608932978122581043">ఫీడ్ ఓరియంటేషన్</translation>
-<translation id="3610142117915544498">తర్వాతిసారి మరింత వేగంగా పేమెంట్ చేయడానికి, మీ కార్డ్‌ను, పేరును, బిల్లింగ్ అడ్రస్‌ను మీ Google ఖాతాకు సేవ్ చేయండి</translation>
 <translation id="3612660594051121194">దూర ప్రయాణ బస్సు &amp; రైలు</translation>
 <translation id="3614001939154393113">అటాకర్ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> నుండి మీ సమాచారాన్ని దొంగిలించడానికి ప్రయత్నిస్తుండవచ్చు (ఉదాహరణకు, పాస్‌వర్డ్‌లు, మెసేజ్‌లు లేదా క్రెడిట్ కార్డ్‌లు). <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">సైజ్‌ 2</translation>
@@ -1951,6 +1949,7 @@
 <translation id="4451684391620232683">యూజర్‌కు ప్రెజెంట్ చేయబడిన టెక్స్ట్:</translation>
 <translation id="4452328064229197696">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని Google Password Manager సిఫార్సు చేస్తోంది.</translation>
 <translation id="4456937135469235202">సాహసోపేత ప్రయాణం</translation>
+<translation id="4458013283022578512">ప్రశ్నను ఎంటర్ చేయండి</translation>
 <translation id="4464826014807964867">మీ సంస్థకు సంబంధించిన సమాచారం ఉన్న వెబ్‌సైట్‌లు</translation>
 <translation id="4466576951214254884">విద్యార్థి లోన్‌లు &amp; కాలేజ్ ఫైనాన్సింగ్</translation>
 <translation id="4467821340016922962">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ అయ్యి, డౌన్‌లోడ్‌ను చూడటానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
@@ -2172,7 +2171,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ఒలింపిక్స్</translation>
 <translation id="4898742041545089450">ఈ టాపిక్ అన్‌బ్లాక్ చేయబడింది, మీ బ్రౌజింగ్ హిస్టరీ ఆధారంగా యాక్టివ్ చేయబడవచ్చు</translation>
-<translation id="4899379435492347481">మీ పరికరాలన్నింటిలో కొనుగోళ్లు చేయడం కోసం Google Payతో ఆన్‌లైన్‌లో ఉపయోగించడానికి ఈ కార్డ్‌ను సేవ్ చేయండి</translation>
 <translation id="4900217275619098670">నైన్త్ రోల్</translation>
 <translation id="4901052769830245369">లేబుల్స్ (సెమీ-గ్లాస్)</translation>
 <translation id="4901162432287938633">పరిశుభ్రత &amp; స్నానానికి సంబంధించిన వస్తువులు</translation>

@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome የመክፈያ ዘዴዎችን ለማርትዕ እየሞከረ ነው።</translation>
 <translation id="2400600116338235695">ከተከታታይ ወደቦች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
 <translation id="2404884497378469141">ፋይሎችዎን እንደገና ለመቅዳት ይሞክሩ</translation>
-<translation id="2412310121876768057">በቀጣይ ካርድ በራስ ይሞላ?</translation>
 <translation id="2413155254802890957">የቆየ</translation>
 <translation id="2413528052993050574">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው ተሽሮ ሊሆን ይችላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="2414886740292270097">ጨለማ</translation>
@@ -1304,7 +1303,6 @@
 <translation id="3354508510846323339">የ<ph name="MAX_CITATIONS" />፣ <ph name="PRODUCT_NAME" />፣ <ph name="URL" /> ዋቢ <ph name="CURRENT_CITATION" /></translation>
 <translation id="3355823806454867987">የተኪ ቅንብሮችን በመቀየር ላይ...</translation>
 <translation id="335809815767823">ወደ ውጭ ተልኳል</translation>
-<translation id="3359387651158939842">በGoogle Pay ለመጠቀም ሲያስቀምጡት ለወደፊት ግዢዎች ካርድዎን በራስ ይሙሉ</translation>
 <translation id="3359565626472459400">ትዳር</translation>
 <translation id="3360103848165129075">የክፍያ ተቆጣጣሪ ሉህ</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1457,7 +1455,6 @@
 <translation id="3605899229568538311">5 x 5 ኢንች</translation>
 <translation id="3606917451836803637">የቴሌቪዥን ትርዒቶች እና ፕሮግራሞች</translation>
 <translation id="3608932978122581043">የምገባ አቀማመጥ</translation>
-<translation id="3610142117915544498">በሚቀጥለው ጊዜ ይበልጥ በፍጥነት ለመክፈል የእርስዎን ካርድ፣ ስም እና የሒሳብ መጠየቂያ አድራሻ በGoogle መለያዎ ላይ ያስቀምጡ።</translation>
 <translation id="3612660594051121194">የረጅም ርቀት አውቶቡስ እና ባቡር</translation>
 <translation id="3614001939154393113">አጥቂዎች መረጃዎን ከ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ለመስረቅ እየሞከሩ ሊሆን ይችላል (ለምሳሌ፣ የይለፍ ቃላት፣ መልዕክቶች ወይም ክሬዲት ካርዶች)። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይረዱ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">መጠን 2</translation>
@@ -2176,7 +2173,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />፣ <ph name="TYPE_2" />፣, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ኦሊምፒክስ</translation>
 <translation id="4898742041545089450">ይህ ርዕስ እገዳው ተነስቷል እና በአሰሳ ታሪክዎ ላይ በመመርኮዝ ንቁ ሊሆን ይችላል</translation>
-<translation id="4899379435492347481">በመስመር ላይ በGoogle Pay በመሣሪያዎችዎ ላይ ለሚደረጉ ግዢዎች ይህን ካርድ ይጠቀሙ</translation>
 <translation id="4900217275619098670">ዘጠነኛ ጥቅልል</translation>
 <translation id="4901052769830245369">መሰየሚያዎች (በግማሽ አንጸባራቂ)</translation>
 <translation id="4901162432287938633">ንጽህና እና የመጸዳጃ ቤት ዕቃዎች</translation>

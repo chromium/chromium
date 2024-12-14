@@ -807,7 +807,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2399868464369312507">Google Chrome está tentando editar os métodos de pago.</translation>
 <translation id="2400600116338235695">Pode pedirche permiso para conectarse a portos en serie</translation>
 <translation id="2404884497378469141">Proba a copiar os ficheiros de novo</translation>
-<translation id="2412310121876768057">Queres autocompletar os datos da tarxeta a próxima vez?</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque quizais se revogase o certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="2414886740292270097">Escuro</translation>
@@ -1305,7 +1304,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3354508510846323339">Cita <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Cambiar configuración do proxy...</translation>
 <translation id="335809815767823">Políticas exportadas</translation>
-<translation id="3359387651158939842">Garda a túa tarxeta para que se autocompleten os datos cando a uses con Google Pay ao facer compras</translation>
 <translation id="3359565626472459400">Matrimonio</translation>
 <translation id="3360103848165129075">Folla do controlador de pagos</translation>
 <translation id="3360306038446926262">Ventás</translation>
@@ -1458,7 +1456,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3605899229568538311">5 x 5 polgadas</translation>
 <translation id="3606917451836803637">Series e programas de televisión</translation>
 <translation id="3608932978122581043">Orientación da alimentación</translation>
-<translation id="3610142117915544498">Para pagar máis rápido a próxima vez, garda a túa tarxeta, o nome e o enderezo de facturación na túa Conta de Google</translation>
 <translation id="3612660594051121194">Trens e autobuses de longa distancia</translation>
 <translation id="3614001939154393113">Os atacantes poderían tentar roubar os teus datos de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, contrasinais, mensaxes e información das túas tarxetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Tamaño 2</translation>
@@ -2177,7 +2174,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Xogos Olímpicos</translation>
 <translation id="4898742041545089450">Este tema está desbloqueado e pode activarse en función do teu historial de navegación</translation>
-<translation id="4899379435492347481">Garda esta tarxeta para usala en liña con Google Pay ao facer compras nos teus dispositivos</translation>
 <translation id="4900217275619098670">Noveno rolo</translation>
 <translation id="4901052769830245369">Etiquetas (semibrillo)</translation>
 <translation id="4901162432287938633">Artigos de hixiene</translation>
@@ -3542,6 +3538,7 @@ Detalles adicionais:
 <translation id="7388594495505979117">{0,plural, =1{O dispositivo reiniciarase en 1 minuto}other{O dispositivo reiniciarase en # minutos}}</translation>
 <translation id="7393161616326137353">Xogos de aventura</translation>
 <translation id="7393475648162498734">Mostra que recompensas e beneficios ofrecen as túas tarxetas ao tramitar as compras</translation>
+<translation id="7393971683644170444">Establecendo conexión co provedor da túa tarxeta...</translation>
 <translation id="739728382607845710">Icona do controlador de pagos</translation>
 <translation id="7399616692258236448">Bloquéanse automaticamente as solicitudes de localización para todos os sitios, excepto para os que permitas</translation>
 <translation id="7400418766976504921">URL</translation>

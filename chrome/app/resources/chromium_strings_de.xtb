@@ -67,6 +67,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="1896836275755235458">In Chromium wird der Akkuverbrauch reduziert, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen zum Energiesparmodus<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Wenn du diese Einstellung deaktivierst, kannst du dich auf Websites von Google wie beispielsweise Gmail anmelden, ohne dich auch in Chromium anmelden zu müssen</translation>
+<translation id="1916451563296275579">Daten dieser App aus Chromium entfernen</translation>
 <translation id="1929939181775079593">Chromium reagiert nicht. Jetzt neu starten?</translation>
 <translation id="1933341829955786215">Deine Organisation (<ph name="MANAGER" />) verlangt, dass du dich in Chromium anmeldest</translation>
 <translation id="193439633299369377">Chromium OS muss neu gestartet werden, um das Update zu installieren.</translation>
@@ -404,6 +405,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6455857529632101747">Willkommen bei den Chromium-Profilen</translation>
 <translation id="6466344609055215035">Konto aus Chromium entfernen</translation>
 <translation id="6475912303565314141">Die Erweiterung legt auch die Seite fest, die beim Start von Chromium angezeigt wird.</translation>
+<translation id="648062525172759633">Diese Seiten sind für Chromium-Entwickler gedacht und werden möglicherweise nicht aktiv gepflegt oder getestet. Wenn du sie aktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> und klicke auf die Schaltfläche zum Aktivieren von Debugging-Seiten. Rufe diese Seite dann noch einmal auf.</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
 <translation id="6510925080656968729">Chromium deinstallieren</translation>
 <translation id="651535675648445253">Verknüpfungen werden in Chromium geöffnet</translation>

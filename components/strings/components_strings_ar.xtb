@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">‏يحاول Google Chrome تعديل طُرق الدفع.</translation>
 <translation id="2400600116338235695">السماح للموقع الإلكتروني بطلب الاتصال بمنافذ تسلسلية</translation>
 <translation id="2404884497378469141">حاوِل نسخ ملفاتك مرة أخرى.</translation>
-<translation id="2412310121876768057">هل تريد ملء بيانات البطاقة تلقائيًا في المرة القادمة؟</translation>
 <translation id="2413155254802890957">القديم</translation>
 <translation id="2413528052993050574">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان ربما تم إلغاء صلاحيتها. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2414886740292270097">داكن</translation>
@@ -1306,7 +1305,6 @@
 <translation id="3354508510846323339">الاقتباس <ph name="CURRENT_CITATION" /> من إجمالي <ph name="MAX_CITATIONS" />، <ph name="PRODUCT_NAME" />،‏ <ph name="URL" /></translation>
 <translation id="3355823806454867987">تغيير إعدادات الخادم الوكيل...</translation>
 <translation id="335809815767823">اكتملت عملية التصدير.</translation>
-<translation id="3359387651158939842">‏يمكنك ملء بياناتك بطاقتك تلقائيًا لإجراء عمليات شراء مستقبلية في حال حفظ هذه البيانات لاستخدامها من خلال Google Pay</translation>
 <translation id="3359565626472459400">زواج</translation>
 <translation id="3360103848165129075">جدول بيانات معالج الدفع</translation>
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
@@ -1459,7 +1457,6 @@
 <translation id="3605899229568538311">5 × 5 بوصة</translation>
 <translation id="3606917451836803637">عروض وبرامج تلفزيونية</translation>
 <translation id="3608932978122581043">تخطيط الاتجاه</translation>
-<translation id="3610142117915544498">‏يمكنك حفظ بيانات البطاقة والاسم وعنوان إرسال الفواتير في حسابك على Google للدفع بشكلٍ أسرع في المرة القادمة.</translation>
 <translation id="3612660594051121194">حافلات وقطارات للمسافات الطويلة</translation>
 <translation id="3614001939154393113">قد تكون هناك محاولات من المهاجمين لسرقة معلوماتك من <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (مثل كلمات المرور أو الرسائل، أو بيانات بطاقات الائتمان). <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">الحجم 2</translation>
@@ -2179,7 +2176,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">أولمبياد</translation>
 <translation id="4898742041545089450">تمت إزالة حظر هذا الموضوع وقد يصبح نشطًا استنادًا إلى سجلّ التصفُّح</translation>
-<translation id="4899379435492347481">‏يمكنك حفظ هذه البطاقة لاستخدامها على الإنترنت من خلال Google Pay لإجراء عمليات شراء على جميع أجهزتك</translation>
 <translation id="4900217275619098670">اللفافة التاسعة</translation>
 <translation id="4901052769830245369">تصنيفات (شبه لامعة)</translation>
 <translation id="4901162432287938633">أدوات صحية وأدوات نظافة شخصية</translation>

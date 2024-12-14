@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="1408847409015257906">"गोपनीयता आणि सुरक्षा" वर टॅप करा.</translation>
 <translation id="1411386976162024013">Lens मधील व्हिज्युअल शोध</translation>
+<translation id="1417474386970818917">साइन आउट करा आणि हटवा</translation>
 <translation id="1426410128494586442">होय</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1436671784520050284">सेटअप सुरू ठेवा</translation>
@@ -931,6 +932,7 @@
 <translation id="5248640482715684545">ही साइट दुसरे अ‍ॅप्लिकेशन उघडण्याचा प्रयत्न करत आहे.</translation>
 <translation id="5271265092610673171">{count,plural, =1{भरणे आवश्यक असलेले फील्ड रिकामे आहे. सेव्ह करण्याआधी भरा.}other{भरणे आवश्यक असलेली फील्ड रिकामी आहेत. सेव्ह करण्याआधी ती भरा.}}</translation>
 <translation id="5271549068863921519">पासवर्ड सेव्ह करा</translation>
+<translation id="5279214046729249716">होय, तो वेगळा ठेवा</translation>
 <translation id="5279600392753459966">सर्व अवरोधित करा</translation>
 <translation id="5282340693022193851">किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशन मिळवण्यासाठी, तुमच्या iOS सेटिंग्ज मध्ये नोटिफिकेशन सुरू करा.</translation>
 <translation id="5294624619177114121">मोबाइल नोटिफिकेशन</translation>
@@ -1009,6 +1011,7 @@
 <translation id="5628388627414062173">{count,plural, =1{तुमच्या वाचन सूचीमधील {count} पेज}other{तुमच्या वाचन सूचीमधील {count} पेज}}</translation>
 <translation id="5632485077360054581">मला कसे ते दाखवा</translation>
 <translation id="5633237939819267663">{count,plural, =1{बुकमार्क "{title}" मध्ये सेव्ह केला आहे}other{{count} बुकमार्क "{title}" मध्ये सेव्ह केले आहेत}}</translation>
+<translation id="564170563478022912">साइन आउट करायचे आहे का? सेव्ह न केलेला खाते डेटा हटवला जाईल.</translation>
 <translation id="5642707040609478753">न वाचलेल्या अशी खूण करा</translation>
 <translation id="5646284034397250191">लेबल तयार केले आहे. तारखेची माहिती उपलब्ध नाही</translation>
 <translation id="5647096944343801045">मोठा एंट्री पॉइंट</translation>
@@ -1021,6 +1024,7 @@
 <translation id="5669335982068190158">तुमच्या iPhone रीसेटचा भाग म्हणून तुम्हाला साइन आउट केले गेले होते. साइन इन करण्यासाठी, सुरू ठेवा वर खाली टॅप करा.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">आवृत्ती <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">खाती स्विच करायची आहेत का? सेव्ह न केलेला खाते डेटा हटवला जाईल.</translation>
 <translation id="5683499062697987550">तुमच्या Google खाते मध्ये पासवर्ड वापरण्यासाठी आणि ते सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा.</translation>
 <translation id="5684761169742812828">हा पासवर्ड इंटरनेटवरील डेटा भंगामध्ये उघड झाला होता. तुम्‍हाला आता ते बदलण्‍यासाठी वेळ नसल्यास, नंतर आठवण करून देण्‍यासाठी Google ही चेतावणी ठेवण्‍याची शिफारस करते.</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> साठी Drive मध्ये सेव्ह केली आहे.</translation>
@@ -1223,6 +1227,7 @@
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" हा टॅब गट शेअर करा</translation>
 <translation id="6507973708545996744">तुमच्या सर्व डिव्हाइसवर तुमची वाचन सूची मिळवण्यासाठी साइन इन करा.</translation>
 <translation id="6518133107902771759">सत्यापित करा</translation>
+<translation id="6518861084553706202">टॅब बंद केले जातील आणि हटवलेल्या डेटामध्ये पासवर्ड, ब्राउझिंग इतिहास, कुकी आणि आणखी बऱ्याच गोष्टींचा समावेश असू शकेल.</translation>
 <translation id="6523575793810663688">कसे हे मला दाखवा</translation>
 <translation id="6524082013156754186">खात्यामध्ये सेव्ह करा</translation>
 <translation id="6527303717912515753">शेअर करा</translation>
@@ -1679,6 +1684,7 @@
 <translation id="8545276357312221485">तुमची डीफॉल्ट ब्राउझर सेटिंग्ज तपासा</translation>
 <translation id="854938212724803178">तुमच्याकडे धोक्यात असलेला १ पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.</translation>
 <translation id="8556590991644167667">{count,plural, =1{तुम्ही {count} चेतावणी डिसमिस केली आहे}other{तुम्ही {count} चेतावण्या डिसमिस केल्या आहेत}}</translation>
+<translation id="8558046478684552694">गट बंद करा.</translation>
 <translation id="8560253818350321773">वारंवार वापरले जाणारे आयटम सर्वप्रथम दाखवा.</translation>
 <translation id="8561999115126307258">{count,plural, =1{तुमच्या कीबोर्डच्या वरती पासवर्डचा {count} पर्याय उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती पासवर्डचे {count} पर्याय उपलब्ध आहेत.}}</translation>
 <translation id="8564894539416715395">नवीन टॅब पेज</translation>
@@ -1847,6 +1853,7 @@
 <translation id="9205189991633470489">गुप्त मोड लॉक</translation>
 <translation id="9206887540681440657">वेग</translation>
 <translation id="9223358826628549784">क्रॅश अहवाल पाठवला.</translation>
+<translation id="926455622548529175">स्विच करा आणि हटवा</translation>
 <translation id="929748059769569925">हायलाइट केलेला मजकूर</translation>
 <translation id="932305336591073205">{count,plural, =1{टॅब बंद करा}other{टॅब बंद करा}}</translation>
 <translation id="939472100615258482">सद्य साइट</translation>

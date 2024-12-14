@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome ચુકવણી પદ્ધતિઓમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="2400600116338235695">સીરિયલ પોર્ટ સાથે કનેક્ટ થવા માટે પૂછી શકે છે</translation>
 <translation id="2404884497378469141">તમારી ફાઇલોની ફરીથી કૉપિ કરવાનો પ્રયાસ કરો</translation>
-<translation id="2412310121876768057">આગલી વખતે કાર્ડની માહિતી ઑટોમૅટિક રીતે ભરીએ?</translation>
 <translation id="2413155254802890957">જૂનું</translation>
 <translation id="2413528052993050574">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર રદબાતલ થયું હશે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="2414886740292270097">ઘાટું</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">અવતરણ <ph name="MAX_CITATIONS" />માંથી <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">પ્રૉક્સી સેટિંગ બદલો...</translation>
 <translation id="335809815767823">નિકાસ કરી</translation>
-<translation id="3359387651158939842">Google Pay વડે તમારા કાર્ડનો ઉપયોગ કરવા માટે જ્યારે તમે તેને સાચવો, ત્યારે ભવિષ્યની ખરીદીઓ માટે તમારા કાર્ડની વિગતો ઑટોમૅટિક રીતે ભરવામાં આવશે</translation>
 <translation id="3359565626472459400">વિવાહ</translation>
 <translation id="3360103848165129075">ચુકવણી માટેની હૅન્ડલર શીટ</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1401,6 +1399,7 @@
 <translation id="351522771072578657">તમે હાલમાં કોઈ મેનૂમાં છો</translation>
 <translation id="3517264445792388751">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા ફાઇલ સિસ્ટમ બંધ કરવામાં આવી છે</translation>
 <translation id="3518941727116570328">એકથી વધુ ઑબ્જેક્ટ હૅન્ડલ કરવા</translation>
+<translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" />ને પૂછો</translation>
 <translation id="3525130752944427905">10 x 14 ઇંચ</translation>
 <translation id="3525435918300186947">MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરીએ?</translation>
 <translation id="3527181387426738155">મ્યુઝિક અને ઑડિયો</translation>
@@ -1458,7 +1457,6 @@
 <translation id="3605899229568538311">5 x 5 ઇંચ</translation>
 <translation id="3606917451836803637">ટીવી શો અને પ્રોગ્રામ</translation>
 <translation id="3608932978122581043">ફીડ ઓરિએન્ટેશન</translation>
-<translation id="3610142117915544498">આગલી વખતે વધુ ઝડપથી ચુકવણી કરવા માટે, તમારા કાર્ડ, નામ અને બિલિંગ સરનામાને તમારા Google એકાઉન્ટમાં સાચવો</translation>
 <translation id="3612660594051121194">લાંબા અંતરની બસ અને રેલ</translation>
 <translation id="3614001939154393113">હુમલાખોરો <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />માંથી તમારી માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ, મેસેજ અથવા ક્રેડિટ કાર્ડ) ચોરવાનો પ્રયાસ કરી રહ્યાં હોઈ શકે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">કદ 2</translation>
@@ -1956,6 +1954,7 @@
 <translation id="4451684391620232683">વપરાશકર્તા સમક્ષ રજૂ કરેલી ટેક્સ્ટ:</translation>
 <translation id="4452328064229197696">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Google પાસવર્ડ મેનેજર તમારા સાચવેલા પાસવર્ડને ચેક કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="4456937135469235202">સાહસિક મુસાફરી</translation>
+<translation id="4458013283022578512">કોઈ પ્રશ્ન દાખલ કરો</translation>
 <translation id="4464826014807964867">તમારી સંસ્થા દ્વારા પ્રદાન કરવામાં આવેલી માહિતી ધરાવતી વેબસાઇટ</translation>
 <translation id="4466576951214254884">કૉલેજના વિદ્યાર્થીઓને લોન આપતી સેવાઓ</translation>
 <translation id="4467821340016922962">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા અને ડાઉનલોડ જોવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
@@ -2177,7 +2176,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ઑલિમ્પિક</translation>
 <translation id="4898742041545089450">આ વિષય અનબ્લૉક કરેલો છે અને તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે સક્રિય થઈ શકે છે</translation>
-<translation id="4899379435492347481">તમારા સમગ્ર ડિવાઇસ પરની ખરીદીઓ માટે Google Pay વડે ઑનલાઇન ઉપયોગમાં લેવા માટે આ કાર્ડને સાચવો</translation>
 <translation id="4900217275619098670">નવમો રોલ</translation>
 <translation id="4901052769830245369">લેબલ (સેમી-ગ્લોસ)</translation>
 <translation id="4901162432287938633">સ્વચ્છતા અને પ્રસાધનો</translation>

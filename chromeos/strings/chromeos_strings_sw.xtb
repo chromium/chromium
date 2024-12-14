@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Kiwango cha chaji cha spika ya masikioni ya kulia ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">mipangilio</translation>
 <translation id="3347558044552027859">kisasa</translation>
+<translation id="3353477144743332882">Pakua mfumo wa kubuni majina na mihtasari</translation>
 <translation id="3359218928534347896">geuza ili uzime sauti ya maikrofoni</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato bila <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
 <translation id="5860491529813859533">Washa</translation>
+<translation id="5875913454160982848">Pakua mfumo wa unukuzi</translation>
 <translation id="5876385649737594562">Washa ili uteue chaguo</translation>
 <translation id="5877503382465267833">Sitisha <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Skrini nzima</translation>
@@ -1588,6 +1590,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8503836310948963452">Dakika chache tu...</translation>
 <translation id="8505011850330200833">Mfumo huu wa Gemini unahitaji GB 2 za nafasi ya hifadhi ili kuchakata manukuu na kutayarisha mihtasari</translation>
 <translation id="8508640263392900755">Maelezo ya APN</translation>
+<translation id="8509574872955173831">Pata maelezo zaidi kuhusu kubuni majina na mihtasari</translation>
 <translation id="8522687886059337719">Sasa unaweza kufikia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />mandhari<ph name="END_LINK_WALLPAPER_SUBPAGE" /> na <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />taswira mpya za skrini<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">mkahawa wa chai</translation>
@@ -1724,7 +1727,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="9133772297793293778">Bonyeza virekebishi 1 hadi 4 na kitufe kingine 1 kwenye kibodi yako. Ili uondoke katika hali ya kubadilisha, bonyeza alt pamoja na esc.</translation>
 <translation id="9137526406337347448">Huduma za Google</translation>
 <translation id="9138630967333032450">Kitufe cha Shift cha kushoto</translation>
-<translation id="9147928237330776930">Umeweka maneno machache mno kwa hivyo imeshindwa kuandaa muhtasari</translation>
 <translation id="9149391708638971077">Tekeleza jaribio la Hifadhi</translation>
 <translation id="9159524746324788320">hambaga</translation>
 <translation id="9161276708550942948">space</translation>

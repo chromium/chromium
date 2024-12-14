@@ -807,7 +807,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2399868464369312507">Google Chrome poskuša urediti plačilna sredstva.</translation>
 <translation id="2400600116338235695">Lahko zahteva vzpostavitev povezave s serijskimi vrati.</translation>
 <translation id="2404884497378469141">Poskusite znova kopirati datoteke</translation>
-<translation id="2412310121876768057">Želite naslednjič samodejno izpolniti kartico?</translation>
 <translation id="2413155254802890957">Staro</translation>
 <translation id="2413528052993050574">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo je bilo morda preklicano. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="2414886740292270097">Temno</translation>
@@ -1305,7 +1304,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3354508510846323339">Navedek <ph name="CURRENT_CITATION" /> od <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Spremeni nastavitve proxyja ...</translation>
 <translation id="335809815767823">Izvoženo</translation>
-<translation id="3359387651158939842">Samodejno izpolnjevanje kartice za prihodnje nakupe, ko jo shranite za uporabo z Googlom Pay</translation>
 <translation id="3359565626472459400">Zakon</translation>
 <translation id="3360103848165129075">List rutine za obravnavo plačil</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3605899229568538311">5 x 5 palcev</translation>
 <translation id="3606917451836803637">TV-oddaje in programi</translation>
 <translation id="3608932978122581043">Usmerjenost podajanja</translation>
-<translation id="3610142117915544498">Če želite naslednjič hitreje plačati, shranite kartico, ime in naslov za izstavitev računa v računu Google</translation>
 <translation id="3612660594051121194">Potovanja z avtobusom in vlakom na daljše razdalje</translation>
 <translation id="3614001939154393113">Morda poskušajo napadalci ukrasti vaše podatke s spletnega mesta <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na primer gesla, sporočila ali kreditne kartice). <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Velikost 2</translation>
@@ -2177,7 +2174,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijske igre</translation>
 <translation id="4898742041545089450">Ta tema je odblokirana in bo morda postala aktivna glede na vašo zgodovino brskanja</translation>
-<translation id="4899379435492347481">Shranite to kartico, da jo boste lahko v spletu uporabljali z Googlom Pay v različnih napravah</translation>
 <translation id="4900217275619098670">Kolut 9</translation>
 <translation id="4901052769830245369">Labels (Semi-Gloss)</translation>
 <translation id="4901162432287938633">Higiena in toaletne potrebščine</translation>

@@ -67,6 +67,7 @@
 <translation id="1896836275755235458">Chromium จะช่วยสงวนพลังงานแบตเตอรี่โดยการจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพ เช่น การเลื่อนอย่างราบรื่นและอัตราเฟรมวิดีโอ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดประหยัดพลังงาน<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">บริการ Chromium Updater</translation>
 <translation id="1911763535808217981">เมื่อปิดการตั้งค่านี้ คุณจะลงชื่อเข้าใช้เว็บไซต์ของ Google อย่างเช่น Gmail ได้โดยไม่ต้องลงชื่อเข้าใช้ Chromium</translation>
+<translation id="1916451563296275579">นำข้อมูลแอปนี้ออกจาก Chromium</translation>
 <translation id="1929939181775079593">Chromium ไม่ตอบสนอง เปิดใหม่เลยหรือไม่</translation>
 <translation id="1933341829955786215">องค์กร <ph name="MANAGER" /> กำหนดให้คุณต้องลงชื่อเข้าใช้ Chromium</translation>
 <translation id="193439633299369377">ต้องรีสตาร์ท Chromium OS เพื่อใช้การอัปเดต</translation>
@@ -404,6 +405,7 @@
 <translation id="6455857529632101747">ยินดีต้อนรับสู่โปรไฟล์ Chromium</translation>
 <translation id="6466344609055215035">นำบัญชีออกจาก Chromium</translation>
 <translation id="6475912303565314141">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chromium ด้วย</translation>
+<translation id="648062525172759633">หน้าเหล่านี้มีไว้สำหรับนักพัฒนาซอฟต์แวร์ Chromium เท่านั้น และอาจไม่ได้รับการดูแลรักษาหรือทดสอบอย่างสม่ำเสมอ หากต้องการเปิดใช้ ให้ไปที่ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> คลิกปุ่มเพื่อเปิดใช้หน้าแก้ไขข้อบกพร่อง แล้วมาที่หน้านี้อีกครั้ง</translation>
 <translation id="648319183876919572">Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นทำสิ่งต่างๆ ได้มากขึ้นเพื่อปกป้องคุณจากเว็บไซต์และการดาวน์โหลดที่เป็นอันตราย</translation>
 <translation id="6510925080656968729">ถอนการติดตั้ง Chromium</translation>
 <translation id="651535675648445253">เปิดทางลัดใน Chromium</translation>

@@ -124,7 +124,6 @@
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="2910701580606108292">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit</translation>
 <translation id="2918484639460781603">Ves a la configuració</translation>
-<translation id="2927133898344569563">Accedeix ràpidament a les pestanyes suggerides des de la llista d'aplicacions i des dels resultats de la cerca del dispositiu. Pots activar o desactivar aquesta opció en qualsevol moment a la configuració de Chrome.</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
 <translation id="2939338015096024043">Quan aquesta opció està activada, els llocs web poden demanar permís per fer un seguiment de la posició de la càmera i obtenir informació sobre el teu entorn. Quan aquesta opció està desactivada, els llocs web no poden fer un seguiment de la posició de la càmera ni obtenir informació sobre el teu entorn.</translation>
 <translation id="2968755619301702150">Lector de certificats</translation>
@@ -336,7 +335,6 @@
 <translation id="5968921426641056619">Introdueix l'adreça web</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Ara pots accedir ràpidament a les pestanyes suggerides des de la llista d'aplicacions i des dels resultats de la cerca del dispositiu. Pots desactivar aquesta funció en qualsevol moment a la configuració de Chrome.</translation>
 <translation id="6015775454662021376">Controla l'accés al teu dispositiu d'aquest lloc web</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>

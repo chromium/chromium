@@ -2871,6 +2871,7 @@
 <translation id="2981113813906970160">मोठा माउस कर्सर दर्शवा</translation>
 <translation id="2983102365694924129">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग बंद आहे.</translation>
 <translation id="2983373101216420412">केसची बॅटरी पातळी <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984384421572259426">न वापरलेले टॅब क्लीन अप करा</translation>
 <translation id="2984727013951557074">फाइल ही अद्याप Drive मध्ये सिंक केली जात आहे.</translation>
 <translation id="2985348301114641460">तुमच्या अ‍ॅडमिनिस्ट्रेटरला "<ph name="EXTENSION_NAME" />" इंस्टॉल करण्याची विनंती पाठवायची?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ने अ‍ॅप अनइंस्टॉल केले}other{<ph name="APP_NAME" /> ने # अ‍ॅप्स अनइंस्टॉल केली}}</translation>
@@ -4429,6 +4430,7 @@
 <translation id="4072805772816336153">नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="4074164314564067597">कीबोर्ड</translation>
 <translation id="407520071244661467">स्केल</translation>
+<translation id="4077623680826964850">बूट करताना किंवा VM शी पुन्हा कनेक्ट करताना टाइमआउट.</translation>
 <translation id="4077917118009885966">या साइटवर जाहिराती ब्लॉक केल्या आहेत</translation>
 <translation id="4078738236287221428">आक्रमक</translation>
 <translation id="4078903002989614318">क्रमाने लावणे आणि सूचीशी संबंधित पर्याय</translation>
@@ -4913,6 +4915,7 @@
 <translation id="4437879751057074691">पासवर्ड आणि पासकी सेव्ह करण्याची ऑफर</translation>
 <translation id="4437947179446780764">कस्टम DNS सेवा पुरवठादार जोडा</translation>
 <translation id="4438043733494739848">पारदर्शक</translation>
+<translation id="4439157218765614426">धोरणाद्वारे मनाई केली आहे.</translation>
 <translation id="4441124369922430666">मशीन सुरू होते तेव्हा तुम्ही हा ॲप स्वयंचलितपणे सुरू करू इच्छिता?</translation>
 <translation id="4441147046941420429">पुढे सुरू ठेवण्यासाठी, तुमच्या डिव्हाइसमधून सिक्युरिटी की काढून टाका आणि नंतर ती पुन्हा घालून तिला स्पर्श करा</translation>
 <translation id="444134486829715816">विस्तार करा...</translation>
@@ -5369,6 +5372,7 @@
 <translation id="4779083564647765204">झूम</translation>
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4779766576531456629">eSIM मोबाइल नेटवर्कचे नाव बदला</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • १ डुप्लिकेट</translation>
 <translation id="4780321648949301421">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
 <translation id="4780558987886269159">ऑफिससाठी</translation>
 <translation id="4785719467058219317">तुम्ही या वेबसाइटवर नोंदणीकृत नसलेली सिक्युरिटी की वापरत आहात</translation>
@@ -5448,6 +5452,7 @@
 <translation id="4833683849865011483">प्रिंट सर्व्हरवरील एक प्रिंटर आढळला</translation>
 <translation id="4835598628985424375">ओठ एकत्र आकसून चंबू करा</translation>
 <translation id="4835677468087803981">पिन लपवा</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> डुप्लिकेट</translation>
 <translation id="4836504898754963407">फिंगरप्रिंट व्यवस्‍थापित करा</translation>
 <translation id="4837128290434901661">Google Search वर परत बदलायचे आहे का?</translation>
 <translation id="4837926214103741331">तुम्ही हे डिव्हाइस वापरण्यासाठी प्राधिकृत नाही. कृपया साइन इन करण्याच्या परवानगीसाठी डिव्हाइस मालकाशी संपर्क साधा.</translation>
@@ -6072,6 +6077,7 @@
 <translation id="528208740344463258">Android अ‍ॅप्स डाउनलोड करण्यासाठी आणि वापरण्यासाठी, अगोदर तुम्ही हा आवश्यक अपडेट इंस्टॉल करणे गरजेचे आहे. तुमचे <ph name="DEVICE_TYPE" /> अपडेट होत असताना, तुम्ही त्याचा वापर करू शकत नाही. इंस्टॉल झाल्यानंतर तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट होईल.</translation>
 <translation id="5283677936944177147">अरेरे! डिव्हाइस मॉडेल किंवा सिरीअल नंबर निर्धारित करण्‍यात सिस्टम अयशस्वी झाली.</translation>
 <translation id="5284445933715251131">डाउनलोड करायला सुरुवात करा</translation>
+<translation id="5285484405698525101">या क्षणी न वापरलेले टॅब नाहीत</translation>
 <translation id="5285635972691565180">डिस्‍प्‍ले <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">स्‍कॅन करीत आहे</translation>
 <translation id="5287425679749926365">तुमची खाती</translation>
@@ -6346,6 +6352,7 @@
 <translation id="5481941284378890518">जवळपासचे प्रिंटर जोडा</translation>
 <translation id="5482417738572414119">Chrome ला टॅब गट सुचवू देण्यासाठी आणि तुमचे टॅब संगतवार ठेवू देण्यासाठी साइन इन करा</translation>
 <translation id="5483005706243021437">इथे रहा</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{न वापरलेले टॅब नाहीत}=1{न वापरलेल्या १ टॅबचे पुनरावलोकन करा}other{न वापरलेल्या # टॅबचे पुनरावलोकन करा}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> आज परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}other{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> {NUM_DAYS} दिवसांच्या आत परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ॲप्लिकेशन जोडा</translation>
 <translation id="5485435764083510385">कॅप्शनची प्राधान्य दिलेली भाषा</translation>
@@ -7027,6 +7034,7 @@
 <translation id="5982578203375898585">डाउनलोड पूर्ण झाल्यावर ते दाखवा</translation>
 <translation id="5983716913605894570">जनरेट करत आहे...</translation>
 <translation id="5984222099446776634">अलीकडे भेट दिलेले</translation>
+<translation id="5984334442529819751">DLC इंस्टॉल करताना एरर आली (बरेचदा रीबूटची आवश्यकता असते, अधिक माहितीसाठी सेटिंग्ज\&gt;\&gt;ChromeOS बद्दल हे पहा).</translation>
 <translation id="5985458664595100876">चुकीचा URL फॉरमॅट. सपोर्ट केले जाणारे फॉरमॅट \\server\share आणि smb://server/share आहेत.</translation>
 <translation id="5985556342298151179">तुमच्या डिव्हाइस अ‍ॅडमिनिस्ट्रेटरने इंस्टॉल केलेले Chrome अ‍ॅप.</translation>
 <translation id="598810097218913399">असाइनमेंट काढून टाका</translation>
@@ -9263,6 +9271,7 @@ I feel - विटांची इमारत</translation>
 <translation id="762917478230183172">प्रत्येक कीसाठी कृती निवडा</translation>
 <translation id="7629206210984165492">फिकट</translation>
 <translation id="7629827748548208700">टॅब: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">अज्ञात परिणाम.</translation>
 <translation id="7630426712700473382">हे डिव्हाइस <ph name="MANAGER" /> द्वारे व्यवस्थापित केले जाते आणि त्यामध्ये तुम्ही प्रत्येक वेळी साइन इन करणे आवश्यक आहे.</translation>
 <translation id="7631014249255418691">Linux अ‍ॅप्स आणि फायलींचा यशस्वीरीत्या बॅकअप घेतला</translation>
 <translation id="7631722872321401342">तुमच्या डिव्हाइसवर कोणतेही <ph name="LANGUAGE" /> आवाज नाहीत. तुम्ही सेटिंग्जमध्ये आवाज इंस्टॉल करू शकता.</translation>
@@ -9416,6 +9425,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7723388585204724670">डीफॉल्ट Chrome वर रीसेट करा</translation>
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7726391492136714301">तुमच्या फोनच्या सूचना आणि अ‍ॅप्स पहा</translation>
+<translation id="7727898923446098954">टॅब लपवला आहे</translation>
 <translation id="7728465250249629478">डिव्हाइसची भाषा बदला</translation>
 <translation id="7728570244950051353">स्लीप मोडमधून स्क्रीन लॉक करा</translation>
 <translation id="7728668285692163452">चॅनल बदल नंतर लागू होईल</translation>
@@ -9806,6 +9816,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7992203134935383159">स्पीच सिंथेसिस</translation>
 <translation id="799570308305997052">वेबदृश्य</translation>
 <translation id="7997826902155442747">प्रक्रिया प्राधान्य</translation>
+<translation id="7997828719430450286">यशस्वी झाले.</translation>
 <translation id="7998701048266085837">URLs</translation>
 <translation id="7999229196265990314">खालील फाइल तयार केल्या:
 
@@ -10455,6 +10466,7 @@ I feel - विटांची इमारत</translation>
 <translation id="845702320058262034">कनेक्ट करू शकत नाही. तुमच्या फोनचे ब्लूटूथ सुरू केले असल्याची खात्री करा</translation>
 <translation id="8457251154056341970">तुम्हाला या पेजवर <ph name="MODULE_NAME" /> पुन्हा दिसणार नाही</translation>
 <translation id="8457451314607652708">बुकमार्क इंपोर्ट करा</translation>
+<translation id="8458259704995116343">VM सुरू करता आली नाही.</translation>
 <translation id="8458341576712814616">शॉर्टकट</translation>
 <translation id="8458627787104127436">नवीन विंडोमध्ये सर्व (<ph name="URL_COUNT" />) उघडा</translation>
 <translation id="8459023460357294721"><ph name="FILE_NAME" /> तरीही उघडा</translation>
@@ -11115,12 +11127,14 @@ I feel - विटांची इमारत</translation>
 <translation id="8918900204934259333">अ‍ॅप इंस्टॉल करत आहे...</translation>
 <translation id="891931289445130855">डेटा आणि परवानग्या हटवा</translation>
 <translation id="8920133120839850939">आणखी जेश्चर टॅब निवडा, त्यानंतर मागे आणि पुढे नेव्हिगेट करण्यासाठी पेजदरम्यान स्वाइप करा सुरू करा</translation>
+<translation id="8921369299636221117">कॉन्सिएर्ज सेवा उपलब्ध नाही.</translation>
 <translation id="8922348435910470639">दोन वेळा बुक केलेला</translation>
 <translation id="8922624386829239660">माउसने स्क्रीनच्या कडांना स्पर्श केल्यावर स्क्रीन हलवा</translation>
 <translation id="8923880975836399332">गडद टील</translation>
 <translation id="8925124370124776087">टायटल बार आता लपवला आहे</translation>
 <translation id="8925458182817574960">&amp;सेटिंग्ज</translation>
 <translation id="8926389886865778422">पुन्हा विचारू नका</translation>
+<translation id="8926555406617248399">टॅब लपवले आहेत</translation>
 <translation id="892706138619340876">काही सेटिंग्ज रीसेट केल्या</translation>
 <translation id="8927438609932588163">साइटना तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती द्या</translation>
 <translation id="8929696694736010839">फक्त सध्याच्या गुप्त सेशनला लागू करा</translation>

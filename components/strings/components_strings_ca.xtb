@@ -807,7 +807,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2399868464369312507">Google Chrome està provant d'editar les formes de pagament.</translation>
 <translation id="2400600116338235695">Pot demanar permís per connectar-se a ports en sèrie</translation>
 <translation id="2404884497378469141">Prova de tornar a copiar els fitxers</translation>
-<translation id="2412310121876768057">Vols que la propera vegada la targeta s'empleni automàticament?</translation>
 <translation id="2413155254802890957">Anteriors</translation>
 <translation id="2413528052993050574">El servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè és possible que el seu certificat de seguretat s'hagi revocat. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="2414886740292270097">Fosc</translation>
@@ -1305,7 +1304,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3354508510846323339">Citació <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Canvia la configuració del servidor intermediari...</translation>
 <translation id="335809815767823">S'han exportat</translation>
-<translation id="3359387651158939842">Emplena automàticament la targeta per a futures compres quan la desis per utilitzar-la amb Google Pay</translation>
 <translation id="3359565626472459400">Matrimoni</translation>
 <translation id="3360103848165129075">Full del gestor de pagaments</translation>
 <translation id="3360306038446926262">Finestres</translation>
@@ -1401,6 +1399,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="351522771072578657">Actualment ets en un menú</translation>
 <translation id="3517264445792388751">El teu administrador ha desactivat el sistema de fitxers</translation>
 <translation id="3518941727116570328">Gestió de diversos objectes</translation>
+<translation id="3519670528214225835">Pregunta a <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 polzades</translation>
 <translation id="3525435918300186947">Vols controlar i reprogramar els dispositius MIDI?</translation>
 <translation id="3527181387426738155">Música i àudio</translation>
@@ -1458,7 +1457,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3605899229568538311">5 x 5 polzades</translation>
 <translation id="3606917451836803637">Programes i xous de televisió</translation>
 <translation id="3608932978122581043">Orientació de l'entrada</translation>
-<translation id="3610142117915544498">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta, el nom i l'adreça de facturació al teu Compte de Google</translation>
 <translation id="3612660594051121194">Autobusos i trens de llarga distància</translation>
 <translation id="3614001939154393113">És possible que hi hagi atacants que estiguin provant de robar-vos informació de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (per exemple, contrasenyes, missatges o targetes de crèdit). <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Mida 2</translation>
@@ -1956,6 +1954,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4451684391620232683">Text mostrat a l'usuari:</translation>
 <translation id="4452328064229197696">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes de Google recomana que comprovis les contrasenyes desades.</translation>
 <translation id="4456937135469235202">Viatges d'aventura</translation>
+<translation id="4458013283022578512">Introdueix una pregunta</translation>
 <translation id="4464826014807964867">Llocs web amb informació sobre la teva organització</translation>
 <translation id="4466576951214254884">Crèdits d'estudi i finançament universitari</translation>
 <translation id="4467821340016922962">Per sortir de la pantalla completa i veure la baixada, prem |<ph name="ACCELERATOR" />|</translation>
@@ -2177,7 +2176,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jocs Olímpics</translation>
 <translation id="4898742041545089450">Aquest tema està desbloquejat i és possible que s'activi en funció del teu historial de navegació</translation>
-<translation id="4899379435492347481">Desa aquesta targeta per utilitzar-la en línia amb Google Pay per a les compres en tots els teus dispositius</translation>
 <translation id="4900217275619098670">Novè corró</translation>
 <translation id="4901052769830245369">Etiquetes (semibrillants)</translation>
 <translation id="4901162432287938633">Productes d'higiene personal</translation>

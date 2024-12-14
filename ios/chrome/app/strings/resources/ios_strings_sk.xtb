@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="1408847409015257906">Klepnite na položku Ochrana súkromia a zabezpečenie.</translation>
 <translation id="1411386976162024013">Vizuálne vyhľadávanie pomocou funkcie Lens</translation>
+<translation id="1417474386970818917">Odhlásiť a odstrániť</translation>
 <translation id="1426410128494586442">Áno</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1436671784520050284">Pokračovať v nastavení</translation>
@@ -931,6 +932,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5248640482715684545">Tento web sa pokúša otvoriť inú aplikáciu.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdne. Pred uložením ho vyplňte.}few{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}many{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}other{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
+<translation id="5279214046729249716">Áno, ponechať oddelené</translation>
 <translation id="5279600392753459966">Blokovať všetky</translation>
 <translation id="5282340693022193851">Ak chcete dostávať upozornenia na sledovanie cien, zapnite upozornenia v nastaveniach systému iOS.</translation>
 <translation id="5294624619177114121">Mobilné upozornenia</translation>
@@ -1009,6 +1011,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5628388627414062173">{count,plural, =1{{count} stránka vo vašom čitateľskom zozname}few{{count} stránky vo vašom čitateľskom zozname}many{{count} pages on your reading list}other{{count} stránok vo vašom čitateľskom zozname}}</translation>
 <translation id="5632485077360054581">Ukázať postup</translation>
 <translation id="5633237939819267663">{count,plural, =1{Záložka bola uložená do priečinka {title}}few{{count} záložky boli uložené do priečinka {title}}many{{count} bookmarks saved to "{title}"}other{{count} záložiek bolo uložených do priečinka {title}}}</translation>
+<translation id="564170563478022912">Chcete sa odhlásiť? Neuložené údaje účtu budú odstránené.</translation>
 <translation id="5642707040609478753">Označiť ako neprečítané</translation>
 <translation id="5646284034397250191">Štítok bol vytvorený. Dátum nie je k dispozícii.</translation>
 <translation id="5647096944343801045">Veľký vstupný bod</translation>
@@ -1021,6 +1024,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5669335982068190158">V rámci resetovania iPhonu vás systém odhlásil. Ak sa chcete prihlásiť, klepnite na Pokračovať nižšie.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Verzia <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Chcete prepnúť účty? Neuložené údaje účtu budú odstránené.</translation>
 <translation id="5683499062697987550">Ak chcete používať a ukladať heslá vo svojom účte Google, overte svoju totožnosť.</translation>
 <translation id="5684761169742812828">Toto heslo bolo prezradené pri porušení ochrany údajov na internete. Ak si ho momentálne nemôžete zmeniť, Google vám odporúča ponechať si toto upozornenie, aby ste na to nezabudli.</translation>
 <translation id="5694848685995373177">Uložené na Disku pre účet <ph name="USER_EMAIL" />.</translation>
@@ -1222,6 +1226,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6506996418997555004">Zdieľanie skupiny kariet <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Ak chcete mať čitateľský zoznam k dispozícii vo všetkých zariadeniach, prihláste sa.</translation>
 <translation id="6518133107902771759">Overiť</translation>
+<translation id="6518861084553706202">Karty budú zatvorené a medzi odstránenými údajmi môžu byť heslá, história prehliadania, súbory cookie a ďalšie položky.</translation>
 <translation id="6523575793810663688">Postup</translation>
 <translation id="6524082013156754186">Uložiť v účte</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
@@ -1678,6 +1683,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8545276357312221485">Skontrolujte nastavenia predvoleného prehliadača</translation>
 <translation id="854938212724803178">Máte jedno odhalené heslo. Tento problém odstráňte, aby ste boli v bezpečí.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Zavreli ste {count} upozornenie}few{Zavreli ste {count} upozornenia}many{You dismissed {count} warnings}other{Zavreli ste {count} upozornení}}</translation>
+<translation id="8558046478684552694">Zavrieť skupinu.</translation>
 <translation id="8560253818350321773">Zobrazujte si často používané položky ako prvé.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Nad klávesnicou je k dispozícii {count} možnosť hesla.}few{Nad klávesnicou sú k dispozícii {count} možnosti hesla.}many{{count} options for password available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} možností hesla.}}</translation>
 <translation id="8564894539416715395">Stránka na novej karte</translation>
@@ -1846,6 +1852,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9205189991633470489">Zámka režimu inkognito</translation>
 <translation id="9206887540681440657">Rýchlosť</translation>
 <translation id="9223358826628549784">Správa o zlyhaní bola odoslaná.</translation>
+<translation id="926455622548529175">Prepnúť a odstrániť</translation>
 <translation id="929748059769569925">Zvýraznený text</translation>
 <translation id="932305336591073205">{count,plural, =1{Zavrieť kartu}few{Zavrieť karty}many{Close tabs}other{Zavrieť karty}}</translation>
 <translation id="939472100615258482">Aktuálny web</translation>

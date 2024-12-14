@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">‏Google Chrome می‌خواهد روش‌های پرداخت را ویرایش کند.</translation>
 <translation id="2400600116338235695">می‌تواند برای اتصال به درگاه‌های سریال درخواست دهد</translation>
 <translation id="2404884497378469141">فایل‌ها را دوباره کپی کنید</translation>
-<translation id="2412310121876768057">دفعه بعدی اطلاعات کارت به‌طور خودکار تکمیل شود؟</translation>
 <translation id="2413155254802890957">قدیمی</translation>
 <translation id="2413528052993050574">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن باطل شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
 <translation id="2414886740292270097">تاریک</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">فهرست منابع <ph name="CURRENT_CITATION" /> از <ph name="MAX_CITATIONS" />، <ph name="PRODUCT_NAME" />، <ph name="URL" /></translation>
 <translation id="3355823806454867987">تغییر تنظیمات پروکسی...</translation>
 <translation id="335809815767823">صادر شد</translation>
-<translation id="3359387651158939842">‏وقتی کارت را برای استفاده در Google Pay ذخیره کنید، اطلاعات کارت برای خریدهای بعدی به‌طور خودکار تکمیل می‌شود</translation>
 <translation id="3359565626472459400">ازدواج</translation>
 <translation id="3360103848165129075">برگ کنترل‌کننده پرداخت</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">۵ × ۵ اینچ</translation>
 <translation id="3606917451836803637">برنامه و نمایش تلویزیونی</translation>
 <translation id="3608932978122581043">جهت تغذیه کاغذ</translation>
-<translation id="3610142117915544498">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت، نام، و نشانی صورت‌حسابتان را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="3612660594051121194">اتوبوس و قطار بین‌شهری</translation>
 <translation id="3614001939154393113">ممکن است مهاجمان قصد داشته باشند اطلاعات شما (مثل گذرواژه‌ها، پیام‌ها، یا کارت‌های اعتباری) را از <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> به‌سرقت ببرند. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">اندازه ۲</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" />،‏ <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">بازی‌های المپیک</translation>
 <translation id="4898742041545089450">این موضوع لغو انسداد شده است و ممکن است براساس سابقه مرور شما فعال شود</translation>
-<translation id="4899379435492347481">‏این کارت را برای استفاده آنلاین در Google Pay و پرداخت هزینه خریدها در دستگاه‌هایتان ذخیره کنید</translation>
 <translation id="4900217275619098670">رول نهم</translation>
 <translation id="4901052769830245369">برچسب (نیمه‌براق)</translation>
 <translation id="4901162432287938633">بهداشت و وسایل آرایشی-بهداشتی</translation>

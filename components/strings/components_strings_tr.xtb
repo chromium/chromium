@@ -807,7 +807,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2399868464369312507">Google Chrome ödeme yöntemlerini düzenlemeye çalışıyor.</translation>
 <translation id="2400600116338235695">Seri bağlantı noktalarına bağlanmak isteyebilir</translation>
 <translation id="2404884497378469141">Dosyalarınızı tekrar kopyalamayı deneyin</translation>
-<translation id="2412310121876768057">Kart bilgileri bundan sonra otomatik olarak doldurulsun mu?</translation>
 <translation id="2413155254802890957">Eski</translation>
 <translation id="2413528052993050574">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası iptal edilmiş olabilir. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="2414886740292270097">Koyu</translation>
@@ -1305,7 +1304,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3354508510846323339">Alıntı <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
 <translation id="335809815767823">Dışa aktarıldı</translation>
-<translation id="3359387651158939842">Kartınızı Google Pay ile kullanılmak üzere kaydettiğinizde bundan sonraki alışverişlerinizde kart bilgileriniz otomatik olarak doldurulur</translation>
 <translation id="3359565626472459400">Evlilik</translation>
 <translation id="3360103848165129075">Ödeme işleyici sayfası</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3605899229568538311">5 x 5 inç</translation>
 <translation id="3606917451836803637">Televizyon Şovları ve Programları</translation>
 <translation id="3608932978122581043">Besleme yönü</translation>
-<translation id="3610142117915544498">Bir dahaki sefere daha hızlı ödeme yapmak için kartınızı ve fatura adresinizi Google Hesabınıza kaydedin</translation>
 <translation id="3612660594051121194">Uzak Mesafe Otobüs ve Tren</translation>
 <translation id="3614001939154393113">Saldırganlar, <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sitesindeki bilgilerinizi (örneğin, şifreler, iletiler veya kredi kartları) çalmaya çalışıyor olabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3614103345592970299">Boyut 2</translation>
@@ -2177,7 +2174,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiyatlar</translation>
 <translation id="4898742041545089450">Bu konunun engellemesi kaldırıldı ve tarama geçmişinize bağlı olarak etkin hale gelebilir</translation>
-<translation id="4899379435492347481">Bu kartı kaydederek cihazlarınızda Google Pay ile online alışveriş yapabilirsiniz</translation>
 <translation id="4900217275619098670">Dokuzuncu Rulo</translation>
 <translation id="4901052769830245369">Etiketler (Yarı Parlak)</translation>
 <translation id="4901162432287938633">Hijyen ve Kişisel Bakım Malzemeleri</translation>
@@ -3543,6 +3539,7 @@ Ek ayrıntılar:
 <translation id="7388594495505979117">{0,plural, =1{Cihazınız 1 dakika içinde yeniden başlatılacak}other{Cihazınız # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="7393161616326137353">Macera Oyunları</translation>
 <translation id="7393475648162498734">Ödeme sırasında kartlarınızla kullanabileceğiniz ödül ve avantajlar gösterilir</translation>
+<translation id="7393971683644170444">Kart sağlayıcınıza bağlanılıyor...</translation>
 <translation id="739728382607845710">Ödeme işleyici simgesi</translation>
 <translation id="7399616692258236448">Konum istekleri, izin verdikleriniz dışındaki tüm siteler için otomatik olarak engellenir</translation>
 <translation id="7400418766976504921">URL</translation>

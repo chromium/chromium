@@ -142,6 +142,7 @@
 您可隨時在「<ph name="GOOGLE_PASSWORD_MANAGER" />」中檢查密碼。</translation>
 <translation id="1084824384139382525">複製連結網址(&amp;E)</translation>
 <translation id="1085064499066015002">一律在所有網站上執行</translation>
+<translation id="1085558727130096638">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的分頁群組</translation>
 <translation id="1085618740036066768">無揀「<ph name="ITEM" />」。第 <ph name="INDEX" /> 項，總共有 <ph name="COUNT" /> 項。㩒搜尋鍵加空白鍵就可以揀。</translation>
 <translation id="1085697365578766383">啟動虛擬機器時發生錯誤，請再試一次。</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
@@ -2143,6 +2144,7 @@
 <translation id="2462752602710430187">已新增「<ph name="PRINTER_NAME" />」</translation>
 <translation id="2464079411014186876">雪糕</translation>
 <translation id="2467755475704469005">未偵測到任何裝置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的分頁群組</translation>
 <translation id="2468178265280335214">觸控板捲動加速</translation>
 <translation id="2468205691404969808">使用 Cookie 記住您的偏好設定 (即使你沒有瀏覽這些網頁)</translation>
 <translation id="2468402215065996499">他媽哥池</translation>
@@ -2288,6 +2290,7 @@
 <translation id="256481480019204378">Google 帳戶 ID</translation>
 <translation id="256517381556987641">「檔案同步」程序目前已找到 <ph name="ITEMS_FOUND" /> 個檔案，且仍在檢查儲存空間。請在數分鐘後再次啟用「檔案同步」。</translation>
 <translation id="2565214867520763227">開啟螢幕閱讀器</translation>
+<translation id="2566146433999774844">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的分頁群組</translation>
 <translation id="2568694057933302218">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="2568774940984945469">資料列容器</translation>
 <translation id="2569972178052279830">零售商名稱</translation>
@@ -2295,6 +2298,7 @@
 <translation id="2571655996835834626">變更設定來控制網站對 Cookie、JavaScript、外掛程式、地理位置、麥克風、相機等功能的存取權。</translation>
 <translation id="257175846174451436">已建議分頁群組</translation>
 <translation id="2572032849266859634">已授與「<ph name="VOLUME_NAME" />」的唯讀權限。</translation>
+<translation id="2573147659521059501"><ph name="NUM" /> 個分頁</translation>
 <translation id="2573276323521243649">從選取顯示圖片頁面返回</translation>
 <translation id="2573417407488272418">升級前將應用程式和檔案備份至「檔案」&gt;「我的檔案」。</translation>
 <translation id="2573831315551295105">指派代表「<ph name="ACTION" />」的按鈕裝置</translation>
@@ -2965,6 +2969,7 @@
 <translation id="3038628620670416486">找出滑鼠按鈕位置</translation>
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
 <translation id="3040982432432547149">協助我們改善 Chromebook 上的 Steam</translation>
+<translation id="304169924727249890">加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組</translation>
 <translation id="3043016484125065343">登入即可查看書籤</translation>
 <translation id="3043126717220766543">清除群組建議</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3303,6 +3308,7 @@
 <translation id="3308852433423051161">正在載入「Google 助理」…</translation>
 <translation id="3309124184713871355">結構</translation>
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
+<translation id="3310379801837527592">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的分頁群組</translation>
 <translation id="331080746368555063">私人網站可能包括公司內部網絡等項目</translation>
 <translation id="3311445899360743395">系統可能會從裝置中移除與此應用程式相關的資料。</translation>
 <translation id="3312470654018965389">正在設定 Linux 容器</translation>
@@ -4259,6 +4265,7 @@
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3958110062351175311">已允許在工具列中顯示要求</translation>
 <translation id="3958821725268247062">已安裝「<ph name="APP_NAME" />」</translation>
+<translation id="3959969108528118741">擁有者</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可以對　<ph name="IBAN_DESCRIPTION" />　執行嘅其他操作</translation>
 <translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" />已離開群組</translation>
@@ -4702,6 +4709,7 @@
 <translation id="428963538941819373">這些網站可在你瀏覽 <ph name="HOST" /> 時，使用與你相關的既有資料</translation>
 <translation id="4289732974614035569">選擇 PIN</translation>
 <translation id="4290791284969893584">關閉網頁後，您已開始的工作可能無法完成</translation>
+<translation id="4290826901752066702"><ph name="NUM" /> 個成員</translation>
 <translation id="4290898381118933198">滑動即可瀏覽頁面</translation>
 <translation id="4291265871880246274">登入對話框</translation>
 <translation id="429312253194641664">網站正在播放媒體</translation>
@@ -5778,6 +5786,7 @@
 <translation id="5079950360618752063">使用建議的密碼</translation>
 <translation id="508059534790499809">更新 Kerberos 票證</translation>
 <translation id="5081124414979006563">開啟訪客設定檔(&amp;O)</translation>
+<translation id="5081974595802103358">無法複製連結</translation>
 <translation id="508209203623347828">如停用此資訊卡，你的 Microsoft 資訊卡 (例如 SharePoint 和 Outlook 日曆) 也會一併停用。</translation>
 <translation id="5083035541015925118">Ctrl 鍵 + Alt 鍵 + 向上箭咀鍵</translation>
 <translation id="5084328598860513926">佈建流程已中斷。請再試一次，或聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -6619,6 +6628,7 @@
 <translation id="5691581861107245578">根據輸入內容取得 Emoji 建議</translation>
 <translation id="5691772641933328258">識別唔到指紋</translation>
 <translation id="5693255400847650006">麥克風正在使用中</translation>
+<translation id="5695046252726616755">㩒一下 Enter 或者 Space 掣就可以睇到多啲選項。</translation>
 <translation id="5695184138696833495">Linux 的 Android 應用程式 ADB</translation>
 <translation id="5696143504434933566">舉報「<ph name="EXTENSION_NAME" />」的濫用行為</translation>
 <translation id="5696679855467848181">目前正在使用的 PPD：<ph name="PPD_NAME" /></translation>
@@ -7853,6 +7863,7 @@
 <translation id="6609478180749378879">離開無痕模式後，登入資料會儲存在此裝置中。您可在日後透過裝置再次登入此網站。</translation>
 <translation id="6610002944194042868">翻譯選項</translation>
 <translation id="6610064275805055636">管理隔離的網絡應用程式</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> 個分頁</translation>
 <translation id="6611972847767394631">您的分頁會在這裡顯示</translation>
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6613267708691765962">正在掃瞄惡意軟件…</translation>
@@ -8564,6 +8575,7 @@
 <translation id="7118268675952955085">螢幕截圖</translation>
 <translation id="711840821796638741">顯示受管理書籤</translation>
 <translation id="711985611146095797">您可在此頁面管理已登入的 Google 帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="71200494435060621">以<ph name="OWNER_FULL_NAME" />的身分加入</translation>
 <translation id="7120762240626567834">除非連線至 VPN，否則系統將封鎖 Chrome 瀏覽器和 Android 流量</translation>
 <translation id="7120904433567247946">此書籤只會儲存至此裝置。如果儲存至「<ph name="ACCOUNT_FOLDER" />」，此書籤也會儲存至你的帳戶。</translation>
 <translation id="7121438501124788993">開發人員模式</translation>
@@ -9960,6 +9972,7 @@
 <translation id="8105273883928376822">如要繼續，請登入帳戶。</translation>
 <translation id="8107015733319732394">正在為 <ph name="DEVICE_TYPE" /> 安裝「Google Play 商店」。這可能需時幾分鐘。</translation>
 <translation id="810728361871746125">螢幕解像度</translation>
+<translation id="8108161424633979910"><ph name="NUM" /> 個成員</translation>
 <translation id="8109109153262930486">預設圖片</translation>
 <translation id="8109991406044913868">以 AI 製作的主題</translation>
 <translation id="8110393529211831722">訂閱項目只會在此裝置上安裝，不會同步至帳戶中的其他裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

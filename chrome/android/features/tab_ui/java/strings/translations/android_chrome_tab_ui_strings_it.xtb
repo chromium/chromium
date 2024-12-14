@@ -98,6 +98,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta}other{<ph name="MANY_ADDED" /> schede aggiunte}}</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
+<translation id="5380159289133845234">Archivia le schede duplicate</translation>
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
@@ -117,6 +118,7 @@ Se esci, perderai immediatamente l'accesso al gruppo di schede "<ph name="TITLE_
 <translation id="6051432659151380973">I gruppi di schede vengono salvati automaticamente</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Perderai immediatamente l'accesso al gruppo di schede <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Ora verranno archiviate anche tutte le schede duplicate, fatta eccezione per la copia utilizzata più di recente.</translation>
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
 <translation id="6271513594716432922">Chiudi tutte le schede non attive</translation>

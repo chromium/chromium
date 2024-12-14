@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome спрабуе змяніць спосабы аплаты.</translation>
 <translation id="2400600116338235695">Сайт можа запытваць дазвол на падключэнне да паслядоўных партоў</translation>
 <translation id="2404884497378469141">Паспрабуйце скапіраваць файлы яшчэ раз</translation>
-<translation id="2412310121876768057">Аўтаматычна запаўняць рэквізіты карткі наступны раз?</translation>
 <translation id="2413155254802890957">Старая форма</translation>
 <translation id="2413528052993050574">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; магчыма, яго сертыфікат бяспекі адкліканы. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="2414886740292270097">Цёмная</translation>
@@ -1306,7 +1305,6 @@
 <translation id="3354508510846323339">Цытата <ph name="CURRENT_CITATION" /> з <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Змяніць налады проксі-сервера...</translation>
 <translation id="335809815767823">Экспарт завершаны</translation>
-<translation id="3359387651158939842">Рэквізіты карткі будуць аўтаматычна запаўняцца падчас купляў, калі вы захаваеце яе для выкарыстання ў Google Pay</translation>
 <translation id="3359565626472459400">Шлюб</translation>
 <translation id="3360103848165129075">Аркуш апрацоўшчыка плацяжоў</translation>
 <translation id="3360306038446926262">Вокны</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5 x 5 цаляў</translation>
 <translation id="3606917451836803637">Тэлешоу і тэлепраграмы</translation>
 <translation id="3608932978122581043">Арыентацыя падачы</translation>
-<translation id="3610142117915544498">Каб наступны раз плаціць хутчэй, захавайце картку, імя і адрас для выстаўлення рахункаў ва Уліковым запісе Google</translation>
 <translation id="3612660594051121194">Аўтобусы і цягнікі далёкага накіравання</translation>
 <translation id="3614001939154393113">Зламыснікі могуць спрабаваць украсці вашы даныя з сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (напрыклад, паролі, паведамленні або даныя крэдытных картак). <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Памер 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Алімпійскія гульні</translation>
 <translation id="4898742041545089450">Гэта тэма разблакіравана і можа стаць актыўнай (гэта залежыць ад гісторыі прагляду вамі сайтаў)</translation>
-<translation id="4899379435492347481">Захавайце гэту картку, каб выкарыстоўваць яе для купляў у інтэрнэце праз Google Pay на ўсіх сваіх прыладах</translation>
 <translation id="4900217275619098670">Дзявяты рулон</translation>
 <translation id="4901052769830245369">Паўглянцавы этыкетачны матэрыял</translation>
 <translation id="4901162432287938633">Гігіена і туалетныя прылады</translation>

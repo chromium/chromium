@@ -807,7 +807,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2399868464369312507">Google Chrome försöker redigera betalningsmetoder.</translation>
 <translation id="2400600116338235695">Får begära tillstånd att ansluta till en serieport</translation>
 <translation id="2404884497378469141">Testa att kopiera filerna igen</translation>
-<translation id="2412310121876768057">Vill du autofylla kortet nästa gång?</translation>
 <translation id="2413155254802890957">Tidigare</translation>
 <translation id="2413528052993050574">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kan ha återkallats. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="2414886740292270097">Mörk</translation>
@@ -1071,7 +1070,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
 <translation id="2941878205777356567">Kuvert, 9 x 12 tum</translation>
 <translation id="2941952326391522266">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kommer från <ph name="DOMAIN2" />. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
-<translation id="2942492342931589800">Informellt</translation>
+<translation id="2942492342931589800">Informell</translation>
 <translation id="2942515540157583425">Jobb inom IT och teknik</translation>
 <translation id="2943895734390379394">Uppladdningstid:</translation>
 <translation id="2948083400971632585">Du kan inaktivera alla proxyservrar som har konfigurerats för en anslutning från sidan Inställningar.</translation>
@@ -1305,7 +1304,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3354508510846323339">Citat <ph name="CURRENT_CITATION" /> av <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Ändra proxyinställningar...</translation>
 <translation id="335809815767823">Exporterade</translation>
-<translation id="3359387651158939842">Autofyll kortet för framtida köp när du sparar det för användning med Google Pay</translation>
 <translation id="3359565626472459400">Äktenskap</translation>
 <translation id="3360103848165129075">Arbetsblad för betalningshantering</translation>
 <translation id="3360306038446926262">Fönster</translation>
@@ -1458,7 +1456,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3605899229568538311">5 x 5 tum</translation>
 <translation id="3606917451836803637">Tv-serier och tv-program</translation>
 <translation id="3608932978122581043">Ställa in riktning</translation>
-<translation id="3610142117915544498">Spara kortet, faktureringsadressen och ditt namn i Google-kontot så går det snabbare att betala nästa gång</translation>
 <translation id="3612660594051121194">Långdistansresor med buss och tåg</translation>
 <translation id="3614001939154393113">Det är möjligt att hackare försöker stjäla dina uppgifter från <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (till exempel lösenord, meddelanden eller kreditkort). <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Storlek 2</translation>
@@ -2177,7 +2174,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympiska spelen</translation>
 <translation id="4898742041545089450">Det här ämnet har avblockerats och kan bli aktivt baserat på din webbhistorik</translation>
-<translation id="4899379435492347481">Spara det här kortet och använd det online med Google Pay på alla dina enheter</translation>
 <translation id="4900217275619098670">Nionde rullen</translation>
 <translation id="4901052769830245369">Etiketter (halvblanka)</translation>
 <translation id="4901162432287938633">Hygien- och toalettartiklar</translation>
@@ -3543,6 +3539,7 @@ Mer information.
 <translation id="7388594495505979117">{0,plural, =1{Om 1 minut startas enheten om}other{Om # minuter startas enheten om}}</translation>
 <translation id="7393161616326137353">Äventyrsspel</translation>
 <translation id="7393475648162498734">Visa vilka belöningar och förmåner som är tillgängliga för korten i kassan</translation>
+<translation id="7393971683644170444">Ansluter till kortutgivaren …</translation>
 <translation id="739728382607845710">Ikonen Betalningshanterare</translation>
 <translation id="7399616692258236448">Platsbegäranden blockeras automatiskt på alla webbplatser utom sådana du tillåter</translation>
 <translation id="7400418766976504921">Webbadress</translation>

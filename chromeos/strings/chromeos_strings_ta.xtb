@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">வலதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">அமைப்புகள்</translation>
 <translation id="3347558044552027859">நவீன</translation>
+<translation id="3353477144743332882">சுருக்க விவரம் மற்றும் பெயர் உருவாக்க மாடலைப் பதிவிறக்கும்</translation>
 <translation id="3359218928534347896">மைக்ரோஃபோனை முடக்குவதற்கான ஐகான்</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">சுஷி</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">ஷார்ட்கட் இல்லை. <ph name="KEY" /> பட்டனை அழுத்தாமல் புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
+<translation id="5875913454160982848">டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்கும்</translation>
 <translation id="5876385649737594562">விருப்பங்களைத் தேர்ந்தெடுக்க ஆன் செய்யவும்</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> ஐ இடைநிறுத்தும்</translation>
 <translation id="588258955323874662">முழுத்திரை</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">இன்னும் சில நிமிடங்கள் காத்திருக்கவும்...</translation>
 <translation id="8505011850330200833">டிரான்ஸ்கிரிப்ட்டுகளைச் செயலாக்கவும் சுருக்க விவரங்களை உருவாக்கவும் Gemini மாடலுக்கு 2 ஜி.பை. சேமிப்பகம் தேவைப்படுகிறது</translation>
 <translation id="8508640263392900755">APN விவரங்கள்</translation>
+<translation id="8509574872955173831">சுருக்க விவரம் மற்றும் பெயர் உருவாக்கம் குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
 <translation id="8522687886059337719">இப்போது நீங்கள் புதிய <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />வால்பேப்பர்களையும்<ph name="END_LINK_WALLPAPER_SUBPAGE" /> <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ஸ்கிரீன் சேவரையும்<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> அணுகலாம்</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">தேநீர் விடுதி</translation>
@@ -1724,7 +1727,6 @@
 <translation id="9133772297793293778">உங்கள் கீபோர்டில் 1-4 மாற்றிகளையும் வேறொரு பட்டனையும் அழுத்தவும். திருத்தும் பயன்முறையில் இருந்து வெளியேற alt + esc அழுத்தவும்.</translation>
 <translation id="9137526406337347448">Google சேவைகள்</translation>
 <translation id="9138630967333032450">இடதுபக்க shift</translation>
-<translation id="9147928237330776930">சுருக்குவதற்கான வார்த்தைகள் மிக மிகக் குறைவாக உள்ளன</translation>
 <translation id="9149391708638971077">நினைவகச் சோதனையை இயக்கு</translation>
 <translation id="9159524746324788320">ஹம்பர்கர்ஸ்</translation>
 <translation id="9161276708550942948">space</translation>

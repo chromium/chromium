@@ -807,7 +807,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2399868464369312507">Google Chrome sta tentando di modificare i metodi di pagamento.</translation>
 <translation id="2400600116338235695">Può chiedere di connettersi alle porte seriali</translation>
 <translation id="2404884497378469141">Prova a copiare di nuovo i file</translation>
-<translation id="2412310121876768057">Vuoi che la prossima volta i dati della carta vengano compilati automaticamente?</translation>
 <translation id="2413155254802890957">Precedente</translation>
 <translation id="2413528052993050574">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere revocato. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="2414886740292270097">Scuro</translation>
@@ -1302,7 +1301,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3354508510846323339">Citazione <ph name="CURRENT_CITATION" /> di <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Modifica impostazioni proxy...</translation>
 <translation id="335809815767823">Criteri esportati</translation>
-<translation id="3359387651158939842">Compila automaticamente i dati della tua carta per gli acquisti futuri quando la salvi per usarla con Google Pay</translation>
 <translation id="3359565626472459400">Matrimonio</translation>
 <translation id="3360103848165129075">Foglio per la gestione dei pagamenti</translation>
 <translation id="3360306038446926262">Finestre</translation>
@@ -1455,7 +1453,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">Programmi e spettacoli TV</translation>
 <translation id="3608932978122581043">Fornisci orientamento</translation>
-<translation id="3610142117915544498">Per pagare più velocemente la prossima volta, salva la carta, il nome e l'indirizzo di fatturazione nel tuo Account Google</translation>
 <translation id="3612660594051121194">Autobus e treni a lunga percorrenza</translation>
 <translation id="3614001939154393113">I malintenzionati potrebbero provare a impossessarsi delle tue informazioni da <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ad esempio password, messaggi o carte di credito). <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3614103345592970299">Dimensione 2</translation>
@@ -2174,7 +2171,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiadi</translation>
 <translation id="4898742041545089450">Questo argomento è stato sbloccato e potrebbe essere attivo in base alla tua cronologia di navigazione</translation>
-<translation id="4899379435492347481">Salva questa carta per usarla online con Google Pay per gli acquisti su tutti i tuoi dispositivi</translation>
 <translation id="4900217275619098670">Nono rullo</translation>
 <translation id="4901052769830245369">Etichette (semilucide)</translation>
 <translation id="4901162432287938633">Igiene personale</translation>

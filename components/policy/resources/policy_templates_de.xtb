@@ -148,11 +148,6 @@ Beide haben den gleichen Effekt auf das Browserverhalten.</translation>
 <translation id="1059069692400941670">Import der Standardsuchmaschine bei der ersten Ausführung deaktivieren</translation>
 <translation id="1062011392452772310">Remote-Bescheinigung (Remote Attestation) für das Gerät aktivieren</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
-<translation id="1062460877136455375">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche isolierten Web-Apps (IWAs) keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, die entsprechende Berechtigung zu erteilen. Für diese Richtlinie können Platzhalter verwendet werden. Beispielsweise wird durch „<ph name="ALL_ISOLATED_WEB_APPS" />“ der Zugriff für alle IWAs blockiert.
-
-       Diese Richtlinie wird von „SmartCardConnectAllowedForUrls“ überschrieben. In erster Linie bedeutet das, dass der Wert „<ph name="ALL_ISOLATED_WEB_APPS" />“ in der Sperrliste dafür sorgt, dass IWAs – mit Ausnahme derer, die in „SmartCardConnectAllowedForUrls“ aufgeführt sind – keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, die Berechtigung zu erteilen.
-
-       Standardmäßig können isolierte Web-Apps, bei denen Smartcard-Berechtigungen im Manifest angeben sind, eine Verbindung zu Smartcards herstellen, sofern der Nutzer für jedes Lesegerät aktiv die Berechtigung gewährt hat.</translation>
 <translation id="1063860513136880926">Wenn die Richtlinie aktiviert ist, können keine Screenshots über Tastenkombinationen oder Erweiterungs-APIs aufgenommen werden. Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind Screenshots zulässig.
 
 Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph name="LINUX_OS_NAME" /> Screenshots, die mit Betriebssystem- oder Drittanbieter-Apps aufgenommen wurden, weiterhin zulässig sind.</translation>
@@ -9301,11 +9296,6 @@ Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie 
 
 Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="7912255076272890813">Zulässige App- bzw. Erweiterungstypen konfigurieren</translation>
-<translation id="7912541841840197488">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche isolierten Web-Apps (IWAs) über die Web Smart Card API eine Verbindung zu Smartcards herstellen können, ohne dass der Nutzer aufgefordert wird, eine Berechtigung zu erteilen. Für diese Richtlinie können keine Platzhalter verwendet werden.
-
-       Diese Richtlinie überschreibt „SmartCardConnectBlockedForUrls“. In erster Linie bedeutet das, dass der Wert „<ph name="ALL_ISOLATED_WEB_APPS" />“ in der Sperrliste dafür sorgt, dass IWAs – mit Ausnahme derer, die in „SmartCardConnectAllowedForUrls“ aufgeführt sind – keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, die Berechtigung zu erteilen.
-
-       Standardmäßig können isolierte Web-Apps, bei denen Smartcard-Berechtigungen im Manifest angeben sind, eine Verbindung zu Smartcards herstellen, sofern der Nutzer für jedes Lesegerät aktiv die Berechtigung gewährt hat.</translation>
 <translation id="791267408364877739">Sicherheitswarnungen anzeigen, wenn potenziell schädliche Befehlszeilen-Flags verwendet werden</translation>
 <translation id="7919665519909231619">Aktivieren der Funktion „Einkaufsliste“ erlauben</translation>
 <translation id="7922358664346625612">Letzten in Chrome geöffneten Tab beibehalten.</translation>

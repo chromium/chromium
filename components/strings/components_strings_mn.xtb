@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome төлбөрийн хэрэгслийг засахаар оролдож байна.</translation>
 <translation id="2400600116338235695">Цуваа портуудад холбогдохыг хүсэх боломжтой</translation>
 <translation id="2404884497378469141">Файлуудаа дахин хуулж үзнэ үү</translation>
-<translation id="2412310121876768057">Картыг дараагийн удаа автоматаар бөглөх үү?</translation>
 <translation id="2413155254802890957">Хуучин</translation>
 <translation id="2413528052993050574">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; хамгаалалтын сертификат хүчингүй болсон байж болзошгүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтон саад учруулж байж болох юм.</translation>
 <translation id="2414886740292270097">Хар</translation>
@@ -1306,7 +1305,6 @@
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" />-н <ph name="CURRENT_CITATION" />-р эшлэл, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Прокси-ийн тохиргоонуудыг өөрчлөх ...</translation>
 <translation id="335809815767823">Экспорт хийлээ</translation>
-<translation id="3359387651158939842">Та картаа Google Pay-р ашиглахын тулд хадгалахад ирээдүйн худалдан авалтад таны картыг автоматаар бөглөнө</translation>
 <translation id="3359565626472459400">Гэрлэлт</translation>
 <translation id="3360103848165129075">Төлбөр хариуцагчийн хүснэгт</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1459,7 +1457,6 @@
 <translation id="3605899229568538311">5 x 5 инч</translation>
 <translation id="3606917451836803637">ТВ шоу, хөтөлбөрүүд</translation>
 <translation id="3608932978122581043">Чиглэлийг заах</translation>
-<translation id="3610142117915544498">Дараагийн удаа илүү хурдан төлөхийн тулд карт, нэр болон төлбөр тооцооны хаягаа Google Бүртгэлдээ хадгална уу</translation>
 <translation id="3612660594051121194">Холын зайн автобус, төмөр зам</translation>
 <translation id="3614001939154393113">Халдагчид таны мэдээллийг <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-с хулгайлахаар оролдож байж магадгүй (жишээ нь нууц үг, мессеж, кредит карт). <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Хэмжээ 2</translation>
@@ -2178,7 +2175,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимп</translation>
 <translation id="4898742041545089450">Энэ сэдвийг блокоос гаргасан бөгөөд энэ нь таны хөтчийн түүхэд тулгуурлан идэвхтэй болж магадгүй</translation>
-<translation id="4899379435492347481">Энэ картыг өөрийн төхөөрөмжүүд дээрх худалдан авалтад зориулж Google Pay-р онлайнаар ашиглахын тулд хадгална уу</translation>
 <translation id="4900217275619098670">Ес дэх хуйлмал</translation>
 <translation id="4901052769830245369">Шошго (хагас гялгар)</translation>
 <translation id="4901162432287938633">Эрүүл ахуйн болон ариун цэврийн хэрэгслүүд</translation>

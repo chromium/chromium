@@ -5812,6 +5812,7 @@ Not: Bu özellik henüz genel kullanıma sunulmadığı için özelliğin etkinl
 Politika ayarlanmazsa varsayılan değer 0 derece olur ve kullanıcılar bu değeri istedikleri gibi değiştirebilir. Bu durumda, varsayılan değer yeniden başlatma sırasında tekrar uygulanmaz.</translation>
 <translation id="5257395339965216304">Barındırılan uygulama verileri</translation>
 <translation id="5258445772095084618">Bağlı olmayan kullanıcıların, Linux uygulamalarını desteklemek için gerekli olan sanal makineleri kullanmasına izin ver</translation>
+<translation id="5258651513421638932">Yalıtılmış uygulamaların akıllı kartlara bağlanmasına izin ver</translation>
 <translation id="5262320080678421295">Symantec Corporation'ın Eski PKI altyapısı tarafından verilen sertifikalara güveni devre dışı bırak</translation>
 <translation id="5265613843467285323">Ayna modunda bir ekranı hariç tutmak için kullanıcı arayüzü açma/kapatma düğmesi göster.</translation>
 <translation id="5272332743749468542">"Ayna modunda bu ekranı hariç tut" özelliğini kullanıcının erişimine aç</translation>
@@ -6776,6 +6777,7 @@ Politika, <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (1 değeri) ola
 <translation id="5945312246863177268">Kullanıcıların Eche uygulamasını başlatmak için Telefon Merkezi bildirimini tıklamasına izin vermez.</translation>
 <translation id="5946082169633555022">Beta kanalı</translation>
 <translation id="5946329690214660966">Güncellemeleri kontrol etmek için özel bir program belirle</translation>
+<translation id="5946401994049024050">Smart Card Connect ayarları</translation>
 <translation id="5950069117106131681">Politika, Etkin değerine ayarlanırsa baskı önizlemede üst bilgiler ve alt bilgiler etkinleştirilir. Politika, Devre Dışı değerine ayarlanırsa bunlar baskı önizlemede devre dışı bırakılır.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Politika ayarlanmadan bırakılırsa üst bilgilerin ve alt bilgilerin gösterilip gösterilmeyeceğine kullanıcılar karar verir.</translation>
@@ -8831,6 +8833,7 @@ Bu politika Yanlış değerine ayarlandığında eski davranış etkinleştirili
       Politika, Devre Dışı olarak ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar TPM güvenlik durumunu kaydetmez veya bildirmez.
       İstisna: M95 ve önceki sürümlerde TPM bilgileri <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> tarafından kontrol edilir.</translation>
 <translation id="739556497251174388">Ağ kimlik doğrulaması için <ph name="PRODUCT_OS_NAME" /> giriş kimlik bilgilerinin yeniden kullanılmasına izin ver</translation>
+<translation id="7395790871181951311">Yalıtılmış uygulamaların akıllı kartlara bağlanmasını engelle</translation>
 <translation id="7400208209734208176">Bağlantıları varsayılan olarak Chrome tarayıcıda aç</translation>
 <translation id="7402257017733669351">Tarayıcı işleminin dinamik kod oluşturmasını engelle</translation>
 <translation id="7402772023599097052">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa, Chrome'u başlatmak için tehlikeli olabilecek komut satırı işaretleri kullanıldığında güvenlik uyarıları gösterilir.

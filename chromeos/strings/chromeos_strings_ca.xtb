@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">L'auricular dret del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="3340978935015468852">configuració</translation>
 <translation id="3347558044552027859">moderna</translation>
+<translation id="3353477144743332882">Baixa el model de creació de noms i resums</translation>
 <translation id="3359218928534347896">commuta el silenci del micròfon</translation>
 <translation id="3360306038446926262">Finestres</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">La drecera no està disponible. Prem una drecera nova sense <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
+<translation id="5875913454160982848">Baixa el model de transcripció</translation>
 <translation id="5876385649737594562">Activa per seleccionar les opcions</translation>
 <translation id="5877503382465267833">Posa en pausa <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pantalla completa</translation>
@@ -1588,6 +1590,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
 <translation id="8505011850330200833">El model de Gemini requereix 2 GB d'emmagatzematge per processar les transcripcions i crear resums</translation>
 <translation id="8508640263392900755">Detalls de l'APN</translation>
+<translation id="8509574872955173831">Més informació sobre la creació de noms i resums</translation>
 <translation id="8522687886059337719">Ara tens accés als nous <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fons de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />estalvis de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">saló de te</translation>
@@ -1724,7 +1727,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="9133772297793293778">Prem d'1 a 4 tecles modificadores i una altra tecla del teclat. Per sortir del mode d'edició, prem Alt+Esc.</translation>
 <translation id="9137526406337347448">Serveis de Google</translation>
 <translation id="9138630967333032450">Maj esquerra</translation>
-<translation id="9147928237330776930">Hi ha massa poques paraules per resumir</translation>
 <translation id="9149391708638971077">Executa la prova de memòria</translation>
 <translation id="9159524746324788320">hamburgueses</translation>
 <translation id="9161276708550942948">espai</translation>

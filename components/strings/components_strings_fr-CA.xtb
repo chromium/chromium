@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome essaie de modifier les modes de paiement.</translation>
 <translation id="2400600116338235695">Les sites peuvent demander à se connecter à des ports série</translation>
 <translation id="2404884497378469141">Réessayez de copier vos fichiers</translation>
-<translation id="2412310121876768057">Remplissage automatique de la carte la prochaine fois?</translation>
 <translation id="2413155254802890957">Anciennes</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414886740292270097">Foncé</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">Citation <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Modifier les paramètres du mandataire...</translation>
 <translation id="335809815767823">Exportées</translation>
-<translation id="3359387651158939842">Remplissez automatiquement les renseignements de votre carte pour vos futurs achats lorsque vous l'enregistrez pour l'utiliser avec Google Pay</translation>
 <translation id="3359565626472459400">Mariage</translation>
 <translation id="3360103848165129075">Feuille du module de traitement du paiement</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5 po x 5 po</translation>
 <translation id="3606917451836803637">Séries télévisées</translation>
 <translation id="3608932978122581043">Orientation de l'alimentation</translation>
-<translation id="3610142117915544498">Pour accélérer le prochain paiement, enregistrez votre carte, votre nom et votre adresse de facturation dans votre compte Google</translation>
 <translation id="3612660594051121194">Autobus et trains longue distance</translation>
 <translation id="3614001939154393113">Des pirates informatiques tentent peut-être de voler vos renseignements de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (par exemple, vos mots de passe, vos messages ou vos cartes de crédit). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Taille 2</translation>
@@ -2177,7 +2174,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jeux olympiques</translation>
 <translation id="4898742041545089450">Ce sujet est débloqué et peut devenir actif en fonction de votre historique de navigation</translation>
-<translation id="4899379435492347481">Enregistrez cette carte pour l'utiliser en ligne avec Google Pay pour des achats sur vos appareils</translation>
 <translation id="4900217275619098670">Neuvième rouleau</translation>
 <translation id="4901052769830245369">Étiquettes (semi-brillantes)</translation>
 <translation id="4901162432287938633">Hygiène et articles de toilette</translation>

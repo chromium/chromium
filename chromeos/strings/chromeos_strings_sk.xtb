@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavenia</translation>
 <translation id="3347558044552027859">Moderná</translation>
+<translation id="3353477144743332882">Stiahnuť model na vytvorenie zhrnutia a názvu</translation>
 <translation id="3359218928534347896">prepínač vypnutia zvuku mikrofónu</translation>
 <translation id="3360306038446926262">Okná</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Skratka nie je k dispozícii. Stlačte novú bez klávesa <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
+<translation id="5875913454160982848">Stiahnuť model prepisov</translation>
 <translation id="5876385649737594562">Zapnite toto nastavenie a vyberte možnosti</translation>
 <translation id="5877503382465267833">Pozastaviť <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
@@ -1588,6 +1590,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8503836310948963452">Už iba niekoľko minút…</translation>
 <translation id="8505011850330200833">Na spracovanie prepisov a vytváranie zhrnutí vyžaduje model Gemini 2 GB priestoru</translation>
 <translation id="8508640263392900755">Podrobnosti názvu prístupového bodu (APN)</translation>
+<translation id="8509574872955173831">Ďalšie informácie o vytvorení zhrnutia a názvu</translation>
 <translation id="8522687886059337719">Teraz máte prístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /> a <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />šetriču obrazovky<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čaj podávajúca</translation>
@@ -1724,7 +1727,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="9133772297793293778">Stlačte prvý až štyrtý modifikátor a jeden ďalší kláves na klávesnici. Režim úprav ukončíte stlačením klávesov alt + esc.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Ľavý kláves Shift</translation>
-<translation id="9147928237330776930">Príliš málo slov na zhrnutie</translation>
 <translation id="9149391708638971077">Spustiť test pamäte</translation>
 <translation id="9159524746324788320">hamburgery</translation>
 <translation id="9161276708550942948">medzera</translation>

@@ -142,6 +142,7 @@
 जब चाहें, <ph name="GOOGLE_PASSWORD_MANAGER" /> में जाकर अपने पासवर्ड की जांच करें.</translation>
 <translation id="1084824384139382525">लिंक का पता कॉपी करें</translation>
 <translation id="1085064499066015002">हमेशा सभी साइटों के लिए अनुमति दें</translation>
+<translation id="1085558727130096638"><ph name="OWNER_FIRST_NAME" /> और <ph name="NUM_OTHER_MEMBERS" /> अन्य व्यक्ति के साथ टैब ग्रुप में शामिल हों</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> को नहीं चुना गया. <ph name="COUNT" /> में से <ph name="INDEX" />. इसे चुनने के लिए, खोज बटन के साथ Space दबाएं.</translation>
 <translation id="1085697365578766383">वर्चुअल मशीन शुरू करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="1090126737595388931">कोई पृष्ठभूमि ऐप्स  चालू नहीं है</translation>
@@ -2144,6 +2145,7 @@
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> जोड़ा गया</translation>
 <translation id="2464079411014186876">आइस्क्रीम</translation>
 <translation id="2467755475704469005">किसी भी डिवाइस का पता नहीं चला <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> और <ph name="NUM_OTHER_MEMBERS" /> अन्य लोगों के साथ टैब ग्रुप में शामिल हों</translation>
 <translation id="2468178265280335214">टचपैड से स्क्रोल करने की रफ़्तार</translation>
 <translation id="2468205691404969808">आपकी पसंद याद रखने के लिए कुकी का इस्तेमाल करती है, भले ही आप उन पेजों पर नहीं जाते</translation>
 <translation id="2468402215065996499">तमागोची</translation>
@@ -2289,6 +2291,7 @@
 <translation id="256481480019204378">Google खाते का आईडी</translation>
 <translation id="256517381556987641">फ़ाइल सिंक की सुविधा ने अब तक <ph name="ITEMS_FOUND" /> फ़ाइलें ढूंढी हैं और स्टोरेज के लिए बची जगह की जांच जारी है. फ़ाइल सिंक की सुविधा को कुछ मिनट बाद फिर से चालू करने की कोशिश करें.</translation>
 <translation id="2565214867520763227">स्क्रीन रीडर चालू करें</translation>
+<translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> और <ph name="NUM_OTHER_MEMBERS" /> अन्य लोगों के साथ टैब ग्रुप में शामिल हों</translation>
 <translation id="2568694057933302218">गुप्त मोड इस्तेमाल करने पर, सभी साइटों पर की गई आपकी ब्राउज़िंग गतिविधि देखने के लिए साइटें, कुकी इस्तेमाल नहीं कर सकतीं. आपकी ब्राउज़िंग गतिविधि का इस्तेमाल, आपके हिसाब से विज्ञापन दिखाने जैसे कामों के लिए नहीं किया जाता. यह मुमकिन है कि कुछ साइटों पर सुविधाएं काम न करें.</translation>
 <translation id="2568774940984945469">जानकारी बार कंटेनर</translation>
 <translation id="2569972178052279830">खुदरा दुकानदार का नाम</translation>
@@ -2296,6 +2299,7 @@
 <translation id="2571655996835834626">कुकी, JavaScript, प्लग इन, भौगोलिक स्थान, माइक्रोफ़ोन, कैमरा वगैरह जैसी सुविधाओं तक वेबसाइट का ऐक्सेस नियंत्रित करने वाली सेटिंग में बदलाव करें.</translation>
 <translation id="257175846174451436">सुझाए गए टैब ग्रुप</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> को सिर्फ़ पढ़ने के लिए एक्सेस दी गई है.</translation>
+<translation id="2573147659521059501"><ph name="NUM" /> टैब</translation>
 <translation id="2573276323521243649">अवतार चुनने वाले पेज से वापस जाएं</translation>
 <translation id="2573417407488272418">अपग्रेड करने से पहले, फ़ाइल &gt; मेरी फ़ाइलें में ऐप्लिकेशन और फ़ाइलों का बैक अप लें.</translation>
 <translation id="2573831315551295105">“<ph name="ACTION" />” के लिए, स्विच असाइन करें</translation>
@@ -2967,6 +2971,7 @@
 <translation id="3038628620670416486">अपने माउस पर मौजूद बटन पर क्लिक करें</translation>
 <translation id="3039491566278747710">डिवाइस पर ऑफ़लाइन नीति इंस्टॉल नहीं की जा सकी.</translation>
 <translation id="3040982432432547149">Chromebook के लिए Steam को बेहतर बनाने में हमारी मदद करें</translation>
+<translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> के साथ टैब ग्रुप में शामिल हों</translation>
 <translation id="3043016484125065343">अपने बुकमार्क देखने के लिए साइन इन करें</translation>
 <translation id="3043126717220766543">टैब ग्रुप के सुझाव मिटाएं</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3307,6 +3312,7 @@
 <translation id="3308852433423051161">Google Assistant को लोड किया जा रहा है...</translation>
 <translation id="3309124184713871355">स्ट्रक्चर</translation>
 <translation id="3309330461362844500">प्रमाणपत्र वाली प्रोफ़ाइल का आईडी</translation>
+<translation id="3310379801837527592"><ph name="OWNER_FIRST_NAME" /> और <ph name="NUM_OTHER_MEMBERS" /> अन्य व्यक्ति के साथ टैब ग्रुप में शामिल हों</translation>
 <translation id="331080746368555063">निजी साइटों में, आपकी कंपनी के इंट्रानेट जैसी चीज़ें शामिल हो सकती हैं</translation>
 <translation id="3311445899360743395">इस ऐप्लिकेशन के डेटा को इस डिवाइस से हटाया जा सकता है.</translation>
 <translation id="3312470654018965389">Linux कंटेनर को कॉन्फ़िगर किया जा रहा है</translation>
@@ -4264,6 +4270,7 @@
 <translation id="3958088479270651626">बुकमार्क और सेटिंग इंपोर्ट करें</translation>
 <translation id="3958110062351175311">टूलबार में अनुरोध दिखाने की अनुमति है</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> को पहले ही इंस्टॉल कर दिया गया है</translation>
+<translation id="3959969108528118741">एडमिन</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> के लिए और कार्रवाइयां</translation>
 <translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> ने ग्रुप छोड़ दिया</translation>
@@ -4712,6 +4719,7 @@
 <translation id="428963538941819373"><ph name="HOST" /> को ब्राउज़ करते समय, ये साइटें आपके बारे में सेव की गई जानकारी का इस्तेमाल कर सकती हैं</translation>
 <translation id="4289732974614035569">कोई पिन चुनें</translation>
 <translation id="4290791284969893584">किसी भी पेज को बंद करने पर, हो सकता है कि वे टास्क पूरे न हों जिन्हें आपने शुरू किया था</translation>
+<translation id="4290826901752066702"><ph name="NUM" /> सदस्य</translation>
 <translation id="4290898381118933198">एक पेज से दूसरे पेज पर जाने के लिए, स्क्रीन पर स्वाइप करें</translation>
 <translation id="4291265871880246274">लॉगिन डायलॉग</translation>
 <translation id="429312253194641664">किसी साइट पर मीडिया चल रहा है</translation>
@@ -5788,6 +5796,7 @@
 <translation id="5079950360618752063">सुझाए गए पासवर्ड का इस्तेमाल करें</translation>
 <translation id="508059534790499809">Kerberos टिकट रीफ़्रेश करें</translation>
 <translation id="5081124414979006563">मेहमान प्रोफ़ाइल खोलें</translation>
+<translation id="5081974595802103358">लिंक को कॉपी नहीं किया जा सका</translation>
 <translation id="508209203623347828">अगर इस कार्ड को बंद किया जाता है, तो आपके Sharepoint और Outlook Calendar जैसे Microsoft कार्ड भी बंद हो जाएंगे.</translation>
 <translation id="5083035541015925118">ctrl + alt + अप ऐरो</translation>
 <translation id="5084328598860513926">सेट अप करने के दौरान कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें. इसके अलावा, डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
@@ -6631,6 +6640,7 @@
 <translation id="5691581861107245578">आप जो भी लिख रहे हैं उसके आधार पर इमोजी के सुझाव पाएं</translation>
 <translation id="5691772641933328258">फ़िंगरप्रिंट नहीं पहचाना गया</translation>
 <translation id="5693255400847650006">माइक्रोफ़ोन इस्तेमाल हो रहा है</translation>
+<translation id="5695046252726616755">'ज़्यादा विकल्प' बटन के लिए, Enter या Space दबाएं.</translation>
 <translation id="5695184138696833495">Linux में Android ऐप्लिकेशन ADB की सेटिंग</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" से दुर्व्यवहार की रिपोर्ट करें</translation>
 <translation id="5696679855467848181">मौजूदा पीपीडी फ़ाइल का इस्तेमाल किया जा रहा है: <ph name="PPD_NAME" /></translation>
@@ -7868,6 +7878,7 @@
 <translation id="6609478180749378879">जब आप गुप्त मोड से बाहर निकल जाएंगे, तब साइन इन करने का डेटा इस डिवाइस में सेव किया जाएगा. अपने डिवाइस की मदद से, आप बाद में इस वेबसाइट पर साइन इन कर पाएंगे.</translation>
 <translation id="6610002944194042868">अनुवाद के विकल्प</translation>
 <translation id="6610064275805055636">आइसोलेटेड वेब ऐप्लिकेशन मैनेज करें</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> टैब</translation>
 <translation id="6611972847767394631">अपने टैब यहां देखें</translation>
 <translation id="661266467055912436">वेब पर आपकी और सभी उपयोगकर्ताओं की सुरक्षा को बेहतर बनाती है.</translation>
 <translation id="6613267708691765962">मैलवेयर का पता लगाने के लिए स्कैन किया जा रहा है...</translation>
@@ -8579,6 +8590,7 @@
 <translation id="7118268675952955085">स्क्रीनशॉट</translation>
 <translation id="711840821796638741">प्रबंधित बुकमार्क दिखाएं</translation>
 <translation id="711985611146095797">इस पेज पर, आप अपने साइन इन किए गए Google खाते मैनेज कर सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="71200494435060621"><ph name="OWNER_FULL_NAME" /> के तौर पर शामिल हों</translation>
 <translation id="7120762240626567834">वीपीएन कनेक्ट नहीं होने तक, Chrome ब्राउज़र और Android ट्रैफ़िक ब्लॉक रहेगा</translation>
 <translation id="7120904433567247946">यह बुकमार्क सिर्फ़ इस डिवाइस में सेव किया गया है. अगर आपने इसे <ph name="ACCOUNT_FOLDER" /> में सेव किया है, तो यह बुकमार्क आपके खाते में भी सेव हो जाएगा.</translation>
 <translation id="7121438501124788993">डेवलपर मोड</translation>
@@ -9974,6 +9986,7 @@
 <translation id="8105273883928376822">कृपया जारी रखने के लिए साइन इन करें.</translation>
 <translation id="8107015733319732394">आपके <ph name="DEVICE_TYPE" /> पर Google Play Store इंस्टॉल हो रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="810728361871746125">डिसप्ले का रिज़ॉल्यूशन</translation>
+<translation id="8108161424633979910"><ph name="NUM" /> सदस्य</translation>
 <translation id="8109109153262930486">डिफ़ॉल्ट अवतार</translation>
 <translation id="8109991406044913868">एआई की मदद से बनाई गई थीम</translation>
 <translation id="8110393529211831722">सदस्यता सिर्फ़ इस डिवाइस पर सिंक की गई है. इसे आपके खाते का इस्तेमाल करने वाले अन्य डिवाइसों के साथ सिंक नहीं किया गया है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>

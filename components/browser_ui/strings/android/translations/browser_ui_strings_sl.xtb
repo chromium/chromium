@@ -124,7 +124,6 @@
 <translation id="2903493209154104877">Naslovi</translation>
 <translation id="2910701580606108292">Prikaži poziv, preden se spletnim mestom dovoli predvajanje zaščitene vsebine</translation>
 <translation id="2918484639460781603">Pojdi v nastavitve</translation>
-<translation id="2927133898344569563">Hitro dostopajte do predlaganih zavihkov na seznamu aplikacij v napravi in v rezultatih iskanja naprave. To lahko kadar koli vklopite ali izklopite v nastavitvah Chroma.</translation>
 <translation id="2932883381142163287">Prijavite zlorabo</translation>
 <translation id="2939338015096024043">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo spremljanje položaja kamere in pridobivanje informacij o vaši okolici. Če je ta možnost izklopljena, spletna mesta ne smejo spremljati položaja kamere ali pridobivati informacij o vaši okolici.</translation>
 <translation id="2968755619301702150">Pregledovalnik potrdil</translation>
@@ -336,7 +335,6 @@
 <translation id="5968921426641056619">Vnesite spletni naslov</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Zdaj lahko na seznamu aplikacij v napravi in v rezultatih iskanja naprave hitro dostopate do predlaganih zavihkov. To lahko kadar koli izklopite v nastavitvah za Chrome.</translation>
 <translation id="6015775454662021376">Nadziranje dostopa spletnega mesta do naprave</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6042308850641462728">Več</translation>

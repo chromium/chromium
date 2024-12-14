@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome ცდილობს გადახდის მეთოდების რედაქტირებას.</translation>
 <translation id="2400600116338235695">შეუძლია თანმიმდევრულ პორტებთან დაკავშირების თხოვნა</translation>
 <translation id="2404884497378469141">ცადეთ თქვენი ფაილების ხელახლა კოპირება</translation>
-<translation id="2412310121876768057">გსურთ ბარათის ავტომატურად შევსება შემდგომში?</translation>
 <translation id="2413155254802890957">ძველი</translation>
 <translation id="2413528052993050574">ეს სერვერი ვერ ამტკიცებს რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი შესაძლოა გაუქმებულია. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="2414886740292270097">მუქი</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" />-დან <ph name="CURRENT_CITATION" /> ციტირება, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">პროქსის პარამეტრების შეცვლა…</translation>
 <translation id="335809815767823">ექსპორტირებულია</translation>
-<translation id="3359387651158939842">ავტომატურად შეავსეთ თქვენი ბარათი სამომავლო შენაძენებისთვის, როცა მას Google Pay-ს მეშვეობით გამოსაყენებლად შეინახავთ</translation>
 <translation id="3359565626472459400">ქორწინება</translation>
 <translation id="3360103848165129075">გადახდების დამმუშავებლის გვერდი</translation>
 <translation id="3360306038446926262">ფანჯრები</translation>
@@ -1459,7 +1457,6 @@
 <translation id="3605899229568538311">5 x 5 დუიმი</translation>
 <translation id="3606917451836803637">სატელევიზიო შოუები და პროგრამები</translation>
 <translation id="3608932978122581043">მიწოდების ორიენტაცია</translation>
-<translation id="3610142117915544498">შემდგომი გადახდების დასაჩქარებლად შეგიძლიათ შეინახოთ თქვენი ბარათის მონაცემები, სახელი და ბილინგის მისამართი თქვენს Google ანგარიშში</translation>
 <translation id="3612660594051121194">საქალაქთაშორისო ავტობუსები და რკინიგზა</translation>
 <translation id="3614001939154393113">თავდამსხმელები შეიძლება ცდილობდნენ თქვენი ინფორმაციის (პაროლები, შეტყობინებები, საკრედიტო ბარათები და სხვა) მოპარვას ვებსაიტიდან <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">ზომა 2</translation>
@@ -2179,7 +2176,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ოლიმპიადა</translation>
 <translation id="4898742041545089450">ეს თემა განბლოკილია და ის, შესაძლოა, გააქტიურდეს ვების დათვალიერების კუთხით თქვენი აქტივობის საფუძველზე</translation>
-<translation id="4899379435492347481">შეინახეთ ეს ბარათი, რომ გამოიყენოთ ონლაინ Google Pay-ს მეშვეობით შენაძენებისთვის თქვენს მოწყობილობებზე</translation>
 <translation id="4900217275619098670">მეცხრე რულონი</translation>
 <translation id="4901052769830245369">ლეიბლები (ნახევარპრიალა)</translation>
 <translation id="4901162432287938633">ჰიგიენური და ტუალეტის საშუალებები</translation>

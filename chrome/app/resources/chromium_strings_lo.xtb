@@ -70,6 +70,7 @@
 <translation id="1896836275755235458">Chromium ຈະຊ່ວຍປະຢັດພະລັງງານແບັດເຕີຣີໂດຍການຈຳກັດກິດຈະກຳຢູ່ພື້ນຫຼັງ ແລະ ເອັບເຟັກພາບ ເຊັ່ນ: ການເລື່ອນທີ່ນຸ້ມນວນ ແລະ ອັດຕາເຟຣມວິດີໂອ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຕົວປະຢັດພະລັງງານ<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">ບໍລິການ Chromium Updater</translation>
 <translation id="1911763535808217981">ໂດຍການປິດສິ່ງນີ້, ທ່ານສາມາດເຂົ້າສູ່ລະບົບເວັບໄຊຂອງ Google ເຊັ່ນ: Gmail ໄດ້ໂດຍບໍ່ຕ້ອງເຂົ້າສູ່ລະບົບ Chromium</translation>
+<translation id="1916451563296275579">ລຶບຂໍ້ມູນແອັບນີ້ອອກຈາກ Chromium</translation>
 <translation id="1929939181775079593">Chromium ບໍ່ຕອບຮັບ. ເລີ່ມເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="1933341829955786215">ອົງກອນຂອງທ່ານ, <ph name="MANAGER" />, ກຳນົດໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="193439633299369377">ຈຳເປັນຕ້ອງຣີສະຕາດ ChromiumOS ເພື່ອນຳໃຊ້ການອັບເດດ.</translation>
@@ -407,6 +408,7 @@
 <translation id="6455857529632101747">ຍິນດີຕ້ອນຮັບສູ່ໂປຣໄຟລ໌ Chromium</translation>
 <translation id="6466344609055215035">ລຶບບັນຊີອອກຈາກ Chromium</translation>
 <translation id="6475912303565314141">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chromium.</translation>
+<translation id="648062525172759633">ໜ້າເຫຼົ່ານີ້ມີໄວ້ສຳລັບນັກພັດທະນາ Chromium ເທົ່ານັ້ນ ແລະ ອາດບໍ່ໄດ້ຮັບການບຳລຸງຮັກສາ ຫຼື ທົດສອບຢ່າງສະໝ່ຳສະເໝີ. ເພື່ອເປີດການນຳໃຊ້, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, ຄລິກປຸ່ມເພື່ອເປີດການນຳໃຊ້ໜ້າດີບັກ, ຈາກນັ້ນນຳທາງໄປຫາໜ້ານີ້ອີກຄັ້ງ.</translation>
 <translation id="648319183876919572">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຊ່ວຍປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ອັນຕະລາຍ</translation>
 <translation id="6510925080656968729">ຖອນ​ຕິດ​ຕັ້ງ Chromium</translation>
 <translation id="651535675648445253">ເປີດທາງລັດໃນ Chromium</translation>

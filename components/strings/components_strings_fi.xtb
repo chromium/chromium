@@ -807,7 +807,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2399868464369312507">Google Chrome yrittää muokata maksutapoja.</translation>
 <translation id="2400600116338235695">Saa pyytää lupaa sarjaportteihin yhdistämiseen</translation>
 <translation id="2404884497378469141">Yritä kopioida tiedostot uudelleen</translation>
-<translation id="2412310121876768057">Täytetäänkö kortti automaattisesti ensi kerralla?</translation>
 <translation id="2413155254802890957">Vanha</translation>
 <translation id="2413528052993050574">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne ei välttämättä ole voimassa. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="2414886740292270097">Tumma</translation>
@@ -1306,7 +1305,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3354508510846323339">Sitaatti <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Muuta välityspalvelimen asetuksia...</translation>
 <translation id="335809815767823">Viety</translation>
-<translation id="3359387651158939842">Täytä korttisi automaattisesti tulevia ostoksia varten, kun tallennat sen Google Payhin</translation>
 <translation id="3359565626472459400">Avioliitto</translation>
 <translation id="3360103848165129075">Maksujenkäsittelytaulukko</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1459,7 +1457,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3605899229568538311">5 x 5 tuumaa</translation>
 <translation id="3606917451836803637">TV-ohjelmat</translation>
 <translation id="3608932978122581043">Syöttösuunta</translation>
-<translation id="3610142117915544498">Jos haluat maksaa nopeammin ensi kerralla, tallenna kortti, nimi ja laskutusosoite Google-tilillesi</translation>
 <translation id="3612660594051121194">Kaukoliikenteen bussit ja junat</translation>
 <translation id="3614001939154393113">Hyökkääjät saattavat yrittää varastaa tietojasi (esimerkiksi salasanoja, viestejä tai luottokorttitietoja) kohteessa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Koko 2</translation>
@@ -2178,7 +2175,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympialaiset</translation>
 <translation id="4898742041545089450">Tämän aiheen esto on kumottu ja se voi aktivoitua selaushistoriasi perusteella</translation>
-<translation id="4899379435492347481">Tallenna tämä kortti, niin voit tehdä verkko-ostoksia Google Paylla kaikilla laitteillasi</translation>
 <translation id="4900217275619098670">Yhdeksäs rulla</translation>
 <translation id="4901052769830245369">Etiketit (puolikiiltävä)</translation>
 <translation id="4901162432287938633">Hygienia ja hygieniatarvikkeet</translation>

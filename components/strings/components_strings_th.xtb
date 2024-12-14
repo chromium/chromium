@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome กําลังพยายามแก้ไขวิธีการชําระเงิน</translation>
 <translation id="2400600116338235695">สามารถขอเชื่อมต่อกับพอร์ตอนุกรมได้</translation>
 <translation id="2404884497378469141">ลองคัดลอกไฟล์อีกครั้ง</translation>
-<translation id="2412310121876768057">ป้อนข้อมูลบัตรอัตโนมัติในครั้งถัดไปไหม</translation>
 <translation id="2413155254802890957">เก่า</translation>
 <translation id="2413528052993050574">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการเพิกถอนใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2414886740292270097">มืด</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">การอ้างอิงที่ <ph name="CURRENT_CITATION" /> จาก <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">เปลี่ยนการตั้งค่าพร็อกซี...</translation>
 <translation id="335809815767823">ส่งออกแล้ว</translation>
-<translation id="3359387651158939842">ป้อนข้อมูลบัตรโดยอัตโนมัติสำหรับการซื้อในอนาคตเมื่อบันทึกบัตรไว้ใช้กับ Google Pay</translation>
 <translation id="3359565626472459400">การแต่งงาน</translation>
 <translation id="3360103848165129075">แผ่นงานของเครื่องจัดการการชำระเงิน</translation>
 <translation id="3360306038446926262">หน้าต่าง</translation>
@@ -1457,7 +1455,6 @@
 <translation id="3605899229568538311">5 x 5 นิ้ว</translation>
 <translation id="3606917451836803637">รายการทีวี</translation>
 <translation id="3608932978122581043">ฟีดกระดาษตามแนว</translation>
-<translation id="3610142117915544498">บันทึกข้อมูลบัตร ชื่อ และที่อยู่สำหรับการเรียกเก็บเงินไว้ในบัญชี Google เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="3612660594051121194">รถโดยสารและรถไฟระยะทางไกล</translation>
 <translation id="3614001939154393113">ผู้โจมตีอาจกำลังพยายามขโมยข้อมูลของคุณจาก <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (เช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">ขนาด 2</translation>
@@ -2176,7 +2173,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> และ <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">โอลิมปิก</translation>
 <translation id="4898742041545089450">ระบบเลิกบล็อกหัวข้อนี้แล้วและอาจทำงานตามประวัติการท่องเว็บของคุณ</translation>
-<translation id="4899379435492347481">บันทึกบัตรใบนี้เพื่อใช้ทางออนไลน์กับ Google Pay สำหรับการซื้อสินค้าและบริการต่างๆ ในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="4900217275619098670">ม้วนกระดาษ 9</translation>
 <translation id="4901052769830245369">ป้าย (กึ่งเงา)</translation>
 <translation id="4901162432287938633">สุขอนามัยและห้องน้ำ</translation>

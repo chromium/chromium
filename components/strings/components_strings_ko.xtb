@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Chrome에서 결제 수단을 수정하려고 합니다.</translation>
 <translation id="2400600116338235695">직렬 포트에 연결하도록 요청할 수 있음</translation>
 <translation id="2404884497378469141">파일을 다시 복사해 보세요.</translation>
-<translation id="2412310121876768057">다음 사용 시 카드 자동 완성하기</translation>
 <translation id="2413155254802890957">이전 주소</translation>
 <translation id="2413528052993050574">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 취소될 수 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2414886740292270097">어둡게</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">인용 <ph name="MAX_CITATIONS" />개 중 <ph name="CURRENT_CITATION" />번째, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">프록시 설정 변경...</translation>
 <translation id="335809815767823">내보내기 성공</translation>
-<translation id="3359387651158939842">Google Pay에서 사용하려고 카드를 저장하면 향후 구매 시 카드 정보를 자동 완성합니다.</translation>
 <translation id="3359565626472459400">결혼</translation>
 <translation id="3360103848165129075">결제 핸들러 시트</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5x5인치</translation>
 <translation id="3606917451836803637">TV 프로그램</translation>
 <translation id="3608932978122581043">종이 공급 방향</translation>
-<translation id="3610142117915544498">다음번에 더 빠르게 결제할 수 있도록 Google 계정에 카드, 이름, 청구서 수신 주소를 저장하세요.</translation>
 <translation id="3612660594051121194">장거리 버스 및 철도</translation>
 <translation id="3614001939154393113">공격자가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에서 사용자의 정보를 도용하려고 시도할 수 있습니다(예: 비밀번호, 메시지, 신용카드 정보). <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">크기 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">올림픽</translation>
 <translation id="4898742041545089450">이 주제는 차단 해제되어 있으며, 방문 기록을 기반으로 활성화될 수도 있습니다.</translation>
-<translation id="4899379435492347481">이 카드를 저장하고 나의 다른 기기에서 Google Pay로 온라인에서 구매할 때 사용합니다.</translation>
 <translation id="4900217275619098670">9번째 롤</translation>
 <translation id="4901052769830245369">라벨(반광택)</translation>
 <translation id="4901162432287938633">위생 및 세면용품</translation>
@@ -3543,6 +3539,7 @@
 <translation id="7388594495505979117">{0,plural, =1{1분 후에 기기가 다시 시작됩니다}other{#분 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="7393161616326137353">어드벤처 게임</translation>
 <translation id="7393475648162498734">결제 시 카드에 사용할 수 있는 리워드 및 혜택을 표시합니다.</translation>
+<translation id="7393971683644170444">카드 제공업체에 연결 중…</translation>
 <translation id="739728382607845710">결제 핸들러 아이콘</translation>
 <translation id="7399616692258236448">허용한 사이트를 제외한 모든 사이트의 위치 요청이 자동으로 차단됩니다.</translation>
 <translation id="7400418766976504921">URL</translation>

@@ -808,7 +808,6 @@
 <translation id="2399868464369312507">Google Chrome পেমেন্ট পদ্ধতি এডিট করার চেষ্টা করছে।</translation>
 <translation id="2400600116338235695">সিরিয়াল পোর্টের সাথে কানেক্ট করতে অনুমতি চাইতে পারে</translation>
 <translation id="2404884497378469141">আপনার ফাইল আবার কপি করার চেষ্টা করে দেখুন</translation>
-<translation id="2412310121876768057">পরের বার থেকে কার্ডের তথ্য অটোফিল করবেন?</translation>
 <translation id="2413155254802890957">পুরনো</translation>
 <translation id="2413528052993050574">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট প্রত্যাহার করা হতে পারে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="2414886740292270097">অন্ধকার</translation>
@@ -1306,7 +1305,6 @@
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" />-এর মধ্যে উদ্ধৃতি <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">প্রক্সি সেটিংস পরিবর্তন করুন...</translation>
 <translation id="335809815767823">এক্সপোর্ট করা হয়েছে</translation>
-<translation id="3359387651158939842">আপনি সেভ করলে ভবিষ্যতে কেনাকাটা করার সময় Google Pay-এর সাথে ব্যবহার করার জন্য আপনার কার্ডের তথ্য অটোফিল করতে পারবেন</translation>
 <translation id="3359565626472459400">বিবাহ</translation>
 <translation id="3360103848165129075">পেমেন্ট হ্যান্ডলার শিট</translation>
 <translation id="3360306038446926262">{0}Windows{/0}</translation>
@@ -1460,7 +1458,6 @@
 <translation id="3605899229568538311">৫ x ৫ ইঞ্চি</translation>
 <translation id="3606917451836803637">টিভি শো ও প্রোগ্রাম</translation>
 <translation id="3608932978122581043">ফিড ওরিয়েন্টেশন</translation>
-<translation id="3610142117915544498">পরের বার আরও দ্রুত পেমেন্ট করতে আপনার কার্ড, নাম এবং বিলিং ঠিকানাটি Google অ্যাকাউন্টে সেভ করে রাখুন।</translation>
 <translation id="3612660594051121194">দূরপাল্লার বাস ও রেল</translation>
 <translation id="3614001939154393113">হ্যাকাররা <ph name="BEGIN_BOLD" /> <ph name="SITE" /> <ph name="END_BOLD" /> (যেমন, পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ড) থেকে আপনার তথ্য চুরি করার চেষ্টা করতে পারে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">সাইজ ২</translation>
@@ -2180,7 +2177,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">অলিম্পিক</translation>
 <translation id="4898742041545089450">এই বিষয় আনব্লক করা হয়েছে এবং আপনার ব্রাউজিং ইতিহাসের উপর ভিত্তি করে এটি চালু হতে পারে</translation>
-<translation id="4899379435492347481">আপনার বিভিন্ন ডিভাইস জুড়ে Google Pay-এর মাধ্যমে অনলাইনে কেনাকাটার জন্য এই কার্ড সেভ করুন</translation>
 <translation id="4900217275619098670">Ninth Roll</translation>
 <translation id="4901052769830245369">লেবেল (সেমি-গ্লস)</translation>
 <translation id="4901162432287938633">পরিচ্ছন্নতা ও প্রসাধন সামগ্রী</translation>

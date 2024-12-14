@@ -807,7 +807,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2399868464369312507">Google Chrome is trying to edit payment methods.</translation>
 <translation id="2400600116338235695">Can ask to connect to serial ports</translation>
 <translation id="2404884497378469141">Try copying your files again</translation>
-<translation id="2412310121876768057">Autofill card next time?</translation>
 <translation id="2413155254802890957">Old</translation>
 <translation id="2413528052993050574">This server could not prove that it is <ph name="DOMAIN" />; its security certificate might be revoked. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2414886740292270097">Dark</translation>
@@ -1305,7 +1304,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3354508510846323339">Citation <ph name="CURRENT_CITATION" /> of <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Change proxy settings...</translation>
 <translation id="335809815767823">Exported</translation>
-<translation id="3359387651158939842">Autofill your card for future purchases when you save it to use with Google Pay</translation>
 <translation id="3359565626472459400">Marriage</translation>
 <translation id="3360103848165129075">Payment handler sheet</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3605899229568538311">5 in x 5 in</translation>
 <translation id="3606917451836803637">TV shows and programmes</translation>
 <translation id="3608932978122581043">Feed orientation</translation>
-<translation id="3610142117915544498">To pay faster next time, save your card, name, and billing address in your Google Account</translation>
 <translation id="3612660594051121194">Long-distance bus and rail</translation>
 <translation id="3614001939154393113">Attackers might be trying to steal your information from <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for example, passwords, messages or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Size 2</translation>
@@ -2177,7 +2174,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympics</translation>
 <translation id="4898742041545089450">This topic is unblocked and may become active based on your browsing history</translation>
-<translation id="4899379435492347481">Save this card to use online with Google Pay for purchases across your devices</translation>
 <translation id="4900217275619098670">Ninth roll</translation>
 <translation id="4901052769830245369">Labels (semi-gloss)</translation>
 <translation id="4901162432287938633">Hygiene and Toiletries</translation>

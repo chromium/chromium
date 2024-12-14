@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата}one{<ph name="MANY_ADDED" /> картица је додата}few{<ph name="MANY_ADDED" /> картице су додате}other{<ph name="MANY_ADDED" /> картица је додато}}</translation>
 <translation id="5161254044473106830">Наслов је обавезан</translation>
 <translation id="5339733443032484186">Последња картица</translation>
+<translation id="5380159289133845234">Архивирај дупликате картица</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5490235265819901748">Група картица је проширена</translation>
 <translation id="5494920125229734069">Избор свих ставки</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Групе картица се аутоматски чувају</translation>
 <translation id="6054741997831917303">Цена ове ставке је недавно снижена са <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Одмах ћете изгубити приступ групи картица <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Све дупликате картица ћемо сада архивирати, изузев последње коришћене копије.</translation>
 <translation id="6193448654517602979">Изаберите картице</translation>
 <translation id="6228793724645064692">(оцена продавнице)</translation>
 <translation id="6271513594716432922">Затвори све неактивне картице</translation>

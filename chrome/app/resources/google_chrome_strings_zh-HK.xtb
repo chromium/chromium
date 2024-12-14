@@ -210,6 +210,7 @@
 <translation id="345171907106878721">新增為 Chrome 使用者</translation>
 <translation id="3453763134178591239">Chrome OS 條款</translation>
 <translation id="3503306920980160878">Chrome 需要位置資訊存取權，才能與這個網站分享您的位置資訊</translation>
+<translation id="3512634283363927263">這些頁面的適用對象為 Chrome 開發人員，可能不會主動維護或測試。如要啟用，請前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，按一下按鈕啟用偵錯頁面，再返回此頁面。</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3541482654983822893">Chrome 無法檢查密碼，請於 24 小時後再試一次。</translation>
 <translation id="3564543103555793392">登入 Chrome 後，你可儲存書籤、密碼等資料，然後在手機上使用</translation>
@@ -636,6 +637,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8718062187489036808">登出 Chrome</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
 <translation id="8748735421235723888">Chrome 會從閒置分頁釋出記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，同時保持 Chrome 的運作速度。閒置分頁會在你使用時自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />進一步瞭解記憶體節省模式<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">從 Chrome 中移除此應用程式資料</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="8781673607513845160">如要使用攝錄機，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>

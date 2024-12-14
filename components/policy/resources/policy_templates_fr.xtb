@@ -148,11 +148,6 @@ Ces deux règles ont le même effet sur le comportement du navigateur.</translat
 <translation id="1059069692400941670">Désactiver l'importation du moteur de recherche par défaut à la première exécution</translation>
 <translation id="1062011392452772310">Activer l'attestation à distance pour l'appareil</translation>
 <translation id="1062407476771304334">Remplacer</translation>
-<translation id="1062460877136455375">Cette règle permet de spécifier quelles applications Web isolées (AWI) ne pourront pas se connecter aux lecteurs de cartes à puce (les utilisateurs ne seront même pas invités à donner leur autorisation). Cette règle accepte les caractères génériques. Par exemple, <ph name="ALL_ISOLATED_WEB_APPS" /> bloquera l'accès à toutes les AWI.
-
-       Cette règle est remplacée par SmartCardConnectAllowedForUrls. En particulier, si la valeur de la liste de blocage est <ph name="ALL_ISOLATED_WEB_APPS" />, les AWI ne pourront pas se connecter aux lecteurs de carte à puce (les utilisateurs ne seront même pas invités à donner leur autorisation), à l'exception de celles listées dans SmartCardConnectAllowedForUrls.
-
-       Par défaut, les applications Web isolées qui spécifient des autorisations de carte à puce dans le fichier manifeste peuvent se connecter à des cartes à puce à condition que l'utilisateur accorde l'autorisation de manière interactive par lecteur.</translation>
 <translation id="1063860513136880926">Si cette règle est activée, les utilisateurs ne peuvent pas faire de captures d'écran avec des raccourcis clavier ni avec des API d'extension. Si elle est désactivée ou qu'elle n'est pas configurée, les captures d'écran sont autorisées.
 
 Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />, cela n'empêche pas d'effectuer des captures d'écran avec des applis tierces ou du système d'exploitation.</translation>
@@ -9317,11 +9312,6 @@ Les valeurs valides sont comprises entre 1 seconde et 9 999 secondes. Si cett
 
 Cette règle n'a aucune incidence lorsque la règle <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="7912255076272890813">Configurer les types d'applications ou d'extensions autorisés</translation>
-<translation id="7912541841840197488">Cette règle permet de spécifier quelles applications Web isolées (AWI) peuvent se connecter à des cartes à puce à l'aide de l'API Web Smart Card sans demander l'autorisation de l'utilisateur. Cette règle n'accepte pas les caractères génériques.
-
-       Cette règle remplace SmartCardConnectBlockedForUrls. En particulier, si la valeur de la liste de blocage est <ph name="ALL_ISOLATED_WEB_APPS" />, les AWI ne pourront pas se connecter aux lecteurs de cartes à puce (les utilisateurs ne seront même pas invités à donner leur autorisation), à l'exception de celles listées dans SmartCardConnectAllowedForUrls.
-
-       Par défaut, les applications Web isolées qui spécifient des autorisations de carte à puce dans le fichier manifeste peuvent se connecter à des cartes à puce à condition que l'utilisateur accorde l'autorisation de manière interactive par lecteur.</translation>
 <translation id="791267408364877739">Afficher les avertissements de sécurité lorsque des indicateurs de ligne de commande potentiellement dangereux sont utilisés</translation>
 <translation id="7919665519909231619">Autoriser l'activation de la fonctionnalité Liste d'achats</translation>
 <translation id="7922358664346625612">Laisser le dernier onglet ouvert dans Chrome.</translation>

@@ -807,7 +807,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2399868464369312507">Google Chrome pokušava urediti načine plaćanja.</translation>
 <translation id="2400600116338235695">Može tražiti da se poveže na serijske priključke</translation>
 <translation id="2404884497378469141">Ponovo pokušajte kopirati fajlove</translation>
-<translation id="2412310121876768057">Automatski popuniti karticu sljedeći put?</translation>
 <translation id="2413155254802890957">Staro</translation>
 <translation id="2413528052993050574">Ovaj server nije uspio dokazati da je <ph name="DOMAIN" />; možda je njegova potvrda sigurnosti opozvana. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="2414886740292270097">Tamno</translation>
@@ -1305,7 +1304,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3354508510846323339"><ph name="CURRENT_CITATION" />. citat od <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Promijeni postavke proksi servera...</translation>
 <translation id="335809815767823">Izvezeno</translation>
-<translation id="3359387651158939842">Sačuvajte podatke o kartici da ih automatski popunjavate u budućim kupovinama putem Google Paya</translation>
 <translation id="3359565626472459400">Brak</translation>
 <translation id="3360103848165129075">Stranica obrađivača uplate</translation>
 <translation id="3360306038446926262">Prozori</translation>
@@ -1459,7 +1457,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">TV emisije i programi</translation>
 <translation id="3608932978122581043">Orijentacija sažetka sadržaja</translation>
-<translation id="3610142117915544498">Da sljedeći put brže platite, sačuvajte karticu, ime i adresu za naplatu na Google računu</translation>
 <translation id="3612660594051121194">Duga putovanja autobusom i željeznicom</translation>
 <translation id="3614001939154393113">Moguće je da napadači pokušavaju ukrasti vaše informacije s <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (naprimjer, lozinke, poruke ili kreditne kartice). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Veličina 2</translation>
@@ -2179,7 +2176,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijske igre</translation>
 <translation id="4898742041545089450">Ova tema je deblokirana i može se aktivirati na osnovu vaše historije pregledanja</translation>
-<translation id="4899379435492347481">Sačuvajte karticu da je koristite online putem Google Paya za kupovine na svim svojim uređajima</translation>
 <translation id="4900217275619098670">Deveta rolna</translation>
 <translation id="4901052769830245369">Naljepnice (polusjajne)</translation>
 <translation id="4901162432287938633">Higijena i higijenska sredstva</translation>
@@ -3545,7 +3541,7 @@ Dodatni detalji:
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se ponovo pokrenuti za 1 min}one{Uređaj će se ponovo pokrenuti za # min}few{Uređaj će se ponovo pokrenuti za # min}other{Uređaj će se ponovo pokrenuti za # min}}</translation>
 <translation id="7393161616326137353">Avanturističke igre</translation>
 <translation id="7393475648162498734">Show which rewards and benefits are available for your cards at checkout</translation>
-<translation id="7393971683644170444">Povezivanje s davateljem kartice...</translation>
+<translation id="7393971683644170444">Povezivanje s pružaocem usluga kartice…</translation>
 <translation id="739728382607845710">Ikona obrađivača plaćanja</translation>
 <translation id="7399616692258236448">Zahtjevi za lokaciju se automatski blokiraju za sve web lokacije osim onih koje omogućite</translation>
 <translation id="7400418766976504921">URL</translation>

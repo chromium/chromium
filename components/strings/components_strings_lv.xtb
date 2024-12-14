@@ -807,7 +807,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2399868464369312507">Pārlūkā Google Chrome tiek mēģināts automātiski rediģēt maksājuma veidus.</translation>
 <translation id="2400600116338235695">Var pieprasīt atļauju veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="2404884497378469141">Mēģiniet vēlreiz kopēt savus failus.</translation>
-<translation id="2412310121876768057">Vai nākamreiz automātiski aizpildīt kartes informāciju?</translation>
 <translation id="2413155254802890957">Vecā</translation>
 <translation id="2413528052993050574">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts, iespējams, ir atsaukts. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="2414886740292270097">Tumšs</translation>
@@ -1305,7 +1304,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3354508510846323339"><ph name="CURRENT_CITATION" />. citāts no <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Mainīt starpniekservera iestatījumus...</translation>
 <translation id="335809815767823">Eksportētas</translation>
-<translation id="3359387651158939842">Automātiski aizpildiet kartes informāciju turpmākiem pirkumiem, kad saglabājat to izmantošanai pakalpojumā Google Pay.</translation>
 <translation id="3359565626472459400">Laulība</translation>
 <translation id="3360103848165129075">Maksājumu apstrādātāja lapa</translation>
 <translation id="3360306038446926262">Logi</translation>
@@ -1458,7 +1456,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3605899229568538311">5 x 5 collas</translation>
 <translation id="3606917451836803637">TV pārraides un programmas</translation>
 <translation id="3608932978122581043">Padeves virziens</translation>
-<translation id="3610142117915544498">Lai nākamreiz veiktu maksājumu ātrāk, saglabājiet kartes datus, vārdu, uzvārdu un norēķinu adresi savā Google kontā.</translation>
 <translation id="3612660594051121194">Tālsatiksmes autobusi un vilcieni</translation>
 <translation id="3614001939154393113">Uzbrucēji var mēģināt nozagt jūsu informāciju no vietnes <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (piemēram, paroles, ziņojumus vai kredītkaršu datus). <ph name="BEGIN_LEARN_MORE_LINK" />Uzzināt vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">2. izmērs</translation>
@@ -2175,7 +2172,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiskās spēles</translation>
 <translation id="4898742041545089450">Šī tēma ir atbloķēta un var tikt aktivizēta, pamatojoties uz jūsu pārlūkošanas vēsturi.</translation>
-<translation id="4899379435492347481">Saglabājiet šo karti, lai to izmantotu tiešsaistē pakalpojumā Google Pay pirkumiem savās ierīcēs.</translation>
 <translation id="4900217275619098670">Devītais rullis</translation>
 <translation id="4901052769830245369">Etiķešu papīrs (pusglancēts)</translation>
 <translation id="4901162432287938633">Higiēna un tualetes piederums</translation>

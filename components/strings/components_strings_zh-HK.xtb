@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome 正嘗試編輯付款方法。</translation>
 <translation id="2400600116338235695">可要求連接序列連接埠</translation>
 <translation id="2404884497378469141">嘗試再次複製檔案</translation>
-<translation id="2412310121876768057">下次自動填寫卡資料？</translation>
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已被撤銷。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="2414886740292270097">灰暗</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">第 <ph name="CURRENT_CITATION" /> 段引文，總共有 <ph name="MAX_CITATIONS" /> 段，<ph name="PRODUCT_NAME" />，<ph name="URL" /></translation>
 <translation id="3355823806454867987">變更 Proxy 設定…</translation>
 <translation id="335809815767823">匯出咗</translation>
-<translation id="3359387651158939842">儲存信用卡資料以用於 Google Pay 後，日後購物時可自動填寫卡資料</translation>
 <translation id="3359565626472459400">婚姻</translation>
 <translation id="3360103848165129075">付款處理常式工作表</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1457,7 +1455,6 @@
 <translation id="3605899229568538311">5 x 5 吋</translation>
 <translation id="3606917451836803637">電視節目</translation>
 <translation id="3608932978122581043">送紙方向</translation>
-<translation id="3610142117915544498">只要將付款卡、姓名和帳單地址儲存至 Google 帳戶中，下次就能更快完成付款程序</translation>
 <translation id="3612660594051121194">長途巴士和鐵路</translation>
 <translation id="3614001939154393113">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取你的資料 (例如密碼、訊息或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">粗幼：2</translation>
@@ -2176,7 +2173,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奧運會</translation>
 <translation id="4898742041545089450">此主題已解除封鎖。系統可能根據你的瀏覽記錄，將該主題設定為有效主題</translation>
-<translation id="4899379435492347481">儲存卡資料，以便在各種裝置使用 Google Pay 網上購物</translation>
 <translation id="4900217275619098670">第九卷</translation>
 <translation id="4901052769830245369">標籤 (半光面)</translation>
 <translation id="4901162432287938633">衛生和浴室用品</translation>

@@ -807,7 +807,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2399868464369312507">Google Chrome está intentando editar formas de pago.</translation>
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos en serie</translation>
 <translation id="2404884497378469141">Intenta volver a copiar tus archivos</translation>
-<translation id="2412310121876768057">¿Quieres autocompletar la tarjeta la próxima vez?</translation>
 <translation id="2413155254802890957">Antigua</translation>
 <translation id="2413528052993050574">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" /> y se podría revocar el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2414886740292270097">Oscuro</translation>
@@ -1306,7 +1305,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3354508510846323339">Cita <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Cambiar la configuración del proxy...</translation>
 <translation id="335809815767823">Se exportó correctamente</translation>
-<translation id="3359387651158939842">Autocompleta tu tarjeta en compras futuras cuando la guardes para usarla con Google Pay</translation>
 <translation id="3359565626472459400">Matrimonio</translation>
 <translation id="3360103848165129075">Hoja del controlador de pagos</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1459,7 +1457,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3605899229568538311">12.7 × 12.7 cm (5 × 5 in)</translation>
 <translation id="3606917451836803637">Programas de TV</translation>
 <translation id="3608932978122581043">Orientación de la entrada</translation>
-<translation id="3610142117915544498">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta, nombre y dirección de facturación en tu Cuenta de Google.</translation>
 <translation id="3612660594051121194">Autobuses y trenes de larga distancia</translation>
 <translation id="3614001939154393113">Es posible que un atacante esté intentando robarte la información de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por ejemplo, contraseñas, mensajes o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Tamaño 2</translation>
@@ -2178,7 +2175,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Juegos olímpicos</translation>
 <translation id="4898742041545089450">Se desbloqueó este tema y es posible que se active según tu historial de navegación</translation>
-<translation id="4899379435492347481">Guarda esta tarjeta para usarla en línea con Google Pay para realizar compras en tus dispositivos</translation>
 <translation id="4900217275619098670">Noveno rollo</translation>
 <translation id="4901052769830245369">Etiquetas (semibrillante)</translation>
 <translation id="4901162432287938633">Higiene y artículos de tocador</translation>

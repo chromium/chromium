@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome हे पेमेंट पद्धती संपादित करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="2400600116338235695">सिरीअल पोर्टशी कनेक्ट करण्याची विनंती करू शकते</translation>
 <translation id="2404884497378469141">तुमच्या फाइल कॉपी करण्याचा पुन्हा प्रयत्न करा</translation>
-<translation id="2412310121876768057">पुढील वेळेस कार्ड ऑटोफिल करायचे आहे का?</translation>
 <translation id="2413155254802890957">जुना</translation>
 <translation id="2413528052993050574">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट कदाचित रद्द केले असू शकते. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="2414886740292270097">गडद</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">संदर्भ <ph name="MAX_CITATIONS" /> पैकी <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
 <translation id="335809815767823">एक्सपोर्ट केली</translation>
-<translation id="3359387651158939842">तुम्ही तुमचे कार्ड Google Pay सह वापरण्यासाठी सेव्ह केल्यावर भविष्यातील खरेदीसाठी ऑटोफिल करा</translation>
 <translation id="3359565626472459400">विवाह</translation>
 <translation id="3360103848165129075">पेमेंट हँडलर शीट</translation>
 <translation id="3360306038446926262">विंडो</translation>
@@ -1400,6 +1398,7 @@
 <translation id="351522771072578657">तुम्ही सध्या मेनूवर आहात</translation>
 <translation id="3517264445792388751">तुमच्या अ‍ॅडमिनिस्ट्रेटरने फाइल सिस्टीम बंद केली आहे</translation>
 <translation id="3518941727116570328">एकापेक्षा अधिक ऑब्जेक्ट हाताळणी</translation>
+<translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> ला विचारा</translation>
 <translation id="3525130752944427905">१० x १४ इं</translation>
 <translation id="3525435918300186947">MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करायची आहेत का?</translation>
 <translation id="3527181387426738155">संगीत आणि ऑडिओ</translation>
@@ -1457,7 +1456,6 @@
 <translation id="3605899229568538311">५ x ५ इं</translation>
 <translation id="3606917451836803637">टीव्ही शो आणि कार्यक्रम</translation>
 <translation id="3608932978122581043">ओरिएंटेशन फीड करा</translation>
-<translation id="3610142117915544498">पुढील वेळेस आणखी जलद पेमेंट करण्यासाठी, तुमच्या Google खाते मध्ये तुमचे कार्ड, नाव आणि बिलिंग पत्ता सेव्ह करा</translation>
 <translation id="3612660594051121194">लांब पल्ल्याची बस आणि रेल्वे</translation>
 <translation id="3614001939154393113">आक्रमणकर्ते <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> वरून आपली माहिती चोरण्याचा प्रयत्न करत असण्याची शक्यता आहे (उदाहरणार्थ, पासवर्ड, मेसेज किंवा क्रेडिट कार्ड). <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">आकार २</translation>
@@ -1955,6 +1953,7 @@
 <translation id="4451684391620232683">वापरकर्त्याला प्रेझेंट केलेला मजकूर:</translation>
 <translation id="4452328064229197696">तुम्ही नुकताच वापरलेला पासवर्ड डेटा भंगामध्ये आढळला होता. तुमची खाती सुरक्षित करण्यासाठ, Google पासवर्ड व्यवस्थापक तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
 <translation id="4456937135469235202">साहसी प्रवास</translation>
+<translation id="4458013283022578512">प्रश्न एंटर करा</translation>
 <translation id="4464826014807964867">तुमच्या संस्थेची माहिती असलेल्या वेबसाइट</translation>
 <translation id="4466576951214254884">शैक्षणिक कर्ज आणि शैक्षणिक अर्थसाहाय्य</translation>
 <translation id="4467821340016922962">फुल स्क्रीनमधून बाहेर पडून डाउनलोड पाहण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करा</translation>
@@ -2176,7 +2175,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ऑलिंपिक</translation>
 <translation id="4898742041545089450">हा विषय अनब्लॉक केला आहे आणि तो तुमच्या ब्राउझिंग इतिहासानुसार ॲक्टिव्ह होऊ शकतो</translation>
-<translation id="4899379435492347481">तुमच्या डिव्हाइसवर खरेदी करण्यासाठी Google Pay सह ऑनलाइन वापरण्याकरिता हे कार्ड सेव्ह करा</translation>
 <translation id="4900217275619098670">नववा रोल</translation>
 <translation id="4901052769830245369">लेबल (सेमी-ग्लॉस)</translation>
 <translation id="4901162432287938633">स्वच्छता आणि प्रसाधने</translation>

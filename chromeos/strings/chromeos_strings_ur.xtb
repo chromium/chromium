@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">آلے کے دائیں بڈ میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
 <translation id="3340978935015468852">ترتیبات</translation>
 <translation id="3347558044552027859">جدید</translation>
+<translation id="3353477144743332882">خلاصہ اور نام کی تخلیق کا ماڈل ڈاؤن لوڈ کریں</translation>
 <translation id="3359218928534347896">مائیکروفون خاموش کریں بٹن کو ٹوگل کریں</translation>
 <translation id="3360306038446926262">ونڈوز</translation>
 <translation id="3361618936611118375">سوشی</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">شارٹ کٹ دستیاب نہیں ہے۔ <ph name="KEY" /> کے بغیر ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="5860491529813859533">آن کریں</translation>
+<translation id="5875913454160982848">ٹرانسکرپشن ماڈل ڈاؤن لوڈ کریں</translation>
 <translation id="5876385649737594562">اختیارات کو منتخب کرنے کے لیے آن کریں</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> موقوف کریں</translation>
 <translation id="588258955323874662">پوری اسکرین</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">صرف چند مزید منٹ...</translation>
 <translation id="8505011850330200833">‏‫Gemini ماڈل کو ٹرانسکرپٹس پر کارروائی کرنے اور خلاصے بنانے کے لیے 2GB اسٹوریج کی ضرورت ہوتی ہے</translation>
 <translation id="8508640263392900755">‏APN کی تفصیلات</translation>
+<translation id="8509574872955173831">خلاصہ اور نام کی تخلیق کے بارے میں مزید جانیں</translation>
 <translation id="8522687886059337719">اب آپ کو نئے <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />وال پیپرز<ph name="END_LINK_WALLPAPER_SUBPAGE" /> اور <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />اسکرین سیور<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> تک رسائی حاصل ہے</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">چائے خانہ</translation>
@@ -1724,7 +1727,6 @@
 <translation id="9133772297793293778">‏اپنے کی بورڈ پر 1 سے 4 موڈیفائرز اور 1 دوسری کلید دبائیں۔ ترمیم کی وضع سے باہر نکلنے کے لیے، alt + Esc دبائیں۔</translation>
 <translation id="9137526406337347448">‏Google سروسز</translation>
 <translation id="9138630967333032450">بائیں شفٹ</translation>
-<translation id="9147928237330776930">خلاصہ کرنے کے لیے بہت کم الفاظ ہیں</translation>
 <translation id="9149391708638971077">میموری ٹیسٹ چلائیں</translation>
 <translation id="9159524746324788320">ہیمبرگرز</translation>
 <translation id="9161276708550942948">اسپیس</translation>

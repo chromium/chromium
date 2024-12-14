@@ -98,6 +98,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> separador adicionado}other{<ph name="MANY_ADDED" /> separadores adicionados}}</translation>
 <translation id="5161254044473106830">Título obrigatório</translation>
 <translation id="5339733443032484186">O seu último separador</translation>
+<translation id="5380159289133845234">Arquivar separadores duplicados</translation>
 <translation id="5400836586163650660">Cinzento</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
@@ -117,6 +118,7 @@ Se sair, vai perder imediatamente o acesso ao grupo de separadores "<ph name="TI
 <translation id="6051432659151380973">Os seus grupos de separadores são guardados automaticamente</translation>
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Vai perder imediatamente o acesso ao grupo de separadores <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Agora, todos os separadores duplicados também vão ser arquivados, com exceção da cópia usada mais recentemente.</translation>
 <translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
 <translation id="6271513594716432922">Fechar todos os separadores inativos</translation>

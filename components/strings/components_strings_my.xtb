@@ -808,7 +808,6 @@
 <translation id="2399868464369312507">Google Chrome က ငွေပေးချေနည်းလမ်းများကို ပြင်ရန် ကြိုးပမ်းနေသည်။</translation>
 <translation id="2400600116338235695">အစဉ်လိုက်ပို့တ်များသို့ ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="2404884497378469141">သင့်ဖိုင်များကို ထပ်မံကူးယူကြည့်ပါ</translation>
-<translation id="2412310121876768057">ကတ်ကို နောက်တစ်ကြိမ် အော်တိုဖြည့်မလား။</translation>
 <translation id="2413155254802890957">အဟောင်း</translation>
 <translation id="2413528052993050574">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်ကို ရုပ်သိမ်းခဲ့တာ ဖြစ်နိုင်သည်။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
@@ -1307,7 +1306,6 @@
 <translation id="3354508510846323339">ကိုးကားချက် <ph name="MAX_CITATIONS" /> ခုအနက် <ph name="CURRENT_CITATION" />၊ <ph name="PRODUCT_NAME" />၊ <ph name="URL" /></translation>
 <translation id="3355823806454867987">ပရောက်စီ ဆက်တင်များ ပြောင်းရန်...</translation>
 <translation id="335809815767823">ထုတ်ယူပြီးပါပြီ</translation>
-<translation id="3359387651158939842">Google Pay ဖြင့် သုံးရန် သင့်ကတ်ကို သိမ်းသောအခါ နောင်ဝယ်ယူမှုများအတွက် ၎င်းကို အော်တိုဖြည့်နိုင်သည်</translation>
 <translation id="3359565626472459400">အိမ်ထောင်ရေး</translation>
 <translation id="3360103848165129075">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာ</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1459,7 +1457,6 @@
 <translation id="3605899229568538311">၅ x ၅ လက်မ</translation>
 <translation id="3606917451836803637">TV ရှိုး၊ အစီအစဉ်</translation>
 <translation id="3608932978122581043">ဖိဒ်အနေအထား</translation>
-<translation id="3610142117915544498">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင်၏ကတ်၊ အမည်နှင့် ငွေတောင်းခံလွှာပို့သော လိပ်စာကို သင့် Google Account တွင် သိမ်းပါ</translation>
 <translation id="3612660594051121194">အဝေးပြေး ဘတ်စ်ကား၊ ရထား</translation>
 <translation id="3614001939154393113">တိုက်ခိုက်သူများက <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ရှိ သင့်အချက်အလက်များ (ဥပမာ- စကားဝှက်၊ မက်ဆေ့ဂျ် သို့မဟုတ် ခရက်ဒစ်ကတ်များ) ကို ခိုးယူရန် ကြိုးပမ်းနိုင်သည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">အရွယ်အစား ၂</translation>
@@ -2178,7 +2175,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">အိုလံပစ်</translation>
 <translation id="4898742041545089450">သင့်ကြည့်ရှုမှုမှတ်တမ်းအရ ဤအကြောင်းအရာကို ပြန်ဖွင့်ထားနိုင်သည်</translation>
-<translation id="4899379435492347481">သင့်စက်များ၌ ဝယ်ယူမှုများအတွက် Google Pay ဖြင့် အွန်လိုင်းသုံးရန် ဤကတ်ကို သိမ်းနိုင်သည်</translation>
 <translation id="4900217275619098670">ကိုးခုမြောက်အလိပ်</translation>
 <translation id="4901052769830245369">လေဘယ်လ် (အနည်းငယ် တောက်ပြောင်)</translation>
 <translation id="4901162432287938633">တစ်ကိုယ်ရေသန့်စင်‌ရေးနှင့် သန့်စင်ပစ္စည်း</translation>

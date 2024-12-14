@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">ડિવાઇસના જમણા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3347558044552027859">મૉર્ડન</translation>
+<translation id="3353477144743332882">સારાંશ અને નામની રચનાનું મૉડલ ડાઉનલોડ કરો</translation>
 <translation id="3359218928534347896">માઇક્રોફોનને મ્યૂટ કરવાનું બટન ટૉગલ કરો</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">સુશી</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">શૉર્ટકટ ઉપલબ્ધ નથી. <ph name="KEY" /> વિના કોઈ નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
+<translation id="5875913454160982848">ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરો</translation>
 <translation id="5876385649737594562">વિકલ્પો પસંદ કરવાનું ચાલુ કરો</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> થોભાવો</translation>
 <translation id="588258955323874662">પૂર્ણસ્ક્રીન</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">બસ થોડો વધુ સમય...</translation>
 <translation id="8505011850330200833">Gemini મૉડલને ટ્રાન્સક્રિપ્ટ ઉપર પ્રક્રિયા કરવા અને સારાંશ બનાવવા માટે 2GB સ્ટોરેજની જરૂર પડે છે</translation>
 <translation id="8508640263392900755">APNની વિગતો</translation>
+<translation id="8509574872955173831">સારાંશ અને નામની રચના વિશે વધુ જાણો</translation>
 <translation id="8522687886059337719">તમે હવે નવા <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />વૉલપેપર<ph name="END_LINK_WALLPAPER_SUBPAGE" /> અને <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />સ્ક્રીન સેવર<ph name="END_LINK_SCREENSAVER_SUBPAGE" />નો ઍક્સેસ ધરાવો છો</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ટી હાઉસ</translation>
@@ -1724,7 +1727,6 @@
 <translation id="9133772297793293778">તમારા કીબોર્ડ પર 1-4 મૉડિફાયર અને અન્ય 1 કી દબાવો. એડિટિંગ મોડમાંથી બહાર નીકળવા માટે, alt + esc દબાવો.</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>
 <translation id="9138630967333032450">ડાબી Shift કી</translation>
-<translation id="9147928237330776930">સારાંશ આપવા માટે શબ્દો ઘણા ઓછા છે</translation>
 <translation id="9149391708638971077">મેમરીનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="9159524746324788320">હૅમ્બર્ગર</translation>
 <translation id="9161276708550942948">space</translation>

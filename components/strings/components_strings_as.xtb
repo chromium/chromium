@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chromeএ পৰিশোধ পদ্ধতি সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="2400600116338235695">ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="2404884497378469141">আপোনাৰ ফাইলসমূহ পুনৰ প্ৰতিলিপি কৰি চাওক</translation>
-<translation id="2412310121876768057">পৰৱৰ্তী বাৰ কাৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবনে?</translation>
 <translation id="2413155254802890957">পুৰণি</translation>
 <translation id="2413528052993050574">এই ছার্ভাৰে নিজকে <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে আৰু ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ হয়তো প্ৰত্যাহাৰ কৰা হৈছে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ প্ৰতিৰোধ কৰাৰ বাবে হ‘ব পাৰে।</translation>
 <translation id="2414886740292270097">গাঢ়</translation>
@@ -1303,7 +1302,6 @@
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" /> টাৰ <ph name="CURRENT_CITATION" /> উদ্ধৃতি, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">প্ৰক্সি ছেটিংসমূহ সলনি কৰক...</translation>
 <translation id="335809815767823">ৰপ্তানি কৰা হৈছে</translation>
-<translation id="3359387651158939842">আপুনি Google Payৰ সৈতে ব্যৱহাৰ কৰিবলৈ আপোনাৰ কাৰ্ডখন ছেভ কৰিলে ভৱিষ্যতে ক্ৰয়ৰ সময়ত আপোনাৰ কাৰ্ডৰ তথ্য স্বয়ংক্ৰিয়ভাৱে পূৰ কৰা হয়</translation>
 <translation id="3359565626472459400">বিবাহ</translation>
 <translation id="3360103848165129075">পৰিশোধ নিয়ন্ত্ৰক শ্বীটখন</translation>
 <translation id="3360306038446926262">ৱিণ্ড’</translation>
@@ -1456,7 +1454,6 @@
 <translation id="3605899229568538311">৫ x ৫ ইঞ্চি</translation>
 <translation id="3606917451836803637">টিভি শ্ব’ আৰু প্ৰ’গ্ৰাম</translation>
 <translation id="3608932978122581043">ফীডৰ দিশ</translation>
-<translation id="3610142117915544498">পৰৱৰ্তী সময়ত দ্ৰুতভাৱে পৰিশোধ কৰিবলৈ, আপোনাৰ Google একাউণ্টত নিজৰ কাৰ্ড, নাম আৰু বিলিঙৰ ঠিকনা ছেভ কৰক।</translation>
 <translation id="3612660594051121194">দূৰণিবটীয়া বাছ আৰু ৰে’ল</translation>
 <translation id="3614001939154393113">আক্ৰমণকাৰীয়ে <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ পৰা আপোনাৰ তথ্য চুৰি কৰিবলৈ চেষ্টা কৰি থাকিব পাৰে (উদাহৰণস্বৰূপে, পাছৱৰ্ড, বাৰ্তা বা ক্ৰেডিট কাৰ্ড)। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">আকাৰ ২</translation>
@@ -2175,7 +2172,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">অলিম্পিক</translation>
 <translation id="4898742041545089450">এই বিষয়বস্তুটো অৱৰোধৰ পৰা আঁতৰোৱা হৈছে আৰু সেইটো আপোনাৰ ব্ৰাউজিঙৰ ইতিহাসৰ আধাৰত সক্ৰিয় হ’ব পাৰে</translation>
-<translation id="4899379435492347481">আপোনাৰ সমগ্ৰ ডিভাইচত ক্ৰয়ৰ বাবে Google Payৰ সৈতে অনলাইন ব্যৱহাৰ কৰিবলৈ এই কাৰ্ডখন ছেভ কৰক</translation>
 <translation id="4900217275619098670">নৱম ৰোল</translation>
 <translation id="4901052769830245369">লেবেল (ছেমি-গ্লছ)</translation>
 <translation id="4901162432287938633">স্বাস্থ্যবিধি আৰু শৌচাগাৰ</translation>
@@ -3539,6 +3535,7 @@
 <translation id="7388594495505979117">{0,plural, =1{আপোনাৰ ডিভাইচটো ১ মিনিটত ৰিষ্টাৰ্ট হ'ব}one{আপোনাৰ ডিভাইচটো # মিনিটত ৰিষ্টাৰ্ট হ'ব}other{আপোনাৰ ডিভাইচটো # মিনিটত ৰিষ্টাৰ্ট হ'ব}}</translation>
 <translation id="7393161616326137353">দুঃসাহসিক গে’ম</translation>
 <translation id="7393475648162498734">চেকআউটত আপোনাৰ কাৰ্ডসমূহৰ বাবে কোনবোৰ পুৰস্কাৰ আৰু লাভ উপলব্ধ সেয়া দেখুৱাওক</translation>
+<translation id="7393971683644170444">আপোনাৰ কাৰ্ড প্ৰদানকাৰীৰ সৈতে সংযোগ কৰি থকা হৈছে…</translation>
 <translation id="739728382607845710">পৰিশোধৰ নিয়ন্ত্ৰকৰ চিহ্ন</translation>
 <translation id="7399616692258236448">আপুনি অনুমতি দিয়াসমূহৰ বাদে আন আটাইবোৰ ছাইটৰ বাবে অৱস্থানৰ অনুৰোধসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হয়</translation>
 <translation id="7400418766976504921">URL</translation>

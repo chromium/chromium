@@ -148,11 +148,6 @@
 <translation id="1059069692400941670">처음 실행 시 기본 검색엔진 가져오기 사용 중지</translation>
 <translation id="1062011392452772310">기기에 대한 원격 인증을 사용합니다.</translation>
 <translation id="1062407476771304334">바꾸기</translation>
-<translation id="1062460877136455375">정책을 설정하면 스마트 카드 리더에 연결할 수 없는 분리형 웹 앱(IWA)이 지정됩니다(사용자에게 권한 요청 메시지가 표시되지도 않음). 이 정책은 와일드 카드를 허용합니다. 예를 들어 <ph name="ALL_ISOLATED_WEB_APPS" />는 모든 IWA의 액세스를 차단합니다.
-
-       이 정책은 SmartCardConnectAllowedForUrls에 의해 재정의됩니다. 특히 차단 목록 값에 <ph name="ALL_ISOLATED_WEB_APPS" />가 사용되면 SmartCardConnectAllowedForUrls에 나열된 앱을 제외한 모든 IWA가 스마트 카드 리더에 연결할 수 없음을 의미합니다(사용자에게 권한 요청 메시지가 표시되지도 않음).
-
-       기본적으로 매니페스트 내에서 스마트 카드 권한을 지정하는 분리형 웹 앱은 사용자가 리더별로 대화형으로 권한을 부여하는 경우 스마트 카드에 연결할 수 있습니다.</translation>
 <translation id="1063860513136880926">정책을 '사용'으로 설정하면 단축키나 확장 프로그램 API를 통해 스크린샷을 캡처할 수 없습니다. 정책을 설정하지 않거나 '사용 안함'으로 설정하면 스크린샷을 캡처할 수 있습니다.
 
 정책 설정과 관계없이 <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="LINUX_OS_NAME" />에서는 운영체제나 서드 파티 애플리케이션으로 찍은 스크린샷이 차단되지 않습니다.</translation>
@@ -9431,11 +9426,6 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
 
 <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> 정책이 false로 설정되면 이 정책은 아무런 영향을 미치지 않습니다.</translation>
 <translation id="7912255076272890813">허용된 앱/확장 프로그램 설정</translation>
-<translation id="7912541841840197488">정책을 설정하면 사용자에게 권한을 요청하지 않고 웹 스마트 카드 API를 사용하여 스마트 카드에 연결할 수 있는 분리형 웹 앱(IWA)을 지정합니다. 이 정책은 와일드 카드를 허용하지 않습니다.
-
-       이 정책은 SmartCardConnectBlockedForUrls를 재정의합니다. 특히 <ph name="ALL_ISOLATED_WEB_APPS" />의 차단 목록 값은 SmartCardConnectAllowedForUrls에 나열된 앱을 제외한 모든 IWA가 스마트 카드 리더에 연결할 수 없음을 의미합니다(사용자에게 권한 요청 메시지가 표시되지도 않음).
-
-       기본적으로 매니페스트 내에서 스마트 카드 권한을 지정하는 분리형 웹 앱은 사용자가 리더별로 대화형으로 권한을 부여하는 경우 스마트 카드에 연결할 수 있습니다.</translation>
 <translation id="791267408364877739">잠재적으로 위험한 명령줄 플래그가 사용될 경우 보안 경고 표시</translation>
 <translation id="7919665519909231619">쇼핑 목록 기능을 사용하도록 허용합니다.</translation>
 <translation id="7922358664346625612">Chrome에서 마지막 탭을 열어둠</translation>

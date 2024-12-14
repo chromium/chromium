@@ -931,6 +931,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5248640482715684545">See sait proovib teist rakendust avada.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Kohustuslik väli on tühi. Täitke see enne salvestamist.}other{Mõned kohustuslikud väljad on tühjad. Täitke need enne salvestamist.}}</translation>
 <translation id="5271549068863921519">Salvesta parool</translation>
+<translation id="5279214046729249716">Jah, hoia need eraldi</translation>
 <translation id="5279600392753459966">Blokeeri kõik</translation>
 <translation id="5282340693022193851">Hinnajälgimise märguannete saamiseks lülitage iOS-i seadetes märguanded sisse.</translation>
 <translation id="5294624619177114121">Mobiilimärguanded</translation>

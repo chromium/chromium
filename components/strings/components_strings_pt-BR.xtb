@@ -807,7 +807,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2399868464369312507">O Google Chrome está tentando editar formas de pagamento.</translation>
 <translation id="2400600116338235695">Pode pedir para se conectar a portas seriais</translation>
 <translation id="2404884497378469141">Tente copiar seus arquivos de novo</translation>
-<translation id="2412310121876768057">Preencher o cartão automaticamente na próxima vez?</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido revogado. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="2414886740292270097">Escuro</translation>
@@ -1305,7 +1304,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3354508510846323339">Citação <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
 <translation id="335809815767823">Exportadas</translation>
-<translation id="3359387651158939842">Preencha automaticamente seu cartão para compras futuras quando salvo no Google Pay</translation>
 <translation id="3359565626472459400">Casamento</translation>
 <translation id="3360103848165129075">Página do gerenciador de pagamento</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1401,6 +1399,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="351522771072578657">Você está em um menu</translation>
 <translation id="3517264445792388751">O sistema de arquivos foi desativado pelo administrador</translation>
 <translation id="3518941727116570328">Gerenciamento de vários objetos</translation>
+<translation id="3519670528214225835">Perguntar para <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 pol.</translation>
 <translation id="3525435918300186947">Controlar e reprogramar dispositivos MIDI?</translation>
 <translation id="3527181387426738155">Música e áudio</translation>
@@ -1458,7 +1457,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3605899229568538311">5 x 5 pol.</translation>
 <translation id="3606917451836803637">Programas de TV</translation>
 <translation id="3608932978122581043">Fornecer orientação</translation>
-<translation id="3610142117915544498">Para agilizar o pagamento na próxima vez, salve o cartão, seu nome e o endereço de faturamento na sua Conta do Google.</translation>
 <translation id="3612660594051121194">Viagens de longa distância de ônibus e de trem</translation>
 <translation id="3614001939154393113">Invasores podem estar tentando roubar suas informações de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, senhas, mensagens ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Tamanho 2</translation>
@@ -1956,6 +1954,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4451684391620232683">Texto apresentado ao usuário:</translation>
 <translation id="4452328064229197696">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você revise suas senhas salvas.</translation>
 <translation id="4456937135469235202">Viagens de aventura</translation>
+<translation id="4458013283022578512">Digite uma pergunta</translation>
 <translation id="4464826014807964867">Sites com informações da sua organização</translation>
 <translation id="4466576951214254884">Empréstimos estudantis e financiamento universitário</translation>
 <translation id="4467821340016922962">Para sair do modo tela cheia e conferir o download, pressione |<ph name="ACCELERATOR" />|</translation>
@@ -2177,7 +2176,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpíadas</translation>
 <translation id="4898742041545089450">Esse tema está desbloqueado e pode ficar ativo com base no seu histórico de navegação</translation>
-<translation id="4899379435492347481">Salve este cartão para usar on-line com o Google Pay para compras em todos seus dispositivos</translation>
 <translation id="4900217275619098670">Nono rolo</translation>
 <translation id="4901052769830245369">Rótulos (semibrilho)</translation>
 <translation id="4901162432287938633">Higiene e cosméticos</translation>

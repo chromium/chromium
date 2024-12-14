@@ -148,11 +148,6 @@ Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="1059069692400941670">Inhabilitar la importación del buscador predeterminado en la primera ejecución</translation>
 <translation id="1062011392452772310">Habilitar confirmación remota para el dispositivo</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
-<translation id="1062460877136455375">Si se define esta política, se especificará qué aplicaciones web aisladas (IWAs) no podrán conectarse a lectores de tarjetas inteligentes (ni siquiera se pedirá permiso a los usuarios). Esta política acepta comodines. Por ejemplo, <ph name="ALL_ISOLATED_WEB_APPS" /> bloqueará el acceso a todas las IWA.
-
-       Esta política se anula con SmartCardConnectAllowedForUrls. En concreto, si se le asigna el valor <ph name="ALL_ISOLATED_WEB_APPS" /> a la lista de bloqueados, significa que todas las IWAs no podrán conectarse a los lectores de tarjetas inteligentes (ni siquiera se pedirá permiso a los usuarios) excepto las que se indiquen en SmartCardConnectAllowedForUrls.
-
-       De forma predeterminada, las aplicaciones web aisladas que especifican permisos de tarjeta inteligente en el archivo de manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario conceda el permiso de forma interactiva por lector.</translation>
 <translation id="1063860513136880926">Si se habilita esta política, no se permitirá hacer capturas de pantalla mediante combinaciones de teclas ni APIs de extensión. Si se inhabilita esta política o no se establece, se permitirán las capturas de pantalla.
 
 Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />, esta política no impedirá que se hagan capturas de pantalla mediante aplicaciones del sistema operativo o de terceros.</translation>
@@ -9364,11 +9359,6 @@ Los valores válidos están comprendidos entre 1 y 9999 segundos. Si no se defin
 
 Esta política no tendrá ningún efecto si se asigna el valor false a la política <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="7912255076272890813">Configurar tipos de extensiones o aplicaciones permitidos</translation>
-<translation id="7912541841840197488">Si se define esta política, se especificará qué aplicaciones web aisladas (IWAs) pueden conectarse a tarjetas inteligentes mediante la API Web Smart Card sin pedir permiso al usuario. Esta política no acepta comodines.
-
-       Esta política anula SmartCardConnectBlockedForUrls. En concreto, si se le asigna el valor <ph name="ALL_ISOLATED_WEB_APPS" /> a la lista de bloqueados, significa que todas las IWAs no podrán conectarse a los lectores de tarjetas inteligentes (ni siquiera se pedirá permiso a los usuarios) excepto las que se indiquen en SmartCardConnectAllowedForUrls.
-
-       De forma predeterminada, las aplicaciones web aisladas que especifican permisos de tarjeta inteligente en el archivo de manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario conceda el permiso de forma interactiva por lector.</translation>
 <translation id="791267408364877739">Mostrar advertencias de seguridad si se utilizan instrucciones de línea de comandos potencialmente peligrosas</translation>
 <translation id="7919665519909231619">Permitir que se habilite la función de lista de la compra</translation>
 <translation id="7922358664346625612">Mantener abierta la última pestaña en Chrome.</translation>

@@ -207,6 +207,7 @@
 <translation id="345171907106878721">Chrome foydalanuvchisini qo‘shish</translation>
 <translation id="3453763134178591239">ChromeOS shartlari</translation>
 <translation id="3503306920980160878">Bu sayt manzilingizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
+<translation id="3512634283363927263">Bu sahifalar Chromium dastur ishlab chiquvchilari foydalanishi uchun moʻljallangan va faol ishlatish yoki sinovdan oʻtkazish mumkin emas. Ularni yoqish uchun <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> havolasiga oʻting, debag sahifalarini yoqish uchun tugmani bosib, keyin yana bu sahifaga oʻting.</translation>
 <translation id="3533694711092285624">Hech qanday parol saqlanmagan. Chrome faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="3541482654983822893">Chrome parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining.</translation>
 <translation id="3564543103555793392">Chromega kirish orqali bukmarklar, parollar va boshqa maʼlumotlarni saqlash va telefonda ishlatish mumkin.</translation>
@@ -633,6 +634,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8718062187489036808">Chrome hisobidan chiqish</translation>
 <translation id="873133009373065397">Google Chrome asosiy brauzerni aniqlay olmadi yoki tayinlay olmadi</translation>
 <translation id="8748735421235723888">Chrome nofaol varaqlar orqali xotirani boʻshatadi. Bunda faol varaqlar va boshqa ilovalar kompyuter resurslarini oshiradi va Chrome ishlashi tezlashadi. Nofaol varaqlar ularga qaytilganda avtomatik faollashadi. <ph name="BEGIN_LINK" />Operativ xotirani tejash haqida batafsil<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Bu ilovalar maʼlumotlarini Chromiumdan olib tashlang</translation>
 <translation id="8765470054473112089">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chrome yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="8781673607513845160">Kameradan foydalanish uchun <ph name="BEGIN_LINK" />tizim sozlamalari<ph name="END_LINK" /> orqali Chromega ruxsat bering</translation>
 <translation id="878572486461146056">Oʻrnatishda xato: Tarmoq administratori oʻrnatishlarni taqiqlovchi guruh siyosatini tatbiq qilgan: <ph name="INSTALL_ERROR" /></translation>

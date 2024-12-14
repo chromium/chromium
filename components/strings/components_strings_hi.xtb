@@ -808,7 +808,6 @@
 <translation id="2399868464369312507">Google Chrome, पेमेंट के तरीकों में बदलाव करने की कोशिश कर रहा है.</translation>
 <translation id="2400600116338235695">साइट, सीरियल पोर्ट से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="2404884497378469141">अपनी फ़ाइलें फिर से कॉपी करने की कोशिश करें</translation>
-<translation id="2412310121876768057">क्या आपको अगली खरीदारी के लिए, कार्ड की जानकारी अपने-आप भरने की सुविधा इस्तेमाल करनी है?</translation>
 <translation id="2413155254802890957">पुराना</translation>
 <translation id="2413528052993050574">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" />; इसका सुरक्षा प्रमाणपत्र निरस्त कर दिया गया है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2414886740292270097">गहरा</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" /> में से <ph name="CURRENT_CITATION" /> उद्धरण, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग बदलें...</translation>
 <translation id="335809815767823">एक्सपोर्ट की गईं</translation>
-<translation id="3359387651158939842">Google Pay में इस्तेमाल करने के मकसद से कार्ड की जानकारी सेव करने पर, आने वाले समय में की जाने वाली खरीदारी के लिए कार्ड की जानकारी अपने-आप भरने की सुविधा चालू करें</translation>
 <translation id="3359565626472459400">शादी</translation>
 <translation id="3360103848165129075">पैसे चुकाने की हैंडलर शीट</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5 x 5 इंच</translation>
 <translation id="3606917451836803637">टीवी शो और प्रोग्राम</translation>
 <translation id="3608932978122581043">फ़ीड ओरिएंटेशन</translation>
-<translation id="3610142117915544498">अगली बार तेज़ी से पैसे चुकाने के लिए, अपने कार्ड की जानकारी, नाम, और बिलिंग पते को Google खाते में सेव करें</translation>
 <translation id="3612660594051121194">लंबी दूरी तक जाने वाली बस और रेल</translation>
 <translation id="3614001939154393113">यह मुमकिन है कि हमलावर <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> से आपकी जानकारी चुराने की कोशिश करें. जैसे, वे आपके पासवर्ड, मैसेज या क्रेडिट कार्ड की जानकारी चुराने की कोशिश कर सकते हैं. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">आकार 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ओलंपिक</translation>
 <translation id="4898742041545089450">इस विषय को अनब्लॉक कर दिया गया है. साथ ही, यह मुमकिन है कि आपके ब्राउज़िंग इतिहास के आधार पर, यह विषय ऐक्टिव हो जाए</translation>
-<translation id="4899379435492347481">अपने डिवाइसों पर Google Pay के ज़रिए ऑनलाइन खरीदारी करने के लिए, इस कार्ड की जानकारी सेव करें</translation>
 <translation id="4900217275619098670">नौवां रोल</translation>
 <translation id="4901052769830245369">लेबल (सेमी-ग्लॉस)</translation>
 <translation id="4901162432287938633">हाइजीन और टॉयलेटरी</translation>
@@ -3543,6 +3539,7 @@
 <translation id="7388594495505979117">{0,plural, =1{आपका डिवाइस 1 मिनट में रीस्टार्ट होगा}one{आपका डिवाइस # मिनट में रीस्टार्ट होगा}other{आपका डिवाइस # मिनट में रीस्टार्ट होगा}}</translation>
 <translation id="7393161616326137353">एडवेंचर गेम</translation>
 <translation id="7393475648162498734">चेकआउट के समय दिखाएं कि मेरे कार्ड के लिए कौन-कौनसे इनाम और फ़ायदे उपलब्ध हैं</translation>
+<translation id="7393971683644170444">कार्ड की सेवा देने वाली कंपनी से कनेक्ट किया जा रहा है...</translation>
 <translation id="739728382607845710">पेमेंट हैंडलर आइकॉन</translation>
 <translation id="7399616692258236448">आपने जिन साइटों को अनुमति दी है उन्हें छोड़कर, दूसरी सभी साइटों के लिए जगह की जानकारी के अनुरोध अपने-आप ब्लॉक हो जाते हैं</translation>
 <translation id="7400418766976504921">URL</translation>

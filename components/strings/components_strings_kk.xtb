@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome төлеу әдістерін өзгерткісі келеді.</translation>
 <translation id="2400600116338235695">Тізбекті порттарға қосылуға рұқсат сұрайды.</translation>
 <translation id="2404884497378469141">Файлдарды қайта көшіріп көріңіз</translation>
-<translation id="2412310121876768057">Келесі жолы картаны автотолтыру қажет пе?</translation>
 <translation id="2413155254802890957">Ескі</translation>
 <translation id="2413528052993050574">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты қайтарып алынған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
@@ -1304,7 +1303,6 @@
 <translation id="3354508510846323339"><ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" /> дәйексөзі, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Прокси параметрлерін өзгерту…</translation>
 <translation id="335809815767823">Экспортталды.</translation>
-<translation id="3359387651158939842">Картаны Google Pay-де пайдалану үшін сақтап қойсаңыз, келесі жолы сауда жасаған кезде оны автоматты түрде толтыруға болады.</translation>
 <translation id="3359565626472459400">Неке</translation>
 <translation id="3360103848165129075">Төлем өңдегіш парағы</translation>
 <translation id="3360306038446926262">Терезелер</translation>
@@ -1457,7 +1455,6 @@
 <translation id="3605899229568538311">5 x 5 дюйм</translation>
 <translation id="3606917451836803637">Телешоулар мен бағдарламалар</translation>
 <translation id="3608932978122581043">Беру бағыты</translation>
-<translation id="3610142117915544498">Келесіде жылдамырақ төлеу үшін картаңызды, аты-жөніңізді және төлем мекенжайын Google аккаунтыңызға сақтап қойыңыз.</translation>
 <translation id="3612660594051121194">Автобуспен және пойызбен алыс жол жүру</translation>
 <translation id="3614001939154393113">Шабуылдаушылар <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы ақпаратыңызды (мысалы, құпия сөздерді, хабарларды немесе несиелік карталарды) ұрлап алуы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Өлшемі: 2</translation>
@@ -2176,7 +2173,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпиада</translation>
 <translation id="4898742041545089450">Бұл тақырып блоктан шығарылды. Ол браузерді қолдану тарихына байланысты қолданысқа енгізілуі мүмкін.</translation>
-<translation id="4899379435492347481">Құрылғыларыңызбен Google Pay арқылы интернеттен тауар сатып алған кезде қолдану үшін бұл картаны сақтап қоюға болады.</translation>
 <translation id="4900217275619098670">Тоғызыншы орам</translation>
 <translation id="4901052769830245369">Белгілер (жартылай жылтыр)</translation>
 <translation id="4901162432287938633">Гигиена және дәретхана заттары</translation>
@@ -3541,6 +3537,7 @@
 <translation id="7388594495505979117">{0,plural, =1{Құрылғыңыз 1 минуттан кейін қайта қосылады}other{Құрылғыңыз # минуттан кейін қайта қосылады}}</translation>
 <translation id="7393161616326137353">Шытырман ойындар</translation>
 <translation id="7393475648162498734">Төлеген кезде карталарда болатын бонустарды көрсетеді.</translation>
+<translation id="7393971683644170444">Карта провайдеріне қосылып жатыр...</translation>
 <translation id="739728382607845710">Төлемді өңдегіш белгішесі</translation>
 <translation id="7399616692258236448">Сіз рұқсат еткеннен басқа барлық сайт үшін локация сұраулары автоматты түрде блокталады.</translation>
 <translation id="7400418766976504921">URL</translation>

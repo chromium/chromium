@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome се опитва да редактира начините на плащане.</translation>
 <translation id="2400600116338235695">Може да поиска разрешение да се свързва със серийни портове</translation>
 <translation id="2404884497378469141">Опитайте отново да копирате файловете си</translation>
-<translation id="2412310121876768057">Да се попълни ли автоматично картата следващия път?</translation>
 <translation id="2413155254802890957">Стар</translation>
 <translation id="2413528052993050574">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; възможно е сертификатът му за сигурност да е оттеглен. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2414886740292270097">Тъмно</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">Цитат <ph name="CURRENT_CITATION" /> от <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Промяна на настройките на прокси сървъра...</translation>
 <translation id="335809815767823">Експортирани</translation>
-<translation id="3359387651158939842">Данните за картата ви ще се попълват автоматично за бъдещи покупки, когато ги запазите, за да ги използвате с Google Pay</translation>
 <translation id="3359565626472459400">Брак</translation>
 <translation id="3360103848165129075">Лист на инструмента за обработване на плащания</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5 x 5 инча</translation>
 <translation id="3606917451836803637">Телевизионни предавания и програми</translation>
 <translation id="3608932978122581043">Ориентация при подаване</translation>
-<translation id="3610142117915544498">За да платите по-бързо следващия път, запазете картата, името и адреса си за фактуриране в профила си в Google</translation>
 <translation id="3612660594051121194">Автобусни и железопътни линии на дълги разстояния</translation>
 <translation id="3614001939154393113">Възможно е хакери да опитват да откраднат информацията ви от <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (например пароли, съобщения или номера на кредитни карти). <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Размер 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпийски игри</translation>
 <translation id="4898742041545089450">Тази тема е отблокирана и може да стане активна въз основа на историята ви на сърфиране</translation>
-<translation id="4899379435492347481">Запазете данните за тази карта, за да я използвате онлайн с Google Pay за покупки на всичките си устройства</translation>
 <translation id="4900217275619098670">Девета ролка</translation>
 <translation id="4901052769830245369">Етикети (полугланцирани)</translation>
 <translation id="4901162432287938633">Хигиена и тоалетни принадлежности</translation>

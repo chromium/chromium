@@ -807,7 +807,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2399868464369312507">Sinusubukan ng Google Chrome na i-edit ang mga paraan ng pagbabayad.</translation>
 <translation id="2400600116338235695">Puwedeng hilinging kumonekta sa mga serial port</translation>
 <translation id="2404884497378469141">Subukang kopyahin ulit ang iyong mga file</translation>
-<translation id="2412310121876768057">I-autofill ang card sa susunod?</translation>
 <translation id="2413155254802890957">Luma</translation>
 <translation id="2413528052993050574">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; maaaring binawi ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="2414886740292270097">Madilim</translation>
@@ -1305,7 +1304,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3354508510846323339">Citation <ph name="CURRENT_CITATION" /> sa <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Baguhin ang mga setting ng proxy...</translation>
 <translation id="335809815767823">Na-export na</translation>
-<translation id="3359387651158939842">I-autofill ang iyong card para sa mga pagbili sa hinaharap kapag na-save mo ito para magamit sa Google Pay</translation>
 <translation id="3359565626472459400">Pagpapakasal</translation>
 <translation id="3360103848165129075">Sheet ng tagapangasiwa ng pagbabayad</translation>
 <translation id="3360306038446926262">Mga Window</translation>
@@ -1459,7 +1457,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">Mga Palabas at Programa sa TV</translation>
 <translation id="3608932978122581043">Oryentasyon ng feed</translation>
-<translation id="3610142117915544498">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card, pangalan, at billing address sa Google Account mo</translation>
 <translation id="3612660594051121194">Pangmalayuang Bus at Tren</translation>
 <translation id="3614001939154393113">Posibleng sinusubukan ng mga attacker na nakawin ang iyong impormasyon mula sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (halimbawa, mga password, mensahe, o credit card). <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Laki 2</translation>
@@ -2179,7 +2176,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympics</translation>
 <translation id="4898742041545089450">Na-unblock ang paksang ito at posible itong maging aktibo batay sa iyong history ng pag-browse</translation>
-<translation id="4899379435492347481">I-save ang card na ito para magamit online sa Google Pay para sa mga pagbili sa lahat ng iyong mga device</translation>
 <translation id="4900217275619098670">Ikasiyam na Rolyo</translation>
 <translation id="4901052769830245369">Mga Label (Semi-Gloss)</translation>
 <translation id="4901162432287938633">Pangkalinisan at Mga Gamit sa Banyo</translation>
@@ -3545,6 +3541,7 @@ Mga karagdagang detalye:
 <translation id="7388594495505979117">{0,plural, =1{Magre-restart ang iyong device pagkalipas ng 1 minuto}one{Magre-restart ang iyong device pagkalipas ng # minuto}other{Magre-restart ang iyong device pagkalipas ng # na minuto}}</translation>
 <translation id="7393161616326137353">Mga Adventure Game</translation>
 <translation id="7393475648162498734">Ipakita kung aling mga reward at benepisyo ang available para sa iyong card kapag nag-checkout</translation>
+<translation id="7393971683644170444">Kumokonekta sa iyong provider ng card...</translation>
 <translation id="739728382607845710">Icon ng tagapangasiwa ng pagbabayad</translation>
 <translation id="7399616692258236448">Awtomatikong naka-block ang mga request sa lokasyon para sa lahat ng site maliban sa mga pinapayagan mo</translation>
 <translation id="7400418766976504921">URL</translation>

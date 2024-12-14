@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome төлөм ыкмаларын түзөтүүгө аракет кылууда.</translation>
 <translation id="2400600116338235695">Сериялык портторго туташууга уруксат сурай алат</translation>
 <translation id="2404884497378469141">Файлдарыңызды кайра көчүрүңүз</translation>
-<translation id="2412310121876768057">Кийинки жолу карта автотолтурулсунбу?</translation>
 <translation id="2413155254802890957">Эски</translation>
 <translation id="2413528052993050574">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы жокко чыгарылган окшойт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="2414886740292270097">Кочкул</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" /> ичинен <ph name="CURRENT_CITATION" />-цитата, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Прокси параметрлерин өзгөртүү…</translation>
 <translation id="335809815767823">Экспорттолду</translation>
-<translation id="3359387651158939842">Google Pay'ге сактап, келечектеги сатып алуулар үчүн картаны автотолтуруңуз</translation>
 <translation id="3359565626472459400">Нике кыйуу</translation>
 <translation id="3360103848165129075">Төлөм иштетүү барагы</translation>
 <translation id="3360306038446926262">Терезелер</translation>
@@ -1457,7 +1455,6 @@
 <translation id="3605899229568538311">5 x 5 дюйм</translation>
 <translation id="3606917451836803637">Телешоулор жана программалар</translation>
 <translation id="3608932978122581043">Түрмөктүн багыты</translation>
-<translation id="3610142117915544498">Кийинки жолу тезирээк төлөө үчүн картаңызды, аты-жөнүңүздү жана эсептешүү дарегин Google аккаунтуңузга сактап коюңуз</translation>
 <translation id="3612660594051121194">Узак аралыкка жүргөн автобус жана поезд</translation>
 <translation id="3614001939154393113">Чабуулчулар <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындагы маалыматыңызды (мисалы, сырсөздөр, билдирүүлөр же насыя карталары) уурдоого аракет кылып жатат окшойт. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Өлчөмү: 2</translation>
@@ -2176,7 +2173,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпиада оюндары</translation>
 <translation id="4898742041545089450">Бул тема бөгөттөн чыгарылган жана көрүлгөн вебсайттардын негизинде жигердүү болушу мүмкүн</translation>
-<translation id="4899379435492347481">Бул картаны сактап, бардык түзмөктөрүңүздө Google Pay'де сатып алуу үчүн колдонуңуз</translation>
 <translation id="4900217275619098670">Тогузунчу барабан</translation>
 <translation id="4901052769830245369">Энбелгилер (жарым жылтырак)</translation>
 <translation id="4901162432287938633">Гигиена каражаттары</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1408847409015257906">Trykk på «Personvern og sikkerhet».</translation>
 <translation id="1411386976162024013">Visuelt søk med Lens</translation>
+<translation id="1417474386970818917">Logg av og slett</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1436671784520050284">Fortsett konfigureringen</translation>
@@ -931,6 +932,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5248640482715684545">Dette nettstedet prøver å åpne en annen app.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
+<translation id="5279214046729249716">Ja, hold dem atskilt</translation>
 <translation id="5279600392753459966">Blokkér alle</translation>
 <translation id="5282340693022193851">For å få varsler om prissporing, slå på varsler i iOS-innstillingene.</translation>
 <translation id="5294624619177114121">Mobilvarsler</translation>
@@ -1009,6 +1011,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5628388627414062173">{count,plural, =1{{count} side på leselisten din}other{{count} sider på leselisten din}}</translation>
 <translation id="5632485077360054581">Vis meg hvordan</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bokmerket er lagret i «{title}»}other{{count} bokmerker er lagret i «{title}»}}</translation>
+<translation id="564170563478022912">Vil du logge av? Ulagrede kontodata slettes.</translation>
 <translation id="5642707040609478753">Merk som ulest</translation>
 <translation id="5646284034397250191">Etiketten er opprettet. Venter på dato</translation>
 <translation id="5647096944343801045">Stort inngangspunkt</translation>
@@ -1021,6 +1024,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5669335982068190158">Du ble logget av som en del av tilbakestillingen av iPhone. Trykk på Fortsett under for å logge på.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versjon <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Vil du bytte konto? Ulagrede kontodata slettes.</translation>
 <translation id="5683499062697987550">For å bruke og lagre passord i Google-kontoen din, må du bekrefte at det er deg.</translation>
 <translation id="5684761169742812828">Dette passordet er avdekket i et databrudd på internett. Hvis du ikke har tid til å endre det akkurat nå, anbefaler Google at du beholder denne advarselen, slik at du får en påminnelse senere.</translation>
 <translation id="5694848685995373177">Lagret i Disk for <ph name="USER_EMAIL" />.</translation>
@@ -1222,6 +1226,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6506996418997555004">Del fanegruppen «<ph name="GROUP_NAME" />»</translation>
 <translation id="6507973708545996744">Logg på for å få leselisten din på alle enhetene dine.</translation>
 <translation id="6518133107902771759">Bekreft</translation>
+<translation id="6518861084553706202">Faner lukkes og data slettes. Dette kan omfatte passord, nettleserloggen, informasjonskapsler med mer.</translation>
 <translation id="6523575793810663688">Vis meg hvordan</translation>
 <translation id="6524082013156754186">Lagre i kontoen</translation>
 <translation id="6527303717912515753">Del</translation>
@@ -1678,6 +1683,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8545276357312221485">Kontroller standardinnstillingene for nettleseren</translation>
 <translation id="854938212724803178">Du har ett passord som er utsatt for sikkerhetsbrudd. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du avviste {count} advarsel}other{Du avviste {count} advarsler}}</translation>
+<translation id="8558046478684552694">Lukk gruppen.</translation>
 <translation id="8560253818350321773">Vis elementene som brukes ofte, først.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} alternativ for passord er tilgjengelig over tastaturet.}other{{count} alternativer for passord er tilgjengelige over tastaturet.}}</translation>
 <translation id="8564894539416715395">Ny fane-siden</translation>
@@ -1846,6 +1852,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9205189991633470489">Inkognitolås</translation>
 <translation id="9206887540681440657">Hastighet</translation>
 <translation id="9223358826628549784">Programstopprapporten er sendt.</translation>
+<translation id="926455622548529175">Bytt og slett</translation>
 <translation id="929748059769569925">Markert tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Lukk fanen}other{Lukk fanene}}</translation>
 <translation id="939472100615258482">Gjeldende nettsted</translation>

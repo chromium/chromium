@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Obre-les totes</translation>
 <translation id="1408847409015257906">Toca Privadesa i seguretat.</translation>
 <translation id="1411386976162024013">Cerca visual de Lens</translation>
+<translation id="1417474386970818917">Tanca la sessió i suprimeix</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1436671784520050284">Continua amb la configuració</translation>
@@ -931,6 +932,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5248640482715684545">Aquest lloc web està provant d'obrir una altra aplicació.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un camp obligatori és buit. Emplena'l abans de desar.}other{Alguns camps obligatoris són buits. Emplena'ls abans de desar.}}</translation>
 <translation id="5271549068863921519">Desa la contrasenya</translation>
+<translation id="5279214046729249716">Sí, mantén-les separades</translation>
 <translation id="5279600392753459966">Bloqueja'ls tots</translation>
 <translation id="5282340693022193851">Per rebre notificacions de seguiment de preus, activa-les a la configuració d'iOS.</translation>
 <translation id="5294624619177114121">Notificacions al mòbil</translation>
@@ -1009,6 +1011,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5628388627414062173">{count,plural, =1{{count} pàgina a la llista de lectura}other{{count} pàgines a la llista de lectura}}</translation>
 <translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5633237939819267663">{count,plural, =1{L'adreça d'interès s'ha desat a {title}}other{S'han desat {count} adreces d'interès a {title}}}</translation>
+<translation id="564170563478022912">Vols tancar la sessió? Se suprimiran les dades del compte no desades.</translation>
 <translation id="5642707040609478753">Marca com a no llegit</translation>
 <translation id="5646284034397250191">Etiqueta creada. Data pendent.</translation>
 <translation id="5647096944343801045">Punt d'entrada gran</translation>
@@ -1021,6 +1024,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5669335982068190158">Se t'ha tancat la sessió com a part del restabliment de l'iPhone. Per iniciar-la, toca Continua, més avall.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versió <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Vols canviar de compte? Se suprimiran les dades del compte no desades.</translation>
 <translation id="5683499062697987550">Per utilitzar i desar contrasenyes al teu Compte de Google, verifica la teva identitat.</translation>
 <translation id="5684761169742812828">Aquesta contrasenya ha quedat exposada en una violació de les dades a Internet. Si no tens temps per canviar-la ara, Google et recomana que conservis aquest advertiment com a recordatori.</translation>
 <translation id="5694848685995373177">S'ha desat a Drive per a <ph name="USER_EMAIL" />.</translation>
@@ -1222,6 +1226,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="6506996418997555004">Comparteix el grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Inicia la sessió per accedir a la llista de lectura en tots els teus dispositius.</translation>
 <translation id="6518133107902771759">Verifica</translation>
+<translation id="6518861084553706202">Es tancaran les pestanyes, i les dades suprimides podrien incloure contrasenyes, l'historial de navegació, galetes i més.</translation>
 <translation id="6523575793810663688">Mostra'm com</translation>
 <translation id="6524082013156754186">Desa al compte</translation>
 <translation id="6527303717912515753">Comparteix</translation>
@@ -1678,6 +1683,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8545276357312221485">Comprova la configuració del navegador predeterminat</translation>
 <translation id="854938212724803178">Tens 1 contrasenya en perill. Corregeix el problema per protegir-te.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Has ignorat {count} advertiment}other{Has ignorat {count} advertiments}}</translation>
+<translation id="8558046478684552694">Tanca el grup.</translation>
 <translation id="8560253818350321773">Mostra primer els elements que s'utilitzen més sovint.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Hi ha {count} opció de contrasenya disponible a sobre del teclat.}other{Hi ha {count} opcions de contrasenya disponibles a sobre del teclat.}}</translation>
 <translation id="8564894539416715395">Pàgina Pestanya nova</translation>
@@ -1846,6 +1852,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9205189991633470489">Bloqueig d'incògnit</translation>
 <translation id="9206887540681440657">Velocitat</translation>
 <translation id="9223358826628549784">L'informe d'error s'ha enviat.</translation>
+<translation id="926455622548529175">Canvia i suprimeix</translation>
 <translation id="929748059769569925">Text marcat</translation>
 <translation id="932305336591073205">{count,plural, =1{Tanca la pestanya}other{Tanca les pestanyes}}</translation>
 <translation id="939472100615258482">Lloc web actual</translation>

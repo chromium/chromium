@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome покушава да измени начине плаћања.</translation>
 <translation id="2400600116338235695">Може да тражи да се повезује са серијским портовима</translation>
 <translation id="2404884497378469141">Пробајте да поново копирате фајлове</translation>
-<translation id="2412310121876768057">Желите да следећи пут аутоматски попуните картицу?</translation>
 <translation id="2413155254802890957">Старо</translation>
 <translation id="2413528052993050574">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат ће можда бити опозван. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2414886740292270097">Тамнa</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339"><ph name="CURRENT_CITATION" />. навод од <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Промени подешавања проксија...</translation>
 <translation id="335809815767823">Извезено је</translation>
-<translation id="3359387651158939842">Аутоматски попуњавајте картицу за будуће куповине када је сачувате да бисте је користили уз Google Pay</translation>
 <translation id="3359565626472459400">Брак</translation>
 <translation id="3360103848165129075">Страница обрађивача плаћања</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1459,7 +1457,6 @@
 <translation id="3605899229568538311">5×5 in</translation>
 <translation id="3606917451836803637">ТВ емисије и програми</translation>
 <translation id="3608932978122581043">Смер уноса</translation>
-<translation id="3610142117915544498">Да бисте следећи пут платили брже, сачувајте картицу, име и адресу за обрачун на Google налогу</translation>
 <translation id="3612660594051121194">Међународни аутобуски и железнички превоз</translation>
 <translation id="3614001939154393113">Нападачи можда покушавају да украду ваше информације са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (на пример, лозинке, поруке или информације о кредитним картицама). <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Величина 2</translation>
@@ -2179,7 +2176,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпијада</translation>
 <translation id="4898742041545089450">Ова тема је одблокирана и може да постане активна на основу историје прегледања</translation>
-<translation id="4899379435492347481">Сачувајте ову картицу да бисте је користили онлајн уз Google Pay за куповине на свим уређајима</translation>
 <translation id="4900217275619098670">Девети котур</translation>
 <translation id="4901052769830245369">Налепнице (полусјајне)</translation>
 <translation id="4901162432287938633">Средства за личну хигијену</translation>

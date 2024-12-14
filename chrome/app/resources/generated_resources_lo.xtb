@@ -142,6 +142,7 @@
 ທ່ານສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານຕອນໃດກໍໄດ້ໃນ <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
 <translation id="1085064499066015002">ເປີດຕະຫຼອດທຸກເວັບໄຊ</translation>
+<translation id="1085558727130096638">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ <ph name="NUM_OTHER_MEMBERS" /> ຄົນ</translation>
 <translation id="1085618740036066768">ບໍ່ໄດ້ເລືອກ <ph name="ITEM" />. <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" />. ກົດປຸ່ມຊອກຫາພ້ອມກັບປຸ່ມຍະຫວ່າງເພື່ອເລືອກ.</translation>
 <translation id="1085697365578766383">ເກີດຄວາມຜິດພາດໃນການເລີ່ມເຄື່ອງຈຳລອງສະເໝືອນຈິງ. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="1090126737595388931">ບໍ່ມີແອັບພື້ນຫຼັງແລ່ນຢູ່</translation>
@@ -2142,6 +2143,7 @@
 <translation id="2462752602710430187">ເພີ່ມ <ph name="PRINTER_NAME" /> ແລ້ວ</translation>
 <translation id="2464079411014186876">ກະແລ໋ມ</translation>
 <translation id="2467755475704469005">ກວດບໍ່ພົບອຸປະກອນໃດ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ <ph name="NUM_OTHER_MEMBERS" /> ຄົນ</translation>
 <translation id="2468178265280335214">ການເລັ່ງຄວາມໄວການເລື່ອນແຜ່ນສຳຜັດ</translation>
 <translation id="2468205691404969808">ໃຊ້ຄຸກກີ້ເພື່ອຈື່ການຕັ້ງຄ່າຂອງທ່ານ, ເຖິງແມ່ນວ່າທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງໜ້າເຫຼົ່ານັ້ນກໍຕາມ</translation>
 <translation id="2468402215065996499">ທາມາກັອດຈິ</translation>
@@ -2287,6 +2289,7 @@
 <translation id="256481480019204378">ID ບັນຊີ Google</translation>
 <translation id="256517381556987641">ການຊິ້ງຂໍ້ມູນໄຟລ໌ພົບໄຟລ໌ <ph name="ITEMS_FOUND" /> ລາຍການ ແລະ ຍັງຄົງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ. ລອງເປີດການຊິ້ງຂໍ້ມູນໄຟລ໌ອີກຄັ້ງໃນສອງສາມນາທີ.</translation>
 <translation id="2565214867520763227">ເປີດໂປຣແກຣມອ່ານໜ້າຈໍ</translation>
+<translation id="2566146433999774844">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ <ph name="NUM_OTHER_MEMBERS" /> ຄົນ</translation>
 <translation id="2568694057933302218">ເມື່ອຢູ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ເວັບໄຊຈະບໍ່ສາມາດໃຊ້ຄຸກກີ້ຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານໃນເວັບໄຊຕ່າງໆໄດ້. ການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານແມ່ນບໍ່ໄດ້ໃຊ້ເພື່ອສິ່ງຕ່າງໆ ເຊັ່ນ: ການປັບແຕ່ງໂຄສະນາໃຫ້ເປັນສ່ວນຕົວ. ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກ.</translation>
 <translation id="2568774940984945469">ພາຊະນະບັນຈຸແຖບຂໍ້ມູນ</translation>
 <translation id="2569972178052279830">ຊື່ຜູ້ຂາຍຍ່ອຍ</translation>
@@ -2294,6 +2297,7 @@
 <translation id="2571655996835834626">ປ່ຽນການຕັ້ງຄ່າທີ່ຄວບຄຸມການເຂົ້າເຖິງຄຸນສົມບັດຕ່າງໆຂອງເວັບໄຊ ເຊັ່ນ: ຄຸກກີ້, JavaScript, ປລັກອິນ, ສະຖານທີ່ທາງພູມສາດ, ໄມໂຄຣໂຟນ, ກ້ອງຖ່າຍຮູບ ແລະ ອື່ນໆ.</translation>
 <translation id="257175846174451436">ກຸ່ມແຖບທີ່ແນະນຳ</translation>
 <translation id="2572032849266859634">​ການເຂົ້າ​ຫາ <ph name="VOLUME_NAME" /> ອ່ານ​ເທົ່າ​ນັ້ນໄດ້​ຮັບ​​ອະ​ນຸ​ຍາດແລ້ວ​.</translation>
+<translation id="2573147659521059501"><ph name="NUM" /> ແຖບ</translation>
 <translation id="2573276323521243649">ກັບອອກຈາກໜ້າການເລືອກຮູບແທນຕົວ</translation>
 <translation id="2573417407488272418">ສຳຮອງຂໍ້ມູນແອັບ ແລະ ໄຟລ໌ໄປໃສ່ໄຟລ໌ &gt; ໄຟລ໌ຂອງຂ້ອຍ ກ່ອນອັບເກຣດ.</translation>
 <translation id="2573831315551295105">ມອບໝາຍສະວິດສຳລັບ “<ph name="ACTION" />”</translation>
@@ -2965,6 +2969,7 @@
 <translation id="3038628620670416486">ຊອກຫາປຸ່ມຢູ່ເມົ້າຂອງທ່ານ</translation>
 <translation id="3039491566278747710">ຕິດຕັ້ງນະໂຍບາຍອອບລາຍໃນອຸປະກອນບໍ່ສຳເລັດ.</translation>
 <translation id="3040982432432547149">ຊ່ວຍພວກເຮົາປັບປຸງ Steam ສຳລັບ Chromebook</translation>
+<translation id="304169924727249890">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3043016484125065343">ເຂົ້າສູ່ລະບົບເພື່ອເບິ່ງບຸກມາກຂອງທ່ານ</translation>
 <translation id="3043126717220766543">ລຶບລ້າງການແນະນຳກຸ່ມ</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3305,6 +3310,7 @@
 <translation id="3308852433423051161">ກຳລັງໂຫຼດຜູ້ຊ່ວຍ Google...</translation>
 <translation id="3309124184713871355">ສິ່ງປູກສ້າງ</translation>
 <translation id="3309330461362844500">ID ໂປຣໄຟລ໌ໃບຮັບຮອງ</translation>
+<translation id="3310379801837527592">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ <ph name="NUM_OTHER_MEMBERS" /> ຄົນ</translation>
 <translation id="331080746368555063">ເວັບໄຊສ່ວນຕົວອາດຮວມມີສິ່ງຕ່າງໆ ເຊັ່ນ: ອິນທຣາເນັດຂອງບໍລິສັດຂອງທ່ານ</translation>
 <translation id="3311445899360743395">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ອາດຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
 <translation id="3312470654018965389">ກຳລັງຕັ້ງຄ່າກ່ອງບັນຈຸ Linux ຢູ່</translation>
@@ -4263,6 +4269,7 @@
 <translation id="3958088479270651626">ນໍາເອົາບຸກມາກສ໌ ແລະການຕັ້ງຄ່າເຂົ້າມາ</translation>
 <translation id="3958110062351175311">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງການຮ້ອງຂໍໃນແຖບເຄື່ອງມື</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> ໄດ້ຖືກຕິດຕັ້ງຢູ່ກ່ອນແລ້ວ</translation>
+<translation id="3959969108528118741">ເຈົ້າຂອງ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> ອອກຈາກກຸ່ມແລ້ວ</translation>
@@ -4711,6 +4718,7 @@
 <translation id="428963538941819373">ເວັບໄຊເຫຼົ່ານີ້ສາມາດໃຊ້ຂໍ້ມູນທີ່ພວກມັນບັນທຶກໄວ້ກ່ຽວກັບທ່ານໄດ້ໃນເວລາທ່ານເລືອກເບິ່ງ <ph name="HOST" /></translation>
 <translation id="4289732974614035569">ເລືອກ PIN</translation>
 <translation id="4290791284969893584">ຫຼັງຈາກການປິດໜ້າໃດໜຶ່ງ, ໜ້າວຽກທີ່ທ່ານເລີ່ມຕົ້ນໄວ້ອາດບໍ່ແລ້ວ</translation>
+<translation id="4290826901752066702">ສະມາຊິກ <ph name="NUM" /> ຄົນ</translation>
 <translation id="4290898381118933198">ປັດເພື່ອນຳທາງລະຫວ່າງໜ້າ</translation>
 <translation id="4291265871880246274">ກ່ອງໂຕ້​ຕອບການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="429312253194641664">ເວັບໄຊກຳລັງຫຼິ້ນສື່ຢູ່</translation>
@@ -5788,6 +5796,7 @@
 <translation id="5079950360618752063">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
 <translation id="508059534790499809">ໂຫຼດຂໍ້ມູນປີ້ Kerberos ໃໝ່</translation>
 <translation id="5081124414979006563">&amp;ເປີດໂປຣໄຟລ໌ແຂກ</translation>
+<translation id="5081974595802103358">ສຳເນົາລິ້ງບໍ່ສຳເລັດ</translation>
 <translation id="508209203623347828">ຫາກບັດນີ້ຖືກປິດການນຳໃຊ້, ບັດ Microsoft ຂອງທ່ານເຊັ່ນ: Sharepoint ແລະ ປະຕິທິນ Outlook ຈະຖືກປິດການນຳໃຊ້ເຊັ່ນກັນ.</translation>
 <translation id="5083035541015925118">Ctrl + Alt + ລູກສອນຂຶ້ນ</translation>
 <translation id="5084328598860513926">ຂັ້ນຕອນການກະກຽມນຳໃຊ້ຖືກຂັດຈັງຫວະ. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ເຈົ້າຂອງ ຫຼື ຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
@@ -6631,6 +6640,7 @@
 <translation id="5691581861107245578">ຮັບການແນະນຳອີໂມຈິທີ່ອີງໃສ່ສິ່ງທີ່ທ່ານກຳລັງພິມ</translation>
 <translation id="5691772641933328258">ບໍ່ຮູ້ຈັກລາຍນິ້ວມື</translation>
 <translation id="5693255400847650006">ມີການໃຊ້ໄມໂຄຣໂຟນຢູ່</translation>
+<translation id="5695046252726616755">ກົດ Enter ຫຼື Space ເພື່ອເບິ່ງຕົວເລືອກເພີ່ມເຕີມ.</translation>
 <translation id="5695184138696833495">ADB ຂອງແອັບ Android ໃນ Linux</translation>
 <translation id="5696143504434933566">ລາຍງານການໃຊ້ໃນທາງທີ່ຜິດຈາກ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">ໄຟລ໌ PPD ທີ່ໃຊ້ຢູ່ໃນປັດຈຸບັນ: <ph name="PPD_NAME" /></translation>
@@ -7866,6 +7876,7 @@
 <translation id="6609478180749378879">ລະບົບຈະເກັບຂໍ້ມູນເຂົ້າສູ່ລະບົບໄວ້ໃນອຸປະກອນນີ້ຫຼັງຈາກທີ່ທ່ານອອກຈາກໂໝດທີ່ບໍ່ເຜີຍຕົວຕົນ. ທ່ານຈະສາມາດເຂົ້າສູ່ລະບົບເວັບໄຊນີ້ໄດ້ອີກຄັ້ງໃນພາຍຫຼັງດ້ວຍອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="6610002944194042868">ຕົວເລືອກແປພາສາ</translation>
 <translation id="6610064275805055636">ຈັດການເວັບແອັບທີ່ແຍກໄວ້</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> ແຖບ</translation>
 <translation id="6611972847767394631">ຊອກຫາແຖບຂອງທ່ານຢູ່ທີ່ນີ້</translation>
 <translation id="661266467055912436">ປັບປຸງຄວາມປອດໄພສຳລັບທ່ານ ແລະ ທຸກຄົນໃນເວັບ.</translation>
 <translation id="6613267708691765962">ກຳລັງສະແກນຫາເມົາແວ...</translation>
@@ -8576,6 +8587,7 @@
 <translation id="7118268675952955085">ຮູບໜ້າຈໍ</translation>
 <translation id="711840821796638741">ສະ​ແດງ​ບຸກມາກສ໌ທີ່​ຄຸ້ມ​ຄອງແລ້ວ</translation>
 <translation id="711985611146095797">ໜ້ານີ້ອະນຸຍາດໃຫ້ທ່ານຈັດການບັນຊີ Google ທີ່ເຂົ້າສູ່ລະບົບແລ້ວຂອງທ່ານໄດ້. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
+<translation id="71200494435060621">ເຂົ້າຮ່ວມໃນຊື່ <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="7120762240626567834">ໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ ທຣາບຟິກ Android ຈະຖືກບລັອກໄວ້ເວັ້ນເສຍແຕ່ຈະເຊື່ອມຕໍ່ VPN</translation>
 <translation id="7120904433567247946">ບຸກມາກນີ້ຖືກບັນທຶກໃສ່ອຸປະກອນນີ້ເທົ່ານັ້ນ. ຫາກທ່ານບັນທຶກມັນໃສ່ <ph name="ACCOUNT_FOLDER" />, ບຸກມາກນີ້ຈະຍັງຖືກບັນທຶກໄວ້ໃນບັນຊີຂອງທ່ານນຳ.</translation>
 <translation id="7121438501124788993">ໂໝດຜູ້ພັດທະນາ</translation>
@@ -9970,6 +9982,7 @@
 <translation id="8105273883928376822">ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອດຳເນີນການຕໍ່.</translation>
 <translation id="8107015733319732394">ກຳລັງຕິດຕັ້ງ Google Play Store ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ນີ້ສາມາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="810728361871746125">ຄວາມລະອຽດຈໍສະແດງຜົນ</translation>
+<translation id="8108161424633979910">ສະມາຊິກ <ph name="NUM" /> ຄົນ</translation>
 <translation id="8109109153262930486">ຮູບແທນຕົວຕາມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="8109991406044913868">ຮູບແບບສີສັນທີ່ສ້າງໂດຍ AI</translation>
 <translation id="8110393529211831722">ການສະໝັກສະມາຊິກແມ່ນຕິດຕັ້ງຢູ່ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ ແລະ ບໍ່ໄດ້ຊິ້ງກັບອຸປະກອນອື່ນໆພາຍໃຕ້ບັນຊີຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>

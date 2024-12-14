@@ -807,7 +807,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2399868464369312507">Google Chrome se pokouší upravit platební metody.</translation>
 <translation id="2400600116338235695">Může žádat o připojení k sériovým portům</translation>
 <translation id="2404884497378469141">Zkuste soubory zkopírovat znovu</translation>
-<translation id="2412310121876768057">Příště kartu automaticky vyplnit?</translation>
 <translation id="2413155254802890957">Stará</translation>
 <translation id="2413528052993050574">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát byl zřejmě zrušen. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="2414886740292270097">Tmavá</translation>
@@ -1302,7 +1301,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3354508510846323339">Citace <ph name="CURRENT_CITATION" /> z <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Změna nastavení proxy...</translation>
 <translation id="335809815767823">Exportováno</translation>
-<translation id="3359387651158939842">Uložte si kartu k použití ve službě Google Pay, aby se u budoucích nákupů vyplnila automaticky</translation>
 <translation id="3359565626472459400">Manželství</translation>
 <translation id="3360103848165129075">List obslužného nástroje pro platby</translation>
 <translation id="3360306038446926262">Okna</translation>
@@ -1455,7 +1453,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3605899229568538311">5 × 5″</translation>
 <translation id="3606917451836803637">Televizní pořady a programy</translation>
 <translation id="3608932978122581043">Orientace podávání</translation>
-<translation id="3610142117915544498">Pokud příště chcete zaplatit rychleji, uložte si kartu, jméno a fakturační adresu do účtu Google</translation>
 <translation id="3612660594051121194">Dálkové autobusy a vlaky</translation>
 <translation id="3614001939154393113">Útočníci se mohou pokusit ukrást vaše údaje na webu <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (například hesla, zprávy nebo informace o platebních kartách). <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Velikost 2</translation>
@@ -2173,7 +2170,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympijské hry</translation>
 <translation id="4898742041545089450">Toto téma je odblokováno a může na základě vaší historie procházení začít být aktivní</translation>
-<translation id="4899379435492347481">Uložte si tuto kartu, abyste ji online pomocí Google Pay mohli používat k nákupům na různých zařízeních</translation>
 <translation id="4900217275619098670">Devátá role</translation>
 <translation id="4901052769830245369">Štítky (pololesklé)</translation>
 <translation id="4901162432287938633">Hygiena a toaletní potřeby</translation>
@@ -3537,6 +3533,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7388594495505979117">{0,plural, =1{Zařízení se za 1 minutu restartuje}few{Zařízení se za # minuty restartuje}many{Zařízení se za # minuty restartuje}other{Zařízení se za # minut restartuje}}</translation>
 <translation id="7393161616326137353">Adventury</translation>
 <translation id="7393475648162498734">Při placení ukázat, jaké odměny a výhody jsou pro vaše karty k dispozici.</translation>
+<translation id="7393971683644170444">Připojování k vydavateli karty…</translation>
 <translation id="739728382607845710">Ikona obslužného nástroje pro platby</translation>
 <translation id="7399616692258236448">Žádosti o informace o poloze jsou automaticky blokovány u všech webů s výjimkou těch, u nichž je povolíte</translation>
 <translation id="7400418766976504921">Adresa URL</translation>

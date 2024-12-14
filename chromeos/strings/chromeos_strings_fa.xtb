@@ -871,7 +871,7 @@
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5220549459260334974">‫<ph name="PROGRESS_PERCENTAGE" />٪ بارگیری شده است</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
-<translation id="522307662484862935">نشانی ایمیل لحاظ نشود</translation>
+<translation id="522307662484862935">بدون درج نشانی ایمیل</translation>
 <translation id="5223226274641517059">«ترانویسی هم‌زمان» درحین ضبط نمایش داده خواهد شد. هروقت بخواهید می‌توانید این گزینه را در «تنظیمات» خاموش کنید.</translation>
 <translation id="5226879510707344687">صادر کردن ترانویسی</translation>
 <translation id="5227902338748591677">زمان‌بندی زمینه تاریک</translation>
@@ -1724,7 +1724,6 @@
 <translation id="9133772297793293778">کلیدهای توصیف‌گر ۱ تا ۴ و یک کلید دیگر را روی صفحه‌کلید فشار دهید. برای خروج از حالت ویرایش، دگرساز + گریز را فشار دهید.</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9138630967333032450">کلید تبدیل چپ</translation>
-<translation id="9147928237330776930">تعداد کلمات برای خلاصه کردن خیلی کم است</translation>
 <translation id="9149391708638971077">اجرای آزمایش حافظه</translation>
 <translation id="9159524746324788320">همبرگر</translation>
 <translation id="9161276708550942948">فاصله</translation>

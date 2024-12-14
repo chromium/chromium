@@ -2866,6 +2866,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2981113813906970160">Vis stor musepeker</translation>
 <translation id="2983102365694924129">Basert på aktiviteten din på et nettsted. Denne innstillingen er slått av.</translation>
 <translation id="2983373101216420412">Batterinivået til etuiet er <ph name="PERCENTAGE" /> %.</translation>
+<translation id="2984384421572259426">Rydd opp i faner som ikke er i bruk</translation>
 <translation id="2984727013951557074">Filen synkroniseres fortsatt med Disk.</translation>
 <translation id="2985348301114641460">Vil du sende en forespørsel til administratoren om å installere «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> avinstallerte en app}other{<ph name="APP_NAME" /> avinstallerte # apper}}</translation>
@@ -4422,6 +4423,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4072805772816336153">Prøv på nytt senere</translation>
 <translation id="4074164314564067597">tastatur</translation>
 <translation id="407520071244661467">Skalér</translation>
+<translation id="4077623680826964850">Tidsavbrudd ved oppstart eller gjenoppkobling til VM.</translation>
 <translation id="4077917118009885966">Annonser er blokkert på dette nettstedet</translation>
 <translation id="4078738236287221428">Aggressiv</translation>
 <translation id="4078903002989614318">Sorterings- og listealternativer</translation>
@@ -4908,6 +4910,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4437879751057074691">Bli tilbudt å lagre passord og passnøkler</translation>
 <translation id="4437947179446780764">Legg til en egendefinert DNS-tjenesteleverandør</translation>
 <translation id="4438043733494739848">Gjennomsiktig</translation>
+<translation id="4439157218765614426">Forbudt i henhold til retningslinjene.</translation>
 <translation id="4441124369922430666">Vil du starte denne appen automatisk når maskinen slås på?</translation>
 <translation id="4441147046941420429">For å fortsette, fjern sikkerhetsnøkkelen fra enheten, sett den inn på nytt, og berør den</translation>
 <translation id="444134486829715816">Utvid</translation>
@@ -5364,6 +5367,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Gi nytt navn til mobilnettverket for eSIM-kortet</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 duplikat</translation>
 <translation id="4780321648949301421">L&amp;agre side som</translation>
 <translation id="4780558987886269159">For jobb</translation>
 <translation id="4785719467058219317">Du bruker en sikkerhetsnøkkel som ikke er registrert på dette nettstedet</translation>
@@ -5442,6 +5446,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4833683849865011483">Fant én skriver på utskriftstjeneren</translation>
 <translation id="4835598628985424375">Snurp leppene sammen</translation>
 <translation id="4835677468087803981">Skjul PIN-koden</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> duplikater</translation>
 <translation id="4836504898754963407">Administrer fingeravtrykk</translation>
 <translation id="4837128290434901661">Vil du bytte tilbake til Google Søk?</translation>
 <translation id="4837926214103741331">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med eieren av enheten for å få tillatelse til å logge på.</translation>
@@ -6066,6 +6071,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="528208740344463258">Du må installere en oppdatering før du kan laste ned og bruke Android-apper. Du kan ikke bruke <ph name="DEVICE_TYPE" /> mens den oppdateres. <ph name="DEVICE_TYPE" /> starter på nytt når installasjonen er ferdig.</translation>
 <translation id="5283677936944177147">Beklager. Systemet kunne ikke fastslå enhetens modell eller serienummer.</translation>
 <translation id="5284445933715251131">Fortsett nedlastingen</translation>
+<translation id="5285484405698525101">Ingen faner som ikke er i bruk, akkurat nå</translation>
 <translation id="5285635972691565180">Skjerm <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Skanning</translation>
 <translation id="5287425679749926365">Dine kontoer</translation>
@@ -6338,6 +6344,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5481941284378890518">Legg til skrivere i nærheten</translation>
 <translation id="5482417738572414119">Logg på for å la Chrome foreslå fanegrupper og organisere fanene dine</translation>
 <translation id="5483005706243021437">Jeg vil bli her</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{Ingen faner som ikke er i bruk}=1{Gjennomgå 1 fane som ikke er i bruk}other{Gjennomgå # faner som ikke er i bruk}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}other{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Legg til appen</translation>
 <translation id="5485435764083510385">Foretrukket språk for teksting</translation>
@@ -7018,6 +7025,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5982578203375898585">Vis nedlastinger når de er ferdige</translation>
 <translation id="5983716913605894570">Genererer …</translation>
 <translation id="5984222099446776634">Nylig besøkte</translation>
+<translation id="5984334442529819751">Feil under installasjon av nedlastbart innhold. Ofte kreves det en omstart. Sjekk Innstillinger\&gt;\&gt;Om ChromeOS for mer informasjon.</translation>
 <translation id="5985458664595100876">Ugyldig nettadresseformat. Støttede formater er \\tjener\delt og smb://tjener/delt.</translation>
 <translation id="5985556342298151179">Chrome-app installert av enhetsadministratoren.</translation>
 <translation id="598810097218913399">Fjern tilordningen</translation>
@@ -9252,6 +9260,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="762917478230183172">Velg en handling for hver tast</translation>
 <translation id="7629206210984165492">Dempet</translation>
 <translation id="7629827748548208700">Fane: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">Ukjent resultat.</translation>
 <translation id="7630426712700473382">Denne enheten administreres av <ph name="MANAGER" /> og krever at du logger deg på hver gang.</translation>
 <translation id="7631014249255418691">Linux-apper og -filer er sikkerhetskopiert</translation>
 <translation id="7631722872321401342">Det finnes ingen stemmer på <ph name="LANGUAGE" /> på enheten din. Du kan installere stemmer i innstillingene.</translation>
@@ -9405,6 +9414,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7723388585204724670">Tilbakestill til standardversjonen av Chrome</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7726391492136714301">Se varslene og appene på telefonen din</translation>
+<translation id="7727898923446098954">Fanen er skjult</translation>
 <translation id="7728465250249629478">Bytt enhetsspråk</translation>
 <translation id="7728570244950051353">Konfigurer låseskjerm fra hvilemodus</translation>
 <translation id="7728668285692163452">Kanalendringen blir tatt i bruk senere.</translation>
@@ -9797,6 +9807,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7992203134935383159">Talesyntese</translation>
 <translation id="799570308305997052">Nettvisning</translation>
 <translation id="7997826902155442747">Prosessprioritet</translation>
+<translation id="7997828719430450286">Fullført.</translation>
 <translation id="7998701048266085837">Nettadresser</translation>
 <translation id="7999229196265990314">Opprettet følgende filer:
 
@@ -10446,6 +10457,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="845702320058262034">Kan ikke koble til. Kontroller at telefonens Bluetooth er på.</translation>
 <translation id="8457251154056341970">Du kommer ikke til å se <ph name="MODULE_NAME" /> på denne siden igjen</translation>
 <translation id="8457451314607652708">Importér bokmerker</translation>
+<translation id="8458259704995116343">Kunne ikke starte VM-en.</translation>
 <translation id="8458341576712814616">Snarvei</translation>
 <translation id="8458627787104127436">Åpne alle (<ph name="URL_COUNT" />) i et nytt vindu</translation>
 <translation id="8459023460357294721">Åpne <ph name="FILE_NAME" /> likevel</translation>
@@ -11105,12 +11117,14 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8918900204934259333">Installerer appen …</translation>
 <translation id="891931289445130855">Slett data og tillatelser</translation>
 <translation id="8920133120839850939">Velg Flere bevegelser-fanen, og slå på Sveip mellom sider for å navigere frem og tilbake</translation>
+<translation id="8921369299636221117">Concierge-tjenesten er ikke tilgjengelig.</translation>
 <translation id="8922348435910470639">Dobbeltbooking</translation>
 <translation id="8922624386829239660">Beveg skjermen når musen berører kantene av skjermen</translation>
 <translation id="8923880975836399332">Mørk blågrønn</translation>
 <translation id="8925124370124776087">Tittellinjen er skjult</translation>
 <translation id="8925458182817574960">&amp;Innstillinger</translation>
 <translation id="8926389886865778422">Ikke spør igjen</translation>
+<translation id="8926555406617248399">Fanene er skjult</translation>
 <translation id="892706138619340876">Tilbakestilte noen innstillinger</translation>
 <translation id="8927438609932588163">La nettsteder lagre data på enheten din</translation>
 <translation id="8929696694736010839">Bare denne inkognitoøkten</translation>

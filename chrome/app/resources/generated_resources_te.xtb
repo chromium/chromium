@@ -2870,6 +2870,7 @@
 <translation id="2981113813906970160">పెద్ద మౌస్ కర్సర్‌ను చూపు</translation>
 <translation id="2983102365694924129">సైట్‌లోని మీ యాక్టివిటీ ఆధారంగా. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="2983373101216420412">కేస్ బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984384421572259426">ఉపయోగించని ట్యాబ్‌లను క్లీనప్ చేయండి</translation>
 <translation id="2984727013951557074">ఫైల్ ఇంకా Driveకు సింక్ అవుతోంది.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />"ను ఇన్‌స్టాల్ చేయడానికి మీ అడ్మినిస్ట్రేటర్‌కు రిక్వెస్ట్‌ పంపాలా?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" />, ఒక యాప్‌ను అన్‌ఇన్‌స్టాల్ చేసింది}other{<ph name="APP_NAME" />, # యాప్‌లను అన్‌ఇన్‌స్టాల్ చేసింది}}</translation>
@@ -4428,6 +4429,7 @@
 <translation id="4072805772816336153">తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="4074164314564067597">కీబోర్డ్</translation>
 <translation id="407520071244661467">ప్రమాణం</translation>
+<translation id="4077623680826964850">VMకి బూట్ చేస్తున్నప్పుడు లేదా మళ్లీ కనెక్ట్ చేస్తున్నప్పుడు గడువు ముగిసింది.</translation>
 <translation id="4077917118009885966">ఈ సైట్‌లో ప్రకటనలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="4078738236287221428">తీవ్రం</translation>
 <translation id="4078903002989614318">క్రమపద్ధతిలో అమర్చే, లిస్ట్ చేసే ఆప్షన్‌లు</translation>
@@ -4914,6 +4916,7 @@
 <translation id="4437879751057074691">పాస్‌వర్డ్‌లు, పాస్-కీలను సేవ్ చేయాలో లేదో అడగాలి</translation>
 <translation id="4437947179446780764">అనుకూల DNS సర్వీస్ ప్రొవైడర్‌ను జోడించండి</translation>
 <translation id="4438043733494739848">పారదర్శకత</translation>
+<translation id="4439157218765614426">పాలసీ ద్వారా తిరస్కరించబడింది.</translation>
 <translation id="4441124369922430666">మెషీన్ ప్రారంభించబడినప్పుడు ఆటోమేటిక్‌గా ఈ యాప్ ప్రారంభించబడాలని మీరు కోరుకుంటున్నారా?</translation>
 <translation id="4441147046941420429">కొనసాగించడానికి, మీ పరికరం నుండి సెక్యూరిటీ కీని తీసివేసి, ఆ తర్వాత చొప్పించి, ఆపై దానిని తాకండి</translation>
 <translation id="444134486829715816">విస్తరించు...</translation>
@@ -5370,6 +5373,7 @@
 <translation id="4779083564647765204">జూమ్ చేయి</translation>
 <translation id="4779136857077979611">ఒనిగిరి</translation>
 <translation id="4779766576531456629">eSIM సెల్యులర్ నెట్‌వర్క్‌కు పేరు మార్చండి</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 డూప్లికేట్ ట్యాబ్</translation>
 <translation id="4780321648949301421">ఇలా పేజీని సేవ్ చేయండి...</translation>
 <translation id="4780558987886269159">ఆఫీస్ కోసం</translation>
 <translation id="4785719467058219317">మీరు ఈ వెబ్‌సైట్‌తో నమోదు కాని సెక్యూరిటీ కీని ఉపయోగిస్తున్నారు</translation>
@@ -5449,6 +5453,7 @@
 <translation id="4833683849865011483">ప్రింట్ సర్వర్ నుండి 1 ప్రింటర్ కనుగొనబడింది</translation>
 <translation id="4835598628985424375">పెదవులను కలిపి నొక్కడం ద్వారా మూతి ముడవటం</translation>
 <translation id="4835677468087803981">PINను దాచండి</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> డూప్లికేట్‌లు</translation>
 <translation id="4836504898754963407">వేలిముద్రలను నిర్వహించండి</translation>
 <translation id="4837128290434901661">తిరిగి Google Searchకు మార్చాలా?</translation>
 <translation id="4837926214103741331">ఈ పరికరాన్ని ఉపయోగించడానికి మీకు అధికారం లేదు. దయచేసి సైన్-ఇన్ అనుమతి కోసం పరికర యజమానిని సంప్రదించండి.</translation>
@@ -6073,6 +6078,7 @@
 <translation id="528208740344463258">Android యాప్‌లను డౌన్‌లోడ్ చేసి, ఉపయోగించడం కోసం, ముందుగా మీరు ఈ అవసరమైన అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయాలి. మీ <ph name="DEVICE_TYPE" /> అప్‌డేట్ అవుతున్న సమయంలో, మీరు దీనిని ఉపయోగించలేరు. ఇన్‌స్టాల్ చేయడం పూర్తయిన తర్వాత, మీ <ph name="DEVICE_TYPE" /> పునఃప్రారంభించబడుతుంది.</translation>
 <translation id="5283677936944177147">అయ్యో!  పరికర మోడల్ లేదా క్రమ సంఖ్యను గుర్తించడంలో సిస్టమ్ విఫలమైంది.</translation>
 <translation id="5284445933715251131">డౌన్‌లోడ్‌ చేయడాన్ని కొనసాగించండి</translation>
+<translation id="5285484405698525101">ప్రస్తుతం ఉపయోగించని ట్యాబ్‌లు ఏవీ లేవు</translation>
 <translation id="5285635972691565180">ప్రదర్శన <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">స్కాన్ చేస్తోంది</translation>
 <translation id="5287425679749926365">మీ ఖాతాలు</translation>
@@ -6346,6 +6352,7 @@
 <translation id="5481941284378890518">సమీప ప్రింటర్‌లను జోడించండి</translation>
 <translation id="5482417738572414119">ట్యాబ్ గ్రూప్‌లను సూచించడానికి, మీ ట్యాబ్‌లను ఆర్గనైజ్ చేయడానికి Chromeను అనుమతించడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="5483005706243021437">ఈ విండోలోనే ఉండండి</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{ఉపయోగించబడని ట్యాబ్‌లు లేవు}=1{1 ఉపయోగించబడని ట్యాబ్‌ను రివ్యూ చేయండి}other{# ఉపయోగించబడని ట్యాబ్‌లను రివ్యూ చేయండి}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈరోజే ఈ <ph name="DEVICE_TYPE" />ను రిటర్న్ చేయాల్సి ఉంటుంది. <ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}other{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈ <ph name="DEVICE_TYPE" />ను {NUM_DAYS} రోజులలోపు రిటర్న్ చేయాల్సి ఉంటుంది. <ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">యాప్‌ను జోడించండి</translation>
 <translation id="5485435764083510385">ప్రాధాన్యత గల క్యాప్షన్ భాష</translation>
@@ -7026,6 +7033,7 @@
 <translation id="5982578203375898585">డౌన్‌లోడ్ చేయడం పూర్తయిన తర్వాత వాటిని చూడండి</translation>
 <translation id="5983716913605894570">జెనరేట్ అవుతోంది...</translation>
 <translation id="5984222099446776634">ఇటీవల సందర్శించినవి</translation>
+<translation id="5984334442529819751">DLCని ఇన్‌స్టాల్ చేయడంలో ఎర్రర్ ఏర్పడింది (తరచుగా రీబూట్ చేయాల్సి ఉంటుంది, మరింత సమాచారం కోసం ChromeOS గురించి సెట్టింగ్‌లు\&gt;\&gt;ని చెక్ చేయండి).</translation>
 <translation id="5985458664595100876">URL ఫార్మాట్ చెల్లదు. మద్దతు ఉన్న ఫార్మాట్‌లు \\server\share మరియు smb://server/share.</translation>
 <translation id="5985556342298151179">మీ పరికర అడ్మినిస్ట్రేటర్ ద్వారా Chrome యాప్ ఇన్‌స్టాల్ చేయబడింది.</translation>
 <translation id="598810097218913399">కేటాయింపును తీసివేయండి</translation>
@@ -9260,6 +9268,7 @@
 <translation id="762917478230183172">ఒక్కో 'కీ'కి ఒక చర్యను ఎంచుకోండి</translation>
 <translation id="7629206210984165492">నిస్తేజం</translation>
 <translation id="7629827748548208700">ట్యాబ్: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">తెలియని ఫలితం.</translation>
 <translation id="7630426712700473382">ఈ పరికరం <ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది, మీరు ప్రతిసారి సైన్ ఇన్ చేయాల్సి ఉంటుంది.</translation>
 <translation id="7631014249255418691">Linux యాప్‌లు, ఫైళ్లు విజయవంతంగా బ్యాకప్ చేయబడ్డాయి</translation>
 <translation id="7631722872321401342">మీ పరికరంలో <ph name="LANGUAGE" /> భాష వాయిస్‌లు లేవు. మీరు సెట్టింగ్‌లలో వాయిస్‌లను ఇన్‌స్టాల్ చేయవచ్చు.</translation>
@@ -9413,6 +9422,7 @@
 <translation id="7723388585204724670">ఆటోమేటిక్‌గా ఉండే Chrome రూపానికి రీసెట్ చేయండి</translation>
 <translation id="7724603315864178912">కత్తిరించండి</translation>
 <translation id="7726391492136714301">మీ ఫోన్‌లోని నోటిఫికేషన్‌లు, యాప్‌లను చూడండి</translation>
+<translation id="7727898923446098954">ట్యాబ్ దాచబడింది</translation>
 <translation id="7728465250249629478">పరికర భాషను మార్చండి</translation>
 <translation id="7728570244950051353">నిద్రావస్థలో ఉండగా స్క్రీన్‌ను లాక్ చేయండి</translation>
 <translation id="7728668285692163452">ఛానెల్ మార్పు తర్వాత వర్తింపజేయబడుతుంది</translation>
@@ -9804,6 +9814,7 @@
 <translation id="7992203134935383159">స్పీచ్ సింథసిస్</translation>
 <translation id="799570308305997052">వెబ్ వీక్షణ</translation>
 <translation id="7997826902155442747">ప్రాసెస్ ప్రాధాన్యత</translation>
+<translation id="7997828719430450286">విజయవంతమైంది.</translation>
 <translation id="7998701048266085837">URLలు</translation>
 <translation id="7999229196265990314">ఈ కింది ఫైళ్ళను సృష్టించింది:
 
@@ -10450,6 +10461,7 @@
 <translation id="845702320058262034">కనెక్ట్ చేయడం సాధ్యపడదు. మీ ఫోన్‌లో బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="8457251154056341970">మీకు ఈ పేజీలో మళ్లీ <ph name="MODULE_NAME" /> కనిపించదు</translation>
 <translation id="8457451314607652708">బుక్‌మార్క్‌లను దిగుమతి చేయండి</translation>
+<translation id="8458259704995116343">VMని ప్రారంభించడం విఫలమైంది.</translation>
 <translation id="8458341576712814616">షార్ట్‌కట్</translation>
 <translation id="8458627787104127436">అన్నింటినీ (<ph name="URL_COUNT" />) కొత్త విండోలో తెరవండి</translation>
 <translation id="8459023460357294721">ఏదేమైనా <ph name="FILE_NAME" />‌ను తెరవండి</translation>
@@ -11109,12 +11121,14 @@
 <translation id="8918900204934259333">యాప్ ఇన్‌స్టాల్ అవుతోంది...</translation>
 <translation id="891931289445130855">డేటాను, అనుమతులను తొలగించండి</translation>
 <translation id="8920133120839850939">మరిన్ని సంజ్ఞల ట్యాబ్‌ను ఎంచుకుని, వెనుకకు, ముందుకు నావిగేట్ చేయడానికి పేజీల మధ్య 'స్వైప్ చేయండి'ని ఆన్ చేయండి</translation>
+<translation id="8921369299636221117">కన్సియర్జ్ సర్వీస్ అందుబాటులో లేదు.</translation>
 <translation id="8922348435910470639">డబుల్-బుక్ చేయబడింది</translation>
 <translation id="8922624386829239660">స్క్రీన్ అంచులను మౌస్ తాకినప్పుడు స్క్రీన్‌ను జరుపుతుంది</translation>
 <translation id="8923880975836399332">ముదురు నీలి ఆకుపచ్చ రంగు</translation>
 <translation id="8925124370124776087">టైటిల్ బార్ ఇప్పుడు దాచబడింది</translation>
 <translation id="8925458182817574960">&amp;సెట్టింగ్‌లు</translation>
 <translation id="8926389886865778422">మళ్ళి అడగవద్దు</translation>
+<translation id="8926555406617248399">ట్యాబ్‌లు దాచబడ్డాయి</translation>
 <translation id="892706138619340876">కొన్ని సెట్టింగ్‌లు రీసెట్ చేయబడ్డాయి</translation>
 <translation id="8927438609932588163">మీ పరికరంలో డేటాను సేవ్ చేయడానికి సైట్‌లను అనుమతించండి</translation>
 <translation id="8929696694736010839">ప్రస్తుత అజ్ఞాత సెషన్‌కు మాత్రమే</translation>

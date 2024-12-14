@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome ödəniş metodlarını redaktə etməyə çalışır.</translation>
 <translation id="2400600116338235695">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="2404884497378469141">Faylları yenidən kopyalayın</translation>
-<translation id="2412310121876768057">Gələn dəfə kart avtomatik doldurulsun?</translation>
 <translation id="2413155254802890957">Köhnə</translation>
 <translation id="2413528052993050574">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatı ləğv edilə bilər. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
 <translation id="2414886740292270097">Qara</translation>
@@ -1303,7 +1302,6 @@
 <translation id="3354508510846323339">İstinad <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Proksi ayarlarını dəyişin...</translation>
 <translation id="335809815767823">Eksport edildi</translation>
-<translation id="3359387651158939842">Kartınızı Google Pay ilə istifadə etmək üçün yadda saxladıqda gələcək alışlar üçün avtomatik doldurun</translation>
 <translation id="3359565626472459400">Nigah</translation>
 <translation id="3360103848165129075">Ödəniş səhifəsi</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1398,6 +1396,7 @@
 <translation id="351522771072578657">Menyudasınız</translation>
 <translation id="3517264445792388751">Fayl sistemi administratorunuz tərəfindən deaktiv edilib</translation>
 <translation id="3518941727116570328">Çoxsaylı obyektin idarə edilməsi</translation>
+<translation id="3519670528214225835">Soruşun: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 düym</translation>
 <translation id="3525435918300186947">MIDI cihazları idarə edilib, təkrar proqramlaşdırılsın?</translation>
 <translation id="3527181387426738155">Musiqi və Audio</translation>
@@ -1455,7 +1454,6 @@
 <translation id="3605899229568538311">5 x 5 düym</translation>
 <translation id="3606917451836803637">TV Şouları və Proqramları</translation>
 <translation id="3608932978122581043">İstiqaməti tənzimləyin</translation>
-<translation id="3610142117915544498">Növbəti dəfə sürətli ödəniş üçün kart, ad və ödəmə ünvanını Google Hesabında yadda saxlayın</translation>
 <translation id="3612660594051121194">Uzun Məsafəyə Avtobus və Dəmiryolu</translation>
 <translation id="3614001939154393113">Hücumçular <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytından məlumat (məsələn, parol, mesaj və ya kredit kartları) oğurlamağa çalışa bilərlər. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Ölçü 2</translation>
@@ -1952,6 +1950,7 @@
 <translation id="4451684391620232683">İstifadəçiyə təqdim olunan mətn:</translation>
 <translation id="4452328064229197696">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Google Parol Meneceri yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
 <translation id="4456937135469235202">Macəra səyahəti</translation>
+<translation id="4458013283022578512">Sual daxil edin</translation>
 <translation id="4464826014807964867">Təşkilatınızın məlumatları olan veb saytlar</translation>
 <translation id="4466576951214254884">Tələbə Kreditləri və Kollec Maliyyələşdirməsi</translation>
 <translation id="4467821340016922962">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsinə basın.</translation>
@@ -2173,7 +2172,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiada</translation>
 <translation id="4898742041545089450">Bu mövzu blokdan çıxarılıb və brauzer tarixçənizə əsasən aktiv ola bilər</translation>
-<translation id="4899379435492347481">Cihazlarınızda satınalmalar üçün Google Pay ilə onlayn istifadə məqsədilə bu kartı yadda saxlayın</translation>
 <translation id="4900217275619098670">Doqquzuncu Rulon</translation>
 <translation id="4901052769830245369">Etiket (yarıparlaq)</translation>
 <translation id="4901162432287938633">Gigiyena və şəxsi qulluq vasitələri</translation>
@@ -3538,6 +3536,7 @@
 <translation id="7388594495505979117">{0,plural, =1{Cihazınız 1 dəqiqə ərzində yenidən başladılacaq}other{Cihazınız # dəqiqə ərzində yenidən başladılacaq}}</translation>
 <translation id="7393161616326137353">Macəra Oyunları</translation>
 <translation id="7393475648162498734">Kassada kartlarınız üçün əlçatan olan mükafat və imtiyazları göstərin</translation>
+<translation id="7393971683644170444">Kart provayderinizə qoşulur...</translation>
 <translation id="739728382607845710">Ödəniş idarəedicisi işarəsi</translation>
 <translation id="7399616692258236448">İcazə verilənlərdən başqa bütün saytlar üçün məkan sorğuları avtomatik bloklanır</translation>
 <translation id="7400418766976504921">URL</translation>

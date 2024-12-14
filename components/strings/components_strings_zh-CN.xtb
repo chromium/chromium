@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome 正在尝试修改付款方式。</translation>
 <translation id="2400600116338235695">可以询问能否连接到串行端口</translation>
 <translation id="2404884497378469141">尝试重新复制文件</translation>
-<translation id="2412310121876768057">下次自动填充此信用卡信息吗？</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414886740292270097">深色调</translation>
@@ -1303,7 +1302,6 @@
 <translation id="3354508510846323339">第 <ph name="CURRENT_CITATION" /> 项引用，共 <ph name="MAX_CITATIONS" /> 项，<ph name="PRODUCT_NAME" />，<ph name="URL" /></translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
 <translation id="335809815767823">已导出</translation>
-<translation id="3359387651158939842">如果您保存信用卡信息以供 Google Pay 使用，那么在您日后购物时，系统会自动填充此信息</translation>
 <translation id="3359565626472459400">婚姻</translation>
 <translation id="3360103848165129075">付款处理程序工作表</translation>
 <translation id="3360306038446926262">窗口</translation>
@@ -1455,7 +1453,6 @@
 <translation id="3605899229568538311">5 x 5 英寸</translation>
 <translation id="3606917451836803637">电视节目</translation>
 <translation id="3608932978122581043">送纸方向</translation>
-<translation id="3610142117915544498">如果想在下次购物时更快捷地付款，请将您的付款卡信息、姓名和账单邮寄地址保存到您的 Google 账号中</translation>
 <translation id="3612660594051121194">长途大巴与铁路</translation>
 <translation id="3614001939154393113">攻击者可能会试图从 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 窃取您的信息（例如：密码、消息或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">大小：2</translation>
@@ -2173,7 +2170,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奥运会</translation>
 <translation id="4898742041545089450">已取消屏蔽此主题，但根据您的浏览记录，此主题可能会变为活跃主题</translation>
-<translation id="4899379435492347481">保存此信用卡信息，以便在各种设备上使用 Google Pay 进行网上购物</translation>
 <translation id="4900217275619098670">第 9 卷</translation>
 <translation id="4901052769830245369">标签（半光）</translation>
 <translation id="4901162432287938633">卫生和洗漱用具</translation>

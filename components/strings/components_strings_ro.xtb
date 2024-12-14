@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome încearcă să modifice metodele de plată.</translation>
 <translation id="2400600116338235695">Poate solicita permisiunea de a se conecta la porturi seriale</translation>
 <translation id="2404884497378469141">Încearcă să copiezi din nou fișierele</translation>
-<translation id="2412310121876768057">Dorești să completezi automat cardul data viitoare?</translation>
 <translation id="2413155254802890957">Veche</translation>
 <translation id="2413528052993050574">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; este posibil ca certificatul său de securitate să fie revocat. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="2414886740292270097">Întunecat</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">Citarea <ph name="CURRENT_CITATION" /> din <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Modifica setările proxy...</translation>
 <translation id="335809815767823">S-au exportat</translation>
-<translation id="3359387651158939842">Completează automat cardul pentru achiziții viitoare când îl salvezi pentru a-l folosi cu Google Pay</translation>
 <translation id="3359565626472459400">Căsătorie</translation>
 <translation id="3360103848165129075">Foaia handlerului pentru plăți</translation>
 <translation id="3360306038446926262">Ferestre</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">Seriale și programe</translation>
 <translation id="3608932978122581043">Orientarea alimentării</translation>
-<translation id="3610142117915544498">Pentru a plăti mai rapid data viitoare, salvează cardul, numele și adresa de facturare în Contul Google</translation>
 <translation id="3612660594051121194">Autobuze și trenuri pentru distanțe mari</translation>
 <translation id="3614001939154393113">Atacatorii pot încerca să-ți fure informațiile de pe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (de exemplu, parole, mesaje sau date despre cardurile de credit). <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Mărimea 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jocurile Olimpice</translation>
 <translation id="4898742041545089450">Acest subiect este deblocat și poate deveni activ pe baza istoricului tău de navigare</translation>
-<translation id="4899379435492347481">Salvează cardul pentru a-l folosi online cu Google Pay pentru achiziții pe toate dispozitivele</translation>
 <translation id="4900217275619098670">A noua rolă</translation>
 <translation id="4901052769830245369">Etichete (semilucioase)</translation>
 <translation id="4901162432287938633">Igienă și produse de igienă</translation>

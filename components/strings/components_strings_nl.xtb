@@ -807,7 +807,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2399868464369312507">Google Chrome probeert betaalmethoden te bewerken.</translation>
 <translation id="2400600116338235695">Kan vragen of deze site verbinding mag maken met seriële poorten</translation>
 <translation id="2404884497378469141">Probeer je bestanden opnieuw te kopiëren</translation>
-<translation id="2412310121876768057">Kaart volgende keer automatisch invullen?</translation>
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2414886740292270097">Donker</translation>
@@ -1302,7 +1301,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3354508510846323339">Citatie <ph name="CURRENT_CITATION" /> van <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Proxyinstellingen wijzigen...</translation>
 <translation id="335809815767823">Geëxporteerd</translation>
-<translation id="3359387651158939842">Je kaartgegevens automatisch invullen voor toekomstige aankopen als je de kaart opslaat voor gebruik met Google Pay</translation>
 <translation id="3359565626472459400">Huwelijk</translation>
 <translation id="3360103848165129075">Blad voor betalingshandler</translation>
 <translation id="3360306038446926262">Vensters</translation>
@@ -1454,7 +1452,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3605899229568538311">5 x 5 inch</translation>
 <translation id="3606917451836803637">Tv-programma's</translation>
 <translation id="3608932978122581043">Invoerrichting</translation>
-<translation id="3610142117915544498">Sla je kaart, naam en factuuradres op in je Google-account, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="3612660594051121194">Lange bus- en treinreizen</translation>
 <translation id="3614001939154393113">Aanvallers proberen misschien je gegevens van <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te stelen (bijvoorbeeld wachtwoorden, berichten of creditcardgegevens). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Grootte 2</translation>
@@ -2171,7 +2168,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympische Spelen</translation>
 <translation id="4898742041545089450">Dit onderwerp wordt niet meer geblokkeerd en kan actief worden op basis van je browsegeschiedenis</translation>
-<translation id="4899379435492347481">Sla deze kaart op voor online gebruik met Google Pay voor aankopen op alle apparaten</translation>
 <translation id="4900217275619098670">9e rol</translation>
 <translation id="4901052769830245369">Labels (zijdeglans)</translation>
 <translation id="4901162432287938633">Hygiëne en toiletartikelen</translation>

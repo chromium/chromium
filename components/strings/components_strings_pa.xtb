@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2400600116338235695">ਸਾਈਟ ਸੀਰੀਅਲ ਪੋਰਟਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="2404884497378469141">ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੁਬਾਰਾ ਕਾਪੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
-<translation id="2412310121876768057">ਕੀ ਅਗਲੀ ਵਾਰ ਕਾਰਡ ਨੂੰ ਆਟੋਫਿਲ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2413155254802890957">ਪੁਰਾਣਾ</translation>
 <translation id="2413528052993050574">ਇਹ ਸਰਵਰ ਇਹ ਸਿੱਧ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਸਰਟੀਫਿਕੇਟ ਰੱਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਇਸ ਦਾ ਕਾਰਨ ਗਲਤ ਸੰਰੂਪਣ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਦੇ ਰਾਹ ਨੂੰ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2414886740292270097">ਡਾਰਕ</translation>
@@ -1303,7 +1302,6 @@
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" /> ਵਿੱਚੋਂ <ph name="CURRENT_CITATION" /> ਹਵਾਲੇ, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਬਦਲੋ...</translation>
 <translation id="335809815767823">ਨਿਰਯਾਤ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="3359387651158939842">ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਕਾਰਡ ਨੂੰ Google Pay ਨਾਲ ਵਰਤਣ ਲਈ ਰੱਖਿਅਤ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਸਨੂੰ ਭਵਿੱਖ ਦੀਆਂ ਖਰੀਦਦਾਰੀਆਂ ਲਈ ਆਟੋਫਿਲ ਕਰੋ</translation>
 <translation id="3359565626472459400">ਵਿਆਹ</translation>
 <translation id="3360103848165129075">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸ਼ੀਟ</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1456,7 +1454,6 @@
 <translation id="3605899229568538311">5 x 5 ਇੰਚ</translation>
 <translation id="3606917451836803637">ਟੀਵੀ ਸ਼ੋਅ ਅਤੇ ਪ੍ਰੋਗਰਾਮ</translation>
 <translation id="3608932978122581043">ਦਿਸ਼ਾਮਾਨ ਫ਼ੀਡ ਕਰੋ</translation>
-<translation id="3610142117915544498">ਅਗਲੀ ਵਾਰ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਲਈ, ਆਪਣੇ ਕਾਰਡ, ਨਾਮ ਅਤੇ ਬਿਲਿੰਗ ਪਤੇ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="3612660594051121194">ਲੰਬੀ ਦੂਰੀ ਲਈ ਬੱਸ ਅਤੇ ਰੇਲ</translation>
 <translation id="3614001939154393113">ਹਮਲਾਵਰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ (ਉਦਾਹਰਨ ਲਈ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ) ਚੋਰੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹਨ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">ਆਕਾਰ 2</translation>
@@ -2174,7 +2171,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ਓਲੰਪਿਕ</translation>
 <translation id="4898742041545089450">ਇਸ ਵਿਸ਼ੇ ਨੂੰ ਅਣਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਹ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਕਿਰਿਆਸ਼ੀਲ ਹੋ ਸਕਦਾ ਹੈ</translation>
-<translation id="4899379435492347481">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੁਗਤਾਨਾਂ ਲਈ Google Pay ਨਾਲ ਆਨਲਾਈਨ ਵਰਤਣ ਲਈ ਇਸ ਕਾਰਡ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="4900217275619098670">ਨੌਵਾਂ ਰੋਲ</translation>
 <translation id="4901052769830245369">ਲੇਬਲ (ਸੇਮੀ-ਗਲੋਸ)</translation>
 <translation id="4901162432287938633">ਸਿਹਤ ਵਿਗਿਆਨ ਅਤੇ ਗੁਸਲਖਾਨੇ ਦੀਆਂ ਲੋੜੀਂਦੀਆਂ ਵਸਤੂਆਂ</translation>

@@ -807,7 +807,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2399868464369312507">I-Google Chrome izama ukuhlela izindlela zokukhokha.</translation>
 <translation id="2400600116338235695">Ingacela ukuxhuma ezimbotsheni zomkhiqizo</translation>
 <translation id="2404884497378469141">Zama ukukopisha amafayela akho futhi</translation>
-<translation id="2412310121876768057">Gcwalisa ngokuzenzakalelayo ikhadi ngokulandelayo?</translation>
 <translation id="2413155254802890957">Okudala</translation>
 <translation id="2413528052993050574">Le seva ayikwazanga ukukhombisa ukuthi iyi-<ph name="DOMAIN" />; isitifiketi sayo sokuvikeleka kungenzeka sibuyisiwe. Lokhu kungahle kubangelwe ukulungisa okungalungile noma umhlaseli uzama ukufinyelela uxhumo lwakho.</translation>
 <translation id="2414886740292270097">Mnyama</translation>
@@ -1303,7 +1302,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3354508510846323339">Okucashuniwe okungu-<ph name="CURRENT_CITATION" /> kokungu-<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Guqula izilungiselelo zommeleli...</translation>
 <translation id="335809815767823">Ithunyelwe</translation>
-<translation id="3359387651158939842">Gcwalisa ngokuzenzakalelayo ikhadi lakho ekuthengeni kwesikhathi esizayo uma ulilondoloza ukuze ulisebenzise ngeGoogle Pay</translation>
 <translation id="3359565626472459400">Umshado</translation>
 <translation id="3360103848165129075">Isidi lesibambi senkokhelo</translation>
 <translation id="3360306038446926262">Amawindi</translation>
@@ -1456,7 +1454,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3605899229568538311">U-5 x 5 phakathi</translation>
 <translation id="3606917451836803637">Imidlalo ye-TV Nezinhlelo</translation>
 <translation id="3608932978122581043">Umumo wokuphakelayo</translation>
-<translation id="3610142117915544498">Ukuze ukhokhe ngokushesha ngokuzayo, londoloza ikhadi lakho, igama, nekheli lokukhokha ku-Google Account yakho.</translation>
 <translation id="3612660594051121194">Ibhasi Nesitimela Sebanga Elide</translation>
 <translation id="3614001939154393113">Abahlaseli bangahle bazame ukweba ulwazi lakho ku-<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ngokwesibonelo, amaphasiwedi, imilayezo, noma amakhadi esikweletu). <ph name="BEGIN_LEARN_MORE_LINK" />Funda kabanzi mayelana nalesi sixwayiso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Usayizi 2</translation>
@@ -2174,7 +2171,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Ama-olimpiki</translation>
 <translation id="4898742041545089450">Lesi sihloko sivuliwe futhi singase sisebenze ngokusekelwe kumlando wakho wokuphequlula</translation>
-<translation id="4899379435492347481">Londoloza leli khadi ukuze ulisebenzise ku-inthanethi ngeGoogle Pay ekuthengeni kumadivayisi akho</translation>
 <translation id="4900217275619098670">Umqulu Wesishiyagalolunye</translation>
 <translation id="4901052769830245369">Amalebula (i-Semi-Gloss)</translation>
 <translation id="4901162432287938633">Inhlanzeko Nezinto Zokugeza</translation>
@@ -3539,6 +3535,7 @@ Imininingwane engeziwe:
 <translation id="7388594495505979117">{0,plural, =1{Idivayisi yakho izoqala kabusha emzuzwini o-1}one{Idivayisi yakho izoqala kabusha emizuzwini engu-#f}other{Idivayisi yakho izoqala kabusha emizuzwini engu-#f}}</translation>
 <translation id="7393161616326137353">Amageyimu okuzidela</translation>
 <translation id="7393475648162498734">Bonisa ukuthi yimiphi imiklomelo nezinzuzo ezitholakalayo zamakhadi akho uma ukhokha</translation>
+<translation id="7393971683644170444">Kuxhunywa umhlinzeki wekhadi lakho...</translation>
 <translation id="739728382607845710">Isithonjana sesibambi senkokhelo</translation>
 <translation id="7399616692258236448">Izicelo zendawo zivinjelwa ngokuzenzakalela kuwo wonke amasayithi ngaphandle kwalawo ovavumelayo</translation>
 <translation id="7400418766976504921">I-URL</translation>

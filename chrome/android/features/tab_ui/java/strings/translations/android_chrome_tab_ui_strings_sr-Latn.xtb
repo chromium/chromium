@@ -98,6 +98,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> kartica je dodata}one{<ph name="MANY_ADDED" /> kartica je dodata}few{<ph name="MANY_ADDED" /> kartice su dodate}other{<ph name="MANY_ADDED" /> kartica je dodato}}</translation>
 <translation id="5161254044473106830">Naslov je obavezan</translation>
 <translation id="5339733443032484186">Poslednja kartica</translation>
+<translation id="5380159289133845234">Arhiviraj duplikate kartica</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5494920125229734069">Izbor svih stavki</translation>
@@ -117,6 +118,7 @@ Ako napustite grupu, odmah ćete izgubiti pristup grupi kartica <ph name="TITLE
 <translation id="6051432659151380973">Grupe kartica se automatski čuvaju</translation>
 <translation id="6054741997831917303">Cena ove stavke je nedavno snižena sa <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Odmah ćete izgubiti pristup grupi kartica <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Sve duplikate kartica ćemo sada arhivirati, izuzev poslednje korišćene kopije.</translation>
 <translation id="6193448654517602979">Izaberite kartice</translation>
 <translation id="6228793724645064692">(ocena prodavnice)</translation>
 <translation id="6271513594716432922">Zatvori sve neaktivne kartice</translation>

@@ -68,6 +68,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="1896836275755235458">O Chromium economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos. <ph name="BEGIN_LINK" />Saiba mais sobre a Economia de energia<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Desative essa opção para fazer login em sites do Google, como o Gmail, sem fazer login no Chromium</translation>
+<translation id="1916451563296275579">Remover os dados deste app do Chromium</translation>
 <translation id="1929939181775079593">O Chromium não está respondendo. Reiniciar agora?</translation>
 <translation id="1933341829955786215">Sua organização, <ph name="MANAGER" />, exige que você faça login no Chromium</translation>
 <translation id="193439633299369377">É necessário reiniciar o ChromiumOS para que a atualização seja aplicada.</translation>
@@ -403,6 +404,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6455857529632101747">Conheça os perfis do Chromium</translation>
 <translation id="6466344609055215035">Remover conta do Chromium</translation>
 <translation id="6475912303565314141">Controla também qual página deve ser exibida quando você inicia o Chromium.</translation>
+<translation id="648062525172759633">Estas páginas se destinam para uso dos desenvolvedores do Chromium e podem não ser mantidas ou testadas ativamente. Para ativá-las, acesse <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração. Em seguida, volte para esta página.</translation>
 <translation id="648319183876919572">O recurso "Navegação segura com proteção reforçada" protege você ainda mais contra sites e downloads perigosos</translation>
 <translation id="6510925080656968729">Desinstalar Chromium</translation>
 <translation id="651535675648445253">Os atalhos são abertos no Chromium</translation>
@@ -507,6 +509,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Você também pode remover interesses que não quer que o Chromium considere.</translation>
 <translation id="7888981273428720788">Defina o Chromium como o navegador padrão</translation>
 <translation id="7934340546140346950">Quando possível, o Chromium faz upgrade automático de conexões sem segurança para HTTPS</translation>
+<translation id="7935734571048689933">O Chromium está sendo gerenciado</translation>
 <translation id="7937630085815544518">Você estava conectado ao Chromium como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
 <translation id="7975919845073681630">Como esta é uma instalação secundária do Chromium, ele não pode se tornar seu navegador padrão.</translation>
 <translation id="7997934263947464652">Extensões, apps e temas de fontes desconhecidas podem danificar o dispositivo. O Chromium recomenda os instalar apenas pela <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>

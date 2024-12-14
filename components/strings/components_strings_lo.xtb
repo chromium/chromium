@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome ກຳລັງພະຍາຍາມແກ້ໄຂວິທີການຈ່າຍເງິນ.</translation>
 <translation id="2400600116338235695">ສາມາດຂໍເຊື່ອມຕໍ່ຫາຜອດຊີຣຽວ</translation>
 <translation id="2404884497378469141">ລອງສຳເນົາໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
-<translation id="2412310121876768057">ຕື່ມຂໍ້ມູນບັດອັດຕະໂນມັດໃນເທື່ອຕໍ່ໄປບໍ?</translation>
 <translation id="2413155254802890957">ເກົ່າ</translation>
 <translation id="2413528052993050574">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນອາດຈະຖືກຖອນຄືນແລ້ວ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="2414886740292270097">ມືດ</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">ການອ້າງອີງທີ <ph name="CURRENT_CITATION" /> ຈາກທັງໝົດ <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">ປ່ຽນການຕັ້ງຄ່າພຣັອກຊີ...</translation>
 <translation id="335809815767823">ສົ່ງອອກແລ້ວ</translation>
-<translation id="3359387651158939842">ຕື່ມຂໍ້ມູນບັດຂອງທ່ານອັດຕະໂນມັດສຳລັບການຊື້ໃນອະນາຄົດເມື່ອທ່ານບັນທຶກບັດໄວ້ໃຊ້ກັບ Google Pay</translation>
 <translation id="3359565626472459400">ການແຕ່ງດອງ</translation>
 <translation id="3360103848165129075">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຊຳລະເງິນ</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5 x 5 ນິ້ວ</translation>
 <translation id="3606917451836803637">ລາຍການ ແລະ ໂປຣແກຣມໂທລະທັດ</translation>
 <translation id="3608932978122581043">ປ້ອນເຈ້ຍຕາມທິດທາງ</translation>
-<translation id="3610142117915544498">ເພື່ອຈ່າຍໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປ, ໃຫ້ບັນທຶກບັດ, ຊື່ ແລະ ທີ່ຢູ່ໃບບິນຂອງທ່ານໄວ້ໃນບັນຊີ Google.</translation>
 <translation id="3612660594051121194">ລົດເມ ແລະ ລົດໄຟໄລຍະໄກ</translation>
 <translation id="3614001939154393113">ຜູ້ໂຈມຕີອາດກຳລັງພະຍາຍາມລັກຂໍ້ມູນຂອງທ່ານຈາກ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ຂໍ້ຄວາມ ຫຼື ບັດເຄຣດິດ). <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">ຂະໜາດ 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ໂອລິມປິກ</translation>
 <translation id="4898742041545089450">ລະບົບຍົກເລີກການບລັອກຫົວຂໍ້ນີ້ແລ້ວ ແລະ ອາດໃຊ້ຕາມປະຫວັດການທ່ອງເວັບຂອງທ່ານ</translation>
-<translation id="4899379435492347481">ບັນທຶກບັດໃບນີ້ເພື່ອໃຊ້ທາງອອນລາຍກັບ Google Pay ສຳລັບການຊື້ຕ່າງໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="4900217275619098670">ມ້ວນທີເກົ້າ</translation>
 <translation id="4901052769830245369">ປ້າຍ (ເຄິ່ງມັນວາວ)</translation>
 <translation id="4901162432287938633">ສຸຂະອະນາໄມ ແລະ ຫ້ອງນ້ຳ</translation>

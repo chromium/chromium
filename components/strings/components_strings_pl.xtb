@@ -807,7 +807,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2399868464369312507">Google Chrome próbuje edytować formy płatności.</translation>
 <translation id="2400600116338235695">Może prosić o zgodę na połączenie z portami szeregowymi</translation>
 <translation id="2404884497378469141">Spróbuj ponownie skopiować pliki</translation>
-<translation id="2412310121876768057">Następnym razem uzupełnić kartę automatycznie?</translation>
 <translation id="2413155254802890957">Stary</translation>
 <translation id="2413528052993050574">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa mógł zostać odwołany. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="2414886740292270097">Ciemny</translation>
@@ -1305,7 +1304,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3354508510846323339">Cytat <ph name="CURRENT_CITATION" /> z <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Zmień ustawienia serwera proxy...</translation>
 <translation id="335809815767823">Wyeksportowano</translation>
-<translation id="3359387651158939842">Gdy zapiszesz kartę do użycia w Google Pay, jej dane będą uzupełniane automatycznie przy przyszłych zakupach</translation>
 <translation id="3359565626472459400">Małżeństwo</translation>
 <translation id="3360103848165129075">Arkusz modułu do obsługi płatności</translation>
 <translation id="3360306038446926262">Okna</translation>
@@ -1458,7 +1456,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3605899229568538311">5 x 5 cali</translation>
 <translation id="3606917451836803637">Seriale i programy telewizyjne</translation>
 <translation id="3608932978122581043">Orientacja podajnika</translation>
-<translation id="3610142117915544498">Aby następnym razem zapłacić szybciej, zapisz kartę oraz imię, nazwisko i adres rozliczeniowy na swoim koncie Google.</translation>
 <translation id="3612660594051121194">Długodystansowe przejazdy autobusowe i kolejowe</translation>
 <translation id="3614001939154393113">Hakerzy mogą próbować wykraść Twoje dane z <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (np. hasła, wiadomości lub informacje o karcie kredytowej). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Rozmiar 2</translation>
@@ -2177,7 +2174,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiada</translation>
 <translation id="4898742041545089450">Ten temat został odblokowany i może stać się aktywny na podstawie Twojej historii przeglądania</translation>
-<translation id="4899379435492347481">Zapisz tę kartę, aby używać jej online w Google Pay podczas zakupów na różnych urządzeniach</translation>
 <translation id="4900217275619098670">Rolka 9</translation>
 <translation id="4901052769830245369">Etykiety (półpołysk)</translation>
 <translation id="4901162432287938633">Higiena i przybory toaletowe</translation>
@@ -3543,6 +3539,7 @@ Dodatkowe informacje:
 <translation id="7388594495505979117">{0,plural, =1{Twoje urządzenie uruchomi się ponownie za 1 minutę}few{Twoje urządzenie uruchomi się ponownie za # minuty}many{Twoje urządzenie uruchomi się ponownie za # minut}other{Twoje urządzenie uruchomi się ponownie za # minuty}}</translation>
 <translation id="7393161616326137353">Gry przygodowe</translation>
 <translation id="7393475648162498734">W momencie płatności pokaż, jakie nagrody i korzyści są dostępne w przypadku Twoich kart</translation>
+<translation id="7393971683644170444">Łączę z dostawcą karty…</translation>
 <translation id="739728382607845710">Ikona modułu obsługi płatności</translation>
 <translation id="7399616692258236448">Prośby o lokalizację są automatycznie blokowane w przypadku wszystkich stron oprócz tych, którym na nie zezwolisz</translation>
 <translation id="7400418766976504921">Adres URL</translation>

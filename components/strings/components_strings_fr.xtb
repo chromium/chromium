@@ -807,7 +807,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2399868464369312507">Google Chrome tente de modifier les modes de paiement.</translation>
 <translation id="2400600116338235695">Peut demander à se connecter aux ports série</translation>
 <translation id="2404884497378469141">Réessayez de copier vos fichiers</translation>
-<translation id="2412310121876768057">Saisir automatiquement la carte la prochaine fois ?</translation>
 <translation id="2413155254802890957">Ancienne</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414886740292270097">Sombre</translation>
@@ -1305,7 +1304,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3354508510846323339">Citation <ph name="CURRENT_CITATION" /> sur <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Modifier les paramètres du proxy...</translation>
 <translation id="335809815767823">Exportées</translation>
-<translation id="3359387651158939842">Saisir automatiquement votre carte pour vos futurs achats lorsque vous l'enregistrez pour l'utiliser avec Google Pay</translation>
 <translation id="3359565626472459400">Mariage</translation>
 <translation id="3360103848165129075">Feuille du gestionnaire de paiement</translation>
 <translation id="3360306038446926262">Fenêtres</translation>
@@ -1458,7 +1456,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3605899229568538311">5 x 5 pouces</translation>
 <translation id="3606917451836803637">Programmes et émissions TV</translation>
 <translation id="3608932978122581043">Orientation de l'alimentation</translation>
-<translation id="3610142117915544498">Pour régler vos achats plus rapidement la prochaine fois, enregistrez votre carte, votre nom et votre adresse de facturation dans votre compte Google</translation>
 <translation id="3612660594051121194">Autobus et train longue distance</translation>
 <translation id="3614001939154393113">Des pirates informatiques tentent peut-être de voler vos informations sur <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (mots de passe, messages ou cartes de crédit, par exemple). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Taille 2</translation>
@@ -2177,7 +2174,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jeux olympiques</translation>
 <translation id="4898742041545089450">Ce thème est débloqué et peut devenir actif en fonction de votre historique de navigation</translation>
-<translation id="4899379435492347481">Enregistrer cette carte pour l'utiliser en ligne pour les achats avec Google Pay sur tous vos appareils</translation>
 <translation id="4900217275619098670">9e rouleau</translation>
 <translation id="4901052769830245369">Étiquettes (semi-brillance)</translation>
 <translation id="4901162432287938633">Hygiène et toilette</translation>
@@ -3544,6 +3540,7 @@ Informations supplémentaires :
 <translation id="7388594495505979117">{0,plural, =1{Votre appareil va redémarrer dans 1 minute}one{Votre appareil va redémarrer dans # minute}other{Votre appareil va redémarrer dans # minutes}}</translation>
 <translation id="7393161616326137353">Jeux d'aventure</translation>
 <translation id="7393475648162498734">Afficher les récompenses et avantages disponibles pour vos cartes lors du paiement</translation>
+<translation id="7393971683644170444">Connexion à l'émetteur de votre carte...</translation>
 <translation id="739728382607845710">Icône du gestionnaire de paiement</translation>
 <translation id="7399616692258236448">Les demandes de localisation sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="7400418766976504921">URL</translation>

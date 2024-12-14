@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome ගෙවීම් ක්‍රම සංස්කරණය කිරීමට උත්සාහ කරයි.</translation>
 <translation id="2400600116338235695">අනුක්‍රමික තොටවල් වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="2404884497378469141">ඔබේ ගොනු නැවත පිටපත් කිරීමට උත්සාහ කරන්න</translation>
-<translation id="2412310121876768057">මීළඟ වතාවේ කාඩ්පත ස්වයං පුරවන්න ද?</translation>
 <translation id="2413155254802890957">පැරණි</translation>
 <translation id="2413528052993050574">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය අහෝසි කර තිබිය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="2414886740292270097">අඳුරු</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">උපුටා ගැනීම <ph name="MAX_CITATIONS" />න් <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">ප්‍රොක්සි සැකසුම් වෙනස් කරන්න...</translation>
 <translation id="335809815767823">නිර්යාත කළා</translation>
-<translation id="3359387651158939842">ඔබ එය Google Pay සමග භාවිත කිරීමට සුරකින විට අනාගත මිල දී ගැනීම් සඳහා ඔබේ කාඩ්පත ස්වයංව පුරවන්න</translation>
 <translation id="3359565626472459400">විවාහය</translation>
 <translation id="3360103848165129075">ගෙවීම් හසුරුවන පත්‍රය</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">අඟ 5 x 5</translation>
 <translation id="3606917451836803637">රූපවාහිනී සංදර්ශන සහ වැඩසටහන්</translation>
 <translation id="3608932978122581043">පෝෂණ දිශානතිය</translation>
-<translation id="3610142117915544498">මීළඟ වතාවේ වේගයෙන් ගෙවීමට, ඔබේ Google ගිණුමේ ඔබේ කාඩ්පත, නම, සහ බිල්පත් ලිපිනය සුරකින්න</translation>
 <translation id="3612660594051121194">දිගු දුර බස් සහ දුම්රිය</translation>
 <translation id="3614001939154393113">ප්‍රහාරකයන් ඔබගේ තොරතුරු (උදාහරණ ලෙස, මුරපද, පණිවිඩ, හෝ ක්‍රෙඩිට් කාඩ්පත්) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> වෙතින් සොරකම් කිරීමට උත්සාහ කළා විය හැක. <ph name="BEGIN_LEARN_MORE_LINK" />මෙම අනතුරු ඇඟවීම ගැන තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">ප්‍රමාණය 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ඔලිම්පික්</translation>
 <translation id="4898742041545089450">මෙම මාතෘකාව අවහිර කිරීම ඉවත් කර ඇති අතර ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම්ව සක්‍රිය වීමට ඉඩ ඇත</translation>
-<translation id="4899379435492347481">ඔබේ උපාංග හරහා මිල දී ගැනීම් සඳහා Google Pay සමග සබැඳිව භාවිත කිරීමට මෙම කාඩ්පත සුරකින්න</translation>
 <translation id="4900217275619098670">Ninth Roll</translation>
 <translation id="4901052769830245369">ලේබල් (අර්ධ දීප්තිය)</translation>
 <translation id="4901162432287938633">සනීපාරක්ෂක සහ වැසිකිලියට අවශ්‍ය දේ</translation>
@@ -3542,6 +3538,7 @@
 <translation id="7388594495505979117">{0,plural, =1{ඔබගේ උපාංගය මිනිත්තු 1කින් යළි ආරම්භ වනු ඇත}one{ඔබගේ උපාංගය මිනිත්තු #කින් යළි ආරම්භ වනු ඇත}other{ඔබගේ උපාංගය මිනිත්තු #කින් යළි ආරම්භ වනු ඇත}}</translation>
 <translation id="7393161616326137353">වික්‍රමාන්විත ක්‍රීඩා</translation>
 <translation id="7393475648162498734">ගෙවා පිටවීමේ දී ඔබේ කාඩ්පත් සඳහා ලැබෙන ත්‍යාග සහ ප්‍රතිලාභ පෙන්වන්න</translation>
+<translation id="7393971683644170444">ඔබේ කාඩ්පත් සැපයුම්කරු වෙත සම්බන්ධ වෙමින්...</translation>
 <translation id="739728382607845710">ගෙවීම් හසුරුවන්නාගේ නිරූපකය</translation>
 <translation id="7399616692258236448">ඔබ ඉඩ දෙන ඒවා හැර අනෙකුත් සියලු ම අඩවි සඳහා ස්ථාන ඉල්ලීම් ස්වයංක්‍රීයව අවහිර වේ</translation>
 <translation id="7400418766976504921">URL</translation>

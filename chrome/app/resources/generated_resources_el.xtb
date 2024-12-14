@@ -142,6 +142,7 @@
 Ελέγξτε ανά πάσα στιγμή τους κωδικούς πρόσβασής σας στην υπηρεσία <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Αντιγραφή διεύθυνσης &amp;συνδέσμου</translation>
 <translation id="1085064499066015002">Πάντα σε όλους τους ιστοτόπους</translation>
+<translation id="1085558727130096638">Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /> και <ph name="NUM_OTHER_MEMBERS" /> ακόμη χρήστη</translation>
 <translation id="1085618740036066768">Το στοιχείο <ph name="ITEM" /> δεν έχει επιλεγεί. <ph name="INDEX" /> από <ph name="COUNT" />. Πατήστε το πλήκτρο αναζήτησης και το πλήκτρο διαστήματος, για να το επιλέξετε.</translation>
 <translation id="1085697365578766383">Σφάλμα έναρξης του εικονικού μηχανήματος. Προσπαθήστε ξανά.</translation>
 <translation id="1090126737595388931">Δεν εκτελούνται εφαρμογές φόντου</translation>
@@ -2143,6 +2144,7 @@
 <translation id="2462752602710430187">Προστέθηκε <ph name="PRINTER_NAME" /></translation>
 <translation id="2464079411014186876">Παγωτό</translation>
 <translation id="2467755475704469005">Δεν εντοπίστηκε συσκευή. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525">Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /> και <ph name="NUM_OTHER_MEMBERS" /> ακόμη χρήστες</translation>
 <translation id="2468178265280335214">Επιτάχυνση κύλισης επιφάνειας αφής</translation>
 <translation id="2468205691404969808">Χρησιμοποιεί cookie για την απομνημόνευση των προτιμήσεών σας, ακόμα κι αν δεν επισκέπτεστε αυτές τις σελίδες</translation>
 <translation id="2468402215065996499">Ταμαγκότσι</translation>
@@ -2288,6 +2290,7 @@
 <translation id="256481480019204378">Αναγνωριστικό Λογαριασμού Google</translation>
 <translation id="256517381556987641">Ο συγχρονισμός αρχείων εντόπισε <ph name="ITEMS_FOUND" /> αρχεία μέχρι στιγμής και εξακολουθεί να ελέγχει τον αποθηκευτικό χώρο. Δοκιμάστε ξανά να ενεργοποιήσετε τον Συγχρονισμό αρχείων σε λίγα λεπτά.</translation>
 <translation id="2565214867520763227">Ενεργοποίηση αναγνώστη οθόνης</translation>
+<translation id="2566146433999774844">Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /> και <ph name="NUM_OTHER_MEMBERS" /> ακόμη χρήστες</translation>
 <translation id="2568694057933302218">Κατά την ανώνυμη περιήγηση, οι ιστότοποι δεν μπορούν να χρησιμοποιήσουν τα cookie σας για να βλέπουν τη δραστηριότητα περιήγησής σας σε διαφορετικούς ιστοτόπους. Η δραστηριότητα περιήγησης δεν χρησιμοποιείται για λειτουργίες όπως η εξατομίκευση διαφημίσεων. Ορισμένες λειτουργίες κάποιων ιστοτόπων μπορεί να μην είναι διαθέσιμες.</translation>
 <translation id="2568774940984945469">Υποδοχέας γραμμής πληροφοριών</translation>
 <translation id="2569972178052279830">Όνομα πωλητή λιανικής</translation>
@@ -2295,6 +2298,7 @@
 <translation id="2571655996835834626">Αλλάξτε τις ρυθμίσεις που ελέγχουν την πρόσβαση των ιστοτόπων σε λειτουργίες, όπως είναι τα cookie, η JavaScript, οι προσθήκες, η γεωγραφική τοποθεσία, το μικρόφωνο, η κάμερα κ.λπ.</translation>
 <translation id="257175846174451436">Προτείνεται μία ομάδα καρτελών</translation>
 <translation id="2572032849266859634">Παραχωρήθηκε πρόσβαση ανάγνωσης σε <ph name="VOLUME_NAME" />.</translation>
+<translation id="2573147659521059501"><ph name="NUM" /> καρτέλες</translation>
 <translation id="2573276323521243649">Επιστροφή από τη σελίδα επιλογής avatar</translation>
 <translation id="2573417407488272418">Δημιουργήστε αντίγραφα ασφαλείας εφαρμογών και αρχείων στην ενότητα Αρχεία &gt; Τα αρχεία μου πριν από την αναβάθμιση.</translation>
 <translation id="2573831315551295105">Αντιστοίχιση διακόπτη για την ενέργεια <ph name="ACTION" /></translation>
@@ -2966,6 +2970,7 @@
 <translation id="3038628620670416486">Εντοπισμός κουμπιών στο ποντίκι σας</translation>
 <translation id="3039491566278747710">Αποτυχία εγκατάστασης πολιτικής εκτός σύνδεσης στη συσκευή.</translation>
 <translation id="3040982432432547149">Βοηθήστε μας να βελτιώσουμε το Steam για Chromebook</translation>
+<translation id="304169924727249890">Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3043016484125065343">Συνδεθείτε για να δείτε τους σελιδοδείκτες σας</translation>
 <translation id="3043126717220766543">Διαγραφή προτάσεων ομάδας</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3306,6 +3311,7 @@
 <translation id="3308852433423051161">Φόρτωση Βοηθού Google…</translation>
 <translation id="3309124184713871355">Κατασκευές</translation>
 <translation id="3309330461362844500">Αναγνωριστικό προφίλ πιστοποιητικού</translation>
+<translation id="3310379801837527592">Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /> και <ph name="NUM_OTHER_MEMBERS" /> ακόμη χρήστη</translation>
 <translation id="331080746368555063">Οι ιδιωτικοί ιστότοποι μπορεί να περιλαμβάνουν διάφορα στοιχεία, όπως το εσωτερικό δίκτυο της εταιρείας σας</translation>
 <translation id="3311445899360743395">Τα δεδομένα που σχετίζονται με αυτή την εφαρμογή μπορεί να καταργηθούν από αυτήν τη συσκευή.</translation>
 <translation id="3312470654018965389">Διαμόρφωση του κοντέινερ Linux</translation>
@@ -4264,6 +4270,7 @@
 <translation id="3958088479270651626">Εισαγωγή σελιδοδεικτών και ρυθμίσεων</translation>
 <translation id="3958110062351175311">Επιτρέπεται η εμφάνιση αιτημάτων στη γραμμή εργαλείων</translation>
 <translation id="3958821725268247062">Η εφαρμογή <ph name="APP_NAME" /> είναι ήδη εγκατεστημένη</translation>
+<translation id="3959969108528118741">Κάτοχος</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Περισσότερες ενέργειες για <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962607437409665666">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> αποχώρησε από την ομάδα</translation>
@@ -4712,6 +4719,7 @@
 <translation id="428963538941819373">Αυτοί οι ιστότοποι μπορούν να χρησιμοποιούν πληροφορίες που έχουν αποθηκεύσει σχετικά με εσάς καθώς περιηγείστε στο <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Επιλογή PIN</translation>
 <translation id="4290791284969893584">Μετά το κλείσιμο μιας σελίδας, οι εργασίες που έχετε ξεκινήσει ενδέχεται να μην ολοκληρωθούν</translation>
+<translation id="4290826901752066702"><ph name="NUM" /> μέλος</translation>
 <translation id="4290898381118933198">Σύρετε για να πλοηγηθείτε μεταξύ σελίδων</translation>
 <translation id="4291265871880246274">Παράθυρο διαλόγου σύνδεσης</translation>
 <translation id="429312253194641664">Ένας ιστότοπος κάνει αναπαραγωγή μέσων</translation>
@@ -5789,6 +5797,7 @@
 <translation id="5079950360618752063">Χρήση προτεινόμενου κωδικού πρόσβασης</translation>
 <translation id="508059534790499809">Ανανέωση ενός εισιτηρίου Kerberos</translation>
 <translation id="5081124414979006563">&amp;Άνοιγμα προφίλ επισκέπτη</translation>
+<translation id="5081974595802103358">Η αντιγραφή του συνδέσμου απέτυχε</translation>
 <translation id="508209203623347828">Εάν απενεργοποιηθεί αυτή η κάρτα, θα απενεργοποιηθούν επίσης οι κάρτες Microsoft, όπως το Sharepoint και το Ημερολόγιο Outlook.</translation>
 <translation id="5083035541015925118">ctrl + alt + πάνω βέλος</translation>
 <translation id="5084328598860513926">Η ροή παροχής διακόπηκε. Δοκιμάστε ξανά ή επικοινωνήστε με τον κάτοχο ή τον διαχειριστή της συσκευής σας. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
@@ -6634,6 +6643,7 @@
 <translation id="5691581861107245578">Λάβετε προτάσεις emoji με βάση αυτά που πληκτρολογείτε.</translation>
 <translation id="5691772641933328258">Δεν είναι δυνατή η αναγνώριση του δακτυλικού αποτυπώματος</translation>
 <translation id="5693255400847650006">Μικρόφωνο σε χρήση</translation>
+<translation id="5695046252726616755">Πατήστε Enter ή το πλήκτρο διαστήματος για περισσότερες επιλογές.</translation>
 <translation id="5695184138696833495">ADB εφαρμογής Android Linux</translation>
 <translation id="5696143504434933566">Αναφορά κατάχρησης από "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">Τρέχον αρχείο PPD που χρησιμοποιείται: <ph name="PPD_NAME" /></translation>
@@ -7869,6 +7879,7 @@
 <translation id="6609478180749378879">Τα δεδομένα σύνδεσης θα αποθηκευτούν σε αυτήν τη συσκευή αφού εξέλθετε από την κατάσταση ανώνυμης περιήγησης. Θα μπορείτε να συνδεθείτε σε αυτόν τον ιστότοπο ξανά με τη συσκευή σας αργότερα.</translation>
 <translation id="6610002944194042868">Μετάφραση επιλογών</translation>
 <translation id="6610064275805055636">Διαχείριση απομονωμένων εφαρμογών ιστού</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> καρτέλα</translation>
 <translation id="6611972847767394631">Βρείτε τις καρτέλες σας εδώ</translation>
 <translation id="661266467055912436">Βελτιώνει την ασφάλεια για εσάς και όλους στον ιστό.</translation>
 <translation id="6613267708691765962">Σάρωση για κακόβουλα προγράμματα…</translation>
@@ -8580,6 +8591,7 @@
 <translation id="7118268675952955085">στιγμιότυπο οθόνης</translation>
 <translation id="711840821796638741">Εμφάνιση διαχειριζόμενων σελιδοδεικτών</translation>
 <translation id="711985611146095797">Αυτή η σελίδα σάς επιτρέπει να διαχειρίζεστε τους συνδεδεμένους Λογαριασμούς σας Google. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
+<translation id="71200494435060621">Συμμετοχή ως <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="7120762240626567834">Το πρόγραμμα περιήγησης Chrome και η επισκεψιμότητα Android θα αποκλειστούν εκτός εάν συνδεθεί ένα VPN.</translation>
 <translation id="7120904433567247946">Αυτός ο σελιδοδείκτης αποθηκεύεται μόνο σε αυτή τη συσκευή. Αν τον αποθηκεύσετε στον φάκελο <ph name="ACCOUNT_FOLDER" />, αυτός ο σελιδοδείκτης θα αποθηκευτεί επίσης στον λογαριασμό σας.</translation>
 <translation id="7121438501124788993">Λειτουργία προγραμματιστή</translation>
@@ -9977,6 +9989,7 @@
 <translation id="8105273883928376822">Συνδεθείτε για να συνεχίσετε.</translation>
 <translation id="8107015733319732394">Εγκατάσταση του Google Play Store στη συσκευή σας <ph name="DEVICE_TYPE" />. Αυτό μπορεί να διαρκέσει μερικά λεπτά.</translation>
 <translation id="810728361871746125">Ανάλυση οθόνης</translation>
+<translation id="8108161424633979910"><ph name="NUM" /> μέλη</translation>
 <translation id="8109109153262930486">Προεπιλεγμένο avatar</translation>
 <translation id="8109991406044913868">Θέμα που δημιουργήθηκε από AI</translation>
 <translation id="8110393529211831722">Η συνδρομή είναι εγκατεστημένη μόνο σε αυτήν τη συσκευή και δεν έχει συγχρονιστεί με άλλες συσκευές στον λογαριασμό σας. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>

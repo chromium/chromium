@@ -124,7 +124,6 @@
 <translation id="2903493209154104877">住所</translation>
 <translation id="2910701580606108292">保護されたコンテンツの再生をサイトに許可する前に確認する</translation>
 <translation id="2918484639460781603">設定に移動</translation>
-<translation id="2927133898344569563">デバイスのアプリリストと検索結果から、おすすめのタブにすばやくアクセスできます。この機能は Chrome の設定でいつでもオンまたはオフにできます。</translation>
 <translation id="2932883381142163287">不正行為を報告</translation>
 <translation id="2939338015096024043">オンにすると、サイトはカメラ位置の追跡と周囲の状況の検出を要求できます。オフにすると、サイトはカメラ位置の追跡や周囲の状況の検出を行えません。</translation>
 <translation id="2968755619301702150">証明書ビューア</translation>
@@ -336,7 +335,6 @@
 <translation id="5968921426641056619">ウェブアドレスを入力</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />～<ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">デバイスのアプリリストと検索結果から、おすすめのタブにすばやくアクセスできるようになりました。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="6015775454662021376">このサイトによるデバイスへのアクセスを管理します</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>

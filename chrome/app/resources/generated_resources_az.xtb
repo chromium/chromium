@@ -2858,6 +2858,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2981113813906970160">Geniş siçan kursorunu göstərin</translation>
 <translation id="2983102365694924129">Saytdakı fəaliyyətinizə əsaslanır. Bu ayar deaktivdir.</translation>
 <translation id="2983373101216420412">Keysin batareya səviyyəsi: <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984384421572259426">İstifadə olunmayan tabları təmizləyin</translation>
 <translation id="2984727013951557074">Fayl hələ də Diskə sinxronlaşdırılır.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" quraşdırmaq üçün inzibatçınıza sorğu göndərilsin?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> bir tətbiqi sistemdən sildi}other{<ph name="APP_NAME" /> # tətbiqi sistemdən sildi}}</translation>
@@ -4416,6 +4417,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4072805772816336153">Sonra yenidən sınayın</translation>
 <translation id="4074164314564067597">klaviatura</translation>
 <translation id="407520071244661467">Miqyas</translation>
+<translation id="4077623680826964850">VM yüklənərkən və ya yenidən qoşularkən vaxt limiti.</translation>
 <translation id="4077917118009885966">Bu saytdakı reklamlar blok edildi</translation>
 <translation id="4078738236287221428">Aqressiv</translation>
 <translation id="4078903002989614318">Çeşidləmə və siyahı seçimləri</translation>
@@ -4900,6 +4902,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4437879751057074691">Parol və giriş açarlarını yadda saxlamağı təklif edin</translation>
 <translation id="4437947179446780764">Fərdi DNS xidməti provayderini əlavə edin</translation>
 <translation id="4438043733494739848">Şəffaf</translation>
+<translation id="4439157218765614426">Siyasətlə qadağandır.</translation>
 <translation id="4441124369922430666">Cihaz aktivləşdirildikdə bu tətbiqin avtomatik açılmasını istəyirsiniz?</translation>
 <translation id="4441147046941420429">Davam etmək üçün təhlükəsizlik açarını cihazınızdan çıxarıb yenidən daxil edin və ona toxunun</translation>
 <translation id="444134486829715816">Genişləndirin...</translation>
@@ -5356,6 +5359,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Oniqiri</translation>
 <translation id="4779766576531456629">eSIM Mobil şəbəkəsinin adını dəyişin</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 dublikat</translation>
 <translation id="4780321648949301421">Səhifəni yadda saxlama formatı:</translation>
 <translation id="4780558987886269159">İş üçün</translation>
 <translation id="4785719467058219317">Bu veb saytda qeydiyyatda olmayan təhlükəsizlik açarından istifadə edirsiniz</translation>
@@ -5435,6 +5439,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4833683849865011483">Çap serverindən 1 printer tapıldı</translation>
 <translation id="4835598628985424375">Dodaqlarınızı bir-birinə sıxaraq büzün</translation>
 <translation id="4835677468087803981">PIN-i gizlədin</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> dublikat</translation>
 <translation id="4836504898754963407">Barmaq izlərini idarə edin</translation>
 <translation id="4837128290434901661">Google Axtarış seçiminə qayıtmaq istəyirsiniz?</translation>
 <translation id="4837926214103741331">Bu cihazı istifadə etmək icazəniz yoxdur. Giriş icazəsi üçün cihaz sahibi ilə əlaqə saxlayın.</translation>
@@ -6059,6 +6064,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="528208740344463258">Android tətbiqləri endirmək və istifadə etmək üçün əvvəlcə bu lazımlı güncəlləməni quraşdırın. <ph name="DEVICE_TYPE" /> güncəllənərkən ondan istifadə edə bilməzsiniz. Quraşdırma tamamlandıqdan sonra <ph name="DEVICE_TYPE" /> işə düşəcək.</translation>
 <translation id="5283677936944177147">Ups!  Sistem bu cihaz üçün cihaz modelini və seriya nömrəsini aşkarlaya bilmədi.</translation>
 <translation id="5284445933715251131">Endirməyə Davam edin</translation>
+<translation id="5285484405698525101">Hazırda istifadə olunmamış tab yoxdur</translation>
 <translation id="5285635972691565180">Displey <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Skan edilir</translation>
 <translation id="5287425679749926365">Hesablarınız</translation>
@@ -6333,6 +6339,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5481941284378890518">Yaxınlıqdakı Printerləri əlavə edin</translation>
 <translation id="5482417738572414119">Chrome-un tab qrupları təklif etməsi və tabları nizamlı saxlaması üçün daxil olun</translation>
 <translation id="5483005706243021437">Burada qalın</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{İstifadə edilməyən tab yoxdur}=1{İstifadə olunmamış 1 tabı nəzərdən keçirin}other{İstifadə olunmamış # tabı nəzərdən keçirin}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> bugün datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir. <ph name="LINK_BEGIN" />Detallara baxın<ph name="LINK_END" />}other{<ph name="MANAGER" /> {NUM_DAYS} gün ərzində datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir. <ph name="LINK_BEGIN" />Detallara baxın<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Tətbiq əlavə edin</translation>
 <translation id="5485435764083510385">Tərcih edilən altyazı dili</translation>
@@ -7011,6 +7018,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5982578203375898585">Hazır olduqda endirmələr göstərilsin</translation>
 <translation id="5983716913605894570">Yaradılır...</translation>
 <translation id="5984222099446776634">Son Ziyarət</translation>
+<translation id="5984334442529819751">DLC quraşdırarkən xəta baş verdi (çox vaxt yenidən yükləmə tələb olunur, əlavə məlumat üçün Ayarlar\&gt;\&gt;ChromeOS bölməsinə baxın).</translation>
 <translation id="5985458664595100876">Yanlış URL formatı. Dəstəklənən formatlar: \\server\share və smb://server/share.</translation>
 <translation id="5985556342298151179">Chrome tətbiqi cihaz administratoru tərəfindən quraşdırıldı.</translation>
 <translation id="598810097218913399">Təyinatı silin</translation>
@@ -9244,6 +9252,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="762917478230183172">Hər düymə üçün əməliyyat seçin</translation>
 <translation id="7629206210984165492">Təslim olmuş</translation>
 <translation id="7629827748548208700">Panel: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">Naməlum nəticə.</translation>
 <translation id="7630426712700473382">Bu cihaz <ph name="MANAGER" /> tərəfindən idarə edilir və hər dəfə sizdən daxil olmağınızı tələb edir.</translation>
 <translation id="7631014249255418691">Linux tətbiq və faylları yedəklənib</translation>
 <translation id="7631722872321401342">Cihazda <ph name="LANGUAGE" /> dilində səs yoxdur. Ayarlarda səsləri quraşdıra bilərsiniz.</translation>
@@ -9397,6 +9406,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7723388585204724670">Defolt Chrome-a sıfırlayın</translation>
 <translation id="7724603315864178912">Kəsin</translation>
 <translation id="7726391492136714301">Telefonunuzun bildirişlərinə və tətbiqlərinə baxın</translation>
+<translation id="7727898923446098954">Tab gizlədildi</translation>
 <translation id="7728465250249629478">Cihazın dilini dəyişin</translation>
 <translation id="7728570244950051353">Yuxu rejimində ekran kilidi</translation>
 <translation id="7728668285692163452">Kanal dəyişikliyi daha sonra tətbiq ediləcək</translation>
@@ -9789,6 +9799,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7992203134935383159">Nitq sintezi</translation>
 <translation id="799570308305997052">Veb görünüşü</translation>
 <translation id="7997826902155442747">Proses Prioriteti</translation>
+<translation id="7997828719430450286">Uğurlu oldu.</translation>
 <translation id="7998701048266085837">URL-lər</translation>
 <translation id="7999229196265990314">Aşağıdakı fayllar yaradıldı:
 
@@ -10437,6 +10448,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="845702320058262034">Qoşulmaq mümkün deyil. Telefonda Bluetooth'u aktiv edin.</translation>
 <translation id="8457251154056341970">Artıq <ph name="MODULE_NAME" /> bu səhifədə görünməyəcək</translation>
 <translation id="8457451314607652708">Əlfəcinləri import edin</translation>
+<translation id="8458259704995116343">VM-i işə salmaq alınmadı.</translation>
 <translation id="8458341576712814616">Qısayol</translation>
 <translation id="8458627787104127436">Hamısını (<ph name="URL_COUNT" />) yeni pəncərədə açın</translation>
 <translation id="8459023460357294721"><ph name="FILE_NAME" /> faylını istənilən halda açın</translation>
@@ -11094,12 +11106,14 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8918900204934259333">Tətbiq quraşdırılır...</translation>
 <translation id="891931289445130855">Data və icazələri silin</translation>
 <translation id="8920133120839850939">Digər jestlər tabını seçib, "Səhifələr arasında sürüşdürün" seçimini aktiv edərək geri və irəli hərəkət edin</translation>
+<translation id="8921369299636221117">Konsyerj xidməti əlçatan deyil.</translation>
 <translation id="8922348435910470639">Üst-üstə düşən rezervasiya</translation>
 <translation id="8922624386829239660">Maus ekranın kənarlarına toxunduqda ekran hərəkət etdirilsin</translation>
 <translation id="8923880975836399332">Tünd-firuzəyi</translation>
 <translation id="8925124370124776087">Başlıq paneli indi gizlədilib</translation>
 <translation id="8925458182817574960">&amp;Ayarlar</translation>
 <translation id="8926389886865778422">Daha soruşmayın</translation>
+<translation id="8926555406617248399">Gizli tablar</translation>
 <translation id="892706138619340876">Bəzi ayarlar sıfırlandı</translation>
 <translation id="8927438609932588163">Saytlara cihazınızda məlumat saxlamağa icazə verin</translation>
 <translation id="8929696694736010839">Yalnız cari Anonim sessiya</translation>

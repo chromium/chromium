@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="3340978935015468852">సెట్టింగ్‌లు</translation>
 <translation id="3347558044552027859">ఆధునికంగా ఉంది</translation>
+<translation id="3353477144743332882">సారాంశం, పేరు క్రియేషన్ మోడల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3359218928534347896">మైక్రోఫోన్‌ను మ్యూట్‌కు టోగుల్ చేస్తుంది</translation>
 <translation id="3360306038446926262">విండోలు</translation>
 <translation id="3361618936611118375">సూషి</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">షార్ట్‌కట్ అందుబాటులో లేదు. <ph name="KEY" /> లేకుండా కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
+<translation id="5875913454160982848">మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="5876385649737594562">ఆప్షన్‌లను ఎంచుకోవడానికి ఆన్ చేయండి</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" />‌ను పాజ్ చేయండి</translation>
 <translation id="588258955323874662">పూర్తితెర</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
 <translation id="8505011850330200833">Gemini మోడల్‌కు ట్రాన్‌స్క్రిప్ట్‌లను ప్రాసెస్ చేయడానికి, అలాగే సారాంశాలను రూపొందించడానికి 2GB స్టోరేజ్ అవసరం</translation>
 <translation id="8508640263392900755">APN వివరాలు</translation>
+<translation id="8509574872955173831">సారాంశం, పేరు క్రియేషన్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8522687886059337719">మీరు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌లు<ph name="END_LINK_WALLPAPER_SUBPAGE" />, <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />స్క్రీన్ సేవర్‌<ph name="END_LINK_SCREENSAVER_SUBPAGE" />కు యాక్సెస్ కలిగి ఉన్నారు</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">టీ హౌస్</translation>
@@ -1724,7 +1727,6 @@
 <translation id="9133772297793293778">మీ కీబోర్డ్‌లో 1-4 మోడిఫయర్‌లు, 1 ఇతర కీని నొక్కండి. ఎడిటింగ్ మోడ్ నుండి ఎగ్జిట్ అవ్వడానికి, alt + esc నొక్కండి.</translation>
 <translation id="9137526406337347448">Google సేవలు</translation>
 <translation id="9138630967333032450">ఎడమ వైపు షిఫ్ట్</translation>
-<translation id="9147928237330776930">సమ్మరైజ్ చేయడానికి చాలా తక్కువ పదాలను చేర్చండి</translation>
 <translation id="9149391708638971077">మెమరీ పరీక్షను రన్ చేయండి</translation>
 <translation id="9159524746324788320">హామ్‌బర్గర్‌లు</translation>
 <translation id="9161276708550942948">స్పేస్</translation>

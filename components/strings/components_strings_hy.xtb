@@ -811,7 +811,6 @@
 <translation id="2399868464369312507">Google Chrome-ը փորձում է փոփոխել վճարման եղանակները։</translation>
 <translation id="2400600116338235695">Կարող է հայցել հաջորդական միացքներին միանալու թույլտվություն</translation>
 <translation id="2404884497378469141">Փորձեք նորից պատճենել ֆայլերը</translation>
-<translation id="2412310121876768057">Հաջորդ անգամ ավտոմատ լրացնե՞լ քարտը</translation>
 <translation id="2413155254802890957">Հին</translation>
 <translation id="2413528052993050574">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը, հավանաբար, հետ է կանչվել: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="2414886740292270097">Մուգ</translation>
@@ -1311,7 +1310,6 @@
 <translation id="3354508510846323339">Մեջբերում <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Փոխել պրոքսի-սերվերի կարգավորումները…</translation>
 <translation id="335809815767823">Արտահանվեցին</translation>
-<translation id="3359387651158939842">Ավտոմատ լրացրեք քարտի տվյալները հետագա գնումների ժամանակ, երբ պահեք այն՝ Google Pay-ով օգտագործելու համար</translation>
 <translation id="3359565626472459400">Ամուսնություն</translation>
 <translation id="3360103848165129075">Վճարման մշակման թերթ</translation>
 <translation id="3360306038446926262">Պատուհաններ</translation>
@@ -1464,7 +1462,6 @@
 <translation id="3605899229568538311">5 x 5 դյույմ</translation>
 <translation id="3606917451836803637">Հեռուստահաղորդումներ և ծրագրեր</translation>
 <translation id="3608932978122581043">Նշել դիրքը</translation>
-<translation id="3610142117915544498">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտը, անունն ու վճարային հասցեն Google հաշվում</translation>
 <translation id="3612660594051121194">Միջքաղաքային ավտոբուսներ և երկաթուղի</translation>
 <translation id="3614001939154393113">Հաքերները կարող են փորձել <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքից տվյալներ հափշտակել (օրինակ՝ գաղտնաբառեր, հաղորդագրություններ և վարկային քարտերի տվյալներ): <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Չափ 2</translation>
@@ -2183,7 +2180,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Օլիմպիական խաղեր</translation>
 <translation id="4898742041545089450">Այս թեման արգելաբացված է և, կախված ձեր այցելությունների պատմությունից, կարող է ակտիվ դառնալ</translation>
-<translation id="4899379435492347481">Պահեք այս քարտը՝ ձեր բոլոր սարքերում Google Pay-ով առցանց գնումներ կատարելու համար</translation>
 <translation id="4900217275619098670">Իններորդ գլանափաթեթ</translation>
 <translation id="4901052769830245369">Պիտակներ (կիսափայլուն)</translation>
 <translation id="4901162432287938633">Հիգիենայի և զուգարանի պարագաներ</translation>
@@ -3551,6 +3547,7 @@
 <translation id="7388594495505979117">{0,plural, =1{Սարքը կվերագործարկվի 1 րոպեից}one{Սարքը կվերագործարկվի # րոպեից}other{Սարքը կվերագործարկվի # րոպեից}}</translation>
 <translation id="7393161616326137353">Արկածային խաղեր</translation>
 <translation id="7393475648162498734">Վճարումը ձևակերպելիս ցույց տալ, թե ինչ բոնուսներ և առավելություններ են հասանելի ձեր քարտերի համար</translation>
+<translation id="7393971683644170444">Քարտի մատակարարի հետ կապի հաստատում…</translation>
 <translation id="739728382607845710">Վճարումների մշակիչի պատկերակ</translation>
 <translation id="7399616692258236448">Տեղադրության հարցումները ավտոմատ արգելափակվում են բոլոր կայքերի համար՝ բացի ձեր նշած կայքերից:</translation>
 <translation id="7400418766976504921">URL</translation>

@@ -124,7 +124,6 @@
 <translation id="2903493209154104877">Osoitteet</translation>
 <translation id="2910701580606108292">Kysy, saavatko sivustot toistaa suojattua sisältöä</translation>
 <translation id="2918484639460781603">Avaa asetukset</translation>
-<translation id="2927133898344569563">Avaa ehdotetut välilehdet nopeasti laitteen sovelluslistasta ja hakutuloksista. Voit laittaa ominaisuuden päälle tai pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="2932883381142163287">Ilmoita väärinkäytöstä</translation>
 <translation id="2939338015096024043">Kun tämä on päällä, sivustot voivat pyytää lupaa seurata kameran sijaintia ja saada tietoa ympäristöstäsi. Kun tämä on pois päältä, sivustot eivät voi seurata kameran sijaintia tai saada tietoa ympäristöstäsi.</translation>
 <translation id="2968755619301702150">Varmennetiedot</translation>
@@ -336,7 +335,6 @@
 <translation id="5968921426641056619">Lisää verkko-osoite</translation>
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Voit nyt siirtyä nopeasti ehdotettuihin välilehtiin laitteen sovelluslistasta ja laitteen hakutuloksista. Voit poistaa ominaisuuden käytöstä milloin tahansa Chromen asetuksissa.</translation>
 <translation id="6015775454662021376">Valitse, mitä tämä sivusto saa tehdä laitteellasi</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6042308850641462728">Lisää</translation>

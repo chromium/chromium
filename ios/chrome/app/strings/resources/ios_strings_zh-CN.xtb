@@ -931,6 +931,7 @@
 <translation id="5248640482715684545">此网站正在尝试打开另一款应用。</translation>
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
+<translation id="5279214046729249716">是，单独保留</translation>
 <translation id="5279600392753459966">全部屏蔽</translation>
 <translation id="5282340693022193851">若要接收价格跟踪通知，请在 iOS 设置中开启通知功能。</translation>
 <translation id="5294624619177114121">移动设备通知</translation>

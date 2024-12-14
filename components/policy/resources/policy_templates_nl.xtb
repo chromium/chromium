@@ -148,11 +148,6 @@ Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="1059069692400941670">Import van standaard zoekmachine bij eerste uitvoering uitzetten</translation>
 <translation id="1062011392452772310">Externe bevestiging van apparaat aanzetten</translation>
 <translation id="1062407476771304334">Vervangen</translation>
-<translation id="1062460877136455375">Als je het beleid instelt, geef je aan welke geïsoleerde web-apps (GWA's) geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming). Dit beleid accepteert jokertekens. <ph name="ALL_ISOLATED_WEB_APPS" /> blokkeert bijvoorbeeld de toegang voor alle GWA's.
-
-       Dit beleid wordt overschreven door SmartCardConnectAllowedForUrls. Een blokkeerlijstwaarde van <ph name="ALL_ISOLATED_WEB_APPS" /> betekent bijvoorbeeld dat alle GWA's geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming), behalve de lezers die zijn vermeld in SmartCardConnectAllowedForUrls.
-
-       Geïsoleerde web-apps die smartcardrechten aangeven in het manifest, kunnen standaard verbinding maken met smartcards, mits de gebruiker de rechten interactief per lezer verleent.</translation>
 <translation id="1063860513136880926">Als je het beleid toepast, zijn screenshots die worden gemaakt met sneltoetsen of extensie-API's niet toegestaan. Als je het beleid niet toepast of niet instelt, zijn screenshots toegestaan.
 
 Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NAME" /> voorkomt dit niet dat screenshots worden gemaakt met het besturingssysteem of apps van derden.</translation>
@@ -9265,11 +9260,6 @@ Geldige waarden liggen tussen 1 en 9999 seconden. Als je het beleid niet instelt
 
 Dit beleid heeft geen effect als het beleid <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> is ingesteld op False.</translation>
 <translation id="7912255076272890813">Toegestane typen apps/extensies configureren</translation>
-<translation id="7912541841840197488">Als je het beleid instelt, geef je aan welke geïsoleerde web-apps (GWA's) verbinding kunnen maken met smartcards via de Web Smart Card API zonder dat de gebruiker om toestemming wordt gevraagd. Dit beleid accepteert geen jokertekens.
-
-       Dit beleid overschrijft SmartCardConnectBlockedForUrls. Een blokkeerlijstwaarde van <ph name="ALL_ISOLATED_WEB_APPS" /> betekent bijvoorbeeld dat alle GWA's geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming), behalve de lezers die zijn vermeld in SmartCardConnectAllowedForUrls.
-
-       Geïsoleerde web-apps die smartcardrechten aangeven in het manifest, kunnen standaard verbinding maken met smartcards, mits de gebruiker de rechten interactief per lezer verleent.</translation>
 <translation id="791267408364877739">Beveiligingswaarschuwingen tonen als er mogelijk schadelijke opdrachtregelmarkeringen worden gebruikt</translation>
 <translation id="7919665519909231619">Toestaan dat de functie voor boodschappenlijstjes wordt aangezet</translation>
 <translation id="7922358664346625612">Laatste tabblad open houden in Chrome.</translation>

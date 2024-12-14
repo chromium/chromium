@@ -807,7 +807,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2399868464369312507">Google Chrome po përpiqet të modifikojë mënyrat e pagesës.</translation>
 <translation id="2400600116338235695">Mund të kërkojë të lidhet me portat seriale</translation>
 <translation id="2404884497378469141">Provo t'i kopjosh përsëri skedarët e tu</translation>
-<translation id="2412310121876768057">Të plotësohet automatikisht karta herën tjetër?</translation>
 <translation id="2413155254802890957">I vjetër</translation>
 <translation id="2413528052993050574">Ky server nuk mund të dëshmonte se është  <ph name="DOMAIN" />; certifikata e tij e sigurisë mund të jetë e revokuar. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="2414886740292270097">E errët</translation>
@@ -1305,7 +1304,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3354508510846323339">Citimi <ph name="CURRENT_CITATION" /> nga <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Ndrysho cilësimet e përfaqësuesit...</translation>
 <translation id="335809815767823">U eksportuan</translation>
-<translation id="3359387651158939842">Plotëso automatikisht kartën për blerjet e ardhshme kur eruan atë për ta përdorur me Google Pay</translation>
 <translation id="3359565626472459400">Martesa</translation>
 <translation id="3360103848165129075">Fleta e përpunuesit të pagesës</translation>
 <translation id="3360306038446926262">Dritaret</translation>
@@ -1458,7 +1456,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3605899229568538311">5 x 5 inç</translation>
 <translation id="3606917451836803637">Shfaqje dhe programe televizive</translation>
 <translation id="3608932978122581043">Orientimi i furnizimit</translation>
-<translation id="3610142117915544498">Për të paguar më shpejt herën tjetër, ruaje kartën, emrin dhe adresën tënde të faturimit në "Llogarinë tënde të Google"</translation>
 <translation id="3612660594051121194">Autobusë dhe trena për distanca të largëta</translation>
 <translation id="3614001939154393113">Sulmuesit mund të përpiqen të vjedhin informacionet e tua nga <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (p.sh. fjalëkalimet, mesazhet ose kartat e kreditit). <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Madhësia 2</translation>
@@ -2177,7 +2174,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Lojërat Olimpike</translation>
 <translation id="4898742041545089450">Kjo temë është zhbllokuar dhe mund të bëhet aktive bazuar në historikun tënd të shfletimit</translation>
-<translation id="4899379435492347481">Ruaje këtë kartë për ta përdorur online me Google Pay për blerje në pajisjet e tua</translation>
 <translation id="4900217275619098670">Ruli i nëntë</translation>
 <translation id="4901052769830245369">Etiketa (me gjysmë shkëlqim)</translation>
 <translation id="4901162432287938633">Higjiena dhe artikujt e higjienës</translation>
@@ -3541,6 +3537,7 @@ Detaje shtesë:
 <translation id="7388594495505979117">{0,plural, =1{Pajisja do të riniset pas 1 minute}other{Pajisja do të riniset pas # minutash}}</translation>
 <translation id="7393161616326137353">Lojëra me aventurë</translation>
 <translation id="7393475648162498734">Shfaq se cilat shpërblime dhe përfitime ofrohen për kartat e tua në përfundim të blerjes</translation>
+<translation id="7393971683644170444">Po lidhet me ofruesin e kartës sate...</translation>
 <translation id="739728382607845710">Ikona e përpunuesit të pagesave</translation>
 <translation id="7399616692258236448">Kërkesat për vendndodhjen bllokohen automatikisht për të gjitha sajtet, përveçse për ato që lejon ti</translation>
 <translation id="7400418766976504921">URL-ja</translation>

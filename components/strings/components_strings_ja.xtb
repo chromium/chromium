@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome がお支払い方法を編集しようとしています。</translation>
 <translation id="2400600116338235695">シリアルポートへの接続を要求できる</translation>
 <translation id="2404884497378469141">ファイルをもう一度コピーしてみてください</translation>
-<translation id="2412310121876768057">次回、カードを自動入力しますか？</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は取り消されている可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="2414886740292270097">ダーク</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">引用 <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />、<ph name="PRODUCT_NAME" />、<ph name="URL" /></translation>
 <translation id="3355823806454867987">プロキシ設定の変更...</translation>
 <translation id="335809815767823">エクスポートしました</translation>
-<translation id="3359387651158939842">Google Pay で使用するカードを保存すると、今後の購入時に自動入力されます</translation>
 <translation id="3359565626472459400">結婚</translation>
 <translation id="3360103848165129075">支払いハンドラのシート</translation>
 <translation id="3360306038446926262">ウィンドウ</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5x5 インチ</translation>
 <translation id="3606917451836803637">テレビ番組</translation>
 <translation id="3608932978122581043">給紙方向</translation>
-<translation id="3610142117915544498">カード、お名前、請求先住所を Google アカウントに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="3612660594051121194">長距離バス、鉄道</translation>
 <translation id="3614001939154393113">攻撃者が、<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上のあなたの情報（パスワード、メッセージ、クレジット カード情報など）を不正に取得しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">サイズ 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">オリンピック</translation>
 <translation id="4898742041545089450">このトピックのブロックを解除しました。トピックは閲覧履歴に基づいてアクティブになることがあります。</translation>
-<translation id="4899379435492347481">このカードを保存すると、お使いのデバイスで Google Pay によるオンライン決済に使用できます</translation>
 <translation id="4900217275619098670">ロール 9</translation>
 <translation id="4901052769830245369">ラベル（半光沢）</translation>
 <translation id="4901162432287938633">衛生用品、トイレタリー</translation>

@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">डिव्हाइसच्या उजव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="3340978935015468852">सेटिंग्ज</translation>
 <translation id="3347558044552027859">मॉडर्न</translation>
+<translation id="3353477144743332882">सारांश आणि नाव निर्मिती मॉडेल डाउनलोड करा</translation>
 <translation id="3359218928534347896">मायक्रोफोन म्यूट टॉगल करा</translation>
 <translation id="3360306038446926262">विंडो</translation>
 <translation id="3361618936611118375">सुशी</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">शॉर्टकट उपलब्ध नाही. <ph name="KEY" /> शिवाय नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
+<translation id="5875913454160982848">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करा</translation>
 <translation id="5876385649737594562">पर्याय निवडण्यासाठी सुरू करा</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> थांबवा</translation>
 <translation id="588258955323874662">क्षेत्रे</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">फक्त आणखी काही मिनिटे...</translation>
 <translation id="8505011850330200833">ट्रान्स्क्रिप्टवर प्रक्रिया करण्यासाठी आणि सारांश तयार करण्यासाठी Gemini मॉडेलला २GB स्टोरेज आवश्यक आहे</translation>
 <translation id="8508640263392900755">APN शी संबंधित तपशील</translation>
+<translation id="8509574872955173831">सारांश आणि नाव निर्मितीबद्दल अधिक जाणून घ्या</translation>
 <translation id="8522687886059337719">तुमच्याकडे आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> आणि <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />स्क्रीन सेव्हर<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">टी हाउस</translation>
@@ -1724,7 +1727,6 @@
 <translation id="9133772297793293778">१-४ मॉडिफायर आणि तुमच्या कीबोर्डवरील इतर १ की प्रेस करा. संपादन मोडमधून बाहेर पडण्यासाठी, alt + esc प्रेस करा.</translation>
 <translation id="9137526406337347448">Google सेवा</translation>
 <translation id="9138630967333032450">डावीकडे शिफ्ट करा</translation>
-<translation id="9147928237330776930">सारांश देण्यासाठी खूप कमी शब्द</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
 <translation id="9159524746324788320">हॅम्बर्गर</translation>
 <translation id="9161276708550942948">स्पेस</translation>

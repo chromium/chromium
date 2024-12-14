@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">‏Google Chrome ادائیگی کے طریقوں میں ترمیم کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="2400600116338235695">سائٹ سیریل پورٹس سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
 <translation id="2404884497378469141">اپنی فائلز کو دوبارہ کاپی کرنے کی کوشش کریں</translation>
-<translation id="2412310121876768057">اگلی بار کارڈ کو آٹو فل کریں؟</translation>
 <translation id="2413155254802890957">پرانا</translation>
 <translation id="2413528052993050574">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ کالعدم قرار دے دیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2414886740292270097">گہری</translation>
@@ -1306,7 +1305,6 @@
 <translation id="3354508510846323339">حوالہ <ph name="CURRENT_CITATION" /> میں سے <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />، <ph name="URL" /></translation>
 <translation id="3355823806454867987">پراکسی ترتیبات تبدیل کریں…</translation>
 <translation id="335809815767823">برآمد ہو گئیں</translation>
-<translation id="3359387651158939842">‏جب آپ اپنے کارڈ کو Google Pay کے ساتھ استعمال کرنے کے لیے محفوظ کرتے ہیں تو مستقبل کی خریداریوں کے لیے آٹو فل کریں</translation>
 <translation id="3359565626472459400">شادی</translation>
 <translation id="3360103848165129075">ادائیگی ہینڈلر کی شیٹ</translation>
 <translation id="3360306038446926262">ونڈوز</translation>
@@ -1402,6 +1400,7 @@
 <translation id="351522771072578657">آپ فی الحال مینو پر ہیں</translation>
 <translation id="3517264445792388751">آپ کے منتظم نے فائل سسٹم کو غیر فعال کر دیا ہے</translation>
 <translation id="3518941727116570328">متعدد آبجیکٹس کو ہینڈل کرنا</translation>
+<translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> سے پوچھیں</translation>
 <translation id="3525130752944427905">‏‎10 x 14 انچ</translation>
 <translation id="3525435918300186947">‏MIDI آلات کو کنٹرول اور دوبارہ پروگرام کریں؟</translation>
 <translation id="3527181387426738155">موسیقی اور آڈیو</translation>
@@ -1459,7 +1458,6 @@
 <translation id="3605899229568538311">‏‎5 x 5 انچ</translation>
 <translation id="3606917451836803637">‏TV شوز اور پروگرامز</translation>
 <translation id="3608932978122581043">سمت بندی فیڈ کریں</translation>
-<translation id="3610142117915544498">‏اگلی بار زیادہ تیزی سے ادائیگی کرنے کیلئے، اپنے کارڈ، نام اور بلنگ پتہ کو اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="3612660594051121194">لمبے سفر کے لیے بس اور ٹرین</translation>
 <translation id="3614001939154393113">حملہ آور <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> سے آپ کی معلومات (مثلاً، پاس ورڈز، پیغامات یا کریڈٹ کارڈز) چوری کرنے کی کوشش کر سکتے ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">سائز 2</translation>
@@ -1957,6 +1955,7 @@
 <translation id="4451684391620232683">صارف کو پیش کردہ ٹیکسٹ:</translation>
 <translation id="4452328064229197696">‏آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، Google پاس ورڈ مینیجر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="4456937135469235202">ایڈونچر سفر</translation>
+<translation id="4458013283022578512">ایک سوال درج کریں</translation>
 <translation id="4464826014807964867">آپ کی تنظیم کے ذریعے دی گئی معلومات والی ویب سائٹس</translation>
 <translation id="4466576951214254884">طالب علم کے قرضے اور کالج فائنانسنگ</translation>
 <translation id="4467821340016922962">پوری اسکرین سے باہر نکلنے اور ڈاؤن لوڈ دیکھنے کے لیے، |<ph name="ACCELERATOR" />| کو دبائیں</translation>
@@ -2178,7 +2177,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">اولمپکس</translation>
 <translation id="4898742041545089450">یہ موضوع غیر مسدود ہے اور آپ کی براؤزنگ کی سرگزشت کی بنیاد پر فعال ہو سکتا ہے</translation>
-<translation id="4899379435492347481">‏اپنے آلات پر خریداریوں کے لیے Google Pay کے ساتھ آن لائن استعمال کرنے کے لیے اس کارڈ کو محفوظ کریں</translation>
 <translation id="4900217275619098670">نواں ٹرے</translation>
 <translation id="4901052769830245369">لیبلز (سیمی گلوس)</translation>
 <translation id="4901162432287938633">حفظان صحت اور صحتگاری کا سامان</translation>

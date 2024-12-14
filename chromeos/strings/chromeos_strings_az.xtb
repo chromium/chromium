@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Sağ qulaqlığın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ayarlar</translation>
 <translation id="3347558044552027859">müasir</translation>
+<translation id="3353477144743332882">Xülasə və ad yaratma modelini endirin</translation>
 <translation id="3359218928534347896">mikrofonu səssiz edin</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">suşi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Qısayol əlçatan deyil. <ph name="KEY" /> olmadan yeni qısayol üzərinə basın.</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
+<translation id="5875913454160982848">Transkripsiya modelini endirin</translation>
 <translation id="5876385649737594562">Seçim etmək üçün aktiv edin</translation>
 <translation id="5877503382465267833">Durdurun: <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Tam ekran</translation>
@@ -1588,6 +1590,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
 <translation id="8505011850330200833">Gemini modeli transkriptləri emal etmək və xülasə yaratmaq üçün 2 GB yaddaş tələb edir</translation>
 <translation id="8508640263392900755">APN detalları</translation>
+<translation id="8509574872955173831">Xülasə və ad yaratma haqqında ətraflı məlumat əldə edin</translation>
 <translation id="8522687886059337719">Artıq yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />divar kağızlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> və <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran qoruyucusuna<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> giriş imkanınız var</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">çay evi</translation>
@@ -1724,7 +1727,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="9133772297793293778">Klaviaturada 1-4 dəyişdiricilərini və 1 digər düyməni basın. Redaktə rejimindən çıxmaq üçün alt + esc üzərinə basın.</translation>
 <translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9138630967333032450">Sol shift</translation>
-<translation id="9147928237330776930">Ümumiləşdirmək üçün çox az söz var</translation>
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
 <translation id="9159524746324788320">hamburgerlər</translation>
 <translation id="9161276708550942948">boşluq</translation>

@@ -2872,6 +2872,7 @@
 <translation id="2981113813906970160">பெரிய மவுஸ் இடஞ்சுட்டியைக் காட்டு</translation>
 <translation id="2983102365694924129">ஒரு தளத்தில் நீங்கள் மேற்கொண்ட செயல்பாட்டின் அடிப்படையிலானவை. இந்த அமைப்பு முடக்கப்பட்டுள்ளது.</translation>
 <translation id="2983373101216420412">கேஸின் பேட்டரி நிலை <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984384421572259426">பயன்படுத்தாத பக்கங்களை அழி</translation>
 <translation id="2984727013951557074">Driveவில் ஃபைல் ஒத்திசைக்கப்படுகிறது.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ஐ நிறுவ உங்கள் நிர்வாகிக்கு கோரிக்கையை அனுப்ப வேண்டுமா?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{ஒரு ஆப்ஸை <ph name="APP_NAME" /> நிறுவல் நீக்கியுள்ளது}other{# ஆப்ஸை <ph name="APP_NAME" /> நிறுவல் நீக்கியுள்ளது}}</translation>
@@ -4430,6 +4431,7 @@
 <translation id="4072805772816336153">பிறகு முயலவும்</translation>
 <translation id="4074164314564067597">கீபோர்டு</translation>
 <translation id="407520071244661467">அளவு</translation>
+<translation id="4077623680826964850">VMமைத் தொடங்கும்போது அல்லது மீண்டும் இணைக்கும்போது நேரம் முடிந்துவிட்டது.</translation>
 <translation id="4077917118009885966">இந்தத் தளத்தில் விளம்பரங்கள் தடுக்கப்பட்டன</translation>
 <translation id="4078738236287221428">கட்டாயப்படுத்து</translation>
 <translation id="4078903002989614318">வரிசைப்படுத்துதல் மற்றும் பட்டியல் விருப்பங்கள்</translation>
@@ -4916,6 +4918,7 @@
 <translation id="4437879751057074691">கடவுச்சொற்களையும் கடவுச்சாவிகளையும் சேமிப்பதற்குக் கேள்</translation>
 <translation id="4437947179446780764">பிரத்தியேக DNS சேவை வழங்குநரைச் சேர்க்கவும்</translation>
 <translation id="4438043733494739848">ஒளிபுகு தன்மை</translation>
+<translation id="4439157218765614426">கொள்கை காரணமாகத் தடுக்கப்பட்டது.</translation>
 <translation id="4441124369922430666">கணினி தொடங்கப்பட்டவுடன் தானாகவே இந்தப் பயன்பாட்டைத் தொடங்க விரும்புகிறீர்களா?</translation>
 <translation id="4441147046941420429">தொடர உங்கள் சாதனத்திலிருந்து பாதுகாப்பு விசையை அகற்றி அதை மீண்டும் செருகி, தொடவும்</translation>
 <translation id="444134486829715816">விரிவாக்கு...</translation>
@@ -5372,6 +5375,7 @@
 <translation id="4779083564647765204">பெரிதாக்கு</translation>
 <translation id="4779136857077979611">ஒனிஜிரி</translation>
 <translation id="4779766576531456629">eSIM மொபைல் நெட்வொர்க்கின் பெயரை மாற்றுதல்</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 நகல்</translation>
 <translation id="4780321648949301421">பக்கத்தை இவ்வாறு சேமி...</translation>
 <translation id="4780558987886269159">பணிக்கானது</translation>
 <translation id="4785719467058219317">இந்த இணையதளத்தில் பதிவுசெய்யப்படாத பாதுகாப்பு விசையைப் பயன்படுத்துகிறீர்கள்</translation>
@@ -5451,6 +5455,7 @@
 <translation id="4833683849865011483">பிரிண்ட் சேவையகத்தில் ஒரு பிரிண்டர் உள்ளது</translation>
 <translation id="4835598628985424375">உதடுகளை ஒன்றாக அழுத்திக் குவித்தல்</translation>
 <translation id="4835677468087803981">பின்னை மறைக்கும்</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> நகல்கள்</translation>
 <translation id="4836504898754963407">கைரேகைகளை நிர்வகிக்கவும்</translation>
 <translation id="4837128290434901661">மீண்டும் Google Search என அமைக்கவா?</translation>
 <translation id="4837926214103741331">இந்தச் சாதனத்தைப் பயன்படுத்த, உங்களுக்கு அங்கீகாரம் இல்லை. உள்நுழைவு அனுமதியைப் பெற, சாதன உரிமையாளரைத் தொடர்பு கொள்ளவும்.</translation>
@@ -6075,6 +6080,7 @@
 <translation id="528208740344463258">Android ஆப்ஸைப் பதிவிறக்கிப் பயன்படுத்துவதற்கு, தேவையான புதுப்பிப்பை முதலில் நீங்கள் நிறுவ வேண்டும். உங்கள் <ph name="DEVICE_TYPE" /> புதுப்பிக்கப்படும் போது, அதை நீங்கள் பயன்படுத்த முடியாது. நிறுவல் முடிந்ததும், உங்கள் <ph name="DEVICE_TYPE" /> தொடங்கும்.</translation>
 <translation id="5283677936944177147">அச்சச்சோ! சாதனத்தால், சாதன மாடல் அல்லது வரிசை எண்ணைக் கண்டறிய முடியவில்லை.</translation>
 <translation id="5284445933715251131">பதிவிறக்கத்தைத் தொடர்க</translation>
+<translation id="5285484405698525101">பயன்படுத்தப்படாத பக்கங்கள் எதுவும் தற்போது இல்லை</translation>
 <translation id="5285635972691565180">திரை <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">ஸ்கேன் செய்கிறது</translation>
 <translation id="5287425679749926365">உங்கள் கணக்குகள்</translation>
@@ -6349,6 +6355,7 @@
 <translation id="5481941284378890518">அருகிலுள்ள பிரிண்டர்களைச் சேர்</translation>
 <translation id="5482417738572414119">பக்கக் குழுக்களைப் பரிந்துரைக்கவும் உங்கள் பக்கங்களை ஒழுங்கமைக்கவும் Chromeமை அனுமதிக்க, உள்நுழையுங்கள்</translation>
 <translation id="5483005706243021437">வெளியேற வேண்டாம்</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{பயன்படுத்தாத பக்கங்கள் இல்லை}=1{பயன்படுத்தாத 1 பக்கத்தைப் பாருங்கள்}other{பயன்படுத்தாத # பக்கங்களைப் பாருங்கள்}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை இன்றே திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}other{உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை {NUM_DAYS} நாட்களுக்குள் திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">பயன்பாட்டைச் சேர்</translation>
 <translation id="5485435764083510385">வசனங்களுக்கான விருப்ப மொழி</translation>
@@ -7030,6 +7037,7 @@
 <translation id="5982578203375898585">பதிவிறக்கப்பட்டதும் காட்டு</translation>
 <translation id="5983716913605894570">உருவாக்குகிறது...</translation>
 <translation id="5984222099446776634">சமீபத்தில் பார்த்தவை</translation>
+<translation id="5984334442529819751">DLCயை நிறுவ முடியவில்லை (அடிக்கடி மறுபடி தொடங்க வேண்டியுள்ளது. கூடுதல் தகவலுக்கு, அமைப்புகள்\&gt;\&gt; ChromeOS பற்றி என்பதைப் பார்க்கவும்).</translation>
 <translation id="5985458664595100876">தவறான URL வடிவமைப்பு. ஆதரிக்கப்படும் வடிவமைப்புகள்: \\server\share, smb://server/share.</translation>
 <translation id="5985556342298151179">உங்கள் சாதன நிர்வாகி Chrome ஆப்ஸை நிறுவியுள்ளார்.</translation>
 <translation id="598810097218913399">ஒதுக்கீட்டை அகற்று</translation>
@@ -9264,6 +9272,7 @@
 <translation id="762917478230183172">ஒவ்வொரு பட்டனுக்கும் ஒரு செயலைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="7629206210984165492">தண்மை</translation>
 <translation id="7629827748548208700">தாவல்: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">முடிவு தெரியவில்லை.</translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> நிர்வகிக்கும் இந்தச் சாதனத்தில் ஒவ்வொரு முறையும் நீங்கள் உள்நுழைய வேண்டும்.</translation>
 <translation id="7631014249255418691">Linux ஆப்ஸ் &amp; ஃபைல்கள்  வெற்றிகரமாக காப்புப் பிரதி எடுக்கப்பட்டன</translation>
 <translation id="7631722872321401342">உங்கள் சாதனத்தில் <ph name="LANGUAGE" /> மொழியில் குரல்கள் எதுவும் இல்லை. அமைப்புகளுக்குச் சென்று குரல்களை நீங்கள் நிறுவலாம்.</translation>
@@ -9417,6 +9426,7 @@
 <translation id="7723388585204724670">இயல்பு Chromeமிற்கு மீட்டமை</translation>
 <translation id="7724603315864178912">வெட்டு</translation>
 <translation id="7726391492136714301">மொபைல் அறிவிப்புகளையும் ஆப்ஸையும் பார்க்கலாம்</translation>
+<translation id="7727898923446098954">பக்கம் மறைக்கப்பட்டது</translation>
 <translation id="7728465250249629478">சாதனத்தின் மொழியை மாற்றுதல்</translation>
 <translation id="7728570244950051353">உறக்கப் பயன்முறையிலிருந்து பூட்டுத் திரை</translation>
 <translation id="7728668285692163452">சேனல் மாற்றம் பின்னர் பயன்படுத்தப்படும்</translation>
@@ -9809,6 +9819,7 @@
 <translation id="7992203134935383159">பேச்சு உருவாக்கம்</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">செயல்படுத்தல் முன்னுரிமை</translation>
+<translation id="7997828719430450286">முடிந்தது.</translation>
 <translation id="7998701048266085837">URLகள்</translation>
 <translation id="7999229196265990314">பின்வரும் ஃபைல்கள்  உருவாக்கப்பட்டன:
 
@@ -10458,6 +10469,7 @@
 <translation id="845702320058262034">இணைக்க முடியவில்லை மொபைலின் புளூடூத் ஆன் ஆகியிருப்பதை உறுதிப்படுத்தவும்</translation>
 <translation id="8457251154056341970"><ph name="MODULE_NAME" /> ஐ மீண்டும் இந்தப் பக்கத்தில் பார்க்க மாட்டீர்கள்</translation>
 <translation id="8457451314607652708">புத்தகக்குறிகளை இறக்குமதி செய்</translation>
+<translation id="8458259704995116343">VMமைத் தொடங்க முடியவில்லை.</translation>
 <translation id="8458341576712814616">ஷார்ட்கட்</translation>
 <translation id="8458627787104127436">அனைத்தையும் (<ph name="URL_COUNT" />) புதிய சாளரத்தில் திற</translation>
 <translation id="8459023460357294721">இருப்பினும் <ph name="FILE_NAME" /> ஃபைலைத் திறக்கும்</translation>
@@ -11117,12 +11129,14 @@
 <translation id="8918900204934259333">ஆப்ஸை நிறுவுகிறது...</translation>
 <translation id="891931289445130855">தரவையும் அனுமதிகளையும் நீக்கு</translation>
 <translation id="8920133120839850939">முந்தைய மற்றும் அடுத்த பக்கத்திற்குச் செல்ல, மேலும் சைகைகள் பிரிவிற்குச் சென்று ‘பக்கங்களுக்கிடையே ஸ்வைப் செய்தல்’ விருப்பத்தை இயக்கவும்</translation>
+<translation id="8921369299636221117">வரவேற்பாளர் சேவை இல்லை.</translation>
 <translation id="8922348435910470639">இருமுறை முன்பதிவு செய்யப்பட்டது</translation>
 <translation id="8922624386829239660">திரையின் மூலைகளுக்குக் கர்சரைக் கொண்டுசெல்லும்போது திரையை நகர்த்து</translation>
 <translation id="8923880975836399332">அடர் பசும் நீலம்</translation>
 <translation id="8925124370124776087">இப்போது தலைப்புப் பட்டி மறைக்கப்பட்டுள்ளது</translation>
 <translation id="8925458182817574960">&amp;அமைப்புகள்</translation>
 <translation id="8926389886865778422">மீண்டும் கேட்கவேண்டாம்</translation>
+<translation id="8926555406617248399">பக்கங்கள் மறைக்கப்பட்டன</translation>
 <translation id="892706138619340876">சில அமைப்புகள் மீட்டமைக்கப்பட்டன</translation>
 <translation id="8927438609932588163">எனது சாதனத்தில் தரவைச் சேமிக்க தளங்களை அனுமதி</translation>
 <translation id="8929696694736010839">தற்போதைய மறைநிலை அமர்விற்கு மட்டும்</translation>

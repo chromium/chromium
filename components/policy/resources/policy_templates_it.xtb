@@ -148,11 +148,6 @@ Entrambi hanno lo stesso effetto sul comportamento del browser.</translation>
 <translation id="1059069692400941670">Disabilita l'importazione del motore di ricerca predefinito alla prima esecuzione</translation>
 <translation id="1062011392452772310">Attivazione dell'attestazione da remoto per il dispositivo</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
-<translation id="1062460877136455375">La configurazione della policy consente di specificare quali app web isolate (IWA) non potranno connettersi ai lettori di smart card (non verrà nemmeno chiesto agli utenti di concedere l'autorizzazione). Questa policy accetta i caratteri jolly. Ad esempio, <ph name="ALL_ISOLATED_WEB_APPS" /> bloccherà l'accesso per tutte le IWA.
-
-       Viene eseguito l'override di questa policy da SmartCardConnectAllowedForUrls; in particolare, se il valore di una lista bloccata è <ph name="ALL_ISOLATED_WEB_APPS" />, nessuna IWA potrà connettersi ai lettori di smart card (non verrà nemmeno chiesto agli utenti di concedere l'autorizzazione), ad eccezione di quelle elencate in SmartCardConnectAllowedForUrls.
-
-       Per impostazione predefinita, le app web isolate che specificano le autorizzazioni per le smart card all'interno del manifest possono connettersi alle smart card a condizione che l'utente conceda l'autorizzazione in modo interattivo per ogni lettore.</translation>
 <translation id="1063860513136880926">Se il criterio viene impostato su Attivato, gli screenshot acquisiti con scorciatoie da tastiera o API di estensioni non sono consentiti. Se il criterio viene impostato su Disattivato o se non viene configurato, gli screenshot sono consentiti.
 
 Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" /> gli screenshot acquisiti con applicazioni del sistema operativo o di terze parti sono consentiti.</translation>
@@ -9434,11 +9429,6 @@ I valori validi sono compresi tra 1 secondo e 9999 secondi. Se il criterio non v
 
 Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> viene impostato su false.</translation>
 <translation id="7912255076272890813">Configura tipi di app/estensioni consentiti</translation>
-<translation id="7912541841840197488">La configurazione della policy consente di specificare quali app web isolate (IWA) possono connettersi alle smart card utilizzando l'API Web Smart Card senza richiedere all'utente l'autorizzazione. Questa policy non accetta caratteri jolly.
-
-       Questa policy esegue l'override di SmartCardConnectBlockedForUrls; in particolare, un valore della lista bloccata di <ph name="ALL_ISOLATED_WEB_APPS" /> significa che nessuna IWA potrà connettersi ai lettori di smart card (non verrà nemmeno chiesto agli utenti di concedere l'autorizzazione), ad eccezione di quelle elencate in SmartCardConnectAllowedForUrls.
-
-       Per impostazione predefinita, le app web isolate che specificano le autorizzazioni per le smart card all'interno del manifest possono connettersi alle smart card a condizione che l'utente conceda l'autorizzazione in modo interattivo per ogni lettore.</translation>
 <translation id="791267408364877739">Mostra avvisi di sicurezza quando vengono usati flag della riga di comando potenzialmente pericolosi</translation>
 <translation id="7919665519909231619">Consenti l'attivazione della funzionalità della lista della spesa</translation>
 <translation id="7922358664346625612">Mantieni l'ultima scheda aperta in Chrome.</translation>

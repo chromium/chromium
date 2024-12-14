@@ -807,7 +807,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2399868464369312507">Google Chrome er að reyna að breyta greiðslumátum.</translation>
 <translation id="2400600116338235695">Getur beðið um að tengjast raðtengjum</translation>
 <translation id="2404884497378469141">Prófaðu að afrita skrárnar þínar aftur</translation>
-<translation id="2412310121876768057">Fylla kortaupplýsingar sjálfkrafa út næst?</translation>
 <translation id="2413155254802890957">Gamalt</translation>
 <translation id="2413528052993050574">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans gæti hafa verið afturkallað. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="2414886740292270097">Dökkt</translation>
@@ -1305,7 +1304,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3354508510846323339">Heimild <ph name="CURRENT_CITATION" /> af <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Breyta proxy-stillingum...</translation>
 <translation id="335809815767823">Flutt út</translation>
-<translation id="3359387651158939842">Vistaðu kortið þitt til fylla kortaupplýsingarnar þínar sjálfkrafa út þegar þú gengur frá kaupum á Google Play í framtíðinni</translation>
 <translation id="3359565626472459400">Hjónaband</translation>
 <translation id="3360103848165129075">Greiðsluhjálparforrit</translation>
 <translation id="3360306038446926262">Gluggar</translation>
@@ -1458,7 +1456,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3605899229568538311">5 x 5 to.</translation>
 <translation id="3606917451836803637">Sjónvarpsþættir og -dagskrár</translation>
 <translation id="3608932978122581043">Inntaksstefna</translation>
-<translation id="3610142117915544498">Til að greiða hraðar næst geturðu vistað kortið og nafn og heimilisfang greiðanda á Google reikningnum</translation>
 <translation id="3612660594051121194">Langferðabílar og lestir</translation>
 <translation id="3614001939154393113">Árásaraðilar eru hugsanlega að reyna að stela upplýsingunum þínum af <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (t.d. aðgangsorðum, skilaboðum eða kreditkortaupplýsingum). <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Stærð 2</translation>
@@ -2177,7 +2174,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Ólympíuleikar</translation>
 <translation id="4898742041545089450">Þetta umfjöllunarefni hefur verið tekið af bannlista og gæti orðið virkt miðað við vafraferil þinn</translation>
-<translation id="4899379435492347481">Vistaðu kortið til að nota það fyrir kaup á Google Pay í öllum tækjunum þínum</translation>
 <translation id="4900217275619098670">Níunda rúlla</translation>
 <translation id="4901052769830245369">Merkimiðar (hálfglans)</translation>
 <translation id="4901162432287938633">Hreinlætisvörur</translation>

@@ -807,7 +807,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2399868464369312507">Google Chrome pokušava da izmeni načine plaćanja.</translation>
 <translation id="2400600116338235695">Može da traži da se povezuje sa serijskim portovima</translation>
 <translation id="2404884497378469141">Probajte da ponovo kopirate fajlove</translation>
-<translation id="2412310121876768057">Želite da sledeći put automatski popunite karticu?</translation>
 <translation id="2413155254802890957">Staro</translation>
 <translation id="2413528052993050574">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat će možda biti opozvan. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="2414886740292270097">Tamna</translation>
@@ -1305,7 +1304,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3354508510846323339"><ph name="CURRENT_CITATION" />. navod od <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Promeni podešavanja proksija...</translation>
 <translation id="335809815767823">Izvezeno je</translation>
-<translation id="3359387651158939842">Automatski popunjavajte karticu za buduće kupovine kada je sačuvate da biste je koristili uz Google Pay</translation>
 <translation id="3359565626472459400">Brak</translation>
 <translation id="3360103848165129075">Stranica obrađivača plaćanja</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1459,7 +1457,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3605899229568538311">5×5 in</translation>
 <translation id="3606917451836803637">TV emisije i programi</translation>
 <translation id="3608932978122581043">Smer unosa</translation>
-<translation id="3610142117915544498">Da biste sledeći put platili brže, sačuvajte karticu, ime i adresu za obračun na Google nalogu</translation>
 <translation id="3612660594051121194">Međunarodni autobuski i železnički prevoz</translation>
 <translation id="3614001939154393113">Napadači možda pokušavaju da ukradu vaše informacije sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na primer, lozinke, poruke ili informacije o kreditnim karticama). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Veličina 2</translation>
@@ -2179,7 +2176,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijada</translation>
 <translation id="4898742041545089450">Ova tema je odblokirana i može da postane aktivna na osnovu istorije pregledanja</translation>
-<translation id="4899379435492347481">Sačuvajte ovu karticu da biste je koristili onlajn uz Google Pay za kupovine na svim uređajima</translation>
 <translation id="4900217275619098670">Deveti kotur</translation>
 <translation id="4901052769830245369">Nalepnice (polusjajne)</translation>
 <translation id="4901162432287938633">Sredstva za ličnu higijenu</translation>

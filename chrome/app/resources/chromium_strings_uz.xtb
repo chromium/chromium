@@ -67,6 +67,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="1896836275755235458">Chromium fondagi amallar hamda ravon varaqlash va video freyming kabi vizual effektlarni cheklash orqali batareya quvvatini tejashni boshlaydi. <ph name="BEGIN_LINK" />Quvvat tejash haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater xizmati</translation>
 <translation id="1911763535808217981">Agar bu faolsizlantirilsa, Gmail kabi Google saytlarida hisobingizga kirganingizda Chromium hisobingizga kirilmaydi</translation>
+<translation id="1916451563296275579">Bu ilovalar maʼlumotlarini Chromiumdan olib tashlang</translation>
 <translation id="1929939181775079593">Chromium javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="1933341829955786215">Tashkilotingiz (<ph name="MANAGER" />) Chromium hisobiga kirishni talab qiladi</translation>
 <translation id="193439633299369377">Yangilanishni oʻrnatish uchun ChromeOS qayta ishga tushirilishi kerak.</translation>
@@ -402,6 +403,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="6455857529632101747">Chromium profillariga xush kelibsiz</translation>
 <translation id="6466344609055215035">Hisobni Chromiumdan chiqarish</translation>
 <translation id="6475912303565314141">Bundan tashqari, kengaytma Chromium bosh sahifasini o‘zgarib qo‘ydi.</translation>
+<translation id="648062525172759633">Bu sahifalar Chromium dastur ishlab chiquvchilari foydalanishi uchun moʻljallangan va faol ishlatish yoki sinovdan oʻtkazish mumkin emas. Ularni yoqish uchun <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> havolasiga oʻting, debag sahifalarini yoqish uchun tugmani bosib, keyin yana bu sahifaga oʻting.</translation>
 <translation id="648319183876919572">Saytlarni kuchaytirilgan rejimda xavfsiz kezish yordamida zararli saytlar va yuklanmalardan himoyalanish mumkin</translation>
 <translation id="6510925080656968729">Chromium’ni o‘chirib tashlash</translation>
 <translation id="651535675648445253">Yorliqlar Chromiumda ochiladi</translation>

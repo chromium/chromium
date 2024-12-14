@@ -807,7 +807,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2399868464369312507">Google Chrome forsøger at redigere betalingsmetoder.</translation>
 <translation id="2400600116338235695">Websitet kan anmode om tilladelse til at oprette forbindelse til serieporte</translation>
 <translation id="2404884497378469141">Prøv at kopiere dine filer igen</translation>
-<translation id="2412310121876768057">Vil du automatisk udfylde kortet næste gang?</translation>
 <translation id="2413155254802890957">Gammel</translation>
 <translation id="2413528052993050574">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet muligvis er blevet tilbagekaldt. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="2414886740292270097">Mørk</translation>
@@ -1305,7 +1304,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3354508510846323339">Henvisning <ph name="CURRENT_CITATION" /> af <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Skift indstillinger for proxy...</translation>
 <translation id="335809815767823">Eksporteret</translation>
-<translation id="3359387651158939842">Udfyld dit kort automatisk ved fremtidige køb, når du gemmer det til brug med Google Pay</translation>
 <translation id="3359565626472459400">Ægteskab</translation>
 <translation id="3360103848165129075">Regneark for betalingshandler</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1458,7 +1456,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3605899229568538311">5 x 5 tommer</translation>
 <translation id="3606917451836803637">Tv-serier og -programmer</translation>
 <translation id="3608932978122581043">Retning for indførelse</translation>
-<translation id="3610142117915544498">Gem dit kort, dit navn og din faktureringsadresse på din Google-konto for at betale hurtigere næste gang</translation>
 <translation id="3612660594051121194">Langdistancebusser og -tog</translation>
 <translation id="3614001939154393113">Hackere prøver muligvis at stjæle dine oplysninger fra <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (f.eks. adgangskoder, beskeder eller kreditkort). <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Størrelse 2</translation>
@@ -2177,7 +2174,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">OL</translation>
 <translation id="4898742041545089450">Blokeringen af dette emne er fjernet, og det kan blive aktivt baseret på din browserhistorik</translation>
-<translation id="4899379435492347481">Gem dette kort, så du kan bruge det online ved køb med Google Pay på alle dine enheder</translation>
 <translation id="4900217275619098670">Niende papirrulle</translation>
 <translation id="4901052769830245369">Etiketter (halvblanke)</translation>
 <translation id="4901162432287938633">Hygiejne og toiletartikler</translation>
@@ -3543,6 +3539,7 @@ Yderligere oplysninger:
 <translation id="7388594495505979117">{0,plural, =1{Din enhed genstarter om 1 minut}one{Din enhed genstarter om # minut}other{Din enhed genstarter om # minutter}}</translation>
 <translation id="7393161616326137353">Adventurespil</translation>
 <translation id="7393475648162498734">Se, hvilke bonusser og fordele der er tilgængelige for dine kort, når du betaler</translation>
+<translation id="7393971683644170444">Opretter forbindelse til din kortudbyder…</translation>
 <translation id="739728382607845710">Ikon for betalingshandler</translation>
 <translation id="7399616692258236448">Lokationsanmodninger blokeres automatisk for alle websites undtagen dem, hvor du har givet tilladelse</translation>
 <translation id="7400418766976504921">Webadresse</translation>

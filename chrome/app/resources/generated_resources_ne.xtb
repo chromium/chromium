@@ -2857,6 +2857,7 @@
 <translation id="2981113813906970160">ठुलो माउस कर्सर देखाउँनुहोस्</translation>
 <translation id="2983102365694924129">तपाईंले कुनै साइटमा गरेका गतिविधिका आधारमा। यो सेटिङ अफ छ।</translation>
 <translation id="2983373101216420412">केसमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="2984384421572259426">प्रयोग नगरिएका ट्याबहरू हटाउनुहोस्</translation>
 <translation id="2984727013951557074">यो फाइल अझै पनि Drive मा सिंक भइरहेको छ।</translation>
 <translation id="2985348301114641460">आफ्ना प्रशासकलाई "<ph name="EXTENSION_NAME" />" स्थापना गरिदिन आग्रह गर्दै एउटा अनुरोध पठाउने हो?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ले एउटा एप अनइन्स्टल गरेको छ}other{<ph name="APP_NAME" /> ले # वटा एप अनइन्स्टल गरेको छ}}</translation>
@@ -4412,6 +4413,7 @@
 <translation id="4072805772816336153">पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="4074164314564067597">किबोर्ड</translation>
 <translation id="407520071244661467">मापन</translation>
+<translation id="4077623680826964850">VM बुट गर्दा वा त्यसमा फेरि कनेक्ट गर्दा टाइम आउट भयो।</translation>
 <translation id="4077917118009885966">यो साइटमा विज्ञापनहरूमाथि रोक लगाइएको छ</translation>
 <translation id="4078738236287221428">आक्रामक</translation>
 <translation id="4078903002989614318">क्रमबद्ध र सूचीबद्ध गर्ने विकल्पहरू</translation>
@@ -4898,6 +4900,7 @@
 <translation id="4437879751057074691">पासवर्ड तथा पासकीहरू सेभ गर्न अफर गरियोस्</translation>
 <translation id="4437947179446780764">कस्टम DNS सेवा प्रदायक हाल्नुहोस्</translation>
 <translation id="4438043733494739848">पारदर्शी</translation>
+<translation id="4439157218765614426">नीतिअनुसार निषेध गरिएको छ।</translation>
 <translation id="4441124369922430666">के तपाईं मेसिन खुला हुँदा यो एप्लिकेसन स्वत: सुरु गर्न चाहनुहुन्छ?</translation>
 <translation id="4441147046941420429">जारी राख्न, आफ्नो डिभाइसबाट सुरक्षा साँचो हटाउनुहोस्, त्यसपछि उक्त साँचो पुनः छिराउनुहोस् र त्यसमा छुनुहोस्</translation>
 <translation id="444134486829715816">विस्तृत गर्नुहोस्</translation>
@@ -5354,6 +5357,7 @@
 <translation id="4779083564647765204">जुम</translation>
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4779766576531456629">eSIM मोबाइल नेटवर्कको नाम बदल्नुहोस्</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • एउटा कपी</translation>
 <translation id="4780321648949301421">पृष्ठलाई निम्न रूपमा बचत गर्नुहोस्...</translation>
 <translation id="4780558987886269159">कार्यालयका लागि</translation>
 <translation id="4785719467058219317">तपाईं यस वेबसाइटमा दर्ता नगरिएको सुरक्षा साँचो प्रयोग गर्दै हुनुहुन्छ</translation>
@@ -5433,6 +5437,7 @@
 <translation id="4833683849865011483">प्रिन्ट सर्भरमा १ प्रिन्टर फेला पर्‍यो</translation>
 <translation id="4835598628985424375">ओठ जोडेर मुख चुच्चो पार्नुहोस्</translation>
 <translation id="4835677468087803981">PIN लुकाउनुहोस्</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> वटा कपी</translation>
 <translation id="4836504898754963407">फिंगरप्रिन्टहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4837128290434901661">फेरि Google खोज प्रयोग गर्ने हो?</translation>
 <translation id="4837926214103741331">तपाईंलाई यो डिभाइस प्रयोग गर्ने अधिकार दिइएको छैन। साइन-इन अनुमतिको लागि यन्त्र मालिकसँग सम्पर्क गर्नुहोस्।</translation>
@@ -6057,6 +6062,7 @@
 <translation id="528208740344463258">Android एपहरू डाउनलोड गर्न र प्रयोग गर्न, तपाईंले पहिले यो आवश्यक अद्यावधिक स्थापना गर्नु पर्छ। तपाईंको <ph name="DEVICE_TYPE" /> अद्यावधिक भइरहेका अवस्थामा, तपाईं यसलाई प्रयोग गर्न सक्नुहुन्न। स्थापना सम्पन्न भएपछि, तपाईंको <ph name="DEVICE_TYPE" /> पुनः सुरु हुने छ।</translation>
 <translation id="5283677936944177147">हत्तेरिका! प्रणालीले यन्त्रको मोडल वा क्रम सङ्ख्या निर्धारण गर्न सकेन।</translation>
 <translation id="5284445933715251131">डाउनलोड जारी राख्नुहोस्</translation>
+<translation id="5285484405698525101">हाल सबै ट्याब प्रयोग गरिएका छन्</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> देखाउनुहोस्</translation>
 <translation id="5286194356314741248">स्क्यान गर्दै</translation>
 <translation id="5287425679749926365">तपाइँका खाताहरू</translation>
@@ -6331,6 +6337,7 @@
 <translation id="5481941284378890518">नजिकैका प्रिन्टरहरू थप्नुहोस्</translation>
 <translation id="5482417738572414119">Chrome लाई ट्याब समूहहरूका बारेमा सुझाव दिन र तपाईंका ट्याबहरू व्यवस्थित गर्न दिन साइन इन गर्नुहोस्</translation>
 <translation id="5483005706243021437">यसमै रहनुहोस्</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{सबै ट्याब प्रयोग गरिएका छन्}=1{प्रयोग नगरिएको एउटा ट्याबको समीक्षा गर्नुहोस्}other{प्रयोग नगरिएका # वटा ट्याबको समीक्षा गर्नुहोस्}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का अनुसार तपाईंले आजै आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरणहरू हेर्नुहोस्<ph name="LINK_END" />}other{<ph name="MANAGER" /> का अनुसार तपाईंले {NUM_DAYS} दिनभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरणहरू हेर्नुहोस्<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">एप थप्नुहोस्</translation>
 <translation id="5485435764083510385">क्याप्सनको रुचाइएको भाषा</translation>
@@ -7010,6 +7017,7 @@
 <translation id="5982578203375898585">डाउनलोड गर्ने कार्य पूरा भएपछि डाउनलोड गरिएका सामग्री देखाउनुहोस्</translation>
 <translation id="5983716913605894570">सिर्जना गरिँदै छन्…</translation>
 <translation id="5984222099446776634">भर्खरै भ्रमण गरिएको</translation>
+<translation id="5984334442529819751">DLC इन्स्टल गर्ने क्रममा त्रुटि भयो (डिभाइस धेरैजसो रिबुट गर्नु पर्ने हुन्छ, "सेटिङ\&gt;\&gt;ChromeOS का बारेमा जानकारी" मा गई थप जानकारी प्राप्त गर्नुहोस्)।</translation>
 <translation id="5985458664595100876">URL ढाँचा अमान्य छ। समर्थन गरिएका ढाँचाहरू \\server\share र smb://server/share हुन्।</translation>
 <translation id="5985556342298151179">तपाईंको डिभाइसका एड्मिनले इन्स्टल गरेको Chrome को एप।</translation>
 <translation id="598810097218913399">तोकिएको काम हटाउनुहोस्</translation>
@@ -9243,6 +9251,7 @@
 <translation id="762917478230183172">प्रत्येक कीका निम्ति एउटा कारबाही चयन गर्नुहोस्</translation>
 <translation id="7629206210984165492">शान्त</translation>
 <translation id="7629827748548208700">ट्याब: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">अज्ञात परिणाम।</translation>
 <translation id="7630426712700473382">यो डिभाइस <ph name="MANAGER" /> ले व्यवस्थापन गर्छ र यो डिभाइस प्रयोग गर्न तपाईंले हरेक पटक साइन इन गर्नु पर्ने हुन्छ।</translation>
 <translation id="7631014249255418691">Linux एप र फाइलहरू सफलतापूर्वक ब्याकअप गरिएका छन्</translation>
 <translation id="7631722872321401342">तपाईंको डिभाइसमा कुनै पनि <ph name="LANGUAGE" /> भ्वाइस उपलब्ध छैन। तपाईं सेटिङमा गई भ्वाइस इन्स्टल गर्न सक्नुहुन्छ।</translation>
@@ -9396,6 +9405,7 @@
 <translation id="7723388585204724670">रिसेट गरी Chrome को डिफल्ट थिम सेट गर्नुहोस्</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7726391492136714301">आफ्नो फोनका सूचना तथा एपहरू हेर्नुहोस्</translation>
+<translation id="7727898923446098954">ट्याब लुकाइएको छ</translation>
 <translation id="7728465250249629478">यन्त्रको भाषा परिवर्तन गर्नुहोस्</translation>
 <translation id="7728570244950051353">शयन मोडबाट स्क्रिन लक गर्ने विकल्प</translation>
 <translation id="7728668285692163452">च्यानल परिवर्तन अलि पछि लागू हुनेछ</translation>
@@ -9788,6 +9798,7 @@
 <translation id="7992203134935383159">टेक्स्ट-टू-स्पिच</translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">प्रक्रिया प्राथमिकता</translation>
+<translation id="7997828719430450286">सफल भयो।</translation>
 <translation id="7998701048266085837">URL हरू</translation>
 <translation id="7999229196265990314">निम्न फाइलहरू सिर्जना गर्‍यो:
 
@@ -10436,6 +10447,7 @@
 <translation id="845702320058262034">जडान गर्न सकिएन। आफ्नो फोनको ब्लुटुथ सक्रिय गरिएको कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="8457251154056341970">तपाईंलाई यो पेजमा <ph name="MODULE_NAME" /> फेरि देखाइने छैन</translation>
 <translation id="8457451314607652708">बुकमार्कहरू इम्पोर्ट गर्नुहोस्</translation>
+<translation id="8458259704995116343">VM सुरु गर्न सकिएन।</translation>
 <translation id="8458341576712814616">सर्टकट</translation>
 <translation id="8458627787104127436">सबै (<ph name="URL_COUNT" />) URL नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="8459023460357294721">जे भए पनि <ph name="FILE_NAME" /> खोल्नुहोस्</translation>
@@ -11095,12 +11107,14 @@
 <translation id="8918900204934259333">एप इन्स्टल गरिँदै छ...</translation>
 <translation id="891931289445130855">डेटा मेटाउनुहोस् तथा अनुमति रद्द गर्नुहोस्</translation>
 <translation id="8920133120839850939">"थप जेस्चरहरू" ट्याब छनौट गर्नुहोस् अनि अगाडि र पछाडि जान पेजहरूका बिचमा स्वाइप गर्ने सुविधा अन गर्नुहोस्</translation>
+<translation id="8921369299636221117">कन्सियर्ज सेवा उपलब्ध छैन।</translation>
 <translation id="8922348435910470639">कार्यक्रमको समय जुधेको छ</translation>
 <translation id="8922624386829239660">माउसको कर्सरले स्क्रिनका किनारामा छुँदा स्क्रिन सारियोस्</translation>
 <translation id="8923880975836399332">गाढा निलो-हरियो मिश्रित रङ्ग</translation>
 <translation id="8925124370124776087">अहिले टाइटल बार लुकाइएको छ</translation>
 <translation id="8925458182817574960">&amp;सेटिङहरू</translation>
 <translation id="8926389886865778422">फेरि नसोध्नुहोस्</translation>
+<translation id="8926555406617248399">ट्याबहरू लुकाइएका छन्</translation>
 <translation id="892706138619340876">केही सेटिङहरू रिसेट गरिएका छन्</translation>
 <translation id="8927438609932588163">साइटहरूलाई तपाईंको डिभाइसमा जानकारी सेभ गर्ने अनुमति दिनुहोस्</translation>
 <translation id="8929696694736010839">हालको इन्कोग्निटो मोड चलाइने अवधिमा मात्र लागू हुन्छ</translation>

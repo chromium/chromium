@@ -206,6 +206,7 @@
 <translation id="345171907106878721">Cadastrar-se no Chrome</translation>
 <translation id="3453763134178591239">Termos do ChromeOS</translation>
 <translation id="3503306920980160878">O Chrome precisa acessar seu local para compartilhá-lo com este site</translation>
+<translation id="3512634283363927263">Estas páginas se destinam para uso dos desenvolvedores do Chrome e podem não ser mantidas ou testadas ativamente. Para ativá-las, acesse <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração. Em seguida, volte para esta página.</translation>
 <translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="3541482654983822893">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
 <translation id="3564543103555793392">Quando você faz login no Chrome, pode salvar favoritos, senhas e muito mais para usar no smartphone</translation>
@@ -520,6 +521,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7572537927358445944">Desativada: o Chrome não consegue verificar a origem dessa extensão</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
+<translation id="7617512710641355143">O Chrome está sendo gerenciado</translation>
 <translation id="7626032353295482388">Este é o Google Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do Google ChromeOS.</translation>
 <translation id="7629695634924605473">O Chrome avisa se suas senhas forem comprometidas</translation>
@@ -629,6 +631,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8718062187489036808">Sair do Google Chrome</translation>
 <translation id="873133009373065397">O Google Chrome não pode determinar ou definir o navegador padrão</translation>
 <translation id="8748735421235723888">O Chrome libera memória de guias inativas. Isso permite que guias ativas e outros apps usem mais recursos do computador e deixa o Chrome rápido. Suas guias inativas são reativadas automaticamente quando você volta a elas. <ph name="BEGIN_LINK" />Saiba mais sobre a Economia de memória<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Remover os dados deste app do Chrome</translation>
 <translation id="8765470054473112089">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chrome envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="8781673607513845160">Para usar a câmera, permita o acesso ao Chrome nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>

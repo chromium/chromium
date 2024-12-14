@@ -807,7 +807,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2399868464369312507">A Google Chrome szerkeszteni próbálja a fizetési módokat.</translation>
 <translation id="2400600116338235695">Engedélyt kérhet a soros portokhoz való csatlakozásra</translation>
 <translation id="2404884497378469141">Próbálja meg újra másolni a fájlokat</translation>
-<translation id="2412310121876768057">Legközelebb szeretné automatikusan kitölteni a kártyát?</translation>
 <translation id="2413155254802890957">Régi</translation>
 <translation id="2413528052993050574">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványát visszavonhatták. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="2414886740292270097">Sötét</translation>
@@ -1303,7 +1302,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" />/<ph name="CURRENT_CITATION" />. idézet, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Proxybeállítások módosítása...</translation>
 <translation id="335809815767823">Exportálva</translation>
-<translation id="3359387651158939842">Automatikusan kitöltheti a kártyát a jövőbeli vásárlások során, ha elmenti a Google Pay szolgáltatással való használatra.</translation>
 <translation id="3359565626472459400">Házasság</translation>
 <translation id="3360103848165129075">Fizetési információk munkalapja</translation>
 <translation id="3360306038446926262">Ablakok</translation>
@@ -1457,7 +1455,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3605899229568538311">5 × 5 hüvelyk</translation>
 <translation id="3606917451836803637">Tévéműsorok és programok</translation>
 <translation id="3608932978122581043">Adagolás tájolása</translation>
-<translation id="3610142117915544498">A következő alkalommal gyorsabban fizethet, ha kártyáját, nevét és számlázási címét a Google-fiókjába menti.</translation>
 <translation id="3612660594051121194">Távolsági busz és vonat</translation>
 <translation id="3614001939154393113">A támadók megpróbálhatják ellopni a(z) <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webhelyen lévő adatait (például jelszavakat, üzeneteket vagy hitelkártyaadatokat). <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3614103345592970299">Méret: 2</translation>
@@ -2176,7 +2173,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> és <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpia</translation>
 <translation id="4898742041545089450">Feloldotta ennek a témának a letiltását, ezért a téma aktívvá válhat az Ön böngészési előzményei alapján.</translation>
-<translation id="4899379435492347481">Mentse el ezt a kártyát, hogy online használhassa a Google Pay szolgáltatással az eszközein végzett vásárlásokhoz.</translation>
 <translation id="4900217275619098670">9. tekercs</translation>
 <translation id="4901052769830245369">Címkék (félig fényes)</translation>
 <translation id="4901162432287938633">Higiénia és piperecikkek</translation>

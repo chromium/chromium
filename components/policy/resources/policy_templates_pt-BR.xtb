@@ -157,11 +157,6 @@ Ambas têm o mesmo efeito no comportamento do navegador.</translation>
 <translation id="1059069692400941670">Desativar a importação do mecanismo de pesquisa padrão na primeira execução</translation>
 <translation id="1062011392452772310">Ativar declaração remota para o dispositivo</translation>
 <translation id="1062407476771304334">Substituir</translation>
-<translation id="1062460877136455375">A definição da política especifica quais Apps Isolados da Web (AIWs) não poderão se conectar a leitores de cartão inteligentes. Os usuários também não vão receber uma solicitação de permissão. Essa política aceita caracteres curinga. Por exemplo, <ph name="ALL_ISOLATED_WEB_APPS" /> vai bloquear o acesso de todos os AIWs.
-
-       Essa política é substituída por SmartCardConnectAllowedForUrls. Especificamente, um valor de lista de bloqueio de <ph name="ALL_ISOLATED_WEB_APPS" /> significa que todos os AIWs não poderão se conectar a leitores de cartão inteligente, exceto os listados em SmartCardConnectAllowedForUrls. Os usuários também não vão receber uma solicitação de permissão.
-
-       Por padrão, os Apps Isolados da Web que especificam permissões de cartão inteligente no manifesto podem se conectar a cartões inteligentes, desde que o usuário dê a permissão de forma interativa para cada leitor.</translation>
 <translation id="1063860513136880926">Se a política for ativada, não vai ser permitido fazer capturas de tela com os atalhos do teclado
 ou as APIs de extensão. Se ela for desativada ou deixada sem definição, será possível fazer capturas de tela.
 
@@ -1334,6 +1329,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
 <translation id="1905061765326052857">Não permitir que usuários não afiliados usem as máquinas virtuais necessárias para os apps do Linux</translation>
 <translation id="1906871416501278476">Desativar o serviço <ph name="PRODUCT_NAME" /> e não iniciar o espaço de trabalho remoto após o login</translation>
 <translation id="1907696459350079081">Não ativar o protetor na tela de bloqueio.</translation>
+<translation id="1909567037176216409">O Carregamento adaptável usa aprendizado de máquina para prever o momento em que você vai desconectar o carregador e atrasa o carregamento para 100%, prolongando a duração da bateria.</translation>
 <translation id="1910704279188129272">Permite definir restrições de uso por app.
         As restrições de uso podem ser aplicadas aos apps instalados no <ph name="PRODUCT_OS_NAME" /> para um determinado usuário.
         As restrições precisam ser passadas na lista |app_limits|. É permitida apenas uma entrada por app. Os apps que não estão na lista não têm restrições.
@@ -2562,6 +2558,12 @@ Definir "command_line" impede que uma extensão seja carregada na
 linha de comando.</translation>
 <translation id="2780840673734667062">Desativar o login com mais Contas do Google</translation>
 <translation id="2784880732336446591">Remover dados de navegação ao sair</translation>
+<translation id="2785422026482376078">Especifica se um modelo de Carregamento adaptável tem permissão para controlar o processo de carregamento e prolongar a duração da bateria.
+
+      Quando o dispositivo está no Carregamento adaptável, o modelo avalia se o processo precisa desse controle. Quando o modelo controla o processo de carregamento, ele mantém a bateria carregada até certo nível, como 80%, e só carrega o dispositivo até 100% quando o usuário precisa.
+      Se esta política for definida como verdadeira, o modelo de Carregamento adaptável será ativado e terá permissão para controlar o processo e prolongar a vida útil da bateria. Se a política for definida como falsa ou for deixada sem definição, o modelo de Carregamento adaptável não vai influenciar no processo.
+
+      Observação: essa política não tem efeito se DevicePowerBatteryChargingOptimization estiver definida.</translation>
 <translation id="2787173078141616821">Informações de relatório sobre o status do Android</translation>
 <translation id="2787774054174244402">Definir a política como verdadeira evita que os usuários gravem em dispositivos de armazenamento externo.
 
@@ -3527,6 +3529,7 @@ Se for definida, o <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não p
       Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> entrará em contato automaticamente com o servidor Quirks, fará o download dos arquivos de configuração, se eles estiverem disponíveis, e os armazenará no dispositivo.  Esses arquivos podem ser usados, por exemplo, para melhorar a qualidade de exibição de monitores acoplados.</translation>
 <translation id="3515196503924273265">Permite ativar o recurso NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Depois que a opção <ph name="LACROS_NAME" /> for desativada, a migração de dados não vai ser realizada. A pasta <ph name="LACROS_NAME" /> será removida, e os usuários vão continuar usando os dados restantes.</translation>
+<translation id="3518293344797498431">Carrega a bateria até cerca de 80% para maximizar a vida útil dela.</translation>
 <translation id="3518512927469906365">Desativar o particionamento de armazenamento de terceiros para origens de nível superior específicas</translation>
 <translation id="3522257170445891912">Quando esta política é definida, o fluxo de autenticação de login acontece em uma das seguintes formas, dependendo do valor da configuração:
 
@@ -5382,6 +5385,7 @@ Se for deixada sem definição, o <ph name="PRODUCT_NAME" /> vai seguir o proces
       Os padrões de URL não podem entrar em conflito com <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
+<translation id="4891286600098289814">Otimização de carregamento da bateria</translation>
 <translation id="4892647988357350237">Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", a caixa de diálogo de Termos de Serviço não aparecerá na primeira execução e nas execuções subsequentes. Se ela for definida como "<ph name="STANDARD_TOS_DIALOG" />" ou não for definida, a caixa de diálogo de Termos de Serviço aparecerá na primeira execução. As outras ressalvas são as seguintes:
 
       - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de gerenciamento unificado de endpoints.
@@ -6052,6 +6056,7 @@ Para mais informações sobre contextos seguros, consulte "Secure Contexts" (htt
 <translation id="5321624917465764266">Se a política for ativada ou não for definida, o histórico de navegação e de downloads poderão ser excluídos no Chrome e os usuários não poderão mudar essa configuração.
 
 Se a política for desativada, o histórico de navegação e o de downloads não poderão ser excluídos. Mesmo que a política esteja desativada, não há garantia de que o histórico de navegação e o de downloads serão preservados. Os usuários poderão editar ou excluir os arquivos de banco de dados de histórico diretamente, e o próprio navegador poderá expirar ou arquivar todo ou qualquer item de histórico a qualquer momento.</translation>
+<translation id="5322649594584715998">Carrega totalmente a bateria na velocidade padrão. Esse modo desativa o carregamento adaptável e limitado.</translation>
 <translation id="5323200200131319468">Ativar a resposta falada na tela de login.</translation>
 <translation id="5323271643727095577">Não mostrar a caixa de diálogo de cancelamento quando event.preventDefault() for chamado para o evento beforeunload. Mostrar a caixa de diálogo de cancelamento quando beforeunload event.returnValue for a string vazia para o evento beforeunload.</translation>
 <translation id="5324430722441910403">Configurações da pesquisa no site</translation>
@@ -6466,6 +6471,11 @@ Se a política for deixada sem definição ou definida como uma lista vazia, cai
       Se a política não fosse configurada, o <ph name="PRODUCT_NAME" /> seguiria o processo de lançamento padrão para proibir hashes não seguros. Se ela fosse ativada, o <ph name="PRODUCT_NAME" /> permitiria que hashes não seguros fossem usados por um servidor ao negociar um handshake de TLS. Se ela fosse desativada, o <ph name="PRODUCT_NAME" /> não permitiria o uso de hashes não seguros por um servidor ao negociar um handshake de TLS.</translation>
 <translation id="5611869109049836323">Aplicar restrições a âncoras de confiança adicionadas localmente</translation>
 <translation id="5612770822986069057">Permitir que os usuários ativem ou desativem o recurso Proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" /> no dispositivo.</translation>
+<translation id="561480358503796257">Um URL de uma imagem que será usada como selo corporativo de um perfil gerenciado. O URL precisa levar a uma imagem.
+
+Ela só pode ser definida como uma política do usuário.
+
+Recomendamos usar o favicon (por exemplo, https://www.google.com/favicon.ico) ou um ícone com pelo menos 48 x 48 pixels.</translation>
 <translation id="5614865701790130558">Registros de eventos para instalações de extensão com base em políticas</translation>
 <translation id="561493980641967737">Se a política for definida como "Ativada", a coleta de dados anônimos inseridos no URL (que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e navegação) vai ficar sempre ativa.
 
@@ -8227,6 +8237,21 @@ Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NA
       Se a política for definida como "Desativada", o ícone de recursos experimentais do navegador será removido da barra de ferramentas.
 
       chrome://flags e todas as outras formas de desativar e ativar os recursos do navegador ainda funcionarão como esperado, independentemente de a política ser definida como "Ativada" ou "Desativada".</translation>
+<translation id="67952585272033079">A integridade da bateria pode ser afetada por fatores como cargas completas frequentes e durações de carregamento prolongadas. Esta política oferece três opções para otimizar o comportamento de carregamento e reduzir esses fatores, prolongando a vida útil da bateria.
+
+Se a política for definida como Padrão, a bateria vai carregar normalmente até 100%. Isso desativa o carregamento adaptável e limitado.
+
+Quando a política é definida como Adaptável, o dispositivo aprende seus hábitos de carregamento e atrasa a carga completa até que seja necessária. Isso ajuda a prolongar a integridade da bateria.
+
+Quando a política é definida como Limitada, a bateria é carregada apenas até cerca de 80% para maximizar a vida útil.
+
+Se a política não for definida, a opção padrão será aplicada (quando for o caso).
+
+A política DevicePowerBatteryChargingOptimization substitui a política DevicePowerAdaptiveChargingEnabled.
+
+A política DevicePowerAdaptiveChargingEnabled controla o Carregamento adaptável se a DevicePowerBatteryChargingOptimization estiver desativada.
+
+As políticas DevicePowerBatteryChargingOptimization e DevicePowerAdaptiveChargingEnabled sempre têm precedência sobre as configurações do usuário.</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6796215185873669533">Definir a versão da string do user agent como a configuração padrão do navegador.</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>
@@ -9683,11 +9708,6 @@ Os valores vão de 1 a 9.999 segundos. Se a política for deixada sem definiçã
 
 Esta política não terá efeito quando a <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> estiver definida como "false".</translation>
 <translation id="7912255076272890813">Configurar tipos permitidos de aplicativo/extensão</translation>
-<translation id="7912541841840197488">A definição da política especifica quais Apps Isolados da Web (AIWs) podem se conectar a cartões inteligentes usando a API Web Smart Card sem que o usuário precise dar permissão. Essa política não aceita caracteres curinga.
-
-       Ela substitui SmartCardConnectBlockedForUrls. Especificamente, um valor de lista de bloqueio de <ph name="ALL_ISOLATED_WEB_APPS" /> significa que todos os AIWs não poderão se conectar a leitores de cartão inteligente, exceto os listados em SmartCardConnectAllowedForUrls. Os usuários também não vão receber uma solicitação de permissão.
-
-       Por padrão, os Apps Isolados da Web que especificam permissões de cartão inteligente no manifesto podem se conectar a cartões inteligentes, desde que o usuário dê a permissão de forma interativa para cada leitor.</translation>
 <translation id="791267408364877739">Exibir avisos de segurança quando sinalizações de linha de comando potencialmente perigosas forem usadas</translation>
 <translation id="7919665519909231619">Permitir que o recurso da lista de compras seja ativado</translation>
 <translation id="7922358664346625612">Mantém a última guia aberta no Chrome.</translation>

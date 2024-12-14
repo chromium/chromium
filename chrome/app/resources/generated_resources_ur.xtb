@@ -2861,6 +2861,7 @@
 <translation id="2981113813906970160">بڑا ماؤس کرسر دکھائیں</translation>
 <translation id="2983102365694924129">سائٹ پر آپ کی سرگرمی کی بنیاد پر۔ یہ ترتیب آف ہے۔</translation>
 <translation id="2983373101216420412">کیس بیٹری کا لیول <ph name="PERCENTAGE" />% ہے۔</translation>
+<translation id="2984384421572259426">غیر استعمال شدہ ٹیبز صاف کریں</translation>
 <translation id="2984727013951557074">‏فائل کو ابھی بھی Drive سے مطابقت پذیر کیا جا رہا ہے۔</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" انسٹال کرنے کے لیے آپ کے منتظم کو درخواست بھیجیں؟</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> نے ایک ایپ کو اَن انسٹال کر دیا}other{<ph name="APP_NAME" /> نے # ایپس کو اَن انسٹال کر دیا}}</translation>
@@ -4417,6 +4418,7 @@
 <translation id="4072805772816336153">بعد میں دوبارہ کوشش کریں</translation>
 <translation id="4074164314564067597">کی بورڈ</translation>
 <translation id="407520071244661467">اسکیل</translation>
+<translation id="4077623680826964850">‏‫VM سے بوٹ کرنے یا دوبارہ منسلک ہونے پر ٹائم آؤٹ۔</translation>
 <translation id="4077917118009885966">اس سائٹ پر اشتہارات مسدود ہیں</translation>
 <translation id="4078738236287221428">پرجوش</translation>
 <translation id="4078903002989614318">ترتیب دینے اور فہرست کے اختیارات</translation>
@@ -4903,6 +4905,7 @@
 <translation id="4437879751057074691">پاس ورڈز اور پاس کیز کو محفوظ کرنے کی پیشکش کریں</translation>
 <translation id="4437947179446780764">‏حسب ضرورت DNS سروس فراہم کنندہ شامل کریں</translation>
 <translation id="4438043733494739848">شفاف</translation>
+<translation id="4439157218765614426">پالیسی کے ذریعہ ممنوع ہے۔</translation>
 <translation id="4441124369922430666">کیا آپ مشین آن ہونے پر اس ایپ کو خودکار طور پر شروع کرنا چاہتے ہیں؟</translation>
 <translation id="4441147046941420429">جاری رکھنے کے لیے، اپنے آلہ سے اپنی سیکیورٹی کلید ہٹائیں، پھر اس کو دوبارہ داخل اور ٹچ کریں</translation>
 <translation id="444134486829715816">پھیلائیں…</translation>
@@ -5359,6 +5362,7 @@
 <translation id="4779083564647765204">زوم</translation>
 <translation id="4779136857077979611">اونیگیری</translation>
 <translation id="4779766576531456629">‏eSIM سیلولر نیٹ ورک کا نام تبدیل کریں</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 ڈپلیکیٹ</translation>
 <translation id="4780321648949301421">صفحہ محفوظ کریں بطور…</translation>
 <translation id="4780558987886269159">کام کیلئے</translation>
 <translation id="4785719467058219317">آپ اس سیکیورٹی کلید کا استعمال کر رہے ہیں جو اس ویب سائٹ کے ساتھ رجسٹرڈ نہیں ہے</translation>
@@ -5437,6 +5441,7 @@
 <translation id="4833683849865011483">پرنٹ سرور سے 1 پرنٹر ملا</translation>
 <translation id="4835598628985424375">اپنے ہونٹوں کو ملا کر دباتے ہوئے سُکیڑیں</translation>
 <translation id="4835677468087803981">‏‫PIN چھپائیں</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> ڈپلیکیٹس</translation>
 <translation id="4836504898754963407">فنگر پرنٹس کا نظم کریں</translation>
 <translation id="4837128290434901661">‏Google تلاش پر واپس جائیں؟</translation>
 <translation id="4837926214103741331">آپ کے پاس یہ آلہ استعمال کرنے کی اجازت نہیں ہے۔ سائن ان کی اجازت کیلئے براہ کرم آلہ کے مالک سے رابطہ کریں۔</translation>
@@ -6061,6 +6066,7 @@
 <translation id="528208740344463258">‏Android ایپس ڈاؤن لوڈ اور استعمال کرنے کیلئے، پہلے آپ کو یہ مطلوبہ اپ ڈیٹ انسٹال کرنا ہوگا۔ آپ کا <ph name="DEVICE_TYPE" /> آلہ اپ ڈیٹ ہونے کے دوران، آپ اس کا استعمال نہیں کر سکتے۔ انسٹالیشن مکمل ہونے کے بعد، آپ کا <ph name="DEVICE_TYPE" /> ری اسٹارٹ ہوگا۔</translation>
 <translation id="5283677936944177147">افوہ! سسٹم آلہ کے ماڈل یا نمبر شمار کا تعین کرنے میں ناکام ہوگیا۔</translation>
 <translation id="5284445933715251131">ڈاؤن لوڈ کرنا جاری رکھیں</translation>
+<translation id="5285484405698525101">ابھی کوئی غیر استعمال شدہ ٹیب نہیں ہے</translation>
 <translation id="5285635972691565180">ڈسپلے <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">اسکین کی جا رہی ہیں</translation>
 <translation id="5287425679749926365">آپ کے اکاؤنٹس</translation>
@@ -6333,6 +6339,7 @@
 <translation id="5481941284378890518">قریبی پرنٹرز کو شامل کریں</translation>
 <translation id="5482417738572414119">‏Chrome کو ٹیب گروپس کی تجویز کرنے اور اپنے ٹیبز کو منظم رکھنے کی اجازت دینے کے لیے سائن ان کریں</translation>
 <translation id="5483005706243021437">یہیں رکیں</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{کوئی غیر استعمال شدہ ٹیب نہیں}=1{‫1 غیر استعمال شدہ ٹیب کا جائزہ لیں}other{‫# غیر استعمال شدہ ٹیبز کا جائزہ لیں}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> آپ سے اپنے ڈیٹا کا بیک اپ لیںے اور اس <ph name="DEVICE_TYPE" /> کو آج ہی واپس کرنے کا تقاضہ کرتا ہے۔ <ph name="LINK_BEGIN" />تفصیلات دیکھیں<ph name="LINK_END" />}other{<ph name="MANAGER" /> آپ سے اپنے ڈیٹا کا بیک اپ لیںے اور اس <ph name="DEVICE_TYPE" /> کو {NUM_DAYS} دن کے اندر واپس کرنے کا تقاضہ کرتا ہے۔<ph name="LINK_BEGIN" />تفصیلات دیکھیں<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ایپ شامل کریں</translation>
 <translation id="5485435764083510385">کیپشن کی ترجیحی زبان</translation>
@@ -7013,6 +7020,7 @@
 <translation id="5982578203375898585">ڈاؤن لوڈز مکمل ہو جانے پر دکھائیں</translation>
 <translation id="5983716913605894570">تخلیق کی جا رہی ہیں...</translation>
 <translation id="5984222099446776634">حال ہی میں ملاحظہ کردہ</translation>
+<translation id="5984334442529819751">‏‫DLC انسٹال کرنے میں خرابی (اکثر اوقات ریبوٹ کی ضرورت ہوتی ہے، مزید معلومات کے لیے ترتیبات\&gt;\&gt;ChromeOS کے بارے میں دیکھیں)۔</translation>
 <translation id="5985458664595100876">‏URL کا فارمیٹ غلط ہے۔ تعاون یافتہ فارمیٹس ‎\\server\share اور smb://server/share ہیں۔</translation>
 <translation id="5985556342298151179">‏‫Chrome ایپ آپ کے آلے کے منتظم کے ذریعہ انسٹال کردہ ہے۔</translation>
 <translation id="598810097218913399">تفویض ہٹائیں</translation>
@@ -9246,6 +9254,7 @@
 <translation id="762917478230183172">ہر کلید کے لیے ایک ایکشن منتخب کریں</translation>
 <translation id="7629206210984165492">مغلوب</translation>
 <translation id="7629827748548208700">ٹیب: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">نامعلوم نتیجہ۔</translation>
 <translation id="7630426712700473382">یہ آلہ <ph name="MANAGER" /> کے زیر انتظام ہے اور آپ کو ہر بار سائن ان کرنے کی ضرورت ہے۔</translation>
 <translation id="7631014249255418691">‏Linux کی ایپس اور فائلز کا کامیابی کے ساتھ بیک اپ لے لیا گیا ہے</translation>
 <translation id="7631722872321401342">آپ کے آلے پر کوئی <ph name="LANGUAGE" /> کی آوازیں نہیں ہیں۔ آپ ترتیبات میں آوازیں انسٹال کر سکتے ہیں۔</translation>
@@ -9399,6 +9408,7 @@
 <translation id="7723388585204724670">‏ڈیفالٹ Chrome پر ری سیٹ کریں</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7726391492136714301">اپنے فون کی اطلاعات اور ایپس دیکھیں</translation>
+<translation id="7727898923446098954">ٹیب پوشیدہ ہے</translation>
 <translation id="7728465250249629478">آلہ کی زبان تبدیل کریں</translation>
 <translation id="7728570244950051353">سلیپ وضع سے اسکرین مقفل کریں</translation>
 <translation id="7728668285692163452">چینل میں تبدیلی بعد میں لاگو کی جائے گی</translation>
@@ -9791,6 +9801,7 @@
 <translation id="7992203134935383159">اسپیچ سنتھیسس</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">کارروائی کی ترجیح</translation>
+<translation id="7997828719430450286">کامیاب۔</translation>
 <translation id="7998701048266085837">URLs</translation>
 <translation id="7999229196265990314">مندرجہ ذیل فائلز بنائی گئیں:
 
@@ -10439,6 +10450,7 @@
 <translation id="845702320058262034">منسلک نہیں ہو سکتا۔ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔</translation>
 <translation id="8457251154056341970">آپ کو دوبارہ اس صفحے پر <ph name="MODULE_NAME" /> دکھائی نہیں دیں گے</translation>
 <translation id="8457451314607652708">بُک مارکس درآمد کریں</translation>
+<translation id="8458259704995116343">‏‫VM شروع کرنا ناکام ہو گیا۔</translation>
 <translation id="8458341576712814616">شارٹ کٹ</translation>
 <translation id="8458627787104127436">سبھی (<ph name="URL_COUNT" />) کو نئی ونڈو میں کھولیں</translation>
 <translation id="8459023460357294721">بہر صورت <ph name="FILE_NAME" /> کھولیں</translation>
@@ -11098,12 +11110,14 @@
 <translation id="8918900204934259333">ایپ انسٹال کی جا رہی ہے...</translation>
 <translation id="891931289445130855">ڈیٹا اور اجازتیں حذف کریں</translation>
 <translation id="8920133120839850939">مزید اشاروں والے ٹیب کو منتخب کریں، پھر آگے اور پیچھے نیویگیٹ کرنے کے لیے صفحات کے درمیان سوائپ کریں کو آن کریں</translation>
+<translation id="8921369299636221117">دربان کی سروس دستیاب نہیں ہے۔</translation>
 <translation id="8922348435910470639">ایونٹ کو دوبار بک کیا گیا</translation>
 <translation id="8922624386829239660">ماؤس کے اسکرین کے کناروں کو ٹچ کرنے پر اسکرین کو حرکت دیں</translation>
 <translation id="8923880975836399332">گہرا نیلگوں سبز</translation>
 <translation id="8925124370124776087">ٹائٹل بار اب پوشیدہ ہے</translation>
 <translation id="8925458182817574960">&amp;ترتیبات</translation>
 <translation id="8926389886865778422">دوبارہ سوال نہ کریں</translation>
+<translation id="8926555406617248399">ٹیبز پوشیدہ ہیں</translation>
 <translation id="892706138619340876">کچھ ترتیبات کو دوبارہ ترتیب دے دیا گیا تھا</translation>
 <translation id="8927438609932588163">سائٹس کو اپنے آلے پر ڈیٹا محفوظ کرنے کی اجازت دیں</translation>
 <translation id="8929696694736010839">صرف موجودہ پوشیدگی سیشن</translation>

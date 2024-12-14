@@ -69,6 +69,7 @@
 <translation id="1896836275755235458">Chromium браузері біркелкі айналдыру және бейнекадр жиілігі сияқты фондық әрекеттерді және визуалдық әсерлерді шектеу арқылы батарея қуатын үнемдейді. <ph name="BEGIN_LINK" />Қуат үнемдеу туралы толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">"Chromium-ді жаңарту құралы" қызметі</translation>
 <translation id="1911763535808217981">Бұл функцияны өшіріп, Chromium браузеріне кірместен Gmail сияқты Google сайттарын пайдалана беруіңізге болады</translation>
+<translation id="1916451563296275579">Chromium-нен бұл қолданбалар деректерін өшіру</translation>
 <translation id="1929939181775079593">Chromium жауап бермейді. Қазір қайта іске қосасыз ба?</translation>
 <translation id="1933341829955786215">Ұйымыңыз (<ph name="MANAGER" />) Chromium-ге кіруді талап етеді</translation>
 <translation id="193439633299369377">Жаңарту күшіне енуі үшін ChromiumOS жүйесін өшіріп қосу керек.</translation>
@@ -406,6 +407,7 @@
 <translation id="6455857529632101747">Chromium профильдеріне қош келдіңіз!</translation>
 <translation id="6466344609055215035">Аккаунтты Chromium-нен өшіру</translation>
 <translation id="6475912303565314141">Сонымен қатар Chromium іске қосылғанда қайсы бет көрсетілуін бақылайды.</translation>
+<translation id="648062525172759633">Бұл беттер Chromium әзірлеушілерінің қолданысына арналған және белсенді түрде жүргізілмеуі не сыналмауы мүмкін. Оларды қосу үшін <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> сайтына өтіп, түзету беттерін қосатын түймені басып, осы бетке қайтып келіңіз.</translation>
 <translation id="648319183876919572">Күшейтілген Safe Browsing-нің қауіпті веб-сайттар мен файлдардан қорғау қабілеті жоғарырақ.</translation>
 <translation id="6510925080656968729">Chromium жою</translation>
 <translation id="651535675648445253">Перне тіркесімдері Chromium-нен ашылады.</translation>

@@ -807,7 +807,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2399868464369312507">Google Chrome pokušava urediti načine plaćanja.</translation>
 <translation id="2400600116338235695">Može tražiti dopuštenje za povezivanje sa serijski spojenim priključcima</translation>
 <translation id="2404884497378469141">Pokušajte ponovno kopirati datoteke</translation>
-<translation id="2412310121876768057">Želite li sljedeći put automatski popuniti karticu?</translation>
 <translation id="2413155254802890957">Stara</translation>
 <translation id="2413528052993050574">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; njegov sigurnosni certifikat možda je opozvan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="2414886740292270097">Tamno</translation>
@@ -1305,7 +1304,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3354508510846323339">Navod <ph name="CURRENT_CITATION" /> od <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Promijeni proxy postavke...</translation>
 <translation id="335809815767823">Izvezeno</translation>
-<translation id="3359387651158939842">Automatski popunjavajte karticu za buduće kupnje kad je spremite za upotrebu s Google Payom</translation>
 <translation id="3359565626472459400">Brak</translation>
 <translation id="3360103848165129075">List rukovatelja plaćanjima</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -1459,7 +1457,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">TV emisije i programi</translation>
 <translation id="3608932978122581043">Usmjerenje umetanja</translation>
-<translation id="3610142117915544498">Da biste sljedeći put platili brže, spremite karticu, ime i adresu za naplatu na Google račun.</translation>
 <translation id="3612660594051121194">Međugradski autobusi i vlakovi</translation>
 <translation id="3614001939154393113">Napadači možda pokušavaju ukrasti vaše podatke s web-lokacije <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na primjer, zaporke, poruke ili kreditne kartice). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o tom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Veličina 2</translation>
@@ -2178,7 +2175,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijske igre</translation>
 <translation id="4898742041545089450">Tema je deblokirana i može postati aktivna na temelju vaše povijesti pregledavanja</translation>
-<translation id="4899379435492347481">Spremite tu karticu da biste je mogli upotrebljavati online s Google Payom za kupnje na svojim uređajima</translation>
 <translation id="4900217275619098670">Deveti kolut</translation>
 <translation id="4901052769830245369">Naljepnice (polusjajno)</translation>
 <translation id="4901162432287938633">Higijena i kozmetika</translation>

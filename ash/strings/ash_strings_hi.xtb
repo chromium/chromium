@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">माइक चालू है, टॉगल करने से यह बंद हो जाएगा.</translation>
 <translation id="2302092602801625023">यह खाता Family Link के ज़रिए प्रबंधित किया जाता है</translation>
 <translation id="2303600792989757991">टॉगल विंडो का संक्षिप्त विवरण</translation>
+<translation id="2304702218354340897">क्या आपको वाकई फ़ेस कंट्रोल की सुविधा बंद करनी है?</translation>
 <translation id="2305738328104302723">Google टास्क की सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: यहां हाल ही के स्क्रीन कैप्चर, डाउनलोड, और पिन की गई फ़ाइलें दिखती हैं</translation>
 <translation id="2318576281648121272">आज <ph name="TODAY_DATE" /></translation>
@@ -901,6 +902,7 @@
 <translation id="4119928251231465047">आपने पिन डालने की कोशिश कई बार कर ली है</translation>
 <translation id="412298498316631026">विंडो</translation>
 <translation id="4123259114412175274">अपना Chromebook अनलॉक करने के लिए, पक्का करें कि आपके फ़ोन का ब्लूटूथ चालू है</translation>
+<translation id="4123868835475902435">यह बुनियादी जानकारी थी! अन्य सहायता और जानकारी पाने के लिए, पहले से उपलब्ध Explore ऐप्लिकेशन का इस्तेमाल करें. यहां आपको <ph name="PRODUCT_NAME" /> का इस्तेमाल करने से जुड़ी जानकारी मिलेगी. इसके अलावा, खास ऑफ़र और इसकी नई सुविधाओं की जानकारी भी मिलेगी.</translation>
 <translation id="4125970834901680537">टैबलेट मोड में ऐप्लिकेशन का कॉन्टेंट स्ट्रीम नहीं किया जा सकता. लैपटॉप मोड में फिर से कोशिश करें.</translation>
 <translation id="4131973331381812765">तापमान: <ph name="TEMPERATURE" />°C - मौजूदा रफ़्तार: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> गीगाहर्ट्ज़</translation>
 <translation id="4136724716305260864">यह सुविधा सूरज उगने तक चालू रहेगी</translation>

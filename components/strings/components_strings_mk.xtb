@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome се обидува да ги измени начините на плаќање.</translation>
 <translation id="2400600116338235695">Може да прашува за да се поврзе со сериски порти</translation>
 <translation id="2404884497378469141">Обидете се да ги копирате датотеките повторно</translation>
-<translation id="2412310121876768057">Да се пополни картичката автоматски следниот пат?</translation>
 <translation id="2413155254802890957">Старата</translation>
 <translation id="2413528052993050574">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е повлечен. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="2414886740292270097">Темна</translation>
@@ -1305,7 +1304,6 @@
 <translation id="3354508510846323339">Цитат <ph name="CURRENT_CITATION" /> од <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Промени прокси-поставки...</translation>
 <translation id="335809815767823">Извезено</translation>
-<translation id="3359387651158939842">Автоматско пополнување на вашата картичка за идни купувања кога ќе ја зачувате за користење со Google Pay</translation>
 <translation id="3359565626472459400">Брак</translation>
 <translation id="3360103848165129075">Лист на ракувачот со плаќања</translation>
 <translation id="3360306038446926262">Прозорци</translation>
@@ -1458,7 +1456,6 @@
 <translation id="3605899229568538311">5 x 5 инчи</translation>
 <translation id="3606917451836803637">ТВ-серии и програми</translation>
 <translation id="3608932978122581043">Одржи ја ориентацијата</translation>
-<translation id="3610142117915544498">За да платите побрзо следниот пат, зачувајте ги картичката, името и адресата за наплата во вашата сметка на Google</translation>
 <translation id="3612660594051121194">Автобуски и железнички линии на долги релации</translation>
 <translation id="3614001939154393113">Напаѓачи можеби се обидуваат да ги украдат вашите податоци од <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (на пример лозинки, пораки или кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Големина 2</translation>
@@ -2177,7 +2174,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпијада</translation>
 <translation id="4898742041545089450">Темава е одблокирана и може да стане активна зависно од вашата историја на прелистувањето</translation>
-<translation id="4899379435492347481">Зачувајте ја картичкава за да ја користите онлајн со Google Pay за купувања на вашите уреди</translation>
 <translation id="4900217275619098670">Деветта ролна</translation>
 <translation id="4901052769830245369">Етикети (полусјајни)</translation>
 <translation id="4901162432287938633">Хигиена и прибор за лична хигиена</translation>
@@ -3542,6 +3538,7 @@
 <translation id="7388594495505979117">{0,plural, =1{Уредот ќе се рестартира за 1 минута}one{Уредот ќе се рестартира за # минута}other{Уредот ќе се рестартира за # минути}}</translation>
 <translation id="7393161616326137353">Авантуристички игри</translation>
 <translation id="7393475648162498734">Приказ на наградите и поволностите што се достапни за вашите картички при плаќање</translation>
+<translation id="7393971683644170444">Се поврзува со издавачот на картичката…</translation>
 <translation id="739728382607845710">Икона за ракувач со плаќања</translation>
 <translation id="7399616692258236448">Барањата за локација се блокираат автоматски за сите сајтови, освен за оние за коишто сте ги дозволиле</translation>
 <translation id="7400418766976504921">URL</translation>

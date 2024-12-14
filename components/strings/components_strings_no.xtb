@@ -807,7 +807,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2399868464369312507">Google Chrome prøver å redigere betalingsmåter.</translation>
 <translation id="2400600116338235695">Kan be om å få koble til serielle porter</translation>
 <translation id="2404884497378469141">Prøv å kopiere filene på nytt</translation>
-<translation id="2412310121876768057">Vil du at kortet skal fylles ut automatisk neste gang?</translation>
 <translation id="2413155254802890957">Gamle</translation>
 <translation id="2413528052993050574">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat kan være trukket tilbake. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="2414886740292270097">Mørk</translation>
@@ -1305,7 +1304,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3354508510846323339">Referanse <ph name="CURRENT_CITATION" /> av <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Endre innstillinger for proxy-tjener</translation>
 <translation id="335809815767823">Eksportert</translation>
-<translation id="3359387651158939842">Lagre kortet ditt automatisk for fremtidige kjøp, når du lagrer det for bruk med Google Pay</translation>
 <translation id="3359565626472459400">Samliv</translation>
 <translation id="3360103848165129075">Ark for betalingsbehandling</translation>
 <translation id="3360306038446926262">Vinduer</translation>
@@ -1401,6 +1399,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="351522771072578657">Du er på en meny</translation>
 <translation id="3517264445792388751">Administratoren din har deaktivert filsystemet</translation>
 <translation id="3518941727116570328">Håndtering av flere objekter</translation>
+<translation id="3519670528214225835">Spør <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 tommer</translation>
 <translation id="3525435918300186947">Vil du la nettstedet kontrollere og omprogrammere MIDI-enhetene dine?</translation>
 <translation id="3527181387426738155">Musikk og lyd</translation>
@@ -1458,7 +1457,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3605899229568538311">5 x 5 tommer</translation>
 <translation id="3606917451836803637">TV-serier og -programmer</translation>
 <translation id="3608932978122581043">Feed-retning</translation>
-<translation id="3610142117915544498">For å betale raskere neste gang, lagre kortet, navnet og faktureringsadressen i Google-kontoen din</translation>
 <translation id="3612660594051121194">Regionbuss og -tog</translation>
 <translation id="3614001939154393113">Angripere prøver kanskje å stjele informasjonen din fra <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for eksempel passord, meldinger eller kredittkort). <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Størrelse 2</translation>
@@ -1956,6 +1954,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4451684391620232683">Tekst som presenteres for brukeren:</translation>
 <translation id="4452328064229197696">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Google Passordlagring at du sjekker de lagrede passordene dine.</translation>
 <translation id="4456937135469235202">Opplevelsesreiser</translation>
+<translation id="4458013283022578512">Skriv inn et spørsmål</translation>
 <translation id="4464826014807964867">Nettsteder med informasjon fra organisasjonen din</translation>
 <translation id="4466576951214254884">Studielån og universitetsfinansiering</translation>
 <translation id="4467821340016922962">For å gå ut av fullskjerm og se nedlastingen, trykk på |<ph name="ACCELERATOR" />|</translation>
@@ -2177,7 +2176,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">OL</translation>
 <translation id="4898742041545089450">Blokkeringen av dette emnet er opphevet, og det kan bli aktivt basert på nettleserloggen din</translation>
-<translation id="4899379435492347481">Lagre dette kortet for å bruke det med Google Pay for nettkjøp på enhetene dine</translation>
 <translation id="4900217275619098670">Niende rull</translation>
 <translation id="4901052769830245369">Etiketter (halvglans)</translation>
 <translation id="4901162432287938633">Hygiene og toalettartikler</translation>
@@ -3542,6 +3540,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7388594495505979117">{0,plural, =1{Enheten din startes på nytt om 1 minutt}other{Enheten din startes på nytt om # minutter}}</translation>
 <translation id="7393161616326137353">Eventyrspill</translation>
 <translation id="7393475648162498734">Vis hvilke belønninger og fordeler som er tilgjengelige for kortene dine, når du betaler</translation>
+<translation id="7393971683644170444">Kobler til kortleverandøren din …</translation>
 <translation id="739728382607845710">Ikon for betalingsbehandler</translation>
 <translation id="7399616692258236448">Posisjonsforespørsler blokkeres automatisk for alle nettsteder unntatt dem du tillater</translation>
 <translation id="7400418766976504921">Nettadresse</translation>

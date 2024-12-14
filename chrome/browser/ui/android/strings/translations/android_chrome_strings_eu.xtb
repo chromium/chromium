@@ -536,7 +536,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3444179773590444986">Webguneetarako gai ilunari buruzko iritzia partekatu nahi duzu?</translation>
 <translation id="3452832259067974318">Zure pribatutasuna babesteko, Chrome-k ez du idatziko automatikoki pasahitza eremu honetan.</translation>
 <translation id="3467081767799433066">Iragarkien neurketarekin, datu mota jakin batzuk soilik partekatzen dituzte webguneek elkarren artean iragarkien errendimendua neurtzeko; adibidez, webgune bat bisitatu ondoren erosketa bat egin duzun.</translation>
-<translation id="3474624961160222204">Erabili <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Egin aurrera <ph name="NAME" /> gisa</translation>
 <translation id="3478363558367712427">Bilatzailea aukera dezakezu</translation>
 <translation id="3479552764303398839">Orain ez</translation>
 <translation id="3488199663160411179">izena</translation>
@@ -931,7 +931,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5226378907213531272">Autoa erabiltzen duzun bakoitzean, pantaila desblokeatuko duzu</translation>
 <translation id="5227554086496586518">Bilaketa-emaitzak ikusteko, sakatu hau</translation>
 <translation id="5233638681132016545">Fitxa berria</translation>
-<translation id="5235196193381275927">Arazo bat izan da saioa hastean</translation>
+<translation id="5235196193381275927">Arazoren bat izan da saioa hastean</translation>
 <translation id="5246093389635966745">Editatu tresna-barrako lasterbide bat</translation>
 <translation id="5264813352784073502">Azken 24 orduetako</translation>
 <translation id="5267572070504076962">Webgune arriskutsuen aurkako babesa lortzeko, aktibatu Arakatze segurua</translation>
@@ -1063,7 +1063,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5849288995120328556">Partekatzeari utzi nahi diozu?</translation>
 <translation id="5853623416121554550">pausatuta</translation>
 <translation id="5855546874025048181">Mugatu honela: <ph name="REFINE_TEXT" /></translation>
-<translation id="5857447844686706637">Arazo bat izan da. Ezin izan da eguneratu prezioen jarraipena.</translation>
+<translation id="5857447844686706637">Arazoren bat izan da. Ezin izan da eguneratu prezioen jarraipena.</translation>
 <translation id="5859968346865909126">Aukera aktibatu edo desaktibatzeko, joan ezarpenetara</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>

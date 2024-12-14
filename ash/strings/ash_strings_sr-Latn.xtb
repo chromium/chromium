@@ -361,6 +361,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2295777434187870477">Mikrofon je uključen. Možete da ga isključite pomeranjem prekidača.</translation>
 <translation id="2302092602801625023">Ovim nalogom upravlja Family Link</translation>
 <translation id="2303600792989757991">Uključi/isključi pregled prozora</translation>
+<translation id="2304702218354340897">Želite li stvarno da isključite upravljanje licem?</translation>
 <translation id="2305738328104302723">Lista Google zadataka: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nedavni snimci ekrana, preuzimanja i zakačeni fajlovi</translation>
 <translation id="2318576281648121272">Danas <ph name="TODAY_DATE" /></translation>
@@ -900,6 +901,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4119928251231465047">Previše pokušaja unosa PIN-a</translation>
 <translation id="412298498316631026">prozor</translation>
 <translation id="4123259114412175274">Da biste otključali Chromebook, uverite se da je Bluetooth na telefonu uključen</translation>
+<translation id="4123868835475902435">To su bile osnovne stvari! Nastavite u aplikaciji Istražite, ugrađenoj aplikaciji za savete i pomoć. Pronaći ćete savete za početne korake, specijalne ponude i najnovije funkcije <ph name="PRODUCT_NAME" />-a.</translation>
 <translation id="4125970834901680537">Ne možete da strimujete aplikacije u režimu tableta. 
 Probajte ponovo u režimu laptopa.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C – Trenutna brzina: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>

@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="3340978935015468852">सेटिङहरू</translation>
 <translation id="3347558044552027859">आधुनिक</translation>
+<translation id="3353477144743332882">सारांश र नाम बनाउने मोडेल डाउनलोड गर्नुहोस्</translation>
 <translation id="3359218928534347896">"माइक्रोफोन म्युट गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">सुसी</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">यो सर्टकट उपलब्ध छैन। <ph name="KEY" /> नथिचिकन नयाँ सर्टकट थिच्नुहोस्।</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
+<translation id="5875913454160982848">ट्रान्स्क्रिप्सन मोडेल डाउनलोड गर्नुहोस्</translation>
 <translation id="5876385649737594562">विकल्पहरू चयन गर्न अन गर्नुहोस्</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> पज गर्नुहोस्</translation>
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">थप केही मिनेट मात्र पर्खनुहोस्…</translation>
 <translation id="8505011850330200833">ट्रान्स्क्रिप्टहरू प्रोसेस गर्न र सारांश निकाल्न यो Gemini मोडेललाई २ जि.बि. भण्डारण चाहिन्छ</translation>
 <translation id="8508640263392900755">APN सम्बन्धी विवरण</translation>
+<translation id="8509574872955173831">सारांश र नाम बनाउने मोडेलका बारेमा थप जान्नुहोस्</translation>
 <translation id="8522687886059337719">तपाईं अब नयाँ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वालपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> तथा <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />स्क्रिन सेभर<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">चिया पसल</translation>
@@ -1724,7 +1727,6 @@
 <translation id="9133772297793293778">किबोर्डमा भएका १ देखि ४ वटा मोडिफायर र अर्को एउटा की थिच्नुहोस्। सम्पादन गर्ने मोडबाट बाहिरिन alt + esc थिच्नुहोस्।</translation>
 <translation id="9137526406337347448">Google का सेवाहरू</translation>
 <translation id="9138630967333032450">लेफ्ट सिफ्ट</translation>
-<translation id="9147928237330776930">अत्यन्तै थोरै शब्द भएकाले सारांश बनाउन मिल्दैन</translation>
 <translation id="9149391708638971077">मेमोरीसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="9159524746324788320">ह्यामबर्गरहरू</translation>
 <translation id="9161276708550942948">space</translation>

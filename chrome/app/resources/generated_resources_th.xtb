@@ -142,6 +142,7 @@
 ตรวจสอบรหัสผ่านได้ทุกเมื่อใน <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1084824384139382525">คัดลอก&amp;ที่อยู่ลิงก์</translation>
 <translation id="1085064499066015002">ตลอดเวลาในทุกเว็บไซต์</translation>
+<translation id="1085558727130096638">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
 <translation id="1085618740036066768">ไม่ได้เลือก<ph name="ITEM" /> <ph name="INDEX" /> จาก <ph name="COUNT" /> รายการ กดแป้นค้นหากับแป้นเว้นวรรคเพื่อเลือก</translation>
 <translation id="1085697365578766383">เกิดข้อผิดพลาดขณะเริ่มต้นเครื่องเสมือน โปรดลองอีกครั้ง</translation>
 <translation id="1090126737595388931">ไม่มีแอปพลิเคชันทำงานในพื้นหลัง</translation>
@@ -2130,6 +2131,7 @@
 <translation id="2462752602710430187">เพิ่ม <ph name="PRINTER_NAME" /> แล้ว</translation>
 <translation id="2464079411014186876">ไอศกรีม</translation>
 <translation id="2467755475704469005">ไม่พบอุปกรณ์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
 <translation id="2468178265280335214">การเร่งความเร็วในการเลื่อนทัชแพด</translation>
 <translation id="2468205691404969808">ใช้คุกกี้เพื่อให้จดจำค่ากำหนดของคุณ แม้ว่าคุณไม่ได้เข้าชมหน้าเว็บเหล่านั้น</translation>
 <translation id="2468402215065996499">ทามาก็อตจิ</translation>
@@ -2275,6 +2277,7 @@
 <translation id="256481480019204378">รหัสบัญชี Google</translation>
 <translation id="256517381556987641">การซิงค์ไฟล์พบไฟล์ <ph name="ITEMS_FOUND" /> รายการ และยังคงตรวจสอบพื้นที่เก็บข้อมูลอยู่ โปรดลองเปิดการซิงค์ไฟล์อีกครั้งในอีกสักครู่</translation>
 <translation id="2565214867520763227">เปิดโปรแกรมอ่านหน้าจอ</translation>
+<translation id="2566146433999774844">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
 <translation id="2568694057933302218">ขณะอยู่ในโหมดไม่ระบุตัวตน เว็บไซต์จะใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ ไม่ได้ ระบบจะไม่ใช้กิจกรรมการท่องเว็บเพื่อวัตถุประสงค์ต่างๆ เช่น การปรับโฆษณาตามโปรไฟล์ของผู้ใช้ ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="2568774940984945469">ที่เก็บแถบข้อมูล</translation>
 <translation id="2569972178052279830">ชื่อผู้ค้าปลีก</translation>
@@ -2282,6 +2285,7 @@
 <translation id="2571655996835834626">เปลี่ยนการตั้งค่าที่ควบคุมการเข้าถึงฟีเจอร์ของเว็บไซต์ เช่น คุกกี้, JavaScript, ปลั๊กอิน, ตำแหน่งทางภูมิศาสตร์, ไมโครโฟน, กล้องถ่ายรูป และอื่นๆ</translation>
 <translation id="257175846174451436">กลุ่มแท็บที่แนะนำ</translation>
 <translation id="2572032849266859634">ได้รับสิทธิ์ในการอ่าน <ph name="VOLUME_NAME" /> เท่านั้นแล้ว</translation>
+<translation id="2573147659521059501"><ph name="NUM" /> แท็บ</translation>
 <translation id="2573276323521243649">กลับไปจากหน้าการเลือกรูปโปรไฟล์</translation>
 <translation id="2573417407488272418">สำรองแอปและไฟล์ไว้ใน Files &gt; ไฟล์ของฉัน ก่อนที่จะอัปเกรด</translation>
 <translation id="2573831315551295105">กำหนดสวิตช์ให้กับ "<ph name="ACTION" />"</translation>
@@ -2953,6 +2957,7 @@
 <translation id="3038628620670416486">ค้นหาปุ่มบนเมาส์</translation>
 <translation id="3039491566278747710">ติดตั้งนโยบายออฟไลน์ในอุปกรณ์นี้ไม่สำเร็จ</translation>
 <translation id="3040982432432547149">ช่วยเราปรับปรุง Steam สําหรับ Chromebook</translation>
+<translation id="304169924727249890">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3043016484125065343">ลงชื่อเข้าใช้เพื่อดูบุ๊กมาร์ก</translation>
 <translation id="3043126717220766543">ล้างคำแนะนำกลุ่ม</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3291,6 +3296,7 @@
 <translation id="3308852433423051161">กำลังโหลด Google Assistant...</translation>
 <translation id="3309124184713871355">สิ่งปลูกสร้าง</translation>
 <translation id="3309330461362844500">รหัสโปรไฟล์ใบรับรอง</translation>
+<translation id="3310379801837527592">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
 <translation id="331080746368555063">เว็บไซต์ส่วนตัวอาจรวมถึงอินทราเน็ตของบริษัทของคุณ เป็นต้น</translation>
 <translation id="3311445899360743395">ระบบอาจนำข้อมูลที่เชื่อมโยงกับแอปนี้ออกจากอุปกรณ์เครื่องนี้</translation>
 <translation id="3312470654018965389">กำลังกำหนดค่าคอนเทนเนอร์ Linux</translation>
@@ -4249,6 +4255,7 @@
 <translation id="3958088479270651626">นำเข้าบุ๊กมาร์กและการตั้งค่า</translation>
 <translation id="3958110062351175311">ได้รับอนุญาตให้แสดงคำขอในแถบเครื่องมือ</translation>
 <translation id="3958821725268247062">ติดตั้ง <ph name="APP_NAME" /> ไว้แล้ว</translation>
+<translation id="3959969108528118741">เจ้าของ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">การดำเนินการเพิ่มเติมสำหรับ <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> ออกจากกลุ่มแล้ว</translation>
@@ -4697,6 +4704,7 @@
 <translation id="428963538941819373">เว็บไซต์เหล่านี้สามารถใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณขณะที่คุณเรียกดู <ph name="HOST" /></translation>
 <translation id="4289732974614035569">เลือก PIN</translation>
 <translation id="4290791284969893584">หลังจากปิดหน้าไปแล้ว งานที่คุณเริ่มไว้อาจไม่ดำเนินต่อจนเสร็จสิ้น</translation>
+<translation id="4290826901752066702">สมาชิก <ph name="NUM" /> ราย</translation>
 <translation id="4290898381118933198">ปัดเพื่อไปยังหน้าต่างๆ</translation>
 <translation id="4291265871880246274">กล่องโต้ตอบการเข้าสู่ระบบ</translation>
 <translation id="429312253194641664">เว็บไซต์กำลังเล่นสื่อ</translation>
@@ -5773,6 +5781,7 @@
 <translation id="5079950360618752063">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="508059534790499809">รีเฟรชตั๋ว Kerberos</translation>
 <translation id="5081124414979006563">&amp;เปิดโปรไฟล์ผู้ใช้ชั่วคราว</translation>
+<translation id="5081974595802103358">คัดลอกลิงก์ไม่สำเร็จ</translation>
 <translation id="508209203623347828">หากปิดใช้การ์ดนี้ การ์ด Microsoft เช่น Sharepoint และ Outlook Calendar จะปิดใช้ด้วย</translation>
 <translation id="5083035541015925118">Ctrl + Alt + ลูกศรขึ้น</translation>
 <translation id="5084328598860513926">ขั้นตอนการตั้งค่าถูกขัดจังหวะ โปรดลองอีกครั้งหรือติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
@@ -6614,6 +6623,7 @@
 <translation id="5691581861107245578">รับคำแนะนำอีโมจิตามคำที่คุณกำลังพิมพ์</translation>
 <translation id="5691772641933328258">ระบบไม่รู้จักลายนิ้วมือนี้</translation>
 <translation id="5693255400847650006">ใช้ไมโครโฟนอยู่</translation>
+<translation id="5695046252726616755">กด Enter หรือ Space เพื่อดูตัวเลือกเพิ่มเติม</translation>
 <translation id="5695184138696833495">ADB ของแอป Android ใน Linux</translation>
 <translation id="5696143504434933566">รายงานการละเมิดจาก "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">ไฟล์ PPD ที่ใช้อยู่ในปัจจุบัน: <ph name="PPD_NAME" /></translation>
@@ -7848,6 +7858,7 @@
 <translation id="6609478180749378879">ข้อมูลการลงชื่อเข้าใช้จะจัดเก็บอยู่ในอุปกรณ์นี้หลังจากออกจากโหมดไม่ระบุตัวตน โดยจะลงชื่อเข้าใช้เว็บไซต์นี้ด้วยอุปกรณ์ของคุณอีกครั้งในภายหลังได้</translation>
 <translation id="6610002944194042868">ตัวเลือกการแปลภาษา</translation>
 <translation id="6610064275805055636">จัดการ Isolated Web App</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> แท็บ</translation>
 <translation id="6611972847767394631">ค้นหาแท็บของคุณที่นี่</translation>
 <translation id="661266467055912436">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6613267708691765962">กำลังสแกนหามัลแวร์...</translation>
@@ -8559,6 +8570,7 @@
 <translation id="7118268675952955085">ภาพหน้าจอ</translation>
 <translation id="711840821796638741">แสดงบุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="711985611146095797">หน้านี้ช่วยให้คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="71200494435060621">เข้าร่วมในชื่อ <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="7120762240626567834">การเข้าชมจากเบราว์เซอร์ Chrome และ Android จะถูกบล็อกหากไม่ได้เชื่อมต่อ VPN</translation>
 <translation id="7120904433567247946">บุ๊กมาร์กข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากบันทึกลงใน <ph name="ACCOUNT_FOLDER" /> ระบบจะบันทึกบุ๊กมาร์กนี้ไว้ในบัญชีด้วย</translation>
 <translation id="7121438501124788993">โหมดของนักพัฒนาซอฟต์แวร์</translation>
@@ -9955,6 +9967,7 @@
 <translation id="8105273883928376822">โปรดลงชื่อเข้าใช้เพื่อดำเนินการต่อ</translation>
 <translation id="8107015733319732394">กำลังติดตั้ง Google Play Store ใน <ph name="DEVICE_TYPE" /> อาจใช้เวลาสักครู่</translation>
 <translation id="810728361871746125">ความละเอียดของจอแสดงผล</translation>
+<translation id="8108161424633979910">สมาชิก <ph name="NUM" /> ราย</translation>
 <translation id="8109109153262930486">รูปโปรไฟล์เริ่มต้น</translation>
 <translation id="8109991406044913868">ธีมที่ AI สร้างขึ้น</translation>
 <translation id="8110393529211831722">การสมัครใช้บริการจะติดตั้งในอุปกรณ์นี้เท่านั้น และไม่ซิงค์กับอุปกรณ์อื่นๆ ภายใต้บัญชีของคุณ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>

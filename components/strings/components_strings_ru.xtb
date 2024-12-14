@@ -807,7 +807,6 @@
 <translation id="2399868464369312507">Google Chrome пытается изменить способы оплаты.</translation>
 <translation id="2400600116338235695">Разрешено отправлять запрос на подключение к последовательным портам</translation>
 <translation id="2404884497378469141">Попробуйте скопировать файлы ещё раз.</translation>
-<translation id="2412310121876768057">Использовать автозаполнение в следующий раз?</translation>
 <translation id="2413155254802890957">Старый</translation>
 <translation id="2413528052993050574">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть отозван. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="2414886740292270097">Тёмная</translation>
@@ -1304,7 +1303,6 @@
 <translation id="3354508510846323339">Цитата <ph name="CURRENT_CITATION" /> из <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Изменить настройки прокси-сервера...</translation>
 <translation id="335809815767823">Экспорт завершен</translation>
-<translation id="3359387651158939842">Если вы сохраните карту, то при будущих покупках с помощью Google Pay ее реквизиты будут заполняться автоматически.</translation>
 <translation id="3359565626472459400">Бракосочетания</translation>
 <translation id="3360103848165129075">Лист с обработчиком платежа</translation>
 <translation id="3360306038446926262">Окна</translation>
@@ -1400,6 +1398,7 @@
 <translation id="351522771072578657">Вы сейчас находитесь в меню</translation>
 <translation id="3517264445792388751">Использование файловой системы отключено администратором.</translation>
 <translation id="3518941727116570328">Обработка нескольких объектов</translation>
+<translation id="3519670528214225835">Задайте вопрос <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 дюймов</translation>
 <translation id="3525435918300186947">Разрешить управлять MIDI-устройствами и перепрограммировать их?</translation>
 <translation id="3527181387426738155">Музыка и аудио</translation>
@@ -1457,7 +1456,6 @@
 <translation id="3605899229568538311">5 x 5 дюймов</translation>
 <translation id="3606917451836803637">Телевизионные шоу и программы</translation>
 <translation id="3608932978122581043">Задать ориентацию</translation>
-<translation id="3610142117915544498">Чтобы оплачивать покупки быстрее, сохраните карту, свое имя и платежный адрес в аккаунте Google.</translation>
 <translation id="3612660594051121194">Автобусы и поезда дальнего следования</translation>
 <translation id="3614001939154393113">Возможно, злоумышленники пытаются похитить вашу информацию с сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, например пароли, сообщения и данные кредитных карт. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="3614103345592970299">Размер: 2</translation>
@@ -1955,6 +1953,7 @@
 <translation id="4451684391620232683">Показанный пользователю текст:</translation>
 <translation id="4452328064229197696">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Google Менеджере паролей.</translation>
 <translation id="4456937135469235202">Приключенческие туры</translation>
+<translation id="4458013283022578512">Напишите вопрос</translation>
 <translation id="4464826014807964867">Веб-сайты со сведениями от вашей организации</translation>
 <translation id="4466576951214254884">Студенческие кредиты и займы на образование</translation>
 <translation id="4467821340016922962">Чтобы выйти из полноэкранного режима и увидеть скачиваемый файл, нажмите |<ph name="ACCELERATOR" />|</translation>
@@ -2176,7 +2175,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпийские игры</translation>
 <translation id="4898742041545089450">Выбранная тема разблокирована и может стать активной в зависимости от вашей истории браузера.</translation>
-<translation id="4899379435492347481">Если вы сохраните карту, то сможете использовать ее для онлайн-покупок с помощью Google Pay на всех своих устройствах.</translation>
 <translation id="4900217275619098670">Девятый лоток</translation>
 <translation id="4901052769830245369">Этикетки (полуглянцевые)</translation>
 <translation id="4901162432287938633">Гигиена и туалетные принадлежности</translation>

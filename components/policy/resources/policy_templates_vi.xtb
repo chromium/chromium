@@ -157,11 +157,6 @@ Cả hai có tác động như nhau đối với hành vi của trình duyệt.<
 <translation id="1059069692400941670">Tắt chính sách nhập công cụ tìm kiếm mặc định trong lần chạy đầu tiên</translation>
 <translation id="1062011392452772310">Cho phép chứng thực từ xa cho thiết bị</translation>
 <translation id="1062407476771304334">Thay thế</translation>
-<translation id="1062460877136455375">Nếu bạn đặt chính sách này, thì hệ thống sẽ chỉ rõ những Ứng dụng web tách biệt (IWA) nào không thể kết nối với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền). Chính sách này chấp nhận các ký tự đại diện – ví dụ: <ph name="ALL_ISOLATED_WEB_APPS" /> sẽ chặn quyền truy cập đối với tất cả IWA.
-
-       Chính sách này bị chính sách SmartCardConnectAllowedForUrls ghi đè; cụ thể, giá trị danh sách chặn là <ph name="ALL_ISOLATED_WEB_APPS" /> tức là tất cả IWA sẽ không kết nối được với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền) ngoại trừ những ứng dụng có trong danh sách SmartCardConnectAllowedForUrls.
-
-       Theo mặc định, các Ứng dụng web tách biệt chỉ rõ quyền đối với Thẻ thông minh trong tệp kê khai có thể kết nối với thẻ thông minh với điều kiện là người dùng cấp quyền có tính tương tác cho mỗi máy đọc.</translation>
 <translation id="1063860513136880926">Nếu bạn đặt chính sách này thành Bật thì người dùng sẽ không thể dùng phím tắt hoặc API tiện ích để chụp ảnh màn hình. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt thì người dùng có thể chụp ảnh màn hình.
 
 Xin lưu ý rằng chính sách này không ngăn người dùng chụp ảnh màn hình bằng hệ điều hành hoặc các ứng dụng của bên thứ ba trên <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="LINUX_OS_NAME" />.</translation>
@@ -9534,11 +9529,6 @@ Giá trị hợp lệ nằm trong khoảng từ 1 giây đến 9999 giây. Nếu
 
 Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> thành false (sai).</translation>
 <translation id="7912255076272890813">Định cấu hình loại ứng dụng/tiện ích được cho phép</translation>
-<translation id="7912541841840197488">Nếu bạn đặt chính sách này, thì hệ thống sẽ chỉ rõ những Ứng dụng web tách biệt (IWA) nào có thể kết nối với thẻ thông minh bằng Web Smart Card API mà không cần nhắc người dùng cấp quyền. Chính sách này không chấp nhận các ký tự đại diện.
-
-       Chính sách này ghi đè chính sách SmartCardConnectBlockedForUrls; cụ thể, giá trị danh sách chặn là <ph name="ALL_ISOLATED_WEB_APPS" /> tức là tất cả IWA sẽ không kết nối được với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền) ngoại trừ những ứng dụng được liệt kê trong chính sách SmartCardConnectAllowedForUrls.
-
-       Theo mặc định, các Ứng dụng web tách biệt chỉ rõ quyền đối với Thẻ thông minh trong tệp kê khai có thể kết nối với thẻ thông minh với điều kiện là người dùng cấp quyền có tính tương tác cho mỗi máy đọc.</translation>
 <translation id="791267408364877739">Hiển thị cảnh báo bảo mật khi cờ hiệu dòng lệnh có thể nguy hiểm được sử dụng</translation>
 <translation id="7919665519909231619">Cho phép bật tính năng danh sách mua sắm</translation>
 <translation id="7922358664346625612">Tiếp tục mở thẻ cuối cùng trong Chrome.</translation>

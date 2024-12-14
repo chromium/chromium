@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">Микрофон је укључен. Можете да га искључите померањем прекидача.</translation>
 <translation id="2302092602801625023">Овим налогом управља Family Link</translation>
 <translation id="2303600792989757991">Укључи/искључи преглед прозора</translation>
+<translation id="2304702218354340897">Желите ли стварно да искључите управљање лицем?</translation>
 <translation id="2305738328104302723">Листа Google задатака: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: недавни снимци екрана, преузимања и закачени фајлови</translation>
 <translation id="2318576281648121272">Данас <ph name="TODAY_DATE" /></translation>
@@ -900,6 +901,7 @@
 <translation id="4119928251231465047">Превише покушаја уноса PIN-а</translation>
 <translation id="412298498316631026">прозор</translation>
 <translation id="4123259114412175274">Да бисте откључали Chromebook, уверите се да је Bluetooth на телефону укључен</translation>
+<translation id="4123868835475902435">То су биле основне ствари! Наставите у апликацији Истражите, уграђеној апликацији за савете и помоћ. Пронаћи ћете савете за почетне кораке, специјалне понуде и најновије функције <ph name="PRODUCT_NAME" />-а.</translation>
 <translation id="4125970834901680537">Не можете да стримујете апликације у режиму таблета. 
 Пробајте поново у режиму лаптопа.</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" />°C – Тренутна брзина: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
