@@ -49,11 +49,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   DISALLOW_NEW();
 
  public:
-  FlexibleBoxAlgorithm(const ComputedStyle*,
-                       LogicalSize percent_resolution_sizes,
-                       Document*);
-  FlexibleBoxAlgorithm(const FlexibleBoxAlgorithm&) = delete;
-
   static bool IsHorizontalFlow(const ComputedStyle&);
   static bool IsColumnFlow(const ComputedStyle&);
 
@@ -72,14 +67,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,
       unsigned number_of_items);
-
-  static LayoutUnit GapBetweenItems(const ComputedStyle& style,
-                                    LogicalSize percent_resolution_sizes);
-  static LayoutUnit GapBetweenLines(const ComputedStyle& style,
-                                    LogicalSize percent_resolution_sizes);
-
-  const LayoutUnit gap_between_items_;
-  const LayoutUnit gap_between_lines_;
 };
 
 }  // namespace blink

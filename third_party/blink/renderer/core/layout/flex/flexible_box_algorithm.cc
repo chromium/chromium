@@ -120,68 +120,6 @@ LayoutUnit FlexibleBoxAlgorithm::AlignmentOffset(
 }
 
 // static
-LayoutUnit FlexibleBoxAlgorithm::GapBetweenItems(
-    const ComputedStyle& style,
-    LogicalSize percent_resolution_sizes) {
-  if (IsColumnFlow(style)) {
-    if (const std::optional<Length>& row_gap = style.RowGap()) {
-      return MinimumValueForLength(
-          *row_gap,
-          percent_resolution_sizes.block_size.ClampIndefiniteToZero());
-    }
-    return LayoutUnit();
-  }
-  if (const std::optional<Length>& column_gap = style.ColumnGap()) {
-    return MinimumValueForLength(
-        *column_gap,
-        percent_resolution_sizes.inline_size.ClampIndefiniteToZero());
-  }
-  return LayoutUnit();
-}
-
-// static
-LayoutUnit FlexibleBoxAlgorithm::GapBetweenLines(
-    const ComputedStyle& style,
-    LogicalSize percent_resolution_sizes) {
-  if (!IsColumnFlow(style)) {
-    if (const std::optional<Length>& row_gap = style.RowGap()) {
-      return MinimumValueForLength(
-          *row_gap,
-          percent_resolution_sizes.block_size.ClampIndefiniteToZero());
-    }
-    return LayoutUnit();
-  }
-  if (const std::optional<Length>& column_gap = style.ColumnGap()) {
-    return MinimumValueForLength(
-        *column_gap,
-        percent_resolution_sizes.inline_size.ClampIndefiniteToZero());
-  }
-  return LayoutUnit();
-}
-
-FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
-                                           LogicalSize percent_resolution_sizes,
-                                           Document* document)
-    : gap_between_items_(GapBetweenItems(*style, percent_resolution_sizes)),
-      gap_between_lines_(GapBetweenLines(*style, percent_resolution_sizes)) {
-  DCHECK_GE(gap_between_items_, 0);
-  DCHECK_GE(gap_between_lines_, 0);
-  const auto& row_gap = style->RowGap();
-  const auto& column_gap = style->ColumnGap();
-  if (row_gap || column_gap) {
-    UseCounter::Count(document, WebFeature::kFlexGapSpecified);
-    if (gap_between_items_ || gap_between_lines_)
-      UseCounter::Count(document, WebFeature::kFlexGapPositive);
-  }
-
-  if (row_gap && row_gap->HasPercent()) {
-    UseCounter::Count(document, WebFeature::kFlexRowGapPercent);
-    if (percent_resolution_sizes.block_size == LayoutUnit(-1))
-      UseCounter::Count(document, WebFeature::kFlexRowGapPercentIndefinite);
-  }
-}
-
-// static
 bool FlexibleBoxAlgorithm::IsColumnFlow(const ComputedStyle& style) {
   return style.ResolvedIsColumnFlexDirection();
 }

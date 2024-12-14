@@ -155,6 +155,26 @@ class BaselineAccumulator {
   std::optional<LayoutUnit> last_fallback_baseline_;
 };
 
+LayoutUnit RowGap(const ComputedStyle& style,
+                  LogicalSize percentage_resolution_size) {
+  if (const std::optional<Length>& row_gap = style.RowGap()) {
+    return MinimumValueForLength(
+        *row_gap,
+        percentage_resolution_size.block_size.ClampIndefiniteToZero());
+  }
+  return LayoutUnit();
+}
+
+LayoutUnit ColumnGap(const ComputedStyle& style,
+                     LogicalSize percentage_resolution_size) {
+  if (const std::optional<Length>& column_gap = style.ColumnGap()) {
+    return MinimumValueForLength(
+        *column_gap,
+        percentage_resolution_size.inline_size.ClampIndefiniteToZero());
+  }
+  return LayoutUnit();
+}
+
 }  // anonymous namespace
 
 FlexLayoutAlgorithm::FlexLayoutAlgorithm(
@@ -171,9 +191,11 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
           CalculateChildPercentageSize(GetConstraintSpace(),
                                        Node(),
                                        ChildAvailableSize())),
-      algorithm_(&Style(),
-                 child_percentage_size_,
-                 &Node().GetDocument()),
+      gap_between_items_(is_column_
+                             ? RowGap(Style(), child_percentage_size_)
+                             : ColumnGap(Style(), child_percentage_size_)),
+      gap_between_lines_(is_column_ ? ColumnGap(Style(), child_percentage_size_)
+                                    : RowGap(Style(), child_percentage_size_)),
       cross_size_adjustments_(cross_size_adjustments) {
   // TODO(layout-dev): Devtools support when there are multiple fragments.
   if (Node().GetLayoutBox()->NeedsDevtoolsInfo() &&
@@ -1155,7 +1177,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   const LayoutUnit line_break_size = MainAxisContentExtent(LayoutUnit::Max());
   const FlexLineBreakerResult result =
       BreakFlexItemsIntoLines(base::span(flex_items_), line_break_size,
-                              algorithm_.gap_between_items_, is_multi_line_);
+                              gap_between_items_, is_multi_line_);
 
   // For column flexboxes we can now determine the intrinsic block-size, which
   // we use to flex all the lines to.
@@ -1177,7 +1199,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
 
     LayoutUnit main_axis_free_space =
         main_axis_inner_size -
-        (line.line_items.size() - 1) * algorithm_.gap_between_items_;
+        (line.line_items.size() - 1) * gap_between_items_;
     LayoutUnit line_cross_size;
     LayoutUnit max_major_ascent = LayoutUnit::Min();
     LayoutUnit max_minor_ascent = LayoutUnit::Min();
@@ -1302,7 +1324,7 @@ LayoutUnit FlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
       for (const auto& flex_line : flex_lines) {
         size += flex_line.line_cross_size;
       }
-      size += (flex_lines.size() - 1) * algorithm_.gap_between_lines_;
+      size += (flex_lines.size() - 1) * gap_between_lines_;
     }
   } else if (Node().HasLineIfEmpty()) {
     size += Node().EmptyLineBlockSize(GetBreakToken());
@@ -1434,7 +1456,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   for (const NGFlexLine& line : *flex_line_outputs) {
     cross_axis_free_space -= line.line_cross_size;
   }
-  cross_axis_free_space -= (num_lines - 1) * algorithm_.gap_between_lines_;
+  cross_axis_free_space -= (num_lines - 1) * gap_between_lines_;
 
   if (!is_multi_line_) {
     // A single line flexbox will always be the cross-axis content-size.
@@ -1642,7 +1664,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       flex_item.offset = offset;
 
       main_axis_offset += item.FlexedBorderBoxSize() + margin.MainEnd() +
-                          space_between_items + algorithm_.gap_between_items_;
+                          space_between_items + gap_between_items_;
 
       const BoxStrut logical_margins =
           physical_margins.ConvertToLogical(writing_direction);
@@ -1663,9 +1685,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       }
     }
 
-    line_cross_axis_offset += line_output.line_cross_size +
-                              space_between_lines +
-                              algorithm_.gap_between_lines_;
+    line_cross_axis_offset +=
+        line_output.line_cross_size + space_between_lines + gap_between_lines_;
   }
 
   if (auto first_baseline = baseline_accumulator.FirstBaseline())
@@ -2291,7 +2312,7 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
       min_max_sizes.max_size += line.line_cross_size;
     }
     min_max_sizes.max_size +=
-        (flex_line_outputs.size() - 1) * algorithm_.gap_between_lines_;
+        (flex_line_outputs.size() - 1) * gap_between_lines_;
   }
 
   DCHECK_GE(min_max_sizes.min_size, 0);
@@ -2376,7 +2397,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
 
   if (!flex_items_.empty()) {
     const LayoutUnit gap_inline_size =
-        (flex_items_.size() - 1) * algorithm_.gap_between_items_;
+        (flex_items_.size() - 1) * gap_between_items_;
     if (is_multi_line_) {
       container_sizes.min_size = largest_outer_min_content_contribution;
       container_sizes.max_size += gap_inline_size;
@@ -2452,8 +2473,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
     }
   }
   if (!is_column_ && number_of_items > 0) {
-    LayoutUnit gap_inline_size =
-        (number_of_items - 1) * algorithm_.gap_between_items_;
+    LayoutUnit gap_inline_size = (number_of_items - 1) * gap_between_items_;
     sizes.max_size += gap_inline_size;
     if (!is_multi_line_) {
       sizes.min_size += gap_inline_size;

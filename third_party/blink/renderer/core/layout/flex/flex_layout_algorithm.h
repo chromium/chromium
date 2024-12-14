@@ -196,6 +196,9 @@ class CORE_EXPORT FlexLayoutAlgorithm
   const bool is_cross_size_definite_;
   const LogicalSize child_percentage_size_;
 
+  const LayoutUnit gap_between_items_;
+  const LayoutUnit gap_between_lines_;
+
   bool has_column_percent_flex_basis_ = false;
   bool ignore_child_scrollbar_changes_ = false;
 
@@ -208,7 +211,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // within a row flex container.
   bool has_processed_first_line_ = false;
 
-  FlexibleBoxAlgorithm algorithm_;
   std::unique_ptr<DevtoolsFlexInfo> layout_info_for_devtools_;
 
   // The block size of the entire flex container (ignoring any fragmentation).
