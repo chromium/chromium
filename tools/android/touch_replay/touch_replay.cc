@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <fcntl.h>
-#include <limits.h>
 #include <linux/input.h>
 #include <poll.h>
 #include <stdlib.h>
@@ -13,7 +12,6 @@
 
 #include <iostream>
 #include <string>
-#include <type_traits>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -49,18 +47,12 @@ struct TouchInputEventRecord {
   int type;
   int code;
   int value;
-#if LONG_MAX > INT_MAX
-  // Explicitly zero the padding so `std::has_unique_object_representations_v`
-  // will hold.
-  int unused_padding = 0;
-#endif
 
   uint64_t InMilliseconds() const {
     return base::checked_cast<uint64_t>(sec) * 1000 +
            base::checked_cast<uint64_t>(usec / 1000);
   }
 };
-static_assert(std::has_unique_object_representations_v<TouchInputEventRecord>);
 
 class InputDevice {
  public:

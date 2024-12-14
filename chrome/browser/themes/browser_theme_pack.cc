@@ -187,8 +187,7 @@ bool InputScalesValid(std::string_view input,
     return false;
   }
   auto scales = base::HeapArray<float>::WithSize(expected.size());
-  base::as_writable_byte_span(base::allow_nonunique_obj, scales)
-      .copy_from(base::as_byte_span(input));
+  base::as_writable_byte_span(scales).copy_from(base::as_byte_span(input));
   for (size_t index = 0; index < expected.size(); ++index) {
     if (scales[index] != ui::GetScaleForResourceScaleFactor(expected[index])) {
       return false;
@@ -204,8 +203,7 @@ std::string GetResourceScaleFactorsAsString(
   for (size_t i = 0; i < scale_factors.size(); ++i) {
     scales[i] = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
   }
-  return std::string(base::as_string_view(
-      base::as_byte_span(base::allow_nonunique_obj, scales)));
+  return std::string(base::as_string_view(base::as_byte_span(scales)));
 }
 
 struct StringToIntTable {

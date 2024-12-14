@@ -228,7 +228,7 @@ TEST_F(WebNNGraphBuilderImplTest, CreateGraphWithConstant) {
   GraphInfoBuilder builder(graph_builder_remote());
   uint64_t constant_operand_id = builder.BuildConstant(
       /*dimensions=*/{2, 3}, OperandDataType::kFloat32,
-      base::as_byte_span(base::allow_nonunique_obj, kConstantData));
+      base::as_byte_span(kConstantData));
   uint64_t output_operand_id = builder.BuildOutput(
       "output", /*dimensions=*/{2, 3}, OperandDataType::kFloat32);
   builder.BuildClamp(constant_operand_id, output_operand_id, /*min_value=*/5.0,
@@ -256,8 +256,7 @@ TEST_F(WebNNGraphBuilderImplTest, CreatePendingConstantOnBuiltGraph) {
   mojo::test::BadMessageObserver bad_message_observer;
   graph_builder_remote()->CreatePendingConstant(
       blink::WebNNPendingConstantToken(), OperandDataType::kFloat32,
-      mojo_base::BigBuffer(
-          base::as_byte_span(base::allow_nonunique_obj, kConstantData)));
+      mojo_base::BigBuffer(base::as_byte_span(kConstantData)));
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             kBadMessageOnBuiltGraphBuilder);
 }
@@ -269,15 +268,13 @@ TEST_F(WebNNGraphBuilderImplTest, CreateInvalidPendingConstantDuplicate) {
 
   graph_builder_remote()->CreatePendingConstant(
       token, OperandDataType::kFloat32,
-      mojo_base::BigBuffer(
-          base::as_byte_span(base::allow_nonunique_obj, kConstantData)));
+      mojo_base::BigBuffer(base::as_byte_span(kConstantData)));
 
   // Create another pending constant with the same token.
   mojo::test::BadMessageObserver bad_message_observer;
   graph_builder_remote()->CreatePendingConstant(
       token, OperandDataType::kFloat32,
-      mojo_base::BigBuffer(
-          base::as_byte_span(base::allow_nonunique_obj, kConstantData)));
+      mojo_base::BigBuffer(base::as_byte_span(kConstantData)));
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             kBadMessageInvalidPendingConstant);
 }

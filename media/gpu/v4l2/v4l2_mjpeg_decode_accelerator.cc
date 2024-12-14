@@ -261,6 +261,13 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
   scoped_refptr<VideoFrame> out_frame_;
 };
 
+V4L2MjpegDecodeAccelerator::BufferRecord::BufferRecord() : at_device(false) {
+  std::ranges::fill(address, nullptr);
+  std::ranges::fill(length, 0u);
+}
+
+V4L2MjpegDecodeAccelerator::BufferRecord::~BufferRecord() {}
+
 V4L2MjpegDecodeAccelerator::V4L2MjpegDecodeAccelerator(
     const scoped_refptr<V4L2Device>& device,
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
@@ -343,7 +350,7 @@ void V4L2MjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
   // Capabilities check.
   struct v4l2_capability caps;
   const __u32 kCapsRequired = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_M2M_MPLANE;
-  std::ranges::fill(base::byte_span_from_ref(caps), 0);
+  std::ranges::fill(base::byte_span_from_ref(caps), 0u);
   if (device_->Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP";
     std::move(init_cb).Run(false);
@@ -358,7 +365,7 @@ void V4L2MjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
 
   // Subscribe to the source change event.
   struct v4l2_event_subscription sub;
-  std::ranges::fill(base::byte_span_from_ref(sub), 0);
+  std::ranges::fill(base::byte_span_from_ref(sub), 0u);
   sub.type = V4L2_EVENT_SOURCE_CHANGE;
   if (device_->Ioctl(VIDIOC_SUBSCRIBE_EVENT, &sub) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_SUBSCRIBE_EVENT";
@@ -573,8 +580,7 @@ bool V4L2MjpegDecodeAccelerator::CreateInputBuffers() {
   // TODO(kamesan): use safe arithmetic to handle overflows.
   size_t reserve_size = (job_record->size() + sizeof(kDefaultDhtSeg)) * 2;
   struct v4l2_format format;
-  std::ranges::fill(base::byte_span_from_ref(base::allow_nonunique_obj, format),
-                    0);
+  std::ranges::fill(base::byte_span_from_ref(format), 0u);
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   format.fmt.pix_mp.pixelformat = V4L2_PIX_FMT_JPEG;
   format.fmt.pix_mp.plane_fmt[0].sizeimage = reserve_size;
@@ -584,7 +590,7 @@ bool V4L2MjpegDecodeAccelerator::CreateInputBuffers() {
   DCHECK_EQ(format.fmt.pix_mp.pixelformat, V4L2_PIX_FMT_JPEG);
 
   struct v4l2_requestbuffers reqbufs;
-  std::ranges::fill(base::byte_span_from_ref(reqbufs), 0);
+  std::ranges::fill(base::byte_span_from_ref(reqbufs), 0u);
   reqbufs.count = kBufferCount;
   reqbufs.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   reqbufs.memory = V4L2_MEMORY_MMAP;
@@ -598,10 +604,8 @@ bool V4L2MjpegDecodeAccelerator::CreateInputBuffers() {
 
     struct v4l2_buffer buffer;
     struct v4l2_plane planes[VIDEO_MAX_PLANES];
-    std::ranges::fill(
-        base::byte_span_from_ref(base::allow_nonunique_obj, buffer), 0);
-    std::ranges::fill(
-        base::as_writable_byte_span(base::allow_nonunique_obj, planes), 0);
+    std::ranges::fill(base::byte_span_from_ref(buffer), 0u);
+    std::ranges::fill(base::as_writable_byte_span(planes), 0u);
     buffer.index = i;
     buffer.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     buffer.m.planes = planes;
@@ -638,8 +642,7 @@ bool V4L2MjpegDecodeAccelerator::CreateOutputBuffers() {
   size_t frame_size = VideoFrame::AllocationSize(
       PIXEL_FORMAT_I420, job_record->out_frame()->coded_size());
   struct v4l2_format format;
-  std::ranges::fill(base::byte_span_from_ref(base::allow_nonunique_obj, format),
-                    0);
+  std::ranges::fill(base::byte_span_from_ref(format), 0u);
   format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   format.fmt.pix_mp.width = job_record->out_frame()->coded_size().width();
   format.fmt.pix_mp.height = job_record->out_frame()->coded_size().height();
@@ -664,7 +667,7 @@ bool V4L2MjpegDecodeAccelerator::CreateOutputBuffers() {
   }
 
   struct v4l2_requestbuffers reqbufs;
-  std::ranges::fill(base::byte_span_from_ref(reqbufs), 0);
+  std::ranges::fill(base::byte_span_from_ref(reqbufs), 0u);
   reqbufs.count = kBufferCount;
   reqbufs.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   reqbufs.memory = V4L2_MEMORY_MMAP;
@@ -678,10 +681,8 @@ bool V4L2MjpegDecodeAccelerator::CreateOutputBuffers() {
 
     struct v4l2_buffer buffer;
     struct v4l2_plane planes[VIDEO_MAX_PLANES];
-    std::ranges::fill(
-        base::byte_span_from_ref(base::allow_nonunique_obj, buffer), 0);
-    std::ranges::fill(
-        base::as_writable_byte_span(base::allow_nonunique_obj, planes), 0);
+    std::ranges::fill(base::byte_span_from_ref(buffer), 0u);
+    std::ranges::fill(base::as_writable_byte_span(planes), 0u);
     buffer.index = i;
     buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     buffer.memory = V4L2_MEMORY_MMAP;
@@ -737,7 +738,7 @@ void V4L2MjpegDecodeAccelerator::DestroyInputBuffers() {
   }
 
   struct v4l2_requestbuffers reqbufs;
-  std::ranges::fill(base::byte_span_from_ref(reqbufs), 0);
+  std::ranges::fill(base::byte_span_from_ref(reqbufs), 0u);
   reqbufs.count = 0;
   reqbufs.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   reqbufs.memory = V4L2_MEMORY_MMAP;
@@ -767,7 +768,7 @@ void V4L2MjpegDecodeAccelerator::DestroyOutputBuffers() {
   }
 
   struct v4l2_requestbuffers reqbufs;
-  std::ranges::fill(base::byte_span_from_ref(reqbufs), 0);
+  std::ranges::fill(base::byte_span_from_ref(reqbufs), 0u);
   reqbufs.count = 0;
   reqbufs.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   reqbufs.memory = V4L2_MEMORY_MMAP;
@@ -1051,10 +1052,8 @@ void V4L2MjpegDecodeAccelerator::Dequeue() {
   struct v4l2_plane planes[VIDEO_MAX_PLANES];
   while (InputBufferQueuedCount() > 0) {
     DCHECK(input_streamon_);
-    std::ranges::fill(
-        base::byte_span_from_ref(base::allow_nonunique_obj, dqbuf), 0);
-    std::ranges::fill(
-        base::as_writable_byte_span(base::allow_nonunique_obj, planes), 0);
+    std::ranges::fill(base::byte_span_from_ref(dqbuf), 0u);
+    std::ranges::fill(base::as_writable_byte_span(planes), 0u);
     dqbuf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     dqbuf.memory = V4L2_MEMORY_MMAP;
     dqbuf.length = std::size(planes);
@@ -1087,10 +1086,8 @@ void V4L2MjpegDecodeAccelerator::Dequeue() {
   // have pending frames in |running_jobs_| and also enqueued output buffers.
   while (!running_jobs_.empty() && OutputBufferQueuedCount() > 0) {
     DCHECK(output_streamon_);
-    std::ranges::fill(
-        base::byte_span_from_ref(base::allow_nonunique_obj, dqbuf), 0);
-    std::ranges::fill(
-        base::as_writable_byte_span(base::allow_nonunique_obj, planes), 0);
+    std::ranges::fill(base::byte_span_from_ref(dqbuf), 0u);
+    std::ranges::fill(base::as_writable_byte_span(planes), 0u);
     dqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     // From experiments, using MMAP and memory copy is still faster than
     // USERPTR. Also, client doesn't need to consider the buffer alignment and
@@ -1251,10 +1248,8 @@ bool V4L2MjpegDecodeAccelerator::EnqueueInputRecord() {
 
   struct v4l2_buffer qbuf;
   struct v4l2_plane planes[VIDEO_MAX_PLANES];
-  std::ranges::fill(base::byte_span_from_ref(base::allow_nonunique_obj, qbuf),
-                    0);
-  std::ranges::fill(
-      base::as_writable_byte_span(base::allow_nonunique_obj, planes), 0);
+  std::ranges::fill(base::byte_span_from_ref(qbuf), 0u);
+  std::ranges::fill(base::as_writable_byte_span(planes), 0u);
   qbuf.index = index;
   qbuf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   qbuf.memory = V4L2_MEMORY_MMAP;
@@ -1282,10 +1277,8 @@ bool V4L2MjpegDecodeAccelerator::EnqueueOutputRecord() {
   DCHECK(!output_record.at_device);
   struct v4l2_buffer qbuf;
   struct v4l2_plane planes[VIDEO_MAX_PLANES];
-  std::ranges::fill(base::byte_span_from_ref(base::allow_nonunique_obj, qbuf),
-                    0);
-  std::ranges::fill(
-      base::as_writable_byte_span(base::allow_nonunique_obj, planes), 0);
+  std::ranges::fill(base::byte_span_from_ref(qbuf), 0u);
+  std::ranges::fill(base::as_writable_byte_span(planes), 0u);
   qbuf.index = index;
   qbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   qbuf.memory = V4L2_MEMORY_MMAP;

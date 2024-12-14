@@ -149,24 +149,6 @@
 // (N.B. There is no entry above for `std::vector<int* const>`, since per the
 // C++ standard, `std::vector`'s element type must be non-const.)
 //
-// Byte spans, `std::has_unique_object_representations_v<>`, and conversions
-// -------------------------------------------------------------------------
-// Because byte spans are often used to copy and hash objects, the byte span
-// conversion functions (e.g. `as_bytes()`, `as_byte_span()`) require the
-// element type to meet `std::has_unique_object_representations_v<>`. For types
-// which do not meet this requirement but need conversion to a byte span, there
-// are two workarounds:
-//   1. If the type is safe to convert to a byte span in general, specialize
-//      `kCanSafelyConvertToByteSpan<T>` to be true for it. For example, Blink's
-//      `AtomicString` is not trivially copyable, but it is interned, so hashing
-//      and comparing the hashed values is safe.
-//   2. If the type is not safe in general but is safe for a particular use
-//      case, pass `base::allow_nonunique_obj` as the first arg to the byte span
-//      conversion functions. For example, floating-point values are not unique
-//      (among other reasons, because `+0` and `-0` are distinct but compare
-//      equal), but they are trivially copyable, so serializing them to disk and
-//      then deserializing is OK.
-//
 // Spans using `raw_ptr<T>` for internal storage
 // ---------------------------------------------
 // Provided via the type alias `raw_span<T[, N]>` (see base/memory/raw_span.h).
@@ -250,9 +232,9 @@
 // Differences from [span.objectrep]:
 // - For convenience, provides `span::to_fixed_extent<N>()` to attempt
 //   conversion to a fixed-extent span, and return null on failure.
-// - Because Chromium bans `std::byte`, `as_[writable_]bytes()` use `uint8_t`
+// - Because Chromium bans `std::byte`, `as_[writeable_]bytes()` use `uint8_t`
 //   instead of `std::byte` as the returned element type.
-// - For convenience, provides `as_[writable_]chars()` and `as_string_view()`
+// - For convenience, provides `as_[writeable_]chars()` and `as_string_view()`
 //   to convert to other "view of bytes"-like objects.
 // - For convenience, provides an `operator<<()` overload that accepts a span
 //   and prints a byte representation. Also provides a `PrintTo()` overload to
@@ -265,9 +247,6 @@
 //   convert `basic_cstring_view<T>` to spans, preserving the null terminator.
 // - For convenience, provides `as_[writable_]byte_span()` to convert
 //   spanifiable objects directly to byte spans.
-// - For safety, bans types which do not meet
-//   `std::has_unique_object_representations_v<>` from all byte span conversion
-//   functions by default. See more detailed comments above for workarounds.
 
 namespace base {
 
@@ -306,22 +285,6 @@ inline constexpr bool std::ranges::enable_borrowed_range<
 
 namespace base {
 
-// Allows global use of a type for conversion to byte spans.
-template <typename T>
-inline constexpr bool kCanSafelyConvertToByteSpan =
-    std::has_unique_object_representations_v<T>;
-template <typename T, typename U>
-inline constexpr bool kCanSafelyConvertToByteSpan<std::pair<T, U>> =
-    kCanSafelyConvertToByteSpan<std::remove_cvref_t<T>> &&
-    kCanSafelyConvertToByteSpan<std::remove_cvref_t<U>>;
-
-// Type tag to provide to byte span conversion functions to bypass
-// `std::has_unique_object_representations_v<>` check.
-struct allow_nonunique_obj_t {
-  explicit allow_nonunique_obj_t() = default;
-};
-inline constexpr allow_nonunique_obj_t allow_nonunique_obj{};
-
 namespace internal {
 
 // Exposition-only concept from [span.syn]
@@ -342,32 +305,25 @@ concept LegalDataConversion = std::is_convertible_v<From (*)[], To (*)[]>;
 template <typename T>
 concept SpanConstructibleFrom = requires(T&& t) { span(std::forward<T>(t)); };
 
-// Returns the element type of `span(T)`.
-template <typename T>
-  requires SpanConstructibleFrom<T>
-using ElementTypeOfSpanConstructedFrom =
-    typename decltype(span(std::declval<T>()))::element_type;
-
 template <typename T, typename It>
 concept CompatibleIter =
     std::contiguous_iterator<It> &&
     LegalDataConversion<std::remove_reference_t<std::iter_reference_t<It>>, T>;
 
-// True when `T` is a `span`.
+// Disallow general-purpose range construction from types that have dedicated
+// constructors.
+// Arrays should go through the array constructors.
 template <typename T>
-inline constexpr bool kIsSpan = false;
-template <typename ElementType, size_t Extent, typename InternalPtrType>
-inline constexpr bool kIsSpan<span<ElementType, Extent, InternalPtrType>> =
-    true;
+inline constexpr bool kCompatibleRangeType = !std::is_array_v<T>;
+// `span`s should go through the copy constructor.
+template <typename T, size_t N, typename P>
+inline constexpr bool kCompatibleRangeType<span<T, N, P>> = false;
 
 template <typename T, typename R>
 concept CompatibleRange =
     std::ranges::contiguous_range<R> && std::ranges::sized_range<R> &&
-    (std::ranges::borrowed_range<R> || (std::is_const_v<T>)) &&
-    // `span`s should go through the copy constructor.
-    (!kIsSpan<std::remove_cvref_t<R>> &&
-     // Arrays should go through the array constructors.
-     (!std::is_array_v<std::remove_cvref_t<R>>)) &&
+    (std::ranges::borrowed_range<R> ||
+     std::is_const_v<T>)&&kCompatibleRangeType<std::remove_cvref_t<R>> &&
     LegalDataConversion<
         std::remove_reference_t<std::ranges::range_reference_t<R>>,
         T>;
@@ -392,30 +348,6 @@ inline constexpr size_t kComputedExtentImpl<span<T, N, InternalPtrType>> = N;
 template <typename T>
 inline constexpr size_t kComputedExtent =
     kComputedExtentImpl<std::remove_cvref_t<T>>;
-
-template <typename T>
-concept CanSafelyConvertToByteSpan =
-    kCanSafelyConvertToByteSpan<std::remove_cvref_t<T>>;
-
-template <typename T>
-concept ByteSpanConstructibleFrom =
-    SpanConstructibleFrom<T> &&
-    CanSafelyConvertToByteSpan<ElementTypeOfSpanConstructedFrom<T>>;
-
-// Allows one-off use of a type that wouldn't normally convert to a byte span.
-template <typename T>
-concept CanSafelyConvertNonUniqueToByteSpan =
-    // Non-trivially-copyable elements usually aren't safe even to serialize;
-    // when they are that's normally unconditionally true and can be handled
-    // using `kCanSafelyConvertToByteSpan`.
-    std::is_trivially_copyable_v<T> &&
-    // If this fails, `allow_nonunique_obj` wasn't necessary.
-    !std::has_unique_object_representations_v<T>;
-
-template <typename T>
-concept ByteSpanConstructibleFromNonUnique =
-    SpanConstructibleFrom<T> &&
-    CanSafelyConvertNonUniqueToByteSpan<ElementTypeOfSpanConstructedFrom<T>>;
 
 template <typename ByteType,
           typename ElementType,
@@ -1391,57 +1323,27 @@ span(R&&) -> span<std::remove_reference_t<std::ranges::range_reference_t<R>>,
 
 // [span.objectrep]: Views of object representation
 template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::CanSafelyConvertToByteSpan<ElementType>)
 constexpr auto as_bytes(span<ElementType, Extent, InternalPtrType> s) {
   return internal::as_byte_span<const uint8_t>(s);
 }
 template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::CanSafelyConvertNonUniqueToByteSpan<ElementType>)
-constexpr auto as_bytes(allow_nonunique_obj_t,
-                        span<ElementType, Extent, InternalPtrType> s) {
-  return internal::as_byte_span<const uint8_t>(s);
-}
-template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::CanSafelyConvertToByteSpan<ElementType> &&
-           !std::is_const_v<ElementType>)
+  requires(!std::is_const_v<ElementType>)
 constexpr auto as_writable_bytes(span<ElementType, Extent, InternalPtrType> s) {
   return internal::as_byte_span<uint8_t>(s);
 }
-template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::CanSafelyConvertNonUniqueToByteSpan<ElementType> &&
-           !std::is_const_v<ElementType>)
-constexpr auto as_writable_bytes(allow_nonunique_obj_t,
-                                 span<ElementType, Extent, InternalPtrType> s) {
-  return internal::as_byte_span<uint8_t>(s);
-}
 
-// Like `as_[writable_]bytes()`, but uses `[const] char` rather than `[const]
+// Like `as_[writeable_]bytes()`, but uses `[const] char` rather than `[const]
 // uint8_t`.
 //
 // (Not in `std::`; eases span adoption in Chromium, which uses `char` in many
 // cases that rightfully should be `uint8_t`.)
 template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::CanSafelyConvertToByteSpan<ElementType>)
 constexpr auto as_chars(span<ElementType, Extent, InternalPtrType> s) {
   return internal::as_byte_span<const char>(s);
 }
 template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::CanSafelyConvertNonUniqueToByteSpan<ElementType>)
-constexpr auto as_chars(allow_nonunique_obj_t,
-                        span<ElementType, Extent, InternalPtrType> s) {
-  return internal::as_byte_span<const char>(s);
-}
-template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::CanSafelyConvertToByteSpan<ElementType> &&
-           !std::is_const_v<ElementType>)
+  requires(!std::is_const_v<ElementType>)
 constexpr auto as_writable_chars(span<ElementType, Extent, InternalPtrType> s) {
-  return internal::as_byte_span<char>(s);
-}
-template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::CanSafelyConvertNonUniqueToByteSpan<ElementType> &&
-           !std::is_const_v<ElementType>)
-constexpr auto as_writable_chars(allow_nonunique_obj_t,
-                                 span<ElementType, Extent, InternalPtrType> s) {
   return internal::as_byte_span<char>(s);
 }
 
@@ -1553,25 +1455,12 @@ constexpr auto span_from_ref(T& t LIFETIME_BOUND) {
 //
 // (Not in `std::`.)
 template <typename T>
-  requires(internal::CanSafelyConvertToByteSpan<T>)
 constexpr auto byte_span_from_ref(const T& t LIFETIME_BOUND) {
   return as_bytes(span_from_ref(t));
 }
 template <typename T>
-  requires(internal::CanSafelyConvertNonUniqueToByteSpan<T>)
-constexpr auto byte_span_from_ref(allow_nonunique_obj_t,
-                                  const T& t LIFETIME_BOUND) {
-  return as_bytes(allow_nonunique_obj, span_from_ref(t));
-}
-template <typename T>
-  requires(internal::CanSafelyConvertToByteSpan<T>)
 constexpr auto byte_span_from_ref(T& t LIFETIME_BOUND) {
   return as_writable_bytes(span_from_ref(t));
-}
-template <typename T>
-  requires(internal::CanSafelyConvertNonUniqueToByteSpan<T>)
-constexpr auto byte_span_from_ref(allow_nonunique_obj_t, T& t LIFETIME_BOUND) {
-  return as_writable_bytes(allow_nonunique_obj, span_from_ref(t));
 }
 
 // Converts a `const CharT[]` literal to a `span<const CharT>`, omitting the
@@ -1653,70 +1542,38 @@ constexpr auto byte_span_with_nul_from_cstring_view(
 //
 // (Not in `std::`.)
 template <int&... ExplicitArgumentBarrier, typename T>
-  requires(internal::ByteSpanConstructibleFrom<const T&>)
+  requires(internal::SpanConstructibleFrom<const T&>)
 constexpr auto as_byte_span(const T& t LIFETIME_BOUND) {
   return as_bytes(span(t));
 }
 template <int&... ExplicitArgumentBarrier, typename T>
-  requires(internal::ByteSpanConstructibleFromNonUnique<const T&>)
-constexpr auto as_byte_span(allow_nonunique_obj_t, const T& t LIFETIME_BOUND) {
-  return as_bytes(allow_nonunique_obj, span(t));
-}
-template <int&... ExplicitArgumentBarrier, typename T>
-  requires(internal::ByteSpanConstructibleFrom<const T&> &&
+  requires(internal::SpanConstructibleFrom<const T&> &&
            std::ranges::borrowed_range<T>)
 constexpr auto as_byte_span(const T& t) {
   return as_bytes(span(t));
-}
-template <int&... ExplicitArgumentBarrier, typename T>
-  requires(internal::ByteSpanConstructibleFromNonUnique<const T&> &&
-           std::ranges::borrowed_range<T>)
-constexpr auto as_byte_span(allow_nonunique_obj_t, const T& t) {
-  return as_bytes(allow_nonunique_obj, span(t));
 }
 // Array arguments require dedicated specializations because if only the
 // generalized functions are available, the compiler cannot deduce the template
 // parameter.
 template <int&... ExplicitArgumentBarrier, typename ElementType, size_t Extent>
-  requires(internal::CanSafelyConvertToByteSpan<ElementType>)
 constexpr auto as_byte_span(const ElementType (&arr LIFETIME_BOUND)[Extent]) {
   return as_bytes(span<const ElementType, Extent>(arr));
 }
-template <int&... ExplicitArgumentBarrier, typename ElementType, size_t Extent>
-  requires(internal::CanSafelyConvertNonUniqueToByteSpan<ElementType>)
-constexpr auto as_byte_span(allow_nonunique_obj_t,
-                            const ElementType (&arr LIFETIME_BOUND)[Extent]) {
-  return as_bytes(allow_nonunique_obj, span<const ElementType, Extent>(arr));
-}
 template <int&... ExplicitArgumentBarrier, typename T>
-  requires(internal::ByteSpanConstructibleFrom<T &&> &&
-           !std::is_const_v<internal::ElementTypeOfSpanConstructedFrom<T>>)
+  requires(internal::SpanConstructibleFrom<T &&> &&
+           !std::is_const_v<
+               typename decltype(span(std::declval<T>()))::element_type>)
 // NOTE: `t` is not marked as lifetimebound because the "non-const
 // `element_type`" requirement above will in turn require `T` to be a borrowed
 // range.
 constexpr auto as_writable_byte_span(T&& t) {
   return as_writable_bytes(span(t));
 }
-template <int&... ExplicitArgumentBarrier, typename T>
-  requires(internal::ByteSpanConstructibleFromNonUnique<T &&> &&
-           !std::is_const_v<internal::ElementTypeOfSpanConstructedFrom<T>>)
-constexpr auto as_writable_byte_span(allow_nonunique_obj_t, T&& t) {
-  return as_writable_bytes(allow_nonunique_obj, span(t));
-}
 template <int&... ExplicitArgumentBarrier, typename ElementType, size_t Extent>
-  requires(internal::CanSafelyConvertToByteSpan<ElementType> &&
-           !std::is_const_v<ElementType>)
+  requires(!std::is_const_v<ElementType>)
 constexpr auto as_writable_byte_span(
     ElementType (&arr LIFETIME_BOUND)[Extent]) {
   return as_writable_bytes(span<ElementType, Extent>(arr));
-}
-template <int&... ExplicitArgumentBarrier, typename ElementType, size_t Extent>
-  requires(internal::CanSafelyConvertNonUniqueToByteSpan<ElementType> &&
-           !std::is_const_v<ElementType>)
-constexpr auto as_writable_byte_span(
-    allow_nonunique_obj_t,
-    ElementType (&arr LIFETIME_BOUND)[Extent]) {
-  return as_writable_bytes(allow_nonunique_obj, span<ElementType, Extent>(arr));
 }
 
 }  // namespace base

@@ -67,11 +67,6 @@
 #endif
 
 namespace WTF {
-template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-class Vector;
-}
-
-namespace WTF {
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 // The allocation pool for nodes is one big chunk that ASAN has no insight

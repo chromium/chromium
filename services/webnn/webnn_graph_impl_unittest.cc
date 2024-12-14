@@ -7699,8 +7699,7 @@ TEST_F(WebNNGraphImplTest, BuildMultipleInputsAppendingConstants) {
       builder.BuildInput("input_a", {2, 2}, OperandDataType::kFloat32);
   std::vector<float> constant_data = {5.0, 6.0, 7.0, 8.0};
   uint64_t constant_a_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32,
-      base::as_byte_span(base::allow_nonunique_obj, constant_data));
+      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
 
   uint64_t intermediate_1_operand_id =
       builder.BuildIntermediateOperand({2, 2}, OperandDataType::kFloat32);
@@ -7710,8 +7709,7 @@ TEST_F(WebNNGraphImplTest, BuildMultipleInputsAppendingConstants) {
   uint64_t input_b_operand_id =
       builder.BuildInput("input_b", {2, 2}, OperandDataType::kFloat32);
   uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32,
-      base::as_byte_span(base::allow_nonunique_obj, constant_data));
+      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
   uint64_t intermediate_2_operand_id =
       builder.BuildIntermediateOperand({2, 2}, OperandDataType::kFloat32);
   builder.BuildGemm(input_b_operand_id, constant_b_operand_id,
@@ -7739,8 +7737,7 @@ TEST_F(WebNNGraphImplTest, BuildMultipleConstantsAppendingInputs) {
       builder.BuildOutput("output", {2, 2}, OperandDataType::kFloat32);
   std::vector<float> constant_data = {5.0, 6.0, 7.0, 8.0};
   uint64_t constant_a_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32,
-      base::as_byte_span(base::allow_nonunique_obj, constant_data));
+      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
   uint64_t input_a_operand_id =
       builder.BuildInput("input_a", {2, 2}, OperandDataType::kFloat32);
   uint64_t intermediate_1_operand_id =
@@ -7751,8 +7748,7 @@ TEST_F(WebNNGraphImplTest, BuildMultipleConstantsAppendingInputs) {
   uint64_t input_b_operand_id =
       builder.BuildInput("input_b", {2, 2}, OperandDataType::kFloat32);
   uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32,
-      base::as_byte_span(base::allow_nonunique_obj, constant_data));
+      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
   uint64_t intermediate_2_operand_id =
       builder.BuildIntermediateOperand({2, 2}, OperandDataType::kFloat32);
   builder.BuildGemm(constant_b_operand_id, input_b_operand_id,

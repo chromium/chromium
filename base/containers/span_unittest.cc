@@ -17,7 +17,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/bit_cast.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/checked_iterators.h"
@@ -1858,88 +1857,6 @@ TEST(SpanTest, AsWritableByteSpan) {
       // Little endian puts the low bits in the first byte.
       EXPECT_EQ(byte_span[0u], 2);
     }(as_writable_byte_span(kMutArray));
-  }
-}
-
-// Create some structs to test byte span conversion from non-unique-rep objects.
-namespace {
-struct NonUnique {
-  float f = 0;
-};
-static_assert(!std::has_unique_object_representations_v<NonUnique>);
-
-struct Allowlisted : NonUnique {};
-static_assert(!std::has_unique_object_representations_v<Allowlisted>);
-}  // namespace
-
-// Verify we can compile byte span conversions for the above with appropriate
-// carve-outs.
-template <>
-inline constexpr bool kCanSafelyConvertToByteSpan<Allowlisted> = true;
-TEST(SpanTest, ByteSpansFromNonUnique) {
-  // Note: This test is just a compile test, and assumes the functionality tests
-  // above are sufficient to verify that aspect.
-
-  {
-    static_assert(!internal::CanSafelyConvertToByteSpan<NonUnique>);
-
-    // `as_[writable_](bytes,chars)()`
-    NonUnique arr[] = {{1}, {2}, {3}};
-    span sp(arr);
-    as_bytes(allow_nonunique_obj, sp);
-    as_writable_bytes(allow_nonunique_obj, sp);
-    as_chars(allow_nonunique_obj, sp);
-    as_writable_chars(allow_nonunique_obj, sp);
-
-    // `byte_span_from_ref()`
-    const NonUnique const_obj;
-    NonUnique obj;
-    // Read-only
-    byte_span_from_ref(allow_nonunique_obj, const_obj);
-    // Writable
-    byte_span_from_ref(allow_nonunique_obj, obj);
-
-    // `as_[writable_]byte_span()`
-    std::vector<NonUnique> vec;
-    // Non-borrowed range
-    as_byte_span(allow_nonunique_obj, std::vector<NonUnique>());
-    // Borrowed range
-    as_byte_span(allow_nonunique_obj, vec);
-    as_writable_byte_span(allow_nonunique_obj, vec);
-    // Array
-    as_byte_span(allow_nonunique_obj, arr);
-    as_writable_byte_span(allow_nonunique_obj, arr);
-  }
-
-  {
-    static_assert(internal::CanSafelyConvertToByteSpan<Allowlisted>);
-
-    // `as_[writable_](bytes,chars)()`
-    Allowlisted arr[] = {{1}, {2}, {3}};
-    span sp(arr);
-    as_bytes(sp);
-    as_writable_bytes(sp);
-    as_chars(sp);
-    as_writable_chars(sp);
-
-    // `byte_span_from_ref()`
-    const Allowlisted const_obj;
-    Allowlisted obj;
-    // Read-only
-    byte_span_from_ref(const_obj);
-    // Writable
-    byte_span_from_ref(obj);
-
-    // `as_[writable_]byte_span()`
-    std::vector<Allowlisted> vec;
-    // Non-borrowed range
-    as_byte_span(std::vector<Allowlisted>());
-    // Borrowed range
-    as_byte_span(vec);
-    as_writable_byte_span(vec);
-    // Array
-    as_byte_span(arr);
-    as_writable_byte_span(arr);
   }
 }
 

@@ -59,7 +59,6 @@ _CONFIG = [
             # //base constructs that are allowed everywhere
             'base::(byte_)?span_from_ref',
             'base::AdoptRef',
-            'base::allow_nonunique_obj',
             'base::ApplyMetadataToPastSamples',
             'base::as_byte_span',
             'base::as_byte_span',

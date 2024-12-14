@@ -26,7 +26,6 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
@@ -41,17 +40,6 @@
 #ifdef __OBJC__
 #include "base/apple/bridging.h"
 #endif
-
-namespace WTF {
-class WTF_EXPORT AtomicString;
-}
-
-// `AtomicString` is interned, so it's safe to hash; allow conversion to a byte
-// span to facilitate this.
-namespace base {
-template <>
-inline constexpr bool kCanSafelyConvertToByteSpan<::WTF::AtomicString> = true;
-}
 
 namespace WTF {
 

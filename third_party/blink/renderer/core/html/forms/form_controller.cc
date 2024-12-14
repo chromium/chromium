@@ -38,17 +38,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
-class ControlKey;
-}
-
-// `ControlKey`'s strings are interned, so it's safe to hash; allow conversion
-// to a byte span to facilitate this.
-namespace base {
-template <>
-inline constexpr bool kCanSafelyConvertToByteSpan<::blink::ControlKey> = true;
-}
-
-namespace blink {
 
 namespace {
 
@@ -155,13 +144,6 @@ class ControlKey {
 
 ControlKey::ControlKey(StringImpl* name, StringImpl* type)
     : name_(name), type_(type) {
-  // These strings being atomic is load-bearing for this type to be safely
-  // comparable by its byte hash.
-  const auto is_atomic = [](StringImpl* s) {
-    return !s || !s->length() || s->IsAtomic();
-  };
-  CHECK(is_atomic(name));
-  CHECK(is_atomic(type));
   Ref();
 }
 

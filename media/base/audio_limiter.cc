@@ -217,7 +217,7 @@ void AudioLimiter::WriteLimitedFrameToOutput() {
 
   const auto copy_float_to_channel = [](float src, base::span<uint8_t>& ch) {
     auto [dest, remainder] = ch.split_at<sizeof(float)>();
-    dest.copy_from(base::byte_span_from_ref(base::allow_nonunique_obj, src));
+    dest.copy_from(base::byte_span_from_ref(src));
     ch = remainder;
   };
 
