@@ -356,7 +356,7 @@ TEST_F(FederatedProviderFetcherTest,
 
   base::RunLoop loop;
 
-  // Asserts that we get a kConfigHttpNotFound.
+  // Asserts that we get no error in the result.
   fetcher.Start(
       {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
@@ -365,6 +365,60 @@ TEST_F(FederatedProviderFetcherTest,
           [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_FALSE(result[0].error);
+            loop.Quit();
+          }));
+
+  loop.Run();
+}
+
+TEST_F(FederatedProviderFetcherTest,
+       ProvidersUrlsCanbeEmptyWhenAuthZIsEnabledAndAccountEndpointsMatch) {
+  // When the AuthZ feature is enabled, the well-known file can have empty
+  // provider_urls.
+  feature_list_.InitAndEnableFeature(features::kFedCmAuthz);
+
+  auto network_manager =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+
+  // Returns a 200 but with an empty and invalid response.
+  EXPECT_CALL(*network_manager, FetchConfig(_, _, _, _, _))
+      .WillOnce(WithArg<4>(
+          [](IdpNetworkRequestManager::FetchConfigCallback callback) {
+            IdpNetworkRequestManager::Endpoints endpoints;
+            endpoints.token = GURL("https://idp.example/token.php");
+            endpoints.accounts = GURL("https://idp.example/accounts.php");
+
+            IdentityProviderMetadata metadata;
+            metadata.idp_login_url =
+                GURL("https://idp.example/idp_login_url.php");
+            std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
+                                    endpoints, metadata);
+          }));
+
+  EXPECT_CALL(*network_manager, FetchWellKnown(_, _))
+      .WillOnce(WithArg<1>(
+          [](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = GURL("https://idp.example/accounts.php");
+            well_known.login_url =
+                GURL("https://idp.example/idp_login_url.php");
+            std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
+                                    well_known);
+          }));
+
+  base::RunLoop loop;
+
+  // Asserts that we get no error in the result.
+  fetcher.Start(
+      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
+      /*icon_ideal_size=*/0,
+      /*icon_minimum_size=*/0,
+      base::BindLambdaForTesting(
+          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+            EXPECT_EQ(result.size(), 1ul);
+            EXPECT_FALSE(result[0].error);
+            EXPECT_TRUE(result[0].wellknown.provider_urls.empty());
             loop.Quit();
           }));
 

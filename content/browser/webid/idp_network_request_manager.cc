@@ -500,6 +500,12 @@ void OnWellKnownParsed(
       ExtractEndpoint(well_known_url, *dict, kAccountsEndpointKey);
   well_known.login_url = ExtractEndpoint(well_known_url, *dict, kLoginUrlKey);
 
+  if (!well_known.accounts.is_empty() && !well_known.login_url.is_empty() &&
+      !dict->Find(kProviderUrlListKey)) {
+    std::move(callback).Run(fetch_status, std::move(well_known));
+    return;
+  }
+
   const base::Value::List* list = dict->FindList(kProviderUrlListKey);
   if (!list) {
     std::move(callback).Run(
