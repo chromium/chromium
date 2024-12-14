@@ -213,6 +213,9 @@ class OnDeviceModelServiceController
 
   on_device_model::ModelAssetPaths PopulateModelPaths();
 
+  // Called to update model availability for all features.
+  void NotifyModelAvailabilityChanges();
+
   // Called to update the model availability changes for `feature`.
   void NotifyModelAvailabilityChange(ModelBasedCapabilityKey feature);
 

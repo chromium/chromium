@@ -292,11 +292,13 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_client_.SetLanguageDetectionModel(model_info);
+  NotifyModelAvailabilityChanges();
 }
 
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_client_.MaybeUpdateSafetyModel(model_info);
+  NotifyModelAvailabilityChanges();
 }
 
 on_device_model::ModelAssetPaths
@@ -317,9 +319,7 @@ void OnDeviceModelServiceController::UpdateModel(
   model_validator_ = nullptr;
 
   if (did_model_change) {
-    for (const auto& entry : model_availability_change_observers_) {
-      NotifyModelAvailabilityChange(entry.first);
-    }
+    NotifyModelAvailabilityChanges();
   }
 
   if (!model_metadata_ || !features::IsOnDeviceModelValidationEnabled()) {
@@ -489,6 +489,12 @@ void OnDeviceModelServiceController::
         OnDeviceModelAvailabilityObserver* observer) {
   DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
   model_availability_change_observers_[feature].RemoveObserver(observer);
+}
+
+void OnDeviceModelServiceController::NotifyModelAvailabilityChanges() {
+  for (const auto& entry : model_availability_change_observers_) {
+    NotifyModelAvailabilityChange(entry.first);
+  }
 }
 
 void OnDeviceModelServiceController::NotifyModelAvailabilityChange(
