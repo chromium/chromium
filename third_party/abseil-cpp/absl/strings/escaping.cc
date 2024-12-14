@@ -370,7 +370,7 @@ std::string CEscapeInternal(absl::string_view src, bool use_hex,
 }
 
 /* clang-format off */
-constexpr unsigned char kCEscapedLen[256] = {
+constexpr std::array<unsigned char, 256> kCEscapedLen = {
     4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 4,  // \t, \n, \r
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
     1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1,  // ", '
@@ -481,7 +481,7 @@ void CEscapeAndAppendInternal(absl::string_view src,
 // documentation for details of the mapping.
 bool Base64UnescapeInternal(absl::Nullable<const char*> src_param, size_t szsrc,
                             absl::Nullable<char*> dest, size_t szdest,
-                            absl::Nonnull<const signed char*> unbase64,
+                            const std::array<signed char, 256>& unbase64,
                             absl::Nonnull<size_t*> len) {
   static const char kPad64Equals = '=';
   static const char kPad64Dot = '.';
@@ -746,7 +746,7 @@ bool Base64UnescapeInternal(absl::Nullable<const char*> src_param, size_t szsrc,
 // where the value of "Base64[]" was replaced by one of k(WebSafe)Base64Chars
 // in the internal escaping.cc.
 /* clang-format off */
-constexpr signed char kUnBase64[] = {
+constexpr std::array<signed char, 256> kUnBase64 = {
     -1,      -1,      -1,      -1,      -1,      -1,      -1,      -1,
     -1,      -1,      -1,      -1,      -1,      -1,      -1,      -1,
     -1,      -1,      -1,      -1,      -1,      -1,      -1,      -1,
@@ -781,7 +781,7 @@ constexpr signed char kUnBase64[] = {
     -1,      -1,      -1,      -1,      -1,      -1,      -1,      -1
 };
 
-constexpr signed char kUnWebSafeBase64[] = {
+constexpr std::array<signed char, 256> kUnWebSafeBase64 = {
     -1,      -1,      -1,      -1,      -1,      -1,      -1,      -1,
     -1,      -1,      -1,      -1,      -1,      -1,      -1,      -1,
     -1,      -1,      -1,      -1,      -1,      -1,      -1,      -1,
@@ -820,7 +820,7 @@ constexpr signed char kUnWebSafeBase64[] = {
 template <typename String>
 bool Base64UnescapeInternal(absl::Nullable<const char*> src, size_t slen,
                             absl::Nonnull<String*> dest,
-                            absl::Nonnull<const signed char*> unbase64) {
+                            const std::array<signed char, 256>& unbase64) {
   // Determine the size of the output string.  Base64 encodes every 3 bytes into
   // 4 characters.  Any leftover chars are added directly for good measure.
   const size_t dest_len = 3 * (slen / 4) + (slen % 4);
@@ -845,7 +845,7 @@ bool Base64UnescapeInternal(absl::Nullable<const char*> src, size_t slen,
 }
 
 /* clang-format off */
-constexpr char kHexValueLenient[256] = {
+constexpr std::array<char, 256> kHexValueLenient = {
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -864,7 +864,7 @@ constexpr char kHexValueLenient[256] = {
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-constexpr signed char kHexValueStrict[256] = {
+constexpr std::array<signed char, 256> kHexValueStrict = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
