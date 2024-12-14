@@ -79,7 +79,7 @@ crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigati
 crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-virtual/disable-raster-inducing-scroll/external/wpt/acid/acid2/reftest.html [ Failure ]
+crbug.com/383814062 virtual/disable-raster-inducing-scroll/external/wpt/acid/acid2/reftest.html [ Failure ]
 crbug.com/377965584 virtual/fenced-frame-mparch/external/wpt/fenced-frame/csp-allowed.https.html [ Timeout ]
 crbug.com/373924121 external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash ]
 crbug.com/360956939 external/wpt/digital-credentials/identity-get.tentative.https.html [ Crash Timeout ]
