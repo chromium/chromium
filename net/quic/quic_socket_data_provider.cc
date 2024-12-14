@@ -176,6 +176,14 @@ class HttpStreamPrinter : public Http3DebugVisitor {
 
 namespace net::test {
 
+QuicSimpleServerSessionForTest::~QuicSimpleServerSessionForTest() = default;
+
+// Always return true if CryptoStream is created, so that the pending stream can
+// handle initial setting frames for tests.
+bool QuicSimpleServerSessionForTest::IsEncryptionEstablished() const {
+  return GetCryptoStream() != nullptr;
+}
+
 QuicSocketDataProvider::Expectation::Expectation(
     std::string name,
     Type type,
@@ -240,8 +248,8 @@ QuicSocketDataProvider::GenSimpleServerSession() {
       quic::ENCRYPTION_FORWARD_SECURE,
       std::make_unique<quic::NullEncrypter>(connection->perspective()));
 
-  std::unique_ptr<quic::QuicSimpleServerSession> session =
-      std::make_unique<quic::QuicSimpleServerSession>(
+  std::unique_ptr<QuicSimpleServerSessionForTest> session =
+      std::make_unique<QuicSimpleServerSessionForTest>(
           config_, quic::CurrentSupportedVersions(), connection, &owner_,
           &stream_helper_, &crypto_config_, &compressed_certs_cache_,
           &memory_cache_backend_);

@@ -29,6 +29,16 @@
 
 namespace net::test {
 
+// A `QuicSimpleServerSession` that decodes the HTTP frame received from the
+// QuicSocketDataProvider.
+class QuicSimpleServerSessionForTest : public quic::QuicSimpleServerSession {
+ public:
+  using quic::QuicSimpleServerSession::QuicSimpleServerSession;
+  ~QuicSimpleServerSessionForTest() override;
+
+  bool IsEncryptionEstablished() const override;
+};
+
 // A `SocketDataProvider` specifically designed to handle QUIC's packet-based
 // nature, and to give useful errors when things do not go as planned. This
 // fills the same purpose as `MockQuicData` and it should be straightforward to
@@ -235,7 +245,7 @@ class QuicSocketDataProvider : public SocketDataProvider {
   std::unique_ptr<quic::QuicSimpleServerSession> GenSimpleServerSession();
   // Helper to print packet data with `QuicSimpleServerSession`.
   std::string PrintWithQuicSession(quic::QuicSimpleServerSession* session,
-                         std::string data);
+                                   std::string data);
 
   std::vector<Expectation> expectations_;
   bool pending_maybe_consume_expectations_ = false;

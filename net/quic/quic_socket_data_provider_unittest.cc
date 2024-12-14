@@ -45,6 +45,11 @@ class QuicSocketDataProviderTest : public TestWithTaskEnvironment {
         .Build();
   }
 
+  std::unique_ptr<quic::QuicReceivedPacket> TestInitialSettingsPacket(
+      uint64_t packet_number) {
+    return packet_maker_->MakeInitialSettingsPacket(packet_number);
+  }
+
   // Create a simple request header packet.
   std::unique_ptr<quic::QuicReceivedPacket>
   TestHeadersPacket(uint64_t packet_number, std::string path, bool fin) {
@@ -516,6 +521,31 @@ TEST_F(QuicSocketDataProviderTest, PrintHTTPHeadersPacket) {
                               TRAFFIC_ANNOTATION_FOR_TESTS)),
       // Path should be decoded by the server session and appear in the output.
       std::format(":path={0}", path));
+}
+
+// Test an HTTP's initial settings packet is decoded by the server session.
+TEST_F(QuicSocketDataProviderTest, PrintInitialSettingsPacket) {
+  QuicSocketDataProvider socket_data(version_);
+  MockClientSocketFactory socket_factory;
+
+  socket_data.AddWrite("InitialSettings", TestInitialSettingsPacket(2));
+
+  socket_factory.AddSocketDataProvider(&socket_data);
+  std::unique_ptr<DatagramClientSocket> socket =
+      socket_factory.CreateDatagramClientSocket(
+          DatagramSocket::BindType::DEFAULT_BIND, nullptr,
+          net_log_with_source_.source());
+  socket->Connect(IPEndPoint());
+  std::unique_ptr<quic::QuicReceivedPacket> packet = TestPacket(999);
+  scoped_refptr<StringIOBuffer> buffer = base::MakeRefCounted<StringIOBuffer>(
+      std::string(packet->data(), packet->length()));
+
+  EXPECT_NONFATAL_FAILURE(
+      EXPECT_EQ(ERR_UNEXPECTED,
+                socket->Write(buffer.get(), packet->length(), base::DoNothing(),
+                              TRAFFIC_ANNOTATION_FOR_TESTS)),
+      // Content of the setting frame should be decoded in the output.
+      "SETTINGS_H3_DATAGRAM = 1;");
 }
 
 }  // namespace net::test
