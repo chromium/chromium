@@ -17,6 +17,7 @@
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/shell.h"
@@ -469,6 +470,9 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
           FocusGroup::kNone, FocusGroup::kStartRecordingButton,
           FocusGroup::kCameraPreview, FocusGroup::kSettingsMenu,
           FocusGroup::kSettingsClose},
+      groups_for_sunfish_{FocusGroup::kNone, FocusGroup::kSelection,
+                          FocusGroup::kActionButtons,
+                          FocusGroup::kSettingsClose},
       session_(session),
       scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
@@ -548,8 +552,7 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
   if (current_group_is_selection) {
     const gfx::Rect user_region =
         CaptureModeController::Get()->user_capture_region();
-    if (user_region.IsEmpty())
-      return;
+    DCHECK(!user_region.IsEmpty());
 
     const auto fine_tune_position = GetFocusedFineTunePosition();
     DCHECK_NE(fine_tune_position, FineTunePosition::kNone);
@@ -758,9 +761,13 @@ CaptureModeSessionFocusCycler::GetNextGroup(bool reverse) const {
 
 const std::vector<CaptureModeSessionFocusCycler::FocusGroup>&
 CaptureModeSessionFocusCycler::GetCurrentGroupList() const {
-  if (session_->active_behavior()->behavior_type() ==
-      BehaviorType::kGameDashboard) {
+  // Behavior-specific focus groups.
+  BehaviorType active_behavior = session_->active_behavior()->behavior_type();
+  if (active_behavior == BehaviorType::kGameDashboard) {
     return groups_for_game_capture_;
+  }
+  if (active_behavior == BehaviorType::kSunfish) {
+    return groups_for_sunfish_;
   }
 
   switch (session_->controller_->source()) {
@@ -786,12 +793,14 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
     }
     case FocusGroup::kStartRecordingButton:
       return session_->capture_mode_bar_view_->GetStartRecordingButton();
-    case FocusGroup::kSelection:
+    case FocusGroup::kSelection: {
+      return !CaptureModeController::Get()->user_capture_region().IsEmpty();
+    }
     case FocusGroup::kCaptureButton: {
-      // The selection UI and capture button are focusable only when it is
-      // interactable, meaning it has buttons that can be pressed. The capture
-      // label widget can be hidden when it intersects with other capture UIs.
-      // In that case, we shouldn't navigate to it via the keyboard.
+      // The capture button is focusable only when it is interactable, meaning
+      // it has buttons that can be pressed. The capture label widget can be
+      // hidden when it intersects with other capture UIs. In that case, we
+      // shouldn't navigate to it via the keyboard.
       auto* capture_label_view = session_->capture_label_view_.get();
       return capture_label_view &&
              capture_label_view->GetWidget()->IsVisible() &&

@@ -107,6 +107,9 @@ constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
 
+// The number of focusable points or areas for the region overlay.
+constexpr int kRegionFocusCount = 9;
+
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
   CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
@@ -1929,6 +1932,60 @@ TEST_F(SunfishTest, PanelStackingOrder) {
   EXPECT_EQ(Shell::GetContainer(panel_window->GetRootWindow(),
                                 kShellWindowId_SystemModalContainer),
             panel_window->parent());
+}
+
+// TODO: crbug.com/380887729 - Update this test when keyboard navigation is
+// added for the search results panel.
+// Tests that keyboard navigation works properly when in a Sunfish session.
+TEST_F(SunfishTest, KeyboardNavigationSunfishSession) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+
+  // Pressing tab before selecting a region in a Sunfish session should advance
+  // focus to the close button.
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSettingsClose,
+            session_test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(session_test_api.GetCurrentFocusedView()->GetView(),
+            session_test_api.GetCaptureModeBarView()->close_button());
+
+  // Since the close button is initially the only focusable view available,
+  // pressing tab again should result in nothing being focused.
+  SendKey(ui::VKEY_TAB, event_generator);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kNone,
+            session_test_api.GetCurrentFocusGroup());
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+
+  // Pressing tab should now focus on the region adjustment points and their
+  // center.
+  for (int i = 0; i < kRegionFocusCount; ++i) {
+    SendKey(ui::VKEY_TAB, event_generator);
+    ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSelection,
+              session_test_api.GetCurrentFocusGroup());
+  }
+
+  // Add a single action button to test focus.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Test", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kOther, 0),
+      ActionButtonViewID::kScannerButton);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+
+  // Pressing tab should finally cycle through the action button, the close
+  // button, then nothing.
+  SendKey(ui::VKEY_TAB, event_generator);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kActionButtons,
+            session_test_api.GetCurrentFocusGroup());
+  SendKey(ui::VKEY_TAB, event_generator);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSettingsClose,
+            session_test_api.GetCurrentFocusGroup());
+  SendKey(ui::VKEY_TAB, event_generator);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kNone,
+            session_test_api.GetCurrentFocusGroup());
 }
 
 class ScannerTest : public AshTestBase {
