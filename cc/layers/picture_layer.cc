@@ -90,6 +90,15 @@ void PictureLayer::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
   Layer::SetNeedsDisplayRect(layer_rect);
 }
 
+void PictureLayer::SetForceUpdateRecordingSource() {
+  DCHECK(IsPropertyChangeAllowed());
+  recording_source_.Write(*this).set_force_update();
+  SetNeedsPushProperties();
+  if (draws_content() && IsAttached()) {
+    layer_tree_host()->SetNeedsUpdateLayers();
+  }
+}
+
 bool PictureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
   if (const DisplayItemList* display_list = GetDisplayItemList()) {
     return display_list->content_color_usage() == gfx::ContentColorUsage::kHDR;
