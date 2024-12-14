@@ -58,11 +58,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
 
-  static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
-                                    ItemPosition position,
-                                    LayoutUnit baseline_offset,
-                                    bool is_wrap_reverse);
-
   static LayoutUnit ContentDistributionSpaceBetweenChildren(
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,

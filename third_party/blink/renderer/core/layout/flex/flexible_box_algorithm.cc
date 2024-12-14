@@ -76,50 +76,6 @@ ContentDistributionType BoxPackToContentDistribution(EBoxPack box_pack) {
 }  // namespace
 
 // static
-LayoutUnit FlexibleBoxAlgorithm::AlignmentOffset(
-    LayoutUnit available_free_space,
-    ItemPosition position,
-    LayoutUnit baseline_offset,
-    bool is_wrap_reverse) {
-  switch (position) {
-    case ItemPosition::kLegacy:
-    case ItemPosition::kAuto:
-    case ItemPosition::kNormal:
-    case ItemPosition::kAnchorCenter:
-      NOTREACHED();
-    case ItemPosition::kSelfStart:
-    case ItemPosition::kSelfEnd:
-    case ItemPosition::kStart:
-    case ItemPosition::kEnd:
-    case ItemPosition::kLeft:
-    case ItemPosition::kRight:
-      NOTREACHED() << static_cast<int>(position)
-                   << " AlignmentForChild should have transformed this "
-                      "position value to something we handle below.";
-    case ItemPosition::kStretch:
-      // Actual stretching must be handled by the caller. Since wrap-reverse
-      // flips cross start and cross end, stretch children should be aligned
-      // with the cross end. This matters because applyStretchAlignment
-      // doesn't always stretch or stretch fully (explicit cross size given, or
-      // stretching constrained by max-height/max-width). For flex-start and
-      // flex-end this is handled by alignmentForChild().
-      if (is_wrap_reverse)
-        return available_free_space;
-      break;
-    case ItemPosition::kFlexStart:
-      break;
-    case ItemPosition::kFlexEnd:
-      return available_free_space;
-    case ItemPosition::kCenter:
-      return available_free_space / 2;
-    case ItemPosition::kBaseline:
-    case ItemPosition::kLastBaseline:
-      return baseline_offset;
-  }
-  return LayoutUnit();
-}
-
-// static
 bool FlexibleBoxAlgorithm::IsColumnFlow(const ComputedStyle& style) {
   return style.ResolvedIsColumnFlexDirection();
 }

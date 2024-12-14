@@ -1641,19 +1641,34 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           space = space.ClampNegativeToZero();
         }
 
-        LayoutUnit baseline_offset;
-        if (item.alignment == ItemPosition::kBaseline ||
-            item.alignment == ItemPosition::kLastBaseline) {
-          const bool is_major = item.baseline_group == BaselineGroup::kMajor;
-          const LayoutUnit ascent = BaselineAscent(item, physical_fragment);
-          const LayoutUnit max_ascent = is_major ? line_output.major_baseline
-                                                 : line_output.minor_baseline;
-          const LayoutUnit baseline_delta = max_ascent - ascent;
-          baseline_offset = is_major ? baseline_delta : space - baseline_delta;
+        LayoutUnit offset;
+        switch (item.alignment) {
+          case ItemPosition::kCenter:
+            offset = space / 2;
+            break;
+          case ItemPosition::kFlexStart:
+            break;
+          case ItemPosition::kFlexEnd:
+            offset = space;
+            break;
+          case ItemPosition::kStretch:
+            offset = is_wrap_reverse_ ? space : LayoutUnit();
+            break;
+          case ItemPosition::kBaseline:
+          case ItemPosition::kLastBaseline: {
+            const bool is_major = item.baseline_group == BaselineGroup::kMajor;
+            const LayoutUnit ascent = BaselineAscent(item, physical_fragment);
+            const LayoutUnit max_ascent = is_major ? line_output.major_baseline
+                                                   : line_output.minor_baseline;
+            const LayoutUnit baseline_delta = max_ascent - ascent;
+            offset = is_major ? baseline_delta : space - baseline_delta;
+            break;
+          }
+          default:
+            NOTREACHED() << "All other values shouldn't be possible.";
         }
-        return line_cross_axis_offset + margin.CrossStart() +
-               FlexibleBoxAlgorithm::AlignmentOffset(
-                   space, item.alignment, baseline_offset, is_wrap_reverse_);
+
+        return line_cross_axis_offset + offset + margin.CrossStart();
       })();
 
       main_axis_offset += margin.MainStart();
