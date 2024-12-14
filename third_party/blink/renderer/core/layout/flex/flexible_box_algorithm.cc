@@ -240,21 +240,4 @@ ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
   return align;
 }
 
-// static
-LayoutUnit FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
-    LayoutUnit available_free_space,
-    const StyleContentAlignmentData& data,
-    unsigned number_of_items) {
-  if (available_free_space > 0 && number_of_items > 1) {
-    if (data.Distribution() == ContentDistributionType::kSpaceBetween)
-      return available_free_space / (number_of_items - 1);
-    if (data.Distribution() == ContentDistributionType::kSpaceAround ||
-        data.Distribution() == ContentDistributionType::kStretch)
-      return available_free_space / number_of_items;
-    if (data.Distribution() == ContentDistributionType::kSpaceEvenly)
-      return available_free_space / (number_of_items + 1);
-  }
-  return LayoutUnit();
-}
-
 }  // namespace blink

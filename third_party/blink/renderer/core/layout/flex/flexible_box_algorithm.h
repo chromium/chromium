@@ -57,11 +57,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   static StyleContentAlignmentData ResolvedAlignContent(const ComputedStyle&);
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
-
-  static LayoutUnit ContentDistributionSpaceBetweenChildren(
-      LayoutUnit available_free_space,
-      const StyleContentAlignmentData&,
-      unsigned number_of_items);
 };
 
 }  // namespace blink

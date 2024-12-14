@@ -1405,6 +1405,25 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
   }
 }
 
+LayoutUnit ContentDistributionSpace(const StyleContentAlignmentData& data,
+                                    LayoutUnit free_space,
+                                    unsigned number_of_items) {
+  if (free_space <= LayoutUnit() || number_of_items <= 1) {
+    return LayoutUnit();
+  }
+  switch (data.Distribution()) {
+    case ContentDistributionType::kDefault:
+      return LayoutUnit();
+    case ContentDistributionType::kSpaceBetween:
+      return free_space / (number_of_items - 1);
+    case ContentDistributionType::kSpaceEvenly:
+      return free_space / (number_of_items + 1);
+    case ContentDistributionType::kSpaceAround:
+    case ContentDistributionType::kStretch:
+      return free_space / number_of_items;
+  }
+}
+
 }  // namespace
 
 LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
@@ -1481,8 +1500,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           : ContentPosition::kStart;
 
   const LayoutUnit space_between_lines =
-      FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
-          cross_axis_free_space, align_content, num_lines);
+      ContentDistributionSpace(align_content, cross_axis_free_space, num_lines);
   LayoutUnit line_cross_axis_offset =
       (is_column_ ? BorderScrollbarPadding().inline_start
                   : BorderScrollbarPadding().block_start) +
@@ -1519,9 +1537,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
             : LayoutUnit();
 
     const wtf_size_t line_items_size = line_output.line_items.size();
-    const LayoutUnit space_between_items =
-        FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
-            main_axis_free_space, justify_content, line_items_size);
+    const LayoutUnit space_between_items = ContentDistributionSpace(
+        justify_content, main_axis_free_space, line_items_size);
     LayoutUnit main_axis_offset =
         (is_column_ ? BorderScrollbarPadding().block_start
                     : BorderScrollbarPadding().inline_start) +
