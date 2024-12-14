@@ -336,18 +336,14 @@ class TtsApiTest : public ExtensionApiTest,
   }
 
   void AddNetworkSpeechSynthesisExtension() {
-    ExtensionHostTestHelper host_helper(profile());
-    host_helper.RestrictToType(
-        ::features::IsExtensionManifestV3NetworkSpeechSynthesisEnabled()
-            ? mojom::ViewType::kOffscreenDocument
-            : mojom::ViewType::kExtensionBackgroundPage);
     ExtensionService* service =
         extensions::ExtensionSystem::Get(profile())->extension_service();
     service->component_loader()->AddNetworkSpeechSynthesisExtension();
-    const ExtensionHost* extension_host =
-        host_helper.WaitForDocumentElementAvailable();
-    ASSERT_EQ(mojom::ManifestLocation::kComponent,
-              extension_host->extension()->location());
+
+    // Wait for any tts engine event listener to be added by the network tts
+    // engine so that tests can be ready to validate state.
+    EventRouterAddListenerWaiter waiter(profile(), tts_engine_events::kOnStop);
+    waiter.Wait();
   }
 
  protected:

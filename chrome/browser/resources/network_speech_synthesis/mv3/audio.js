@@ -2,50 +2,60 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Initialize the audio element and event listeners on it.
-window.audioElement_ = document.createElement('audio');
-document.body.appendChild(window.audioElement_);
-window.audioElement_.addEventListener('canplaythrough', onStart_, false);
-window.audioElement_.addEventListener('ended', onStop_, false);
+class AudioHandler {
+  constructor() {
+    // Initialize the audio element and event listeners on it.
+    this.audioElement_ = document.createElement('audio');
+    document.body.appendChild(this.audioElement_);
+    this.audioElement_.addEventListener(
+        'canplaythrough', () => this.onCanPlayThrough_(), false);
+    this.audioElement_.addEventListener('ended', () => this.onEnded_(), false);
 
-/**
- * Handler for the canplaythrough event on the audio element.
- * Called when the audio element has buffered enough audio to begin
- * playback. Send the 'start' event to the ttsEngine callback and
- * then begin playing the audio element.
- * @private
- */
-function onStart_() {
-  if (!window.currentUtterance_) {
-    return;
+    chrome.runtime.onMessage.addListener(message => {
+      switch (message['command']) {
+        case 'pause':
+          this.audioElement_.pause();
+          break;
+        case 'play':
+          this.audioElement_.play();
+          break;
+        case 'setCurrentUtterance':
+          this.currentUtterance_ = message.currentUtterance;
+          break;
+        case 'setUrl':
+          this.audioElement_.src = message.url;
+          break;
+      }
+    });
   }
 
-  if (window.currentUtterance_.options.volume !== undefined) {
-    // Both APIs use the same range for volume, between 0.0 and 1.0.
-    window.audioElement_.volume = window.currentUtterance_.options.volume;
+  /**
+   * Handler for the canplaythrough event on the audio element.
+   * Called when the audio element has buffered enough audio to begin
+   * playback. Send the 'start' event to the ttsEngine callback and
+   * then begin playing the audio element.
+   * @private
+   */
+  onCanPlayThrough_() {
+    if (!this.currentUtterance_) {
+      return;
+    }
+
+    if (this.currentUtterance_.options.volume !== undefined) {
+      // Both APIs use the same range for volume, between 0.0 and 1.0.
+      this.audioElement_.volume = this.currentUtterance_.options.volume;
+    }
+    this.audioElement_.play();
+    chrome.runtime.sendMessage({command: 'onCanPlayThrough'});
   }
-  window.audioElement_.play();
-  chrome.runtime.sendMessage({command: 'onStart'});
+
+  onEnded_() {
+    this.currentUtterance_ = null;
+    chrome.runtime.sendMessage({command: 'onEnded'});
+  }
 }
 
-function onStop_() {
-  window.currentUtterance_ = null;
-  chrome.runtime.sendMessage({command: 'onStop'});
-}
-
-chrome.runtime.onMessage.addListener(message => {
-  switch (message['command']) {
-    case 'pause':
-      window.audioElement_.pause();
-      break;
-    case 'play':
-      window.audioElement_.play();
-      break;
-    case 'setCurrentUtterance':
-      window.currentUtterance_ = message.currentUtterance;
-      break;
-    case 'setUrl':
-      window.audioElement_.src = message.url;
-      break;
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  new AudioHandler();
+  chrome.runtime.sendMessage({command: 'loaded'});
 });

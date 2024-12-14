@@ -7,7 +7,7 @@
  * This is a component extension that implements a text-to-speech (TTS)
  * engine powered by Google's speech synthesis API.
  *
- * This is an "event page", so it's not loaded when the API isn't being used,
+ * This is a service worker, so it's not loaded when the API isn't being used,
  * and doesn't waste resources. When a web page or web app makes a speech
  * request and the parameters match one of the voices in this extension's
  * manifest, it makes a request to Google's API using Chrome's private key
@@ -15,67 +15,63 @@
  */
 
 /**
- *A global promise to monitor the result of chrome.offscreen.createDocument.
- * @type {Promise}
- */
-let creating;
-
-/**
  * The main class for this extension. Adds listeners to
  * chrome.ttsEngine.onSpeak and chrome.ttsEngine.onStop and implements
  * them using Google's speech synthesis API.
- * @constructor
  */
-function TtsExtension() {}
-
-TtsExtension.prototype = {
+class TtsExtension {
   /**
-   * The url prefix of the speech server, including static query
-   * parameters that don't change.
-   * @type {string}
-   * @const
-   * @private
-   */
-  SPEECH_SERVER_URL_: 'https://www.google.com/speech-api/v2/synthesize?' +
-      'enc=mpeg&client=chromium',
-
-  /**
-   * A mapping from language and gender to voice name, hardcoded for now
-   * until the speech synthesis server capabilities response provides this.
-   * The key of this map is of the form '<lang>-<gender>'.
-   * @type {Object<string>}
-   * @private
-   */
-  LANG_AND_GENDER_TO_VOICE_NAME_: {
-    'en-gb-male': 'rjs',
-    'en-gb-female': 'fis',
-  },
-
-  /**
-   * The arguments passed to the onSpeak event handler for the utterance
-   * that's currently being spoken. Should be null when no object is
-   * pending.
-   *
-   * @type {?{utterance: string, options: Object, callback: Function}}
-   * @private
-   */
-  currentUtterance_: null,
-
-  /**
-   * A mapping from voice name to language and gender, derived from the
-   * manifest file.  This is used in case the speech synthesis request
-   * specifies a voice name but doesn't specify a language code or gender.
-   * @type {Object<{lang: string, gender: string}>}
-   * @private
-   */
-  voiceNameToLangAndGender_: {},
-
-  /**
-   * This is the main function called to initialize this extension.
    * Initializes data structures and adds event listeners.
    */
+  constructor() {
+    /**
+     * The url prefix of the speech server, including static query
+     * parameters that don't change.
+     * @type {string}
+     * @const
+     * @private
+     */
+    this.SPEECH_SERVER_URL_ =
+        'https://www.google.com/speech-api/v2/synthesize?' +
+        'enc=mpeg&client=chromium';
 
-  async init() {
+    /**
+     * A mapping from language and gender to voice name, hardcoded for now
+     * until the speech synthesis server capabilities response provides this.
+     * The key of this map is of the form '<lang>-<gender>'.
+     * @type {Object<string>}
+     * @private
+     */
+    this.LANG_AND_GENDER_TO_VOICE_NAME_ = {
+      'en-gb-male': 'rjs',
+      'en-gb-female': 'fis',
+    };
+
+    /**
+     * The arguments passed to the onSpeak event handler for the utterance
+     * that's currently being spoken. Should be null when no object is
+     * pending.
+     *
+     * @type {?{utterance: string, options: Object, callback: Function}}
+     * @private
+     */
+    this.currentUtterance_ = null;
+
+    /**
+     * A mapping from voice name to language and gender, derived from the
+     * manifest file.  This is used in case the speech synthesis request
+     * specifies a voice name but doesn't specify a language code or gender.
+     * @type {Object<{lang: string, gender: string}>}
+     * @private
+     */
+    this.voiceNameToLangAndGender_ = {};
+
+    /** True when the offscreen document is in the progress of loading. */
+    this.loading_ = true;
+
+    /** Tracks the timeout callback which closes the offscreen document. */
+    this.closeTimeoutId_ = null;
+
     // Get voices from manifest.
     const voices = chrome.runtime.getManifest().tts_engine.voices;
     for (let i = 0; i < voices.length; i++) {
@@ -86,38 +82,38 @@ TtsExtension.prototype = {
     }
 
     // Install event listeners for the ttsEngine API.
-    chrome.ttsEngine.onSpeak.addListener(this.onSpeak_.bind(this));
-    chrome.ttsEngine.onStop.addListener(this.onStop_.bind(this));
-    chrome.ttsEngine.onPause.addListener(this.onPause_.bind(this));
-    chrome.ttsEngine.onResume.addListener(this.onResume_.bind(this));
+    chrome.ttsEngine.onSpeak.addListener(
+        (utterance, options, callback) =>
+            this.onSpeak_(utterance, options, callback));
+    chrome.ttsEngine.onStop.addListener(() => this.onStop_());
+    chrome.ttsEngine.onPause.addListener(() => this.onPause_());
+    chrome.ttsEngine.onResume.addListener(() => this.onResume_());
 
     chrome.runtime.onMessage.addListener(message => {
       switch (message.command) {
-        case 'onStart':
+        case 'loaded':
+          // Speak an utterance spoken during load.
+          if (this.loading_) {
+            this.loading_ = false;
+            if (this.currentUtterance_) {
+              this.onSpeak_(
+                  this.currentUtterance_.utterance,
+                  this.currentUtterance_.options,
+                  this.currentUtterance_.callback);
+            }
+          }
+          break;
+        case 'onCanPlayThrough':
           if (this.currentUtterance_) {
             this.currentUtterance_.callback({'type': 'start', 'charIndex': 0});
           }
           break;
-        case 'onStop':
-          this.onStop_();
+        case 'onEnded':
+          this.onStop_(/* onEnded = */ true);
           break;
       }
     });
-
-    const offscreenUrl = chrome.runtime.getURL('audio.html');
-    const existingContexts = await chrome.runtime.getContexts(
-        {contextTypes: ['OFFSCREEN_DOCUMENT'], documentUrls: [offscreenUrl]});
-
-    if (existingContexts.length === 0 && !creating) {
-      creating = chrome.offscreen.createDocument({
-        url: offscreenUrl,
-        reasons: ['AUDIO_PLAYBACK'],
-        justification: 'Use the audio element',
-      });
-      await creating;
-      creating = null;
-    }
-  },
+  }
 
   /**
    * Handler for the chrome.ttsEngine.onSpeak interface.
@@ -130,14 +126,11 @@ TtsExtension.prototype = {
    * @private
    */
   onSpeak_(utterance, options, callback) {
-    if (creating) {
-      return;
-    }
-
     // Ignore the utterance if it is empty. Continue such processing causes no
     // speech and fails all subsequent calls to process additional utterances.
     if (utterance.length === 0) {
       callback({'type': 'end', 'charIndex': 0});
+      this.currentUtterance_ = null;
       return;
     }
 
@@ -148,74 +141,74 @@ TtsExtension.prototype = {
       utterance = utterance.substr(0, 32768);
     }
 
-    try {
-      // First, stop any pending audio.
-      this.onStop_();
+    this.currentUtterance_ = {
+      utterance: utterance,
+      options: options,
+      callback: callback,
+    };
 
-      this.currentUtterance_ = {
-        utterance: utterance,
-        options: options,
-        callback: callback,
-      };
-
-      chrome.runtime.sendMessage({
-        command: 'setCurrentUtterance',
-        currentUtterance: this.currentUtterance_,
-      });
-
-      let lang = options.lang;
-      let gender = options.gender;
-      if (options.voiceName) {
-        lang = this.voiceNameToLangAndGender_[options.voiceName].lang;
-        gender = this.voiceNameToLangAndGender_[options.voiceName].gender;
-      }
-
-      if (!lang) {
-        lang = navigator.language;
-      }
-
-      // Look up the specific voice name for this language and gender.
-      // If it's not in the map, it doesn't matter - the language will
-      // be used directly. This is only used for languages where more
-      // than one gender is actually available.
-      const key = lang.toLowerCase() + '-' + gender;
-      const voiceName = this.LANG_AND_GENDER_TO_VOICE_NAME_[key];
-
-      let url = this.SPEECH_SERVER_URL_;
-      chrome.systemPrivate.getApiKey(key => {
-        url += '&key=' + key;
-        url += '&text=' + encodeURIComponent(utterance);
-        url += '&lang=' + lang.toLowerCase();
-
-        if (voiceName) {
-          url += '&name=' + voiceName;
-        }
-
-        if (options.rate) {
-          // Input rate is between 0.1 and 10.0 with a default of 1.0.
-          // Output speed is between 0.0 and 1.0 with a default of 0.5.
-          url += '&speed=' + (options.rate / 2.0);
-        }
-
-        if (options.pitch) {
-          // Input pitch is between 0.0 and 2.0 with a default of 1.0.
-          // Output pitch is between 0.0 and 1.0 with a default of 0.5.
-          url += '&pitch=' + (options.pitch / 2.0);
-        }
-
-        // This begins loading the audio but does not play it.
-        // When enough of the audio has loaded to begin playback,
-        // the 'canplaythrough' handler will call this.onStart_,
-        // which sends a start event to the ttsEngine callback and
-        // then begins playing audio.
-        chrome.runtime.sendMessage({command: 'setUrl', url});
-      });
-    } catch (err) {
-      console.error(String(err));
-      callback({'type': 'error', 'errorMessage': String(err)});
-      this.currentUtterance_ = null;
+    if (this.loading_) {
+      this.maybeCreateOffscreenDocument_();
+      return;
     }
-  },
+
+    // We're now committed to speaking something. Bump our timeout to keep the
+    // offscreen doc open.
+    clearTimeout(this.closeTimeoutId_);
+
+    chrome.runtime.sendMessage({
+      command: 'setCurrentUtterance',
+      currentUtterance: this.currentUtterance_,
+    });
+
+    let lang = options.lang;
+    let gender = options.gender;
+    if (options.voiceName) {
+      lang = this.voiceNameToLangAndGender_[options.voiceName].lang;
+      gender = this.voiceNameToLangAndGender_[options.voiceName].gender;
+    }
+
+    if (!lang) {
+      lang = navigator.language;
+    }
+
+    // Look up the specific voice name for this language and gender.
+    // If it's not in the map, it doesn't matter - the language will
+    // be used directly. This is only used for languages where more
+    // than one gender is actually available.
+    const key = lang.toLowerCase() + '-' + gender;
+    const voiceName = this.LANG_AND_GENDER_TO_VOICE_NAME_[key];
+
+    let url = this.SPEECH_SERVER_URL_;
+    chrome.systemPrivate.getApiKey(key => {
+      url += '&key=' + key;
+      url += '&text=' + encodeURIComponent(utterance);
+      url += '&lang=' + lang.toLowerCase();
+
+      if (voiceName) {
+        url += '&name=' + voiceName;
+      }
+
+      if (options.rate) {
+        // Input rate is between 0.1 and 10.0 with a default of 1.0.
+        // Output speed is between 0.0 and 1.0 with a default of 0.5.
+        url += '&speed=' + (options.rate / 2.0);
+      }
+
+      if (options.pitch) {
+        // Input pitch is between 0.0 and 2.0 with a default of 1.0.
+        // Output pitch is between 0.0 and 1.0 with a default of 0.5.
+        url += '&pitch=' + (options.pitch / 2.0);
+      }
+
+      // This begins loading the audio but does not play it.
+      // When enough of the audio has loaded to begin playback,
+      // the 'canplaythrough' handler will call this.onCanPlayThrough_,
+      // which sends a start event to the ttsEngine callback and
+      // then begins playing audio.
+      chrome.runtime.sendMessage({command: 'setUrl', url});
+    });
+  }
 
   /**
    * Handler for the chrome.ttsEngine.onStop interface.
@@ -226,22 +219,22 @@ TtsExtension.prototype = {
    * messages and will automatically replace the 'end' event with a
    * more specific callback like 'interrupted' when sending it to the
    * TTS client.
+   * @param {boolean|undefined) onEnded
    * @private
    */
-  onStop_() {
-    if (creating) {
-      return;
-    }
-
+  onStop_(onEnded) {
     if (this.currentUtterance_) {
-      chrome.runtime.sendMessage({command: 'pause'});
+      if (onEnded !== true) {
+        chrome.runtime.sendMessage({command: 'pause'});
+      }
       this.currentUtterance_.callback({
         'type': 'end',
         'charIndex': this.currentUtterance_.utterance.length,
       });
+      this.currentUtterance_ = null;
     }
-    this.currentUtterance_ = null;
-  },
+    this.maybeCloseOffscreenDocument_();
+  }
 
   /**
    * Handler for the chrome.ttsEngine.onPause interface.
@@ -249,14 +242,10 @@ TtsExtension.prototype = {
    * @private
    */
   onPause_() {
-    if (creating) {
-      return;
-    }
-
     if (this.currentUtterance_) {
       chrome.runtime.sendMessage({command: 'pause'});
     }
-  },
+  }
 
   /**
    * Handler for the chrome.ttsEngine.onPause interface.
@@ -264,15 +253,38 @@ TtsExtension.prototype = {
    * @private
    */
   onResume_() {
-    if (creating) {
-      return;
-    }
-
     if (this.currentUtterance_) {
       chrome.runtime.sendMessage({command: 'play'});
     }
-  },
+  }
 
-};
+  async maybeCreateOffscreenDocument_() {
+    const offscreenUrl = chrome.runtime.getURL('audio.html');
+    const existingContexts = await chrome.runtime.getContexts(
+        {contextTypes: ['OFFSCREEN_DOCUMENT'], documentUrls: [offscreenUrl]});
 
-(new TtsExtension()).init();
+    if (existingContexts.length === 0) {
+      const creating = chrome.offscreen.createDocument({
+        url: offscreenUrl,
+        // We use USER_MEDIA here instead of AUDIO_PLAYBACK because we need to
+        // support pause/resume and need the offscreen document to exist without
+        // audio playback. Once finished, we manually close the offscreen
+        // document.
+        reasons: ['USER_MEDIA'],
+        justification: 'Use the audio element',
+      });
+      await creating;
+    }
+  }
+
+  maybeCloseOffscreenDocument_() {
+    // Clear any existing timeouts.
+    clearTimeout(this.closeTimeoutId_);
+    this.closeTimeoutId_ = setTimeout(async () => {
+      await chrome.offscreen.closeDocument();
+      this.loading_ = true;
+    }, 30 * 1000);
+  }
+}
+
+new TtsExtension();
