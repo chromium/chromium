@@ -79,7 +79,7 @@ cros_toolchain("target") {
     extra_cxxflags = cros_target_extra_cxxflags
     extra_ldflags = cros_target_extra_ldflags
 
-    needs_rewrapper_path_arg = true
+    needs_rewrapper_path_arg = cros_needs_rewrapper_path_arg
   }
 }
 
@@ -116,7 +116,7 @@ cros_toolchain("nacl_bootstrap") {
     extra_cxxflags = cros_nacl_bootstrap_extra_cxxflags
     extra_ldflags = cros_nacl_bootstrap_extra_ldflags
 
-    needs_rewrapper_path_arg = true
+    needs_rewrapper_path_arg = cros_needs_rewrapper_path_arg
   }
 
   # We build for ARM32, even when the rest of the build targets ARM64.
@@ -161,7 +161,7 @@ cros_toolchain("nacl_helper_arm32") {
   extra_ldflags = ""
 
   if (!lacros_use_chromium_toolchain) {
-    needs_rewrapper_path_arg = true
+    needs_rewrapper_path_arg = cros_needs_rewrapper_path_arg
   }
 }
 
