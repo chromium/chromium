@@ -52,9 +52,9 @@ class CollaborationService : public KeyedService,
   // Starts a new share flow. This will cancel all existing ongoing join and
   // share flows in the same browser instance.
   // Note: EitherGroupID is either a local tab group id or a sync id.
-  virtual void StartShareFlow(
+  virtual void StartShareOrManageFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
-      tab_groups::EitherGroupID either_id) = 0;
+      const tab_groups::EitherGroupID& either_id) = 0;
 
   // Get the current ServiceStatus.
   virtual ServiceStatus GetServiceStatus() = 0;

@@ -45,8 +45,9 @@ class CollaborationServiceImpl : public CollaborationService,
   bool IsEmptyService() override;
   void StartJoinFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
                      const GURL& url) override;
-  void StartShareFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
-                      tab_groups::EitherGroupID group_id) override;
+  void StartShareOrManageFlow(
+      std::unique_ptr<CollaborationControllerDelegate> delegate,
+      const tab_groups::EitherGroupID& group_id) override;
   ServiceStatus GetServiceStatus() override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;
@@ -73,7 +74,8 @@ class CollaborationServiceImpl : public CollaborationService,
   GetJoinControllersForTesting();
 
   // Called to clean up a flow given a GroupToken.
-  void FinishFlow(const data_sharing::GroupToken& token);
+  void FinishJoinFlow(const data_sharing::GroupToken& token);
+  void FinishShareFlow(const tab_groups::EitherGroupID& group_id);
 
  private:
   SyncStatus GetSyncStatus();
@@ -103,6 +105,8 @@ class CollaborationServiceImpl : public CollaborationService,
   // Join controllers: <GroupId, CollaborationController>
   std::map<data_sharing::GroupToken, std::unique_ptr<CollaborationController>>
       join_controllers_;
+  std::map<tab_groups::EitherGroupID, std::unique_ptr<CollaborationController>>
+      share_controllers_;
 
   base::WeakPtrFactory<CollaborationServiceImpl> weak_ptr_factory_{this};
 };

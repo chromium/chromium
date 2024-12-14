@@ -129,6 +129,11 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
   session_id_ = share_flow.share_kit_service()->ShareTabGroup(config);
 }
 
+void IOSCollaborationControllerDelegate::ShowManageDialog(
+    ResultCallback result) {
+  // TODO(crbug.com/377306986): Implement this.
+}
+
 void IOSCollaborationControllerDelegate::PromoteTabGroup(
     ResultCallback result) {
   // TODO(crbug.com/377306986): Implement this.

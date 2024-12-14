@@ -30,6 +30,7 @@ class MockCollaborationControllerDelegate
                ResultCallback result),
               (override));
   MOCK_METHOD(void, ShowShareDialog, (ResultCallback result), (override));
+  MOCK_METHOD(void, ShowManageDialog, (ResultCallback result), (override));
   MOCK_METHOD(void, PromoteTabGroup, (ResultCallback result), (override));
   MOCK_METHOD(void, PromoteCurrentScreen, (), (override));
 };

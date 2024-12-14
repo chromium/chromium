@@ -20,8 +20,9 @@ class EmptyCollaborationService : public CollaborationService {
   bool IsEmptyService() override;
   void StartJoinFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
                      const GURL& url) override;
-  void StartShareFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
-                      tab_groups::EitherGroupID group_id) override;
+  void StartShareOrManageFlow(
+      std::unique_ptr<CollaborationControllerDelegate> delegate,
+      const tab_groups::EitherGroupID& group_id) override;
   ServiceStatus GetServiceStatus() override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;

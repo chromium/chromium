@@ -19,6 +19,7 @@ using data_sharing::GroupId;
 using data_sharing::GroupMember;
 using data_sharing::GroupToken;
 using data_sharing::MemberRole;
+using Flow = CollaborationController::Flow;
 
 CollaborationServiceImpl::CollaborationServiceImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
@@ -76,16 +77,33 @@ void CollaborationServiceImpl::StartJoinFlow(
   // is needed in order to show the url parsing error message to the user.
   join_controllers_.insert(
       {token, std::make_unique<CollaborationController>(
-                  CollaborationController::Flow::kJoin, token, this,
+                  Flow(Flow::Type::kJoin, token), this,
                   data_sharing_service_.get(), tab_group_sync_service_.get(),
                   sync_service_.get(), std::move(delegate),
-                  base::BindOnce(&CollaborationServiceImpl::FinishFlow,
+                  base::BindOnce(&CollaborationServiceImpl::FinishJoinFlow,
                                  weak_ptr_factory_.GetWeakPtr(), token))});
 }
 
-void CollaborationServiceImpl::StartShareFlow(
+void CollaborationServiceImpl::StartShareOrManageFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    tab_groups::EitherGroupID group_id) {}
+    const tab_groups::EitherGroupID& group_id) {
+  auto it = share_controllers_.find(group_id);
+  if (it != share_controllers_.end()) {
+    it->second->delegate()->PromoteCurrentScreen();
+    return;
+  }
+
+  // Invalid url parsing will start a new join flow with empty GroupToken. This
+  // is needed in order to show the url parsing error message to the user.
+  share_controllers_.insert(
+      {group_id,
+       std::make_unique<CollaborationController>(
+           Flow(Flow::Type::kShareOrManage, group_id), this,
+           data_sharing_service_.get(), tab_group_sync_service_.get(),
+           sync_service_.get(), std::move(delegate),
+           base::BindOnce(&CollaborationServiceImpl::FinishShareFlow,
+                          weak_ptr_factory_.GetWeakPtr(), group_id))});
+}
 
 ServiceStatus CollaborationServiceImpl::GetServiceStatus() {
   return current_status_;
@@ -164,9 +182,14 @@ CollaborationServiceImpl::GetJoinControllersForTesting() {
   return join_controllers_;
 }
 
-void CollaborationServiceImpl::FinishFlow(
+void CollaborationServiceImpl::FinishJoinFlow(
     const data_sharing::GroupToken& token) {
   join_controllers_.erase(join_controllers_.find(token));
+}
+
+void CollaborationServiceImpl::FinishShareFlow(
+    const tab_groups::EitherGroupID& group_id) {
+  share_controllers_.erase(share_controllers_.find(group_id));
 }
 
 SyncStatus CollaborationServiceImpl::GetSyncStatus() {

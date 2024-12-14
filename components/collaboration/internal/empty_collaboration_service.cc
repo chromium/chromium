@@ -18,9 +18,9 @@ void EmptyCollaborationService::StartJoinFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     const GURL& url) {}
 
-void EmptyCollaborationService::StartShareFlow(
+void EmptyCollaborationService::StartShareOrManageFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    tab_groups::EitherGroupID group_id) {}
+    const tab_groups::EitherGroupID& group_id) {}
 
 ServiceStatus EmptyCollaborationService::GetServiceStatus() {
   return ServiceStatus();

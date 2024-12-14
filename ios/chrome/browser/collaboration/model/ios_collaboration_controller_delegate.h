@@ -33,6 +33,7 @@ class IOSCollaborationControllerDelegate
   void ShowJoinDialog(data_sharing::SharedDataPreview preview_data,
                       ResultCallback result) override;
   void ShowShareDialog(ResultCallback result) override;
+  void ShowManageDialog(ResultCallback result) override;
   void PromoteTabGroup(ResultCallback result) override;
   void PromoteCurrentScreen() override;
 

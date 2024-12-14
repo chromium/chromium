@@ -22,9 +22,9 @@ class MockCollaborationService : public CollaborationService {
                const GURL& url),
               (override));
   MOCK_METHOD(void,
-              StartShareFlow,
+              StartShareOrManageFlow,
               (std::unique_ptr<CollaborationControllerDelegate> delegate,
-               tab_groups::EitherGroupID either_id),
+               const tab_groups::EitherGroupID& either_id),
               (override));
   MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (override));
   MOCK_METHOD(data_sharing::MemberRole,
