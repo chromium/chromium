@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_WIN)
 // XpsObjectModel.h indirectly includes <wincrypt.h> which is
@@ -284,10 +286,11 @@ sk_sp<SkData> SerializeOopPicture(SkPicture* pic, void* ctx) {
   const auto* context = reinterpret_cast<const ContentToProxyTokenMap*>(ctx);
   uint32_t pic_id = pic->uniqueID();
   auto iter = context->find(pic_id);
-  if (iter == context->end())
+  if (iter == context->end()) {
     return nullptr;
+  }
 
-  return SkData::MakeWithCopy(&pic_id, sizeof(pic_id));
+  return gfx::MakeSkDataFromSpanWithCopy(base::byte_span_from_ref(pic_id));
 }
 
 sk_sp<SkPicture> DeserializeOopPicture(const void* data,

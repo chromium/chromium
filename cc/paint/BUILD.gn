@@ -148,6 +148,7 @@ cc_component("paint") {
     "//base",
     "//components/crash/core/common:crash_key",
     "//gpu/command_buffer/common:mailbox",
+    "//ui/gfx:gfx_skia",
     "//ui/gfx/animation",
   ]
 
