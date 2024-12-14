@@ -16,9 +16,21 @@
 A WebUI page is made of a single-page application, which communicates
 with a C++ UI controller, as explained [here](webui_explainer.md).
 
-WebUI pages live in `chrome/browser/resources` and their native counterpart in
-`chrome/browser/ui/webui/`. We will start by creating folders for the new page
-in `chrome/browser/[resources|ui/webui]/hello_world`. When creating WebUI
+For WebUIs that are not served on iOS, the frontend resources (TS/HTML/CSS)
+should be placed in `chrome/browser/resources` and the backend code
+(WebUIController, WebUIConfig, and any handlers) should be placed in
+`chrome/browser/ui/webui/`. WebUIs that are available on iOS need to have
+2 separate backend implementations: one for iOS in ios/, and one for all
+other platforms in `chrome/browser/ui/webui`. To allow both implementations
+to access the frontend resources and other shared code (e.g., mojo interfaces),
+frontend resources and shared code for such WebUIs should be placed in
+`components/` instead of `chrome/`. Note: some legacy WebUIs are located in
+other folders, such as `content/`. This is discouraged for new WebUIs since
+code in `content/` and other folders may not be allowed to depend on WebUI
+shared infrastructure and utilities.
+
+In this example, we can start by creating folders for the new page in
+`chrome/browser/[resources|ui/webui]/hello_world`. When creating WebUI
 resources, follow the
 [Web Development Style Guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md).
 
