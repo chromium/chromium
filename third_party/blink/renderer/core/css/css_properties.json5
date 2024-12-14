@@ -3807,6 +3807,17 @@
       invalidate: ["paint"],
     },
     {
+      name: "masonry-fill",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["normal", "reverse"],
+      typedom_types: ["Keyword"],
+      default_value: "normal",
+      invalidate: ["layout"],
+      runtime_flag: "CSSMasonryLayout",
+    },
+    {
       // TODO(crbug.com/343257585): We might need to alter the spec's grammar to accept
       // normal | <length-percentage>. With normal, we use `1em` for slack size.
       name: "masonry-slack",

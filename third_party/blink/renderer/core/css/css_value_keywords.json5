@@ -1236,6 +1236,10 @@
     // luminance
     "match-source",
 
+    // masonry-fill
+    // normal
+    // reverse
+
     // color-interpolation / color-interpolation-filters
     // auto
     "srgb",

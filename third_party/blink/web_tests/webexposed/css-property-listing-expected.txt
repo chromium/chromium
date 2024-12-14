@@ -259,6 +259,7 @@ All changes to this list should go through Blink's feature review process: http:
     mask-repeat
     mask-size
     mask-type
+    masonry-fill
     masonry-slack
     masonry-template-tracks
     masonry-track-end
