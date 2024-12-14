@@ -173,6 +173,60 @@ bool D3D11TextureHelper::EnsureContentBlendState() {
   return true;
 }
 
+bool D3D11TextureHelper::CopyToBackBuffer(
+    const scoped_refptr<viz::ContextProvider>& context_provider,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> source) {
+  EnsureInitialized();
+
+  gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
+  if (!gl) {
+    return false;
+  }
+
+  // TODO(crbug.com/359418629): Access to the texture needs be by synchronized
+  // before proceeding.
+  gl->Finish();
+
+  Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device;
+  HRESULT hr = render_state_.d3d11_device_.As(&d3d11_device);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get ID3D11Device1.";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+  hr = source->QueryInterface(IID_PPV_ARGS(&dxgi_resource));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed QueryInterface.";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+  hr = dxgi_resource.As(&(keyed_mutex));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get Keyed Mutex.";
+    return false;
+  }
+
+  hr = keyed_mutex->AcquireSync(gpu::kDXGIKeyedMutexAcquireKey, INFINITE);
+  if (FAILED(hr) || hr == WAIT_TIMEOUT || hr == WAIT_ABANDONED) {
+    // We failed to acquire the lock.  We'll drop this frame, but subsequent
+    // frames won't be affected.
+    DLOG(ERROR) << "Failed to AcquireSync with shared texture.";
+    return false;
+  }
+
+  render_state_.d3d11_device_context_->CopyResource(
+      /*destination=*/render_state_.target_texture_.Get(),
+      /*source=*/source.Get());
+
+  keyed_mutex->ReleaseSync(0);
+
+  backbuffer_contains_source_ = true;
+
+  return true;
+}
+
 bool D3D11TextureHelper::CompositeToBackBuffer(
     const scoped_refptr<viz::ContextProvider>& context_provider) {
   if (!EnsureInitialized())

@@ -126,8 +126,9 @@ base::span<SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainImages() {
 
 bool OpenXrGraphicsBindingD3D11::CanUseSharedImages() const {
   // Put shared image feature behind a flag until remaining issues with overlays
-  // are resolved.
-  return base::FeatureList::IsEnabled(device::features::kOpenXRSharedImages);
+  // are resolved. WebGPU sessions always use SharedImages.
+  return base::FeatureList::IsEnabled(device::features::kOpenXRSharedImages) ||
+         IsWebGPUSession();
 }
 
 void OpenXrGraphicsBindingD3D11::CreateSharedImages(
@@ -164,9 +165,9 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
         nullptr, &shared_handle);
 
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Unable to create shared handle for DXGIResource (0x"
-                  << std::hex << hr << "). Creating a separate shareable "
-                  << "texture instead.";
+      DLOG(WARNING) << "Unable to create shared handle for DXGIResource (0x"
+                    << std::hex << hr << "). Creating a separate shareable "
+                    << "texture instead.";
 
       D3D11_TEXTURE2D_DESC desc;
       desc.Width = texture2d_desc.Width;
@@ -179,8 +180,8 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
       desc.Usage = D3D11_USAGE_DEFAULT;
       desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
       desc.CPUAccessFlags = 0;
-      desc.MiscFlags =
-          D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED;
+      desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+                       D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
 
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
           texture_helper_->GetDevice();
@@ -198,6 +199,7 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
         DLOG(ERROR) << "QueryInterface for IDXGIResource of shared texture "
                        "failed with error 0x"
                     << std::hex << hr;
+        swap_chain_info.d3d11_shared_texture = nullptr;
         return;
       }
 
@@ -208,6 +210,8 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
         DLOG(ERROR)
             << "Unable to create shared handle for fallback DXGIResource (0x"
             << std::hex << hr << ").";
+        swap_chain_info.d3d11_shared_texture = nullptr;
+        return;
       }
     }
 
@@ -315,13 +319,11 @@ bool OpenXrGraphicsBindingD3D11::Render(
     const scoped_refptr<viz::ContextProvider>& context_provider) {
   const SwapChainInfo& swap_chain_image = GetActiveSwapchainImage();
   if (swap_chain_image.d3d11_shared_texture) {
-    // If a separate shared texture is being used, copy it into the original
-    // swap chain texture prior to any further compositing. The shared texture
-    // should always be the same size and format as the swap chain texture, so
-    // a direct copy can be done rather than a render pass.
-    texture_helper_->GetDeviceContext()->CopyResource(
-        /*destination=*/swap_chain_image.d3d11_texture.get(),
-        /*source=*/swap_chain_image.d3d11_shared_texture.Get());
+    if (!texture_helper_->CopyToBackBuffer(
+            context_provider, swap_chain_image.d3d11_shared_texture)) {
+      DLOG(ERROR) << "CopyToBackBuffer failed.";
+      return false;
+    }
   }
 
   // Even if a shared image was copied, always perform a composite to account
