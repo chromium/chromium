@@ -8,6 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "url/gurl.h"
 
@@ -48,6 +49,13 @@ std::optional<GURL> ProfilePreloadCandidateSelector::GetURLToPreload(
   for (const GURL& url : preloadable_urls_) {
     // Skip URLs that are present under the profile.
     if (webui_tracker_->ProfileHasWebUI(profile, url.spec())) {
+      continue;
+    }
+
+    // Skip if this URL is disabled. This is seen in History Clusters side panel
+    // where some locales are not supported.
+    auto* config = TopChromeWebUIConfig::From(profile, url);
+    if (!config || !config->IsWebUIEnabled(profile)) {
       continue;
     }
 
