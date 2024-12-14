@@ -43,8 +43,7 @@ declare_args() {
   # warnings with known toolchains. Allow overriding this e.g. for Chromium
   # builds on Linux that could use a different version of the compiler.
   # With GCC, warnings in no-Chromium code are always not treated as errors.
-  # TODO(thakis): Re-enable on LLVM HEAD builds in ~5 hours.
-  treat_warnings_as_errors = !llvm_force_head_revision
+  treat_warnings_as_errors = true
 
   # How many symbols to include in the build. This affects the performance of
   # the build since the symbols are large and dealing with them is slow.
