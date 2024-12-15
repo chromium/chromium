@@ -729,6 +729,10 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
   }
 }
 
+void CaptureModeController::CloseSearchResultsPanel() {
+  search_results_panel_widget_.reset();
+}
+
 void CaptureModeController::MaybeUpdateSearchResultsPanelBounds() {
   if (!search_results_panel_widget_) {
     return;
@@ -1574,7 +1578,7 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
     // finished yet.
     Stop();
   }
-  search_results_panel_widget_.reset();
+  CloseSearchResultsPanel();
 
   if (!is_recording_in_progress())
     return;
@@ -2573,7 +2577,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
 
   // Close any previously opened panel to ensure a clean slate.
   // TODO(b/377370403): Revisit this decision.
-  search_results_panel_widget_.reset();
+  CloseSearchResultsPanel();
 
   // Before we start the session, if video recording is in progress, we need to
   // set the current type to image (except if the new behavior type is sunfish),

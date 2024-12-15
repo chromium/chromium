@@ -146,6 +146,9 @@ class ASH_EXPORT CaptureModeController
   // results `url`.
   void ShowSearchResultsPanel(const gfx::ImageSkia& image, GURL url);
 
+  // Closes the search results panel, or does nothing if it doesn't exist.
+  void CloseSearchResultsPanel();
+
   // Called explicitly by `CaptureModeSession` on a mouse drag, to hide the
   // panel.
   void OnLocatedEventDragged();

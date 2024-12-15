@@ -2400,6 +2400,7 @@ TEST_F(ScannerTest, PressingActionButtonsEndSession) {
       ElementsAre(ActionButtonIdIs(ActionButtonViewID::kScannerButton)));
   LeftClickOn(action_buttons[0]);
 
+  EXPECT_FALSE(capture_mode_controller->GetSearchResultsPanel());
   EXPECT_FALSE(capture_mode_controller->IsActive());
 }
 
