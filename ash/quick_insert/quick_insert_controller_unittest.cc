@@ -197,7 +197,9 @@ class QuickInsertControllerTest : public AshTestBase {
     client_ = std::make_unique<NiceMock<TestQuickInsertClient>>(
         controller_.get(), &prefs_);
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
-    QuickInsertSessionMetrics::RegisterProfilePrefs(prefs_.registry());
+    QuickInsertController::RegisterProfilePrefs(prefs_.registry());
+    // Disable the feature tour by default.
+    prefs_.SetBoolean(kQuickInsertFeatureTourCompletedPref, true);
     metrics_recorder_ =
         std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
     metrics_recorder_->Initialize();
@@ -312,7 +314,7 @@ TEST_F(QuickInsertControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
 }
 
 TEST_F(QuickInsertControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
-  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
+  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
 
   EXPECT_TRUE(controller().feature_tour_for_testing().widget_for_testing());
@@ -326,7 +328,7 @@ TEST_F(QuickInsertControllerTest,
   ASSERT_EQ(focus_controller->GetFocusedWindow(), nullptr);
 
   // Show the feature tour.
-  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
+  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -371,7 +373,7 @@ TEST_F(QuickInsertControllerTest,
             test_widget->GetNativeWindow());
 
   // Show the feature tour.
-  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
+  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -423,7 +425,7 @@ TEST_F(QuickInsertControllerTest,
   ASSERT_TRUE(textfield->HasFocus());
 
   // Show the feature tour.
-  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
+  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -460,7 +462,7 @@ TEST_F(QuickInsertControllerTest,
 }
 
 TEST_F(QuickInsertControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
-  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
+  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();

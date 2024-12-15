@@ -57,10 +57,6 @@ constexpr auto kFeatureTourDialogIllustrationCornerRadii =
                          /*lower_right=*/0,
                          /*lower_left=*/0);
 
-// Pref storing whether the feature tour was completed.
-constexpr char kFeatureTourCompletedPref[] =
-    "ash.picker.feature_tour.completed";
-
 std::u16string GetHeadingText(
     QuickInsertFeatureTour::EditorStatus editor_status) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -147,7 +143,7 @@ QuickInsertFeatureTour::~QuickInsertFeatureTour() {
 
 void QuickInsertFeatureTour::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kFeatureTourCompletedPref, false);
+  registry->RegisterBooleanPref(kQuickInsertFeatureTourCompletedPref, false);
 }
 
 bool QuickInsertFeatureTour::MaybeShowForFirstUse(
@@ -155,7 +151,7 @@ bool QuickInsertFeatureTour::MaybeShowForFirstUse(
     EditorStatus editor_status,
     base::RepeatingClosure learn_more_callback,
     base::RepeatingClosure completion_callback) {
-  auto* pref = prefs->FindPreference(kFeatureTourCompletedPref);
+  auto* pref = prefs->FindPreference(kQuickInsertFeatureTourCompletedPref);
   // Don't show if `pref` is null (this happens in unit tests that don't call
   // `RegisterProfilePrefs`).
   if (pref == nullptr || pref->GetValue()->GetBool()) {
@@ -181,7 +177,7 @@ bool QuickInsertFeatureTour::MaybeShowForFirstUse(
 
   widget_->Show();
 
-  prefs->SetBoolean(kFeatureTourCompletedPref, true);
+  prefs->SetBoolean(kQuickInsertFeatureTourCompletedPref, true);
   return true;
 }
 
