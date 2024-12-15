@@ -30,6 +30,7 @@
 #include "ash/quick_insert/views/quick_insert_search_bar_textfield.h"
 #include "ash/quick_insert/views/quick_insert_search_field_view.h"
 #include "ash/quick_insert/views/quick_insert_view.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
@@ -160,9 +161,8 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
 // when it's destroyed.
 class TestQuickInsertClient : public MockQuickInsertClient {
  public:
-  TestQuickInsertClient(QuickInsertController* controller,
-                        sync_preferences::TestingPrefServiceSyncable* prefs)
-      : controller_(controller), prefs_(prefs) {
+  TestQuickInsertClient(QuickInsertController* controller, PrefService* prefs)
+      : controller_(controller) {
     controller_->SetClient(this);
     CHECK(history_dir_.CreateUniqueTempDir());
     history_service_ =
@@ -172,17 +172,14 @@ class TestQuickInsertClient : public MockQuickInsertClient {
     ON_CALL(*this, GetSharedURLLoaderFactory)
         .WillByDefault(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>);
-    ON_CALL(*this, GetPrefs).WillByDefault(Return(prefs_));
+    ON_CALL(*this, GetPrefs).WillByDefault(Return(prefs));
     ON_CALL(*this, GetHistoryService)
         .WillByDefault(Return(history_service_.get()));
   }
   ~TestQuickInsertClient() override { controller_->SetClient(nullptr); }
 
-  PrefRegistrySimple* registry() { return prefs_->registry(); }
-
  private:
   raw_ptr<QuickInsertController> controller_ = nullptr;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ = nullptr;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
 };
@@ -195,12 +192,10 @@ class QuickInsertControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     controller_ = std::make_unique<QuickInsertController>();
-    RegisterUserProfilePrefs(prefs_.registry(), /*country=*/"",
-                             /*for_test=*/true);
     client_ = std::make_unique<NiceMock<TestQuickInsertClient>>(
-        controller_.get(), &prefs_);
+        controller_.get(), prefs());
     // Disable the feature tour by default.
-    prefs_.SetBoolean(kQuickInsertFeatureTourCompletedPref, true);
+    prefs()->SetBoolean(kQuickInsertFeatureTourCompletedPref, true);
     metrics_recorder_ =
         std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
     metrics_recorder_->Initialize();
@@ -221,7 +216,9 @@ class QuickInsertControllerTest : public AshTestBase {
 
   NiceMock<TestQuickInsertClient>& client() { return *client_; }
 
-  sync_preferences::TestingPrefServiceSyncable& prefs() { return prefs_; }
+  PrefService* prefs() {
+    return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  }
 
   metrics::structured::TestStructuredMetricsRecorder& metrics_recorder() {
     return *metrics_recorder_;
@@ -229,7 +226,6 @@ class QuickInsertControllerTest : public AshTestBase {
 
  private:
   MockNewWindowDelegate new_window_delegate_;
-  sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<QuickInsertController> controller_;
   std::unique_ptr<NiceMock<TestQuickInsertClient>> client_;
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
@@ -315,7 +311,7 @@ TEST_F(QuickInsertControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
 }
 
 TEST_F(QuickInsertControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
-  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
+  prefs()->SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
 
   EXPECT_TRUE(controller().feature_tour_for_testing().widget_for_testing());
@@ -329,7 +325,7 @@ TEST_F(QuickInsertControllerTest,
   ASSERT_EQ(focus_controller->GetFocusedWindow(), nullptr);
 
   // Show the feature tour.
-  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
+  prefs()->SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -374,7 +370,7 @@ TEST_F(QuickInsertControllerTest,
             test_widget->GetNativeWindow());
 
   // Show the feature tour.
-  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
+  prefs()->SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -426,7 +422,7 @@ TEST_F(QuickInsertControllerTest,
   ASSERT_TRUE(textfield->HasFocus());
 
   // Show the feature tour.
-  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
+  prefs()->SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -463,7 +459,7 @@ TEST_F(QuickInsertControllerTest,
 }
 
 TEST_F(QuickInsertControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
-  prefs().SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
+  prefs()->SetBoolean(kQuickInsertFeatureTourCompletedPref, false);
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -1169,40 +1165,40 @@ TEST_F(QuickInsertControllerTest, IsValidDuringWidgetClose) {
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionTopWhenCapsLockHasNotShownEnoughTimes) {
-  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 4);
-  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
+  prefs()->SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 4);
+  prefs()->SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             QuickInsertCapsLockPosition::kTop);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionTopWhenCapsLockIsAlwaysUsed) {
-  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
-  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 14);
+  prefs()->SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
+  prefs()->SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 14);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             QuickInsertCapsLockPosition::kTop);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionMiddleWhenCapsLockIsSometimesUsed) {
-  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
-  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 7);
+  prefs()->SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
+  prefs()->SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 7);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             QuickInsertCapsLockPosition::kMiddle);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionBottomWhenCapsLockIsNeverUsed) {
-  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
-  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
+  prefs()->SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
+  prefs()->SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             QuickInsertCapsLockPosition::kBottom);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnCapsLockPositionTopWhenCapsLockIsEnabled) {
-  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 4);
-  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
+  prefs()->SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 4);
+  prefs()->SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
   GetImeKeyboard()->SetCapsLockEnabled(true);
 
   EXPECT_EQ(controller().GetCapsLockPosition(),
