@@ -2574,11 +2574,9 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
       session_test_api.GetActionButtons();
   ASSERT_THAT(
       action_buttons,
-      ElementsAre(
-          AllOf(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton),
-                ActionButtonIsCollapsed()),
-          AllOf(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton),
-                Not(ActionButtonIsCollapsed()))));
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton),
+                  AllOf(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton),
+                        Not(ActionButtonIsCollapsed()))));
 
   // Click the smart actions button.
   base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>

@@ -86,7 +86,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "capture_mode_play.icon",
     "capture_mode_region.icon",
     "capture_mode_settings.icon",
-    "capture_mode_smart_actions.icon",
     "capture_mode_video.icon",
     "capture_mode_window.icon",
     "caret_left.icon",

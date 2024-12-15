@@ -1441,16 +1441,13 @@ void CaptureModeSession::OnTextDetected() {
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
     // TODO(crbug.com/375967525): Finalize and translate the smart actions
-    // button accessible name.
-    if (ActionButtonView* action_button = AddActionButton(
-            base::BindRepeating(
-                &CaptureModeSession::OnSmartActionsButtonPressed,
-                weak_ptr_factory_.GetWeakPtr()),
-            u"Smart actions", &kCaptureModeSmartActionsIcon,
-            ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
-            ActionButtonViewID::kSmartActionsButton)) {
-      action_button->CollapseToIconButton();
-    }
+    // button text.
+    AddActionButton(
+        base::BindRepeating(&CaptureModeSession::OnSmartActionsButtonPressed,
+                            weak_ptr_factory_.GetWeakPtr()),
+        u"More actions", /*icon=*/nullptr,
+        ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
+        ActionButtonViewID::kSmartActionsButton);
   }
 }
 

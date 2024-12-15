@@ -63,7 +63,8 @@ class ASH_EXPORT ActionButtonView : public views::Button {
 
   raw_ptr<views::BoxLayout> box_layout_ = nullptr;
 
-  // The image view for the action button icon.
+  // The image view for the action button icon. May be `nullptr` if the action
+  // button does not have an icon.
   raw_ptr<views::ImageView> image_view_ = nullptr;
 
   // The label containing the action button text. This label is hidden when the

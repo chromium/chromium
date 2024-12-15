@@ -36,6 +36,9 @@ namespace {
 // Action button insets when it is shown in full (text and icon).
 constexpr auto kFullActionButtonInsets = gfx::Insets::TLBR(8, 12, 8, 16);
 
+// Action button insets when it only has a text label (no icon).
+constexpr auto kTextOnlyActionButtonInsets = gfx::Insets::VH(8, 16);
+
 // Action button insets when it is collapsed (icon only).
 constexpr auto kCollapsedActionButtonInsets = gfx::Insets(8);
 
@@ -61,9 +64,13 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
       // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
       shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation12)) {
-  box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kFullActionButtonInsets,
-      kActionButtonIconLabelSpacing));
+  box_layout_ = SetLayoutManager(
+      icon ? std::make_unique<views::BoxLayout>(
+                 views::BoxLayout::Orientation::kHorizontal,
+                 kFullActionButtonInsets, kActionButtonIconLabelSpacing)
+           : std::make_unique<views::BoxLayout>(
+                 views::BoxLayout::Orientation::kHorizontal,
+                 kTextOnlyActionButtonInsets));
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
@@ -74,9 +81,11 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
       this, kActionButtonRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);
 
-  image_view_ = AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          *icon, kColorAshButtonIconColor, kActionButtonIconSize)));
+  if (icon) {
+    image_view_ = AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            *icon, kColorAshButtonIconColor, kActionButtonIconSize)));
+  }
   label_ = AddChildView(std::make_unique<views::Label>(text));
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 
