@@ -8842,3 +8842,6 @@ crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.
 crbug.com/383855460 inspector-protocol/css/css-get-animated-styles.js [ Failure Pass ]
 
 crbug.com/384009732 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-offscreencanvas.html [ Failure Pass ]
+
+# Gardener 2024-12-16
+crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-fill-video.html [ Failure Pass ]
