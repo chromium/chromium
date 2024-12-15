@@ -2686,10 +2686,10 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
-[ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
-[ Mac13 ] external/wpt/webrtc/RTCRtpParameters-encodings.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc/RTCRtpParameters-encodings.html [ Timeout ]
+crbug.com/383880387 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
+crbug.com/383880387 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
+crbug.com/383911311 [ Mac13 ] external/wpt/webrtc/RTCRtpParameters-encodings.html [ Timeout ]
+crbug.com/383911311 [ Mac15 ] external/wpt/webrtc/RTCRtpParameters-encodings.html [ Timeout ]
 crbug.com/383999274 [ Mac13 ] external/wpt/css/css-layout-api/edges/padding-vrl.https.html [ Failure ]
 crbug.com/383999274 [ Win10.20h2 ] external/wpt/css/css-layout-api/edges/padding-vrl.https.html [ Failure ]
 crbug.com/383880384 [ Mac13 ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure ]
