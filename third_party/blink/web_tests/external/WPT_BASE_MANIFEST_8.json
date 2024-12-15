@@ -119793,6 +119793,32 @@
        {}
       ]
      ],
+     "flexbox-flex-wrap-flexing-002.html": [
+      "00782f608dd690422fa8575d06fc5c62c772b10b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flexbox-flex-wrap-flexing-003.html": [
+      "fb2bd9381268ddb3b4f998fbb13d838302c459e6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "flexbox-flex-wrap-flexing.html": [
       "b172fe6fbdbb7ec34f0eb88110e8325b2173a1cf",
       [
@@ -143006,6 +143032,35 @@
             [
              0,
              5000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-single-stop-longer-hue-hsl-002.html": [
+       "da78d6e1cc5ff65867ac506a279accea2af131e3",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-single-stop-longer-hue-hsl-002-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             8
+            ],
+            [
+             0,
+             9050
             ]
            ]
           ]
@@ -184739,6 +184794,58 @@
      }
     },
     "css-sizing": {
+     "abspos-auto-sizing-fit-content-percentage-001.html": [
+      "b729e6ff7c514db6158fd1958042faf30df77bcd",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abspos-auto-sizing-fit-content-percentage-002.html": [
+      "856b9607fa246fa9ef47b6745b4ceae88d97858a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abspos-auto-sizing-fit-content-percentage-003.html": [
+      "b872ca162b37a2f11c64a4465f91e483f94f01f1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abspos-auto-sizing-fit-content-percentage-004.html": [
+      "1d05d96f43104dcc6ceacf4f563f07a488bb91c2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "aspect-ratio": {
       "abspos-001.html": [
        "e18a0a7c81dbef1b2526793bac31ab6640b33dd7",
@@ -340352,6 +340459,10 @@
       ],
       "gradient-none-interpolation-ref.html": [
        "89a1929e275bac96c2a2e845124e0bd9cecd3cfa",
+       []
+      ],
+      "gradient-single-stop-longer-hue-hsl-002-ref.html": [
+       "2862a7a7ab85bc936eb678056d1c487edb5cd1dc",
        []
       ],
       "gradient-single-stop-longer-hue-hsl-ref.html": [
