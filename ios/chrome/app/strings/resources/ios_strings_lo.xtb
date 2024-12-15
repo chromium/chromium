@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">ເປີດ​ທັງ​ຫມົດ</translation>
 <translation id="1408847409015257906">ແຕະໃສ່ “ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພ.”</translation>
 <translation id="1411386976162024013">ການຊອກຫາດ້ວຍພາບໂດຍໃຊ້ Lens</translation>
+<translation id="1417474386970818917">ອອກຈາກລະບົບ ແລະ ລຶບ</translation>
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1436671784520050284">ສືບຕໍ່ການຕັ້ງຄ່າ</translation>
@@ -1010,6 +1011,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5628388627414062173">{count,plural, =1{{count} ໜ້າໃນລາຍຊື່ການອ່ານຂອງທ່ານ}other{{count} ໜ້າໃນລາຍຊື່ການອ່ານຂອງທ່ານ}}</translation>
 <translation id="5632485077360054581">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
 <translation id="5633237939819267663">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ແລ້ວ}other{ບັນທຶກບຸກມາກ {count} ລາຍການໃສ່ "{title}" ແລ້ວ}}</translation>
+<translation id="564170563478022912">ອອກຈາກລະບົບບໍ? ລະບົບຈະລຶບຂໍ້ມູນບັນຊີທີ່ບໍ່ໄດ້ບັນທຶກໄວ້.</translation>
 <translation id="5642707040609478753">ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="5646284034397250191">ສ້າງປ້າຍກຳກັບແລ້ວ. ວັນທີລໍຖ້າດຳເນີນການ</translation>
 <translation id="5647096944343801045">ຈຸດເຂົ້າເຖິງໃຫຍ່</translation>
@@ -1022,6 +1024,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5669335982068190158">ທ່ານອອກຈາກລະບົບເປັນສ່ວນໜຶ່ງຂອງການຣີເຊັດ iPhone ທ່ານແລ້ວ. ແຕະສືບຕໍ່ທາງລຸ່ມເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">ລຸ້ນ <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">ສະຫຼັບບັນຊີບໍ? ລະບົບຈະລຶບຂໍ້ມູນບັນຊີທີ່ບໍ່ໄດ້ບັນທຶກໄວ້.</translation>
 <translation id="5683499062697987550">ເພື່ອໃຊ້ ແລະ ບັນທຶກລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ.</translation>
 <translation id="5684761169742812828">ລະຫັດຜ່ານນີ້ຖືກເປີດເຜີຍໃນການລະເມີດຂໍ້ມູນຢູ່ອິນເຕີເນັດ. ຫາກທ່ານບໍ່ມີເວລາທີ່ຈະປ່ຽນມັນໃນຕອນນີ້, Google ແນະນໍາໃຫ້ຮັກສາຄໍາເຕືອນນີ້ເພື່ອເຕືອນຕົວເອງໃນພາຍຫຼັງ.</translation>
 <translation id="5694848685995373177">ບັນທຶກໃນ Drive ສຳລັບ <ph name="USER_EMAIL" /> ແລ້ວ.</translation>
@@ -1223,6 +1226,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6506996418997555004">ແບ່ງປັນກຸ່ມແຖບ "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">ເຂົ້າສູ່ລະບົບເພື່ອຮັບລາຍຊື່ການອ່ານຂອງທ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ.</translation>
 <translation id="6518133107902771759">ກວດສອບ</translation>
+<translation id="6518861084553706202">ລະບົບຈະປິດແຖບ ແລະ ຂໍ້ມູນທີ່ຖືກລຶບອາດຮວມມີລະຫັດຜ່ານ, ປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້ ແລະ ອື່ນໆ.</translation>
 <translation id="6523575793810663688">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
 <translation id="6524082013156754186">ບັນທຶກໃນບັນຊີ</translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
@@ -1679,6 +1683,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8545276357312221485">ກວດສອບການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="854938212724803178">ທ່ານມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ. ແກ້ໄຂດຽວນີ້ເພື່ອຄວາມປອດໄພ.</translation>
 <translation id="8556590991644167667">{count,plural, =1{ທ່ານໄດ້ປິດ {count} ຄຳເຕືອນໄວ້ແລ້ວ}other{ທ່ານໄດ້ປິດ {count} ຄຳເຕືອນໄວ້ແລ້ວ}}</translation>
+<translation id="8558046478684552694">ປິດກຸ່ມ.</translation>
 <translation id="8560253818350321773">ສະແດງລາຍການທີ່ໃຊ້ເລື້ອຍໆກ່ອນ.</translation>
 <translation id="8561999115126307258">{count,plural, =1{ຕົວເລືອກສຳລັບລະຫັດຜ່ານ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}other{ຕົວເລືອກສຳລັບລະຫັດຜ່ານ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}}</translation>
 <translation id="8564894539416715395">ໜ້າແຖບໃໝ່</translation>
@@ -1847,6 +1852,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9205189991633470489">ການລັອກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="9206887540681440657">ຄວາມໄວ</translation>
 <translation id="9223358826628549784">​ສົ່ງລາຍງານການຂັດຂ້ອງແລ້ວ.</translation>
+<translation id="926455622548529175">ສະຫຼັບ ແລະ ລຶບ</translation>
 <translation id="929748059769569925">ຂໍ້ຄວາມທີ່ໄຮໄລ້</translation>
 <translation id="932305336591073205">{count,plural, =1{ປິດແຖບ}other{ປິດແຖບ}}</translation>
 <translation id="939472100615258482">ເວັບໄຊປັດຈຸບັນ</translation>

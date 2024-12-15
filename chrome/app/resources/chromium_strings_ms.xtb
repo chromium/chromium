@@ -68,6 +68,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="1896836275755235458">Chromium menjimatkan kuasa bateri dengan mengehadkan aktiviti latar dan kesan visual, seperti penatalan lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui Penjimat Tenaga dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Perkhidmatan Pengemas Kini Chromium</translation>
 <translation id="1911763535808217981">Dengan mematikan pilihan ini, anda boleh mengelog masuk ke tapak Google seperti Gmail tanpa perlu mengelog masuk ke Chromium</translation>
+<translation id="1916451563296275579">Alih keluar data apl ini daripada Chromium</translation>
 <translation id="1929939181775079593">Chromium tidak responsif. Lancarkan semula sekarang?</translation>
 <translation id="1933341829955786215">Organisasi anda, <ph name="MANAGER" />, menghendaki anda untuk log masuk ke Chromium</translation>
 <translation id="193439633299369377">Chromium OS perlu dimulakan semula untuk melaksanakan kemas kini.</translation>
@@ -405,6 +406,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6455857529632101747">Selamat datang ke profil Chromium</translation>
 <translation id="6466344609055215035">Alih keluar Akaun daripada Chromium</translation>
 <translation id="6475912303565314141">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chromium.</translation>
+<translation id="648062525172759633">Halaman ini bertujuan untuk digunakan oleh pembangun Chromium dan mungkin tidak diselenggara atau diuji secara aktif. Untuk mendayakan halaman ini, navigasi kepada <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik butang untuk mendayakan halaman nyahpepijat, kemudian navigasi kepada halaman ini sekali lagi.</translation>
 <translation id="648319183876919572">Penyemakan Imbas Selamat Dipertingkatkan melakukan lebih banyak lagi untuk melindungi anda daripada laman web dan muat turun berbahaya</translation>
 <translation id="6510925080656968729">Nyahpasang Chromium</translation>
 <translation id="651535675648445253">Pintasan dibuka dalam Chromium</translation>

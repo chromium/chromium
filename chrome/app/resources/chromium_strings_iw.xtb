@@ -68,6 +68,7 @@
 <translation id="1896836275755235458">‏‫Chromium חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון באנרגיה<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">‏שירות לעדכון של Chromium</translation>
 <translation id="1911763535808217981">‏כיבוי הגדרה זו יאפשר לך להיכנס לאתרי Google, כמו Gmail, בלי להיכנס אל Chromium</translation>
+<translation id="1916451563296275579">‏הסרת הנתונים של האפליקציות האלה מ-Chromium</translation>
 <translation id="1929939181775079593">‏Chromium אינו מגיב. להפעיל מחדש עכשיו?</translation>
 <translation id="1933341829955786215">‏לפי דרישת הארגון שלך, <ph name="MANAGER" />, עליך להיכנס לחשבון ב-Chromium</translation>
 <translation id="193439633299369377">‏צריך להפעיל מחדש את ChromiumOS כדי להחיל את העדכון הזה.</translation>
@@ -403,6 +404,7 @@
 <translation id="6455857529632101747">‏ברוך בואך לפרופילים של Chromium</translation>
 <translation id="6466344609055215035">‏הסרת החשבון מ-Chromium</translation>
 <translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium.</translation>
+<translation id="648062525172759633">‏הדפים האלה מיועדים למפתחי Chromium. יכול להיות שהם לא מתוחזקים או נבדקים באופן פעיל. כדי להפעיל אותם, עוברים לכתובת <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, לוחצים על הלחצן כדי להפעיל את מצב ניפוי הבאגים בדפים, ואז מנווטים בחזרה לדף הזה.</translation>
 <translation id="648319183876919572">הגרסה המשופרת של הגלישה הבטוחה מגנה עליך טוב יותר מפני הורדות ואתרים מסוכנים</translation>
 <translation id="6510925080656968729">‏הסרה של התקנת Chromium</translation>
 <translation id="651535675648445253">‏קיצורי הדרך נפתחים ב-Chromium</translation>

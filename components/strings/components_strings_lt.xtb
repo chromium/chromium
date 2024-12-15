@@ -1140,6 +1140,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="306573536155379004">Žaidimas prasidėjo.</translation>
 <translation id="3067505415088964188">Kaina yra maža</translation>
 <translation id="3068118691172921711">Failų įkėlimas į „<ph name="CLOUD_PROVIDER" />“ bus pradėtas po vienos minutės</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elementas}one{{ITEMS} elementas}few{{ITEMS} elementai}many{{ITEMS} elemento}other{{ITEMS} elementų}}</translation>
 <translation id="3076865167425975822">Operacinės sistemos</translation>
 <translation id="3080254622891793721">Grafiniai elementai</translation>
 <translation id="3082007635241601060">Leiskite „Google“, kai yra galimybė, pasinaudojus jūsų kortelėmis rasti suasmenintų nuolaidų</translation>
@@ -2830,6 +2831,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6106989379647458772">Gali būti, kad tinklalapis adresu <ph name="PAGE" /> laikinai neveikia arba yra visam laikui perkeltas nauju žiniatinklio adresu.</translation>
 <translation id="6107012941649240045">Išduotas</translation>
 <translation id="6107924765192360631">Tiesiog pradėkite nuo kelių žodžių ar pirmojo juodraščio, kad gautumėte rašymo pasiūlymų.</translation>
+<translation id="6108508372809181847">Palyginti <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Išsami sertifikato informacija</translation>
 <translation id="6108702513636120202">Paieškos variklis sistemoje „Chromium“</translation>
 <translation id="6108849843016142864">Ropliai ir amfibijos</translation>

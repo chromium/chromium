@@ -210,6 +210,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="345171907106878721">Jiongeze kwenye Chrome</translation>
 <translation id="3453763134178591239">Sheria na masharti ya Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="3503306920980160878">Chrome inahitaji kufikia maelezo ya mahali ulipo ili kuyashiriki na tovuti hii</translation>
+<translation id="3512634283363927263">Kurasa hizi zinanuiwa kutumiwa na wasanidi programu wa Chrome na huenda zisiweze kufanyiwa majaribio wala kudumishwa kila wakati. Ili uzifungue, nenda kwenye <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, bofya kitufe ili ufungue kurasa za utatuzi kisha urudi kwenye ukurasa huu tena.</translation>
 <translation id="3533694711092285624">Hakuna manenosiri yaliyohifadhiwa. Chrome inaweza kukagua manenosiri yako unapoyahifadhi.</translation>
 <translation id="3541482654983822893">Chrome imeshindwa kukagua manenosiri yako. Jaribu tena baada ya saa 24.</translation>
 <translation id="3564543103555793392">Unapoingia katika akaunti kwenye Chrome, unaweza kuhifadhi alamisho, manenosiri na zaidi kisha uyatumie kwenye simu yako</translation>
@@ -638,6 +639,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8718062187489036808">Ondoka kwenye Chrome</translation>
 <translation id="873133009373065397">Google Chrome haijafaulu kubainisha wala kuweka kivinjari chaguomsingi</translation>
 <translation id="8748735421235723888">Chrome hurejesha hifadhi iliyopo kwenye vichupo visivyotumika. Hii hufanya vichupo vinavyotumika na programu nyinginezo ziwe na nyenzo zaidi za kompyuta na huifanya Chrome iwe na kasi ya utendaji. Vichupo ambavyo hutumii vitaanza kutumika tena kiotomatiki utakaporudi kwenye vichupo hivyo. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu Kiokoa Hifadhi<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Ondoa data hii ya programu kwenye Chrome</translation>
 <translation id="8765470054473112089">Unapoandika kwenye sehemu ya anwani au kisanduku cha kutafutia, Chrome hutuma unachokiandika kwenye mtambo wako chaguomsingi wa kutafuta ili upate mapendekezo bora. Kipengele hiki huwa kimezimwa katika Hali fiche.</translation>
 <translation id="8781673607513845160">Ili utumie kamera yako, ruhusu Chrome ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Hitilafu ya kisakinishaji: Msimamizi wa mtandao wako ameweka Sera ya Jumla inayozuia usakinishaji: <ph name="INSTALL_ERROR" /></translation>

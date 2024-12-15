@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Išjungti tamsiąją temą</translation>
 <translation id="1807246157184219062">Šviesi</translation>
 <translation id="1808803439260407870">Klasikinis menas</translation>
+<translation id="181434555916624618">Kol kas rezultatai su žmonėmis nebus rodomi. Bandykite kitą užklausą.</translation>
 <translation id="1815850098929213707">Pasirinktas klavišas yra „<ph name="KEYS" />“. Palieskite mygtuką, kad redaguotumėte valdiklį</translation>
 <translation id="1823120442877418684">Personažai</translation>
 <translation id="1827738518074806965">Meno galerija</translation>
@@ -1293,6 +1294,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7135814714616751706">Ieškoti sparčiųjų klavišų</translation>
 <translation id="7138614237884624401">Supaprastintas tekstas</translation>
+<translation id="7138668887584231801">Nepakanka žodžių, kad būtų galima apibendrinti</translation>
 <translation id="7141470099673912333">Turinio perkėlimas</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>

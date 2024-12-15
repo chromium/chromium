@@ -849,7 +849,7 @@
 <translation id="3945319193631853098">Допрете за да го завршите поставувањето</translation>
 <translation id="3945867833895287237">Се поврзува со точка на пристап…</translation>
 <translation id="3950272133184491871">Дали ќе се одјавите сега?</translation>
-<translation id="3950820424414687140">Најави се</translation>
+<translation id="3950820424414687140">Најавете се</translation>
 <translation id="3953130726459169782">Сѐ уште нема завршени задачи.</translation>
 <translation id="3958714870339660776">Цел ден</translation>
 <translation id="3962859241508114581">Претходна песна</translation>
@@ -1051,7 +1051,7 @@
 <translation id="4596144739579517758">Темната тема е исклучена</translation>
 <translation id="4596442969149038771">Споделено од <ph name="USER" /></translation>
 <translation id="4610493115106525653">Добри излезни податоци</translation>
-<translation id="4611292653554630842">Најави се</translation>
+<translation id="4611292653554630842">Најавете се</translation>
 <translation id="462160925400706389">Поврзано: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Потврдете ја сметката</translation>
 <translation id="4628757576491864469">Уреди</translation>
@@ -2123,7 +2123,7 @@
 <translation id="8142699993796781067">Приватна мрежа</translation>
 <translation id="8144760705599030999">Зачувајте го уредот <ph name="NAME" /> на <ph name="EMAIL" /> за побрзо спарување со вашите други уреди</translation>
 <translation id="8144914663975476336">Изберете формат на снимање</translation>
-<translation id="8145272500474066209">Генеративната AI може да прави грешки, вклучително и за луѓе, па проверувајте ги излезните податоци двапати. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
+<translation id="8145272500474066209">Генеративната AI може да прави грешки, вклучително и за луѓе, па проверувајте ги одговорите. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Прикажете ги поставките за Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Притиснете Ctrl + W за да затворите.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автоматско довршување</translation>
@@ -2352,7 +2352,7 @@
 <translation id="8991648557324317894">Притиснете Fn + „Брзо вметнување“ или Shift за да откажете.</translation>
 <translation id="899350903320462459">Отклучете го уредот како <ph name="LOGIN_ID" /> за да се изврши дејството од известувањето</translation>
 <translation id="8993733019280019776">Дали зборувате? Вашиот микрофон е исклучен. Изберете го микрофонот за да го вклучите.</translation>
-<translation id="9000771174482730261">УПРАВУВАЈТЕ СО КАПАЦИТЕТОТ</translation>
+<translation id="9000771174482730261">УПРАВУВАЈТЕ СО ПРОСТОРОТ</translation>
 <translation id="9003374957546315126">Емоџија и друго</translation>
 <translation id="9005984960510803406">Отвора прозорец на Crosh</translation>
 <translation id="9017320285115481645">Внесете го кодот за пристап на родители на Family Link.</translation>

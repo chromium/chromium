@@ -142,6 +142,7 @@
 אפשר לבדוק את הסיסמאות שלך בכל שלב ב<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">העתקת כתו&amp;בת קישור</translation>
 <translation id="1085064499066015002">פועל כל הזמן בכל האתרים</translation>
+<translation id="1085558727130096638">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד משתמש אחד (<ph name="NUM_OTHER_MEMBERS" />)</translation>
 <translation id="1085618740036066768">‫<ph name="ITEM" /> לא נבחר. ‫<ph name="INDEX" /> מתוך <ph name="COUNT" />. כדי לבחור, יש ללחוץ על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="1085697365578766383">קרתה שגיאה בהפעלת המכונה הווירטואלית. יש לנסות שוב.</translation>
 <translation id="1090126737595388931">אין יישומים פועלים ברקע</translation>
@@ -2142,6 +2143,7 @@
 <translation id="2462752602710430187">המדפסת <ph name="PRINTER_NAME" /> נוספה</translation>
 <translation id="2464079411014186876">גלידה</translation>
 <translation id="2467755475704469005">לא זוהה מכשיר. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUM_OTHER_MEMBERS" /> משתמשים</translation>
 <translation id="2468178265280335214">האצת גלילה בלוח מגע</translation>
 <translation id="2468205691404969808">‏שימוש בקובצי cookie כדי לשמור את ההעדפות שלך, גם אם לא נכנסת אל הדפים האלה</translation>
 <translation id="2468402215065996499">טמגוצ'י</translation>
@@ -2287,6 +2289,7 @@
 <translation id="256481480019204378">‏מספר חשבון Google</translation>
 <translation id="256517381556987641">בסנכרון הקבצים נמצאו עד עכשיו <ph name="ITEMS_FOUND" /> קבצים ונפח האחסון עדיין בבדיקה. אפשר לנסות להפעיל את סנכרון הקבצים שוב בעוד כמה דקות.</translation>
 <translation id="2565214867520763227">הפעלת קורא המסך</translation>
+<translation id="2566146433999774844">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUM_OTHER_MEMBERS" /> משתמשים</translation>
 <translation id="2568694057933302218">‏במצב פרטי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים. פעילות הגלישה לא משמשת לפעולות כמו התאמה אישית של מודעות. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="2568774940984945469">גורם מכיל של סרגל המידע</translation>
 <translation id="2569972178052279830">שם הקמעונאי</translation>
@@ -2294,6 +2297,7 @@
 <translation id="2571655996835834626">‏שינוי ההגדרות ששולטות בגישה של אתרים לתכונות כמו קובצי cookie, ‏JavaScript, יישומי פלאגין, מיקום גיאוגרפי, מיקרופון, מצלמה וכו'.</translation>
 <translation id="257175846174451436">יש הצעה לקבוצת כרטיסיות</translation>
 <translation id="2572032849266859634">ניתנה הרשאה לקריאה בלבד ב-<ph name="VOLUME_NAME" />.</translation>
+<translation id="2573147659521059501">‫<ph name="NUM" /> כרטיסיות</translation>
 <translation id="2573276323521243649">חזרה מדף בחירת הדמות</translation>
 <translation id="2573417407488272418">לפני השדרוג כדאי לגבות קבצים ואפליקציות ב'קבצים' &gt; 'הקבצים שלי'.</translation>
 <translation id="2573831315551295105">הקצאת מתג לפעולה “<ph name="ACTION" />”</translation>
@@ -2965,6 +2969,7 @@
 <translation id="3038628620670416486">איתור לחצנים בעכבר</translation>
 <translation id="3039491566278747710">התקנת המדיניות במצב אופליין במכשיר נכשלה.</translation>
 <translation id="3040982432432547149">‏נשמח לעזרתך בשיפור של Steam ב-Chromebook</translation>
+<translation id="304169924727249890">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3043016484125065343">צריך להיכנס לחשבון כדי לראות את הסימניות</translation>
 <translation id="3043126717220766543">הסרת ההצעות לקבוצות</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3305,6 +3310,7 @@
 <translation id="3308852433423051161">‏טעינת Google Assistant מתבצעת...</translation>
 <translation id="3309124184713871355">מבנים</translation>
 <translation id="3309330461362844500">מזהה פרופיל האישור</translation>
+<translation id="3310379801837527592">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד משתמש אחד (<ph name="NUM_OTHER_MEMBERS" />)</translation>
 <translation id="331080746368555063">אתרים פרטיים יכולים לכלול דברים כמו האינטראנט של החברה</translation>
 <translation id="3311445899360743395">ייתכן שיוסרו מהמכשיר נתונים המשויכים לאפליקציה הזו.</translation>
 <translation id="3312470654018965389">‏המערכת מגדירה את הקונטיינר של Linux</translation>
@@ -4263,6 +4269,7 @@
 <translation id="3958088479270651626">ייבוא סימניות והגדרות</translation>
 <translation id="3958110062351175311">יש הרשאה להציג בקשות בסרגל הכלים</translation>
 <translation id="3958821725268247062">האפליקציה <ph name="APP_NAME" /> כבר מותקנת</translation>
+<translation id="3959969108528118741">בעלים</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">עוד פעולות לגבי <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962607437409665666">‫<ph name="MEMBER_FIRST_NAME" /> עזב/ה את הקבוצה</translation>
@@ -4711,6 +4718,7 @@
 <translation id="428963538941819373">האתרים האלה יכולים להשתמש במידע שנשמר עליך בזמן הגלישה בשרת <ph name="HOST" /></translation>
 <translation id="4289732974614035569">בחירת קוד אימות</translation>
 <translation id="4290791284969893584">לאחר סגירת דף, ייתכן שמשימות שהתחלת לא יסתיימו</translation>
+<translation id="4290826901752066702">משתמש אחד (<ph name="NUM" />)</translation>
 <translation id="4290898381118933198">אפשר להחליק כדי לעבור בין הדפים</translation>
 <translation id="4291265871880246274">תיבת דו-שיח להתחברות</translation>
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
@@ -5789,6 +5797,7 @@
 <translation id="5079950360618752063">שימוש בסיסמה המוצעת</translation>
 <translation id="508059534790499809">‏רענון של כרטיס Kerberos</translation>
 <translation id="5081124414979006563">&amp;פתיחת פרופיל אורח</translation>
+<translation id="5081974595802103358">העתקת הקישור נכשלה</translation>
 <translation id="508209203623347828">‏אם הכרטיס הזה מושבת, גם הכרטיסים של Microsoft כמו Sharepoint ו-Outlook Calendar יושבתו.</translation>
 <translation id="5083035541015925118">‏Ctrl +‏ Alt + חץ למעלה</translation>
 <translation id="5084328598860513926">תהליך ההכנה לשימוש נקטע. יש לנסות שוב, או לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
@@ -6633,6 +6642,7 @@
 <translation id="5691581861107245578">המערכת תציע לך סמלי אמוג'י על סמך הטקסט שהקלדת</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
 <translation id="5693255400847650006">המיקרופון נמצא בשימוש</translation>
+<translation id="5695046252726616755">‏מקישים על Enter. כדי לעבור לאפשרויות נוספות, מקישים על מקש הרווח.</translation>
 <translation id="5695184138696833495">‏ADB עבור אפליקציות ל-Android ב-Linux</translation>
 <translation id="5696143504434933566">דיווח על ניצול לרעה על-ידי "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">‏קובץ PPD נוכחי בשימוש: <ph name="PPD_NAME" /></translation>
@@ -7872,6 +7882,7 @@
 <translation id="6609478180749378879">פרטי הכניסה יאוחסנו במכשיר הזה אחרי היציאה ממצב אנונימי. מאוחר יותר תהיה לך אפשרות להיכנס שוב לחשבון באתר הזה באמצעות המכשיר.</translation>
 <translation id="6610002944194042868">אפשרויות תרגום</translation>
 <translation id="6610064275805055636">‏ניהול של אפליקציות אינטרנט מבודדות (IWA)</translation>
+<translation id="6611432349566876829">כרטיסייה אחת (<ph name="NUM" />)</translation>
 <translation id="6611972847767394631">הכרטיסיות שלך נמצאות כאן</translation>
 <translation id="661266467055912436">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט.</translation>
 <translation id="6613267708691765962">מתבצעת סריקה לאיתור תוכנה זדונית…</translation>
@@ -8583,6 +8594,7 @@
 <translation id="7118268675952955085">צילום מסך</translation>
 <translation id="711840821796638741">הצגת סימניות מנוהלות</translation>
 <translation id="711985611146095797">‏הדף הזה מאפשר לך לנהל את חשבונות Google שאליהם נכנסת. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="71200494435060621">הצטרפות בתור <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="7120762240626567834">‏דפדפן ה-Chrome ותנועת הגולשים ב-Android ייחסמו אלא אם יתבצע חיבור ל-VPN</translation>
 <translation id="7120904433567247946">הסימנייה הזו שמורה רק במכשיר הזה. אם הסימנייה תישמר ב-<ph name="ACCOUNT_FOLDER" />, היא תישמר גם בחשבון שלך.</translation>
 <translation id="7121438501124788993">מצב מפתח</translation>
@@ -9981,6 +9993,7 @@
 <translation id="8105273883928376822">צריך להיכנס לחשבון כדי להמשיך.</translation>
 <translation id="8107015733319732394">‏ההתקנה של חנות Google Play במכשיר <ph name="DEVICE_TYPE" /> מתבצעת. ייתכן שההתקנה תימשך כמה דקות.</translation>
 <translation id="810728361871746125">רזולוציית מסך</translation>
+<translation id="8108161424633979910">‫<ph name="NUM" /> חברים</translation>
 <translation id="8109109153262930486">דמות ברירת מחדל</translation>
 <translation id="8109991406044913868">‏עיצוב שנוצר באמצעות AI</translation>
 <translation id="8110393529211831722">המינוי מותקן רק במכשיר הזה ולא מסונכרן עם מכשירים אחרים שרשומים בחשבון שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>

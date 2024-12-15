@@ -2875,6 +2875,7 @@
 <translation id="2981113813906970160">ສະ​ແດງເຄີເຊີເມົາສ໌ໃຫຍ່</translation>
 <translation id="2983102365694924129">ອີງຕາມການເຄື່ອນໄຫວຂອງທ່ານຢູ່ເວັບໄຊ. ການຕັ້ງຄ່ານີ້ປິດຢູ່.</translation>
 <translation id="2983373101216420412">ລະດັບແບັດເຕີຣີເຄສ <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984384421572259426">ລຶບແຖບທີ່ບໍ່ໄດ້ໃຊ້ອອກ</translation>
 <translation id="2984727013951557074">ໄຟລ໌ຍັງກຳລັງຖືກຊິ້ງໃສ່ Drive ຢູ່.</translation>
 <translation id="2985348301114641460">ສົ່ງຄຳຂໍຫາຜູ້ເບິ່ງແຍງລະບົບເພື່ອຕິດຕັ້ງ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ຖອນການຕິດຕັ້ງໜຶ່ງແອັບແລ້ວ}other{<ph name="APP_NAME" /> ຖອນການຕິດຕັ້ງ # ແອັບແລ້ວ}}</translation>
@@ -4436,6 +4437,7 @@
 <translation id="4072805772816336153">ລອງໃໝ່ໃນພາຍຫລັງ</translation>
 <translation id="4074164314564067597">ແປ້ນພິມ</translation>
 <translation id="407520071244661467">ຂະໜາດ</translation>
+<translation id="4077623680826964850">ໝົດເວລາເມື່ອເປີດ ຫຼື ເຊື່ອມຕໍ່ກັບ VM ຄືນໃໝ່.</translation>
 <translation id="4077917118009885966">ບລັອກໂຄສະນາໃນເວັບໄຊນີ້ໄວ້ແລ້ວ</translation>
 <translation id="4078738236287221428">ບັງຄັບແຄສ</translation>
 <translation id="4078903002989614318">ຕົວເລືອກການຈັດຮຽງ ແລະ ລາຍຊື່</translation>
@@ -4923,6 +4925,7 @@
 <translation id="4437879751057074691">ສະເໜີໃຫ້ບັນທຶກລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານໄວ້</translation>
 <translation id="4437947179446780764">ເພີ່ມຜູ້ໃຫ້ບໍລິການ DNS ທີ່ກຳນົດເອງ</translation>
 <translation id="4438043733494739848">ໂປ່ງແສງ</translation>
+<translation id="4439157218765614426">ນະໂຍບາຍບໍ່ອະນຸຍາດ.</translation>
 <translation id="4441124369922430666">ທ່ານ​ຕ້ອງ​ການເລີ່ມແອັບນີ້ອັດ​ຕະ​ໂນ​ມັດບໍ ເມື່ອເຄື່ອງຈັກເປີດ​?</translation>
 <translation id="4441147046941420429">ເພື່ອສືບຕໍ່, ກະລຸນາຖອດກະແຈຄວາມປອດໄພຂອງທ່ານອອກຈາກອຸປະກອນ, ຈາກນັ້ນ ສຽບເຂົ້າຄືນ ແລ້ວແຕະມັນ</translation>
 <translation id="444134486829715816">ຂະຫຍາຍ...</translation>
@@ -5379,6 +5382,7 @@
 <translation id="4779083564647765204">ຊູມ</translation>
 <translation id="4779136857077979611">ໂອະນິງິຣິ</translation>
 <translation id="4779766576531456629">ປ່ຽນຊື່ເຄືອຂ່າຍມືຖືຂອງ eSIM</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 ແຖບທີ່ຊ້ຳກັນ</translation>
 <translation id="4780321648949301421">ບັນທຶກໜ້າເປັນ...</translation>
 <translation id="4780558987886269159">ສໍາລັບການເຮັດວຽກ</translation>
 <translation id="4785719467058219317">ທ່ານກຳລັງໃຊ້ກະແຈຄວາມປອດໄພທີ່ບໍ່ໄດ້ລົງທະບຽນນຳເວັບໄຊນີ້</translation>
@@ -5458,6 +5462,7 @@
 <translation id="4833683849865011483">ພົບເຄື່ອງພິມ 1 ລາຍການຈາກເຊີບເວີການພິມ</translation>
 <translation id="4835598628985424375">ເຮັດປາກຈູບໂດຍບີບຮີມປາກເຂົ້າຫາກັນ</translation>
 <translation id="4835677468087803981">ເຊື່ອງ PIN</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> ແຖບທີ່ຊ້ຳກັນ</translation>
 <translation id="4836504898754963407">ຈັດການລາຍນິ້ວມື</translation>
 <translation id="4837128290434901661">ປ່ຽນກັບຄືນເປັນ Google ຊອກຫາບໍ?</translation>
 <translation id="4837926214103741331">ທ່ານບໍ່ໄດ້ຮັບສິດໃຫ້ໃຊ້ອຸປະກອນນີ້. ກະ​ລຸ​ນາຕິດຕໍ່ເຈົ້າຂອງອຸປະກອນສຳ​ລັບ​ການ​ອະ​ນຸ​ຍາດ​ເຂົ້າ​ສູ່ລະ​ບົບ.</translation>
@@ -6083,6 +6088,7 @@
 <translation id="528208740344463258">ເພື່ອດາວໂຫຼດ ແລະ ໃຊ້ແອັບ Android, ກ່ອນອື່ນທ່ານຈຳເປັນຕ້ອງຕິດຕັ້ງການອັບເດດທີ່ຈຳເປັນນີ້. ໃນຂະນະທີ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກຳລັງອັບເດດ, ທ່ານບໍ່ສາມາດໃຊ້ມັນໄດ້. ຫຼັງຈາກການຕິດຕັ້ງສຳເລັດແລ້ວ, <ph name="DEVICE_TYPE" /> ຂອງທ່ານຈະປິດເປີດຄືນໃໝ່.</translation>
 <translation id="5283677936944177147">ອຸ້ຍ!  ລະບົບບໍ່ສາມາດກຳນົດຮຸ່ນອຸປະກອນ ຫຼື ໝາຍເລກຊີຣຽວໄດ້.</translation>
 <translation id="5284445933715251131">ສືບຕໍ່ການດາວໂຫລດ</translation>
+<translation id="5285484405698525101">ບໍ່ມີແຖບທີ່ບໍ່ໄດ້ໃຊ້ໃນຕອນນີ້</translation>
 <translation id="5285635972691565180">ຈໍສະແດງຜົນ <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">ກຳລັງສະແກນ</translation>
 <translation id="5287425679749926365">ບັນ​ຊີ​ຂອງ​ທ່ານ</translation>
@@ -6356,6 +6362,7 @@
 <translation id="5481941284378890518">ເພີ່ມເຄື່ອງພິມທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="5482417738572414119">ເຂົ້າສູ່ລະບົບເພື່ອໃຫ້ Chrome ແນະນຳກຸ່ມແຖບ ແລະ ຈັດລະບຽບແຖບຂອງທ່ານ</translation>
 <translation id="5483005706243021437">ຢູ່ບ່ອນນີ້ຕໍ່</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{ບໍ່ມີແຖບທີ່ບໍ່ໄດ້ໃຊ້}=1{ກວດສອບແຖບທີ່ບໍ່ໄດ້ໃຊ້ 1 ລາຍການ}other{ກວດສອບແຖບທີ່ບໍ່ໄດ້ໃຊ້ # ລາຍການ}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນໃນມື້ນີ້. <ph name="LINK_BEGIN" />ເບິ່ງລາຍລະອຽດ<ph name="LINK_END" />}other{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນພາຍໃນ {NUM_DAYS} ມື້. <ph name="LINK_BEGIN" />ເບິ່ງລາຍລະອຽດ<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ເພີ່ມ​ແອັບ</translation>
 <translation id="5485435764083510385">ພາສາທີ່ຕ້ອງການສຳລັບຄຳບັນຍາຍ</translation>
@@ -7037,6 +7044,7 @@
 <translation id="5982578203375898585">ສະແດງລາຍການດາວໂຫຼດເມື່ອສຳເລັດການດາວໂຫຼດແລ້ວ</translation>
 <translation id="5983716913605894570">ກຳລັງສ້າງ...</translation>
 <translation id="5984222099446776634">ເຂົ້າເບິ່ງບໍ່​ດົນ​ມາ​ນີ້</translation>
+<translation id="5984334442529819751">ເກີດຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ DLC (ໂດຍປົກກະຕິຈະຕ້ອງປິດເປີດໃໝ່, ກະລຸນາເບິ່ງຂໍ້ມູນເພີ່ມເຕີມໃນການຕັ້ງຄ່າ\&gt;\&gt;ກ່ຽວກັບ ChromeOS).</translation>
 <translation id="5985458664595100876">ຮູບແບບ URL ບໍ່ຖືກຕ້ອງ. ຮູບແບບທີ່ຮອງຮັບແມ່ນ \\server\share ແລະ smb://server/share.</translation>
 <translation id="5985556342298151179">ແອັບ Chrome ທີ່ຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານຕິດຕັ້ງ.</translation>
 <translation id="598810097218913399">ລຶບການກຳນົດອອກ</translation>
@@ -9271,6 +9279,7 @@
 <translation id="762917478230183172">ເລືອກຄຳສັ່ງສຳລັບແຕ່ລະປຸ່ມ</translation>
 <translation id="7629206210984165492">ຂົ່ມອາລົມ</translation>
 <translation id="7629827748548208700">ແຖບ: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">ຜົນການຊອກຫາທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="7630426712700473382">ອຸປະກອນນີ້ຈັດການໂດຍ <ph name="MANAGER" /> ແລະ ກຳນົດໃຫ້ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບທຸກເທື່ອ.</translation>
 <translation id="7631014249255418691">ສຳຮອງແອັບ ແລະ ໄຟລ໌ Linux ສຳເລັດແລ້ວ</translation>
 <translation id="7631722872321401342">ບໍ່ມີສຽງພາສາ <ph name="LANGUAGE" /> ໃນອຸປະກອນຂອງທ່ານ. ທ່ານສາມາດຕິດຕັ້ງສຽງໄດ້ໃນການຕັ້ງຄ່າ.</translation>
@@ -9424,6 +9433,7 @@
 <translation id="7723388585204724670">ຣີເຊັດເປັນ Chrome ແບບຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7726391492136714301">ເບິ່ງການແຈ້ງເຕືອນ ແລະ ແອັບຂອງໂທລະສັບທ່ານ</translation>
+<translation id="7727898923446098954">ເຊື່ອງແຖບແລ້ວ</translation>
 <translation id="7728465250249629478">ປ່ຽນພາສາຂອງອຸປະກອນ</translation>
 <translation id="7728570244950051353">ໜ້າຈໍລັອກຈາກໂໝດພັກເຄື່ອງ</translation>
 <translation id="7728668285692163452">ການປ່ຽນຊ່ອງຈະຖືກນຳໃຊ້ໃນພາຍຫຼັງ</translation>
@@ -9815,6 +9825,7 @@
 <translation id="7992203134935383159">ອ່ານໜັງສືດ້ວຍສຽງທຽມ</translation>
 <translation id="799570308305997052">ມຸມມອງເວັບ</translation>
 <translation id="7997826902155442747">ບຸລິມະສິດຂອງຂະບວນການ</translation>
+<translation id="7997828719430450286">ສຳເລັດ.</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">ສ້າງໄຟລ໌ຕໍ່ໄປນີ້ແລ້ວ:
 
@@ -10464,6 +10475,7 @@
 <translation id="845702320058262034">ບໍ່ສາມາດເຊື່ອມຕໍ່ໄດ້. ກວດໃຫ້ແນ່ໃຈວ່າ Bluetooth ຂອງໂທລະສັບຂອງທ່ານເປີດຢູ່.</translation>
 <translation id="8457251154056341970">ທ່ານຈະບໍ່ເຫັນ <ph name="MODULE_NAME" /> ຢູ່ໜ້ານີ້ອີກ</translation>
 <translation id="8457451314607652708">ນໍາບຸກມາກສ໌ເຂົ້າມາ</translation>
+<translation id="8458259704995116343">ການເລີ່ມຕົ້ນ VM ບໍ່ສຳເລັດ.</translation>
 <translation id="8458341576712814616">ທາງລັດ</translation>
 <translation id="8458627787104127436">ເປີດທັງໝົດ (<ph name="URL_COUNT" />) ໃນໜ້າຈໍໃໝ່</translation>
 <translation id="8459023460357294721">ຢືນຢັນການເປີດ <ph name="FILE_NAME" /></translation>
@@ -11123,12 +11135,14 @@
 <translation id="8918900204934259333">ກຳລັງຕິດຕັ້ງແອັບ...</translation>
 <translation id="891931289445130855">ລຶບຂໍ້ມູນ ແລະ ການອະນຸຍາດ</translation>
 <translation id="8920133120839850939">ເລືອກແຖບ ທ່າທາງເພີ່ມເຕີມ, ຈາກນັ້ນເປີດ ປັດໄປມາລະຫວ່າງໜ້າ ເພື່ອກັບຄືນ ແລະ ໄປໜ້າ</translation>
+<translation id="8921369299636221117">ບໍລິການຈາກເຈົ້າໜ້າທີ່ບໍ່ພ້ອມໃຫ້ນຳໃຊ້.</translation>
 <translation id="8922348435910470639">ຈອງເວລາຊ້ຳ</translation>
 <translation id="8922624386829239660">ຍ້າຍໜ້າຈໍເມື່ອເມົ້າສຳຜັດຂອບໜ້າຈໍ</translation>
 <translation id="8923880975836399332">ສີຂຽວອົມຟ້າເຂັ້ມ</translation>
 <translation id="8925124370124776087">ຕອນນີ້ເຊື່ອງແຖບຊື່ແລ້ວ</translation>
 <translation id="8925458182817574960">ການຕັ້ງຄ່າ</translation>
 <translation id="8926389886865778422">ຢ່າຖາມອີກ</translation>
+<translation id="8926555406617248399">ເຊື່ອງແຖບແລ້ວ</translation>
 <translation id="892706138619340876">ບາງການຕັ້ງຄ່າໄດ້ຖືກຣີເຊັດແລ້ວ</translation>
 <translation id="8927438609932588163">ອະນຸຍາດໃຫ້ເວັບໄຊບັນທຶກຂໍ້ມູນຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8929696694736010839">ເຊດຊັນບໍ່ເປີດເຜີຍຕົວຕົນປັດຈຸບັນເທົ່ານັ້ນ</translation>

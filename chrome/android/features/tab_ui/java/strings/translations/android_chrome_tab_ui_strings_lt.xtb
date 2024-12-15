@@ -98,7 +98,9 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Pridėtas <ph name="ONE_ADDED" /> skirtukas}one{Pridėtas <ph name="MANY_ADDED" /> skirtukas}few{Pridėti <ph name="MANY_ADDED" /> skirtukai}many{Pridėta <ph name="MANY_ADDED" /> skirtuko}other{Pridėta <ph name="MANY_ADDED" /> skirtukų}}</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
 <translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>
+<translation id="5380159289133845234">Archyvuoti tikslias skirtukų kopijas</translation>
 <translation id="5400836586163650660">Pilka spalva</translation>
+<translation id="5446043142172831860">Pašalinti skirtuką ir išeiti iš grupės</translation>
 <translation id="5490235265819901748">Skirtukų grupė išskleista</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_ONE" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}one{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}few{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukais, kurių spalva <ph name="COLOR_NAME" />.}many{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuko, kurių spalva <ph name="COLOR_NAME" />.}other{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukų, kurių spalva <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +119,7 @@ Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="
 <translation id="6051432659151380973">Skirtukų grupės išsaugomos automatiškai</translation>
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Iš karto neteksite prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“</translation>
+<translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
 <translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
 <translation id="6271513594716432922">Uždaryti visus neaktyvius skirtukus</translation>

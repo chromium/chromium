@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Prisijungta prie USB įrenginio</translation>
 <translation id="4194328954146351878">Klausti prieš leidžiant svetainėms peržiūrėti ir keisti informaciją NFC įrenginiuose (rekomenduojama)</translation>
 <translation id="4200726100658658164">Atidaryti vietovės nustatymus</translation>
+<translation id="4213239715282467974">Dabar „Chrome“ bendrina pastaruosius skirtukus su įrenginiu. Galite greitai pasiekti juos įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="4226663524361240545">Gavus pranešimą įrenginys gali vibruoti</translation>
 <translation id="4259722352634471385">Naršymas užblokuotas: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Leidžiama</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Svetainės blokuojamos, kad neprašytų naudoti savo išsaugotos informacijos apie jus</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
 <translation id="5403592356182871684">Pavadinimai</translation>
+<translation id="5408906274948600065">Leiskite „Chrome“ bendrinti naujausius skirtukus su įrenginiu, kad juos matytumėte įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada įjungti arba išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="5438097262470833822">Bus iš naujo nustatyti svetainės <ph name="WEBSITE" /> leidimai</translation>
 <translation id="5459413148890178711">Įjungus svetainėse gali būti prašoma jūsų vietovės informacijos. Išjungus svetainės negali matyti jūsų vietovės.</translation>
 <translation id="5489227211564503167">Praėjęs laikas: <ph name="ELAPSED_TIME" /> iš <ph name="TOTAL_TIME" />.</translation>

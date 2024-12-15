@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຂວາເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ການຕັ້ງຄ່າ</translation>
 <translation id="3347558044552027859">ທັນສະໄໝ</translation>
+<translation id="3353477144743332882">ດາວໂຫຼດສະຫຼຸບ ແລະ ໂມເດວການສ້າງຊື່</translation>
 <translation id="3359218928534347896">ສະຫຼັບການປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">ຊູຊິ</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດປຸ່ມທາງລັດໃໝ່ໂດຍບໍ່ມີ <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="5860491529813859533">ເປີດ</translation>
+<translation id="5875913454160982848">ດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມ</translation>
 <translation id="5876385649737594562">ເປີດໃຊ້ເພື່ອເລືອກຕົວເລືອກ</translation>
 <translation id="5877503382465267833">ຢຸດ <ph name="RECORDING_NAME" /> ຊົ່ວຄາວ</translation>
 <translation id="588258955323874662">ເຕັມໜ້າຈໍ</translation>
@@ -1589,6 +1591,7 @@
 <translation id="8503836310948963452">ອີກສອງສາມນາທີ...</translation>
 <translation id="8505011850330200833">ໂມເດວ Gemini ຕ້ອງໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນ 2GB ໃນການປະມວນຜົນການຖອດຂໍ້ຄວາມຈາກສຽງ ແລະ ສ້າງຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="8508640263392900755">ລາຍລະອຽດ APN</translation>
+<translation id="8509574872955173831">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສະຫຼຸບ ແລະ ການສ້າງຊື່</translation>
 <translation id="8522687886059337719">ຕອນນີ້ທ່ານມີສິດເຂົ້າເຖິງ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ຮູບພື້ນຫຼັງ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ແລະ <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ພາບພັກໜ້າຈໍ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ໃໝ່ໄດ້ແລ້ວ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ຮ້ານນ້ຳຊາ</translation>
