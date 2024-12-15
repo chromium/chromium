@@ -2699,6 +2699,7 @@ crbug.com/383825172 [ Mac13 ] external/wpt/html/semantics/forms/the-select-eleme
 crbug.com/383825172 [ Mac15 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac13-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac12 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
+crbug.com/383825172 [ Mac12-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure Pass ]
 crbug.com/383825172 [ Mac11 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac15-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
