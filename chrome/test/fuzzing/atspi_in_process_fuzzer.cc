@@ -134,6 +134,7 @@ class AtspiInProcessFuzzer
   AtspiInProcessFuzzer();
   void SetUpOnMainThread() override;
 
+  bool UseSingleProcessMode() override;
   int Fuzz(const test::fuzzing::atspi_fuzzing::FuzzCase& fuzz_case) override;
 
   static size_t CustomMutator(uint8_t* data,
@@ -231,6 +232,10 @@ AtspiInProcessFuzzer::AtspiInProcessFuzzer() {
   // our accessibility subsystem gets told "no" by D-Bus when querying whether
   // it should enable accessibility. This overrides that.
   setenv("ACCESSIBILITY_ENABLED", "1", 1);
+}
+
+bool AtspiInProcessFuzzer::UseSingleProcessMode() {
+  return false;
 }
 
 void AtspiInProcessFuzzer::SetUpOnMainThread() {
