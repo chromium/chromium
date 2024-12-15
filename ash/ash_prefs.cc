@@ -235,6 +235,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterIntegerPref(prefs::kInformedRestoreNudgeShownCount, 0);
     registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
                                base::Time());
+    registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
   }
 }
 

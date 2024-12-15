@@ -15,6 +15,7 @@
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -194,10 +195,10 @@ class QuickInsertControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     controller_ = std::make_unique<QuickInsertController>();
+    RegisterUserProfilePrefs(prefs_.registry(), /*country=*/"",
+                             /*for_test=*/true);
     client_ = std::make_unique<NiceMock<TestQuickInsertClient>>(
         controller_.get(), &prefs_);
-    prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
-    QuickInsertController::RegisterProfilePrefs(prefs_.registry());
     // Disable the feature tour by default.
     prefs_.SetBoolean(kQuickInsertFeatureTourCompletedPref, true);
     metrics_recorder_ =

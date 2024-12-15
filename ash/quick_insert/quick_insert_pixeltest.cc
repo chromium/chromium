@@ -6,6 +6,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/quick_insert/metrics/quick_insert_session_metrics.h"
 #include "ash/quick_insert/mock_quick_insert_client.h"
 #include "ash/quick_insert/quick_insert_controller.h"
@@ -52,8 +53,8 @@ class QuickInsertPixelTest : public AshTestBase,
     input_method::InputMethodManager::Initialize(
         new MockInputMethodManagerWithKeyboard);
 
-    QuickInsertController::RegisterProfilePrefs(prefs_.registry());
-    prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
+    RegisterUserProfilePrefs(prefs_.registry(), /*country=*/"",
+                             /*for_test=*/true);
 
     CHECK(history_dir_.CreateUniqueTempDir());
     history_service_ =
