@@ -58,7 +58,7 @@ Notas importantes:
 <translation id="2342919707875585281">Chrome compartirá tu ubicación con los sitios que permitas.</translation>
 <translation id="2347208864470321755">Cuando se activa esta función, Chrome ofrece la posibilidad de traducir páginas escritas en otros idiomas con el Traductor de Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2423077901494354337">Ahora podrás sacar el máximo partido a Chrome en tu dispositivo.</translation>
-<translation id="2427791862912929107">Chrome incluye funciones que te permiten administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
+<translation id="2427791862912929107">Chrome incluye funciones que te ayudan a gestionar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, usa Autocompletar en Chrome</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Ocurre cuando Chrome lleva {THRESHOLD} minuto sin usarse. Esto podría incluir el historial y la función Autocompletar.}other{Ocurre cuando Chrome lleva {THRESHOLD} minutos sin usarse. Esto podría incluir el historial y la función Autocompletar.}}</translation>

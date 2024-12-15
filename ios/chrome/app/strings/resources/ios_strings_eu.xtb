@@ -518,7 +518,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3464194322481586217">Ezin izan da egin prezioaren jarraipena.</translation>
 <translation id="3469117812148449995">Pasahitza gordetzeko aukerak</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} webgune edo aplikaziorako}other{{COUNT} webgune edo aplikaziotarako}}</translation>
-<translation id="3474624961160222204">Erabili <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Egin aurrera <ph name="NAME" /> gisa</translation>
 <translation id="3476450923187944815">Lortu zure pasahitzak beste aplikazioetatik.</translation>
 <translation id="3488501490964659223">Fitxak itxi dira, eta arakatze-datuak ezabatu dira. Zure saioa amaitu da.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> iradokitako edukiari buruz</translation>

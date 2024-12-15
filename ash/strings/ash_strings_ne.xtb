@@ -576,7 +576,7 @@
 <translation id="3033545621352269033">अन</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> मा संयोजन गर्नुहोस्</translation>
 <translation id="3036649622769666520">खुल्ला फाइलहरू</translation>
-<translation id="3038571455154067151">साइन इन गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्</translation>
+<translation id="3038571455154067151">साइन इन गर्न Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्</translation>
 <translation id="3039939407102840004">स्टाइलसको ब्याट्री <ph name="PERCENTAGE" /> प्रतिशत बाँकी छ।</translation>
 <translation id="304097922505898963">Key Shortcuts एप खोल्नुहोस्</translation>
 <translation id="304417730895741346">तपाईंका पिन गरिएका तथा खुला रहेका एपहरू सेल्फमा देखिन्छन्। सेल्फमा कुनै एप पिन गर्न सो एपमा राइट क्लिक गर्नुहोस् वा दुई वटा औँलाले टचप्याडमा ट्याप गर्नुहोस्।</translation>
@@ -1882,7 +1882,7 @@
 <translation id="7392563512730092880">तपाईं पछि जुनसुकै बेला सेटिङमा गई सेट अप गर्न सक्नुहुन्छ।</translation>
 <translation id="7401222354741467707">पूर्ण स्क्रिनसट लिनुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="7401788553834047908">फोकस मोड अन हुँदा Do Not Disturb अन गर्नुहोस्</translation>
-<translation id="7405710164030118432">डिभाइस अनलक गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्‌</translation>
+<translation id="7405710164030118432">डिभाइस अनलक गर्न Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्</translation>
 <translation id="7406608787870898861">आफ्नो मोबाइल नेटवर्क सेटअप गर्ने कार्य पूरा गर्नुहोस्</translation>
 <translation id="7406854842098869085"><ph name="MODIFIER_1" /> थिचिराख्नुहोस्, आफूले खोल्न चाहेको विन्डोमा नपुगुन्जेल <ph name="KEY" /> मा ट्याप गर्नुहोस् अनि छाड्नुहोस्</translation>
 <translation id="740790383907119240">एपका सर्टकटहरू</translation>
@@ -2248,7 +2248,7 @@
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> बाँकी छ</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> सम्बन्धी जानकारी देखाइँदै छ</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> टाइमर</translation>
-<translation id="8647931990447795414">कुनै व्यक्ति थप्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्</translation>
+<translation id="8647931990447795414">कुनै व्यक्ति थप्न Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्</translation>
 <translation id="8649597172973390955">सेल्फ सधैँ देखिने छ</translation>
 <translation id="8652175077544655965">सेटिङहरू बन्द गर्नुहोस्</translation>
 <translation id="8653151467777939995">सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। सूचनाहरू सक्रिय छन्</translation>
@@ -2353,7 +2353,7 @@
 <translation id="9000771174482730261">भण्डारण व्यवस्थापन गर्नुहोस्</translation>
 <translation id="9003374957546315126">इमोजी तथा थप सामग्री</translation>
 <translation id="9005984960510803406">Crosh विन्डो खोल्नुहोस्‌</translation>
-<translation id="9017320285115481645">Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्।</translation>
+<translation id="9017320285115481645">Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्।</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
 <translation id="9029736946581028033">डिभाइस चाँडै नै पावर डाउन हुने छ</translation>
 <translation id="9030319654231318877">सूर्यास्त नहुँदासम्म अफ</translation>
