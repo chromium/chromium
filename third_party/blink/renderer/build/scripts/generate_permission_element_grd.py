@@ -57,11 +57,11 @@ namespace blink {
 
 namespace {
 
-static constexpr std::string_view kLanguages =
+static constexpr char kLanguages[] =
 '''
 kStringMapCcMidfix = '''
 
-using LangStringSlice = base::subtle::StringSlice<kLanguages>;
+using LangStringSlice = base::subtle::StringSlice<sizeof(kLanguages), kLanguages>;
 
 // In C++20, pairs required exactly-matching types to be comparable, i.e.
 // std::pair<T1, T2> cannot be compared against std::pair<U1, U2>, even if T1

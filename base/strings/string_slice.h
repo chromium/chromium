@@ -63,8 +63,8 @@ namespace base::subtle {
 // dynamically resolving to a std::string_view at runtime. Using `StringSlice`,
 // the above example might look like this instead:
 //
-// constexpr std::string_view kData[] = "AliceBobEve";
-// constexpr StringSlice<kData> kNames[] = {
+// constexpr char kData[] = "AliceBobEve";
+// constexpr StringSlice<sizeof(kData), kData> kNames[] = {
 //   {0, 5},
 //   {5, 3},
 //   {8, 3},
@@ -72,9 +72,9 @@ namespace base::subtle {
 //
 // While this has a small runtime cost (typically a PC-relative load), modern
 // CPUs are quite good at this sort of math.
-template <const std::string_view& kConstant>
+template <size_t N, const char (&kData)[N]>
 struct StringSlice {
-  using IndexType = typename internal::IndexTypeForSize<kConstant.size()>::Type;
+  using IndexType = typename internal::IndexTypeForSize<N>::Type;
 
   IndexType offset;
   IndexType length;
@@ -86,7 +86,11 @@ struct StringSlice {
     return std::string_view(lhs) <=> std::string_view(rhs);
   }
   constexpr operator std::string_view() const {
-    return kConstant.substr(offset, length);
+    // Note 1: using as_string_view() or span() can cause issues with constexpr
+    // evaluation limits.
+    // Note 2: Subtract 1 from kData since this is intended for use with string
+    // literals, and the terminating nul should not be included.
+    return std::string_view(kData, sizeof(kData) - 1).substr(offset, length);
   }
 };
 

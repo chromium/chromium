@@ -17,28 +17,27 @@ namespace {
 using subtle::StringSlice;
 
 TEST(StringSliceTest, IndexType) {
-  static const char kBigBuffer[65536] = {};
   {
-    static constexpr std::string_view kData(kBigBuffer, 255);
-    using Slice = StringSlice<kData>;
+    static char kData[255] = {};
+    using Slice = StringSlice<sizeof(kData), kData>;
     static_assert(std::same_as<Slice::IndexType, uint8_t>);
   }
 
   {
-    static constexpr std::string_view kData(kBigBuffer, 256);
-    using Slice = StringSlice<kData>;
+    static char kData[256] = {};
+    using Slice = StringSlice<sizeof(kData), kData>;
     static_assert(std::same_as<Slice::IndexType, uint16_t>);
   }
 
   {
-    static constexpr std::string_view kData(kBigBuffer, 65535);
-    using Slice = StringSlice<kData>;
+    static char kData[65535] = {};
+    using Slice = StringSlice<sizeof(kData), kData>;
     static_assert(std::same_as<Slice::IndexType, uint16_t>);
   }
 
   {
-    static constexpr std::string_view kData(kBigBuffer, 65536);
-    using Slice = StringSlice<kData>;
+    static char kData[65536] = {};
+    using Slice = StringSlice<sizeof(kData), kData>;
     static_assert(std::same_as<Slice::IndexType, uint32_t>);
   }
 }
