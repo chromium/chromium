@@ -2379,6 +2379,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
   // SpdySession.
 
   constexpr size_t kNumRequests = 2;
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination("https://a.test").Build();
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   std::vector<std::unique_ptr<SequencedSocketData>> socket_datas;
@@ -2396,19 +2399,17 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
     socket_factory()->AddSSLSocketDataProvider(ssl.get());
     ssls.emplace_back(std::move(ssl));
 
-    auto requester = std::make_unique<StreamRequester>();
-    requester->set_destination("https://a.test")
-        .set_enable_ip_based_pooling(false)
-        .RequestStream(pool());
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    requester->set_enable_ip_based_pooling(false).RequestStream(pool());
     requesters.emplace_back(std::move(requester));
   }
 
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
-  RunUntilIdle();
 
   for (auto& requester : requesters) {
+    requester->WaitForResult();
     ASSERT_TRUE(requester->result().has_value());
     EXPECT_THAT(requester->result(), Optional(IsOk()));
   }
@@ -2418,6 +2419,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(pool().TotalConnectingStreamCount(), 0u);
+  ASSERT_TRUE(http_server_properties()->GetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyCreateSessionFail) {

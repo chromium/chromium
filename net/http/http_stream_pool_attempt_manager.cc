@@ -25,6 +25,7 @@
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_network_session.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
@@ -1675,6 +1676,14 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
     if (create_result != OK) {
       HandleAttemptFailure(std::move(in_flight_attempt), create_result);
       return;
+    }
+
+    HttpServerProperties* http_server_properties =
+        http_network_session()->http_server_properties();
+    if (http_server_properties) {
+      http_server_properties->SetSupportsSpdy(
+          stream_key().destination(), stream_key().network_anonymization_key(),
+          /*supports_spdy=*/true);
     }
 
     HandleSpdySessionReady(StreamCloseReason::kSpdySessionCreated);
