@@ -3159,7 +3159,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithMainFrameState",
+                    "params": {
+                        "min_site_engagement": "15",
+                        "restore_main_frame_state": "true"
+                    },
                     "enable_features": [
                         "BackgroundTabLoadingFromPerformanceManager"
                     ]
