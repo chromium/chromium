@@ -360,12 +360,6 @@ BASE_FEATURE(kContinueGestureOnLosingFocus,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables reporting ResourceTiming entries for document, who initiated a
-// cancelled navigation in one of their <iframe>.
-BASE_FEATURE(kResourceTimingForCancelledNavigationInFrame,
-             "ResourceTimingForCancelledNavigationInFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 // Make sendBeacon throw for a Blob with a non simple type.
 BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,

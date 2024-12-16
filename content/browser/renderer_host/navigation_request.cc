@@ -5420,10 +5420,6 @@ network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsToCommit() {
 }
 
 void NavigationRequest::MaybeAddResourceTimingEntryForCancelledNavigation() {
-  if (!base::FeatureList::IsEnabled(
-          features::kResourceTimingForCancelledNavigationInFrame)) {
-    return;
-  }
 
   // Some navigation are cancelled even before requesting and receiving a
   // response. Those cases are not supported and the ResourceTiming is not
