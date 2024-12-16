@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_NG_FLEX_LINE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_NG_FLEX_LINE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_LINE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_LINE_H_
 
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -35,11 +35,12 @@ struct NGFlexItem {
   BlockNode block_node;
 };
 
-struct NGFlexLine {
+// A flex-line post running the line-flexer.
+struct FlexLine {
   DISALLOW_NEW();
 
  public:
-  explicit NGFlexLine(wtf_size_t num_items) : line_items(num_items) {}
+  explicit FlexLine(wtf_size_t num_items) : line_items(num_items) {}
 
   LayoutUnit LineCrossEnd() const {
     return line_cross_size + cross_axis_offset + item_offset_adjustment;
@@ -61,6 +62,6 @@ struct NGFlexLine {
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGFlexItem)
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGFlexLine)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::FlexLine)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_NG_FLEX_LINE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_LINE_H_

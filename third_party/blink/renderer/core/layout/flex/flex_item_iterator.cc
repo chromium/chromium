@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/core/layout/flex/flex_item_iterator.h"
 
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
-#include "third_party/blink/renderer/core/layout/flex/ng_flex_line.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 
 namespace blink {
 
-FlexItemIterator::FlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
+FlexItemIterator::FlexItemIterator(const HeapVector<FlexLine>& flex_lines,
                                    const BlockBreakToken* break_token,
                                    bool is_column)
     : flex_lines_(flex_lines),

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_BREAK_TOKEN_DATA_H_
 
 #include "third_party/blink/renderer/core/layout/block_break_token_data.h"
-#include "third_party/blink/renderer/core/layout/flex/ng_flex_line.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 
 namespace blink {
 
@@ -26,7 +26,7 @@ struct FlexBreakTokenData final : BlockBreakTokenData {
   };
 
   FlexBreakTokenData(const BlockBreakTokenData* break_token_data,
-                     const HeapVector<NGFlexLine>& flex_lines,
+                     const HeapVector<FlexLine>& flex_lines,
                      const Vector<EBreakBetween>& row_break_between,
                      const HeapVector<Member<LayoutBox>>& oof_children,
                      LayoutUnit intrinsic_block_size,
@@ -44,7 +44,7 @@ struct FlexBreakTokenData final : BlockBreakTokenData {
     BlockBreakTokenData::Trace(visitor);
   }
 
-  HeapVector<NGFlexLine> flex_lines;
+  HeapVector<FlexLine> flex_lines;
   Vector<EBreakBetween> row_break_between;
   HeapVector<Member<LayoutBox>> oof_children;
   LayoutUnit intrinsic_block_size;

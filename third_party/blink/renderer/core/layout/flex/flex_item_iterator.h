@@ -13,7 +13,7 @@ namespace blink {
 
 class BlockBreakToken;
 struct NGFlexItem;
-struct NGFlexLine;
+struct FlexLine;
 
 // A utility class for flexbox layout which given a list of flex lines and a
 // break token will iterate through unfinished flex items.
@@ -31,7 +31,7 @@ class CORE_EXPORT FlexItemIterator {
   STACK_ALLOCATED();
 
  public:
-  FlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
+  FlexItemIterator(const HeapVector<FlexLine>& flex_lines,
                    const BlockBreakToken* break_token,
                    bool is_column);
 
@@ -53,7 +53,7 @@ class CORE_EXPORT FlexItemIterator {
   void AdjustItemIndexForNewLine();
 
   NGFlexItem* next_unstarted_item_ = nullptr;
-  const HeapVector<NGFlexLine>& flex_lines_;
+  const HeapVector<FlexLine>& flex_lines_;
   const BlockBreakToken* break_token_;
   bool is_column_ = false;
 

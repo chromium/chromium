@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
 
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/layout/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"

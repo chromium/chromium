@@ -36,7 +36,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   const LayoutResult* LayoutInternal();
 
   void PlaceFlexItems(
-      HeapVector<NGFlexLine>* flex_line_outputs,
+      HeapVector<FlexLine>* flex_lines,
       HeapVector<Member<LayoutBox>>* oof_children,
       LayoutUnit* total_intrinsic_block_size,
       bool is_computing_multiline_column_intrinsic_size = false);
@@ -73,12 +73,12 @@ class CORE_EXPORT FlexLayoutAlgorithm
   void ConstructAndAppendFlexItems(
       Phase phase,
       HeapVector<Member<LayoutBox>>* oof_children = nullptr);
-  void ApplyReversals(HeapVector<NGFlexLine>* flex_line_outputs);
+  void ApplyReversals(HeapVector<FlexLine>* flex_lines);
   LayoutResult::EStatus GiveItemsFinalPositionAndSize(
-      HeapVector<NGFlexLine>* flex_line_outputs,
+      HeapVector<FlexLine>* flex_lines,
       Vector<EBreakBetween>* row_break_between_outputs);
   LayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
-      HeapVector<NGFlexLine>* flex_line_outputs,
+      HeapVector<FlexLine>* flex_lines,
       Vector<EBreakBetween>* row_break_between_outputs,
       FlexBreakTokenData::FlexBreakBeforeRow* break_before_row,
       LayoutUnit* total_intrinsic_block_size);
@@ -105,7 +105,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
       HeapVector<Member<LayoutBox>>& oof_children);
 
   // Set reading flow so they can be accessed by LayoutBox.
-  void SetReadingFlowNodes(const HeapVector<NGFlexLine>& flex_line_outputs);
+  void SetReadingFlowNodes(const HeapVector<FlexLine>& flex_lines);
 
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainerV3();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
@@ -120,7 +120,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // https://www.w3.org/TR/css-break-3/#box-splitting
   void ConsumeRemainingFragmentainerSpace(
       LayoutUnit offset_in_stitched_container,
-      NGFlexLine* flex_line,
+      FlexLine* flex_line,
       const FlexColumnBreakInfo* column_break_info = nullptr);
 
   BreakStatus BreakBeforeChildIfNeeded(
@@ -144,7 +144,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // |has_container_separation| and |is_first_for_row| are specific to the row
   // itself. See
   // |::blink::BreakBeforeChildIfNeeded()| for more documentation.
-  BreakStatus BreakBeforeRowIfNeeded(const NGFlexLine& row,
+  BreakStatus BreakBeforeRowIfNeeded(const FlexLine& row,
                                      LayoutUnit row_block_offset,
                                      EBreakBetween row_break_between,
                                      wtf_size_t row_index,
@@ -169,7 +169,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   // Add the amount an item expanded by to the item offset adjustment of the
   // flex line at the index directly after |flex_line_idx|, if there is one.
-  void AdjustOffsetForNextLine(HeapVector<NGFlexLine>* flex_line_outputs,
+  void AdjustOffsetForNextLine(HeapVector<FlexLine>* flex_lines,
                                wtf_size_t flex_line_idx,
                                LayoutUnit item_expansion) const;
 
