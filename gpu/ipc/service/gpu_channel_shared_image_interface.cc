@@ -164,7 +164,8 @@ bool GpuChannelSharedImageInterface::MakeContextCurrent(bool needs_gl) {
 scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    std::optional<SharedImagePoolId> pool_id) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::Generate();
   {
@@ -244,7 +245,8 @@ scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    gfx::BufferUsage buffer_usage) {
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::Generate();
   {

@@ -79,7 +79,8 @@ SharedImageInterface::~SharedImageInterface() = default;
 scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,
-    gfx::BufferUsage buffer_usage) {
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id) {
   NOTREACHED();
 }
 

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
@@ -116,7 +117,8 @@ class GPU_EXPORT SharedImageInterface
   // tracing tools. Pick a name that is unique to the allocation site.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
-      gpu::SurfaceHandle surface_handle) = 0;
+      gpu::SurfaceHandle surface_handle,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt) = 0;
 
   // Same behavior as the above, except that this version takes |pixel_data|
   // which is used to populate the SharedImage.  |pixel_data| should have the
@@ -142,7 +144,8 @@ class GPU_EXPORT SharedImageInterface
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
-      gfx::BufferUsage buffer_usage);
+      gfx::BufferUsage buffer_usage,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   // Creates a shared image out an existing buffer. The buffer described by
   // `buffer_handle` must hold all planes based on `format` and `size`. This

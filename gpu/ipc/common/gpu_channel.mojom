@@ -8,6 +8,7 @@ import "gpu/ipc/common/capabilities.mojom";
 import "gpu/ipc/common/context_result.mojom";
 import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
+import "gpu/ipc/common/shared_image_pool_id.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
@@ -582,6 +583,10 @@ struct CreateSharedImageParams {
 
   // Information about the shared image.
   SharedImageInfo si_info;
+
+  // An optional SharedImagePoolId which indicates the pool this shared image
+  // is created from.
+  SharedImagePoolId? pool_id;
 };
 
 // Creates a new shared image and populates it with pixel data from a shared
@@ -616,6 +621,10 @@ struct CreateSharedImageWithBufferParams {
 
   // A handle to the existing GPU memory buffer.
   gfx.mojom.GpuMemoryBufferHandle buffer_handle;
+
+  // An optional SharedImagePoolId which indicates the pool this shared image
+  // is created from.
+  SharedImagePoolId? pool_id;
 };
 
 // Updates the contents of a shared image from whatever is backing it, if

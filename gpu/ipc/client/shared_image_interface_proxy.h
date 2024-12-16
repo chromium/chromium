@@ -61,14 +61,18 @@ class SharedImageInterfaceProxy {
     std::vector<SyncToken> destruction_sync_tokens;
   };
 
-  Mailbox CreateSharedImage(const SharedImageInfo& si_info);
+  Mailbox CreateSharedImage(const SharedImageInfo& si_info,
+                            std::optional<SharedImagePoolId> pool_id);
   Mailbox CreateSharedImage(SharedImageInfo& si_info,
                             gfx::BufferUsage buffer_usage,
+                            std::optional<SharedImagePoolId> pool_id,
                             gfx::GpuMemoryBufferHandle* handle_to_populate);
   Mailbox CreateSharedImage(const SharedImageInfo& si_info,
                             base::span<const uint8_t> pixel_data);
-  Mailbox CreateSharedImage(const SharedImageInfo& si_info,
-                            gfx::GpuMemoryBufferHandle handle);
+  Mailbox CreateSharedImage(
+      const SharedImageInfo& si_info,
+      gfx::GpuMemoryBufferHandle handle,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox);

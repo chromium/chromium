@@ -98,11 +98,13 @@ SharedImageInterfaceProxy::SharedImageInterfaceProxy(
 SharedImageInterfaceProxy::~SharedImageInterfaceProxy() = default;
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    const SharedImageInfo& si_info) {
+    const SharedImageInfo& si_info,
+    std::optional<SharedImagePoolId> pool_id) {
   auto mailbox = Mailbox::Generate();
   auto params = mojom::CreateSharedImageParams::New();
   params->mailbox = mailbox;
   params->si_info = CreateSharedImageInfo(si_info);
+  params->pool_id = std::move(pool_id);
   {
     base::AutoLock lock(lock_);
     AddMailbox(mailbox);
@@ -121,6 +123,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     SharedImageInfo& si_info,
     gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id,
     gfx::GpuMemoryBufferHandle* handle_to_populate) {
   // Create a GMB here first on IO thread via sync IPC. Then create a mailbox
   // from it.
@@ -155,7 +158,8 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   // GpuChannelMessageFilter::CreateGpuMemoryBuffer() call in service side can
   // itself can post a task from IO thread to gpu main thread to create a
   // mailbox from handle and then return the handle back to SIIProxy.
-  return CreateSharedImage(si_info, handle_to_populate->Clone());
+  return CreateSharedImage(si_info, handle_to_populate->Clone(),
+                           std::move(pool_id));
 }
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
@@ -199,7 +203,8 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     const SharedImageInfo& si_info,
-    gfx::GpuMemoryBufferHandle buffer_handle) {
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    std::optional<SharedImagePoolId> pool_id) {
   // TODO(kylechar): Verify buffer_handle works for size+format.
   auto mailbox = Mailbox::Generate();
 
@@ -207,6 +212,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params->mailbox = mailbox;
   params->si_info = CreateSharedImageInfo(si_info);
   params->buffer_handle = std::move(buffer_handle);
+  params->pool_id = std::move(pool_id);
 
   base::AutoLock lock(lock_);
   // Note: we enqueue and send the IPC under the lock to guarantee

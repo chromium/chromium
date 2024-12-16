@@ -20,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/decoder.h"
 #include "media/base/media_util.h"
@@ -333,10 +334,11 @@ class MockStableVideoDecoderService : public stable::mojom::StableVideoDecoder {
 class MockSharedImageInterface : public gpu::SharedImageInterface {
  public:
   // gpu::SharedImageInterface implementation.
-  MOCK_METHOD2(
-      CreateSharedImage,
-      scoped_refptr<gpu::ClientSharedImage>(const gpu::SharedImageInfo& si_info,
-                                            gpu::SurfaceHandle surface_handle));
+  MOCK_METHOD3(CreateSharedImage,
+               scoped_refptr<gpu::ClientSharedImage>(
+                   const gpu::SharedImageInfo& si_info,
+                   gpu::SurfaceHandle surface_handle,
+                   std::optional<gpu::SharedImagePoolId> pool_id));
   MOCK_METHOD2(CreateSharedImage,
                scoped_refptr<gpu::ClientSharedImage>(
                    const gpu::SharedImageInfo& si_info,

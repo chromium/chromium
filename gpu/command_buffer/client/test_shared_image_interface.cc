@@ -148,9 +148,10 @@ TestSharedImageInterface::TestSharedImageInterface() {
 
 TestSharedImageInterface::~TestSharedImageInterface() = default;
 
-scoped_refptr<ClientSharedImage>
-TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
-                                            SurfaceHandle surface_handle) {
+scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    std::optional<SharedImagePoolId> pool_id) {
   SyncToken sync_token = GenUnverifiedSyncToken();
   base::AutoLock locked(lock_);
   auto mailbox = Mailbox::Generate();
@@ -175,10 +176,11 @@ TestSharedImageInterface::CreateSharedImage(
       mailbox, si_info.meta, sync_token, holder_, gfx::EMPTY_BUFFER);
 }
 
-scoped_refptr<ClientSharedImage>
-TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
-                                            SurfaceHandle surface_handle,
-                                            gfx::BufferUsage buffer_usage) {
+scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id) {
   DoCreateSharedImage(si_info.meta.size, si_info.meta.format, surface_handle,
                       buffer_usage);
   if (fail_shared_image_creation_with_buffer_usage_) {
