@@ -1373,6 +1373,15 @@ bool AppMenu::ShouldExecuteCommandWithoutClosingMenu(int command_id,
          (IsOtherProfileCommand(command_id) && event.IsMouseEvent());
 }
 
+bool AppMenu::ShouldTryPositioningBesideAnchor() const {
+  // Per crbug.com/349667538, if the app menu isn't drawn with bubble borders,
+  // it should still follow what bubble borders do and *not* float beside the
+  // menu button when vertical space is constrained. Ideally, the app menu would
+  // be switched over to bubble borders on all platforms, but shadow-related
+  // hurdles need to be resolved for that.
+  return false;
+}
+
 void AppMenu::BookmarkModelChanged() {
   DCHECK(bookmark_menu_delegate_.get());
   if (!bookmark_menu_delegate_->is_mutating_model())

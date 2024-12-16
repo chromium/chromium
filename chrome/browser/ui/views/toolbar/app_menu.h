@@ -100,6 +100,7 @@ class AppMenu final : public views::MenuDelegate,
   void OnMenuClosed(views::MenuItemView* menu) override;
   bool ShouldExecuteCommandWithoutClosingMenu(int command_id,
                                               const ui::Event& event) override;
+  bool ShouldTryPositioningBesideAnchor() const override;
 
   // bookmarks::BaseBookmarkModelObserver overrides:
   void BookmarkModelChanged() override;
