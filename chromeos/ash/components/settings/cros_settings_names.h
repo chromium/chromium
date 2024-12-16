@@ -519,6 +519,11 @@ inline constexpr char kCastReceiverName[] = "cros.device.cast_receiver.name";
 inline constexpr char kUnaffiliatedArcAllowed[] =
     "cros.device.unaffiliated_arc_allowed";
 
+// A boolean pref that indicates whether Android VPN apps are allowed to
+// be push installed.
+inline constexpr char kDeviceFlexArcPreloadEnabled[] =
+    "cros.device.device_flex_arc_preload_enabled";
+
 // A boolean pref that indicates whether users are allowed to configure the
 // device hostname.
 inline constexpr char kDeviceHostnameUserConfigurable[] =

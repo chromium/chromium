@@ -1890,6 +1890,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_deviceflexarcpreloadenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceflexarcpreloadenabled());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceFlexArcPreloadEnabled, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.value()), nullptr);
+    }
+  }
+
   if (policy.has_virtual_machines_allowed()) {
     const em::VirtualMachinesAllowedProto& container(
         policy.virtual_machines_allowed());
