@@ -75,13 +75,18 @@ class LogMessage;
 // Class used for raising a check error upon destruction.
 class BASE_EXPORT CheckError {
  public:
+  // Takes ownership of `log_message`.
+  explicit CheckError(LogMessage* log_message);
+
+  // TODO(pbos): Make all static methods that currently return some version of
+  // CheckError return LogMessage*.
   static CheckError Check(
       const char* condition,
       base::NotFatalUntil fatal_milestone,
       const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // CHECK_op macros.
-  static CheckError CheckOp(
+  static LogMessage* CheckOp(
       char* log_message_str,
       base::NotFatalUntil fatal_milestone,
       const base::Location& location = base::Location::Current());
@@ -91,7 +96,7 @@ class BASE_EXPORT CheckError {
       const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // DCHECK_op macros.
-  static CheckError DCheckOp(
+  static LogMessage* DCheckOp(
       char* log_message_str,
       const base::Location& location = base::Location::Current());
 
@@ -100,7 +105,7 @@ class BASE_EXPORT CheckError {
       const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // DUMP_WILL_BE_CHECK_op macros.
-  static CheckError DumpWillBeCheckOp(
+  static LogMessage* DumpWillBeCheckOp(
       char* log_message_str,
       const base::Location& location = base::Location::Current());
 
@@ -128,15 +133,13 @@ class BASE_EXPORT CheckError {
   }
 
  protected:
-  // Takes ownership of `log_message`.
-  explicit CheckError(LogMessage* log_message);
-
   std::unique_ptr<LogMessage> log_message_;
 };
 
 // Used for NOTREACHED(), its destructor is importantly [[noreturn]].
 class BASE_EXPORT CheckNoreturnError : public CheckError {
  public:
+  using CheckError::CheckError;
   [[noreturn]] NOMERGE NOINLINE NOT_TAIL_CALLED ~CheckNoreturnError();
 
   static CheckNoreturnError Check(
@@ -144,7 +147,7 @@ class BASE_EXPORT CheckNoreturnError : public CheckError {
       const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // CHECK_op macros.
-  static CheckNoreturnError CheckOp(
+  static LogMessage* CheckOp(
       char* log_message_str,
       const base::Location& location = base::Location::Current());
 
@@ -153,9 +156,6 @@ class BASE_EXPORT CheckNoreturnError : public CheckError {
       const base::Location& location = base::Location::Current());
   static CheckNoreturnError PCheck(
       const base::Location& location = base::Location::Current());
-
- private:
-  using CheckError::CheckError;
 };
 
 // Used for NOTREACHED(base::NotFatalUntil) and DUMP_WILL_BE_NOTREACHED().
