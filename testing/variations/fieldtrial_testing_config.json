@@ -658,22 +658,8 @@
                     },
                     "enable_features": [
                         "AndroidTabDeclutter",
+                        "AndroidTabDeclutterArchiveDuplicateTabs",
                         "IPH_AndroidTabDeclutter"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AndroidTabDeclutterArchiveDuplicateTabs": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidTabDeclutterArchiveDuplicateTabs"
                     ]
                 }
             ]
