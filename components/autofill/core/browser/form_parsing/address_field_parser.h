@@ -72,6 +72,22 @@ class AddressFieldParser : public FormFieldParser {
 
   bool ParseState(ParsingContext& context, AutofillScanner* scanner);
 
+  bool ParseStreetLocation(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseStreetName(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseHouseNumber(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseApartmentNumber(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseBetweenStreetsOrLandmark(ParsingContext& context,
+                                     AutofillScanner* scanner);
+
+  bool ParseOverflowAndLandmark(ParsingContext& context,
+                                AutofillScanner* scanner);
+
+  bool ParseOverflow(ParsingContext& context, AutofillScanner* scanner);
+
   // Parses the current field pointed to by `scanner`, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
   // dependent locality, city, state, country, zip, landmark, between streets,
