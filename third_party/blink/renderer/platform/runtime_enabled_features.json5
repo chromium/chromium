@@ -947,7 +947,7 @@
     },
     {
       name: "CSPReportHash",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The AccentColor And AccentColorText CSS system color keywords
