@@ -19,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -53,6 +54,7 @@ const char* const kPermissionsKillSwitchFieldStudy =
 const char* const kPermissionsKillSwitchBlockedValue =
     PermissionContextBase::kPermissionsKillSwitchBlockedValue;
 const char kPermissionsKillSwitchTestGroup[] = "TestGroup";
+constexpr int kDefaultDismissalsBeforeBlock = 3;
 
 class TestPermissionContext : public PermissionContextBase {
  public:
@@ -414,59 +416,6 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     SetUpUrl(url);
     base::HistogramTester histograms;
 
-    {
-      // Ensure that > 3 dismissals behaves correctly when the
-      // BlockPromptsIfDismissedOften feature is off.
-      base::test::ScopedFeatureList feature_list;
-      feature_list.InitAndDisableFeature(
-          features::kBlockPromptsIfDismissedOften);
-
-      for (uint32_t i = 0; i < 4; ++i) {
-        TestPermissionContext permission_context(
-            browser_context(), ContentSettingsType::GEOLOCATION);
-
-        const PermissionRequestID id(
-            web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
-            PermissionRequestID::RequestLocalId(i + 1));
-
-        permission_context.SetRespondPermissionCallback(
-            base::BindOnce(&PermissionContextBaseTests::RespondToPermission,
-                           base::Unretained(this), &permission_context, id, url,
-                           CONTENT_SETTING_ASK));
-        permission_context.RequestPermission(
-            PermissionRequestData(&permission_context, id,
-                                  /*user_gesture=*/true, url),
-            base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
-                           base::Unretained(&permission_context)));
-        histograms.ExpectTotalCount(
-            "Permissions.Prompt.Dismissed.PriorDismissCount2.Geolocation",
-            i + 1);
-        histograms.ExpectBucketCount(
-            "Permissions.Prompt.Dismissed.PriorDismissCount2.Geolocation", i,
-            1);
-        histograms.ExpectUniqueSample(
-            "Permissions.AutoBlocker.EmbargoPromptSuppression",
-            static_cast<int>(PermissionEmbargoStatus::NOT_EMBARGOED), i + 1);
-        histograms.ExpectUniqueSample(
-            "Permissions.AutoBlocker.EmbargoStatus",
-            static_cast<int>(PermissionEmbargoStatus::NOT_EMBARGOED), i + 1);
-
-        ASSERT_EQ(1u, permission_context.decisions().size());
-        EXPECT_EQ(CONTENT_SETTING_ASK, permission_context.decisions()[0]);
-        EXPECT_TRUE(permission_context.tab_context_updated());
-        EXPECT_EQ(CONTENT_SETTING_ASK,
-                  permission_context.GetContentSettingFromMap(url, url));
-      }
-
-      // Flush the dismissal counts.
-      auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
-      map->ClearSettingsForOneType(
-          ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA);
-    }
-
-    EXPECT_TRUE(
-        base::FeatureList::IsEnabled(features::kBlockPromptsIfDismissedOften));
-
     // Sanity check independence per permission type by checking two of them.
     DismissMultipleTimesAndExpectBlock(url, ContentSettingsType::GEOLOCATION,
                                        3);
@@ -479,24 +428,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     SetUpUrl(url);
     base::HistogramTester histograms;
 
-    std::map<std::string, std::string> params;
-    params
-        [PermissionDecisionAutoBlocker::GetPromptDismissCountKeyForTesting()] =
-            "5";
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kBlockPromptsIfDismissedOften, params);
-
-    std::map<std::string, std::string> actual_params;
-    EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-        features::kBlockPromptsIfDismissedOften, &actual_params));
-    EXPECT_EQ(params, actual_params);
-
-    EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-        features::kBlockPromptsIfDismissedOften, &actual_params));
-    EXPECT_EQ(params, actual_params);
-
-    for (uint32_t i = 0; i < 5; ++i) {
+    for (uint32_t i = 0; i < kDefaultDismissalsBeforeBlock; ++i) {
       TestPermissionContext permission_context(browser_context(),
                                                ContentSettingsType::MIDI_SYSEX);
 
@@ -528,7 +460,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
           static_cast<int>(PermissionEmbargoStatus::NOT_EMBARGOED), i + 1);
       histograms.ExpectTotalCount("Permissions.AutoBlocker.EmbargoStatus",
                                   i + 1);
-      if (i < 4) {
+      if (i < kDefaultDismissalsBeforeBlock - 1) {
         EXPECT_EQ(PermissionStatus::ASK, result.status);
         EXPECT_EQ(content::PermissionStatusSource::UNSPECIFIED, result.source);
         histograms.ExpectUniqueSample(
@@ -559,24 +491,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     SetUpUrl(url);
     base::HistogramTester histograms;
 
-    std::map<std::string, std::string> params;
-    params
-        [PermissionDecisionAutoBlocker::GetPromptDismissCountKeyForTesting()] =
-            "5";
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kBlockPromptsIfDismissedOften, params);
-
-    std::map<std::string, std::string> actual_params;
-    EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-        features::kBlockPromptsIfDismissedOften, &actual_params));
-    EXPECT_EQ(params, actual_params);
-
-    EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-        features::kBlockPromptsIfDismissedOften, &actual_params));
-    EXPECT_EQ(params, actual_params);
-
-    for (uint32_t i = 0; i < 5; ++i) {
+    for (uint32_t i = 0; i < kDefaultDismissalsBeforeBlock; ++i) {
       TestPermissionContext permission_context(browser_context(),
                                                ContentSettingsType::MIDI_SYSEX);
       permission_context.SetUsesAutomaticEmbargo(false);
@@ -895,7 +810,7 @@ TEST_F(PermissionContextBaseTests, TestGlobalKillSwitch) {
   TestGlobalPermissionsKillSwitch(ContentSettingsType::NOTIFICATIONS);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::MIDI_SYSEX);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::DURABLE_STORAGE);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   TestGlobalPermissionsKillSwitch(
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
 #endif

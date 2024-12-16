@@ -16,12 +16,6 @@ BASE_FEATURE(kBackForwardCacheUnblockPermissionRequest,
              "BackForwardCacheUnblockPermissionRequest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables whether permission prompts are automatically blocked
-// after the user has explicitly dismissed them too many times.
-BASE_FEATURE(kBlockPromptsIfDismissedOften,
-             "BlockPromptsIfDismissedOften",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOneTimePermission,
              "OneTimePermission",
              base::FEATURE_ENABLED_BY_DEFAULT);

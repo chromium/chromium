@@ -3707,18 +3707,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
   }
 }
 
-class ChromeBrowsingDataRemoverDelegateBlockPromptsTest
-    : public ChromeBrowsingDataRemoverDelegateTest {
- public:
-  ChromeBrowsingDataRemoverDelegateBlockPromptsTest() {
-    // This needs to be done before SetUp, to avoid tsan flakes due to tasks
-    // running on other threads checking if a feature is enabled.
-    feature_list_.InitWithFeatures(
-        {permissions::features::kBlockPromptsIfDismissedOften}, {});
-  }
-};
-
-TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        ClearPermissionPromptCounts) {
   RemovePermissionPromptCountsTest tester(GetProfile());
 

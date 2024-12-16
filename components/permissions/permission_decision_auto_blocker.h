@@ -41,8 +41,7 @@ class PermissionDecisionAutoBlockerBase {
                            ContentSettingsType permission) = 0;
 
   // Records that a dismissal of a prompt for |permission| was made. If the
-  // total number of dismissals exceeds a threshhold and
-  // features::kBlockPromptsIfDismissedOften is enabled, it will place |url|
+  // total number of dismissals exceeds a threshold it will place |url|
   // under embargo for |permission|. |dismissed_prompt_was_quiet| will inform
   // the decision of which threshold to pick, depending on whether the prompt
   // that was presented to the user was quiet or not.
@@ -107,9 +106,6 @@ class PermissionDecisionAutoBlocker : public PermissionDecisionAutoBlockerBase,
       const GURL& request_origin,
       ContentSettingsType permission,
       base::Time current_time);
-
-  // Updates the threshold to start blocking prompts from the field trial.
-  static void UpdateFromVariations();
 
   // Checks the status of the content setting to determine if |request_origin|
   // is under embargo for |permission|. This checks all types of embargo.
