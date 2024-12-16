@@ -4,9 +4,6 @@
 # crbug.com/355057773
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
 
-# crbug.com/351026514
--org.chromium.chrome.browser.gsa.GSAAccountChangeListenerTest.testReceivesBroadcastIntents
-
 # crbug.com/352811552
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitSubframe
 

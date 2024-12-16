@@ -1,6 +1,3 @@
-# crbug.com/1036556
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
-
 # crbug.com/350393662
 -org.chromium.chrome.browser.searchwidget.SearchActivityTest.*
 
@@ -9,12 +6,6 @@
 
 # crbug.com/351025374
 -org.chromium.chrome.browser.toolbar.top.ToolbarPhoneTest.testToolbarColorSameAsSuggestionColorWhenFocus_activeColorOmnibox
-
-# crbug.com/351026514
--org.chromium.chrome.browser.gsa.GSAAccountChangeListenerTest.testReceivesBroadcastIntents
-
-# crbug.com/362792693
--org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
 
 # crbug.com/377939398
 -org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.testMouseClicksConsumedByAccessoryBar
