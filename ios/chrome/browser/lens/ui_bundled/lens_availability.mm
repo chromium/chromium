@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -78,4 +79,11 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
 
   return lens_support_status == LensSupportStatus::LensSearchSupported;
 }
+
+bool IsLensContextMenuUnifiedExperienceEnabled() {
+  bool featureEnabled =
+      base::FeatureList::IsEnabled(kEnableLensContextMenuUnifiedExperience);
+  return IsLensOverlayAvailable() && featureEnabled;
+}
+
 }  // namespace lens_availability

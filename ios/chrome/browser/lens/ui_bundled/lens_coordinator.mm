@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -187,6 +188,15 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 #pragma mark - Commands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
+  if (lens_availability::IsLensContextMenuUnifiedExperienceEnabled()) {
+    id<LensOverlayCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), LensOverlayCommands);
+    [handler
+        searchImageWithLens:command.image
+                 entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu];
+    return;
+  }
+
   const bool isIncognito = self.browser->GetProfile()->IsOffTheRecord();
   __weak LensCoordinator* weakSelf = self;
 

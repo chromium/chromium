@@ -18,6 +18,7 @@ class SnapshotTabHelper;
 class FullscreenController;
 enum class FullscreenAnimatorStyle : short;
 
+// Manages the flow of capturing the snapshot of a given base window.
 class LensOverlaySnapshotController final
     : public FullscreenControllerObserver {
  public:

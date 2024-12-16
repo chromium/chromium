@@ -8,4 +8,5 @@ include_rules = [
     "+ios/chrome/browser/url_loading/model",
     "+ios/chrome/browser/web/model/web_navigation_util.h",
     "+ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h",
+    "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
 ]

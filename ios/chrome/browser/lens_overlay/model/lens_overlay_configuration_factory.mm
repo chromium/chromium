@@ -23,6 +23,8 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
       return LensEntrypoint::LensOverlayLocationBar;
     case LensOverlayEntrypoint::kOverflowMenu:
       return LensEntrypoint::LensOverlayOverflowMenu;
+    case LensOverlayEntrypoint::kSearchImageContextMenu:
+      return LensEntrypoint::ContextMenu;
   }
 }
 

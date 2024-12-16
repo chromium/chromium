@@ -13,6 +13,8 @@ enum class LensOverlayEntrypoint {
   kLocationBar,
   // 3-dots overflow menu.
   kOverflowMenu,
+  // Search image button from context menu.
+  kSearchImageContextMenu,
 };
 
 namespace lens {
