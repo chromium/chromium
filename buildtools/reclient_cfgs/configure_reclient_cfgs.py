@@ -164,7 +164,7 @@ def RequestCipdAuthentication():
     print("I'm sorry for the hassle, but you may need to do a one-time manual")
     print("authentication. Please run:")
     print()
-    print("    cipd auth-login")
+    print("    update_depot_tools && cipd auth-login")
     print()
     print("and follow the instructions.")
     print()
