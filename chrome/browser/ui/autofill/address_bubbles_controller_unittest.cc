@@ -13,7 +13,7 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -29,12 +29,13 @@ namespace autofill {
 using ::testing::Property;
 using profile_ref = base::optional_ref<const AutofillProfile>;
 
-class AddressBubblesControllerTest
-    : public BrowserWithTestWindowTest {
+// TODO(crbug.com/384547121): Unit test shouldn't use BrowserWithTestWindowTest
+// or TestWithBrowserView.
+class AddressBubblesControllerTest : public TestWithBrowserView {
  public:
   AddressBubblesControllerTest() = default;
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    TestWithBrowserView::SetUp();
     AddTab(browser(), GURL("about:blank"));
   }
 

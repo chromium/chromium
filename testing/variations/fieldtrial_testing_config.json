@@ -11216,26 +11216,6 @@
             ]
         }
     ],
-    "IOSAcquisitionOnDesktopPromo": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledPromosGroup_2024_10_24",
-                    "enable_features": [
-                        "IOSPromoAddressBubble",
-                        "IOSPromoPaymentBubble",
-                        "IOSPromoRefreshedPasswordBubble"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillAcrossIframes": [
         {
             "platforms": [

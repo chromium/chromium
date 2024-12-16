@@ -103,19 +103,19 @@ BASE_FEATURE(kFewerUpdateConfirmations,
 // when saving or updating passwords.
 BASE_FEATURE(kIOSPromoRefreshedPasswordBubble,
              "IOSPromoRefreshedPasswordBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature controls whether the user can be shown the Chrome for iOS promo
 // when saving or updating addresses.
 BASE_FEATURE(kIOSPromoAddressBubble,
              "IOSPromoAddressBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature controls whether the user can be shown the Chrome for iOS promo
 // when saving or updating payments.
 BASE_FEATURE(kIOSPromoPaymentBubble,
              "IOSPromoPaymentBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kIOSPromoPasswordBubbleQRCodeURL{
     &kIOSPromoRefreshedPasswordBubble, "password_promo_qr_code_url",
