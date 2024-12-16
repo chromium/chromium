@@ -135,18 +135,14 @@ void TextPaintTimingDetector::RecordAggregatedText(
     const LayoutBoxModelObject& aggregator,
     const gfx::Rect& aggregated_visual_rect,
     const PropertyTreeStateOrAlias& property_tree_state) {
-  if (RuntimeEnabledFeatures::
-          ExcludeTransparentTextsFromBeingLcpEligibleEnabled()) {
-    bool is_color_transparent =
-        aggregator.StyleRef()
-            .VisitedDependentColor(GetCSSPropertyColor())
-            .IsFullyTransparent();
-    bool has_shadow = !!aggregator.StyleRef().TextShadow();
-    bool has_text_stroke = aggregator.StyleRef().TextStrokeWidth();
+  bool is_color_transparent = aggregator.StyleRef()
+                                  .VisitedDependentColor(GetCSSPropertyColor())
+                                  .IsFullyTransparent();
+  bool has_shadow = !!aggregator.StyleRef().TextShadow();
+  bool has_text_stroke = aggregator.StyleRef().TextStrokeWidth();
 
-    if (is_color_transparent && !has_shadow && !has_text_stroke) {
-      return;
-    }
+  if (is_color_transparent && !has_shadow && !has_text_stroke) {
+    return;
   }
 
   DCHECK(ShouldWalkObject(aggregator));
