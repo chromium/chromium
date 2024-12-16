@@ -465,14 +465,19 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Token binding challenge success"/>
 </enum>
 
+<!-- LINT.IfChange(OAuthMultiloginResponseStatus) -->
+
 <enum name="OAuthMultiloginResponseStatus">
-  <int value="0" label="UNKNOWN_STATUS"/>
-  <int value="1" label="OK"/>
-  <int value="2" label="RETRY"/>
-  <int value="3" label="INVALID_INPUT"/>
-  <int value="4" label="INVALID_TOKENS"/>
-  <int value="5" label="ERROR"/>
+  <int value="0" label="kUnknownStatus"/>
+  <int value="1" label="kOk"/>
+  <int value="2" label="kRetry"/>
+  <int value="3" label="kInvalidInput"/>
+  <int value="4" label="kInvalidTokens"/>
+  <int value="5" label="kError"/>
+  <int value="6" label="kRetryWithTokenBindingChallenge"/>
 </enum>
+
+<!-- LINT.ThenChange(//google_apis/gaia/oauth_multilogin_result.h:OAuthMultiloginResponseStatus) -->
 
 <enum name="PAMInitializePrimaryAccountInfoState">
   <int value="0" label="OK: Account info available"/>
