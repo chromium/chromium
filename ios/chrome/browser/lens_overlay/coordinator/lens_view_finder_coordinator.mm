@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_configuration_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_view_finder_transition_manager.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -14,6 +15,21 @@
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
+
+namespace {
+
+// Maps the presentation style to transition type.
+LensViewFinderTransition TransitionFromPresentationStyle(
+    LensInputSelectionPresentationStyle style) {
+  switch (style) {
+    case LensInputSelectionPresentationStyle::SlideFromLeft:
+      return LensViewFinderTransitionSlideFromLeft;
+    case LensInputSelectionPresentationStyle::SlideFromRight:
+      return LensViewFinderTransitionSlideFromRight;
+  }
+}
+
+}  // namespace
 
 @interface LensViewFinderCoordinator () <LensCommands,
                                          ChromeLensControllerDelegate>
@@ -25,6 +41,9 @@
 
   // The user interface to be presented.
   __weak UIViewController* _lensViewController;
+
+  // Manages the presenting & dismissal of the LVF user interface.
+  LensViewFinderTransitionManager* _transitionManager;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -63,10 +82,16 @@
   LensConfiguration* configuration = [configurationFactory
       configurationForLensEntrypoint:command.entryPoint
                              profile:self.browser->GetProfile()];
+
+  _transitionManager = [[LensViewFinderTransitionManager alloc]
+      initWithLVFTransitionType:TransitionFromPresentationStyle(
+                                    command.presentationStyle)];
+
   _lensController = ios::provider::NewChromeLensController(configuration);
   _lensController.delegate = self;
 
   _lensViewController = _lensController.inputSelectionViewController;
+  _lensViewController.transitioningDelegate = _transitionManager;
   _lensViewController.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
   _lensViewController.modalTransitionStyle =

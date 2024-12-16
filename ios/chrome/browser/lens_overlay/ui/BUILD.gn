@@ -8,6 +8,7 @@ source_set("ui") {
     ":accessibility_identifier_constants",
     ":consent_presenter",
     ":container_presenter",
+    ":lvf_transition_manager",
     ":network_issue_alert_presenter",
     ":progress_bar",
     ":protocols",
@@ -168,6 +169,14 @@ source_set("consent_presenter") {
     "//ui/base",
     "//url",
   ]
+}
+
+source_set("lvf_transition_manager") {
+  sources = [
+    "lens_view_finder_transition_manager.h",
+    "lens_view_finder_transition_manager.mm",
+  ]
+  deps = []
 }
 
 source_set("eg2_tests") {
