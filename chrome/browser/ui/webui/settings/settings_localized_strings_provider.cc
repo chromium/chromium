@@ -1532,6 +1532,8 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
       {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
       {"verifyAccount", IDS_SETTINGS_PEOPLE_VERIFY_ACCOUNT_BUTTON},
       {"signOutOfChrome", IDS_PROFILE_MENU_SIGN_OUT},
+      {"syncPausedButtonLabel",
+       IDS_SETTINGS_SIGNIN_BUTTON_LABEL_WHEN_SYNC_IS_PAUSED},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

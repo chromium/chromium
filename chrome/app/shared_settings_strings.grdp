@@ -298,6 +298,9 @@
   <message name="IDS_SETTINGS_TURN_ON_SYNC_BUTTON_UPDATE_SETTINGS_UI_ENABLED" desc="Label of the button in the settings page to turn on Sync.">
     Turn on Sync
   </message>
+  <message name="IDS_SETTINGS_SIGNIN_BUTTON_LABEL_WHEN_SYNC_IS_PAUSED" desc="Label of the button shown in the settings page to Sign in when sync is paused">
+     Sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+  </message>
 
   <!-- Signout Subpage (strings used by the <settings-signout-dialog> element) -->
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM" desc="The text to display on the button to confirm the user wishes to stop syncing.">

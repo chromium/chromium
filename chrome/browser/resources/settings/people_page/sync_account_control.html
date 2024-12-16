@@ -205,11 +205,21 @@
           $i18n{turnOffSync}
         </cr-button>
         <cr-button id="sync-error-button" class="action-button cr-button-gap"
-            hidden="[[!shouldShowErrorActionButton_(syncStatus,
-                showSetupButtons_)]]"
+            hidden="[[!shouldShowErrorActionButton_(syncStatus.signedInState,
+            syncStatus.hasError, syncStatus.statusAction, showSetupButtons_)]]"
             on-click="onErrorButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]
+        </cr-button>
+        <cr-button class="action-button cr-button-gap" on-click="onSigninClick_"
+        id="sync-paused"
+        hidden="[[!shouldSyncPausedSigninButton_(syncStatus.signedInState)]]">
+        <img class="account-icon small" alt=""
+        src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]"
+        slot="prefix-icon">
+        [[getSyncPausedButtonLabel_(
+          '$i18nPolymer{syncPausedButtonLabel}',
+          shownAccount_.givenName)]]
         </cr-button>
         <div id="setup-buttons" hidden="[[!showSetupButtons_]]"
             class="cr-button-gap">
