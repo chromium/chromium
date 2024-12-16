@@ -58,6 +58,7 @@
 #include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -618,8 +619,12 @@ void LensOverlayController::BindSidePanel(
     side_panel_page_->LoadResultsInFrame(*pending_side_panel_url_);
     pending_side_panel_url_.reset();
   }
-  side_panel_page_->SetShowErrorPage(
-      pending_side_panel_should_show_error_page_);
+  // Only record and show the side panel error state if the side panel was set
+  // to do so. Otherwise, do nothing as this metric will be recorded when the
+  // first side panel navigation completes.
+  if (side_panel_should_show_error_page_) {
+    RecordAndShowSidePanelErrorPage();
+  }
 }
 
 void LensOverlayController::BindSidePanelGhostLoader(
@@ -947,14 +952,42 @@ void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
   }
 }
 
-void LensOverlayController::SetSidePanelShowErrorPage(
-    bool should_show_error_page) {
-  if (side_panel_page_) {
-    side_panel_page_->SetShowErrorPage(should_show_error_page);
+void LensOverlayController::MaybeSetSidePanelShowErrorPage(
+    bool should_show_error_page,
+    lens::SidePanelResultStatus status) {
+  // Only show / hide the error page if the side panel is not already in that
+  // state. Return early if the state should not change unless the initial load
+  // has not been logged (`side_panel_result_status_` set to kUnknown).
+  if (side_panel_should_show_error_page_ == should_show_error_page &&
+      side_panel_result_status_ != lens::SidePanelResultStatus::kUnknown) {
     return;
   }
 
-  pending_side_panel_should_show_error_page_ = should_show_error_page;
+  side_panel_should_show_error_page_ = should_show_error_page;
+  side_panel_result_status_ = status;
+  if (side_panel_page_) {
+    RecordAndShowSidePanelErrorPage();
+  }
+}
+
+void LensOverlayController::SetSidePanelIsOffline(bool is_offline) {
+  // If the side panel is already showing an error page due to start query
+  // error, then this should be a no-op.
+  if (side_panel_result_status_ ==
+      lens::SidePanelResultStatus::kErrorPageShownStartQueryError) {
+    return;
+  }
+
+  MaybeSetSidePanelShowErrorPage(
+      is_offline, is_offline
+                      ? lens::SidePanelResultStatus::kErrorPageShownOffline
+                      : lens::SidePanelResultStatus::kResultShown);
+}
+
+void LensOverlayController::RecordAndShowSidePanelErrorPage() {
+  CHECK(side_panel_page_);
+  side_panel_page_->SetShowErrorPage(side_panel_should_show_error_page_);
+  lens::RecordSidePanelResultStatus(side_panel_result_status_);
 }
 
 bool LensOverlayController::IsScreenshotPossible(
@@ -1864,6 +1897,8 @@ void LensOverlayController::CloseUIPart2(
   lens_overlay_blur_layer_delegate_.reset();
   overlay_searchbox_handler_.reset();
   last_navigation_time_.reset();
+  side_panel_should_show_error_page_ = false;
+  side_panel_result_status_ = lens::SidePanelResultStatus::kUnknown;
 
   if (overlay_view_) {
     // Remove and delete the overlay view and web view. Not doing so will result
@@ -2744,9 +2779,20 @@ void LensOverlayController::HandleStartQueryResponse(
     std::vector<lens::mojom::OverlayObjectPtr> objects,
     lens::mojom::TextPtr text,
     bool is_error) {
-  // If the full image response fails, the side panel should show the error page
-  // since interaction requests will not work.
-  SetSidePanelShowErrorPage(/*should_show_error_page=*/is_error);
+  // If the side panel is open, then the error page state can change depending
+  // on whether the query succeeded or not. If the side panel is not open, the
+  // error page state can only change if the query failed since the first side
+  // panel navigation will take care of recording whether the result was shown.
+  if (side_panel_page_) {
+    MaybeSetSidePanelShowErrorPage(
+        is_error,
+        is_error ? lens::SidePanelResultStatus::kErrorPageShownStartQueryError
+                 : lens::SidePanelResultStatus::kResultShown);
+  } else if (!side_panel_page_ && is_error) {
+    MaybeSetSidePanelShowErrorPage(
+        /*should_show_error_page=*/true,
+        lens::SidePanelResultStatus::kErrorPageShownStartQueryError);
+  }
 
   if (!objects.empty()) {
     SendObjects(std::move(objects));

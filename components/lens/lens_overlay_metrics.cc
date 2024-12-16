@@ -396,4 +396,8 @@ void RecordPdfPageCount(uint32_t page_count) {
                                page_count);
 }
 
+void RecordSidePanelResultStatus(SidePanelResultStatus status) {
+  base::UmaHistogramEnumeration("Lens.Overlay.SidePanelResultStatus", status);
+}
+
 }  // namespace lens

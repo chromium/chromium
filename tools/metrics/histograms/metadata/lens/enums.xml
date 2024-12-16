@@ -154,6 +154,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->
 
+<!-- LINT.IfChange(LensOverlaySidePanelResultStatus) -->
+
+<enum name="SidePanelResultStatus">
+  <summary>
+    Indicates the state of the side panel content, including whether results
+    were successfully shown or an error occurred preventing display. If an error
+    is indicated, the enum value further specifies the reason for the error.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Result shown"/>
+  <int value="2" label="Error page shown (offline)"/>
+  <int value="3" label="Error page shown (start query response error)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_side_panel_result.h:LensOverlaySidePanelResultStatus) -->
+
 </enums>
 
 </histogram-configuration>
