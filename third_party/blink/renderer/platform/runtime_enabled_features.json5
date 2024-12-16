@@ -942,10 +942,6 @@
       status: "stable",
     },
     {
-      name: "CrossFramePerformanceTimeline",
-      status: "experimental",
-    },
-    {
       name: "CSPReportHash",
       status: "stable",
     },

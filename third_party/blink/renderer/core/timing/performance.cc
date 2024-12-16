@@ -351,37 +351,6 @@ PerformanceEntryVector Performance::getEntries() {
   return GetEntriesForCurrentFrame();
 }
 
-PerformanceEntryVector Performance::getEntries(
-    ScriptState* script_state,
-    PerformanceEntryFilterOptions* options) {
-  if (!RuntimeEnabledFeatures::CrossFramePerformanceTimelineEnabled() ||
-      !options) {
-    return GetEntriesForCurrentFrame();
-  }
-
-  PerformanceEntryVector entries;
-
-  AtomicString name =
-      options->hasName() ? AtomicString(options->name()) : g_null_atom;
-
-  AtomicString entry_type = options->hasEntryType()
-                                ? AtomicString(options->entryType())
-                                : g_null_atom;
-
-  // Get sorted entry list based on provided input.
-  if (options->getIncludeChildFramesOr(false)) {
-    entries = GetEntriesWithChildFrames(script_state, entry_type, name);
-  } else {
-    if (!entry_type) {
-      entries = GetEntriesForCurrentFrame(name);
-    } else {
-      entries = GetEntriesByTypeForCurrentFrame(entry_type, name);
-    }
-  }
-
-  return entries;
-}
-
 PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
     const AtomicString& maybe_name) {
   PerformanceEntryVector entries;
@@ -628,73 +597,6 @@ PerformanceEntryVector Performance::getEntriesByName(
   } else {
     entries = GetEntriesByTypeForCurrentFrame(entry_type, name);
   }
-
-  return entries;
-}
-
-PerformanceEntryVector Performance::GetEntriesWithChildFrames(
-    ScriptState* script_state,
-    const AtomicString& maybe_type,
-    const AtomicString& maybe_name) {
-  PerformanceEntryVector entries;
-
-  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  if (!window) {
-    return entries;
-  }
-  LocalFrame* root_frame = window->GetFrame();
-  if (!root_frame) {
-    return entries;
-  }
-  const SecurityOrigin* root_origin = window->GetSecurityOrigin();
-
-  HeapDeque<Member<Frame>> queue;
-  queue.push_back(root_frame);
-
-  while (!queue.empty()) {
-    Frame* current_frame = queue.TakeFirst();
-
-    if (LocalFrame* local_frame = DynamicTo<LocalFrame>(current_frame)) {
-      // Get the Performance object from the current frame.
-      LocalDOMWindow* current_window = local_frame->DomWindow();
-      // As we verified that the frame this was called with is not detached when
-      // entring this loop, we can assume that all its children are also not
-      // detached, and hence have a window object.
-      DCHECK(current_window);
-
-      // Validate that the child frame's origin is the same as the root
-      // frame.
-      const SecurityOrigin* current_origin =
-          current_window->GetSecurityOrigin();
-      if (root_origin->IsSameOriginWith(current_origin)) {
-        WindowPerformance* window_performance =
-            DOMWindowPerformance::performance(*current_window);
-
-        // Get the performance entries based on maybe_type input. Since the root
-        // frame can script the current frame, its okay to expose the current
-        // frame's performance entries to the root.
-        PerformanceEntryVector current_entries;
-        if (!maybe_type) {
-          current_entries =
-              window_performance->GetEntriesForCurrentFrame(maybe_name);
-        } else {
-          current_entries = window_performance->GetEntriesByTypeForCurrentFrame(
-              maybe_type, maybe_name);
-        }
-
-        entries.AppendVector(current_entries);
-      }
-    }
-
-    // Add both Local and Remote Frame children to the queue.
-    for (Frame* child = current_frame->FirstChild(); child;
-         child = child->NextSibling()) {
-      queue.push_back(child);
-    }
-  }
-
-  std::sort(entries.begin(), entries.end(),
-            PerformanceEntry::StartTimeCompareLessThan);
 
   return entries;
 }

@@ -7591,9 +7591,6 @@ crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/storage/set_cook
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/classic/execute_script/user_prompts.py [ Failure Timeout ]
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/classic/new_window/new_window.py [ Failure Timeout ]
 
-# Flaky test in virtual suite.
-crbug.com/324113086 virtual/stable/external/wpt/performance-timeline/tentative/with-filter-options-originA.html [ Failure Pass ]
-
 crbug.com/1467464 http/tests/devtools/a11y-axe-core/sources/event-listener-breakpoints-a11y-test.js [ Failure Pass ]
 
 # TODO(crbug.com/328677885): Re-enable this test.

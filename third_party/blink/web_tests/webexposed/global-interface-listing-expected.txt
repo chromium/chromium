@@ -7217,7 +7217,6 @@ interface PerformanceEntry
     getter entryType
     getter name
     getter navigationId
-    getter source
     getter startTime
     method constructor
     method toJSON

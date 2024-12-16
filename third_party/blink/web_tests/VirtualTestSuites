@@ -327,7 +327,6 @@
               "media/stable",
               "webexposed",
               "compositing/filters",
-              "external/wpt/performance-timeline/tentative/with-filter-options-originA.html",
               "external/wpt/soft-navigation-heuristics/disabled.html",
               "wpt_internal/performance-timeline/performance-user-timing-mark-feature-usage.html"
             ],
@@ -676,18 +675,6 @@
     "exclusive_tests": "ALL",
     "args": ["--disable-site-isolation-trials",
              "--disable-features=OriginKeyedProcessesByDefault"],
-    "owners": [
-      "alexmos@chromium.org",
-      "creis@chromium.org",
-      "wjmaclean@chromium.org"
-    ],
-    "expires": "never"
-  },
-  {
-    "prefix": "not-site-per-process-nonexclusive",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/performance-timeline/tentative"],
-    "args": ["--disable-site-isolation-trials"],
     "owners": [
       "alexmos@chromium.org",
       "creis@chromium.org",
