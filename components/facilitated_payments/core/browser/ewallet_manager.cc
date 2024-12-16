@@ -152,10 +152,15 @@ void EwalletManager::OnEwalletPaymentPromptResult(
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
 
   client_->LoadRiskData(base::BindOnce(&EwalletManager::OnRiskDataLoaded,
-                                       weak_ptr_factory_.GetWeakPtr()));
+                                       weak_ptr_factory_.GetWeakPtr(),
+                                       base::TimeTicks::Now()));
 }
 
-void EwalletManager::OnRiskDataLoaded(const std::string& risk_data) {
+void EwalletManager::OnRiskDataLoaded(base::TimeTicks start_time,
+                                      const std::string& risk_data) {
+  LogLoadRiskDataResultAndLatency(kPaymentsType,
+                                  /*was_successful=*/!risk_data.empty(),
+                                  base::TimeTicks::Now() - start_time, scheme_);
   if (risk_data.empty()) {
     client_->ShowErrorScreen();
     return;

@@ -80,8 +80,10 @@ class EwalletManager {
   void OnEwalletPaymentPromptResult(bool is_prompt_accepted,
                                     int64_t selected_instrument_id);
 
-  // Invoked after risk data is fetched. `risk_data` is the fetched risk data.
-  void OnRiskDataLoaded(const std::string& risk_data);
+  // Invoked when risk data is fetched. The call to fetch the risk data was
+  // made at `start_time`. `risk_data` is the fetched risk data.
+  void OnRiskDataLoaded(base::TimeTicks start_time,
+                        const std::string& risk_data);
 
   // Called after retrieving the client token from the facilitated payment API.
   // If not empty, the client token can be used for initiating payment.

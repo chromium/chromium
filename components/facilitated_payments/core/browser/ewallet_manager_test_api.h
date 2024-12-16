@@ -49,8 +49,9 @@ class EwalletManagerTestApi {
                                                    selected_instrument_id);
   }
 
-  void OnRiskDataLoaded(const std::string& risk_data) {
-    ewallet_manager_->OnRiskDataLoaded(risk_data);
+  void OnRiskDataLoaded(base::TimeTicks start_time,
+                        const std::string& risk_data) {
+    ewallet_manager_->OnRiskDataLoaded(start_time, risk_data);
   }
 
   void OnGetClientToken(std::vector<uint8_t> client_token) {

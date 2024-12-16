@@ -103,8 +103,14 @@ void LogApiAvailabilityCheckResultAndLatency(
 // Logs the result and latency for fetching the risk data. If the risk data was
 // fetched successfully, `was_successful` is true. The call took `duration` to
 // complete.
-void LogLoadRiskDataResultAndLatency(bool was_successful,
-                                     base::TimeDelta duration);
+// `payment_type` must be either `kEwallet` or `kPix`.
+// The `scheme` parameter is required for the 'kEwallet' payment type and should
+// not be `kInvalid`.
+void LogLoadRiskDataResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool was_successful,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
 // Log the result and the latency of the GetClientToken call made to api client.
 void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration);

@@ -313,18 +313,44 @@ TEST_F(EwalletManagerTest,
 // from the facilitated payments API client.
 TEST_F(EwalletManagerTest,
        RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_)).Times(0);
   EXPECT_CALL(client_, ShowErrorScreen);
 
-  test_api(*ewallet_manager_).OnRiskDataLoaded(/*risk_data=*/"");
+  test_api(*ewallet_manager_)
+      .OnRiskDataLoaded(base::TimeTicks::Now() - base::Seconds(2),
+                        /*risk_data=*/"");
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.LoadRiskData.Failure.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.LoadRiskData.Failure.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // If the risk data is not empty, then the manager retrieves a client token from
 // the facilitated payments API client.
 TEST_F(EwalletManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
 
-  test_api(*ewallet_manager_).OnRiskDataLoaded(/*risk_data=*/"fake risk data");
+  test_api(*ewallet_manager_)
+      .OnRiskDataLoaded(base::TimeTicks::Now() - base::Seconds(2),
+                        /*risk_data=*/"fake risk data");
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.LoadRiskData.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.LoadRiskData.Success.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // If the client token is empty, an error screen will be shown.

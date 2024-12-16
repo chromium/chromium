@@ -212,7 +212,8 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
 void FacilitatedPaymentsManager::OnRiskDataLoaded(
     base::TimeTicks start_time,
     const std::string& risk_data) {
-  LogLoadRiskDataResultAndLatency(/*was_successful=*/!risk_data.empty(),
+  LogLoadRiskDataResultAndLatency(kPaymentsType,
+                                  /*was_successful=*/!risk_data.empty(),
                                   base::TimeTicks::Now() - start_time);
   if (risk_data.empty()) {
     ShowErrorScreen();

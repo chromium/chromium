@@ -59,6 +59,24 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram
+    name="FacilitatedPayments.Ewallet.LoadRiskData.{Result}.Latency.{Scheme}"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the call to fetch risk data which was a {Result}. The payment is
+    supported by {Scheme}. Logged then the eWallet payflow is triggered. The
+    risk data gives device's risk fingerprint which is used to decide whether or
+    not to process the transaction. [Frequency] Logged at most once per page
+    load.
+  </summary>
+  <token key="Result" variants="BooleanResult"/>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
@@ -168,21 +186,6 @@ reviewer.
     <variant name="Failed" summary="Failed InitiatePurchaseAction call"/>
     <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
   </token>
-</histogram>
-
-<histogram name="FacilitatedPayments.Pix.LoadRiskData.{Result}.Latency"
-    units="ms" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Latency for the call to fetch risk data which was a {Result}. The risk data
-    gives device's risk fingerprint which is used to decide whether or not to
-    process the transaction. [Frequency] Logged at most once per page load.
-    [Trigger] The browser gets signal that a Pix code exists on the page.
-  </summary>
-  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.PayflowExitedReason"
@@ -300,6 +303,24 @@ reviewer.
     using Google Pay. [Frequency] Logged at most once per
     {FacilitatedPaymentsType} payflow. [Trigger] Page is loaded and the main
     frame contains a valid payment code for {FacilitatedPaymentsType}.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.LoadRiskData.{Result}.Latency"
+    units="ms" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the call to fetch risk data which was a {Result}. The risk data
+    gives device's risk fingerprint which is used to decide whether or not to
+    process the transaction. [Frequency] Logged at most once per page load.
+    [Trigger] The browser gets signal that a {FacilitatedPaymentsType} code
+    exists on the page.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
   <token key="Result" variants="BooleanResult"/>
