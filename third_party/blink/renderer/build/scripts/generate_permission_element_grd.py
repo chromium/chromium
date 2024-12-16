@@ -42,13 +42,13 @@ kStringMapCcPrefix = '''// Copyright 2024 The Chromium Authors
 
 #include <stdint.h>
 
-#include <bit>
 #include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/strings/string_slice.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_strings_map.h"
 #include "third_party/blink/public/strings/grit/permission_element_generated_strings.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
@@ -61,46 +61,7 @@ static constexpr std::string_view kLanguages =
 '''
 kStringMapCcMidfix = '''
 
-template <size_t kSize>
-constexpr auto IndexTypeForSizeHelper() {
-  constexpr int kMinBits = std::bit_width(kSize);
-  if constexpr (kMinBits <= 8) {
-    return uint8_t();
-  } else if constexpr (kMinBits <= 16) {
-    return uint16_t();
-  } else if constexpr (kMinBits <= 32) {
-    return uint32_t();
-  } else {
-    return size_t();
-  }
-}
-
-template <size_t size>
-struct IndexTypeForSize {
- public:
-  using Type = decltype(IndexTypeForSizeHelper<size>());
-};
-
-template <const std::string_view& kConstant>
-struct StringSlice {
-  using IndexType = typename IndexTypeForSize<kConstant.size()>::Type;
-
-  IndexType offset;
-  IndexType length;
-
-  friend constexpr bool operator==(StringSlice lhs, StringSlice rhs) {
-    return std::string_view(lhs) == std::string_view(rhs);
-  }
-  friend constexpr auto operator<=>(StringSlice lhs, StringSlice rhs) {
-    return std::string_view(lhs) <=> std::string_view(rhs);
-  }
-  constexpr operator std::string_view() const {
-    return kConstant.substr(offset, length);
-  }
-
-};
-
-using LangStringSlice = StringSlice<kLanguages>;
+using LangStringSlice = base::subtle::StringSlice<kLanguages>;
 
 // In C++20, pairs required exactly-matching types to be comparable, i.e.
 // std::pair<T1, T2> cannot be compared against std::pair<U1, U2>, even if T1
