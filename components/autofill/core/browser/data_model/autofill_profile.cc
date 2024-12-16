@@ -517,6 +517,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
                                 NAME_FIRST,
                                 NAME_MIDDLE,
                                 NAME_LAST,
+                                NAME_LAST_PREFIX,
                                 NAME_LAST_FIRST,
                                 NAME_LAST_SECOND,
                                 NAME_LAST_CONJUNCTION,
@@ -553,7 +554,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 166,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 167,
                 "New field type needs to be reviewed for inclusion in the "
                 "profile comparison logic.");
 

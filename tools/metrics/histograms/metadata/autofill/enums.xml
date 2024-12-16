@@ -737,6 +737,9 @@ Called by update_autofill_enums.py.-->
              edited"/>
   <int value="10561"
       label="ALTERNATIVE_FAMILY_NAME: Autofilled value accepted"/>
+  <int value="10688"
+      label="NAME_LAST_PREFIX: Not autofilled or autofilled value edited"/>
+  <int value="10689" label="NAME_LAST_PREFIX: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -965,6 +968,8 @@ Called by update_autofill_enums.py.-->
   <int value="2625" label="ALTERNATIVE_GIVEN_NAME: accepted"/>
   <int value="2640" label="ALTERNATIVE_FAMILY_NAME: edited"/>
   <int value="2641" label="ALTERNATIVE_FAMILY_NAME: accepted"/>
+  <int value="2672" label="NAME_LAST_PREFIX: edited"/>
+  <int value="2673" label="NAME_LAST_PREFIX: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -1776,6 +1781,7 @@ Called by update_autofill_enums.py.-->
   <int value="163" label="ALTERNATIVE_FULL_NAME"/>
   <int value="164" label="ALTERNATIVE_GIVEN_NAME"/>
   <int value="165" label="ALTERNATIVE_FAMILY_NAME"/>
+  <int value="167" label="NAME_LAST_PREFIX"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3796,6 +3802,22 @@ Called by update_autofill_enums.py.-->
   <int value="996"
       label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
              with both predictions"/>
+  <int value="1003"
+      label="NAME_LAST_PREFIX - Predictions equal - Value agrees"/>
+  <int value="1004"
+      label="NAME_LAST_PREFIX - Predictions equal - Value disagrees"/>
+  <int value="1005"
+      label="NAME_LAST_PREFIX - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="1006"
+      label="NAME_LAST_PREFIX - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="1007"
+      label="NAME_LAST_PREFIX - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="1008"
+      label="NAME_LAST_PREFIX - Predictions different - Value agrees with
+             both predictions"/>
 </enum>
 
 <enum name="AutofillPreferenceSetter">
@@ -4078,6 +4100,8 @@ Called by update_autofill_enums.py.-->
   <int value="2625" label="ALTERNATIVE_GIVEN_NAME: Empty on page load"/>
   <int value="2640" label="ALTERNATIVE_FAMILY_NAME: Pre-filled on page load"/>
   <int value="2641" label="ALTERNATIVE_FAMILY_NAME: Empty on page load"/>
+  <int value="2672" label="NAME_LAST_PREFIX: Pre-filled on page load"/>
+  <int value="2673" label="NAME_LAST_PREFIX: Empty on page load"/>
 </enum>
 
 <enum name="AutofillProfileImportDecision">

@@ -464,6 +464,10 @@ enum FieldType {
   ALTERNATIVE_GIVEN_NAME = 164,
   ALTERNATIVE_FAMILY_NAME = 165,
 
+  // Prefix of the last name, e.g. "van" in the Netherlands.
+  // This is the first child of NAME_LAST.
+  NAME_LAST_PREFIX = 166,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -474,7 +478,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 166,
+  MAX_VALID_FIELD_TYPE = 167,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 

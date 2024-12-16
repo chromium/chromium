@@ -525,6 +525,7 @@ spaces. This should be deprecated in favor of FirstShowOrReshow.
   <variant name="NAME_LAST"/>
   <variant name="NAME_LAST_CONJUNCTION"/>
   <variant name="NAME_LAST_FIRST"/>
+  <variant name="NAME_LAST_PREFIX"/>
   <variant name="NAME_LAST_SECOND"/>
   <variant name="NAME_MIDDLE"/>
   <variant name="NAME_SUFFIX"/>

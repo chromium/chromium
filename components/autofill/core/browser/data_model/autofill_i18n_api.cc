@@ -151,6 +151,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
+    case NAME_LAST_PREFIX:
     case NAME_LAST_FIRST:
     case NAME_LAST_CONJUNCTION:
     case NAME_LAST_SECOND:

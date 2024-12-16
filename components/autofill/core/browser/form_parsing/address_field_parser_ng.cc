@@ -618,6 +618,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
+    case NAME_LAST_PREFIX:
     case ALTERNATIVE_FULL_NAME:
     case ALTERNATIVE_GIVEN_NAME:
     case ALTERNATIVE_FAMILY_NAME:
