@@ -33,16 +33,16 @@ const kScriptToExecute = {
 
   signatures: {
     // ```
-    // "identity-digest": sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:
+    // "identity-digest";sf: sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:
     // "@signature-params": ("identity-digest";sf);alg="ed25519";keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"
     // ```
-    rfc: "SBTcEpLwiDpHvxOFkajwl+S9Mnwf+86JLyhdL1LoMaFbyaqKqdkOu/6/HyNmKdRJK59heDMaIut5/4IXahH/Ag==",
+    rfc: "pRcIRwdXaZL4XqkAo1a7mXIlzETMgG93JWWgqDlx6XhWe8mC8umiEgbI3afULpzT1Buro4ZJfzEXwy8tC5HaCA==",
 
     // ```
-    // "identity-digest": sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:
+    // "identity-digest";sf: sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:
     // "@signature-params": ("identity-digest";sf);alg="ed25519";keyid="xDnP380zcL4rJ76rXYjeHlfMyPZEOqpJYjsjEppbuXE=";tag="sri"
     // ```
-    arbitrary: "EaC2ECm9TD+W5o1LATMd6YwKX+tfl2vZhe9mwKzmFwzHIPsKoegEYX9o/a/yQ0L/rIBWIKYTUaOSQ8Tig0s3Cw=="
+    arbitrary: "6zUKqibVA3CzFvQj6a+irKnOB9ZY2ky5opG7TMpFF0BtvJ1oAjoVjW3uObPlD/PBOrmkXFNRNwv3PVerE12FDQ=="
   }
 };
 
@@ -52,16 +52,16 @@ const kScriptToBlock = {
 
   signatures: {
     // ```
-    // "identity-digest": sha-256=:FUSFR1N3vTmSGbI7q9jaMbHq+ogNeBfpznOIufaIfpc=:
+    // "identity-digest";sf: sha-256=:FUSFR1N3vTmSGbI7q9jaMbHq+ogNeBfpznOIufaIfpc=:
     // "@signature-params": ("identity-digest";sf);alg="ed25519";keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"
     // ```
-    rfc: "WE+KckOA+tcmoIlFZjBreg6uMrH7eRLHmioElLIiSaVINe+gyAwmvgWsJeoZdFQ7b92zJP3zWymikJsmKuAuAg==",
+    rfc: "mXbPPr9LIwClnGOoPM/7mlRT3PfgCHnF4E5te6LocGWplqcxS6qKQoUPo/rnU8BxCY56/nI4BuGtgyjPr2lQCg==",
 
     // ```
-    // "identity-digest": sha-256=:FUSFR1N3vTmSGbI7q9jaMbHq+ogNeBfpznOIufaIfpc=:
+    // "identity-digest";sf: sha-256=:FUSFR1N3vTmSGbI7q9jaMbHq+ogNeBfpznOIufaIfpc=:
     // "@signature-params": ("identity-digest";sf);alg="ed25519";keyid="xDnP380zcL4rJ76rXYjeHlfMyPZEOqpJYjsjEppbuXE";tag="sri"
     // ```
-    arbitrary: "R7yvyU8E+nOPB3JVOaGLtIBfldw/UCcFGWi4e7uV9KpWvXhFN0ISV/g6PXRzGFtmChobjND0PU7tgm0WyafjCQ=="
+    arbitrary: "FGQbZOeQIqXQLbooOWExK2M756WCcT4rcszNsXX6+Z6Wdofh4GKuXoFcFSdiYiGNamFMHEW6/BRMoVVjtnGwAg=="
   }
 };
 

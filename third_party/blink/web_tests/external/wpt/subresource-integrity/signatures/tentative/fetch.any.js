@@ -21,8 +21,8 @@ function resourceURL(data) {
 // Signature-Input: signature=("identity-digest";sf);alg="ed25519"; \
 //                  keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs="; \
 //                  tag="sri"
-// Signature: signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus \
-//            5p24qPK7DtVQcxJFhzSYDj4RBq9grZTAQ==:
+// Signature: signature=:TUznBT2ikFq6VrtoZeC5znRtZugu1U8OHJWoBkOLDTJA2FglSR34Q \
+//                       Y9j+BwN79PT4H0p8aIosnv4rXSKfIZVDA==:
 //
 // {"hello": "world"}
 // ```
@@ -38,7 +38,7 @@ const kInvalidKey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 const kRequestWithValidSignature = {
   body: `{"hello": "world"}`,
   digest: `sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:`,
-  signature: `signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus5p24qPK7DtVQcxJFhzSYDj4RBq9grZTAQ==:`,
+  signature: `signature=:TUznBT2ikFq6VrtoZeC5znRtZugu1U8OHJWoBkOLDTJA2FglSR34QY9j+BwN79PT4H0p8aIosnv4rXSKfIZVDA==:`,
   signatureInput: `signature=("identity-digest";sf);alg="ed25519";keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"`
 };
 

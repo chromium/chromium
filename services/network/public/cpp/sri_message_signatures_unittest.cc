@@ -39,17 +39,16 @@ const char* kPublicKey = "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
 // Content-Type: application/json
 // Identity-Digest: sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:
 // Content-Length: 18
-// Signature-Input:
-// signature=("identity-digest";sf);alg="ed25519";keyid="JrQLj5P/89iXES9+vFgrI \
-//           y29clF9CC/oPPsw3c5D0bs=";tag="sri"
-// Signature: signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus \
-//            5p24qPK7DtVQcxJFhzSYDj4RBq9grZTAQ==:
+// Signature-Input: signature=("identity-digest";sf);alg="ed25519"; \
+//     keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"
+// Signature: signature=:TUznBT2ikFq6VrtoZeC5znRtZugu1U8OHJWoBkOLDTJA2FglSR34Q \
+//     Y9j+BwN79PT4H0p8aIosnv4rXSKfIZVDA==:
 //
 // {"hello": "world"}
 // ```
 const char* kSignature =
-    "H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus"
-    "5p24qPK7DtVQcxJFhzSYDj4RBq9grZTAQ==";
+    "TUznBT2ikFq6VrtoZeC5znRtZugu1U8OHJWoBkOLDTJA2FglSR34QY9j+BwN79PT4H0p8aIosn"
+    "v4rXSKfIZVDA==";
 
 const char* kValidDigestHeader =
     "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
@@ -62,8 +61,8 @@ const char* kValidSignatureInputHeader =
     "signature=(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
     "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
 const char* kValidSignatureHeader =
-    "signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus5p24qPK7Dt"
-    "VQcxJFhzSYDj4RBq9grZTAQ==:";
+    "signature=:TUznBT2ikFq6VrtoZeC5znRtZugu1U8OHJWoBkOLDTJA2FglSR34QY9j+BwN79P"
+    "T4H0p8aIosnv4rXSKfIZVDA==:";
 
 // The following signature was generated using test-key-ed25519 from RFC 9421
 // (https://datatracker.ietf.org/doc/html/rfc9421#appendix-B.1.4),
@@ -74,8 +73,8 @@ const char* kValidExpiringSignatureInputHeader =
     "signature=(\"identity-digest\";sf);alg=\"ed25519\";expires=5459212800;"
     "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
 const char* kValidExpiringSignatureHeader =
-    "signature=:oVJa+A12xhF1hJz1IMLY6e8fap3uFVJbnhNi6vSYSVnYpZtUUGjtYtNZpqm"
-    "VnflfJAbkqCV7Llh842pv8SBIAg==:";
+    "signature=:cQNpdSxWJp2rV5m1omnG780Ei/paw/b2CTFtnxD8YkKWmMFIMcepxB67cK8f836"
+    "W5IZhw4zG6wFnvd+T1BG3CQ==:";
 const int64_t kValidExpiringSignatureExpiresAt = 5459212800;
 
 }  // namespace
@@ -579,7 +578,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersValidBase) {
       ConstructSignatureBase(signatures[0], *headers);
   ASSERT_TRUE(result.has_value());
   std::string expected_base =
-      base::StrCat({"\"identity-digest\": ", kValidDigestHeader,
+      base::StrCat({"\"identity-digest\";sf: ", kValidDigestHeader,
                     "\n\"@signature-params\": "
                     "(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"",
                     kPublicKey, "\";tag=\"sri\""});
@@ -622,7 +621,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersStrictlySerializedBase) {
         ConstructSignatureBase(signatures[0], *headers);
     ASSERT_TRUE(result.has_value());
     std::string expected_base =
-        base::StrCat({"\"identity-digest\": ", kValidDigestHeader,
+        base::StrCat({"\"identity-digest\";sf: ", kValidDigestHeader,
                       "\n\"@signature-params\": "
                       "(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"",
                       kPublicKey, "\";tag=\"sri\""});
@@ -657,7 +656,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
 
     std::stringstream expected_base;
     expected_base
-        << "\"identity-digest\": " << kValidDigestHeader << '\n'
+        << "\"identity-digest\";sf: " << kValidDigestHeader << '\n'
         << "\"@signature-params\": (\"identity-digest\";sf);alg=\"ed25519\"";
     if (test.created) {
       input_header << ";created=" << test.created;
@@ -701,7 +700,7 @@ TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
     input_header << "signature=(\"identity-digest\";sf)";
 
     std::stringstream expected_base;
-    expected_base << "\"identity-digest\": " << kValidDigestHeader << '\n'
+    expected_base << "\"identity-digest\";sf: " << kValidDigestHeader << '\n'
                   << "\"@signature-params\": (\"identity-digest\";sf)";
     for (const char* param : params) {
       input_header << ';' << param;

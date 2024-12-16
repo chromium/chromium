@@ -81,6 +81,21 @@ std::string SerializeParams(const net::structured_headers::Parameters params) {
   return param_list.str();
 }
 
+std::string SerializeComponentParams(const std::vector<Parameters>& params) {
+  // All currently-supported component params are boolean, so we serialize them
+  // by mapping each enum value to a string, and joining them with `;`.
+  std::stringstream param_list;
+  for (const auto& param : params) {
+    param_list << ';';
+    switch (param) {
+      case Parameters::kStrictStructuredFieldSerialization:
+        param_list << "sf";
+        break;
+    }
+  }
+  return param_list.str();
+}
+
 // net::StructuredHeaders gives us the ability to serialize a list, but not an
 // inner list. This is generally pretty reasonable, but unfortunately not what
 // Section 2.3 of RFC9421 specifies for signature base serialization:
@@ -294,9 +309,12 @@ std::optional<std::string> ConstructSignatureBase(
     //      (We handle this at parse time)
     //
     // 2.2. Append the component identifier for the covered component ...
+    signature_base << '"' << component->name << '"';
+    signature_base << SerializeComponentParams(component->params);
+
     // 2.3. Append a single colon (`:`).
     // 2.4. Append a single space (` `).
-    signature_base << '"' << component->name << "\": ";
+    signature_base << ": ";
 
     // 2.5. Determine the component value for the component identifier.
     //
