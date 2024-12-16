@@ -5625,9 +5625,7 @@ SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
   if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
     color_type = kRGBA_F16_SkColorType;
   }
-  return SkColorInfo(
-      color_type, GetAlphaType(),
-      PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_));
+  return SkColorInfo(color_type, GetAlphaType(), GetSkColorSpace());
 }
 
 SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
@@ -5635,6 +5633,10 @@ SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
   // is premultiplied. This is to match historical behavior that may or may not
   // have been intentional.
   return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
+}
+
+sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
+  return PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_);
 }
 
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
