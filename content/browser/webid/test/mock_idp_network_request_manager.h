@@ -43,6 +43,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
               (const GURL&,
                const std::string&,
                const std::string&,
+               bool,
                TokenRequestCallback,
                ContinueOnCallback,
                RecordErrorMetricsCallback),

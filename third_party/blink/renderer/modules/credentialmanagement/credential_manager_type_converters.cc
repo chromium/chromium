@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_field.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
@@ -959,6 +960,12 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
       blink::RuntimeEnabledFeatures::FedCmDomainHintEnabled()
           ? options.getDomainHintOr("")
           : "";
+
+  if (options.hasFormat()) {
+    // Only one format type is supported at the time and the bindings code
+    // verifies that the correct one was specified.
+    mojo_options->format = blink::mojom::blink::Format::kSdJwt;
+  }
 
   // We do not need to check whether authz is enabled because the bindings
   // code will check that for us due to the RuntimeEnabled= flag in the IDL.

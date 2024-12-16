@@ -67,11 +67,13 @@ constexpr char kProviderUrlListKey[] = "provider_urls";
 
 // fedcm.json configuration keys.
 constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
+constexpr char kVcIssuanceEndpoint[] = "vc_issuance_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
 constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
 constexpr char kModesKey[] = "modes";
 constexpr char kTypesKey[] = "types";
+constexpr char kFormatsKey[] = "formats";
 
 // Keys in the 'accounts' dictionary
 constexpr char kIncludeKey[] = "include";
@@ -566,6 +568,7 @@ void OnConfigParsed(const GURL& provider,
   endpoints.metrics = ExtractEndpoint(provider, response, kMetricsEndpoint);
   endpoints.disconnect =
       ExtractEndpoint(provider, response, kDisconnectEndpoint);
+  endpoints.issuance = ExtractEndpoint(provider, response, kVcIssuanceEndpoint);
 
   const base::Value::Dict* idp_metadata_value =
       response.FindDict(kIdpBrandingKey);
@@ -578,6 +581,18 @@ void OnConfigParsed(const GURL& provider,
   }
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
+
+  if (IsFedCmIdPRegistrationEnabled()) {
+    const base::Value::List* formats = response.FindList(kFormatsKey);
+    if (formats) {
+      for (const auto& format : *formats) {
+        if (format.is_string()) {
+          idp_metadata.formats.push_back(format.GetString());
+        }
+      }
+    }
+  }
+
   if (IsFedCmIdPRegistrationEnabled()) {
     const base::Value::List* types = response.FindList(kTypesKey);
     if (types) {
@@ -1061,12 +1076,25 @@ void IdpNetworkRequestManager::SendTokenRequest(
     const GURL& token_url,
     const std::string& account,
     const std::string& url_encoded_post_data,
+    bool idp_blindness,
     TokenRequestCallback callback,
     ContinueOnCallback continue_on,
     RecordErrorMetricsCallback record_error_metrics_callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
-          token_url, CredentialedResourceRequestType::kOriginWithCORS);
+          token_url, idp_blindness
+                         ? CredentialedResourceRequestType::kNoOrigin
+                         : CredentialedResourceRequestType::kOriginWithCORS);
+
+  if (idp_blindness) {
+    // IdP blindness can only be used when the feature is enabled.
+    DCHECK(IsFedCmIdPRegistrationEnabled());
+    // We have to set this to a Origin: null because the underlying loader
+    // will  not let us send a request without Origin header if the request
+    // method is POST.
+    resource_request->request_initiator = url::Origin();
+  }
+
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),

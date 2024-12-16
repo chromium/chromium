@@ -6507,6 +6507,7 @@ data/fedcm/accounts_endpoint.json
 data/fedcm/client_metadata_endpoint.json
 data/fedcm/eval_worker.js
 data/fedcm/id_assertion_endpoint.json
+data/fedcm/sd_jwt.html
 data/fenced_frames/ad_that_leaves_interest_group.html
 data/fenced_frames/ad_that_leaves_interest_group.html.mock-http-headers
 data/fenced_frames/ad_with_3pat_macro_reporting.html

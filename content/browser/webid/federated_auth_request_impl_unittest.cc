@@ -429,6 +429,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       const GURL& token_url,
       const std::string& account,
       const std::string& url_encoded_post_data,
+      bool idp_blidness,
       TokenRequestCallback callback,
       ContinueOnCallback on_continue,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
@@ -546,6 +547,7 @@ class IdpNetworkRequestManagerParamChecker
       const GURL& token_url,
       const std::string& account,
       const std::string& url_encoded_post_data,
+      bool idp_blindness,
       TokenRequestCallback callback,
       ContinueOnCallback on_continue,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
@@ -556,8 +558,9 @@ class IdpNetworkRequestManagerParamChecker
       EXPECT_EQ(expected_url_encoded_post_data_, url_encoded_post_data);
     }
     TestIdpNetworkRequestManager::SendTokenRequest(
-        token_url, account, url_encoded_post_data, std::move(callback),
-        std::move(on_continue), std::move(record_error_metrics_callback));
+        token_url, account, url_encoded_post_data, idp_blindness,
+        std::move(callback), std::move(on_continue),
+        std::move(record_error_metrics_callback));
   }
 
  private:

@@ -58,6 +58,8 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   // For registered IdPs, the type is used to only show the accounts when the
   // RP is compatible.
   std::vector<std::string> types;
+  // The token formats that are supported.
+  std::vector<std::string> formats;
   // The URL of the configuration endpoint. This is stored in
   // IdentityProviderMetadata so that the UI code can pass it along when an
   // Account is selected by the user.

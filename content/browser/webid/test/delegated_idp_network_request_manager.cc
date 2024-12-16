@@ -53,11 +53,13 @@ void DelegatedIdpNetworkRequestManager::SendTokenRequest(
     const GURL& token_url,
     const std::string& account,
     const std::string& url_encoded_post_data,
+    bool idp_blindness,
     TokenRequestCallback callback,
     ContinueOnCallback continue_on,
     RecordErrorMetricsCallback record_error_metrics_callback) {
   delegate_->SendTokenRequest(token_url, account, url_encoded_post_data,
-                              std::move(callback), std::move(continue_on),
+                              idp_blindness, std::move(callback),
+                              std::move(continue_on),
                               std::move(record_error_metrics_callback));
 }
 

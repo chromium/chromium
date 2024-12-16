@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -25,6 +26,8 @@
 #include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
+#include "content/browser/webid/jwt_signer.h"
+#include "content/browser/webid/sd_jwt.h"
 #include "content/browser/webid/test/mock_digital_identity_provider.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
@@ -40,7 +43,10 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "crypto/ec_private_key.h"
+#include "crypto/sha2.h"
 #include "net/base/features.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -120,6 +126,7 @@ class IdpTestServer {
     std::string accounts_endpoint_url;
     std::string client_metadata_endpoint_url;
     std::string id_assertion_endpoint_url;
+    std::string vc_issuance_endpoint_url;
     std::string metrics_endpoint_url;
     std::string login_url;
     std::vector<std::string> types;
@@ -193,11 +200,17 @@ class IdpTestServer {
   void BuildConfigResponseFromDetails(BasicHttpResponse& response,
                                       const ConfigDetails& details) {
     std::map<std::string, std::string> map = {
-        {"accounts_endpoint", details.accounts_endpoint_url},
-        {"client_metadata_endpoint", details.client_metadata_endpoint_url},
-        {"id_assertion_endpoint", details.id_assertion_endpoint_url},
-        {"login_url", details.login_url},
-        {"metrics_endpoint", details.metrics_endpoint_url}};
+        {"accounts_endpoint", "\"" + details.accounts_endpoint_url + "\""},
+        {"client_metadata_endpoint",
+         "\"" + details.client_metadata_endpoint_url + "\""},
+        {"id_assertion_endpoint",
+         "\"" + details.id_assertion_endpoint_url + "\""},
+        {"vc_issuance_endpoint",
+         "\"" + details.vc_issuance_endpoint_url + "\""},
+        {"login_url", "\"" + details.login_url + "\""},
+        {"metrics_endpoint", "\"" + details.metrics_endpoint_url + "\""},
+        {"formats", "[\"vc+sd-jwt\"]"},
+    };
     std::string content = ConvertToJsonDictionary(map, details.types);
     response.set_code(details.status_code);
     response.set_content(content);
@@ -217,7 +230,7 @@ class IdpTestServer {
       const std::vector<std::string>& types) {
     std::string out = "{";
     for (auto it : data) {
-      out += "\"" + it.first + "\":\"" + it.second + "\",";
+      out += "\"" + it.first + "\":" + it.second + ",";
     }
     if (!types.empty()) {
       out += "\"types\":[";
@@ -364,6 +377,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
             accounts_endpoint_url,
             client_metadata_endpoint_url,
             id_assertion_endpoint_url,
+            /*vc_issuance_endpoint_url=*/std::string(),
             /*metrics_endpoint_url=*/std::string(),
             login_url,
             /*types=*/{},
@@ -1794,6 +1808,158 @@ IN_PROC_BROWSER_TEST_F(WebIdModeBrowserTest, UseModeButtonInsteadOfActive) {
   EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
                                  "*The mode button*"));
   ASSERT_TRUE(console_observer.Wait());
+}
+
+std::vector<uint8_t> TestSha256(std::string_view data) {
+  std::string str = crypto::SHA256HashString(data);
+  std::vector<uint8_t> result(str.begin(), str.end());
+  return result;
+}
+
+class WebIdDelegationBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    private_key_ = crypto::ECPrivateKey::Create();
+
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(features::kFedCm);
+    // Needs the fields API
+    features.push_back(features::kFedCmAuthz);
+    // Intended to be used in Active mode
+    features.push_back(features::kFedCmButtonMode);
+    // Needs to reconcile well with the IdP Registration and Multi-IdP API
+    features.push_back(features::kFedCmIdPRegistration);
+    features.push_back(features::kFedCmMultipleIdentityProviders);
+    scoped_feature_list_.InitWithFeatures(features, {});
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+ protected:
+  void SetVcIssuanceConfigDetails(base::RunLoop* run_loop) {
+    IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+    config_details.vc_issuance_endpoint_url = "/vc_issuance_endpoint.json";
+
+    config_details.servlets["/vc_issuance_endpoint.json"] =
+        base::BindLambdaForTesting([&](const HttpRequest& request)
+                                       -> std::unique_ptr<HttpResponse> {
+          EXPECT_EQ(request.method, HttpMethod::METHOD_POST);
+          EXPECT_EQ(request.has_content, true);
+
+          // Assert that the Verifier's origin isn't passed to the issuer.
+          EXPECT_TRUE(request.headers.contains("Origin"));
+          EXPECT_EQ("null", request.headers.at("Origin"));
+
+          GURL query_url("http://localhost/?" + request.content);
+
+          // Assert that the format type is a supported one by the issuer.
+          std::string format;
+          EXPECT_TRUE(net::GetValueForKeyInQuery(query_url, "format", &format));
+          EXPECT_EQ("vc+sd-jwt", format);
+
+          // Expects a holder_key JWK as a parameter.
+          std::string holder_key_json;
+          EXPECT_TRUE(net::GetValueForKeyInQuery(query_url, "holder_key",
+                                                 &holder_key_json));
+
+          auto holder_key_value = base::JSONReader::ReadDict(holder_key_json);
+          EXPECT_TRUE(holder_key_value);
+          auto holder_key = sdjwt::Jwk::From(*holder_key_value);
+          EXPECT_TRUE(holder_key);
+
+          std::string account_id;
+          EXPECT_TRUE(
+              net::GetValueForKeyInQuery(query_url, "account_id", &account_id));
+
+          auto response = std::make_unique<BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/json");
+
+          // Issues a real signed SD-JWT with a "sub" and "name" disclosures.
+          sdjwt::Disclosure sub;
+          sub.name = "sub";
+          sub.value = account_id;
+          sub.salt = sdjwt::Disclosure::CreateSalt();
+
+          sdjwt::Disclosure name;
+          name.name = "name";
+          name.value = "Sam";
+          name.salt = sdjwt::Disclosure::CreateSalt();
+
+          sdjwt::Header header;
+          sdjwt::Payload payload;
+          sdjwt::ConfirmationKey confirmation;
+
+          // Binds the holder's public key to the issued JWT.
+          confirmation.jwk = *holder_key;
+          payload.cnf = confirmation;
+          payload._sd = {
+              *sub.Digest(base::BindRepeating(TestSha256)),
+              *name.Digest(base::BindRepeating(TestSha256)),
+          };
+          sdjwt::Jwt jwt;
+          jwt.header = *header.ToJson();
+          jwt.payload = *payload.ToJson();
+          jwt.Sign(sdjwt::CreateJwtSigner(private_key_->Copy()));
+
+          sdjwt::SdJwt sd_jwt;
+          sd_jwt.jwt = jwt;
+          sd_jwt.disclosures = {*sub.ToJson(), *name.ToJson()};
+
+          response->set_content(R"({"token": ")" + sd_jwt.Serialize() +
+                                R"("})");
+          return response;
+        });
+
+    idp_server()->SetConfigResponseDetails(config_details);
+  }
+
+  std::unique_ptr<crypto::ECPrivateKey> private_key_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, IssueVCs) {
+  base::RunLoop run_loop;
+  SetVcIssuanceConfigDetails(&run_loop);
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server().GetURL(kRpHostName, "/fedcm/sd_jwt.html")));
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                format: 'vc+sd-jwt',
+                fields: ['name'],
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345',
+              }],
+              mode: 'button'
+            },
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  auto token = EvalJs(shell(), script).ExtractString();
+
+  auto public_key = sdjwt::ExportPublicKey(*private_key_);
+
+  EXPECT_TRUE(public_key);
+
+  // Load the token into a string
+  ASSERT_TRUE(ExecJs(shell(), "var token = '" + token + "';"));
+
+  // Load the key into an object
+  ASSERT_TRUE(ExecJs(shell(), "var key = " + *public_key->Serialize() + ";"));
+
+  // Load the audience into a string
+  ASSERT_TRUE(ExecJs(shell(), "var aud = '" + BaseRpUrl() + "';"));
+
+  // Verify the SD-JWT+KB.
+  EXPECT_THAT(EvalJs(shell(), "main(token, key, aud, '12345')").ExtractList(),
+              testing::UnorderedElementsAre("Sam"));
 }
 
 class WebIdMetricsBrowserTest : public WebIdBrowserTest {

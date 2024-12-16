@@ -18,6 +18,8 @@
 #include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/webid/jwt_signer.h"
+#include "content/browser/webid/sd_jwt.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
@@ -375,6 +377,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const std::optional<GURL>& selected_idp_config_url,
       const std::string& token,
       bool should_delay_callback);
+  void ProcessSdJwt(const GURL& selected_idp_config_url,
+                    const std::string& token);
+  void OnDisclosureParsed(base::RepeatingClosure cb,
+                          const std::string& json,
+                          data_decoder::DataDecoder::ValueOrError result);
+  void OnSdJwtParsed(const GURL& selected_idp_config_url,
+                     const sdjwt::Jwt& token);
   void CompleteUserInfoRequest(
       FederatedAuthUserInfoRequest* request,
       RequestUserInfoCallback callback,
@@ -634,6 +643,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Keeps track of the state of the verifying dialog. Is std::nullopt when the
   // verifying dialog has not been shown.
   std::optional<FedCmVerifyingDialogResult> verifying_dialog_result_;
+
+  // A private key that is used to bind the token when the token "format" is
+  // "vc+sd-jwt".
+  std::unique_ptr<crypto::ECPrivateKey> private_key_;
+
+  // A list of discloures that were parsed in the token response, when
+  // the token's format is "vc+sd-jwt".
+  std::vector<std::pair<std::string, std::string>> disclosures_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };

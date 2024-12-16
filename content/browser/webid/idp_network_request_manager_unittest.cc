@@ -237,7 +237,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
       const char* request,
       net::HttpStatusCode http_status = net::HTTP_OK,
       const std::string& mime_type = "application/json",
-      const char* response = R"({"token": "token"})") {
+      const char* response = R"({"token": "token"})",
+      bool idp_blindness = false) {
     GURL token_endpoint(kTestTokenEndpoint);
     AddResponse(token_endpoint, http_status, mime_type, response);
 
@@ -252,7 +253,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->SendTokenRequest(token_endpoint, account, request,
+    manager->SendTokenRequest(token_endpoint, account, request, idp_blindness,
                               std::move(callback), base::DoNothing(),
                               CreateErrorMetricsCallback(run_loop));
     run_loop.Run();
@@ -1681,7 +1682,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
   });
 
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-  manager->SendTokenRequest(token_endpoint, "account", "request",
+  manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             std::move(callback), std::move(on_continue),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
@@ -1705,7 +1706,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
 
   base::RunLoop run_loop;
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-  manager->SendTokenRequest(token_endpoint, "account", "request",
+  manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
@@ -1728,7 +1729,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithErrorAndToken) {
 
   base::RunLoop run_loop;
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-  manager->SendTokenRequest(token_endpoint, "account", "request",
+  manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
@@ -1750,7 +1751,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithError) {
 
   base::RunLoop run_loop;
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-  manager->SendTokenRequest(token_endpoint, "account", "request",
+  manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
@@ -1783,7 +1784,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
   });
 
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-  manager->SendTokenRequest(token_endpoint, "account", "request",
+  manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             std::move(callback), std::move(on_continue),
                             base::DoNothing());
   run_loop.Run();
