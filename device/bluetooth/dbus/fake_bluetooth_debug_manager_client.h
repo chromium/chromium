@@ -30,10 +30,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDebugManagerClient
                     base::OnceClosure callback,
                     ErrorCallback error_callback) override;
 
-  void SetDevCoredump(const bool enable,
-                      base::OnceClosure callback,
-                      ErrorCallback error_callback) override {}
-
   void SetLLPrivacy(const bool enable,
                     base::OnceClosure callback,
                     ErrorCallback error_callback) override {}

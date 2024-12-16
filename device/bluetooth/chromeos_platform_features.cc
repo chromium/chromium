@@ -6,10 +6,6 @@
 
 namespace chromeos::bluetooth::features {
 
-BASE_FEATURE(kBluetoothCoredump,
-             "BluetoothCoredump",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kBluetoothFlossCoredump,
              "BluetoothFlossCoredump",
              base::FEATURE_ENABLED_BY_DEFAULT);

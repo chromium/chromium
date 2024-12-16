@@ -921,8 +921,7 @@ const FeatureEntry::FeatureParam kCctSignInTestOnly[] = {
 const FeatureEntry::FeatureVariation kCctSignInPromptVariations[] = {
     {"always show", kCctSignInPromptAlways, std::size(kCctSignInPromptAlways),
      nullptr},
-    {"for test", kCctSignInTestOnly, std::size(kCctSignInTestOnly),
-     nullptr}};
+    {"for test", kCctSignInTestOnly, std::size(kCctSignInTestOnly), nullptr}};
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -4708,9 +4707,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBluetoothBtsnoopInternalsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::bluetooth::features::kBluetoothBtsnoopInternals)},
-    {"bluetooth-coredump", flag_descriptions::kBluetoothCoredumpName,
-     flag_descriptions::kBluetoothCoredumpDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::bluetooth::features::kBluetoothCoredump)},
     {"bluetooth-floss-coredump", flag_descriptions::kBluetoothFlossCoredumpName,
      flag_descriptions::kBluetoothFlossCoredumpDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
@@ -11759,7 +11755,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_GLIC)
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},
-#endif // ENABLE_GLIC
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)
     {"enterprise-real-time-url-check-on-android",

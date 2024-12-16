@@ -44,27 +44,6 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
   ~BluetoothDebugManagerClientImpl() override = default;
 
   // BluetoothDebugManagerClient override.
-  void SetDevCoredump(const bool enable,
-                      base::OnceClosure callback,
-                      ErrorCallback error_callback) override {
-    constexpr char kDevCoredump[] = "SetDevCoredump";
-
-    dbus::MethodCall method_call(bluetooth_debug::kBluetoothDebugInterface,
-                                 kDevCoredump);
-
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(enable);
-
-    object_proxy_->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothDebugManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothDebugManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
-  }
-
-  // BluetoothDebugManagerClient override.
   void SetLLPrivacy(const bool enable,
                     base::OnceClosure callback,
                     ErrorCallback error_callback) override {

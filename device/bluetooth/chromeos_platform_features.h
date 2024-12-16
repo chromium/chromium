@@ -10,9 +10,6 @@
 
 namespace chromeos::bluetooth::features {
 
-// Enables/disables the bluetooth devcoredump feature
-DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kBluetoothCoredump);
-
 // Enables/disables the bluetooth devcoredump feature for floss
 DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kBluetoothFlossCoredump);
 

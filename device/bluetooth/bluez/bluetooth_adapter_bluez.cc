@@ -381,38 +381,12 @@ void BluetoothAdapterBlueZ::Init() {
   }
   initialized_ = true;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bluez::BluezDBusManager::Get()
-      ->GetBluetoothDebugManagerClient()
-      ->SetDevCoredump(
-          base::FeatureList::IsEnabled(
-              chromeos::bluetooth::features::kBluetoothCoredump),
-          base::BindOnce(&BluetoothAdapterBlueZ::OnSetDevCoredumpSuccess,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&BluetoothAdapterBlueZ::OnSetDevCoredumpError,
-                         weak_ptr_factory_.GetWeakPtr()));
-#endif // BUILDFLAG(IS_CHROMEOS)
   std::move(init_callback_).Run();
 }
 
 BluetoothAdapterBlueZ::~BluetoothAdapterBlueZ() {
   Shutdown();
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void BluetoothAdapterBlueZ::OnSetDevCoredumpSuccess() {
-  bool flag = base::FeatureList::IsEnabled(
-      chromeos::bluetooth::features::kBluetoothCoredump);
-  BLUETOOTH_LOG(DEBUG) << "Bluetooth devcoredump state set to " << flag;
-}
-
-void BluetoothAdapterBlueZ::OnSetDevCoredumpError(
-    const std::string& error_name,
-    const std::string& error_message) {
-  BLUETOOTH_LOG(ERROR) << "Failed to update bluetooth devcoredump state: "
-                       << error_name << ": " << error_message;
-}
-#endif // BUILDFLAG(IS_CHROMEOS)
 
 std::string BluetoothAdapterBlueZ::GetAddress() const {
   if (!IsPresent())
