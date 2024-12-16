@@ -204,8 +204,7 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
     base::test::TaskEnvironment::TimeSource time_source)
     : task_environment_{time_source} {
   scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kExtensionTelemetryDisableOffstoreExtensions,
-                            kExtensionTelemetryFileDataForCommandLineExtensions,
+      /*enabled_features=*/{kExtensionTelemetryFileDataForCommandLineExtensions,
                             kExtensionTelemetryForEnterprise},
       /*disabled_features=*/{});
 

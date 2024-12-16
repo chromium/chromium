@@ -767,9 +767,7 @@ void ExtensionTelemetryService::OnUploadComplete(
     SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());
 
     ExtensionTelemetryReportResponse response;
-    if (base::FeatureList::IsEnabled(
-            kExtensionTelemetryDisableOffstoreExtensions) &&
-        response.ParseFromString(response_data)) {
+    if (response.ParseFromString(response_data)) {
       ProcessOffstoreExtensionVerdicts(response);
     }
   }

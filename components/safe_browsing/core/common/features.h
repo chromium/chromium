@@ -176,10 +176,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryReportContactedHosts);
 BASE_DECLARE_FEATURE(
     kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);
 
-// Enables remotely disabling of malicious off-store extensions identified in
-// Extension Telemetry service reports.
-BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);
-
 // Enables reporting of external app redirects
 BASE_DECLARE_FEATURE(kExternalAppRedirectTelemetry);
 
