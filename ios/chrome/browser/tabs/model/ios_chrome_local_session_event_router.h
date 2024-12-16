@@ -9,8 +9,7 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync_sessions/local_session_event_router.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -83,9 +82,6 @@ class IOSChromeLocalSessionEventRouter
   // Called when Batch operation is completed for a web state list.
   void OnSessionEventEnded();
 
-  // Called when a tab is parented.
-  void OnTabParented(web::WebState* web_state);
-
   // Called on observation of a change in `web_state`.
   void OnWebStateChange(web::WebState* web_state);
 
@@ -99,8 +95,6 @@ class IOSChromeLocalSessionEventRouter
   raw_ptr<sync_sessions::LocalSessionEventHandler> handler_ = nullptr;
   const raw_ptr<sync_sessions::SyncSessionsClient> sessions_client_;
   syncer::SyncableService::StartSyncFlare flare_;
-
-  base::CallbackListSubscription const tab_parented_subscription_;
 
   // Track the number of WebStateList we are observing that are in a batch
   // operation.

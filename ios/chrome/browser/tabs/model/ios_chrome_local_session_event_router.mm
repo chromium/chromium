@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/model/glue/sync_start_util.h"
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
-#import "ios/chrome/browser/tabs/model/tab_parenting_global_observer.h"
 
 namespace {
 
@@ -41,12 +40,7 @@ IOSChromeLocalSessionEventRouter::IOSChromeLocalSessionEventRouter(
           std::make_unique<Observer>(this),
           AllWebStateListObservationRegistrar::Mode::REGULAR)),
       sessions_client_(sessions_client),
-      flare_(flare),
-      tab_parented_subscription_(
-          TabParentingGlobalObserver::GetInstance()->RegisterCallback(
-              base::BindRepeating(
-                  &IOSChromeLocalSessionEventRouter::OnTabParented,
-                  base::Unretained(this)))) {
+      flare_(flare) {
   DCHECK(sessions_client_);
 }
 
@@ -89,13 +83,18 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
       web::WebState* replaced_web_state = replace_change.replaced_web_state();
       router_->OnWebStateChange(replaced_web_state);
       replaced_web_state->RemoveObserver(this);
-      replace_change.inserted_web_state()->AddObserver(this);
+
+      web::WebState* inserted_web_state = replace_change.inserted_web_state();
+      router_->OnWebStateChange(inserted_web_state);
+      inserted_web_state->AddObserver(this);
       break;
     }
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
-      insert_change.inserted_web_state()->AddObserver(this);
+      web::WebState* inserted_web_state = insert_change.inserted_web_state();
+      router_->OnWebStateChange(inserted_web_state);
+      inserted_web_state->AddObserver(this);
       break;
     }
     case WebStateListChange::Type::kGroupCreate:
@@ -147,10 +146,6 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateDestroyed(
     web::WebState* web_state) {
   router_->OnWebStateClosed();
   web_state->RemoveObserver(this);
-}
-
-void IOSChromeLocalSessionEventRouter::OnTabParented(web::WebState* web_state) {
-  OnWebStateChange(web_state);
 }
 
 void IOSChromeLocalSessionEventRouter::Observer::WillBeginBatchOperation(
