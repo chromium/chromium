@@ -5460,8 +5460,6 @@ InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
       max_owner_storage_size_(MaxOwnerStorageSize()),
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
-      db_(std::make_unique<sql::Database>(GetDatabaseOptions(),
-                                          "InterestGroups")),
       db_maintenance_timer_(FROM_HERE,
                             kIdlePeriod,
                             this,
