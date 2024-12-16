@@ -107,8 +107,8 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkHighContrastConfig* config);
   void Read(gfx::HDRMetadata* hdr_metadata);
   void Read(SkGradientShader::Interpolation* interpolation);
-
   void Read(scoped_refptr<SkottieWrapper>* skottie);
+  void Read(SkString* sk_string);
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {

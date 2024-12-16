@@ -78,4 +78,47 @@ TEST(PaintOpWriterReaderTest, Vector) {
   EXPECT_EQ(uint_vec, std::vector<uint32_t>({1, 2, 3}));
 }
 
+TEST(PaintOpWriterReaderTest, SkString) {
+  char buffer[128];
+  TestOptionsProvider options_provider;
+  memset(buffer, 0xa5, std::size(buffer));
+  PaintOpWriter writer(buffer, std::size(buffer),
+                       options_provider.serialize_options(),
+                       /*enable_security_constraints=*/true);
+  const SkString original("test string");
+
+  writer.Write(original);
+  // 8 bytes for the `original.size()` (size_t), 11 bytes for the string, but
+  // aligned to 12 bytes.
+  EXPECT_EQ(writer.size(), 20u);
+
+  PaintOpReader reader(buffer, writer.size(),
+                       options_provider.deserialize_options(),
+                       /*enable_security_constraints=*/true);
+  SkString deseralized;
+  reader.Read(&deseralized);
+  EXPECT_EQ(deseralized, original);
+}
+
+TEST(PaintOpWriterReaderTest, EmptySkString) {
+  char buffer[128];
+  TestOptionsProvider options_provider;
+  memset(buffer, 0xa5, std::size(buffer));
+  PaintOpWriter writer(buffer, std::size(buffer),
+                       options_provider.serialize_options(),
+                       /*enable_security_constraints=*/true);
+  const SkString original;
+
+  writer.Write(original);
+  // 8 bytes for size_t 0.
+  EXPECT_EQ(writer.size(), 8u);
+
+  PaintOpReader reader(buffer, writer.size(),
+                       options_provider.deserialize_options(),
+                       /*enable_security_constraints=*/true);
+  SkString deseralized;
+  reader.Read(&deseralized);
+  EXPECT_EQ(deseralized, original);
+}
+
 }  // namespace cc

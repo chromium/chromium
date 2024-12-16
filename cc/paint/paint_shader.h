@@ -41,6 +41,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     kSweepGradient,
     kImage,
     kPaintRecord,
+    kSkSLCommand,
     kShaderCount
   };
 
@@ -122,6 +123,12 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       SkTileMode ty,
       const SkMatrix* local_matrix,
       ScalingBehavior scaling_behavior = ScalingBehavior::kRasterAtScale);
+
+  // Returns null if the `sksl` command is invalid.
+  //
+  // *NOTE*: This is only intended for trusted shader (e.g., shaders that are
+  // part of the Chromium binary).
+  static sk_sp<PaintShader> MakeSkSLCommand(std::string_view sksl);
 
   static size_t GetSerializedSize(const PaintShader* shader);
 
@@ -288,6 +295,15 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   sk_sp<SkImage> sk_cached_image_;
 
   ImageAnalysisState image_analysis_state_ = ImageAnalysisState::kNoAnalysis;
+
+  // The command to be (de)serialized for `Type::kSkSLCommand`. Remains empty
+  // for other shader types.
+  //
+  // TODO(https://crbug.com/384532231): Consider cashing the Skia shader for
+  // performance.
+  //
+  // TODO(https://crbug.com/384075578): Add support to shader uniforms.
+  SkString sksl_command_;
 };
 
 }  // namespace cc

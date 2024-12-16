@@ -657,6 +657,11 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     SetInvalid(DeserializationError::kPaintRecordForbidden);
     return;
   }
+  if (!options_.is_privileged &&
+      shader_type == PaintShader::Type::kSkSLCommand) {
+    valid_ = false;
+    return;
+  }
 
   *shader = sk_sp<PaintShader>(new PaintShader(shader_type));
   PaintShader& ref = **shader;
@@ -739,6 +744,8 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     return;
   }
   ReadVectorContent(positions_size, ref.positions_);
+
+  Read(&ref.sksl_command_);
 
   // We don't write the cached shader, so don't attempt to read it either.
 
@@ -909,6 +916,22 @@ void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
     return;
   }
   DidRead(bytes_to_skip);
+}
+
+void PaintOpReader::Read(SkString* sk_string) {
+  static_assert(std::is_same_v<unsigned char, uint8_t>);
+  size_t size = 0;
+  // We always serialize the empty string's size (0u).
+  ReadSize(&size);
+  if (remaining_bytes_ < size) {
+    valid_ = false;
+  }
+  if (!valid_ || size == 0) {
+    return;
+  }
+  uint8_t* scratch = CopyScratchSpace(size);
+  *sk_string = SkString(reinterpret_cast<char*>(scratch), size);
+  DidRead(size);
 }
 
 void PaintOpReader::AlignMemory(size_t alignment) {

@@ -3540,6 +3540,20 @@ TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
                   PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags))));
 }
 
+TEST(PaintOpBufferTest, SkSLCommandShaderSerialization) {
+  static constexpr char kCommand[] =
+      "half4 main(float2 coord) { return half4(0.5); }";
+
+  PaintFlags flags;
+  flags.setShader(PaintShader::MakeSkSLCommand(kCommand));
+  PaintOpBuffer buffer;
+  buffer.push<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags);
+
+  EXPECT_THAT(SerializeAndDeserialize(buffer),
+              Pointee(ElementsAre(
+                  PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags))));
+}
+
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
 TEST(PaintOpBufferTest, BoundingRect_DrawSkottieOp) {
   PaintOpBuffer buffer;

@@ -158,6 +158,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static size_t SerializedSize(const PaintImage& image);
   static size_t SerializedSize(const PaintRecord& record);
   static size_t SerializedSize(const SkHighContrastConfig& config);
+  static size_t SerializedSize(const SkString& sk_string);
 
   // Serialization of raw/smart pointers is not supported by default.
   template <typename T>
@@ -275,6 +276,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   }
   void Write(const PathEffect* effect);
   void Write(const gfx::HDRMetadata& hdr_metadata);
+  void Write(const SkString& sk_string);
 
   void Write(SkClipOp op) { WriteEnum(op); }
   void Write(PaintCanvas::AnnotationType type) { WriteEnum(type); }
