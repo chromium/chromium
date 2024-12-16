@@ -3206,17 +3206,6 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="DomDistiller.MessageDismissalCondition"
-    enum="ReaderModeMessageDismissalCondition" expires_after="2023-09-10">
-  <owner>twellington@chromium.org</owner>
-  <owner>aishwaryarj@google.com</owner>
-  <summary>
-    Records whether the user accepted or ignored/dismissed the Reader Mode
-    message prompt in conjunction with the Reader Mode accessibility setting.
-    Recorded for Android only.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
     enum="ReaderModeEntryPoint" expires_after="2023-11-30">
   <owner>katie@chromium.org</owner>

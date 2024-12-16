@@ -1765,23 +1765,6 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//components/dom_distiller/content/browser/uma_helper.h:ReaderModeEntryPoint) -->
 
-<!-- LINT.IfChange(ReaderModeMessageDismissalCondition) -->
-
-<enum name="ReaderModeMessageDismissalCondition">
-  <int value="0"
-      label="Message was accepted with accessibility setting selected"/>
-  <int value="1"
-      label="Message was accepted with accessibility setting deselected"/>
-  <int value="2"
-      label="Message was ignored or dismissed with accessibility setting
-             selected"/>
-  <int value="3"
-      label="Message was ignored or dismissed with accessibility setting
-             deselected"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:MessageDismissalCondition) -->
-
 <!-- LINT.IfChange(SodaLanguageCode) -->
 
 <enum name="SodaLanguageCode">
