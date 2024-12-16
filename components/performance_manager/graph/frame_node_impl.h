@@ -207,6 +207,7 @@ class FrameNodeImpl
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
+  // LINT.IfChange(document_prop)
   struct DocumentProperties {
     DocumentProperties();
     ~DocumentProperties();
@@ -250,6 +251,7 @@ class FrameNodeImpl
         &FrameNodeObserver::OnFrameUsesWebRTCChanged>
         uses_web_rtc{false};
   };
+  // LINT.ThenChange(//components/performance_manager/graph/frame_node_impl.cc:document_prop_reset)
 
   // Invoked by subframes on joining/leaving the graph.
   void AddChildFrame(FrameNodeImpl* frame_node);

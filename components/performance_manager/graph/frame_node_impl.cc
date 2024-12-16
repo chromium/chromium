@@ -954,6 +954,7 @@ void FrameNodeImpl::SetInheritedIsIntersectingLargeArea(
 FrameNodeImpl::DocumentProperties::DocumentProperties() = default;
 FrameNodeImpl::DocumentProperties::~DocumentProperties() = default;
 
+// LINT.IfChange(document_prop_reset)
 void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
                                               GURL url_in,
                                               url::Origin origin_in) {
@@ -985,6 +986,8 @@ void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
   network_almost_idle.SetAndMaybeNotify(frame_node, false);
   had_form_interaction.SetAndMaybeNotify(frame_node, false);
   had_user_edits.SetAndMaybeNotify(frame_node, false);
+  uses_web_rtc.SetAndMaybeNotify(frame_node, false);
 }
+// LINT.ThenChange()
 
 }  // namespace performance_manager

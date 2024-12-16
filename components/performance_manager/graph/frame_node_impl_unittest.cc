@@ -106,7 +106,8 @@ TEST_F(FrameNodeImplTest, NavigationCommitted_SameDocument) {
   EXPECT_FALSE(frame_node->GetOrigin().has_value());
 }
 
-TEST_F(FrameNodeImplTest, NavigationCommitted_DifferentDocument) {
+TEST_F(FrameNodeImplTest,
+       NavigationCommitted_DifferentDocument_UrlAndOriginUpdated) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
@@ -119,6 +120,39 @@ TEST_F(FrameNodeImplTest, NavigationCommitted_DifferentDocument) {
       /*is_served_from_back_forward_cache=*/false);
   EXPECT_EQ(kUrl, frame_node->GetURL());
   EXPECT_EQ(kOrigin, frame_node->GetOrigin());
+}
+
+TEST_F(FrameNodeImplTest,
+       NavigationCommitted_DifferentDocument_PropertiesReset) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+
+  frame_node->SetHasNonEmptyBeforeUnload(true);
+  frame_node->SetNetworkAlmostIdle();
+  frame_node->SetHadFormInteraction();
+  frame_node->SetHadUserEdits();
+  frame_node->OnStartedUsingWebRTC();
+
+  EXPECT_TRUE(frame_node->HasNonemptyBeforeUnload());
+  EXPECT_TRUE(frame_node->GetNetworkAlmostIdle());
+  EXPECT_TRUE(frame_node->HadFormInteraction());
+  EXPECT_TRUE(frame_node->HadUserEdits());
+  EXPECT_TRUE(frame_node->UsesWebRTC());
+
+  const GURL kUrl("http://www.foo.com/");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+  frame_node->OnNavigationCommitted(
+      kUrl, kOrigin, /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
+  EXPECT_EQ(kUrl, frame_node->GetURL());
+  EXPECT_EQ(kOrigin, frame_node->GetOrigin());
+
+  EXPECT_FALSE(frame_node->HasNonemptyBeforeUnload());
+  EXPECT_FALSE(frame_node->GetNetworkAlmostIdle());
+  EXPECT_FALSE(frame_node->HadFormInteraction());
+  EXPECT_FALSE(frame_node->HadUserEdits());
+  EXPECT_FALSE(frame_node->UsesWebRTC());
 }
 
 TEST_F(FrameNodeImplTest, RemoveChildFrame) {
