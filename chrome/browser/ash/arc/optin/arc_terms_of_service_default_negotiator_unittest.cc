@@ -539,7 +539,8 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptMetricsNoOwner) {
+// TODO(crbug.com/383267605): Fix flakiness and re-enable.
+TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, DISABLED_AcceptMetricsNoOwner) {
   // Show Terms of service page.
   Status status = Status::PENDING;
   negotiator()->StartNegotiation(UpdateStatusCallback(&status));
@@ -573,8 +574,9 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptMetricsNoOwner) {
             ash::StatsReportingController::Get()->IsEnabled());
 }
 
+// TODO(crbug.com/383267605): Fix flakiness and re-enable.
 TEST_F(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
-       AcceptMetricsUserOptIn) {
+       DISABLED_AcceptMetricsUserOptIn) {
   // Show Terms of service page.
   Status status = Status::PENDING;
   negotiator()->StartNegotiation(UpdateStatusCallback(&status));
