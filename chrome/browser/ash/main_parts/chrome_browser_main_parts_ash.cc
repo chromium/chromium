@@ -1304,6 +1304,22 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
                        shill::kUseLegacyDHCPCDProperty));
 
     ash::ShillManagerClient::Get()->SetProperty(
+        shill::kEnableSingleCACertVerificationPhase1Property,
+        base::Value(base::FeatureList::IsEnabled(
+            features::kSingleCaCertVerificationPhase1)),
+        base::DoNothing(),
+        base::BindOnce(ShillSetPropertyErrorCallback,
+                       shill::kEnableSingleCACertVerificationPhase1Property));
+
+    ash::ShillManagerClient::Get()->SetProperty(
+        shill::kEnableSingleCACertVerificationPhase2Property,
+        base::Value(base::FeatureList::IsEnabled(
+            features::kSingleCaCertVerificationPhase2)),
+        base::DoNothing(),
+        base::BindOnce(ShillSetPropertyErrorCallback,
+                       shill::kEnableSingleCACertVerificationPhase2Property));
+
+    ash::ShillManagerClient::Get()->SetProperty(
         shill::kDisconnectWiFiOnEthernetProperty,
         base::Value(base::FeatureList::IsEnabled(
                         features::kDisconnectWiFiOnEthernetConnected)
