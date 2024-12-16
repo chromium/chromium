@@ -24,6 +24,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kHideSettingsSignInPromo,
     &switches::kUseConsentLevelSigninForLegacyAccountEmailPref,
     &switches::kCctSignInPrompt,
+    &switches::kUnoForAuto,
 };
 
 // static
