@@ -48,6 +48,7 @@ using testing::Property;
 constexpr char kAddressesSuppressedHistogramName[] =
     "Autofill.AddressesSuppressedForDisuse";
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 Matcher<Suggestion> EqualLabels(
     const std::vector<std::vector<Suggestion::Text>>& suggestion_objects) {
   return Field(&Suggestion::labels, suggestion_objects);
@@ -64,6 +65,7 @@ Matcher<Suggestion> EqualLabels(
   }
   return EqualLabels(suggestion_objects);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_IOS)
 Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
@@ -783,6 +785,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(test_address_child.type, SuggestionType::kDevtoolsTestAddressEntry);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Text fixture for label generation related tests. Parameterized by triggering
 // field type since how we build labels depends highly on it.
 class AddressLabelSuggestionGeneratorTest
@@ -897,6 +900,7 @@ TEST_P(AddressLabelSuggestionGeneratorTest,
           AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
           AllOf(EqualLabels({{full_form_filling_label + u"Switzerland"}}))));
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace autofill

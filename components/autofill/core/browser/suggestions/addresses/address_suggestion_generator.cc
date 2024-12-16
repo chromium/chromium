@@ -126,6 +126,7 @@ std::u16string GetProfileSuggestionMainText(const AutofillProfile& profile,
   return profile.GetInfo(trigger_field_type, app_locale);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Returns the minimum number of fields that should be returned by
 // `AutofillProfile::CreateInferredLabels()`, based on the type of the
 // triggering field.
@@ -138,6 +139,7 @@ int GetNumberOfMinimalFieldsToShow(FieldType trigger_field_type) {
     return 1;
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Returns for each profile in `profiles` a differentiating label string to be
 // used as a secondary text in the corresponding suggestion bubble.
@@ -155,13 +157,16 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
                          -> raw_ptr<const AutofillProfile, VectorExperimental> {
                        return &profile;
                      });
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)) {
     differentiating_labels = AutofillProfile::CreateInferredLabels(
         profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
         {trigger_field_type},
         GetNumberOfMinimalFieldsToShow(trigger_field_type), app_locale,
         /*use_improved_labels_order=*/true);
-  } else {
+  } else
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  {
     differentiating_labels = AutofillProfile::CreateInferredLabels(
         profile_ptrs, field_types, /*triggering_field_type=*/std::nullopt,
         {trigger_field_type},
