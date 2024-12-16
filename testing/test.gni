@@ -306,13 +306,22 @@ template("mixed_test") {
             "close_fd_mask",
             "fork",
           ]
-          fuzzer_args =
-              "-undefok=" + string_join(",", known_libfuzzer_args) + " "
+          fuzzer_args = [ "-undefok=" + string_join(",", known_libfuzzer_args) ]
         } else {
-          fuzzer_args = ""
+          fuzzer_args = []
         }
-        fuzzer_args += "--fuzz=$fuzztest_unit --corpus_database=\"\""
-        contents = [ "const char* kFuzzerArgs = \"${fuzzer_args}\"; const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" ]
+
+        fuzzer_args += [
+          "--fuzz=${fuzztest_unit}",
+          "--corpus_database=",
+        ]
+        fuzzer_args_joined = string_join(" ", fuzzer_args)
+
+        NEWLINE = "$0x0A"
+
+        contents =
+            "const char* kFuzzerArgs = \"${fuzzer_args_joined}\";" + NEWLINE +
+            "const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" + NEWLINE
       }
 
       _fuzzer_target_name = target_name
