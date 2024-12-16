@@ -155,9 +155,7 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
                          -> raw_ptr<const AutofillProfile, VectorExperimental> {
                        return &profile;
                      });
-  if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels) &&
-      !features::kAutofillImprovedLabelsParamOnlyWithMainTextChangesParam
-           .Get()) {
+  if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)) {
     differentiating_labels = AutofillProfile::CreateInferredLabels(
         profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
         {trigger_field_type},

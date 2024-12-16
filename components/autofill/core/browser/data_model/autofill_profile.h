@@ -358,7 +358,7 @@ class AutofillProfile : public AutofillDataModel {
   // |indices|, and stores the results to the corresponding elements of
   // |labels|. These labels include enough fields to differentiate among the
   // profiles, if possible; and also at least |num_fields_to_include| fields, if
-  // possible. The label fields are drawn from |fields|.
+  // possible. The label fields are drawn from |field_types|.
   static void CreateInferredLabelsHelper(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
@@ -366,6 +366,7 @@ class AutofillProfile : public AutofillDataModel {
       const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,
       const std::string& app_locale,
+      bool force_differentiating_label_in_front,
       std::vector<std::u16string>& labels);
 
   // Utilities for listing and lookup of the data members that constitute

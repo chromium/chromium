@@ -265,7 +265,7 @@ BASE_FEATURE(kAutofillImportFromAutocompleteUnrecognized,
              "AutofillImportFromAutocompleteUnrecognized",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the autofill suggestion labels are more more descriptive and
+// When enabled, the autofill suggestion labels are more descriptive and
 // relevant.
 // TODO(crbug.com/380273791): Cleanup when launched.
 BASE_FEATURE(kAutofillImprovedLabels,
@@ -279,12 +279,13 @@ const base::FeatureParam<bool>
         &kAutofillImprovedLabels,
         "autofill_improved_labels_without_main_text_changes", false};
 
-// Controls whether labels should not be improved, but only the main text.
+// Controls whether differentiating labels should be shown before or after the
+// improved labels.
 // TODO(crbug.com/380273791): Clean up when launched.
 const base::FeatureParam<bool>
-    kAutofillImprovedLabelsParamOnlyWithMainTextChangesParam{
+    kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam{
         &kAutofillImprovedLabels,
-        "autofill_improved_labels_only_with_main_text_changes", false};
+        "autofill_improved_labels_with_differentiating_labels_in_front", false};
 
 // If enabled, we start forwarding submissions with source
 // DOM_MUTATION_AFTER_AUTOFILL, even for non-password forms.

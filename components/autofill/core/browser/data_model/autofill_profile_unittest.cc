@@ -602,7 +602,14 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
 TEST_F(
     AutofillProfileTest,
     CreateInferredLabels_TriggeringFieldUsedToDecideWhetherToAddADifferentiatingLabel) {
-  base::test::ScopedFeatureList feature{features::kAutofillImprovedLabels};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillImprovedLabels,
+      {{features::
+            kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam
+                .name,
+        "true"}});
+
   AutofillProfile profile1 = test::GetFullProfile();
   AutofillProfile profile2 = test::GetFullProfile();
   profile1.SetRawInfo(EMAIL_ADDRESS, u"hoa@gmail.com");
@@ -640,8 +647,8 @@ TEST_F(
       /*excluded_fields=*/{}, /*minimal_fields_shown=*/1, "en-US",
       /*use_improved_labels_order=*/true);
   ASSERT_EQ(2U, labels.size());
-  EXPECT_EQ(u"John H. Doe, hoa@gmail.com", labels[0]);
-  EXPECT_EQ(u"John H. Doe, pham@gmail.com", labels[1]);
+  EXPECT_EQ(u"hoa@gmail.com, John H. Doe", labels[0]);
+  EXPECT_EQ(u"pham@gmail.com, John H. Doe", labels[1]);
 }
 
 // Test that we do not show duplicate fields in the labels.
@@ -732,7 +739,14 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
 // Test that `ADDRESS_HOME_LINE2` is used as a differentiating label if
 // necessary.
 TEST_F(AutofillProfileTest, CreateInferredLabelsDifferentiateByAddressLine2) {
-  base::test::ScopedFeatureList feature_list(features::kAutofillImprovedLabels);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillImprovedLabels,
+      {{features::
+            kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam
+                .name,
+        "true"}});
+
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(
       i18n_model_definition::kLegacyHierarchyCountryCode));
@@ -749,8 +763,8 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsDifferentiateByAddressLine2) {
       /*minimal_fields_shown=*/1, "en-US",
       /*use_improved_labels_order=*/true);
   ASSERT_EQ(2U, labels.size());
-  EXPECT_EQ(u"88 Nowhere Ave., Apt. 42", labels[0]);
-  EXPECT_EQ(u"88 Nowhere Ave., Apt. 43", labels[1]);
+  EXPECT_EQ(u"Apt. 42, 88 Nowhere Ave.", labels[0]);
+  EXPECT_EQ(u"Apt. 43, 88 Nowhere Ave.", labels[1]);
 }
 
 TEST_F(AutofillProfileTest, IsSubsetOf) {

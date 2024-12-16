@@ -97,7 +97,7 @@ extern const base::FeatureParam<bool>
     kAutofillImprovedLabelsParamWithoutMainTextChangesParam;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>
-    kAutofillImprovedLabelsParamOnlyWithMainTextChangesParam;
+    kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSupportPhoneticNameForJP);
 COMPONENT_EXPORT(AUTOFILL)

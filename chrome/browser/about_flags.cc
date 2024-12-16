@@ -4042,19 +4042,22 @@ const FeatureEntry::FeatureVariation kAutofillVcnEnrollRequestTimeoutOptions[] =
 const FeatureEntry::FeatureParam
     kAutofillImprovedLabelsWithoutMainTextChanges[] = {
         {"autofill_improved_labels_without_main_text_changes", "true"},
-        {"autofill_improved_labels_only_with_main_text_changes", "false"}};
+        {"autofill_improved_labels_with_differentiating_labels_in_front",
+         "false"}};
 
 const FeatureEntry::FeatureParam
-    kAutofillImprovedLabelsOnlyWithMainTextChanges[] = {
+    kAutofillImprovedLabelsWithDifferentiatingLabelsInFront[] = {
         {"autofill_improved_labels_without_main_text_changes", "false"},
-        {"autofill_improved_labels_only_with_main_text_changes", "true"}};
+        {"autofill_improved_labels_with_differentiating_labels_in_front",
+         "true"}};
 
 const FeatureEntry::FeatureVariation kAutofillImprovedLabelsVariations[] = {
     {"without main text changes", kAutofillImprovedLabelsWithoutMainTextChanges,
      std::size(kAutofillImprovedLabelsWithoutMainTextChanges), nullptr},
-    {"with only main text changes",
-     kAutofillImprovedLabelsOnlyWithMainTextChanges,
-     std::size(kAutofillImprovedLabelsOnlyWithMainTextChanges), nullptr},
+    {"with differentiating labels in front",
+     kAutofillImprovedLabelsWithDifferentiatingLabelsInFront,
+     std::size(kAutofillImprovedLabelsWithDifferentiatingLabelsInFront),
+     nullptr},
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -11782,7 +11785,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillImprovedLabelsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillImprovedLabels,
                                     kAutofillImprovedLabelsVariations,
-                                    "AutofillImprovedLabelsVariations")},
+                                    "AutofillImprovedLabels")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-bookmark-bar", flag_descriptions::kAndroidBookmarkBarName,
