@@ -320,7 +320,8 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
  public:
   // WebContentsDelegate overrides.
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override {
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
     return PreloadingEligibility::kEligible;
   }
 };

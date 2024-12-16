@@ -589,7 +589,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
     // Check whether preloading is enabled. If it is not enabled, report the
     // reason.
     switch (initiator_web_contents.GetDelegate()->IsPrerender2Supported(
-        initiator_web_contents)) {
+        initiator_web_contents, attributes.trigger_type)) {
       case PreloadingEligibility::kEligible:
         // nop
         break;

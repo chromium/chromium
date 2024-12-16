@@ -447,7 +447,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPrerenderingEmbedderInitiatedActivation() throws Throwable {
-        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
@@ -479,7 +478,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testSameOriginRedirection() throws Throwable {
-        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         // Construct an initial prerendering URL that is redirected to `mPrerenderingUrl`.
@@ -520,7 +518,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testSameSiteCrossOriginRedirection() throws Throwable {
-        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         // Construct an initial prerendering URL that is redirected to `mPrerenderingUrl`.
@@ -566,7 +563,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testCrossSiteRedirection() throws Throwable {
-        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         // Construct an initial prerendering URL that is redirected to `mPrerenderingUrl`.
@@ -603,7 +599,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testAdditionalHeaders() throws Throwable {
-        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
@@ -671,7 +666,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testInvalidAdditionalHeaders() throws Throwable {
-        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         final String[] invalids = {"null\u0000", "cr\r", "nl\n"};
@@ -782,7 +776,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testNoVarySearchHintAndHeader() throws Throwable {
-        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
@@ -829,7 +822,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testNullActivationCallback() throws Throwable {
-        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
         var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);

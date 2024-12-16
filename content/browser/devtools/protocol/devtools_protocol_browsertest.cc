@@ -246,7 +246,8 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
 
   // WebContentsDelegate overrides.
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override {
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
     return PreloadingEligibility::kEligible;
   }
 
@@ -2921,7 +2922,8 @@ class DevToolsProtocolDeviceEmulationPrerenderTest
 
   // WebContentsDelegate overrides.
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override {
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
     return PreloadingEligibility::kEligible;
   }
 

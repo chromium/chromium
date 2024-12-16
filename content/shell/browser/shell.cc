@@ -697,7 +697,9 @@ bool Shell::IsBackForwardCacheSupported(WebContents& web_contents) {
   return true;
 }
 
-PreloadingEligibility Shell::IsPrerender2Supported(WebContents& web_contents) {
+PreloadingEligibility Shell::IsPrerender2Supported(
+    WebContents& web_contents,
+    PreloadingTriggerType trigger_type) {
   return PreloadingEligibility::kEligible;
 }
 

@@ -81,7 +81,8 @@ class AwWebContentsDelegate
       content::WebContents* web_contents) override;
   bool IsBackForwardCacheSupported(content::WebContents& web_contents) override;
   content::PreloadingEligibility IsPrerender2Supported(
-      content::WebContents& web_contents) override;
+      content::WebContents& web_contents,
+      content::PreloadingTriggerType trigger_type) override;
   content::NavigationController::UserAgentOverrideOption
   ShouldOverrideUserAgentForPrerender2() override;
   bool ShouldAllowPartialParamMismatchOfPrerender2(

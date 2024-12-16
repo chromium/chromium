@@ -142,7 +142,8 @@ bool PreviewTab::AuditWebInputEvent(const blink::WebInputEvent& event) {
 }
 
 content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    content::PreloadingTriggerType trigger_type) {
   return content::PreloadingEligibility::kPreloadingDisabled;
 }
 

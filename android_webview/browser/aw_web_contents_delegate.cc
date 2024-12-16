@@ -350,7 +350,13 @@ bool AwWebContentsDelegate::IsBackForwardCacheSupported(
 }
 
 content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    content::PreloadingTriggerType trigger_type) {
+  // Allow when prerendering is triggered by the WebView Prerender API.
+  if (trigger_type == content::PreloadingTriggerType::kEmbedder) {
+    return content::PreloadingEligibility::kEligible;
+  }
+
   AwSettings* aw_settings = AwSettings::FromWebContents(&web_contents);
   if (aw_settings->IsPrerender2Allowed()) {
     return content::PreloadingEligibility::kEligible;

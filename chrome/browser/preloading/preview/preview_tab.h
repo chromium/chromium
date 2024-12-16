@@ -72,7 +72,8 @@ class PreviewTab final : public content::WebContentsDelegate,
 
   // content::WebContentsDelegate implementation:
   content::PreloadingEligibility IsPrerender2Supported(
-      content::WebContents& web_contents) override;
+      content::WebContents& web_contents,
+      content::PreloadingTriggerType trigger_type) override;
 
   void RegisterKeyboardAccelerators();
 

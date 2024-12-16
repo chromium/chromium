@@ -1826,7 +1826,8 @@ bool Browser::IsBackForwardCacheSupported(content::WebContents& web_contents) {
 }
 
 content::PreloadingEligibility Browser::IsPrerender2Supported(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    content::PreloadingTriggerType trigger_type) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents.GetBrowserContext());
   return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
