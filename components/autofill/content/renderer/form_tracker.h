@@ -83,7 +83,6 @@ class FormTracker : public content::RenderFrameObserver,
   using UserGestureRequired =
       base::StrongAlias<class UserGestureRequiredTag, bool>;
   explicit FormTracker(content::RenderFrame* render_frame,
-                       UserGestureRequired user_gesture_required,
                        AutofillAgent& agent);
 
   FormTracker(const FormTracker&) = delete;
@@ -107,6 +106,11 @@ class FormTracker : public content::RenderFrameObserver,
   void UpdateLastInteractedElement(
       absl::variant<FormRendererId, FieldRendererId> element_id);
   void ResetLastInteractedElements();
+
+  // Set whether a user gesture is required to accept text changes. If
+  // `user_gesture_required` is false, text changes without user gestures are
+  // discarded.
+  void SetUserGestureRequired(UserGestureRequired user_gesture_required);
 
   FormRef last_interacted_form() const { return last_interacted_.form; }
 
@@ -175,7 +179,7 @@ class FormTracker : public content::RenderFrameObserver,
   void ElementWasHiddenOrRemoved(mojom::SubmissionSource source);
 
   // Whether a user gesture is required to pass on text field change events.
-  const UserGestureRequired user_gesture_required_;
+  UserGestureRequired user_gesture_required_ = UserGestureRequired(true);
 
   struct {
     FormRef form;

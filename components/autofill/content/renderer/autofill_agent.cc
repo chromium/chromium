@@ -474,6 +474,7 @@ AutofillAgent::AutofillAgent(
       config_(config),
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)) {
+  form_tracker_->SetUserGestureRequired(config.user_gesture_required);
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(

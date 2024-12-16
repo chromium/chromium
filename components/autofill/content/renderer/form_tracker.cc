@@ -113,11 +113,9 @@ FieldRendererId FieldRef::GetId() const {
 }
 
 FormTracker::FormTracker(content::RenderFrame* render_frame,
-                         UserGestureRequired user_gesture_required,
                          AutofillAgent& agent)
     : content::RenderFrameObserver(render_frame),
       blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
-      user_gesture_required_(user_gesture_required),
       agent_(agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
 }
@@ -467,6 +465,11 @@ void FormTracker::ResetLastInteractedElements() {
     form_element_observer_->Disconnect();
     form_element_observer_ = nullptr;
   }
+}
+
+void FormTracker::SetUserGestureRequired(
+    UserGestureRequired user_gesture_required) {
+  user_gesture_required_ = user_gesture_required;
 }
 
 bool FormTracker::IsTracking() const {
