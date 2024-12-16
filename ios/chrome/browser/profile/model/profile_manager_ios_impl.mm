@@ -21,6 +21,7 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/uuid.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
 #import "ios/chrome/browser/profile/model/profile_ios_impl.h"
@@ -215,6 +216,7 @@ bool ProfileManagerIOSImpl::HasProfileWithName(std::string_view name) const {
 bool ProfileManagerIOSImpl::CanCreateProfileWithName(
     std::string_view name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Cannot create a profile with the same name as an existing profile.
   if (HasProfileWithName(name)) {
     return false;
@@ -225,9 +227,12 @@ bool ProfileManagerIOSImpl::CanCreateProfileWithName(
     return false;
   }
 
-  // TODO(crbug.com/335630301): check whether there is a Profile with that name
-  // whose deletion is pending, and return false if this is the case (to avoid
-  // recovering its state).
+  const base::Value::List& profiles_to_remove =
+      local_state_->GetList(prefs::kProfilesToRemove);
+  if (base::Contains(profiles_to_remove, name)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -243,6 +248,19 @@ std::string ProfileManagerIOSImpl::ReserveNewProfileName() {
   profile_attributes_storage_.AddProfile(profile_name);
 
   return profile_name;
+}
+
+bool ProfileManagerIOSImpl::CanDeleteProfileWithName(
+    std::string_view name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!HasProfileWithName(name)) {
+    return false;
+  }
+  // Cannot delete the personal profile.
+  if (name == profile_attributes_storage_.GetPersonalProfileName()) {
+    return false;
+  }
+  return true;
 }
 
 bool ProfileManagerIOSImpl::LoadProfileAsync(
@@ -323,6 +341,22 @@ void ProfileManagerIOSImpl::UnloadAllProfiles() {
   while (!profiles_map_.empty()) {
     const std::string& name = profiles_map_.begin()->first;
     UnloadProfile(name);
+  }
+}
+
+void ProfileManagerIOSImpl::MarkProfileForDeletion(std::string_view name) {
+  DCHECK(CanDeleteProfileWithName(name));
+
+  ScopedListPrefUpdate update(local_state_, prefs::kProfilesToRemove);
+  update->Append(base::Value(name));
+
+  auto iter = profiles_map_.find(name);
+  if (iter != profiles_map_.end() && iter->second.is_loaded()) {
+    ProfileIOS* profile = iter->second.profile();
+    DCHECK(profile);
+    for (auto& observer : observers_) {
+      observer.OnProfileMarkedForPermanentDeletion(this, profile);
+    }
   }
 }
 

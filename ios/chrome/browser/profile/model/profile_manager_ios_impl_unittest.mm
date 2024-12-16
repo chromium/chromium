@@ -560,3 +560,75 @@ TEST_F(ProfileManagerIOSImplTest, ReserveNewProfileName) {
       attributes_storage().GetAttributesForProfileWithName(name);
   EXPECT_TRUE(attrs.IsNewProfile());
 }
+
+// Tests that marking profile for deletion invoke
+// OnProfileMarkedForPermanentDeletion(...) on the observers.
+TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
+  // Create a few profiles synchronously.
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
+  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletation_called());
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
+
+  // Check that the profiles are accessible.
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+
+  // Mark profile for deletion, they should not longer be accessible and the
+  // observer must have been notified of that.
+  profile_manager().MarkProfileForDeletion(kProfileName2);
+
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_TRUE(observer.on_profile_marked_for_permanent_deletation_called());
+}
+
+// Tests that marking unloaded profile for deletion does not invoke
+// OnProfileMarkedForPermanentDeletion(...) on the observers.
+TEST_F(ProfileManagerIOSImplTest,
+       MarkProfileForDeletion_UnloadedProfileShouldNotCallObserver) {
+  // Create a few profiles synchronously.
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
+  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletation_called());
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
+
+  // Check that the profiles are accessible.
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+
+  // Unload a profile, it should not longer be accessible and the
+  // observer must have been notified of that.
+  profile_manager().UnloadProfile(kProfileName2);
+
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_TRUE(observer.on_profile_unloaded_called());
+
+  // Mark unloaded profile for deletion, ensure the observer is not called.
+  profile_manager().MarkProfileForDeletion(kProfileName2);
+
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletation_called());
+}
+
+// Tests that it is not possible to create a profile with a name marked for
+// deletion.
+TEST_F(ProfileManagerIOSImplTest,
+       MarkProfileForDeletion_CantCreateProfileWithProfileMarkedForDeletion) {
+  // Create a few profiles synchronously.
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  // Check that the profiles are accessible.
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+
+  // Mark profile for deletion.
+  profile_manager().MarkProfileForDeletion(kProfileName2);
+  EXPECT_FALSE(profile_manager().CanCreateProfileWithName(kProfileName2));
+}

@@ -46,6 +46,7 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   bool HasProfileWithName(std::string_view name) const override;
   bool CanCreateProfileWithName(std::string_view name) const override;
   std::string ReserveNewProfileName() override;
+  bool CanDeleteProfileWithName(std::string_view name) const override;
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override;
@@ -56,6 +57,7 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   ProfileIOS* CreateProfile(std::string_view name) override;
   void UnloadProfile(std::string_view name) override;
   void UnloadAllProfiles() override;
+  void MarkProfileForDeletion(std::string_view name) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // ProfileIOS::Delegate:

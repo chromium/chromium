@@ -159,6 +159,10 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
     return profile_name;
   }
 
+  bool CanDeleteProfileWithName(std::string_view name) const override {
+    return false;
+  }
+
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override {
@@ -189,6 +193,8 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
 
   void UnloadProfile(std::string_view name) override { NOTREACHED(); }
   void UnloadAllProfiles() override { NOTREACHED(); }
+
+  void MarkProfileForDeletion(std::string_view name) override { NOTREACHED(); }
 
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override {
     return &profile_attributes_storage_;

@@ -88,6 +88,11 @@ std::string TestProfileManagerIOS::ReserveNewProfileName() {
   return name;
 }
 
+bool TestProfileManagerIOS::CanDeleteProfileWithName(
+    std::string_view name) const {
+  return false;
+}
+
 bool TestProfileManagerIOS::LoadProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
@@ -147,6 +152,10 @@ void TestProfileManagerIOS::UnloadAllProfiles() {
       observer.OnProfileUnloaded(this, profile.get());
     }
   }
+}
+
+void TestProfileManagerIOS::MarkProfileForDeletion(std::string_view name) {
+  // No-op
 }
 
 ProfileAttributesStorageIOS*

@@ -64,6 +64,10 @@ inline constexpr char kNumberOfProfiles[] = "profile.profiles_created";
 // A map of a scene and a profile.
 inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";
 
+// List of profiles' name that has been marked for deletion.
+inline constexpr char kProfilesToRemove[] =
+    "ios.multiprofile.profiles_marked_for_deletion";
+
 // A string of NSUUID used to access the WebKit storage per Profile.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
 
