@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>IndexedDB: Historical features</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: title=IndexedDB: Historical features
+// META: global=window,worker
+
+'use strict';
+
 test(function() {
   // Replaced circa December 2011 by 'error'.
   assert_false('errorCode' in IDBRequest.prototype);
@@ -73,8 +72,6 @@ var removedFromWindow = [
 
 removedFromWindow.forEach(function(name) {
   test(function() {
-    assert_false(name in window);
+    assert_false(name in self);
   }, '"' + name + '" should not be supported');
 });
-
-</script>
