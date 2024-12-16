@@ -74,6 +74,12 @@ const FormData* GetFormByName(const std::vector<FormData>& forms,
 
 class FormCacheBrowserTest : public test::AutofillRendererTest {
  public:
+  static constexpr CallTimerState kCallTimerStateDummy = {
+      .call_site = CallTimerState::CallSite::kExtractForms,
+      .last_autofill_agent_reset = {},
+      .last_dom_content_loaded = {},
+  };
+
   ~FormCacheBrowserTest() override = default;
 
   void SetUp() override {
@@ -87,7 +93,8 @@ class FormCacheBrowserTest : public test::AutofillRendererTest {
   }
 
   FormCache::UpdateFormCacheResult UpdateFormCache() {
-    return form_cache_->UpdateFormCache(GetFieldDataManager());
+    return form_cache_->UpdateFormCache(GetFieldDataManager(),
+                                        kCallTimerStateDummy);
   }
 
   size_t num_extracted_forms() {
@@ -578,14 +585,15 @@ TEST_F(FormCacheBrowserTest, UpdateFormCacheMeasuresTotalTime) {
     <input>
   )");
   // FormCache::UpdateFormCache() is called by AutofillAgent.
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.UpdateFormCache", 1);
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.UpdateFormCache.UpdateFormCache", 1);
+  histogram_tester.ExpectTotalCount("Autofill.TimingPrecise.UpdateFormCache",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.TimingPrecise.UpdateFormCache.DidDispatchDomContentLoadedEvent",
+      1);
   // form_util::ExtractFormData() is also called by PasswordAutofillAgent.
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.ExtractFormData", 3);
-  histogram_tester.ExpectTotalCount(  //
+  histogram_tester.ExpectTotalCount("Autofill.TimingPrecise.ExtractFormData",
+                                    3);
+  histogram_tester.ExpectTotalCount(
       "Autofill.TimingPrecise.ExtractFormData.UpdateFormCache", 1);
 }
 

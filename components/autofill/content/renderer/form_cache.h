@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -75,7 +76,8 @@ class FormCache {
   // Updates |extracted_forms_| to contain the forms that are currently in the
   // DOM.
   UpdateFormCacheResult UpdateFormCache(
-      const FieldDataManager& field_data_manager);
+      const FieldDataManager& field_data_manager,
+      const CallTimerState& timer_state);
 
  private:
   friend class FormCacheTestApi;

@@ -304,8 +304,13 @@ void ApplyFieldsAction(
                                *base::MakeRefCounted<FieldDataManager>());
 }
 
-constexpr CallTimerState kCallTimerStateDummy = {
+static constexpr CallTimerState kExtractFormDataCallTimerStateDummy = {
     .call_site = CallTimerState::CallSite::kUpdateFormCache,
+    .last_autofill_agent_reset = {},
+    .last_dom_content_loaded = {},
+};
+static constexpr CallTimerState kUpdateFormCacheCallTimerStateDummy = {
+    .call_site = CallTimerState::CallSite::kExtractForms,
     .last_autofill_agent_reset = {},
     .last_dom_content_loaded = {},
 };
@@ -313,7 +318,7 @@ constexpr CallTimerState kCallTimerStateDummy = {
 FormData FindForm(const blink::WebFormControlElement& element) {
   if (auto p = FindFormAndFieldForFormControlElement(
           element, *base::MakeRefCounted<FieldDataManager>(),
-          kCallTimerStateDummy, {})) {
+          kExtractFormDataCallTimerStateDummy, {})) {
     return p->first;
   }
   return FormData();
@@ -370,9 +375,9 @@ class FormAutofillTest : public test::AutofillRendererTest {
   std::optional<FormData> ExtractFormData(
       WebFormElement form,
       DenseSet<ExtractOption> extract_options = {}) {
-    return form_util::ExtractFormData(GetDocument(), form,
-                                      *base::MakeRefCounted<FieldDataManager>(),
-                                      kCallTimerStateDummy, extract_options);
+    return form_util::ExtractFormData(
+        GetDocument(), form, *base::MakeRefCounted<FieldDataManager>(),
+        kExtractFormDataCallTimerStateDummy, extract_options);
   }
 
   std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
@@ -381,12 +386,13 @@ class FormAutofillTest : public test::AutofillRendererTest {
       DenseSet<ExtractOption> extract_options = {}) {
     return form_util::FindFormAndFieldForFormControlElement(
         control, *base::MakeRefCounted<FieldDataManager>(),
-        kCallTimerStateDummy, extract_options);
+        kExtractFormDataCallTimerStateDummy, extract_options);
   }
 
   FormCache::UpdateFormCacheResult UpdateFormCache() {
     return form_cache_->UpdateFormCache(
-        *base::MakeRefCounted<FieldDataManager>());
+        *base::MakeRefCounted<FieldDataManager>(),
+        kUpdateFormCacheCallTimerStateDummy);
   }
 
   void ExpectLabels(const char* html,

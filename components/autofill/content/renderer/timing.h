@@ -33,6 +33,10 @@ struct CallTimerState {
     kShowSuggestionPopup,
     kUpdateFormCache,
     kUpdateLastInteractedElement,
+    kDidDispatchDomContentLoadedEvent,
+    kEmitFormIssuesToDevtools,
+    kExtractForms,
+    kExtractFormsAndNotifyPasswordAutofillAgent,
   };
   CallSite call_site = internal::IsRequired();
   base::TimeTicks last_autofill_agent_reset = internal::IsRequired();

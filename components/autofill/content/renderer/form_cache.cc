@@ -61,10 +61,10 @@ void FormCache::Reset() {
 }
 
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
-    const FieldDataManager& field_data_manager) {
+    const FieldDataManager& field_data_manager,
+    const CallTimerState& timer_state) {
   constexpr auto kUpdateFormCache = CallTimerState::CallSite::kUpdateFormCache;
-  ScopedCallTimer timer("UpdateFormCache",
-                        agent_->GetCallTimerState(kUpdateFormCache));
+  ScopedCallTimer timer("UpdateFormCache", timer_state);
 
   // |extracted_forms_| is re-populated below in ProcessForm().
   std::map<FormRendererId, FormData> old_extracted_forms =
@@ -139,6 +139,5 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   }
   return r;
 }
-
 
 }  // namespace autofill

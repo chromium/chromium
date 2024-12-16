@@ -415,7 +415,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // running) is expensive.
   void ExtractFormsAndNotifyPasswordAutofillAgent(base::OneShotTimer& timer);
 
-  void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback);
+  void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback,
+                               const CallTimerState& timer_state);
 
   // Hides any currently showing Autofill popup.
   void HidePopup();

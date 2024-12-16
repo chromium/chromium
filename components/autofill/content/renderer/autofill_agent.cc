@@ -43,6 +43,7 @@
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -528,7 +529,8 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
                                 !unsafe_render_frame()->IsInFencedFrameTree());
   is_dom_content_loaded_ = true;
   timing_.last_dom_content_loaded = base::TimeTicks::Now();
-  ExtractFormsUnthrottled(/*callback=*/{});
+  ExtractFormsUnthrottled(/*callback=*/{},
+                          GetCallTimerState(kDidDispatchDomContentLoadedEvent));
 }
 
 void AutofillAgent::DidChangeScrollOffset() {
@@ -1505,7 +1507,8 @@ void AutofillAgent::ExtractLabeledTextNodeValue(
 
 void AutofillAgent::EmitFormIssuesToDevtools() {
   // TODO(crbug.com/1399414,crbug.com/1444566): Throttle this call if possible.
-  ExtractFormsUnthrottled(/*callback=*/{});
+  ExtractFormsUnthrottled(/*callback=*/{},
+                          GetCallTimerState(kEmitFormIssuesToDevtools));
 }
 
 void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
@@ -1518,7 +1521,8 @@ void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
   }
   timer.Start(FROM_HERE, kFormsSeenThrottle,
               base::BindOnce(&AutofillAgent::ExtractFormsUnthrottled,
-                             base::Unretained(this), std::move(callback)));
+                             base::Unretained(this), std::move(callback),
+                             GetCallTimerState(kExtractForms)));
 }
 
 void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
@@ -1536,11 +1540,13 @@ void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
                   password_autofill_agent->OnDynamicFormsSeen();
                 }
               },
-              base::Unretained(password_autofill_agent_.get()))));
+              base::Unretained(password_autofill_agent_.get())),
+          GetCallTimerState(kExtractFormsAndNotifyPasswordAutofillAgent)));
 }
 
 void AutofillAgent::ExtractFormsUnthrottled(
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool)> callback,
+    const CallTimerState& timer_state) {
   content::RenderFrame* render_frame = unsafe_render_frame();
   if (!render_frame) {
     if (!callback.is_null()) {
@@ -1549,7 +1555,7 @@ void AutofillAgent::ExtractFormsUnthrottled(
     return;
   }
   FormCache::UpdateFormCacheResult cache =
-      form_cache_.UpdateFormCache(field_data_manager());
+      form_cache_.UpdateFormCache(field_data_manager(), timer_state);
   form_issues::MaybeEmitFormIssuesToDevtools(*render_frame->GetWebFrame(),
                                              cache.updated_forms);
   if (!cache.updated_forms.empty() || !cache.removed_forms.empty()) {
