@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -24,8 +25,10 @@
 namespace password_manager {
 
 namespace {
+
 const std::string kLineEnding = "\n";
-}
+
+}  // namespace
 
 class LoginDbDeprecationPasswordExporterTest : public testing::Test {
  public:
@@ -48,7 +51,7 @@ class LoginDbDeprecationPasswordExporterTest : public testing::Test {
   const base::FilePath& export_dir() { return temp_dir_.GetPath(); }
 
   LoginDbDeprecationPasswordExporter* exporter() { return exporter_.get(); }
-  PasswordStoreInterface* password_store() { return password_store_.get(); }
+  scoped_refptr<TestPasswordStore> password_store() { return password_store_; }
 
  protected:
   base::test::TaskEnvironment task_env_;
@@ -62,9 +65,8 @@ class LoginDbDeprecationPasswordExporterTest : public testing::Test {
 
 TEST_F(LoginDbDeprecationPasswordExporterTest, DoesntExportIfNoPasswords) {
   // No passwords in the backend.
-  exporter()->Start(password_store());
-
-  task_env_.RunUntilIdle();
+  exporter()->Start(password_store(), task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
 
   base::FilePath expected_file_path =
       export_dir().Append(FILE_PATH_LITERAL("ChromePasswords.csv"));
@@ -81,17 +83,15 @@ TEST_F(LoginDbDeprecationPasswordExporterTest, ExportsBackendPasswords) {
   form.password_value = u"Secret";
   form.notes = {PasswordNote(kNoteValue, base::Time::Now())};
 
-  base::test::TestFuture<PasswordChangesOrError> future;
   password_store()->AddLogin(form, task_env_.QuitClosure());
   task_env_.RunUntilQuit();
 
-  exporter()->Start(password_store());
+  exporter()->Start(password_store(), task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+
   base::FilePath expected_file_path =
       export_dir().Append(FILE_PATH_LITERAL("ChromePasswords.csv"));
-  ASSERT_TRUE(base::test::RunUntil([&expected_file_path]() {
-    return base::PathExists(expected_file_path);
-  }));
-
+  EXPECT_TRUE(base::PathExists(expected_file_path));
   std::string contents;
   const std::string kExpectedContents =
       "name,url,username,password,note" + kLineEnding +

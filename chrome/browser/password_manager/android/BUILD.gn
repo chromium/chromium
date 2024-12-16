@@ -20,6 +20,8 @@ android_library("android_backend_java_enums") {
 
 source_set("backend_public") {
   sources = [
+    "login_db_deprecation_runner_factory.cc",
+    "login_db_deprecation_runner_factory.h",
     "password_manager_settings_service_android_impl.cc",
     "password_manager_settings_service_android_impl.h",
   ]
@@ -31,6 +33,8 @@ source_set("backend_public") {
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/content:content",
     "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/browser:password_manager_buildflags",
+    "//components/password_manager/core/browser/export",
     "//components/password_manager/core/browser/features:password_features",
     "//components/prefs:prefs",
     "//components/sync/service",
@@ -557,6 +561,7 @@ source_set("unit_tests") {
     "fake_password_manager_lifecycle_helper.h",
     "first_cct_page_load_marker_unittest.cc",
     "generated_password_saved_message_delegate_unittest.cc",
+    "login_db_deprecation_runner_factory_unittest.cc",
     "mock_password_checkup_launcher_helper.cc",
     "mock_password_checkup_launcher_helper.h",
     "mock_password_manager_error_message_helper_bridge.cc",

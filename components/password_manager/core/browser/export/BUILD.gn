@@ -27,6 +27,8 @@ source_set("export") {
     sources += [
       "login_db_deprecation_password_exporter.cc",
       "login_db_deprecation_password_exporter.h",
+      "login_db_deprecation_runner.cc",
+      "login_db_deprecation_runner.h",
     ]
     deps += [ "//components/password_manager/core/browser/password_store:password_store_interface" ]
   }

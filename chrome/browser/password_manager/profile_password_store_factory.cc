@@ -29,7 +29,9 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/login_db_deprecation_runner_factory.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -99,7 +101,14 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
   password_affiliation_adapter->RegisterPasswordStore(ps.get());
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
-
+#if BUILDFLAG(IS_ANDROID)
+  CHECK(password_manager_android_util::IsInternalBackendPresent());
+  password_manager::LoginDbDeprecationRunner* login_db_deprecation_runner =
+      LoginDbDeprecationRunnerFactory::GetForProfile(profile);
+  if (login_db_deprecation_runner) {
+    login_db_deprecation_runner->StartExport(ps);
+  }
+#endif
   DelayReportingPasswordStoreMetrics(profile);
 
   return ps;
@@ -143,6 +152,9 @@ ProfilePasswordStoreFactory::ProfilePasswordStoreFactory()
               .Build()) {
   DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
+#if BUILDFLAG(IS_ANDROID)
+  DependsOn(LoginDbDeprecationRunnerFactory::GetInstance());
+#endif
 }
 
 ProfilePasswordStoreFactory::~ProfilePasswordStoreFactory() = default;

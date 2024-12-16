@@ -27,7 +27,8 @@ class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
       const LoginDbDeprecationPasswordExporter&) = delete;
   ~LoginDbDeprecationPasswordExporter() override;
 
-  void Start(PasswordStoreInterface* password_store);
+  void Start(scoped_refptr<PasswordStoreInterface> password_store,
+             base::OnceClosure export_cleanup_calback);
 
   // Allows the `PasswordManagerExporter` to retrieve the saved credentials
   // after `this` receives them. Not a necessary pattern for this use-case
@@ -39,6 +40,14 @@ class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
       LoginsResultOrError results_or_error) override;
+
+  // Called when the `exporter_` completes all the export operations,
+  // irrespective of whether the export succeeded.
+  void OnExportComplete();
+
+  // Callback to invoke when ALL the export operations finished. It will clean
+  // up `this`.
+  base::OnceClosure export_cleanup_callback_;
 
   // Serializes the passwords and writes them to a CSV file.
   std::unique_ptr<PasswordManagerExporter> exporter_;

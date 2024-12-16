@@ -13,7 +13,6 @@ namespace password_manager {
 
 namespace {
 constexpr std::string_view kExportedPasswordsFileName = "ChromePasswords.csv";
-
 }  // namespace
 
 LoginDbDeprecationPasswordExporter::LoginDbDeprecationPasswordExporter(
@@ -23,7 +22,9 @@ LoginDbDeprecationPasswordExporter::~LoginDbDeprecationPasswordExporter() =
     default;
 
 void LoginDbDeprecationPasswordExporter::Start(
-    PasswordStoreInterface* password_store) {
+    scoped_refptr<PasswordStoreInterface> password_store,
+    base::OnceClosure export_cleanup_calback) {
+  export_cleanup_callback_ = std::move(export_cleanup_calback);
   password_store->GetAutofillableLogins(weak_factory_.GetWeakPtr());
 }
 
@@ -36,6 +37,7 @@ void LoginDbDeprecationPasswordExporter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError logins_or_error) {
   if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+    OnExportComplete();
     return;
   }
 
@@ -47,15 +49,24 @@ void LoginDbDeprecationPasswordExporter::OnGetPasswordStoreResultsOrErrorFrom(
     passwords_.emplace_back(password_form);
   }
   if (passwords_.empty()) {
+    OnExportComplete();
     return;
   }
 
-  // TODO(crbug.com/378650395): Pass the callbacks into the constructor.
-  exporter_ = std::make_unique<PasswordManagerExporter>(this, base::DoNothing(),
-                                                        base::DoNothing());
+  // TODO(crbug.com/378650395): Pass the all the callbacks in the constructor.
+  exporter_ = std::make_unique<PasswordManagerExporter>(
+      this, base::DoNothing(),
+      base::BindOnce(&LoginDbDeprecationPasswordExporter::OnExportComplete,
+                     weak_factory_.GetWeakPtr()));
   exporter_->PreparePasswordsForExport();
   exporter_->SetDestination(
       export_dir_path_.Append(FILE_PATH_LITERAL(kExportedPasswordsFileName)));
+}
+
+void LoginDbDeprecationPasswordExporter::OnExportComplete() {
+  // TODO(crbug.com/378650395): Handle success/failure.
+  std::move(export_cleanup_callback_).Run();
+  // The callback above destroys `this`.
 }
 
 }  // namespace password_manager
