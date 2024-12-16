@@ -40,12 +40,12 @@ class RarTime
     static const uint REMINDER_PRECISION = TICKS_PER_SECOND;
   public:
     RarTime() {Reset();}
-    bool operator == (RarTime &rt) {return itime==rt.itime;}
-    bool operator != (RarTime &rt) {return itime!=rt.itime;}
-    bool operator < (RarTime &rt)  {return itime<rt.itime;}
-    bool operator <= (RarTime &rt) {return itime<rt.itime || itime==rt.itime;}
-    bool operator > (RarTime &rt)  {return itime>rt.itime;}
-    bool operator >= (RarTime &rt) {return itime>rt.itime || itime==rt.itime;}
+    bool operator == (const RarTime &rt) const {return itime==rt.itime;}
+    bool operator != (const RarTime &rt) const {return itime!=rt.itime;}
+    bool operator < (const RarTime &rt)  const {return itime<rt.itime;}
+    bool operator <= (const RarTime &rt) const {return itime<rt.itime || itime==rt.itime;}
+    bool operator > (const RarTime &rt)  const {return itime>rt.itime;}
+    bool operator >= (const RarTime &rt) const {return itime>rt.itime || itime==rt.itime;}
 
     void GetLocal(RarLocalTime *lt);
     void SetLocal(RarLocalTime *lt);

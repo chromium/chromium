@@ -52,7 +52,7 @@ enum ARC_METADATA
   ARCMETA_RESTORE  // -amr
 };
 
-enum QOPEN_MODE { QOPEN_NONE, QOPEN_AUTO, QOPEN_ALWAYS };
+enum QOPEN_MODE { QOPEN_NONE=0, QOPEN_AUTO, QOPEN_ALWAYS };
 
 enum RAR_CHARSET { RCH_DEFAULT=0,RCH_ANSI,RCH_OEM,RCH_UNICODE,RCH_UTF8 };
 
@@ -168,6 +168,14 @@ class RAROptions
     bool SkipSymLinks;
     int Priority;
     int SleepTime;
+
+    bool UseLargePages;
+
+    // Quit after processing some system integration related switch,
+    // like enabling the large memory pages privilege.
+    // menu for non-admin user and quit.
+    bool SetupComplete;
+
     bool KeepBroken;
     bool OpenShared;
     bool DeleteFiles;
@@ -185,6 +193,9 @@ class RAROptions
     bool SyncFiles;
     bool ProcessEA;
     bool SaveStreams;
+#ifdef PROPAGATE_MOTW
+    bool MotwAllFields;
+#endif
     bool SetCompressedAttr;
     bool IgnoreGeneralAttr;
     RarTime FileMtimeBefore,FileCtimeBefore,FileAtimeBefore;

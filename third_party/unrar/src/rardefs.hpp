@@ -21,7 +21,7 @@
 // the excessive memory allocation for dynamically allocated strings.
 #define  MAXPATHSIZE       0x10000
 
-#define  MAXSFXSIZE        0x200000
+#define  MAXSFXSIZE        0x400000
 
 #define  MAXCMTSIZE        0x40000
 
@@ -46,5 +46,9 @@
 
 // Produce the value, which is equal or larger than 'v' and aligned to 'a'.
 #define ALIGN_VALUE(v,a) (size_t(v) + ( (~size_t(v) + 1) & (a - 1) ) )
+
+#if defined(_WIN_ALL) && !defined(SFX_MODULE)
+#define PROPAGATE_MOTW // Propagate the archive Mark of the Web.
+#endif
 
 #endif

@@ -15,5 +15,3 @@ int ToPercentUnlim(int64 N1,int64 N2)
     return 0;
   return (int)(N1*100/N2);
 }
-
-

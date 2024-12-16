@@ -37,7 +37,7 @@ void ListArchive(CommandData *Cmd)
           mprintf(L"\n%s: %s",St(MListArchive),Arc.FileName.c_str());
 
           mprintf(L"\n%s: ",St(MListDetails));
-          const wchar *Fmt=Arc.Format==RARFMT14 ? L"RAR 1.4":(Arc.Format==RARFMT15 ? L"RAR 4":L"RAR 5");
+          const wchar *Fmt=Arc.Format==RARFMT14 ? L"RAR 1.4":(Arc.Format==RARFMT15 ? L"RAR 1.5":L"RAR 5");
           mprintf(L"%s", Fmt);
           if (Arc.Solid)
             mprintf(L", %s", St(MListSolid));

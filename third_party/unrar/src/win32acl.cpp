@@ -110,26 +110,3 @@ void SetACLPrivileges()
 
   InitDone=true;
 }
-
-
-bool SetPrivilege(LPCTSTR PrivName)
-{
-  bool Success=false;
-
-  HANDLE hToken;
-  if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
-  {
-    TOKEN_PRIVILEGES tp;
-    tp.PrivilegeCount = 1;
-    tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-    if (LookupPrivilegeValue(NULL,PrivName,&tp.Privileges[0].Luid) &&
-        AdjustTokenPrivileges(hToken, FALSE, &tp, 0, NULL, NULL) &&
-        GetLastError() == ERROR_SUCCESS)
-      Success=true;
-
-    CloseHandle(hToken);
-  }
-
-  return Success;
-}

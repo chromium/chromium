@@ -176,3 +176,4 @@ void blake2s_final( blake2s_state *S, byte *digest )
   for( int i = 0; i < 8; ++i ) /* Output full hash  */
     RawPut4( S->h[i], digest + 4 * i );
 }
+

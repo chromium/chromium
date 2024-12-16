@@ -63,12 +63,12 @@ void CommandData::OutHelp(RAR_EXIT ExitCode)
     MCHelpSwAT,MCHelpSwAC,MCHelpSwAD,MCHelpSwAG,MCHelpSwAI,MCHelpSwAP,
     MCHelpSwCm,MCHelpSwCFGm,MCHelpSwCL,MCHelpSwCU,MCHelpSwDH,MCHelpSwEP,
     MCHelpSwEP3,MCHelpSwEP4,MCHelpSwF,MCHelpSwIDP,MCHelpSwIERR,
-    MCHelpSwINUL,MCHelpSwIOFF,MCHelpSwKB,MCHelpSwME,MCHelpSwN,MCHelpSwNa,
-    MCHelpSwNal,MCHelpSwO,MCHelpSwOC,MCHelpSwOL,MCHelpSwOP,MCHelpSwOR,
-    MCHelpSwOW,MCHelpSwP,MCHelpSwR,MCHelpSwRI,MCHelpSwSC,MCHelpSwSI,
-    MCHelpSwSL,MCHelpSwSM,MCHelpSwTA,MCHelpSwTB,MCHelpSwTN,MCHelpSwTO,
-    MCHelpSwTS,MCHelpSwU,MCHelpSwVUnr,MCHelpSwVER,MCHelpSwVP,MCHelpSwX,
-    MCHelpSwXa,MCHelpSwXal,MCHelpSwY
+    MCHelpSwINUL,MCHelpSwIOFF,MCHelpSwKB,MCHelpSwME,MCHelpSwMLP,
+    MCHelpSwN,MCHelpSwNa,MCHelpSwNal,MCHelpSwO,MCHelpSwOC,MCHelpSwOL,
+    MCHelpSwOM,MCHelpSwOP,MCHelpSwOR,MCHelpSwOW,MCHelpSwP,MCHelpSwR,
+    MCHelpSwRI,MCHelpSwSC,MCHelpSwSI,MCHelpSwSL,MCHelpSwSM,MCHelpSwTA,
+    MCHelpSwTB,MCHelpSwTN,MCHelpSwTO,MCHelpSwTS,MCHelpSwU,MCHelpSwVUnr,
+    MCHelpSwVER,MCHelpSwVP,MCHelpSwX,MCHelpSwXa,MCHelpSwXal,MCHelpSwY
 #endif
   };
 
@@ -80,7 +80,7 @@ void CommandData::OutHelp(RAR_EXIT ExitCode)
 #ifndef _WIN_ALL
     static MSGID Win32Only[]={
       MCHelpSwIEML,MCHelpSwVD,MCHelpSwAO,MCHelpSwOS,MCHelpSwIOFF,
-      MCHelpSwEP2,MCHelpSwOC,MCHelpSwONI,MCHelpSwDR,MCHelpSwRI
+      MCHelpSwEP2,MCHelpSwMLP,MCHelpSwOC,MCHelpSwONI,MCHelpSwDR,MCHelpSwRI
     };
     bool Found=false;
     for (uint J=0;J<ASIZE(Win32Only);J++)

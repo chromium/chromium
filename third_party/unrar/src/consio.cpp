@@ -255,7 +255,7 @@ bool GetConsolePassword(UIPASSWORD_TYPE Type,const std::wstring &FileName,SecPas
 
 
 #ifndef SILENT
-bool getwstr(std::wstring &str)
+void getwstr(std::wstring &str)
 {
   // Print buffered prompt title function before waiting for input.
   fflush(stderr);
@@ -281,8 +281,8 @@ bool getwstr(std::wstring &str)
     if (ReadSize<=0)
     {
       // Looks like stdin is a null device. We can enter to infinite loop
-      // calling Ask(), so let's better exit.
-      ErrHandler.Exit(RARX_USERBREAK);
+      // calling Ask() or set an empty password, so let's better exit.
+     ErrHandler.ReadError(L"stdin");
     }
     StrA[ReadSize]=0;
 
@@ -297,20 +297,26 @@ bool getwstr(std::wstring &str)
   else
   {
     std::vector<wchar> Buf(MaxRead);  // Up to 4 UTF-8 characters per wchar_t.
+    DWORD SizeToRead=(DWORD)Buf.size()-1;
+
+    // ReadConsole fails in Windows 7 for requested input exceeding 30 KB.
+    // Not certain about Windows 8, so check for Windows 10 here.
+    if (WinNT()<=WNT_W10)
+      SizeToRead=Min(SizeToRead,0x4000);
+
     DWORD ReadSize=0;
-    if (ReadConsole(GetStdHandle(STD_INPUT_HANDLE),&Buf[0],(DWORD)Buf.size()-1,&ReadSize,NULL)==0)
-      return false;
+    if (ReadConsole(GetStdHandle(STD_INPUT_HANDLE),&Buf[0],SizeToRead,&ReadSize,NULL)==0)
+      ErrHandler.ReadError(L"stdin"); // Unknown user input, safer to abort.
     Buf[ReadSize]=0;
     str=Buf.data();
   }
 #else
   std::vector<wchar> Buf(MaxRead);  // Up to 4 UTF-8 characters per wchar_t.
   if (fgetws(&Buf[0],Buf.size(),stdin)==NULL)
-    ErrHandler.Exit(RARX_USERBREAK); // Avoid infinite Ask() loop.
+    ErrHandler.ReadError(L"stdin"); // Avoid infinite Ask() loop.
   str=Buf.data();
 #endif
   RemoveLF(str);
-  return true;
 }
 #endif
 
@@ -324,22 +330,22 @@ int Ask(const wchar *AskStr)
 {
   uiAlarm(UIALARM_QUESTION);
 
-  const int MaxItems=10;
+  const uint MaxItems=10;
   wchar Item[MaxItems][40];
-  int ItemKeyPos[MaxItems],NumItems=0;
+  uint ItemKeyPos[MaxItems],NumItems=0;
 
-  for (const wchar *NextItem=AskStr;NextItem!=NULL;NextItem=wcschr(NextItem+1,'_'))
+  for (const wchar *NextItem=AskStr;NextItem!=nullptr;NextItem=wcschr(NextItem+1,'_'))
   {
     wchar *CurItem=Item[NumItems];
     wcsncpyz(CurItem,NextItem+1,ASIZE(Item[0]));
     wchar *EndItem=wcschr(CurItem,'_');
-    if (EndItem!=NULL)
+    if (EndItem!=nullptr)
       *EndItem=0;
-    int KeyPos=0,CurKey;
+    uint KeyPos=0,CurKey;
     while ((CurKey=CurItem[KeyPos])!=0)
     {
       bool Found=false;
-      for (int I=0;I<NumItems && !Found;I++)
+      for (uint I=0;I<NumItems && !Found;I++)
         if (toupperw(Item[I][ItemKeyPos[I]])==toupperw(CurKey))
           Found=true;
       if (!Found && CurKey!=' ')
@@ -350,11 +356,11 @@ int Ask(const wchar *AskStr)
     NumItems++;
   }
 
-  for (int I=0;I<NumItems;I++)
+  for (uint I=0;I<NumItems;I++)
   {
     eprintf(I==0 ? (NumItems>3 ? L"\n":L" "):L", ");
-    int KeyPos=ItemKeyPos[I];
-    for (int J=0;J<KeyPos;J++)
+    uint KeyPos=ItemKeyPos[I];
+    for (uint J=0;J<KeyPos;J++)
       eprintf(L"%c",Item[I][J]);
     eprintf(L"[%c]%ls",Item[I][KeyPos],&Item[I][KeyPos+1]);
   }
@@ -362,7 +368,7 @@ int Ask(const wchar *AskStr)
   std::wstring Str;
   getwstr(Str);
   wchar Ch=toupperw(Str[0]);
-  for (int I=0;I<NumItems;I++)
+  for (uint I=0;I<NumItems;I++)
     if (Ch==Item[I][ItemKeyPos[I]])
       return I+1;
   return 0;
