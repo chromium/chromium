@@ -11,7 +11,7 @@ MockAccountChecker::MockAccountChecker()
     : AccountChecker("", "", nullptr, nullptr, nullptr, nullptr) {
   // Default to an account checker with the fewest restrictions.
   SetSignedIn(true);
-  SetSyncingBookmarks(true);
+  SetAllSyncTypesEnabled(true);
   SetAnonymizedUrlDataCollectionEnabled(true);
   SetIsSubjectToParentalControls(false);
   SetCanUseModelExecutionFeatures(true);
@@ -25,8 +25,8 @@ void MockAccountChecker::SetSignedIn(bool signed_in) {
   ON_CALL(*this, IsSignedIn).WillByDefault(testing::Return(signed_in));
 }
 
-void MockAccountChecker::SetSyncingBookmarks(bool syncing) {
-  ON_CALL(*this, IsSyncingBookmarks).WillByDefault(testing::Return(syncing));
+void MockAccountChecker::SetAllSyncTypesEnabled(bool enabled) {
+  ON_CALL(*this, IsSyncTypeEnabled).WillByDefault(testing::Return(enabled));
 }
 
 void MockAccountChecker::SetAnonymizedUrlDataCollectionEnabled(bool enabled) {

@@ -25,8 +25,6 @@ class MockAccountChecker : public AccountChecker {
 
   MOCK_METHOD(bool, IsSignedIn, (), (override));
 
-  MOCK_METHOD(bool, IsSyncingBookmarks, (), (override));
-
   MOCK_METHOD(bool,
               IsSyncTypeEnabled,
               (syncer::UserSelectableType type),
@@ -46,7 +44,7 @@ class MockAccountChecker : public AccountChecker {
 
   void SetSignedIn(bool signed_in);
 
-  void SetSyncingBookmarks(bool syncing);
+  void SetAllSyncTypesEnabled(bool enabled);
 
   void SetAnonymizedUrlDataCollectionEnabled(bool enabled);
 

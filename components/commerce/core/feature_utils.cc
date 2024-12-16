@@ -48,7 +48,8 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
   // Make sure the user allows subscriptions to be made and that we can fetch
   // store data.
   if (!account_checker || !account_checker->IsSignedIn() ||
-      !account_checker->IsSyncingBookmarks() ||
+      !account_checker->IsSyncTypeEnabled(
+          syncer::UserSelectableType::kBookmarks) ||
       !account_checker->IsAnonymizedUrlDataCollectionEnabled() ||
       account_checker->IsSubjectToParentalControls()) {
     return false;

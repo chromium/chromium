@@ -286,9 +286,11 @@ void CommerceInternalsHandler::GetShoppingEligibilityDetails(
 
   details->details.push_back(mojom::EligibilityDetail::New(
       "IsSignedIn", account_checker->IsSignedIn(), /*expected_value=*/true));
-  details->details.push_back(mojom::EligibilityDetail::New(
-      "IsSyncingBookmarks", account_checker->IsSyncingBookmarks(),
-      /*expected_value=*/true));
+  details->details.push_back(
+      mojom::EligibilityDetail::New("IsSyncTypeEnabled(kBookmarks)",
+                                    account_checker->IsSyncTypeEnabled(
+                                        syncer::UserSelectableType::kBookmarks),
+                                    /*expected_value=*/true));
   details->details.push_back(mojom::EligibilityDetail::New(
       "IsSyncTypeEnabled(kProductComparison)",
       account_checker->IsSyncTypeEnabled(

@@ -1402,7 +1402,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
 
   ASSERT_TRUE(IsShoppingListEligible(&checker));
 
-  checker.SetSyncingBookmarks(false);
+  checker.SetAllSyncTypesEnabled(false);
 
   ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
