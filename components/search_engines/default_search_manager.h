@@ -78,7 +78,7 @@ class DefaultSearchManager
 
   static const char kUsageCount[];
   static const char kAlternateURLs[];
-  static const char kCreatedByPolicy[];
+  static const char kPolicyOrigin[];
   static const char kDisabledByPolicy[];
   static const char kCreatedFromPlayAPI[];
   static const char kFeaturedByPolicy[];

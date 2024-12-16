@@ -1492,8 +1492,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
         TemplateURLServiceFactory::GetForProfile(browser()->profile())
             ->GetTemplateURLForKeyword(kSiteSearchPolicyKeyword);
     ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->created_by_policy(),
-              TemplateURLData::CreatedByPolicy::kSiteSearch);
+    EXPECT_EQ(turl->policy_origin(),
+              TemplateURLData::PolicyOrigin::kSiteSearch);
     EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
     EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
     EXPECT_FALSE(turl->featured_by_policy());
@@ -1538,8 +1538,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
         TemplateURLServiceFactory::GetForProfile(browser()->profile())
             ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
     ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->created_by_policy(),
-              TemplateURLData::CreatedByPolicy::kSiteSearch);
+    EXPECT_EQ(turl->policy_origin(),
+              TemplateURLData::PolicyOrigin::kSiteSearch);
     EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
     EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
     EXPECT_TRUE(turl->featured_by_policy());
@@ -1587,8 +1587,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
         TemplateURLServiceFactory::GetForProfile(browser()->profile())
             ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
     ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->created_by_policy(),
-              TemplateURLData::CreatedByPolicy::kSiteSearch);
+    EXPECT_EQ(turl->policy_origin(),
+              TemplateURLData::PolicyOrigin::kSiteSearch);
     EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
     EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
     EXPECT_TRUE(turl->featured_by_policy());
@@ -1659,8 +1659,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
         TemplateURLServiceFactory::GetForProfile(browser()->profile())
             ->GetTemplateURLForKeyword(kSearchAggregatorPolicyKeyword);
     ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->created_by_policy(),
-              TemplateURLData::CreatedByPolicy::kSearchAggregator);
+    EXPECT_EQ(turl->policy_origin(),
+              TemplateURLData::PolicyOrigin::kSearchAggregator);
     EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
     EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
     EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
@@ -1712,8 +1712,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
             ->GetTemplateURLForKeyword(
                 kSearchAggregatorPolicyKeywordWithAtPrefix);
     ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->created_by_policy(),
-              TemplateURLData::CreatedByPolicy::kSearchAggregator);
+    EXPECT_EQ(turl->policy_origin(),
+              TemplateURLData::PolicyOrigin::kSearchAggregator);
     EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
     EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
     EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
@@ -1770,8 +1770,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
             ->GetTemplateURLForKeyword(
                 kSearchAggregatorPolicyKeywordWithAtPrefix);
     ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->created_by_policy(),
-              TemplateURLData::CreatedByPolicy::kSearchAggregator);
+    EXPECT_EQ(turl->policy_origin(),
+              TemplateURLData::PolicyOrigin::kSearchAggregator);
     EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
     EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
     EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);

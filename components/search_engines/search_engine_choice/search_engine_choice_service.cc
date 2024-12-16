@@ -84,8 +84,7 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
 
 bool IsSetOrBlockedByPolicy(const TemplateURL* default_search_engine) {
   return !default_search_engine ||
-         default_search_engine->created_by_policy() ==
-             TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+         default_search_engine->CreatedByDefaultSearchProviderPolicy();
 }
 
 bool IsDefaultSearchProviderSetOrBlockedByPolicy(

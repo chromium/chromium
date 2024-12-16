@@ -54,7 +54,7 @@ BASE_DECLARE_FEATURE(kKeywordTableHashVerification);
 //                          encodings, may be empty.
 //   suggest_url
 //   prepopulate_id         See TemplateURLData::prepopulate_id.
-//   created_by_policy      See TemplateURLData::created_by_policy.  This was
+//   created_by_policy      See TemplateURLData::policy_origin.  This was
 //                          added in version 26.
 //   last_modified          See TemplateURLData::last_modified.  This was added
 //                          in version 38.

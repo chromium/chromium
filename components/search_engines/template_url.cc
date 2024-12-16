@@ -221,12 +221,8 @@ bool IsPolicySearchEngineBetterThanNonPolicyEngine(
   // the `SiteSearchSettings` or `EnterpriseSearchAggregatorSettings` policy,
   // `other_engine` should have been created by something else, but not via
   // policy.
-  CHECK(policy_engine->created_by_policy() ==
-            TemplateURLData::CreatedByPolicy::kSiteSearch ||
-        policy_engine->created_by_policy() ==
-            TemplateURLData::CreatedByPolicy::kSearchAggregator);
-  CHECK_EQ(other_engine->created_by_policy(),
-           TemplateURLData::CreatedByPolicy::kNoPolicy);
+  CHECK(policy_engine->CreatedByNonDefaultSearchProviderPolicy());
+  CHECK(!other_engine->CreatedByPolicy());
 
   const std::u16string& keyword = policy_engine->keyword();
   // Prefer `policy_engine` if the `keyword` starts with the "@" symbol.
@@ -1645,26 +1641,16 @@ bool TemplateURL::IsBetterThanConflictingEngine(
     const TemplateURL* other) const {
   DCHECK(other);
 
-  auto by_policy = [](const TemplateURL* turl) {
-    return turl->created_by_policy() ==
-               TemplateURLData::CreatedByPolicy::kSiteSearch ||
-           turl->created_by_policy() ==
-               TemplateURLData::CreatedByPolicy::kSearchAggregator;
-  };
-
-  auto no_policy = [](const TemplateURL* turl) {
-    return turl->created_by_policy() ==
-           TemplateURLData::CreatedByPolicy::kNoPolicy;
-  };
-
   // Site search and Enterprise Search Aggregator engines set by enterprise
   // policy have different priority over existing search engines because we
   // don't want to break current workflows for power users.
-  if (by_policy(this) && no_policy(other)) {
+  if (CreatedByNonDefaultSearchProviderPolicy() && !other->CreatedByPolicy()) {
     return IsPolicySearchEngineBetterThanNonPolicyEngine(this, other);
-  } else if (no_policy(this) && by_policy(other)) {
+  } else if (!CreatedByPolicy() &&
+             other->CreatedByNonDefaultSearchProviderPolicy()) {
     return !IsPolicySearchEngineBetterThanNonPolicyEngine(other, this);
-  } else if (by_policy(this) && by_policy(other)) {
+  } else if (CreatedByNonDefaultSearchProviderPolicy() &&
+             other->CreatedByNonDefaultSearchProviderPolicy()) {
     // If both engines are created by the `SiteSearchSettings` or
     // `EnterpriseSearchAggregatorSettings` policy, prefer the one that is
     // featured. Otherwise, fallback to the comparison based on the signals
@@ -1680,8 +1666,7 @@ bool TemplateURL::IsBetterThanConflictingEngine(
     return std::make_tuple(
         // Policy-created engines always win over non-policy created engines.
         // At this point, managed search engine should be created by DSP policy.
-        engine->created_by_policy() ==
-            TemplateURLData::CreatedByPolicy::kDefaultSearchProvider,
+        engine->CreatedByDefaultSearchProviderPolicy(),
         // Policy-enforced engines always win over policy-recommended engines.
         engine->enforced_by_policy(),
         // The integral value of the type enum is used to sort next.
@@ -2005,6 +1990,18 @@ GURL TemplateURL::GenerateSuggestionURL(
 
   return GURL(suggestions_url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
+}
+
+bool TemplateURL::CreatedByPolicy() const {
+  return data().CreatedByPolicy();
+}
+
+bool TemplateURL::CreatedByDefaultSearchProviderPolicy() const {
+  return data().CreatedByDefaultSearchProviderPolicy();
+}
+
+bool TemplateURL::CreatedByNonDefaultSearchProviderPolicy() const {
+  return data().CreatedByNonDefaultSearchProviderPolicy();
 }
 
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {

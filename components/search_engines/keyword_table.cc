@@ -576,8 +576,8 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.id = s.ColumnInt64(0);
   data.date_created = s.ColumnTime(7);
   data.last_modified = s.ColumnTime(13);
-  data.created_by_policy =
-      static_cast<TemplateURLData::CreatedByPolicy>(s.ColumnInt(12));
+  data.policy_origin =
+      static_cast<TemplateURLData::PolicyOrigin>(s.ColumnInt(12));
   data.created_from_play_api = s.ColumnBool(22);
   data.usage_count = s.ColumnInt(8);
   data.prepopulate_id = s.ColumnInt(11);
@@ -667,7 +667,7 @@ void KeywordTable::BindURLToStatement(const TemplateURLData& data,
                 base::JoinString(data.input_encodings, ";"));
   s->BindString(starting_column + 9, data.suggestions_url);
   s->BindInt(starting_column + 10, data.prepopulate_id);
-  s->BindInt(starting_column + 11, static_cast<int>(data.created_by_policy));
+  s->BindInt(starting_column + 11, static_cast<int>(data.policy_origin));
   s->BindTime(starting_column + 12, data.last_modified);
   s->BindString(starting_column + 13, data.sync_guid);
   s->BindString(starting_column + 14, alternate_urls);

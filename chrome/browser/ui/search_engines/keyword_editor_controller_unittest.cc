@@ -81,8 +81,8 @@ class KeywordEditorControllerTest : public testing::Test,
     managed_engine.SetShortName(kManaged);
     managed_engine.SetKeyword(kManaged);
     managed_engine.SetURL(url);
-    managed_engine.created_by_policy =
-        TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+    managed_engine.policy_origin =
+        TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
     managed_engine.enforced_by_policy = is_mandatory;
     is_mandatory
         ? SetManagedDefaultSearchPreferences(managed_engine, true, &profile_)
@@ -388,12 +388,11 @@ std::unique_ptr<TemplateURL> CreateTemplateUrlForSortingTest(
   data.SetShortName(test_case.short_name);
   data.is_active = test_case.is_active ? TemplateURLData::ActiveStatus::kTrue
                                        : TemplateURLData::ActiveStatus::kFalse;
-  data.created_by_policy =
-      test_case.created_by_search_aggregator_policy
-          ? TemplateURLData::CreatedByPolicy::kSearchAggregator
-      : test_case.created_by_site_search_policy
-          ? TemplateURLData::CreatedByPolicy::kSiteSearch
-          : TemplateURLData::CreatedByPolicy::kNoPolicy;
+  data.policy_origin = test_case.created_by_search_aggregator_policy
+                           ? TemplateURLData::PolicyOrigin::kSearchAggregator
+                       : test_case.created_by_site_search_policy
+                           ? TemplateURLData::PolicyOrigin::kSiteSearch
+                           : TemplateURLData::PolicyOrigin::kNoPolicy;
   data.featured_by_policy = test_case.featured_by_policy;
   data.safe_for_autoreplace = test_case.safe_for_autoreplace;
   return std::make_unique<TemplateURL>(data);

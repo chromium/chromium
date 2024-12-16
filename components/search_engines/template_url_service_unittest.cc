@@ -349,8 +349,7 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
   const TemplateURL* policy_engine =
       template_url_service().GetDefaultSearchProvider();
   ASSERT_EQ(policy_engine->keyword(), policy_engine_data.keyword());
-  ASSERT_EQ(policy_engine->created_by_policy(),
-            TemplateURLData::CreatedByPolicy::kDefaultSearchProvider);
+  ASSERT_TRUE(policy_engine->CreatedByDefaultSearchProviderPolicy());
 
   const auto new_play_engine_data =
       CreatePlayAPITemplateURLData(kNewPlayEngineKeyword);
@@ -383,8 +382,7 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
   const TemplateURL* policy_engine =
       template_url_service().GetDefaultSearchProvider();
   ASSERT_EQ(policy_engine->keyword(), policy_engine_data.keyword());
-  ASSERT_EQ(policy_engine->created_by_policy(),
-            TemplateURLData::CreatedByPolicy::kDefaultSearchProvider);
+  ASSERT_TRUE(policy_engine->CreatedByDefaultSearchProviderPolicy());
 
   // Add the Play API engine using the same keyword as the policy engine.
   const auto new_play_engine_data =

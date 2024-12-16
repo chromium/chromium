@@ -49,8 +49,7 @@ void SetUserSelectedDefaultSearchProvider(
       "https://%s/alt#quux={searchTerms}", kCustomSearchEngineDomain));
 
   if (created_by_policy) {
-    data.created_by_policy =
-        TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+    data.policy_origin = TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
   }
 
   TemplateURL* template_url =

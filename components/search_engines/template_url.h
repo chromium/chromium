@@ -805,8 +805,8 @@ class TemplateURL {
   base::Time last_modified() const { return data().last_modified; }
   base::Time last_visited() const { return data().last_visited; }
 
-  TemplateURLData::CreatedByPolicy created_by_policy() const {
-    return data().created_by_policy;
+  TemplateURLData::PolicyOrigin policy_origin() const {
+    return data().policy_origin;
   }
   bool enforced_by_policy() const { return data().enforced_by_policy; }
   bool created_from_play_api() const { return data().created_from_play_api; }
@@ -993,6 +993,15 @@ class TemplateURL {
   // RegulatoryExtensionType.
   const TemplateURLData::RegulatoryExtension* GetRegulatoryExtension(
       RegulatoryExtensionType type) const;
+
+  // Returns whether this search engine was created by an Enterprise policy.
+  bool CreatedByPolicy() const;
+  // Returns whether this search engine was created by the Default Search
+  // Provider Enterprise policy.
+  bool CreatedByDefaultSearchProviderPolicy() const;
+  // Returns whether this search engine was created by an Enterprise policy that
+  // doesn't define the Default Search Provider.
+  bool CreatedByNonDefaultSearchProviderPolicy() const;
 
   void SetURL(const std::string& url);
   void SetPrepopulateId(int id);

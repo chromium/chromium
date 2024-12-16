@@ -53,8 +53,8 @@ base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
 
   dict.Set(DefaultSearchManager::kFeaturedByPolicy, featured);
 
-  dict.Set(DefaultSearchManager::kCreatedByPolicy,
-           static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
+  dict.Set(DefaultSearchManager::kPolicyOrigin,
+           static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch));
   dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
   dict.Set(DefaultSearchManager::kIsActive,
            static_cast<int>(TemplateURLData::ActiveStatus::kTrue));

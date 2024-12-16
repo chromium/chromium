@@ -36,7 +36,7 @@
 #include "ui/base/device_form_factor.h"
 
 using base::ASCIIToUTF16;
-using CreatedByPolicy = TemplateURLData::CreatedByPolicy;
+using PolicyOrigin = TemplateURLData::PolicyOrigin;
 using RequestSource = SearchTermsData::RequestSource;
 
 namespace {
@@ -3119,7 +3119,7 @@ TEST_F(TemplateURLTest, ImageSearchBrandingLabel) {
 
 struct IsBetterThanEngineTestEngine {
   std::u16string keyword;
-  CreatedByPolicy created_by_policy = CreatedByPolicy::kNoPolicy;
+  PolicyOrigin policy_origin = PolicyOrigin::kNoPolicy;
   bool enforced_by_policy = false;
   bool featured_by_policy = false;
   bool safe_for_autoreplace = false;
@@ -3133,7 +3133,7 @@ TemplateURL CreateEngineFromTestEngine(
   template_url_data.SetShortName(engine.keyword + u"_name");
   template_url_data.SetURL("https://" + base::UTF16ToUTF8(engine.keyword) +
                            ".com/q={searchTerms}");
-  template_url_data.created_by_policy = engine.created_by_policy;
+  template_url_data.policy_origin = engine.policy_origin;
   template_url_data.enforced_by_policy = engine.enforced_by_policy;
   template_url_data.featured_by_policy = engine.featured_by_policy;
   template_url_data.safe_for_autoreplace = engine.safe_for_autoreplace;
@@ -3151,7 +3151,7 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .policy_origin = PolicyOrigin::kSiteSearch,
             },
         .worse_engine =
             {
@@ -3169,7 +3169,7 @@ struct IsBetterThanEngineTestCase {
         .worse_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .policy_origin = PolicyOrigin::kSiteSearch,
             },
     },
     {
@@ -3177,7 +3177,7 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"@kw",
-                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .policy_origin = PolicyOrigin::kSiteSearch,
                 .featured_by_policy = true,
             },
         .worse_engine =
@@ -3192,13 +3192,13 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"@kw",
-                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .policy_origin = PolicyOrigin::kSiteSearch,
                 .featured_by_policy = true,
             },
         .worse_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .policy_origin = PolicyOrigin::kSiteSearch,
             },
     },
     {
@@ -3206,13 +3206,13 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+                .policy_origin = PolicyOrigin::kDefaultSearchProvider,
                 .enforced_by_policy = true,
             },
         .worse_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kNoPolicy,
+                .policy_origin = PolicyOrigin::kNoPolicy,
                 .safe_for_autoreplace = false,
             },
     },
@@ -3221,13 +3221,13 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+                .policy_origin = PolicyOrigin::kDefaultSearchProvider,
                 .enforced_by_policy = true,
             },
         .worse_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+                .policy_origin = PolicyOrigin::kDefaultSearchProvider,
             },
     },
     {
@@ -3235,13 +3235,13 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .policy_origin = PolicyOrigin::kSiteSearch,
                 .last_modified = base::Time::FromTimeT(2000),
             },
         .worse_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .policy_origin = PolicyOrigin::kSiteSearch,
                 .last_modified = base::Time::FromTimeT(1000),
             },
     },
@@ -3250,7 +3250,7 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+                .policy_origin = PolicyOrigin::kSearchAggregator,
             },
         .worse_engine =
             {
@@ -3268,7 +3268,7 @@ struct IsBetterThanEngineTestCase {
         .worse_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+                .policy_origin = PolicyOrigin::kSearchAggregator,
             },
 
     },
@@ -3277,7 +3277,7 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"@kw",
-                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+                .policy_origin = PolicyOrigin::kSearchAggregator,
                 .featured_by_policy = true,
             },
         .worse_engine =
@@ -3292,13 +3292,13 @@ struct IsBetterThanEngineTestCase {
         .better_engine =
             {
                 .keyword = u"@kw",
-                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+                .policy_origin = PolicyOrigin::kSearchAggregator,
                 .featured_by_policy = true,
             },
         .worse_engine =
             {
                 .keyword = u"kw",
-                .created_by_policy = CreatedByPolicy::kSearchAggregator,
+                .policy_origin = PolicyOrigin::kSearchAggregator,
             },
     },
 };

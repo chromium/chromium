@@ -52,7 +52,7 @@ TemplateURLData::TemplateURLData()
       id(0),
       date_created(base::Time::Now()),
       last_modified(base::Time::Now()),
-      created_by_policy(CreatedByPolicy::kNoPolicy),
+      policy_origin(PolicyOrigin::kNoPolicy),
       enforced_by_policy(false),
       created_from_play_api(false),
       usage_count(0),
@@ -115,7 +115,7 @@ TemplateURLData::TemplateURLData(
       favicon_url(favicon_url),
       safe_for_autoreplace(true),
       id(0),
-      created_by_policy(CreatedByPolicy::kNoPolicy),
+      policy_origin(PolicyOrigin::kNoPolicy),
       enforced_by_policy(false),
       created_from_play_api(false),
       usage_count(0),
@@ -215,4 +215,16 @@ size_t TemplateURLData::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(url_);
 
   return res;
+}
+
+bool TemplateURLData::CreatedByPolicy() const {
+  return policy_origin != PolicyOrigin::kNoPolicy;
+}
+
+bool TemplateURLData::CreatedByDefaultSearchProviderPolicy() const {
+  return policy_origin == PolicyOrigin::kDefaultSearchProvider;
+}
+
+bool TemplateURLData::CreatedByNonDefaultSearchProviderPolicy() const {
+  return CreatedByPolicy() && !CreatedByDefaultSearchProviderPolicy();
 }

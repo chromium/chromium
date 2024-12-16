@@ -56,8 +56,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   search_test_utils::WaitForTemplateURLServiceToLoad(service);
   const TemplateURL* default_search = service->GetDefaultSearchProvider();
   ASSERT_TRUE(default_search);
-  EXPECT_EQ(default_search->created_by_policy(),
-            TemplateURLData::CreatedByPolicy::kNoPolicy);
+  EXPECT_FALSE(default_search->CreatedByPolicy());
   EXPECT_NE(kKeyword, default_search->keyword());
   EXPECT_NE(kSearchURL, default_search->url());
   EXPECT_FALSE(default_search->alternate_urls().size() == 2 &&
@@ -96,8 +95,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   UpdateProviderPolicy(policies);
   default_search = service->GetDefaultSearchProvider();
   ASSERT_TRUE(default_search);
-  EXPECT_EQ(default_search->created_by_policy(),
-            TemplateURLData::CreatedByPolicy::kDefaultSearchProvider);
+  EXPECT_TRUE(default_search->CreatedByDefaultSearchProviderPolicy());
   EXPECT_EQ(kKeyword, default_search->keyword());
   EXPECT_EQ(kSearchURL, default_search->url());
   EXPECT_EQ(2U, default_search->alternate_urls().size());

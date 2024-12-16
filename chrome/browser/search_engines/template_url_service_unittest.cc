@@ -2626,23 +2626,22 @@ TEST_P(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
 
 struct EnterpriseSearchTestParam {
   bool choice_enabled;
-  TemplateURLData::CreatedByPolicy created_by_policy;
+  TemplateURLData::PolicyOrigin policy_origin;
 };
 
 static std::string EnterpriseSearchTestParamToTestSuffix(
     const ::testing::TestParamInfo<EnterpriseSearchTestParam>& info) {
   // Note: ensures this only runs for site search and search aggregator
   // policies.
-  CHECK(info.param.created_by_policy ==
-            TemplateURLData::CreatedByPolicy::kSiteSearch ||
-        info.param.created_by_policy ==
-            TemplateURLData::CreatedByPolicy::kSearchAggregator);
+  CHECK(info.param.policy_origin ==
+            TemplateURLData::PolicyOrigin::kSiteSearch ||
+        info.param.policy_origin ==
+            TemplateURLData::PolicyOrigin::kSearchAggregator);
   return base::StringPrintf(
       "%s_%s",
       info.param.choice_enabled ? "SearchEngineChoiceEnabled"
                                 : "SearchEngineChoiceDisabled",
-      info.param.created_by_policy ==
-              TemplateURLData::CreatedByPolicy::kSiteSearch
+      info.param.policy_origin == TemplateURLData::PolicyOrigin::kSiteSearch
           ? "SiteSearch"
           : "SearchAggregator");
 }
@@ -2653,7 +2652,7 @@ class TemplateURLServiceEnterpriseSearchTest
  public:
   TemplateURLServiceEnterpriseSearchTest()
       : TemplateURLServiceTestBase(GetParam().choice_enabled),
-        created_by_policy_(GetParam().created_by_policy) {
+        policy_origin_(GetParam().policy_origin) {
     EXPECT_EQ(
         IsSearchEngineChoiceEnabled(),
         base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
@@ -2670,7 +2669,7 @@ class TemplateURLServiceEnterpriseSearchTest
     data->SetShortName(base::UTF8ToUTF16(keyword + "name"));
     data->SetKeyword(base::UTF8ToUTF16(keyword));
     data->SetURL(std::string("https://") + keyword + ".com/q={searchTerms}");
-    data->created_by_policy = created_by_policy_;
+    data->policy_origin = policy_origin_;
     data->enforced_by_policy = false;
     data->featured_by_policy = featured_by_policy;
     data->is_active = TemplateURLData::ActiveStatus::kTrue;
@@ -2690,7 +2689,7 @@ class TemplateURLServiceEnterpriseSearchTest
     return CreateEnterpriseSearchEntry(keyword, /*featured_by_policy=*/false);
   }
 
-  TemplateURLData::CreatedByPolicy created_by_policy_;
+  TemplateURLData::PolicyOrigin policy_origin_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2699,18 +2698,16 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         EnterpriseSearchTestParam{
             .choice_enabled = false,
-            .created_by_policy = TemplateURLData::CreatedByPolicy::kSiteSearch},
+            .policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch},
         EnterpriseSearchTestParam{
             .choice_enabled = false,
-            .created_by_policy =
-                TemplateURLData::CreatedByPolicy::kSearchAggregator},
+            .policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator},
         EnterpriseSearchTestParam{
             .choice_enabled = true,
-            .created_by_policy = TemplateURLData::CreatedByPolicy::kSiteSearch},
+            .policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch},
         EnterpriseSearchTestParam{
             .choice_enabled = true,
-            .created_by_policy =
-                TemplateURLData::CreatedByPolicy::kSearchAggregator}),
+            .policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator}),
     &EnterpriseSearchTestParamToTestSuffix);
 
 TEST_P(TemplateURLServiceEnterpriseSearchTest,

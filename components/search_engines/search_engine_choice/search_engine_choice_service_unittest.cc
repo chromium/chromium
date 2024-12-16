@@ -373,9 +373,9 @@ TEST_F(SearchEngineChoiceServiceTest,
   TemplateURLData data_from_policies;
   data_from_policies.SetURL("test");
   base::Value::Dict dict = TemplateURLDataToDictionary(data_from_policies);
-  dict.Set(DefaultSearchManager::kCreatedByPolicy,
-           static_cast<int>(
-               TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
+  dict.Set(
+      DefaultSearchManager::kPolicyOrigin,
+      static_cast<int>(TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
   pref_service()->SetManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName,
       std::move(dict));

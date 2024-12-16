@@ -1120,27 +1120,26 @@ void AutocompleteMatch::LogSearchEngineUsed(
   UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType", search_engine_type,
                             SEARCH_ENGINE_MAX);
 
-  if (template_url->created_by_policy() !=
-      TemplateURLData::CreatedByPolicy::kNoPolicy) {
+  if (template_url->CreatedByPolicy()) {
     UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType.SetByEnterprisePolicy",
                               search_engine_type, SEARCH_ENGINE_MAX);
 
-    switch (template_url->created_by_policy()) {
-      case TemplateURLData::CreatedByPolicy::kDefaultSearchProvider:
+    switch (template_url->policy_origin()) {
+      case TemplateURLData::PolicyOrigin::kDefaultSearchProvider:
         UMA_HISTOGRAM_ENUMERATION(
             "Omnibox.SearchEngineType.SetByEnterprisePolicy."
             "DefaultSearchProvider",
             search_engine_type, SEARCH_ENGINE_MAX);
         break;
 
-      case TemplateURLData::CreatedByPolicy::kSiteSearch:
+      case TemplateURLData::PolicyOrigin::kSiteSearch:
         UMA_HISTOGRAM_ENUMERATION(
             "Omnibox.SearchEngineType.SetByEnterprisePolicy."
             "SiteSearchSettings",
             search_engine_type, SEARCH_ENGINE_MAX);
         break;
 
-      case TemplateURLData::CreatedByPolicy::kSearchAggregator:
+      case TemplateURLData::PolicyOrigin::kSearchAggregator:
         UMA_HISTOGRAM_ENUMERATION(
             "Omnibox.SearchEngineType.SetByEnterprisePolicy."
             "EnterpriseSearchAggregatorSettings",

@@ -231,9 +231,9 @@ testing::Matcher<const base::Value&> IsSearchAggregatorEntry(
                          test_case.icon_url ? std::string(test_case.icon_url)
                                             : std::string()),
           FieldNotSet(DefaultSearchManager::kFaviconURL)),
-      HasIntegerField(DefaultSearchManager::kCreatedByPolicy,
-                      static_cast<int>(
-                          TemplateURLData::CreatedByPolicy::kSearchAggregator)),
+      HasIntegerField(
+          DefaultSearchManager::kPolicyOrigin,
+          static_cast<int>(TemplateURLData::PolicyOrigin::kSearchAggregator)),
       HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
       HasBooleanField(DefaultSearchManager::kFeaturedByPolicy, featured),
       HasIntegerField(DefaultSearchManager::kIsActive,

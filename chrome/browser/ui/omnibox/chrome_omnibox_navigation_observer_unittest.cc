@@ -108,8 +108,8 @@ void ChromeOmniboxNavigationObserverTest::SetUp() {
 
   TemplateURLData policy_turl;
   policy_turl.SetKeyword(policy_search_keyword());
-  policy_turl.created_by_policy =
-      TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+  policy_turl.policy_origin =
+      TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
   factory_util.model()->Add(std::make_unique<TemplateURL>(policy_turl));
 
   TemplateURLData starter_pack_turl;

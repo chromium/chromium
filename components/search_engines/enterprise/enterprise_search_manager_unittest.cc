@@ -46,17 +46,16 @@ base::Value::Dict GenerateSearchPrefEntry(const std::string& keyword,
 base::Value::Dict GenerateSiteSearchPrefEntry(const std::string& keyword) {
   base::Value::Dict entry =
       GenerateSearchPrefEntry(keyword, /*featured=*/false);
-  entry.Set(DefaultSearchManager::kCreatedByPolicy,
-            static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
+  entry.Set(DefaultSearchManager::kPolicyOrigin,
+            static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch));
   return entry;
 }
 
 base::Value::Dict GenerateSearchAggregatorPrefEntry(const std::string& keyword,
                                                     bool featured) {
   base::Value::Dict entry = GenerateSearchPrefEntry(keyword, featured);
-  entry.Set(
-      DefaultSearchManager::kCreatedByPolicy,
-      static_cast<int>(TemplateURLData::CreatedByPolicy::kSearchAggregator));
+  entry.Set(DefaultSearchManager::kPolicyOrigin,
+            static_cast<int>(TemplateURLData::PolicyOrigin::kSearchAggregator));
   entry.Set(DefaultSearchManager::kSuggestionsURL,
             std::string("https://") + keyword + ".com/suggest");
   return entry;

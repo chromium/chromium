@@ -79,9 +79,8 @@ base::Value SearchAggregatorDictFromPolicyValue(
     dict.Set(DefaultSearchManager::kFaviconURL, *icon_url);
   }
 
-  dict.Set(
-      DefaultSearchManager::kCreatedByPolicy,
-      static_cast<int>(TemplateURLData::CreatedByPolicy::kSearchAggregator));
+  dict.Set(DefaultSearchManager::kPolicyOrigin,
+           static_cast<int>(TemplateURLData::PolicyOrigin::kSearchAggregator));
   dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
   dict.Set(DefaultSearchManager::kFeaturedByPolicy, featured);
   dict.Set(DefaultSearchManager::kIsActive,

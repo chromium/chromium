@@ -499,7 +499,7 @@ TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataNoManagedEngines) {
   model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
   model()->Add(CreateTestTemplateURL(
       u"key3", "http://key3.com", std::string(), base::Time::FromTimeT(100),
-      false, TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
+      false, TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
   syncer::SyncDataList all_sync_data =
       model()->GetAllSyncData(syncer::SEARCH_ENGINES);
 
@@ -510,8 +510,7 @@ TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataNoManagedEngines) {
     std::string guid = GetGUID(*iter);
     TemplateURL* service_turl = model()->GetTemplateURLForGUID(guid);
     std::unique_ptr<TemplateURL> deserialized(Deserialize(*iter));
-    ASSERT_EQ(service_turl->created_by_policy(),
-              TemplateURLData::CreatedByPolicy::kNoPolicy);
+    ASSERT_FALSE(service_turl->CreatedByPolicy());
     AssertEquals(*service_turl, *deserialized);
   }
 }
@@ -697,17 +696,17 @@ TEST_F(TemplateURLServiceSyncTest, MergeAddFromNewerSyncData) {
   // Duplicate keyword, same hostname
   model()->Add(CreateTestTemplateURL(
       u"key1", "http://key1.com", "localguid1", base::Time::FromTimeT(10),
-      false, TemplateURLData::CreatedByPolicy::kNoPolicy, 111));
+      false, TemplateURLData::PolicyOrigin::kNoPolicy, 111));
 
   // Duplicate keyword, different hostname
   model()->Add(CreateTestTemplateURL(
       u"key2", "http://expected.com", "localguid2", base::Time::FromTimeT(10),
-      false, TemplateURLData::CreatedByPolicy::kNoPolicy, 112));
+      false, TemplateURLData::PolicyOrigin::kNoPolicy, 112));
 
   // Add
   model()->Add(CreateTestTemplateURL(
       u"unique", "http://unique.com", "localguid3", base::Time::FromTimeT(10),
-      false, TemplateURLData::CreatedByPolicy::kNoPolicy, 113));
+      false, TemplateURLData::PolicyOrigin::kNoPolicy, 113));
 
   ASSERT_EQ(3U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   MergeAndExpectNotify(CreateInitialSyncData(), 1);
@@ -749,8 +748,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeIgnoresPolicyAndPlayAPIEngines) {
   model()->Add(CreateTestTemplateURL(
       u"key1", "http://key1.com", "localguid1", base::Time::FromTimeT(100),
       /*safe_for_autoreplace=*/false,
-      /*created_by_policy=*/
-      TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
+      /*policy_origin=*/
+      TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
 
   {
     auto play_api_engine = CreateTestTemplateURL(
@@ -969,7 +968,7 @@ TEST_F(TemplateURLServiceSyncTest, ProcessChangesWithLocalExtensions) {
       syncer::SyncChange::ACTION_ADD,
       CreateTestTemplateURL(u"keyword1", "http://aaa.com", std::string(),
                             base::Time::FromTimeT(100), true,
-                            TemplateURLData::CreatedByPolicy::kNoPolicy, 0)));
+                            TemplateURLData::PolicyOrigin::kNoPolicy, 0)));
   changes.push_back(CreateTestSyncChange(
       syncer::SyncChange::ACTION_ADD,
       CreateTestTemplateURL(u"keyword2", "http://bbb.com")));
@@ -1248,7 +1247,7 @@ TEST_F(TemplateURLServiceSyncTest, DefaultGuidDeletedBeforeNewDSPArrives) {
   data.safe_for_autoreplace = false;
   data.date_created = Time::FromTimeT(100);
   data.last_modified = Time::FromTimeT(100);
-  data.created_by_policy = TemplateURLData::CreatedByPolicy::kNoPolicy;
+  data.policy_origin = TemplateURLData::PolicyOrigin::kNoPolicy;
   data.prepopulate_id = 999999;
   data.sync_guid = "guid2";
   std::unique_ptr<TemplateURL> turl2(new TemplateURL(data));
@@ -1326,7 +1325,7 @@ TEST_F(TemplateURLServiceSyncTest,
   data.safe_for_autoreplace = false;
   data.date_created = Time::FromTimeT(100);
   data.last_modified = Time::FromTimeT(100);
-  data.created_by_policy = TemplateURLData::CreatedByPolicy::kNoPolicy;
+  data.policy_origin = TemplateURLData::PolicyOrigin::kNoPolicy;
   data.prepopulate_id = 999999;
   data.sync_guid = "guid2";
   std::unique_ptr<TemplateURL> turl2(new TemplateURL(data));
@@ -2587,7 +2586,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineIgnoresId0) {
   std::unique_ptr<TemplateURL> turl(
       CreateTestTemplateURL(u"what", "http://thewhat.com/{searchTerms}",
                             "normal_guid", base::Time::FromTimeT(10), true,
-                            TemplateURLData::CreatedByPolicy::kNoPolicy, 0));
+                            TemplateURLData::PolicyOrigin::kNoPolicy, 0));
   initial_data.push_back(
       TemplateURLService::CreateSyncDataFromTemplateURL(*turl));
 
