@@ -432,7 +432,7 @@ class ServiceWorkerTaskQueue
                               int thread_id);
   void DidStartWorkerFail(const SequencedContextId& context_id,
                           base::Time start_time,
-                          blink::ServiceWorkerStatusCode status_code);
+                          content::StatusCodeResponse status);
 
   bool IsStartWorkerFailureUnexpected(
       blink::ServiceWorkerStatusCode status_code);

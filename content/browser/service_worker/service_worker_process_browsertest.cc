@@ -232,11 +232,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
             worker_process_id = process_id;
             loop.Quit();
           }),
-      base::BindLambdaForTesting(
-          [&loop](blink::ServiceWorkerStatusCode status_code) {
-            ASSERT_FALSE(true) << "start worker failed";
-            loop.Quit();
-          }));
+      base::BindLambdaForTesting([&loop](StatusCodeResponse status) {
+        ASSERT_FALSE(true) << "start worker failed";
+        loop.Quit();
+      }));
   loop.Run();
 
   // The page and service worker are in different processes. (This is not

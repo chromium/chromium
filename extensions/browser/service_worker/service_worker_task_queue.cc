@@ -175,7 +175,7 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
 void ServiceWorkerTaskQueue::DidStartWorkerFail(
     const SequencedContextId& context_id,
     base::Time start_time,
-    blink::ServiceWorkerStatusCode status_code) {
+    content::StatusCodeResponse status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsCurrentActivation(context_id.extension_id, context_id.token)) {
     // This can happen is when the registration got unregistered right before we
@@ -184,27 +184,27 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
     return;
   }
 
-  if (IsStartWorkerFailureUnexpected(status_code)) {
+  if (IsStartWorkerFailureUnexpected(status.status_code)) {
     base::UmaHistogramBoolean(
         "Extensions.ServiceWorkerBackground.StartWorkerStatus", false);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.StartWorker_FailStatus",
-        status_code);
+        status.status_code);
     base::UmaHistogramTimes(
         "Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
         base::Time::Now() - start_time);
     LOG(ERROR)
         << "DidStartWorkerFail " << context_id.extension_id << ": "
         << static_cast<std::underlying_type_t<blink::ServiceWorkerStatusCode>>(
-               status_code);
+               status.status_code);
   }
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
   if (g_test_observer) {
     std::vector<PendingTask>* tasks = pending_tasks(context_id);
-    g_test_observer->DidStartWorkerFail(context_id.extension_id,
-                                        tasks ? tasks->size() : 0, status_code);
+    g_test_observer->DidStartWorkerFail(
+        context_id.extension_id, tasks ? tasks->size() : 0, status.status_code);
   }
   DeleteAllPendingTasks(context_id);
   // TODO(https://crbug/1062936): Needs more thought: extension would be in

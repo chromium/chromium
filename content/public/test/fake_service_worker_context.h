@@ -77,7 +77,8 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
       const GURL& scope,
       const blink::StorageKey& key,
       ServiceWorkerContext::StartWorkerCallback info_callback,
-      ServiceWorkerContext::StatusCodeCallback failure_callback) override;
+      ServiceWorkerContext::StatusCodeResponseCallback failure_callback)
+      override;
   bool IsLiveStartingServiceWorker(int64_t service_worker_version_id) override;
   bool IsLiveRunningServiceWorker(int64_t service_worker_version_id) override;
   service_manager::InterfaceProvider& GetRemoteInterfaces(
