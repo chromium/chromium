@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/glic/glic_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
@@ -20,6 +21,8 @@ namespace {
 // Default value for how close the corner of glic has to be from a browser's
 // glic button to snap.
 constexpr static int kSnapDistanceThreshold = 50;
+constexpr static int kWidgetWidth = 400;
+constexpr static int kWidgetHeight = 800;
 
 // Helper class for observing mouse and key events from native window.
 class WindowEventObserver : public ui::EventObserver {
@@ -60,31 +63,68 @@ namespace glic {
 GlicWindowController::GlicWindowController(Profile* profile)
     : profile_(profile) {}
 
-void GlicWindowController::Show(const views::View* glic_button_view) {
+void GlicWindowController::Show(views::View* glic_button_view) {
   // TODO(crbug.com/379943498): possibly bring to front or activate in this case
   if (widget_) {
     return;
   }
 
+  int padding;
+  gfx::Point top_right_point;
+
   if (!glic_button_view) {
-    // TODO(crbug.com/382311793): Position the window when opened from the
-    // launcher.
-    return;
+    // Right now this only detects whether the glic widget is summoned from the
+    // OS entrypoint and positions itself detached from the browser.
+    // TODO(crbug.com/384061064): Add more logic for when the glic window should
+    // show up in a detached state.
+    top_right_point = GetTopRightPositionForDetachedWindow();
+    padding = 50;
+  } else {
+    // If summoned from the tab strip button. This will always show up attached
+    // because it is tied to a views::View object within the current browser
+    // window.
+    top_right_point = GetTopRightPositionForAttachedWindow(glic_button_view);
+    padding = GetLayoutConstant(TAB_STRIP_PADDING);
   }
 
-  // Initial position determined by glic view bounds.
-  gfx::Point top_right_bounds =
-      glic_button_view->GetBoundsInScreen().top_right();
-  const int width = 400;
-  const int height = 800;
-  const int padding = GetLayoutConstant(TAB_STRIP_PADDING);
-
   std::tie(widget_, glic_view_) = glic::GlicView::CreateWidget(
-      profile_, {top_right_bounds.x() - width - padding,
-                 top_right_bounds.y() + padding, width, height});
+      profile_, {top_right_point.x() - kWidgetWidth - padding,
+                 top_right_point.y() + padding, kWidgetWidth, kWidgetHeight});
   widget_->Show();
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, glic_view_);
+}
+
+gfx::Point GlicWindowController::GetTopRightPositionForAttachedWindow(
+    views::View* glic_button_view) {
+  // Initial position determined by glic button bounds. Returns the top right
+  // point of the button.
+  gfx::Point top_right_bounds =
+      glic_button_view->GetBoundsInScreen().top_right();
+  views::Widget* glic_button_widget = glic_button_view->GetWidget();
+  AttachToBrowser(glic_button_widget);
+
+  return top_right_bounds;
+}
+
+gfx::Point GlicWindowController::GetTopRightPositionForDetachedWindow() {
+  // Position determined by screen bounds. Returns the top right point of the
+  // screen.
+  display::Screen* screen = display::Screen::GetScreen();
+  gfx::Point top_right_bounds =
+      screen->GetPrimaryDisplay().work_area().top_right();
+
+  return top_right_bounds;
+}
+
+void GlicWindowController::AttachToBrowser(views::Widget* widget) {
+  // Makes the glic widget a child view of the given widget's browser.
+  if (widget && widget_) {
+    // Add observer to new parent.
+    pinned_target_widget_observer_.SetPinnedTargetWidget(widget);
+    views::Widget::ReparentNativeView(widget_->GetNativeView(),
+                                      widget->GetNativeView());
+  }
 }
 
 bool GlicWindowController::Resize(const gfx::Size& size) {
@@ -168,10 +208,7 @@ void GlicWindowController::HandleBrowserPinning(gfx::Vector2d mouse_location) {
             views::Widget::ClosedReason::kLostFocus);
         holder_widget_.reset();
       }
-      // add observer to new parent
-      pinned_target_widget_observer_.SetPinnedTargetWidget(window_widget);
-      views::Widget::ReparentNativeView(widget_->GetNativeView(),
-                                        window_widget->GetNativeView());
+      AttachToBrowser(window_widget);
     } else if (widget_->parent() == window_widget) {
       // If farther than the snapping threshold from the current parent
       // widget, open a blank holder window to reparent to

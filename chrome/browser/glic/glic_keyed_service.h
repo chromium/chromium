@@ -32,7 +32,7 @@ class GlicKeyedService : public KeyedService {
 
   // Launches the Glic UI anchored at the given View object. When started from
   // the launcher, no anchor view is provided.
-  void LaunchUI(const views::View* glic_button_view);
+  void LaunchUI(views::View* glic_button_view);
 
   GlicWindowController* window_controller() { return window_controller_.get(); }
 

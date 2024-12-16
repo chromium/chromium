@@ -12,6 +12,7 @@
 class Browser;
 namespace gfx {
 class Size;
+class Point;
 }  // namespace gfx
 
 namespace {
@@ -33,7 +34,7 @@ class GlicWindowController {
   ~GlicWindowController();
 
   // Shows the glic window.
-  void Show(const views::View* glic_button_view);
+  void Show(views::View* glic_button_view);
 
   // Sets the size of the glic window to the specified dimensions. Returns true
   // if the operation succeeded.
@@ -53,6 +54,19 @@ class GlicWindowController {
   base::WeakPtr<GlicWindowController> GetWeakPtr();
 
  private:
+  // Determines the correct position for the glic window when attached to a
+  // browser.
+  gfx::Point GetTopRightPositionForAttachedWindow(
+      views::View* glic_button_view);
+
+  // Determines the correct position for the glic window when in a detached
+  // state.
+  gfx::Point GetTopRightPositionForDetachedWindow();
+
+  // Reparents the glic widget under the given widget. Helper method for
+  // GetTopRightPositionForAttachedWindow.
+  void AttachToBrowser(views::Widget* widget);
+
   // observes the pinned target
   class PinnedTargetWidgetObserver : public views::WidgetObserver {
    public:

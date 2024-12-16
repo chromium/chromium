@@ -29,7 +29,7 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
 
 GlicKeyedService::~GlicKeyedService() = default;
 
-void GlicKeyedService::LaunchUI(const views::View* glic_button_view) {
+void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
   profile_manager_->OnUILaunching(this);
 
   if (!window_controller_) {
