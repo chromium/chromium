@@ -220,6 +220,7 @@ int AudioDestination::Render(base::TimeDelta delay,
                                              web_audio_device_->SampleRate());
 
       media::AudioGlitchInfo combined_glitch_info = glitch_info;
+      bool has_fifo_underrun_occurred = false;
       if (result.frames_provided < number_of_frames) {
         media::AudioGlitchInfo underrun{
             // FIFO contains audio at the output device sample rate.
@@ -229,6 +230,7 @@ int AudioDestination::Render(base::TimeDelta delay,
             .count = 1};
         underrun.MaybeAddTraceEvent();
         combined_glitch_info += underrun;
+        has_fifo_underrun_occurred = true;
       }
 
       PostCrossThreadTask(
@@ -236,7 +238,8 @@ int AudioDestination::Render(base::TimeDelta delay,
           CrossThreadBindOnce(&AudioDestination::RequestRender,
                               WrapRefCounted(this), number_of_frames,
                               result.frames_to_render, delay, delay_timestamp,
-                              combined_glitch_info));
+                              combined_glitch_info,
+                              has_fifo_underrun_occurred));
     } else {
       // Otherwise use the single-thread rendering.
       const size_t frames_to_render =
@@ -531,7 +534,8 @@ void AudioDestination::RequestRender(
     size_t frames_to_render,
     base::TimeDelta delay,
     base::TimeTicks delay_timestamp,
-    const media::AudioGlitchInfo& glitch_info) {
+    const media::AudioGlitchInfo& glitch_info,
+    bool has_fifo_underrun_occurred) {
 
   base::AutoTryLock locker(device_state_lock_);
 
@@ -562,6 +566,9 @@ void AudioDestination::RequestRender(
   base::TimeDelta fifo_delay = audio_utilities::FramesToTime(
       fifo_->GetFramesAvailable(), web_audio_device_->SampleRate());
   uma_reporter_.UpdateFifoDelay(fifo_delay);
+  if (has_fifo_underrun_occurred) {
+    uma_reporter_.IncreaseFifoUnderrunCount();
+  }
 
   delay_to_report_ = delay + fifo_delay;
   glitch_info_to_report_.Add(glitch_info);

@@ -169,7 +169,8 @@ class PLATFORM_EXPORT AudioDestination final
                      size_t frames_to_render,
                      base::TimeDelta delay,
                      base::TimeTicks delay_timestamp,
-                     const media::AudioGlitchInfo& glitch_info);
+                     const media::AudioGlitchInfo& glitch_info,
+                     bool has_fifo_underrun_occurred = false);
 
   // Provide input to the resampler (if used).
   void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
