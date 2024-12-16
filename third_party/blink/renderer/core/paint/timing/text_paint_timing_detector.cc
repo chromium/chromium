@@ -83,9 +83,7 @@ std::pair<TextRecord*, bool> LargestTextPaintManager::UpdateMetricsCandidate() {
   return {largest_text_.Get(), changed};
 }
 
-std::optional<
-    base::OnceCallback<void(const base::TimeTicks&, const DOMPaintTimingInfo&)>>
-TextPaintTimingDetector::TakePaintTimingCallback() {
+OptionalPaintTimingCallback TextPaintTimingDetector::TakePaintTimingCallback() {
   if (!added_entry_in_latest_frame_)
     return std::nullopt;
 
@@ -290,6 +288,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
       continue;
     }
     record->paint_time = timestamp;
+    record->paint_timing_info = paint_timing_info;
     if (can_report_element_timing && record->is_needed_for_element_timing_) {
       text_element_timing_->OnTextObjectPainted(*record, paint_timing_info);
     }

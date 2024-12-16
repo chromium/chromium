@@ -55,6 +55,7 @@ class TextRecord final : public GarbageCollected<TextRecord> {
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
   // The time of the first paint after fully loaded.
   base::TimeTicks paint_time = base::TimeTicks();
+  DOMPaintTimingInfo paint_timing_info;
   bool is_needed_for_element_timing_ = false;
 };
 

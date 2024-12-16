@@ -111,8 +111,6 @@ namespace {
 // level before reporting to UKM to smooth out recorded events over all pages.
 constexpr size_t kLongTaskUkmSampleInterval = 100;
 
-constexpr base::TimeDelta kExtraCoarseResolution = base::Milliseconds(4);
-
 const char kSwapsPerInsertionHistogram[] =
     "Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion";
 
@@ -1268,22 +1266,6 @@ DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
   return MonotonicTimeToDOMHighResTimeStamp(time_origin_, monotonic_time,
                                             false /* allow_negative_value */,
                                             cross_origin_isolated_capability_);
-}
-
-DOMHighResTimeStamp Performance::RenderTimeToDOMHighResTimeStamp(
-    base::TimeTicks monotonic_time) const {
-  if (monotonic_time.is_null() || time_origin_.is_null()) {
-    return 0;
-  }
-
-  if (RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() &&
-      !cross_origin_isolated_capability_) {
-    return (monotonic_time - time_origin_)
-        .CeilToMultiple(kExtraCoarseResolution)
-        .InMillisecondsF();
-  } else {
-    return MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
-  }
 }
 
 DOMHighResTimeStamp Performance::now() const {

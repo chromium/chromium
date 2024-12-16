@@ -5697,6 +5697,8 @@ interface LargestContentfulPaint : PerformanceEntry
     getter element
     getter id
     getter loadTime
+    getter paintTime
+    getter presentationTime
     getter renderTime
     getter size
     getter url

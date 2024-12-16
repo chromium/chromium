@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -200,8 +201,7 @@ ImagePaintTimingDetector::UpdateMetricsCandidate() {
   return {largest_image_record, changed};
 }
 
-std::optional<
-    base::OnceCallback<void(const base::TimeTicks&, const DOMPaintTimingInfo&)>>
+OptionalPaintTimingCallback
 ImagePaintTimingDetector::TakePaintTimingCallback() {
   viewport_size_ = std::nullopt;
   if (!added_entry_in_latest_frame_)
@@ -486,6 +486,15 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
     if (base::FeatureList::IsEnabled(
             features::kReportFirstFrameTimeAsRenderTime)) {
       record->paint_time = record->first_animated_frame_time;
+
+      // TODO(crbug.com/383568320): this timestamp it not specified, and it's
+      // not clear how it should be coarsened
+      DOMHighResTimeStamp dom_timestamp =
+          DOMWindowPerformance::performance(
+              *frame_view_->GetFrame().GetDocument()->domWindow())
+              ->MonotonicTimeToDOMHighResTimeStamp(record->paint_time);
+      record->paint_timing_info =
+          DOMPaintTimingInfo{dom_timestamp, dom_timestamp};
     }
   } else if (record->first_animated_frame_time.is_null()) {
     // Otherwise, this is an animated image, and so we should wait for the

@@ -14,13 +14,11 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -193,9 +191,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
       cached_image.IntrinsicSize(respect_orientation), id, element));
 }
 
-std::optional<
-    base::OnceCallback<void(const base::TimeTicks&, const DOMPaintTimingInfo&)>>
-ImageElementTiming::TakePaintTimingCallback() {
+OptionalPaintTimingCallback ImageElementTiming::TakePaintTimingCallback() {
   if (!element_timings_) {
     return std::nullopt;
   }

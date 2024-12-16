@@ -139,9 +139,6 @@ class CORE_EXPORT Performance : public EventTarget {
   // exposing to web.
   DOMHighResTimeStamp MonotonicTimeToDOMHighResTimeStamp(base::TimeTicks) const;
 
-  // This does the same as MonotonicTimeToDOMHighResTimeStamp, but applies a
-  // coarser resolution for render times.
-  DOMHighResTimeStamp RenderTimeToDOMHighResTimeStamp(base::TimeTicks) const;
   DOMHighResTimeStamp now() const;
 
   // High Resolution Time Level 3 timeOrigin.
@@ -333,6 +330,8 @@ class CORE_EXPORT Performance : public EventTarget {
   // TODO(https://crbug.com/1457049): remove this once visited links are
   // partitioned.
   bool softNavPaintMetricsSupported() const;
+
+  base::SingleThreadTaskRunner& GetTaskRunner() { return *task_runner_; }
 
  private:
   PerformanceMeasure* MeasureInternal(

@@ -1141,71 +1141,6 @@ void WindowPerformance::AddFirstContentfulPaintTiming(
                  paint_timing_info, is_triggered_by_soft_navigation);
 }
 
-void WindowPerformance::QueueEntryWithPaintTiming(
-    base::OnceCallback<void(WindowPerformance*, const DOMPaintTimingInfo&)>
-        callback,
-    const DOMPaintTimingInfo& paint_timing_info) {
-  if (!RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() ||
-      time_origin_.is_null() || cross_origin_isolated_capability_) {
-    std::move(callback).Run(this, paint_timing_info);
-    return;
-  }
-
-  // https://w3c.github.io/paint-timing/#mark-paint-timing
-  // 10.3.2 Wait until the current high resolution time is paintTimingInfo’s
-  //        implementation-defined presentation time.
-  // |target_time| here is using the coarsened time in DOMPaintTimingInfo, and
-  // adds it to the time origin to create a new target time relative to the
-  // shared monotonic clock.
-  base::TimeTicks target_time =
-      time_origin_ + base::Milliseconds(paint_timing_info.presentation_time);
-  if (pending_entry_operations_with_render_coarsening_.empty()) {
-    SchedulePendingRenderCoarsenedEntries(target_time);
-  }
-
-  pending_entry_operations_with_render_coarsening_.push_back(
-      std::make_pair(WTF::BindOnce(std::move(callback),
-                                   WrapWeakPersistent(this), paint_timing_info),
-                     target_time));
-}
-
-void WindowPerformance::SchedulePendingRenderCoarsenedEntries(
-    base::TimeTicks target_time) {
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      WTF::BindOnce(
-          [](WeakPersistent<WindowPerformance> self) {
-            if (self) {
-              self->FlushPendingRenderCoarsenedEntries();
-            }
-          },
-          WrapWeakPersistent(this)),
-      target_time - base::TimeTicks::Now());
-}
-
-void WindowPerformance::FlushPendingRenderCoarsenedEntries() {
-  base::TimeTicks now = base::TimeTicks::Now();
-
-  Vector<std::pair<base::OnceClosure, base::TimeTicks>> pending_entries;
-  std::swap(pending_entry_operations_with_render_coarsening_, pending_entries);
-  base::TimeTicks next_tick;
-  for (auto& [callback, target_time] : pending_entries) {
-    // We could have had a few entries batched and this one is coarsened to the
-    // future. Fire it in the next batch.
-    if (target_time > now) {
-      pending_entry_operations_with_render_coarsening_.push_back(
-          std::make_pair(std::move(callback), target_time));
-      next_tick =
-          next_tick.is_null() ? target_time : std::min(next_tick, target_time);
-    } else {
-      std::move(callback).Run();
-    }
-  }
-
-  if (!next_tick.is_null()) {
-    SchedulePendingRenderCoarsenedEntries(next_tick);
-  }
-}
 void WindowPerformance::AddLongAnimationFrameEntry(PerformanceEntry* entry) {
   if (!IsLongAnimationFrameBufferFull()) {
     InsertEntryIntoSortedBuffer(long_animation_frame_buffer_, *entry,
@@ -1342,8 +1277,7 @@ uint64_t WindowPerformance::interactionCount() const {
 }
 
 void WindowPerformance::OnLargestContentfulPaintUpdated(
-    base::TimeTicks start_time,
-    base::TimeTicks render_time,
+    std::optional<DOMPaintTimingInfo> paint_timing_info,
     uint64_t paint_size,
     base::TimeTicks load_time,
     const AtomicString& id,
@@ -1352,39 +1286,25 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     bool is_triggered_by_soft_navigation) {
   DOMHighResTimeStamp load_timestamp =
       MonotonicTimeToDOMHighResTimeStamp(load_time);
-  DOMHighResTimeStamp start_timestamp =
-      RenderTimeToDOMHighResTimeStamp(start_time);
-  DOMHighResTimeStamp render_timestamp =
-      RenderTimeToDOMHighResTimeStamp(render_time);
 
-  // TODO(crbug.com/381270287) integrate with PaintMixin. This currently doesn't
-  // have a proper paint_time.
-  DOMPaintTimingInfo paint_timing_info{render_timestamp, render_timestamp};
-
-  // TODO(yoav): Should we modify start to represent the animated frame?
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
-      start_timestamp, render_timestamp, paint_size, load_timestamp, id, url,
-      element, DomWindow(), is_triggered_by_soft_navigation);
+      paint_timing_info.has_value() ? paint_timing_info->presentation_time
+                                    : load_timestamp,
+      paint_timing_info.has_value() ? paint_timing_info->presentation_time : 0,
+      paint_size, load_timestamp, id, url, element, DomWindow(),
+      is_triggered_by_soft_navigation);
 
-  QueueEntryWithPaintTiming(
-      WTF::BindOnce(
-          [](Persistent<LargestContentfulPaint> entry,
-             WindowPerformance* window_performance, const DOMPaintTimingInfo&) {
-            if (!window_performance->DomWindow()) {
-              return;
-            }
+  if (paint_timing_info) {
+    entry->SetPaintTimingInfo(paint_timing_info.value());
+  }
 
-            if (window_performance->HasObserverFor(
-                    PerformanceEntry::kLargestContentfulPaint)) {
-              window_performance->NotifyObserversOfEntry(*entry);
-            }
-            window_performance->AddLargestContentfulPaint(entry);
-            window_performance->DomWindow()
-                ->document()
-                ->OnLargestContentfulPaintUpdated();
-          },
-          WrapPersistent(entry)),
-      paint_timing_info);
+  if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint)) {
+    NotifyObserversOfEntry(*entry);
+  }
+  AddLargestContentfulPaint(entry);
+  if (LocalDOMWindow* window = DomWindow()) {
+    window->document()->OnLargestContentfulPaintUpdated();
+  }
 
   if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
     image_element->SetIsLCPElement();
