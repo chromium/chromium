@@ -66,6 +66,14 @@ enum class ItemType {
   kItemTypePlusAddressAction
 };
 
+// Returns whether the view should be resized to match the desired popover UI on
+// tablets.
+bool ShouldResizeViewForPopover(
+    UIModalPresentationStyle modal_presentation_style) {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+         modal_presentation_style == UIModalPresentationPopover;
+}
+
 }  // namespace
 
 @interface FallbackViewController ()
@@ -128,7 +136,7 @@ enum class ItemType {
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
   if (!self.tableViewModel) {
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
       self.preferredContentSize = CGSizeMake(
           PopoverPreferredWidth, AlignValueToPixel(PopoverLoadingHeight));
     }
@@ -139,7 +147,7 @@ enum class ItemType {
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ShouldResizeViewForPopover(self.modalPresentationStyle)) {
     CGSize systemLayoutSize = self.tableView.contentSize;
     CGFloat preferredHeight =
         std::min(systemLayoutSize.height, PopoverMaxHeight);
