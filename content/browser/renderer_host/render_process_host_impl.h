@@ -248,7 +248,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool ShutdownRequested() override;
   bool FastShutdownIfPossible(size_t page_count = 0,
                               bool skip_unload_handlers = false,
-                              bool ignore_workers = false) override;
+                              bool ignore_workers = false,
+                              bool ignore_keep_alive = false) override;
   const base::Process& GetProcess() override;
   bool IsReady() override;
   BrowserContext* GetBrowserContext() override;
