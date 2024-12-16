@@ -508,6 +508,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 #pragma mark - UITextViewDelegate
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -519,6 +520,20 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
       showSuggestionsPageWithURL:net::GURLWithNSURL(URL)];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  DCHECK(self.footerLabel == textView);
+  DCHECK(textItem.link);
+
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate sadTabView:weakSelf
+        showSuggestionsPageWithURL:net::GURLWithNSURL(textItem.link)];
+  }];
 }
 
 @end
