@@ -68,7 +68,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return color_params_.GetAlphaType();
   }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return CanvasRenderingContextSkColorInfo().refColorSpace();
+    return color_params_.GetSkColorSpace();
   }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   void Reset() override;
