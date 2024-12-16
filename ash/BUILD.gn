@@ -3918,7 +3918,6 @@ test("ash_unittests") {
     "host/ash_window_tree_host_unified_unittest.cc",
     "ime/ime_controller_impl_unittest.cc",
     "in_session_auth/auth_dialog_contents_view_unittest.cc",
-    "in_session_auth/authentication_dialog_unittest.cc",
     "in_session_auth/in_session_auth_dialog_contents_view_unittest.cc",
     "in_session_auth/webauthn_dialog_controller_impl_unittest.cc",
     "keyboard/keyboard_controller_impl_unittest.cc",
