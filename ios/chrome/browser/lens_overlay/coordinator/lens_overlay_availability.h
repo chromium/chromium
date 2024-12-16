@@ -12,4 +12,7 @@ bool IsLensOverlayAvailable();
 // instead of new tab.
 bool IsLensOverlaySameTabNavigationEnabled();
 
+// Returns whether LVF unified experience is enabled.
+bool IsLVFUnifiedExperienceEnabled();
+
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_AVAILABILITY_H_

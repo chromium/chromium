@@ -31,6 +31,8 @@ source_set("coordinator") {
     "lens_result_page_mediator.h",
     "lens_result_page_mediator.mm",
     "lens_result_page_mediator_delegate.h",
+    "lens_view_finder_coordinator.h",
+    "lens_view_finder_coordinator.mm",
     "lens_web_provider.h",
   ]
   deps = [

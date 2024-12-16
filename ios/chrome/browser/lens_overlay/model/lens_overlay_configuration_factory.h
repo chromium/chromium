@@ -9,6 +9,7 @@
 
 @class LensConfiguration;
 enum class LensOverlayEntrypoint;
+enum class LensEntrypoint;
 class ProfileIOS;
 
 // A factory class to create configuration objects.
@@ -18,6 +19,10 @@ class ProfileIOS;
 - (LensConfiguration*)configurationForEntrypoint:
                           (LensOverlayEntrypoint)entrypoint
                                          profile:(ProfileIOS*)profile;
+
+// Creates a configuration object for the given entrypoint and profile.
+- (LensConfiguration*)configurationForLensEntrypoint:(LensEntrypoint)entrypoint
+                                             profile:(ProfileIOS*)profile;
 
 @end
 

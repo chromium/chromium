@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
@@ -575,6 +576,7 @@ enum class ToolbarKind {
   BubbleViewControllerPresenter* _contextualPanelEntrypointHelpPresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   LensCoordinator* _lensCoordinator;
+  LensViewFinderCoordinator* _lensViewFinderCoordinator;
   LensOverlayCoordinator* _lensOverlayCoordinator;
   ToolbarCoordinator* _toolbarCoordinator;
   TabStripCoordinator* _tabStripCoordinator;
@@ -1115,7 +1117,12 @@ enum class ToolbarKind {
   _NTPCoordinator.toolbarDelegate = _toolbarCoordinator;
   self.tabLifecycleMediator.NTPCoordinator = _NTPCoordinator;
 
-  _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
+  if (IsLVFUnifiedExperienceEnabled()) {
+    _lensViewFinderCoordinator =
+        [[LensViewFinderCoordinator alloc] initWithBrowser:self.browser];
+  } else {
+    _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
+  }
 
   _safeAreaProvider = [[SafeAreaProvider alloc] initWithBrowser:self.browser];
 
@@ -1170,9 +1177,14 @@ enum class ToolbarKind {
   // The Lens coordinator needs to be started before the primary toolbar
   // coordinator so that the LensCommands dispatcher is correctly registered in
   // time.
-  _lensCoordinator.baseViewController = viewController;
-  _lensCoordinator.delegate = viewController;
-  [_lensCoordinator start];
+  if (IsLVFUnifiedExperienceEnabled()) {
+    _lensViewFinderCoordinator.baseViewController = viewController;
+    [_lensViewFinderCoordinator start];
+  } else {
+    _lensCoordinator.baseViewController = viewController;
+    _lensCoordinator.delegate = viewController;
+    [_lensCoordinator start];
+  }
 
   _toolbarCoordinator.baseViewController = viewController;
   _toolbarCoordinator.omniboxFocusDelegate = viewController;
@@ -1256,8 +1268,13 @@ enum class ToolbarKind {
   [_lensCoordinator stop];
   _lensCoordinator = nil;
 
-  [_lensOverlayCoordinator stop];
-  _lensOverlayCoordinator = nil;
+  if (IsLVFUnifiedExperienceEnabled()) {
+    [_lensViewFinderCoordinator stop];
+    _lensViewFinderCoordinator = nil;
+  } else {
+    [_lensOverlayCoordinator stop];
+    _lensOverlayCoordinator = nil;
+  }
 
   [self.downloadManagerCoordinator stop];
   self.downloadManagerCoordinator = nil;
