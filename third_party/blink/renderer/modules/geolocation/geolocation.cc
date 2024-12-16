@@ -213,6 +213,11 @@ void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
   if (!GetFrame())
     return;
 
+  if (GetFrame()->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnGeoLocation);
+  }
+
   probe::BreakableLocation(GetExecutionContext(),
                            "Geolocation.getCurrentPosition");
 

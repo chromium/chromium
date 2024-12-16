@@ -4605,7 +4605,11 @@ enum WebFeature {
   kSrcSetUsedHigherDensityImageFromCache = 5219,
   kHTMLElementWritingSuggestions = 5220,
   kCSSPseudoOpen = 5221,
-
+  kAdScriptInStackOnGeoLocation = 5222,
+  kAdScriptInStackOnClipboardRead = 5223,
+  kAdScriptInStackOnBluetooth = 5224,
+  kAdScriptInStackOnMicrophoneRead = 5225,
+  kAdScriptInStackOnCameraRead = 5226,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
   // spaces or comments in this file. Comments belong next to the usage of

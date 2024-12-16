@@ -415,6 +415,11 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kStorageAccessAPI_requestStorageAccessFor_Method,
           WebFeature::kSharedWorkerScriptUnderServiceWorkerControlIsBlob,
           WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath,
+          WebFeature::kAdScriptInStackOnGeoLocation,
+          WebFeature::kAdScriptInStackOnClipboardRead,
+          WebFeature::kAdScriptInStackOnBluetooth,
+          WebFeature::kAdScriptInStackOnMicrophoneRead,
+          WebFeature::kAdScriptInStackOnCameraRead,
       }));
   return *opt_in_features;
 }

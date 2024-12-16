@@ -390,6 +390,12 @@ ScriptPromise<IDLSequence<BluetoothDevice>> Bluetooth::getDevices(
     return ScriptPromise<IDLSequence<BluetoothDevice>>();
   }
 
+  LocalFrame* frame = window->GetFrame();
+  if (frame && frame->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnBluetooth);
+  }
+
   AddUnsupportedPlatformConsoleMessage(window);
   CHECK(window->IsSecureContext());
 
@@ -431,6 +437,11 @@ ScriptPromise<BluetoothDevice> Bluetooth::requestDevice(
   if (!LocalFrame::HasTransientUserActivation(frame)) {
     exception_state.ThrowSecurityError(kHandleGestureForPermissionRequest);
     return EmptyPromise();
+  }
+
+  if (frame->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnBluetooth);
   }
 
   EnsureServiceConnection(window);

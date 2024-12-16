@@ -10938,6 +10938,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5219" label="SrcSetUsedHigherDensityImageFromCache"/>
   <int value="5220" label="HTMLElementWritingSuggestions"/>
   <int value="5221" label="CSSPseudoOpen"/>
+  <int value="5222" label="AdScriptInStackOnGeoLocation"/>
+  <int value="5223" label="AdScriptInStackOnClipboardRead"/>
+  <int value="5224" label="AdScriptInStackOnBluetooth"/>
+  <int value="5225" label="AdScriptInStackOnMicrophoneRead"/>
+  <int value="5226" label="AdScriptInStackOnCameraRead"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
