@@ -8535,9 +8535,7 @@ crbug.com/362506646 [ Debug ] external/wpt/longtask-timing/longtask-in-raf.html 
 
 # TODO(crbug.com/359628062) Re-enable the test after failures are resolved.
 # Gardener 2024-08-14
-crbug.com/359628062 [ Mac12 ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/mismatched-snapshot-containing-block-size-skips.html [ Failure Pass ]
-# Gardener 2024-11-04
-crbug.com/359628062 [ Mac13 ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/mismatched-snapshot-containing-block-size-skips.html [ Failure Pass ]
+crbug.com/359628062 virtual/threaded/external/wpt/css/css-view-transitions/navigation/mismatched-snapshot-containing-block-size-skips.html [ Failure Pass ]
 
 # Flaky scheduler/integration_tests
 crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-click.html [ Failure Pass ]
@@ -8815,7 +8813,7 @@ crbug.com/381085690 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/vali
 crbug.com/381378075 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 
 # Gardener 2024-11-27
-crbug.com/381142479 [ Linux ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ctor.html [ Failure Pass ]
+crbug.com/381142479 virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ctor.html [ Failure Pass ]
 crbug.com/378680890 [ Mac ] fast/peerconnection/RTCPeerConnection-many.html [ Pass Timeout ]
 
 # Gardener 2024-11-28
