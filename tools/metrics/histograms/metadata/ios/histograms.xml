@@ -3301,7 +3301,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.TimeOpen.DestinationChosen" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-05-11">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
