@@ -2686,6 +2686,8 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-metadata.https.html [ Timeout ]
+[ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-serviceworker-failure.https.html [ Timeout ]
 crbug.com/383880387 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
 crbug.com/383880387 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
 crbug.com/383911311 [ Mac13 ] external/wpt/webrtc/RTCRtpParameters-encodings.html [ Timeout ]
@@ -2701,6 +2703,7 @@ crbug.com/383825172 [ Mac13-arm64 ] external/wpt/html/semantics/forms/the-select
 crbug.com/383825172 [ Mac12 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac12-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure Pass ]
 crbug.com/383825172 [ Mac11 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
+crbug.com/383825172 [ Mac14-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac15-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383814062 [ Mac13 ] virtual/disable-raster-inducing-scroll/external/wpt/acid/acid2/reftest.html [ Failure ]
@@ -8685,8 +8688,8 @@ crbug.com/372293920 [ Mac15-arm64 ] wpt_internal/webxr/ar/ar_hittestsource_lifet
 crbug.com/366261815 external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Failure Pass Timeout ]
 
 # Gardener 2024-10-21
-crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/print/frame_tentative.py [ Timeout Failure Pass ]
-crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Timeout Failure Pass ]
+crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/print/frame_tentative.py [ Failure Pass Timeout ]
+crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure Pass Timeout ]
 
 # Fix importer 2024-10-22
 crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-dedicated-worker.https.tentative.window.html [ Pass Timeout ]
