@@ -1410,30 +1410,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToLargestContentfulPaint{Granularity}{SafeSitesFilter}"
-    units="ms" expires_after="2025-06-08">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    Measures the time in milliseconds from navigation timing's navigation start
-    to the time when the page first paints the experimental largest content
-    (text or image) within viewport, for Google Search page loads,
-    {SafeSitesFilter}. See http://bit.ly/largest_contentful_paint_explainer for
-    more details. Differs from
-    SubFrame.PaintTiming.NavigationToLargestContentfulPaint in that removed
-    content is still considered a valid candidate. Only recorded for Search
-    navigations that happen entirely in the foreground. The metric is emitted
-    when the navigation is completed or the app is backgrounded on Android.
-    {Granularity}
-  </summary>
-  <token key="Granularity">
-    <variant name="" summary=""/>
-    <variant name=".FineGrained" summary="Metric is clipped to 10 seconds."/>
-  </token>
-  <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
-</histogram>
-
-<histogram
     name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}{SafeSitesFilter}"
     units="ms" expires_after="2025-08-01">
   <owner>sisidovski@chromium.org</owner>
@@ -1502,6 +1478,30 @@ chromium-metrics-reviews@google.com.
 
     This is recorded at the timing of navigation commit.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint{SafeSitesFilter}"
+    units="ms" expires_after="2025-06-08">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Measures the time in milliseconds from navigation timing's navigation start
+    to the time when the page first paints the experimental largest content
+    (text or image) within viewport, for Google Search page loads,
+    {SafeSitesFilter}. See http://bit.ly/largest_contentful_paint_explainer for
+    more details. Differs from
+    SubFrame.PaintTiming.NavigationToLargestContentfulPaint in that removed
+    content is still considered a valid candidate. Only recorded for Search
+    navigations that happen entirely in the foreground. The metric is emitted
+    when the navigation is completed or the app is backgrounded on Android.
+    {Granularity}
+  </summary>
+  <token key="Granularity">
+    <variant name="" summary=""/>
+    <variant name=".FineGrained" summary="Metric is clipped to 10 seconds."/>
+  </token>
+  <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
 </histogram>
 
 <histogram name="PageLoad.Clients.LCPP.PaintTiming.ActualLCPIndex"
