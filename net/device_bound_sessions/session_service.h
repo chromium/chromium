@@ -13,6 +13,7 @@
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_key.h"
+#include "net/log/net_log_with_source.h"
 
 namespace net {
 class IsolationInfo;
@@ -46,10 +47,13 @@ class NET_EXPORT SessionService {
   // Isolation info to be used for registration request, this should be the
   // same as was used for the response with the Sec-Session-Registration
   // header.
+  // `net_log` is the log corresponding to the request receiving the
+  // Sec-Session-Registration header.
   virtual void RegisterBoundSession(
       OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
-      const IsolationInfo& isolation_info) = 0;
+      const IsolationInfo& isolation_info,
+      const NetLogWithSource& net_log) = 0;
 
   // Check if a request should be deferred due to the session cookie being
   // missing. This should only be called once the request has the correct

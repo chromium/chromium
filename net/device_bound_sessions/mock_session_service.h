@@ -27,7 +27,8 @@ class SessionServiceMock : public SessionService {
               RegisterBoundSession,
               (OnAccessCallback on_access_callback,
                RegistrationFetcherParam registration_params,
-               const IsolationInfo& isolation_info),
+               const IsolationInfo& isolation_info,
+               const NetLogWithSource& net_log),
               (override));
   MOCK_METHOD(std::optional<Session::Id>,
               GetAnySessionRequiringDeferral,

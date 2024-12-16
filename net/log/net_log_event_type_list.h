@@ -4767,3 +4767,18 @@ EVENT_TYPE(DBSC_REQUEST)
 //     "refresh_missing_cookie": <string>,
 //   }
 EVENT_TYPE(CHECK_DBSC_REFRESH_REQUIRED)
+
+// This event identifies the NetLogSource() for a URLRequest of the
+// device bound session refresh request.
+EVENT_TYPE(DBSC_REFRESH_REQUEST)
+
+// This event identifies the NetLogSource() for a URLRequest of the
+// device bound session registration request.
+EVENT_TYPE(DBSC_REGISTRATION_REQUEST)
+
+// This event is logged when a device bound session refresh request
+// completes. It contains the following parameters:
+//   {
+//     "status": <string>,
+//   }
+EVENT_TYPE(DBSC_REFRESH_RESULT)

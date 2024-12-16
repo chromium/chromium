@@ -92,10 +92,17 @@ void SessionServiceImpl::LoadSessionsAsync() {
 void SessionServiceImpl::RegisterBoundSession(
     OnAccessCallback on_access_callback,
     RegistrationFetcherParam registration_params,
-    const IsolationInfo& isolation_info) {
+    const IsolationInfo& isolation_info,
+    const NetLogWithSource& net_log) {
+  net::NetLogSource net_log_source_for_registration = net::NetLogSource(
+      net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
+  net_log.AddEventReferencingSource(
+      net::NetLogEventType::DBSC_REGISTRATION_REQUEST,
+      net_log_source_for_registration);
+
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(registration_params), key_service_.get(), context_.get(),
-      isolation_info,
+      isolation_info, net_log_source_for_registration,
       base::BindOnce(&SessionServiceImpl::OnRegistrationComplete,
                      weak_factory_.GetWeakPtr(),
                      std::move(on_access_callback)));
@@ -214,6 +221,12 @@ void SessionServiceImpl::DeferRequestForRefresh(
       UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
       return;
     }
+
+    net::NetLogSource net_log_source_for_refresh = net::NetLogSource(
+        net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
+    request->net_log().AddEventReferencingSource(
+        net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
+
     auto callback =
         base::BindOnce(&SessionServiceImpl::OnRefreshRequestCompletion,
                        weak_factory_.GetWeakPtr(),
@@ -221,8 +234,8 @@ void SessionServiceImpl::DeferRequestForRefresh(
                        std::move(site), session_id);
     RegistrationFetcher::StartFetchWithExistingKey(
         RegistrationRequestParam::Create(*session), key_service_.get(),
-        context_.get(), request->isolation_info(), std::move(callback),
-        *key_id);
+        context_.get(), request->isolation_info(), net_log_source_for_refresh,
+        std::move(callback), *key_id);
   }
 }
 

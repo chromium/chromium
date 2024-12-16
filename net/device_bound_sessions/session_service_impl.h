@@ -62,7 +62,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   void RegisterBoundSession(OnAccessCallback on_access_callback,
                             RegistrationFetcherParam registration_params,
-                            const IsolationInfo& isolation_info) override;
+                            const IsolationInfo& isolation_info,
+                            const NetLogWithSource& net_log) override;
 
   std::optional<Session::Id> GetAnySessionRequiringDeferral(
       URLRequest* request) override;

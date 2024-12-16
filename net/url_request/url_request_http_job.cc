@@ -1155,7 +1155,7 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
   for (auto& param : params) {
     service->RegisterBoundSession(
         request_->device_bound_session_access_callback(), std::move(param),
-        request_->isolation_info());
+        request_->isolation_info(), request_->net_log());
   }
 
   std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =

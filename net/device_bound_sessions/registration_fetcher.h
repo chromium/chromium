@@ -16,6 +16,7 @@
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "net/http/http_response_headers.h"
+#include "net/log/net_log_source.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -74,6 +75,7 @@ class NET_EXPORT RegistrationFetcher {
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
+      std::optional<NetLogSource> net_log_source,
       RegistrationCompleteCallback callback);
 
   // Starts the network request to the DBSC refresh endpoint with existing key
@@ -85,6 +87,7 @@ class NET_EXPORT RegistrationFetcher {
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
+      std::optional<net::NetLogSource> net_log_source,
       RegistrationCompleteCallback callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
           key_id);

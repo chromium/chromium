@@ -210,6 +210,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       const unexportable_keys::UnexportableKeyId& key_id,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
+      std::optional<NetLogSource> net_log_source,
       RegistrationFetcher::RegistrationCompleteCallback callback)
       : fetcher_endpoint_(fetcher_endpoint),
         session_identifier_(std::move(session_identifier)),
@@ -217,6 +218,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
         key_id_(key_id),
         context_(context),
         isolation_info_(isolation_info),
+        net_log_source_(std::move(net_log_source)),
         callback_(std::move(callback)),
         buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)) {}
 
@@ -279,7 +281,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   std::unique_ptr<net::URLRequest> CreateBaseRequest() {
     std::unique_ptr<net::URLRequest> request = context_->CreateRequest(
-        fetcher_endpoint_, IDLE, this, kRegistrationTrafficAnnotation);
+        fetcher_endpoint_, IDLE, this, kRegistrationTrafficAnnotation,
+        /*is_for_websockets=*/false, net_log_source_);
     request->set_method("POST");
     request->SetLoadFlags(LOAD_DISABLE_CACHE);
     request->set_allow_credentials(true);
@@ -329,8 +332,32 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   // Deletes `this` afterwards.
   void RunCallbackAndDeleteSelf(
       std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
+    AddNetLogResult(params);
     std::move(callback_).Run(std::move(params));
     delete this;
+  }
+
+  void AddNetLogResult(
+      const std::optional<RegistrationFetcher::RegistrationCompleteParams>&
+          params) {
+    if (!request_) {
+      return;
+    }
+    request_->net_log().AddEvent(NetLogEventType::DBSC_REFRESH_RESULT, [&]() {
+      std::string result;
+      if (!params) {
+        result = "failed_continue";
+      } else if (std::holds_alternative<SessionParams>(params->params)) {
+        result = "refreshed";
+      } else if (std::holds_alternative<SessionTerminationParams>(
+                     params->params)) {
+        result = "session_ended";
+      }
+
+      base::Value::Dict dict;
+      dict.Set("status", std::move(result));
+      return dict;
+    });
   }
 
   // State passed in to constructor
@@ -340,6 +367,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   unexportable_keys::UnexportableKeyId key_id_;
   raw_ptr<const URLRequestContext> context_;
   IsolationInfo isolation_info_;
+  std::optional<net::NetLogSource> net_log_source_;
   RegistrationFetcher::RegistrationCompleteCallback callback_;
 
   // Created to fetch data
@@ -379,6 +407,7 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
     // is safe.
     const URLRequestContext* context,
     const IsolationInfo& isolation_info,
+    std::optional<NetLogSource> net_log_source,
     RegistrationCompleteCallback callback) {
   // Using mock fetcher for testing
   if (g_mock_fetcher) {
@@ -395,7 +424,7 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
       supported_algos, kTaskPriority,
       base::BindOnce(&RegistrationFetcher::StartFetchWithExistingKey,
                      std::move(request_params), std::ref(key_service), context,
-                     isolation_info, std::move(callback)));
+                     isolation_info, net_log_source, std::move(callback)));
 }
 
 // static
@@ -404,6 +433,7 @@ void RegistrationFetcher::StartFetchWithExistingKey(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     const URLRequestContext* context,
     const IsolationInfo& isolation_info,
+    std::optional<net::NetLogSource> net_log_source,
     RegistrationFetcher::RegistrationCompleteCallback callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
         key_id) {
@@ -422,7 +452,8 @@ void RegistrationFetcher::StartFetchWithExistingKey(
   RegistrationFetcherImpl* fetcher = new RegistrationFetcherImpl(
       request_params.TakeRegistrationEndpoint(),
       request_params.TakeSessionIdentifier(), unexportable_key_service,
-      key_id.value(), context, isolation_info, std::move(callback));
+      key_id.value(), context, isolation_info, net_log_source,
+      std::move(callback));
 
   fetcher->Start(request_params.TakeChallenge(),
                  request_params.TakeAuthorization());
