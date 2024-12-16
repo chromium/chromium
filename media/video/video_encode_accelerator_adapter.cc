@@ -473,12 +473,14 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX &&
       !options_.avc.produce_annexb) {
-    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>(
+        /*add_parameter_sets_in_bitstream=*/false);
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
     BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (profile_ == HEVCPROFILE_MAIN && !options_.hevc.produce_annexb) {
-    h265_converter_ = std::make_unique<H265AnnexBToHevcBitstreamConverter>();
+    h265_converter_ = std::make_unique<H265AnnexBToHevcBitstreamConverter>(
+        /*add_parameter_sets_in_bitstream=*/false);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
         // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -703,7 +705,8 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     if (options.avc.produce_annexb) {
       h264_converter_.reset();
     } else if (!h264_converter_) {
-      h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+      h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>(
+          /*add_parameter_sets_in_bitstream=*/false);
     }
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
@@ -712,7 +715,8 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     if (options.hevc.produce_annexb) {
       h265_converter_.reset();
     } else if (!h265_converter_) {
-      h265_converter_ = std::make_unique<H265AnnexBToHevcBitstreamConverter>();
+      h265_converter_ = std::make_unique<H265AnnexBToHevcBitstreamConverter>(
+          /*add_parameter_sets_in_bitstream=*/false);
     }
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&

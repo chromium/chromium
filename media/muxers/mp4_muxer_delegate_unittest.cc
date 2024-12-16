@@ -30,8 +30,13 @@
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/mp4_stream_parser.h"
 #include "media/muxers/mp4_type_conversion.h"
+#include "media/parsers/h264_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/formats/mp4/h26x_annex_b_to_bitstream_converter.h"
+#endif
 
 namespace media {
 
@@ -47,7 +52,12 @@ constexpr char kAudioHandlerName[] = "SoundHandler";
 constexpr uint32_t kBoxHeaderSize = 8u;
 #endif
 }  // namespace
-class Mp4MuxerDelegateTest : public testing::Test {
+
+struct TestParam {
+  bool add_parameter_sets_in_bitstream;
+};
+
+class Mp4MuxerDelegateTest : public ::testing::TestWithParam<TestParam> {
  public:
   Mp4MuxerDelegateTest() = default;
 
@@ -131,7 +141,7 @@ class Mp4MuxerDelegateTest : public testing::Test {
 };
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
+TEST_P(Mp4MuxerDelegateTest, AddVideoFrame) {
   // Add video stream only.
   base::MemoryMappedFile mapped_file_1;
   LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_1);
@@ -151,6 +161,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -444,7 +455,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   }
 }
 
-TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
+TEST_P(Mp4MuxerDelegateTest, AddAudioFrame) {
   // Add audio stream only.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Stereo(),
@@ -467,6 +478,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
   // 5 seconds.
   Mp4MuxerDelegate delegate(
       AudioCodec::kAAC, VideoCodec::kUnknown, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -671,7 +683,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
   }
 }
 
-TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
+TEST_P(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
   // Add audio stream with counts over new fragment threshold..
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Stereo(),
@@ -690,6 +702,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       AudioCodec::kAAC, VideoCodec::kUnknown, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -787,7 +800,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
   }
 }
 
-TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
+TEST_P(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
   // Add stream audio first and video.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Stereo(),
@@ -812,6 +825,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -989,7 +1003,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
   }
 }
 
-TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
+TEST_P(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   // Add stream audio first and video.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Stereo(),
@@ -1015,6 +1029,7 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -1196,7 +1211,7 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
             fourth_moof_written_data);
 }
 
-TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
+TEST_P(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
   // Add stream with video first, and audio.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Stereo(),
@@ -1220,6 +1235,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -1328,8 +1344,10 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
     // `trun` test of video.
     ASSERT_EQ(1u, traf_boxes[1].runs.size());
     EXPECT_EQ(24u, traf_boxes[1].runs[0].sample_count);
-    EXPECT_EQ(5859u, traf_boxes[1].runs[0].data_offset);
-
+    // When `add_parameter_sets_in_bitstream` is set to true, there are
+    // additionally 29-byte SPS and 10-byte PPS.
+    EXPECT_EQ(GetParam().add_parameter_sets_in_bitstream ? 5898u : 5859u,
+              traf_boxes[1].runs[0].data_offset);
     ASSERT_EQ(24u, traf_boxes[1].runs[0].sample_durations.size());
 
     // The first and last item.
@@ -1338,7 +1356,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
   }
 }
 
-TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
+TEST_P(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
   // Add audio and video the first fragment, but video and audio
   // on the second segment.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -1364,6 +1382,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
       AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         base::ranges::copy(mp4_data, std::back_inserter(total_written_data));
 
@@ -1467,7 +1486,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
   }
 }
 
-TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
+TEST_P(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc) {
   // Add audio and video the first fragment, but video and audio
   // on the second fragment.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -1488,6 +1507,7 @@ TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
   int moof_box_start_offset = 0;
   Mp4MuxerDelegate delegate(
       AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
       base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
         switch (++callback_count) {
           case 1:
@@ -1542,7 +1562,7 @@ TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
       nullptr, &moof_reader);
   EXPECT_EQ(result, mp4::ParseResult::kOk);
 
-  // `moof`box read.
+  // `moof` box read.
   EXPECT_EQ(mp4::FOURCC_MOOF, moof_reader->type());
   EXPECT_TRUE(moof_reader->ScanChildren());
 
@@ -1564,8 +1584,167 @@ TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
     nalsize = (nalsize << 8) | total_written_data[nal_size_offset++];
   }
 
-  EXPECT_EQ(nalsize, 578u);
+  // When the value of `add_parameter_sets_in_bitstream` equals to true, it
+  // should refer to the NALU size of SPS. When its value equals to false, it
+  // should refer to the size of IDR instead.
+  EXPECT_EQ(nalsize, GetParam().add_parameter_sets_in_bitstream ? 24u : 578u);
 }
+
+TEST_P(Mp4MuxerDelegateTest, VideoFrameResolutionChanged) {
+  // Load the first `240x240` frame.
+  base::MemoryMappedFile mapped_file_1;
+  LoadEncodedFile("blackwhite_yuv444p-frame.h264", mapped_file_1);
+  auto video_stream_1 = media::DecoderBuffer::CopyFrom(mapped_file_1.bytes());
+
+  // Load the second `320x192` frame.
+  base::MemoryMappedFile mapped_file_2;
+  LoadEncodedFile("bear-320x192-baseline-frame-0.h264", mapped_file_2);
+  auto video_stream_2 = media::DecoderBuffer::CopyFrom(mapped_file_2.bytes());
+
+  base::RunLoop run_loop;
+
+  std::vector<uint8_t> first_moof_and_mdat_written_data;
+  std::vector<uint8_t> second_moof_and_mdat_written_data;
+  int callback_count = 0;
+  Mp4MuxerDelegate delegate(
+      AudioCodec::kAAC, VideoCodec::kH264, std::nullopt, std::nullopt,
+      GetParam().add_parameter_sets_in_bitstream,
+      base::BindLambdaForTesting([&](base::span<const uint8_t> mp4_data) {
+        switch (++callback_count) {
+          case 3:
+            // First `moof` + `mdat`.
+            base::ranges::copy(
+                mp4_data, std::back_inserter(first_moof_and_mdat_written_data));
+            break;
+          case 4:
+            // Second `moof` + `mdat`.
+            base::ranges::copy(
+                mp4_data,
+                std::back_inserter(second_moof_and_mdat_written_data));
+            run_loop.Quit();
+            break;
+          default:
+            break;
+        }
+      }));
+
+  H26xAnnexBToBitstreamConverter converter(
+      VideoCodec::kH264, GetParam().add_parameter_sets_in_bitstream);
+
+  base::TimeTicks base_time_ticks = base::TimeTicks::Now();
+
+  // Add the first `240x240` frame.
+  auto stream_buffer_1 = converter.Convert(video_stream_1->AsSpan());
+  media::Muxer::VideoParameters params_1(gfx::Size(240, 240), 30,
+                                         VideoCodec::kH264, gfx::ColorSpace());
+  video_stream_1->set_is_key_frame(true);
+  delegate.AddVideoFrame(params_1, video_stream_1,
+                         converter.GetCodecDescription(), base_time_ticks);
+
+  // Add the second `320x192` frame.
+  auto stream_buffer_2 = converter.Convert(video_stream_2->AsSpan());
+  media::Muxer::VideoParameters params_2(gfx::Size(320, 192), 30,
+                                         VideoCodec::kH264, gfx::ColorSpace());
+  video_stream_2->set_is_key_frame(true);
+  delegate.AddVideoFrame(params_2, video_stream_2,
+                         converter.GetCodecDescription(),
+                         base_time_ticks + base::Milliseconds(30));
+
+  // Write box data to the callback.
+  delegate.Flush();
+
+  run_loop.Run();
+
+  std::size_t index = 0;
+  for (auto moof_and_mdat_written_data :
+       {first_moof_and_mdat_written_data, second_moof_and_mdat_written_data}) {
+    // Parse `moof` + `mdat`.
+    std::unique_ptr<mp4::BoxReader> moof_reader;
+    EXPECT_EQ(mp4::BoxReader::ReadTopLevelBox(moof_and_mdat_written_data.data(),
+                                              moof_and_mdat_written_data.size(),
+                                              nullptr, &moof_reader),
+              mp4::ParseResult::kOk);
+
+    // `moof` box read.
+    EXPECT_EQ(mp4::FOURCC_MOOF, moof_reader->type());
+    EXPECT_TRUE(moof_reader->ScanChildren());
+
+    // `traf` box read.
+    std::vector<mp4::TrackFragment> traf_boxes;
+    EXPECT_TRUE(moof_reader->ReadChildren(&traf_boxes));
+
+    uint32_t mdat_video_data_offset;
+    EXPECT_EQ(112u, traf_boxes[0].runs[0].data_offset);
+    mdat_video_data_offset = traf_boxes[0].runs[0].data_offset;
+
+    // Get `mdat` data and convert it to `Annex-B` format.
+    std::vector<uint8_t> mdat_written_data(
+        moof_and_mdat_written_data.begin() + mdat_video_data_offset,
+        moof_and_mdat_written_data.end());
+    EXPECT_TRUE(
+        mp4::AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(&mdat_written_data));
+
+    H264Parser parser;
+    parser.SetStream(mdat_written_data.data(), mdat_written_data.size());
+    std::vector<H264NALU> nalus;
+    while (true) {
+      H264NALU nalu;
+      H264Parser::Result res = parser.AdvanceToNextNALU(&nalu);
+      if (res == H264Parser::kEOStream) {
+        break;
+      }
+      EXPECT_EQ(res, H264Parser::kOk);
+      switch (nalu.nal_unit_type) {
+        case H264NALU::kSPS: {
+          int sps_id;
+          EXPECT_EQ(parser.ParseSPS(&sps_id), H264Parser::kOk);
+          EXPECT_TRUE(!!parser.GetSPS(sps_id));
+          nalus.push_back(nalu);
+          const H264SPS* sps = parser.GetSPS(sps_id);
+          // Frame width & height should change.
+          EXPECT_EQ((sps->pic_width_in_mbs_minus1 + 1) * 16,
+                    index == 0 ? 240 : 320);
+          EXPECT_EQ((sps->pic_height_in_map_units_minus1 + 1) * 16,
+                    index == 0 ? 240 : 192);
+          break;
+        }
+        case H264NALU::kPPS: {
+          int pps_id;
+          EXPECT_EQ(parser.ParsePPS(&pps_id), H264Parser::kOk);
+          EXPECT_TRUE(!!parser.GetPPS(pps_id));
+          nalus.push_back(nalu);
+          break;
+        }
+        case H264NALU::kIDRSlice: {
+          nalus.push_back(nalu);
+          break;
+        }
+        default:
+          break;
+      }
+    }
+
+    if (GetParam().add_parameter_sets_in_bitstream) {
+      // Expect SPS, PPS, IDR.
+      EXPECT_EQ(nalus.size(), 3u);
+      EXPECT_EQ(nalus[0].nal_unit_type, H264NALU::kSPS);
+      EXPECT_EQ(nalus[1].nal_unit_type, H264NALU::kPPS);
+      EXPECT_EQ(nalus[2].nal_unit_type, H264NALU::kIDRSlice);
+    } else {
+      // Expect only one IDR.
+      EXPECT_EQ(nalus.size(), 1u);
+      EXPECT_EQ(nalus[0].nal_unit_type, H264NALU::kIDRSlice);
+    }
+
+    index++;
+  }
+}
+
+static const TestParam kTestCases[] = {
+    {/*add_parameter_sets_in_bitstream=*/false},
+    {/*add_parameter_sets_in_bitstream=*/true}};
+
+INSTANTIATE_TEST_SUITE_P(, Mp4MuxerDelegateTest, testing::ValuesIn(kTestCases));
 
 #endif
 

@@ -61,8 +61,9 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   Mp4MuxerDelegate(
       AudioCodec audio_codec,
       VideoCodec video_codec,
-      std::optional<VideoCodecProfile> profile,
-      std::optional<VideoCodecLevel> level,
+      std::optional<VideoCodecProfile> video_profile,
+      std::optional<VideoCodecLevel> video_level,
+      bool add_parameter_sets_in_bitstream,
       Muxer::WriteDataCB write_callback,
       size_t audio_sample_count_per_fragment = kAudioFragmentCount);
   ~Mp4MuxerDelegate() override;
@@ -166,6 +167,8 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   const std::optional<media::VideoCodecProfile> video_profile_;
   const std::optional<media::VideoCodecLevel> video_level_;
+
+  const bool add_parameter_sets_in_bitstream_ = false;
 
   // 1000 is a count that audio samples in the same fragment
   // when no video frame is added. In Windows, when video frames are present,
