@@ -119,7 +119,7 @@ def main():
                    '"logdog_butler" must be on PATH if running on swarming.')
 
   with tempfile_ext.NamedTemporaryDirectory(
-      prefix='tmp_android_logdog_wrapper') as temp_directory:
+      prefix='tmp_logdog') as temp_directory:
     if logdog_butler_bin:
       streamserver_uri = 'unix:%s' % os.path.join(temp_directory, 'butler.sock')
       prefix = os.path.join('android', 'swarming', 'logcats',
