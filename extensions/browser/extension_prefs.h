@@ -680,6 +680,11 @@ class ExtensionPrefs : public KeyedService {
   // TODO(archanasimha): Remove this around M89.
   void MigrateDeprecatedDisableReasons();
 
+  // Performs a one-time migration of the legacy disable reasons bitflag to a
+  // list of disable reasons.
+  // TODO(crbug.com/372186532): Remove this around M140.
+  void MaybeMigrateDisableReasonsBitflagToList();
+
   // Iterates over the extension pref entries and removes any obsolete keys. We
   // need to do this here specially (rather than in
   // MigrateObsoleteProfilePrefs()) because these entries are subkeys of the
@@ -726,9 +731,18 @@ class ExtensionPrefs : public KeyedService {
   friend class ExtensionPrefsBlocklistedExtensions;  // Unit test.
   friend class ExtensionPrefsComponentExtension;     // Unit test.
   friend class ExtensionPrefsUninstallExtension;     // Unit test.
+  friend class ExtensionPrefsDisableReasonsBitflagToListMigration;  // Unit
+                                                                    // test.
   friend class ExtensionPrefsMigratesToLastUpdateTime;  // Unit test.
   friend class
       ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue;  // Unit test.
+
+  enum class DisableReasonsPrefOperation {
+    kAdd,
+    kRemove,
+    kReplace,
+    kClear,
+  };
 
   // Updates ExtensionPrefs for a specific extension.
   void UpdateExtensionPrefInternal(const ExtensionId& id,
@@ -787,10 +801,14 @@ class ExtensionPrefs : public KeyedService {
   // Modifies the extensions disable reasons to add a new reason, remove an
   // existing reason, or clear all reasons. Notifies observers if the set of
   // DisableReasons has changed.
-  // If `operation` is BitMapPrefOperation::kClear, then `reasons` are ignored.
+  // If `operation` is DisableReasonsPrefOperation::kClear, then `reasons` are
+  // ignored.
   void ModifyDisableReasons(const ExtensionId& extension_id,
                             int reasons,
-                            BitMapPrefOperation operation);
+                            DisableReasonsPrefOperation operation);
+  void ModifyDisableReasonsPref(const ExtensionId& extension_id,
+                                int incoming_reasons,
+                                DisableReasonsPrefOperation operation);
 
   // Installs the persistent extension preferences into |prefs_|'s extension
   // pref store. Does nothing if extensions_disabled_ is true.

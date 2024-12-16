@@ -165,6 +165,58 @@ class ExtensionPrefsDeprecatedDisableReason : public ExtensionPrefsTest {
 
 TEST_F(ExtensionPrefsDeprecatedDisableReason, MigrateExtensionState) {}
 
+class ExtensionPrefsDisableReasonsBitflagToListMigration
+    : public ExtensionPrefsTest {
+ public:
+  void Initialize() override {
+    extension_1_ = prefs_.AddExtension("test1");
+    prefs()->SetExtensionDisabled(extension_1_->id(),
+                                  extension_1_disable_reasons_);
+
+    extension_2_ = prefs_.AddExtension("test2");
+    prefs()->SetExtensionDisabled(extension_2_->id(),
+                                  extension_2_disable_reasons_);
+  }
+
+  void Verify() override {
+    // Verify that the disable reasons are returned correctly.
+    EXPECT_EQ(prefs()->GetDisableReasons(extension_1_->id()),
+              extension_1_disable_reasons_);
+    EXPECT_EQ(prefs()->GetDisableReasons(extension_2_->id()),
+              extension_2_disable_reasons_);
+
+    // Verify() is called twice.
+    // In the first execution, we have the modern state. We wipe out this state
+    // and simulate the legacy state. In the second execution, `ExtensionPrefs`
+    // is re-constructed. It should re-construct the modern state from the
+    // simulated legacy state.
+    SimulateLegacyState();
+  }
+
+ private:
+  void SimulateLegacyState() {
+    // Write the disable reasons to the preference as a bitflag.
+    constexpr const char kPrefDisableReasons[] = "disable_reasons";
+    prefs()->UpdateExtensionPref(extension_1_->id(), kPrefDisableReasons,
+                                 base::Value(extension_1_disable_reasons_));
+    prefs()->UpdateExtensionPref(extension_2_->id(), kPrefDisableReasons,
+                                 base::Value(extension_2_disable_reasons_));
+  }
+
+  scoped_refptr<Extension> extension_1_;
+  const int extension_1_disable_reasons_ =
+      disable_reason::DISABLE_USER_ACTION |
+      disable_reason::DISABLE_BLOCKED_BY_POLICY;
+
+  scoped_refptr<Extension> extension_2_;
+  const int extension_2_disable_reasons_ =
+      disable_reason::DISABLE_PERMISSIONS_INCREASE |
+      disable_reason::DISABLE_NOT_VERIFIED |
+      disable_reason::DISABLE_USER_ACTION;
+};
+
+TEST_F(ExtensionPrefsDisableReasonsBitflagToListMigration, TestPrefMigration) {}
+
 class ExtensionPrefsEscalatePermissions : public ExtensionPrefsTest {
  public:
   void Initialize() override {
