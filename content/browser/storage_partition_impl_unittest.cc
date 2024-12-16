@@ -88,6 +88,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/test/mock_device_bound_session_manager.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -113,6 +114,12 @@
 using net::CanonicalCookie;
 using CookieDeletionFilter = network::mojom::CookieDeletionFilter;
 using CookieDeletionFilterPtr = network::mojom::CookieDeletionFilterPtr;
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::Eq;
+using ::testing::Invoke;
+using ::testing::SaveArgPointee;
+using ::testing::WithArg;
 
 namespace content {
 namespace {
@@ -2294,6 +2301,36 @@ TEST(StorageServiceImplOnSequenceLocalStorage, ThreadDestructionDoesNotFail) {
     storage_control.FlushForTesting();
   }
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+TEST_F(StoragePartitionImplTest, RemoveDeviceBoundSessions) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  auto device_bound_session_manager =
+      std::make_unique<network::MockDeviceBoundSessionManager>();
+  network::MockDeviceBoundSessionManager* device_bound_session_manager_raw =
+      device_bound_session_manager.get();
+  partition->OverrideDeviceBoundSessionManagerForTesting(
+      std::move(device_bound_session_manager));
+
+  base::Time created_before_time = base::Time::Now() - base::Days(1);
+  base::Time created_after_time = base::Time::Now() - base::Days(3);
+
+  EXPECT_CALL(
+      *device_bound_session_manager_raw,
+      DeleteAllSessions(Eq(created_after_time), Eq(created_before_time), _, _))
+      .WillOnce(WithArg<3>(Invoke([](base::OnceClosure completion_closure) {
+        std::move(completion_closure).Run();
+      })));
+
+  base::RunLoop run_loop;
+  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS,
+                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+                       blink::StorageKey(), created_after_time,
+                       created_before_time, run_loop.QuitClosure());
+  run_loop.Run();
+}
+#endif
 
 class StoragePartitionImplSharedStorageTest : public StoragePartitionImplTest {
  public:

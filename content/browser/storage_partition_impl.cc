@@ -144,6 +144,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
@@ -919,6 +920,7 @@ class StoragePartitionImpl::DataDeletionHelper {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+      network::mojom::DeviceBoundSessionManager* device_bound_session_manager,
       bool perform_storage_cleanup,
       const base::Time begin,
       const base::Time end);
@@ -953,7 +955,8 @@ class StoragePartitionImpl::DataDeletionHelper {
     kPrivateAggregation = 12,
     kInterestGroups = 13,
     kCdmStorage = 14,
-    kMaxValue = kCdmStorage,
+    kDeviceBoundSessions = 15,
+    kMaxValue = kDeviceBoundSessions,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/history/enums.xml:StoragePartitionRemoverTasks)
 
@@ -1883,6 +1886,7 @@ CdmStorageDataModel* StoragePartitionImpl::GetCdmStorageDataModel() {
 network::mojom::DeviceBoundSessionManager*
 StoragePartitionImpl::GetDeviceBoundSessionManager() {
   DCHECK(initialized_);
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (!device_bound_session_manager_ ||
       !device_bound_session_manager_.is_connected()) {
     // Reset `device_bound_session_manager_` before binding it again.
@@ -1890,7 +1894,11 @@ StoragePartitionImpl::GetDeviceBoundSessionManager() {
     GetNetworkContext()->GetDeviceBoundSessionManager(
         device_bound_session_manager_.BindNewPipeAndPassReceiver());
   }
+
   return device_bound_session_manager_.get();
+#else
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 }
 
 InterestGroupManager* StoragePartitionImpl::GetInterestGroupManager() {
@@ -2578,7 +2586,7 @@ void StoragePartitionImpl::ClearDataImpl(
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       cdm_storage_manager_.get(),
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-      perform_storage_cleanup, begin, end);
+      GetDeviceBoundSessionManager(), perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2779,6 +2787,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+    network::mojom::DeviceBoundSessionManager* device_bound_session_manager,
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end) {
@@ -3011,6 +3020,15 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     shared_storage_manager->PurgeMatchingOrigins(
         combined_storage_key_matcher, begin, end,
         std::move(shared_storage_purge_callback), perform_storage_cleanup);
+  }
+
+  if (remove_mask_ & REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS &&
+      device_bound_session_manager) {
+    device_bound_session_manager->DeleteAllSessions(
+        begin, end,
+        filter_builder ? filter_builder->BuildNetworkServiceFilter() : nullptr,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(CreateTaskCompletionClosure(
+            TracingDataType::kDeviceBoundSessions)));
   }
 }
 
@@ -3364,6 +3382,15 @@ void StoragePartitionImpl::OverridePrivateAggregationManagerForTesting(
         private_aggregation_manager) {
   DCHECK(initialized_);
   private_aggregation_manager_ = std::move(private_aggregation_manager);
+}
+
+void StoragePartitionImpl::OverrideDeviceBoundSessionManagerForTesting(
+    std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+        device_bound_session_manager) {
+  DCHECK(initialized_);
+  mojo::MakeSelfOwnedReceiver(
+      std::move(device_bound_session_manager),
+      device_bound_session_manager_.BindNewPipeAndPassReceiver());
 }
 
 void StoragePartitionImpl::GetQuotaSettings(

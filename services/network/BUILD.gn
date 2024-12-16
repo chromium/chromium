@@ -612,6 +612,8 @@ source_set("test_support") {
     "test/client_security_state_builder.h",
     "test/fake_test_cert_verifier_params_factory.cc",
     "test/fake_test_cert_verifier_params_factory.h",
+    "test/mock_device_bound_session_manager.cc",
+    "test/mock_device_bound_session_manager.h",
     "test/mock_devtools_observer.cc",
     "test/mock_devtools_observer.h",
     "test/mock_url_loader_client.cc",

@@ -163,6 +163,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OverridePrivateAggregationManagerForTesting(
       std::unique_ptr<PrivateAggregationManagerImpl>
           private_aggregation_manager);
+  void OverrideDeviceBoundSessionManagerForTesting(
+      std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager);
 
   // StoragePartition interface.
   const StoragePartitionConfig& GetConfig() const override;
