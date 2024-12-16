@@ -1787,6 +1787,17 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
     self._set_value_arg('--srcjar', '$(out)')
     self._update_arg_at(-1, self._sanitize_filepath_with_location_tag)
 
+  def _sanitize_inputs(self):
+    super()._sanitize_inputs()
+    # https://crrev.com/c/5840231 adds
+    #   //third_party/android_build_tools/protoc/cipd/protoc
+    # to the input list. We don't import that protoc prebuilt binary; instead we
+    # build protoc from source from //third_party/protobuf:protoc. We don't
+    # need to add that as an input because it's already a tool dependency in
+    # the generated module.
+    self.target.inputs.remove(
+        "//third_party/android_build_tools/protoc/cipd/protoc")
+
   def get_tools(self):
     tools = super().get_tools()
     tools.add(self._protoc)
