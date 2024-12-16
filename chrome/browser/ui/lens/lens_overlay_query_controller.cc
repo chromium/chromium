@@ -168,9 +168,11 @@ std::vector<std::string> CreateOAuthHeader(
 }
 
 std::vector<std::string> CreateVariationsHeaders(
-    variations::mojom::VariationsHeadersPtr variations) {
+    variations::VariationsClient* variations_client) {
   std::vector<std::string> headers;
-  if (variations.is_null()) {
+  variations::mojom::VariationsHeadersPtr variations =
+      variations_client->GetVariationsHeaders();
+  if (variations_client->IsOffTheRecord() || variations.is_null()) {
     return headers;
   }
 
@@ -632,7 +634,7 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
 
   // Get client experiment variations to include in the request.
   std::vector<std::string> cors_exempt_headers =
-      CreateVariationsHeaders(variations_client_->GetVariationsHeaders());
+      CreateVariationsHeaders(variations_client_);
 
   // Generate the URL to fetch.
   GURL fetch_url = GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
@@ -1416,7 +1418,7 @@ void LensOverlayQueryController::PerformFetchRequest(
 
   // Get client experiment variations to include in the request.
   std::vector<std::string> cors_exempt_headers =
-      CreateVariationsHeaders(variations_client_->GetVariationsHeaders());
+      CreateVariationsHeaders(variations_client_);
 
   // Generate the URL to fetch to and include the server session id if present.
   GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
