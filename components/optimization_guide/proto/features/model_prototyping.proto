@@ -10,8 +10,6 @@ import "components/optimization_guide/proto/features/forms_predictions.proto";
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
-import "components/optimization_guide/proto/common_types.proto";
-
 import "components/optimization_guide/proto/model_quality_metadata.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -197,6 +195,20 @@ message HistoryVisitItem {
   Timestamp visit_time = 3;
 
   repeated string passages = 4;
+}
+
+// This is a mirror of google.protobuf.Timestamp.
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  int32 nanos = 2;
 }
 
 message HistoryQuery {
