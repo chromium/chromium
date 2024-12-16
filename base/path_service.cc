@@ -58,8 +58,11 @@ typedef std::unordered_map<int, FilePath> PathMap;
 // providers claim overlapping keys.
 struct Provider {
   PathService::ProviderFunc func;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type, #global-scope
+  // This field is not a raw_ptr<> because would cause the class to have a
+  // nontrivial destructor, causing several cascading compile errors. The
+  // pointer cannot dangle because all Providers are either in statically-
+  // allocated memory (globals), or allocated in RegisterProvider and
+  // never freed.
   RAW_PTR_EXCLUSION struct Provider* next;
 #ifndef NDEBUG
   int key_start;
