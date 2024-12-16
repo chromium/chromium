@@ -96,6 +96,11 @@ tast_disabled_tests_from_chrome_all = [
   "audio.CrasNoiseCancellation.aec",
   "audio.CrasNoiseCancellation.no_effects",
 
+  # b/384060114
+  "inputs.InputMethodShelfInputs@reven-vmtest",
+  "inputs.VirtualKeyboardHandwriting.docked@reven-vmtest",
+  "inputs.VirtualKeyboardHandwriting.floating@reven-vmtest",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
