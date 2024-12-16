@@ -431,6 +431,15 @@ std::unique_ptr<SharedImageTexture> ClientSharedImage::CreateGLTexture(
   return base::WrapUnique(new SharedImageTexture(gl, this));
 }
 
+std::unique_ptr<RasterScopedAccess> ClientSharedImage::BeginRasterAccess(
+    InterfaceBase* raster_interface,
+    ClientSharedImage* shared_image,
+    const SyncToken& sync_token,
+    bool readonly) {
+  return base::WrapUnique(new RasterScopedAccess(raster_interface, shared_image,
+                                                 sync_token, readonly));
+}
+
 // static
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
   return CreateForTesting(viz::SinglePlaneFormat::kRGBA_8888, GL_TEXTURE_2D);
@@ -564,6 +573,28 @@ SharedImageTexture::BeginAccess(const SyncToken& sync_token, bool readonly) {
 void SharedImageTexture::DidEndAccess(bool readonly) {
   has_active_access_ = false;
   shared_image_->EndAccess(readonly);
+}
+
+RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
+                                       ClientSharedImage* shared_image,
+                                       const SyncToken& sync_token,
+                                       bool readonly)
+    : raster_interface_(raster_interface),
+      shared_image_(shared_image),
+      readonly_(readonly) {
+  CHECK(raster_interface_);
+  shared_image_->BeginAccess(readonly);
+  raster_interface_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+}
+
+// static
+SyncToken RasterScopedAccess::EndAccess(
+    std::unique_ptr<RasterScopedAccess> scoped_access) {
+  InterfaceBase* raster_interface = scoped_access->raster_interface_;
+  SyncToken sync_token;
+  scoped_access->shared_image_->EndAccess(scoped_access->readonly_);
+  raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  return sync_token;
 }
 
 }  // namespace gpu

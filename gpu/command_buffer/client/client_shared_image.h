@@ -36,6 +36,8 @@ class GLES2Interface;
 
 class ClientSharedImageInterface;
 class GpuChannelSharedImageInterface;
+class InterfaceBase;
+class RasterScopedAccess;
 class SharedImageTexture;
 class TestSharedImageInterface;
 
@@ -222,6 +224,14 @@ class GPU_EXPORT ClientSharedImage
   std::unique_ptr<SharedImageTexture> CreateGLTexture(
       gles2::GLES2Interface* gl);
 
+  // Creates a RasterScopedAccess object from the current SharedImage for the
+  // provided raster interface.
+  std::unique_ptr<RasterScopedAccess> BeginRasterAccess(
+      InterfaceBase* raster_interface,
+      ClientSharedImage* shared_image,
+      const SyncToken& sync_token,
+      bool readonly);
+
  private:
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   friend class SharedImageTexture;
@@ -272,6 +282,7 @@ class GPU_EXPORT ClientSharedImage
   // `sii_holder` must not be null.
   friend class ClientSharedImageInterface;
   friend class GpuChannelSharedImageInterface;
+  friend class RasterScopedAccess;
   friend class TestSharedImageInterface;
   friend class media::VideoFrame;
   ClientSharedImage(const Mailbox& mailbox,
@@ -411,6 +422,30 @@ class GPU_EXPORT SharedImageTexture {
   const raw_ptr<gpu::ClientSharedImage> shared_image_;
   unsigned int id_ = 0;
   bool has_active_access_ = false;
+};
+
+class RasterScopedAccess {
+ public:
+  RasterScopedAccess(const RasterScopedAccess&) = delete;
+  RasterScopedAccess& operator=(const RasterScopedAccess&) = delete;
+  RasterScopedAccess(RasterScopedAccess&&) = delete;
+  RasterScopedAccess& operator=(RasterScopedAccess&&) = delete;
+
+  ~RasterScopedAccess() = default;
+
+  static SyncToken EndAccess(
+      std::unique_ptr<RasterScopedAccess> scoped_shared_image);
+
+ private:
+  friend class ClientSharedImage;
+  RasterScopedAccess(InterfaceBase* raster_interface,
+                     ClientSharedImage* shared_image,
+                     const SyncToken& sync_token,
+                     bool readonly);
+
+  const raw_ptr<InterfaceBase> raster_interface_;
+  const raw_ptr<ClientSharedImage> shared_image_;
+  bool readonly_;
 };
 
 }  // namespace gpu
