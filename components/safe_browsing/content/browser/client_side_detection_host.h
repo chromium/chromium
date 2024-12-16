@@ -257,7 +257,8 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist,
       GURL phishing_url,
       bool is_phishing,
-      std::optional<net::HttpStatusCode> response_code);
+      std::optional<net::HttpStatusCode> response_code,
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict);
 
   // Whether request is forced for |current_url_|. This function also checks
   // whether enhanced protection is enabled.

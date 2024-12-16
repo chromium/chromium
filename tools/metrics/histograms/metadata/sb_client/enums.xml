@@ -122,6 +122,11 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Visual extraction failed"/>
 </enum>
 
+<enum name="IntelligentScanVerdict">
+  <int value="0" label="Intelligent scan verdict safe"/>
+  <int value="1" label="Scam experiment verdict 1"/>
+</enum>
+
 <!-- LINT.IfChange(SafeBrowsingVerifyAppsEnabledResult) -->
 
 <enum name="SafeBrowsingVerifyAppsEnabledResult">

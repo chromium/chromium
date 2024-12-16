@@ -1250,6 +1250,11 @@ std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
   base::Value::Dict dict;
   dict.Set("phishy", cpr.phishy());
 
+  if (cpr.has_intelligent_scan_verdict()) {
+    dict.Set("intelligent_scan_verdict",
+             IntelligentScanVerdict_Name(cpr.intelligent_scan_verdict()));
+  }
+
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
   serializer.set_pretty_print(true);

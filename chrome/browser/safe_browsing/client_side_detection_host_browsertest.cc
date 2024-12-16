@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(page_url, true, net::HTTP_OK);
+      .Run(page_url, true, net::HTTP_OK, std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(prerender_url, true, net::HTTP_OK);
+      .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(prerender_url, true, net::HTTP_OK);
+      .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 
   ClientSideDetectionFeatureCache* feature_cache_map =
       ClientSideDetectionFeatureCache::FromWebContents(GetWebContents());
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(prerender_url, true, net::HTTP_OK);
+      .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 
   LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
       feature_cache_map->GetOrCreateDebuggingMetadataForURL(prerender_url);
@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(initial_url, true, net::HTTP_OK);
+      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.KeyboardLockRequested", 1);
@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(initial_url, true, net::HTTP_OK);
+      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.PointerLockRequested", 1);
@@ -1082,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(initial_url, true, net::HTTP_OK);
+      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.VibrationApi", 1);

@@ -58,6 +58,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionNotificationPrompt);
 // preclassification check conditions pass.
 BASE_DECLARE_FEATURE(kClientSideDetectionSamplePing);
 
+// Show a warning to the user that factors in the IntelligentScanVerdict from
+// ClientPhishingResponse.
+BASE_DECLARE_FEATURE(kClientSideDetectionShowScamVerdictWarning);
+
 // Expand CSPP beyond phishing and trigger when vibration API is called on the
 // web page.
 BASE_DECLARE_FEATURE(kClientSideDetectionVibrationApi);

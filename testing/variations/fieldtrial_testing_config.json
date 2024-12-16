@@ -5532,6 +5532,23 @@
             ]
         }
     ],
+    "ClientSideDetectionShowScamVerdictWarning": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionShowScamVerdictWarning"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClipboardDeemphasisAndroid": [
         {
             "platforms": [

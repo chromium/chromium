@@ -295,6 +295,12 @@ message ClientPhishingRequest {
   // next available tag number: 33.
 }
 
+// Verdict based on IntelligentScanInfo included in ClientPhishingRequest
+enum IntelligentScanVerdict {
+  INTELLIGENT_SCAN_VERDICT_SAFE = 0;
+  SCAM_EXPERIMENT_VERDICT_1 = 1;
+}
+
 message ClientPhishingResponse {
   required bool phishy = 1;
 
@@ -310,6 +316,8 @@ message ClientPhishingResponse {
   // Marked OBSOLETE because the URL is sent for all users, so the server
   // can do allowlist matching.
   repeated string OBSOLETE_allowlist_expression = 2;
+
+  optional IntelligentScanVerdict intelligent_scan_verdict = 3;
 }
 
 // Enum used to keep stats about why the pre-classification check failed.

@@ -78,9 +78,12 @@ class ClientSideDetectionService
       public content::RenderProcessHostObserver {
  public:
   // void(GURL phishing_url, bool is_phishing,
-  // std::optional<net::HttpStatusCode> response_code).
-  typedef base::OnceCallback<
-      void(GURL, bool, std::optional<net::HttpStatusCode>)>
+  // std::optional<net::HttpStatusCode> response_code,
+  // std::optional<IntelligentScanVerdict> intelligent_scan_verdict).
+  typedef base::OnceCallback<void(GURL,
+                                  bool,
+                                  std::optional<net::HttpStatusCode>,
+                                  std::optional<IntelligentScanVerdict>)>
       ClientReportPhishingRequestCallback;
 
   // Delegate which allows to provide embedder specific implementations.

@@ -336,10 +336,12 @@ class ClientSideDetectionServiceTest
   testing::NiceMock<MockSession> session_;
 
  private:
-  void SendRequestDone(base::OnceClosure continuation_callback,
-                       GURL phishing_url,
-                       bool is_phishing,
-                       std::optional<net::HttpStatusCode> response_code) {
+  void SendRequestDone(
+      base::OnceClosure continuation_callback,
+      GURL phishing_url,
+      bool is_phishing,
+      std::optional<net::HttpStatusCode> response_code,
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict) {
     ASSERT_EQ(phishing_url, phishing_url_);
     is_phishing_ = is_phishing;
     std::move(continuation_callback).Run();
