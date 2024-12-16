@@ -195,12 +195,6 @@ void FlossManagerClient::SetLLPrivacy(ResponseCallback<bool> callback,
                                enable);
 }
 
-void FlossManagerClient::SetDevCoredump(ResponseCallback<Void> callback,
-                                        const bool enable) {
-  CallExperimentalMethod<Void>(std::move(callback),
-                               experimental::kSetDevCoredump, enable);
-}
-
 // Register manager client against manager.
 void FlossManagerClient::RegisterWithManager() {
   DCHECK(!manager_available_);
@@ -305,14 +299,6 @@ void FlossManagerClient::Init(dbus::Bus* bus,
                   kSetFlossRetryDelayMs,
                   base::BindOnce(&FlossManagerClient::CompleteSetFlossEnabled,
                                  weak_ptr_factory_.GetWeakPtr()));
-
-  SetDevCoredump(base::BindOnce([](DBusResult<Void> ret) {
-                   if (!ret.has_value()) {
-                     LOG(ERROR) << "Fail to set devcoredump.\n";
-                   }
-                 }),
-                 base::FeatureList::IsEnabled(
-                     chromeos::bluetooth::features::kBluetoothFlossCoredump));
 
   if (floss::features::IsLLPrivacyAvailable()) {
     SetLLPrivacy(

@@ -4707,10 +4707,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBluetoothBtsnoopInternalsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::bluetooth::features::kBluetoothBtsnoopInternals)},
-    {"bluetooth-floss-coredump", flag_descriptions::kBluetoothFlossCoredumpName,
-     flag_descriptions::kBluetoothFlossCoredumpDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::bluetooth::features::kBluetoothFlossCoredump)},
     {"bluetooth-floss-telephony",
      flag_descriptions::kBluetoothFlossTelephonyName,
      flag_descriptions::kBluetoothFlossTelephonyDescription, kOsCrOS,

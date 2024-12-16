@@ -970,11 +970,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "bluetooth-floss-coredump",
-    "owners": ["mmandlik@chromium.org", "chromeos-bt-team@google.com"],
-    "expiry_milestone": 124
-  },
-  {
     "name": "bluetooth-floss-telephony",
     "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
     "expiry_milestone": 140

@@ -6058,13 +6058,6 @@ const char kBluetoothFlossTelephonyDescription[] =
     "Enable Floss to create a Bluetooth HID device that allows applications to "
     "access Bluetooth telephony functions through WebHID.";
 
-const char kBluetoothFlossCoredumpName[] =
-    "Enable Bluetooth Device Coredump for Floss";
-const char kBluetoothFlossCoredumpDescription[] =
-    "Enable Bluetooth coredump collection if supported. Please note that "
-    "coredumps are only collected when hardware exceptions occur and are "
-    "used for debugging such exceptions.";
-
 const char kBluetoothUseFlossName[] = "Use Floss instead of BlueZ";
 const char kBluetoothUseFlossDescription[] =
     "Enables using Floss (also known as Fluoride, Android's Bluetooth stack) "
