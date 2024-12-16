@@ -202,7 +202,7 @@
 #endif
 
 #ifdef ENABLE_VTUNE_JIT_INTERFACE
-#include "v8/src/third_party/vtune/v8-vtune.h"
+#include "v8/third_party/vtune/v8-vtune.h"
 #endif
 
 #if defined(ENABLE_IPC_FUZZER)
