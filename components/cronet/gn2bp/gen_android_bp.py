@@ -286,12 +286,12 @@ additional_args = {
     [('export_include_dirs', {
         "base/allocator/partition_allocator/src/",
     })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags':
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_buildflags':
     [('export_include_dirs', {
         ".",
         "base/allocator/partition_allocator/src/",
     })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_partition_alloc_buildflags__testing':
+    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing':
     [('export_include_dirs', {
         ".",
         "base/allocator/partition_allocator/src/",
