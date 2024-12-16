@@ -368,6 +368,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/ios/browser/account_consistency_service.mm:GaiaPage) -->
 
+<!-- LINT.IfChange(GaiaRemoteConsentFlowResult) -->
+
 <enum name="GaiaRemoteConsentFlowResult">
   <int value="0" label="Success"/>
   <int value="1" label="Window was closed"/>
@@ -377,7 +379,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Consent wasn't granted"/>
   <int value="6" label="User navigated away (deprecated 07/23)"/>
   <int value="7" label="Cannot create a window"/>
+  <int value="8" label="Failed to set resolution cookies"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h:GaiaRemoteConsentFlowResult) -->
+
+<!-- LINT.IfChange(GetAuthTokenResult) -->
 
 <enum name="GetAuthTokenResult">
   <int value="0" label="Success"/>
@@ -411,7 +418,10 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="kInteractivityDenied"/>
   <int value="29" label="kCannotCreateWindow"/>
   <int value="30" label="kBrowserContextShutDown"/>
+  <int value="31" label="kSetRemoteConsentResolutionCookiesFailed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/extensions/api/identity/identity_get_auth_token_error.h:GetAuthTokenResult) -->
 
 <enum name="IdentityConfirmationSnackbarDecision">
   <int value="0" label="Show"/>

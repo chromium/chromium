@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_error.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -638,6 +639,13 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
     case GaiaRemoteConsentFlow::CANNOT_CREATE_WINDOW:
       error = IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kCannotCreateWindow);
+      break;
+
+    case GaiaRemoteConsentFlow::SET_RESOLUTION_COOKIES_FAILED:
+      error = IdentityGetAuthTokenError(
+          IdentityGetAuthTokenError::State::
+              kSetRemoteConsentResolutionCookiesFailed);
+      break;
   }
 
   CompleteFunctionWithError(error);
