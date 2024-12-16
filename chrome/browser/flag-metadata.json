@@ -1909,7 +1909,7 @@
   {
     "name": "defer-renderer-tasks-after-input",
     "owners": [ "shaseley@google.com" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 135
   },
   {
     "name": "delay-media-sink-discovery",
@@ -8694,7 +8694,7 @@
   {
     "name": "threaded-scroll-prevent-rendering-starvation",
     "owners": [ "shaseley@google.com" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 135
   },
   {
     "name": "tiled-display-support",
