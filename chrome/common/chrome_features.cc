@@ -919,6 +919,12 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
 BASE_FEATURE(kPrintPreviewCrosPrimary,
              "PrintPreviewCrosPrimary",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, use managed per-printer print job options set via
+// DevicePrinters/PrinterBulkConfiguration policy in print preview.
+BASE_FEATURE(kUseManagedPrintJobOptionsInPrintPreview,
+             "UseManagedPrintJobOptionsInPrintPreview",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables or disables push subscriptions keeping Chrome running in the

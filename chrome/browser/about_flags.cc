@@ -11832,6 +11832,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kEnableChromeRefreshTokenBinding)},
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"use-managed-print-job-options-in-print-preview",
+     flag_descriptions::kUseManagedPrintJobOptionsInPrintPreviewName,
+     flag_descriptions::kUseManagedPrintJobOptionsInPrintPreviewDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kUseManagedPrintJobOptionsInPrintPreview)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

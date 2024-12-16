@@ -21735,6 +21735,8 @@ from previous Chrome versions.
   <int value="546464390" label="LiveCaption:enabled"/>
   <int value="546520086" label="enable-data-reduction-proxy-savings-promo"/>
   <int value="546710806" label="disable-easy-signin"/>
+  <int value="547077683"
+      label="UseManagedPrintJobOptionsInPrintPreview:disabled"/>
   <int value="547170394"
       label="OmniboxAlternateMatchDescriptionSeparator:disabled"/>
   <int value="547654419" label="CrOSEnforceSystemAecAgc:enabled"/>
@@ -22942,6 +22944,8 @@ from previous Chrome versions.
   <int value="1034347979"
       label="OmniboxFocusTriggersContextualWebZeroSuggest:disabled"/>
   <int value="1034991480" label="ExperimentalOmniboxLabs:disabled"/>
+  <int value="1035400639"
+      label="UseManagedPrintJobOptionsInPrintPreview:enabled"/>
   <int value="1035517284" label="DownloadsMigrateToJobsAPI:disabled"/>
   <int value="1036007454"
       label="CmdDecoderAlwaysGetSizeFromSourceTexture:enabled"/>
