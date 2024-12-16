@@ -1955,7 +1955,6 @@
   if (!_customizationCoordinator) {
     return;
   }
-  [self.NTPViewController dismissViewControllerAnimated:YES completion:nil];
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
 }
