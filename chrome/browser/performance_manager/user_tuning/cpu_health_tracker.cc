@@ -48,16 +48,18 @@ CpuHealthTracker::CpuHealthTracker(
               .CreateScopedQuery()) {
   std::unique_ptr<system_cpu::CpuProbe> cpu_probe =
       system_cpu::CpuProbe::Create();
-  cpu_probe->StartSampling();
-  cpu_probe_timer_.Start(
-      FROM_HERE, performance_manager::features::kCPUSampleFrequency.Get(),
-      base::BindRepeating(
-          &system_cpu::CpuProbe::RequestSample, std::move(cpu_probe),
-          base::BindRepeating(&CpuHealthTracker::ProcessCpuProbeResult,
-                              base::Unretained(this))));
-  // base::Unretained(this) is safe here because the CPU probe is owned by the
-  // callback, which is owned by the timer. The timer is owned by this, so the
-  // callback will not be invoked after this is destroyed
+  if (cpu_probe) {
+    cpu_probe->StartSampling();
+    cpu_probe_timer_.Start(
+        FROM_HERE, performance_manager::features::kCPUSampleFrequency.Get(),
+        base::BindRepeating(
+            &system_cpu::CpuProbe::RequestSample, std::move(cpu_probe),
+            base::BindRepeating(&CpuHealthTracker::ProcessCpuProbeResult,
+                                base::Unretained(this))));
+    // base::Unretained(this) is safe here because the CPU probe is owned by the
+    // callback, which is owned by the timer. The timer is owned by this, so the
+    // callback will not be invoked after this is destroyed
+  }
 }
 
 CpuHealthTracker::~CpuHealthTracker() = default;
