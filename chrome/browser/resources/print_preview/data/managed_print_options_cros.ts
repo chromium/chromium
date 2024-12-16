@@ -7,24 +7,24 @@ export interface PrintOption<OptionValueType> {
   allowedValues?: OptionValueType[];
 }
 
-export interface Size {
+export interface ManagedPrintOptionsSize {
   width: number;
   height: number;
 }
 
-export enum DuplexType {
+export enum ManagedPrintOptionsDuplexType {
   UNKNOWN_DUPLEX = 0,
   ONE_SIDED = 1,
   SHORT_EDGE = 2,
   LONG_EDGE = 3,
 }
 
-export interface Dpi {
+export interface ManagedPrintOptionsDpi {
   horizontal: number;
   vertical: number;
 }
 
-export enum QualityType {
+export enum ManagedPrintOptionsQualityType {
   UNKNOWN_QUALITY = 0,
   DRAFT = 1,
   NORMAL = 2,
@@ -32,11 +32,11 @@ export enum QualityType {
 }
 
 export interface ManagedPrintOptions {
-  mediaSize?: PrintOption<Size>;
+  mediaSize?: PrintOption<ManagedPrintOptionsSize>;
   mediaType?: PrintOption<string>;
-  duplex?: PrintOption<DuplexType>;
+  duplex?: PrintOption<ManagedPrintOptionsDuplexType>;
   color?: PrintOption<boolean>;
-  dpi?: PrintOption<Dpi>;
-  quality?: PrintOption<QualityType>;
+  dpi?: PrintOption<ManagedPrintOptionsDpi>;
+  quality?: PrintOption<ManagedPrintOptionsQualityType>;
   printAsImage?: PrintOption<boolean>;
 }

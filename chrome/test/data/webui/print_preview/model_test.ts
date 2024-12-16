@@ -407,7 +407,7 @@ suite('ModelTest', function() {
       print: {
         collate: {collate: true},
         color: {
-          type: testDestination.getSelectedColorOption(true)!.type,
+          type: testDestination.getColor(true)!.type,
         },
         copies: {copies: 1},
         duplex: {type: 'NO_DUPLEX'},
@@ -436,7 +436,7 @@ suite('ModelTest', function() {
       print: {
         collate: {collate: false},
         color: {
-          type: testDestination.getSelectedColorOption(false)!.type,
+          type: testDestination.getColor(false)!.type,
         },
         copies: {copies: 2},
         duplex: {type: 'SHORT_EDGE'},

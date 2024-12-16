@@ -15,12 +15,12 @@ import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '.
 // </if>
 
 import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
+import {DuplexType} from './cdd.js';
 import type {Destination, RecentDestination} from './destination.js';
 import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination.js';
 import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
-
 // <if expr="is_chromeos">
 import {PrinterStatusReason} from './printer_status_cros.js';
 // </if>
@@ -208,15 +208,6 @@ export enum DuplexMode {
   UNKNOWN_DUPLEX_MODE = -1,
 }
 
-/**
- * Values matching the types of duplex in a CDD.
- */
-export enum DuplexType {
-  NO_DUPLEX = 'NO_DUPLEX',
-  LONG_EDGE = 'LONG_EDGE',
-  SHORT_EDGE = 'SHORT_EDGE',
-}
-
 let instance: PrintPreviewModelElement|null = null;
 
 let whenReadyResolver: PromiseResolver<void> = new PromiseResolver();
@@ -294,41 +285,6 @@ function getDuplexDefaultValue(
   // In this case defaultMode is either not set or non-compliant with
   // allowedMode. Note that "DUPLEX" is not a single mode, but a group of modes.
   return DuplexModeRestriction.DUPLEX;
-}
-
-/**
- * Helper function that checks whether the duplex default value set by policy
- * is supported by a printing destination.
- * @param duplexPolicyDefault Duplex value policy default.
- * @param duplexShortEdgePolicyDefault DuplexShortEdge value policy default.
- * @param caps Capabilities of a printing destination.
- */
-function getDuplexPolicyDefaultValueAvailable(
-    duplexPolicyDefault: boolean|undefined,
-    duplexShortEdgePolicyDefault: boolean|undefined,
-    caps: CddCapabilities|null): boolean {
-  // `duplexShortEdgePolicyDefault` is undefined if the default mode is set to
-  // "Simplex". `duplexPolicyDefault` is defined if and only if there is a
-  // default duplex policy.
-  if (duplexPolicyDefault === undefined) {
-    return false;
-  }
-  const capsHasDuplexOptions = !!caps && !!caps.duplex && !!caps.duplex.option;
-  if (!capsHasDuplexOptions) {
-    // There are no duplex capabilities reported by the printer.
-    return false;
-  }
-
-  let defaultPolicyDuplexType: DuplexType|null = null;
-  if (duplexPolicyDefault === false) {
-    defaultPolicyDuplexType = DuplexType.NO_DUPLEX;
-  } else if (duplexShortEdgePolicyDefault === true) {
-    defaultPolicyDuplexType = DuplexType.SHORT_EDGE;
-  } else {
-    defaultPolicyDuplexType = DuplexType.LONG_EDGE;
-  }
-
-  return caps!.duplex!.option.some(o => o.type === defaultPolicyDuplexType);
 }
 // </if>
 
@@ -817,8 +773,39 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 
   /**
-   * Updates the availability of the settings sections and values of dpi and
-   *     media size settings based on the destination capabilities.
+   * Helper function that checks whether the duplex default value set by policy
+   * is supported by a printing destination.
+   * @param duplexPolicyDefault Duplex value policy default.
+   * @param duplexShortEdgePolicyDefault DuplexShortEdge value policy default.
+   * @param caps Capabilities of a printing destination.
+   */
+  // <if expr="is_chromeos">
+  private getDuplexPolicyDefaultValueAvailable_(
+      duplexPolicyDefault: boolean|undefined,
+      duplexShortEdgePolicyDefault: boolean|undefined): boolean {
+    // `duplexShortEdgePolicyDefault` is undefined if the default mode is set to
+    // "Simplex". `duplexPolicyDefault` is defined if and only if there is a
+    // default duplex policy.
+    if (duplexPolicyDefault === undefined) {
+      return false;
+    }
+
+    let defaultPolicyDuplexType: DuplexType|null = null;
+    if (duplexPolicyDefault === false) {
+      defaultPolicyDuplexType = DuplexType.NO_DUPLEX;
+    } else if (duplexShortEdgePolicyDefault === true) {
+      defaultPolicyDuplexType = DuplexType.SHORT_EDGE;
+    } else {
+      defaultPolicyDuplexType = DuplexType.LONG_EDGE;
+    }
+
+    return this.destination.supportsDuplex(defaultPolicyDuplexType);
+  }
+  // </if>
+
+  /**
+   * Updates the availability of the settings sections and values of various
+   * settings based on the destination capabilities.
    */
   private updateSettingsFromDestination_() {
     if (!this.destination || !this.settings) {
@@ -831,21 +818,20 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     this.lastDestinationCapabilities_ = this.destination.capabilities;
 
-    const caps = this.destination.capabilities ?
-        this.destination.capabilities.printer :
-        null;
-    this.updateSettingsAvailabilityFromDestination_(caps);
+    this.updateSettingsAvailabilityFromDestination_();
 
-    if (!caps) {
+    if (!this.destination.capabilities?.printer) {
       return;
     }
 
-    this.updateSettingsValues_(caps);
+    this.updateSettingsValues_();
     this.applyPersistentCddDefaults_();
   }
 
-  private updateSettingsAvailabilityFromDestination_(caps: CddCapabilities|
-                                                     null) {
+  private updateSettingsAvailabilityFromDestination_() {
+    const caps = this.destination.capabilities ?
+        this.destination.capabilities.printer :
+        null;
     this.setSettingPath_(
         'copies.available', this.destination.hasCopiesCapability);
     this.setSettingPath_('collate.available', !!caps && !!caps.collate);
@@ -1050,21 +1036,25 @@ export class PrintPreviewModelElement extends PolymerElement {
         });
   }
 
-  private updateSettingsValues_(caps: CddCapabilities|null) {
+  private updateSettingsValues_() {
+    const caps = this.destination.capabilities ?
+        this.destination.capabilities.printer :
+        null;
+    if (!caps) {
+      return;
+    }
+
     if (this.settings.mediaSize.available) {
-      const defaultOption =
-          caps!.media_size!.option.find(o => !!o.is_default) ||
-          caps!.media_size!.option[0];
+      const defaultOption = caps.media_size!.option.find(o => !!o.is_default) ||
+          caps.media_size!.option[0];
       let matchingOption = null;
       // If the setting does not have a valid value, the UI has just started so
       // do not try to get a matching value; just set the printer default in
       // case the user doesn't have sticky settings.
       if (this.settings.mediaSize.setFromUi) {
         const currentMediaSize = this.getSettingValue('mediaSize');
-        matchingOption = caps!.media_size!.option.find(o => {
-          return o.height_microns === currentMediaSize.height_microns &&
-              o.width_microns === currentMediaSize.width_microns;
-        });
+        matchingOption = this.destination.getMediaSize(
+            currentMediaSize.width_microns, currentMediaSize.height_microns);
       }
       this.setSetting('mediaSize', matchingOption || defaultOption, true);
     }
@@ -1078,42 +1068,36 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
 
     if (this.settings.mediaType.available) {
-      const defaultOption =
-          caps!.media_type!.option.find(o => !!o.is_default) ||
-          caps!.media_type!.option[0];
+      const defaultOption = caps.media_type!.option.find(o => !!o.is_default) ||
+          caps.media_type!.option[0];
       let matchingOption = null;
       if (this.settings.mediaType.setFromUi) {
-        const currentMediaType = this.getSettingValue('mediaType');
-        matchingOption = caps!.media_type!.option.find(o => {
-          return o.vendor_id === currentMediaType.vendor_id;
-        });
+        matchingOption = this.destination.getMediaType(
+            this.getSettingValue('mediaType').vendor_id);
       }
       this.setSetting('mediaType', matchingOption || defaultOption, true);
     } else if (
-        caps && caps.media_type && caps.media_type.option &&
+        caps.media_type && caps.media_type.option &&
         caps.media_type.option.length > 0) {
       const unavailableValue =
-          caps!.media_type!.option.find(o => !!o.is_default) ||
-          caps!.media_type!.option[0];
+          caps.media_type!.option.find(o => !!o.is_default) ||
+          caps.media_type!.option[0];
       this.setSettingPath_('mediaType.unavailableValue', unavailableValue);
     }
 
     if (this.settings.dpi.available) {
       const defaultOption =
-          caps!.dpi!.option.find(o => !!o.is_default) || caps!.dpi!.option[0];
+          caps.dpi!.option.find(o => !!o.is_default) || caps.dpi!.option[0];
       let matchingOption = null;
       if (this.settings.dpi.setFromUi) {
         const currentDpi = this.getSettingValue('dpi');
-        matchingOption = caps!.dpi!.option.find(o => {
-          return o.horizontal_dpi === currentDpi.horizontal_dpi &&
-              o.vertical_dpi === currentDpi.vertical_dpi;
-        });
+        matchingOption = this.destination.getDpi(
+            currentDpi.horizontal_dpi, currentDpi.vertical_dpi);
       }
       this.setSetting('dpi', matchingOption || defaultOption, true);
-    } else if (
-        caps && caps.dpi && caps.dpi.option && caps.dpi.option.length > 0) {
+    } else if (caps.dpi && caps.dpi.option && caps.dpi.option.length > 0) {
       const unavailableValue =
-          caps!.dpi!.option.find(o => !!o.is_default) || caps!.dpi!.option[0];
+          caps.dpi!.option.find(o => !!o.is_default) || caps.dpi!.option[0];
       this.setSettingPath_('dpi.unavailableValue', unavailableValue);
     }
 
@@ -1127,8 +1111,8 @@ export class PrintPreviewModelElement extends PolymerElement {
             true);
       }
     } else if (
-        !this.settings.color.available && caps && caps.color &&
-        caps.color.option && caps.color.option.length > 0) {
+        !this.settings.color.available && caps.color && caps.color.option &&
+        caps.color.option.length > 0) {
       this.setSettingPath_(
           'color.unavailableValue',
           !['STANDARD_MONOCHROME', 'CUSTOM_MONOCHROME'].includes(
@@ -1142,16 +1126,16 @@ export class PrintPreviewModelElement extends PolymerElement {
     // check printing destinations' duplex availability on other platforms.
     // <if expr="is_chromeos">
     const duplexPolicyDefaultValueAvailable =
-        getDuplexPolicyDefaultValueAvailable(
+        this.getDuplexPolicyDefaultValueAvailable_(
             this.getSetting('duplex').policyDefaultValue,
-            this.getSetting('duplexShortEdge').policyDefaultValue, caps);
+            this.getSetting('duplexShortEdge').policyDefaultValue);
     // </if>
     // <if expr="not is_chromeos">
     const duplexPolicyDefaultValueAvailable = false;
     // </if>
     if (!this.settings.duplex.setFromUi && this.settings.duplex.available &&
         !duplexPolicyDefaultValueAvailable) {
-      const defaultOption = caps!.duplex!.option.find(o => !!o.is_default);
+      const defaultOption = caps.duplex!.option.find(o => !!o.is_default);
       if (defaultOption !== undefined) {
         const defaultOptionIsDuplex =
             defaultOption.type === DuplexType.SHORT_EDGE ||
@@ -1169,7 +1153,7 @@ export class PrintPreviewModelElement extends PolymerElement {
           // printer.
           this.setSettingPath_(
               'duplexShortEdge.unavailableValue',
-              caps!.duplex!.option.some(o => o.type === DuplexType.SHORT_EDGE));
+              caps.duplex!.option.some(o => o.type === DuplexType.SHORT_EDGE));
         }
       }
     } else if (
@@ -1177,9 +1161,9 @@ export class PrintPreviewModelElement extends PolymerElement {
         caps.duplex.option) {
       // In this case, there must only be one option.
       const hasLongEdge =
-          caps!.duplex!.option.some(o => o.type === DuplexType.LONG_EDGE);
+          caps.duplex!.option.some(o => o.type === DuplexType.LONG_EDGE);
       const hasShortEdge =
-          caps!.duplex!.option.some(o => o.type === DuplexType.SHORT_EDGE);
+          caps.duplex!.option.some(o => o.type === DuplexType.SHORT_EDGE);
       // If the only option available is long edge, the value should always be
       // true.
       this.setSettingPath_(
@@ -1193,7 +1177,7 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     if (this.settings.vendorItems.available) {
       const vendorSettings: {[key: string]: any} = {};
-      for (const item of caps!.vendor_capability!) {
+      for (const item of caps.vendor_capability!) {
         let defaultValue = null;
         if (item.type === 'SELECT' && item.select_cap &&
             item.select_cap.option) {
@@ -1689,12 +1673,8 @@ export class PrintPreviewModelElement extends PolymerElement {
       const mediaSizePolicy = this.policySettings_['mediaSize'] &&
           this.policySettings_['mediaSize'].value;
       if (mediaSizePolicy !== undefined) {
-        const matchingOption =
-            this.destination.capabilities!.printer.media_size!.option.find(
-                o => {
-                  return o.width_microns === mediaSizePolicy.width &&
-                      o.height_microns === mediaSizePolicy.height;
-                });
+        const matchingOption = this.destination.getMediaSize(
+            mediaSizePolicy.width, mediaSizePolicy.height);
         if (matchingOption !== undefined) {
           this.set('settings.mediaSize.value', matchingOption);
         }
@@ -1859,8 +1839,8 @@ export class PrintPreviewModelElement extends PolymerElement {
       cjt.print.collate = {collate: this.settings.collate.value};
     }
     if (this.settings.color.available) {
-      const selectedOption = destination.getSelectedColorOption(
-          this.settings.color.value as boolean);
+      const selectedOption =
+          destination.getColor(this.settings.color.value as boolean);
       if (!selectedOption) {
         console.warn('Could not find correct color option');
       } else {

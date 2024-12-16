@@ -11,7 +11,7 @@ import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 // </if>
 
-import type {Cdd, ColorCapability, ColorOption, CopiesCapability} from './cdd.js';
+import type {Cdd, ColorCapability, ColorOption, CopiesCapability, DpiOption, DuplexType, MediaSizeOption, MediaTypeOption} from './cdd.js';
 // <if expr="is_chromeos">
 import type {ManagedPrintOptions} from './managed_print_options_cros.ts';
 import type {PrinterStatus} from './printer_status_cros.js';
@@ -541,27 +541,6 @@ export class Destination {
 
   /**
    * @param isColor Whether to use a color printing mode.
-   * @return Selected color option.
-   */
-  getSelectedColorOption(isColor: boolean): ColorOption|null {
-    const typesToLookFor = isColor ? COLOR_TYPES : MONOCHROME_TYPES;
-    const capability = this.colorCapability_();
-    if (!capability || !capability.option) {
-      return null;
-    }
-    for (let i = 0; i < typesToLookFor.length; i++) {
-      const matchingOptions = capability.option.filter(option => {
-        return option.type === typesToLookFor[i];
-      });
-      if (matchingOptions.length > 0) {
-        return matchingOptions[0];
-      }
-    }
-    return null;
-  }
-
-  /**
-   * @param isColor Whether to use a color printing mode.
    * @return Native color model of the destination.
    */
   getNativeColorModel(isColor: boolean): number {
@@ -570,7 +549,7 @@ export class Destination {
     if (!capability || !capability.option) {
       return isColor ? ColorMode.COLOR : ColorMode.GRAY;
     }
-    const selected = this.getSelectedColorOption(isColor);
+    const selected = this.getColor(isColor);
     const mode = parseInt(selected ? selected.vendor_id! : '', 10);
     if (isNaN(mode)) {
       return isColor ? ColorMode.COLOR : ColorMode.GRAY;
@@ -590,6 +569,74 @@ export class Destination {
       return option.is_default;
     });
     return defaultOptions.length !== 0 ? defaultOptions[0] : null;
+  }
+
+  /**
+   * @return Color option value of the destination with the given binary color
+   * value. Returns null if the destination doesn't support such color value.
+   */
+  getColor(isColor: boolean): ColorOption|null {
+    const typesToLookFor = isColor ? COLOR_TYPES : MONOCHROME_TYPES;
+    const capability = this.colorCapability_();
+    if (!capability || !capability.option) {
+      return null;
+    }
+    for (let i = 0; i < typesToLookFor.length; i++) {
+      const matchingOptions = capability.option.filter(option => {
+        return option.type === typesToLookFor[i];
+      });
+      if (matchingOptions.length > 0) {
+        return matchingOptions[0];
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @return Media size value of the destination with the given width and height
+   * values. Returns undefined if there is no such media size value.
+   */
+  getMediaSize(width: number, height: number): MediaSizeOption|undefined {
+    return this.capabilities?.printer.media_size?.option.find(o => {
+      return o.width_microns === width && o.height_microns === height;
+    });
+  }
+
+  /**
+   * @return Media type value of the destination with the given vendor id.
+   * Returns undefined if there is no such media type value.
+   */
+  getMediaType(vendorId: string): MediaTypeOption|undefined {
+    return this.capabilities?.printer.media_type?.option.find(o => {
+      return o.vendor_id === vendorId;
+    });
+  }
+
+  /**
+   * @return DPI (Dots per Inch) value of the destination with the given
+   * horizontal and vertical resolutions. Returns undefined if there is no such
+   * DPI value.
+   */
+  getDpi(horizontal: number, vertical: number): DpiOption|undefined {
+    return this.capabilities?.printer.dpi?.option.find(o => {
+      return o.horizontal_dpi === horizontal && o.vertical_dpi === vertical;
+    });
+  }
+
+  /**
+   * @return Returns true if the current printing destination supports the given
+   * duplex value. Returns false in all other cases.
+   */
+  supportsDuplex(duplex: DuplexType): boolean {
+    const availableDuplexOptions = this.capabilities?.printer.duplex?.option;
+    if (!availableDuplexOptions) {
+      // There are no duplex capabilities reported by the printer.
+      return false;
+    }
+
+    return availableDuplexOptions.some(o => {
+      return o.type === duplex;
+    });
   }
 
   /** @return A unique identifier for this destination. */
