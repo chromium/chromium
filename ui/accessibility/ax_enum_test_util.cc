@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/ax_enum_test_util.h"
 
+#include <unordered_map>
+
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 
 namespace ui {

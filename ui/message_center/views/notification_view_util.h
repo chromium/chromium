@@ -5,6 +5,8 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_UTIL_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_UTIL_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 
