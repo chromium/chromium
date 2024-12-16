@@ -296,12 +296,24 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS24be) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 
-IN_PROC_BROWSER_TEST_P(MediaTest, HLSSingleFileBear) {
+// TODO(crbug.com/384342045): Failing on win11-arm64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_HLSSingleFileBear DISABLED_HLSSingleFileBear
+#else
+#define MAYBE_HLSSingleFileBear HLSSingleFileBear
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_HLSSingleFileBear) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear-1280x720-hls-clear-mpl.m3u8");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, HLSMultivariantBitrateBear) {
+// TODO(crbug.com/384342045): Failing on win11-arm64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_HLSMultivariantBitrateBear DISABLED_HLSMultivariantBitrateBear
+#else
+#define MAYBE_HLSMultivariantBitrateBear HLSMultivariantBitrateBear
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_HLSMultivariantBitrateBear) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("hls/multi-bitrate-multivariant-bear/playlist.m3u8");
 }
