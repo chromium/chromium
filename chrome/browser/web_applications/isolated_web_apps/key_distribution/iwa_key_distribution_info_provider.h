@@ -99,7 +99,11 @@ class IwaKeyDistributionInfoProvider {
       const std::string& web_bundle_id,
       const std::optional<std::vector<uint8_t>>& rotated_key);
 
+  // Dumps the entire component data to web-app-internals.
   base::Value AsDebugValue() const;
+
+  // Writes component metadata (version and whether it's preloaded) to `log`.
+  void WriteComponentMetadata(base::Value::Dict& log) const;
 
   bool Ready() const;
 

@@ -384,6 +384,9 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
   MaybeRecordFirstPolicyProcessingDelay(profile_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  IwaKeyDistributionInfoProvider::GetInstance()->WriteComponentMetadata(
+      debug_info);
+
   CHECK(provider_);
   CHECK(install_tasks_.empty());
 

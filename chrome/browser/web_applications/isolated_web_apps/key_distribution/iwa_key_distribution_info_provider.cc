@@ -248,6 +248,22 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
   return base::Value(std::move(debug_data));
 }
 
+// Writes component metadata (version and whether it's preloaded) to `log`.
+void IwaKeyDistributionInfoProvider::WriteComponentMetadata(
+    base::Value::Dict& log) const {
+  if (!data_) {
+    // Will be displayed as <null>.
+    log.Set("component", base::Value());
+    return;
+  }
+
+  auto* component = log.EnsureDict("component");
+  component->Set("version", data_->version.GetString());
+  if (data_->is_preloaded) {
+    component->Set("is_preloaded", true);
+  }
+}
+
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
     const base::Version& version,
     bool is_preloaded) const {
