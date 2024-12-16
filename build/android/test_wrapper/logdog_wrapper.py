@@ -121,22 +121,27 @@ def main():
   with tempfile_ext.NamedTemporaryDirectory(
       prefix='tmp_logdog') as temp_directory:
     if logdog_butler_bin:
-      streamserver_uri = 'unix:%s' % os.path.join(temp_directory, 'butler.sock')
-      prefix = os.path.join('android', 'swarming', 'logcats',
-                            os.environ.get('SWARMING_TASK_ID'))
-      project = GetProjectFromLuciContext()
+      if os.path.exists(logdog_butler_bin):
+        streamserver_uri = 'unix:%s' % os.path.join(temp_directory,
+                                                    'butler.sock')
+        prefix = os.path.join('android', 'swarming', 'logcats',
+                              os.environ.get('SWARMING_TASK_ID', ""))
+        project = GetProjectFromLuciContext()
 
-      logdog_cmd = [
-          logdog_butler_bin, '-project', project, '-output', OUTPUT, '-prefix',
-          prefix, '-coordinator-host', COORDINATOR_HOST, 'serve',
-          '-streamserver-uri', streamserver_uri
-      ]
-      test_env.update({
-          'LOGDOG_STREAM_PROJECT': project,
-          'LOGDOG_STREAM_PREFIX': prefix,
-          'LOGDOG_STREAM_SERVER_PATH': streamserver_uri,
-          'LOGDOG_COORDINATOR_HOST': COORDINATOR_HOST,
-      })
+        logdog_cmd = [
+            logdog_butler_bin, '-project', project, '-output', OUTPUT,
+            '-prefix', prefix, '-coordinator-host', COORDINATOR_HOST, 'serve',
+            '-streamserver-uri', streamserver_uri
+        ]
+        test_env.update({
+            'LOGDOG_STREAM_PROJECT': project,
+            'LOGDOG_STREAM_PREFIX': prefix,
+            'LOGDOG_STREAM_SERVER_PATH': streamserver_uri,
+            'LOGDOG_COORDINATOR_HOST': COORDINATOR_HOST,
+        })
+      else:
+        logging.warning('--logdog-bin-cmd specified, but binary was not found.'
+                        ' Will not be using logdog butler server.')
 
     logdog_proc = None
     if logdog_cmd:
