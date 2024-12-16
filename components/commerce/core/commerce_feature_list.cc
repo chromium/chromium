@@ -198,11 +198,6 @@ const base::FeatureParam<bool> kProductSpecsMigrateToMultiSpecifics{
     &commerce::kProductSpecificationsMultiSpecifics,
     kProductSpecsMigrateToMultiSpecificsParam, false};
 
-// Tonal colors for the expanded state of the price tracking chip on desktop.
-BASE_FEATURE(kPriceTrackingIconColors,
-             "PriceTrackingIconColors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Promotion in Magic Stack for Price Tracking users from other platforms.
 BASE_FEATURE(kPriceTrackingPromo,
              "PriceTrackingPromo",

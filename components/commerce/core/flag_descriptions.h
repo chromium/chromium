@@ -12,9 +12,6 @@ namespace commerce::flag_descriptions {
 extern const char kCommerceLocalPDPDetectionName[];
 extern const char kCommerceLocalPDPDetectionDescription[];
 
-extern const char kPriceTrackingIconColorsName[];
-extern const char kPriceTrackingIconColorsDescription[];
-
 extern const char kProductSpecificationsName[];
 extern const char kProductSpecificationsDescription[];
 

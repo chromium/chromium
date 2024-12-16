@@ -7041,14 +7041,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "price-tracking-icon-colors",
-    "owners": [
-      "mdjones@chromium.org",
-      "chrome-shopping-eng@google.com"
-    ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "price-tracking-subscription-service-locale-key",
     "owners": [ "qib@google.com", "chrommerce-eng@google.com" ],
     "expiry_milestone": 135

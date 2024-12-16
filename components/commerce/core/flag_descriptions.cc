@@ -11,12 +11,6 @@ const char kCommerceLocalPDPDetectionDescription[] =
     "Allow Chrome to attempt to detect product pages on the client, without "
     "server support.";
 
-const char kPriceTrackingIconColorsName[] =
-    "Price Tracking Icon Tonal UI Colors";
-const char kPriceTrackingIconColorsDescription[] =
-    "Tonal colors for the expanded state of the price tracking chip on "
-    "desktop.";
-
 const char kProductSpecificationsName[] = "Product Specifications";
 const char kProductSpecificationsDescription[] =
     "Enable the Product Specifications feature.";
