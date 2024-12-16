@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 
 BASE_FEATURE(kIOSInterruptibleCoordinatorAlwaysDismissed,
-             "InterruptibleChromeAlwaysDismissed",
+             "IOSInterruptibleCoordinatorAlwaysDismissed",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSInterruptibleCoordinatorStoppedSynchronously,
-             "InterruptibleChromeStoppedSynchronously",
+             "IOSInterruptibleCoordinatorStoppedSynchronously",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 SigninCoordinatorInterrupt SynchronousStopAction() {
