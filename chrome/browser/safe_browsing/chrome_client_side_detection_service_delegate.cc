@@ -25,6 +25,10 @@ static constexpr auto kWaitableReasons =
         optimization_guide::OnDeviceModelEligibilityReason::
             kConfigNotAvailableForFeature,
         optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
+        optimization_guide::OnDeviceModelEligibilityReason::
+            kSafetyModelNotAvailable,
+        optimization_guide::OnDeviceModelEligibilityReason::
+            kLanguageDetectionModelNotAvailable,
     });
 }  // namespace
 

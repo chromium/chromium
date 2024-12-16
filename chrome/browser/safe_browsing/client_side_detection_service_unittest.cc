@@ -766,11 +766,27 @@ TEST_P(ClientSideDetectionServiceTest, TestOnDeviceModelFetchSuccessCall) {
   CHECK(availability_observer);
 
   // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
-  // first to the observer, which will not stop the observing.
+  // first to the observer, which will not stop the observing. We will then test
+  // for all the possible waitable reasons, which should also not stop
+  // observing.
   availability_observer->OnDeviceModelAvailabilityChanged(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::
           kConfigNotAvailableForFeature);
+
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled);
+
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kSafetyModelNotAvailable);
+
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kLanguageDetectionModelNotAvailable);
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
