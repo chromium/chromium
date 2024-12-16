@@ -575,6 +575,10 @@ CookieBase::UniqueDomainCookieKey CookieBase::UniqueDomainKey() const {
   return std::make_tuple(partition_key_, name_, domain_, path_, source_scheme);
 }
 
+CookieBase::LegacyUniqueCookieKey CookieBase::LegacyUniqueKey() const {
+  return std::make_tuple(partition_key_, name_, domain_, path_);
+}
+
 void CookieBase::SetSourcePort(int port) {
   source_port_ = ValidateAndAdjustSourcePort(port);
 }

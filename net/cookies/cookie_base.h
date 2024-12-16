@@ -51,6 +51,13 @@ class NET_EXPORT CookieBase {
                                            /*path=*/std::string,
                                            std::optional<CookieSourceScheme>>;
 
+  // Same as UniqueCookieKey but for use with Legacy Scoped cookies, which do
+  // not consider the source_port or source_scheme.
+  using LegacyUniqueCookieKey = std::tuple<std::optional<CookiePartitionKey>,
+                                           /*name=*/std::string,
+                                           /*domain=*/std::string,
+                                           /*path=*/std::string>;
+
   // Returns if the cookie should be included (and if not, why) for the given
   // request |url| using the CookieInclusionStatus enum. HTTP only cookies can
   // be filter by using appropriate cookie |options|.
@@ -169,6 +176,11 @@ class NET_EXPORT CookieBase {
   // Same as UniqueKey() except it does not contain a source_port field. For use
   // with Domain cookies, which do not consider the source_port.
   UniqueDomainCookieKey UniqueDomainKey() const;
+
+  // Same as UniqueKey() except it does not contain a source_port or
+  // source_scheme field. For use for determining aliasing cookies, which do not
+  // consider the source_port or source_scheme.
+  LegacyUniqueCookieKey LegacyUniqueKey() const;
 
   void SetSourceScheme(CookieSourceScheme source_scheme) {
     source_scheme_ = source_scheme;

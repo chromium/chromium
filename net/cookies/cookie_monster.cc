@@ -50,6 +50,7 @@
 #include <optional>
 #include <set>
 #include <string_view>
+#include <tuple>
 #include <utility>
 
 #include "base/check_is_test.h"
@@ -1368,9 +1369,8 @@ void CookieMonster::FilterCookiesWithOptions(
   bool delegate_treats_url_as_trustworthy =
       cookie_access_delegate() &&
       cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(url);
-
-  std::vector<std::pair<CanonicalCookie*, CookieAccessResult>>
-      cookies_and_access_results;
+  using CookieAndAccessResult = std::pair<CanonicalCookie*, CookieAccessResult>;
+  std::vector<CookieAndAccessResult> cookies_and_access_results;
   cookies_and_access_results.reserve(cookie_ptrs->size());
   std::set<std::string> origin_cookie_names;
 
@@ -1404,6 +1404,10 @@ void CookieMonster::FilterCookiesWithOptions(
       origin_cookie_names.insert(cookie_ptr->Name());
     }
   }
+
+  // Map to store the most recent aliasing cookie and it's CookieAccessResult
+  std::map<CanonicalCookie::LegacyUniqueCookieKey, CookieAndAccessResult*>
+      latest_aliasing_cookies;
 
   for (auto& cookie_result : cookies_and_access_results) {
     CanonicalCookie* cookie_ptr = cookie_result.first;
@@ -1440,27 +1444,64 @@ void CookieMonster::FilterCookiesWithOptions(
       }
     }
 
-    // Filter out any domain `cookie_ptr` which are shadowing origin cookies.
-    // Don't apply domain shadowing exclusion/warning reason if `cookie_ptr` is
-    // already being excluded/warned for scheme matching reasons (Note, domain
-    // cookies match every port so they'll never get excluded/warned for port
-    // reasons).
-    bool scheme_mismatch =
-        access_result.status.HasExclusionReason(
-            CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH) ||
-        access_result.status.HasWarningReason(
-            CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+    if (GetScopeSemanticsForCookie(*cookie_ptr) ==
+        CookieScopeSemantics::LEGACY) {
+      // For legacy scope semantics we want to exclude all but the most recent
+      // aliasing cookie(s).
+      auto existing_alias =
+          latest_aliasing_cookies.find(cookie_ptr->LegacyUniqueKey());
 
-    if (cookie_ptr->IsDomainCookie() && !scheme_mismatch &&
-        origin_cookie_names.count(cookie_ptr->Name())) {
-      if (cookie_util::IsSchemeBoundCookiesEnabled()) {
-        access_result.status.AddExclusionReason(
-            CookieInclusionStatus::EXCLUDE_SHADOWING_DOMAIN);
+      if (existing_alias == latest_aliasing_cookies.end()) {
+        // Cookie is new and not in map.
+        latest_aliasing_cookies[cookie_ptr->LegacyUniqueKey()] = &cookie_result;
       } else {
-        access_result.status.AddWarningReason(
-            CookieInclusionStatus::WARN_SHADOWING_DOMAIN);
+        CHECK(std::make_tuple(cookie_ptr->SourcePort(),
+                              cookie_ptr->SourceScheme()) !=
+              std::make_tuple(existing_alias->second->first->SourcePort(),
+                              existing_alias->second->first->SourceScheme()))
+            << "port: " << cookie_ptr->SourcePort()
+            << ", scheme: " << static_cast<size_t>(cookie_ptr->SourceScheme());
+        if (cookie_ptr->CreationDate() >
+            existing_alias->second->first->CreationDate()) {
+          existing_alias->second->second.status.AddExclusionReason(
+              CookieInclusionStatus::EXCLUDE_ALIASING);
+          latest_aliasing_cookies[cookie_ptr->LegacyUniqueKey()] =
+              &cookie_result;
+        } else {
+          access_result.status.AddExclusionReason(
+              CookieInclusionStatus::EXCLUDE_ALIASING);
+        }
+      }
+    } else {
+      // Filter out any domain `cookie_ptr` which are shadowing origin cookies.
+      // Don't apply domain shadowing exclusion/warning reason if `cookie_ptr`
+      // is already being excluded/warned for scheme matching reasons (Note,
+      // domain cookies match every port so they'll never get excluded/warned
+      // for port reasons).
+      bool scheme_mismatch =
+          access_result.status.HasExclusionReason(
+              CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH) ||
+          access_result.status.HasWarningReason(
+              CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+
+      if (cookie_ptr->IsDomainCookie() && !scheme_mismatch &&
+          origin_cookie_names.count(cookie_ptr->Name())) {
+        if (cookie_util::IsSchemeBoundCookiesEnabled()) {
+          access_result.status.AddExclusionReason(
+              CookieInclusionStatus::EXCLUDE_SHADOWING_DOMAIN);
+        } else {
+          access_result.status.AddWarningReason(
+              CookieInclusionStatus::WARN_SHADOWING_DOMAIN);
+        }
       }
     }
+  }
+  // Loop through all cookies again and add to include and exclude list.
+  // TODO(crbug.com/40165805): Look for optimizations for excluding previous
+  // aliases.
+  for (auto& cookie_result : cookies_and_access_results) {
+    CanonicalCookie* cookie_ptr = cookie_result.first;
+    CookieAccessResult& access_result = cookie_result.second;
 
     if (!access_result.status.IsInclude()) {
       if (options.return_excluded_cookies()) {

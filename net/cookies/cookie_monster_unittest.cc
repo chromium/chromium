@@ -5838,6 +5838,115 @@ TEST_F(CookieMonsterLegacyCookieAccessTest,
             GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
 }
 
+// Test that Cookies are excluded for alisaing each other when ScopeSemantics
+// are LEGACY
+TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeAlising) {
+  std::unique_ptr<TestCookieAccessDelegate> access_delegate =
+      std::make_unique<TestCookieAccessDelegate>();
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  base::Time creation_time = base::Time::Now();
+  base::Time three_days_earlier = base::Time::Now() - base::Days(3);
+  std::optional<base::Time> server_time;
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  options.set_return_excluded_cookies();
+
+  auto CookieListsMatch = [](const CookieAccessResultList& actual,
+                             const CookieList& expected) {
+    if (actual.size() != expected.size()) {
+      return false;
+    }
+
+    for (size_t i = 0; i < actual.size(); i++) {
+      if (!actual[i].cookie.IsEquivalent(expected[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies,
+       net::features::kEnablePortBoundCookies},
+      {});
+
+  std::vector<CanonicalCookie*> cookie_ptrs;
+  CookieAccessResultList included;
+  CookieAccessResultList excluded;
+
+  auto reset = [&cookie_ptrs, &included, &excluded]() {
+    cookie_ptrs.clear();
+    included.clear();
+    excluded.clear();
+  };
+
+  // Testing aliasing cookies
+  auto alias_cookie1 = CanonicalCookie::CreateForTesting(
+      GURL("https://www.example.com/withDomain"),
+      "W=D; Domain=example.com; Path=/withDomain", creation_time, server_time);
+
+  auto alias_cookie2 = CanonicalCookie::CreateForTesting(
+      GURL("http://www.example.com/withDomain"),
+      "W=D; Domain=example.com; Path=/withDomain", three_days_earlier,
+      server_time);
+
+  // Different name so should not alias above cookies
+  auto alias_cookie3 = CanonicalCookie::CreateForTesting(
+      GURL("https://www.example.com/withDomain"),
+      "A=B; Domain=example.com; Path=/withDomain", creation_time, server_time);
+
+  // Different port value so should be excluded
+  auto alias_cookie4 = CanonicalCookie::CreateForTesting(
+      GURL("https://www.example.com/withDomain"),
+      "W=D; Domain=example.com; Path=/withDomain", three_days_earlier,
+      server_time);
+  alias_cookie4->SetSourcePort(8000);
+
+  // Need to inject such a cookie under legacy semantics.
+  access_delegate->SetExpectationForCookieScope("example.com",
+                                                CookieScopeSemantics::LEGACY);
+
+  access_delegate->SetExpectationForCookieScope(
+      "test.com", CookieScopeSemantics::NONLEGACY);
+
+  cm->SetCookieAccessDelegate(std::move(access_delegate));
+
+  cookie_ptrs = {alias_cookie2.get(), alias_cookie3.get(), alias_cookie1.get(),
+                 alias_cookie4.get()};
+
+  cm->FilterCookiesWithOptions(GURL("https://www.example.com/withDomain"),
+                               options, &cookie_ptrs, &included, &excluded);
+
+  EXPECT_TRUE(CookieListsMatch(included, {*alias_cookie3, *alias_cookie1}));
+
+  EXPECT_TRUE(CookieListsMatch(excluded, {*alias_cookie2, *alias_cookie4}));
+
+  EXPECT_TRUE(excluded[0].access_result.status.HasExclusionReason(
+      CookieInclusionStatus::EXCLUDE_ALIASING));
+  reset();
+
+  // These cookies are to test when ScopeSemantics are NONLEGACY cookies should
+  // not be excluded for aliasing when this is the case
+  auto non_legacy_cookie1 = CanonicalCookie::CreateForTesting(
+      GURL("https://www.test.com/withDomain"),
+      "W=D; Domain=test.com; Path=/withDomain", three_days_earlier,
+      server_time);
+
+  auto non_legacy_cookie2 = CanonicalCookie::CreateForTesting(
+      GURL("https://www.test.com/withDomain"),
+      "W=D; Domain=test.com; Path=/withDomain", creation_time, server_time);
+
+  cookie_ptrs = {non_legacy_cookie1.get(), non_legacy_cookie2.get()};
+  cm->FilterCookiesWithOptions(GURL("https://www.test.com/withDomain"), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(
+      CookieListsMatch(included, {*non_legacy_cookie1, *non_legacy_cookie2}));
+  // Since aliasing is not active nothing should be excluded
+  EXPECT_EQ(excluded.size(), 0u);
+}
+
 TEST_F(CookieMonsterTest, IsCookieSentToSamePortThatSetIt) {
   // Note: `IsCookieSentToSamePortThatSetIt()` only uses the source_scheme if
   // the port is valid, specified, and doesn't match the url's port. So for test

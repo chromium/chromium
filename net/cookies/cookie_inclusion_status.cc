@@ -239,6 +239,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {EXCLUDE_DISALLOWED_CHARACTER, "EXCLUDE_DISALLOWED_CHARACTER"},
       {EXCLUDE_THIRD_PARTY_PHASEOUT, "EXCLUDE_THIRD_PARTY_PHASEOUT"},
       {EXCLUDE_NO_COOKIE_CONTENT, "EXCLUDE_NO_COOKIE_CONTENT"},
+      {EXCLUDE_ALIASING, "EXCLUDE_ALIASING"},
   };
   static_assert(
       std::size(exclusion_reasons) == ExclusionReason::NUM_EXCLUSION_REASONS,
