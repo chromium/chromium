@@ -5,9 +5,9 @@
 #include "components/autofill/core/browser/payments/iban_manager.h"
 
 #include "base/containers/contains.h"
-#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_clock.h"

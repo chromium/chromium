@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOFILL_COMPOSE_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOFILL_COMPOSE_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_MOCK_AUTOFILL_COMPOSE_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_MOCK_AUTOFILL_COMPOSE_DELEGATE_H_
 
 #include <optional>
 
-#include "components/autofill/core/browser/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -43,4 +43,4 @@ class MockAutofillComposeDelegate : public AutofillComposeDelegate {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOFILL_COMPOSE_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_MOCK_AUTOFILL_COMPOSE_DELEGATE_H_

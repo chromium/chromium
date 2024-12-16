@@ -8,7 +8,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace autofill {

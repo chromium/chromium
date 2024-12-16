@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_OPTIMIZATION_GUIDE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_OPTIMIZATION_GUIDE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_OPTIMIZATION_GUIDE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_OPTIMIZATION_GUIDE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
@@ -99,4 +99,4 @@ class AutofillOptimizationGuide : public KeyedService {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_OPTIMIZATION_GUIDE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_OPTIMIZATION_GUIDE_H_

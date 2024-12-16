@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_metrics.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
