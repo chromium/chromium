@@ -59,7 +59,8 @@ NotificationContentDetectionModel::~NotificationContentDetectionModel() =
 void NotificationContentDetectionModel::Execute(
     blink::PlatformNotificationData& notification_data,
     const GURL& origin,
-    bool did_match_allowlist) {
+    bool did_match_allowlist,
+    ModelVerdictCallback model_verdict_callback) {
   // If there is no model version, then there is no valid notification content
   // detection model loaded from the server so don't check the model.
   if (!GetModelInfo() || !GetModelInfo()->GetVersion()) {
@@ -71,13 +72,14 @@ void NotificationContentDetectionModel::Execute(
   ExecuteModelWithInput(
       base::BindOnce(&NotificationContentDetectionModel::PostprocessCategories,
                      weak_ptr_factory_.GetWeakPtr(), origin,
-                     did_match_allowlist),
+                     did_match_allowlist, std::move(model_verdict_callback)),
       GetFormattedNotificationContentsForModelInput(notification_data));
 }
 
 void NotificationContentDetectionModel::PostprocessCategories(
     const GURL& origin,
     bool did_match_allowlist,
+    ModelVerdictCallback model_verdict_callback,
     const std::optional<std::vector<tflite::task::core::Category>>& output) {
   // If the model does not have an output, return without collecting metrics.
   // This can happen if the model times out and this should not cause a crash.

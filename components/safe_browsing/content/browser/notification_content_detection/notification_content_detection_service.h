@@ -22,6 +22,9 @@ namespace safe_browsing {
 
 class NotificationContentDetectionService : public KeyedService {
  public:
+  // The callback for displaying a persistent notification.
+  using ModelVerdictCallback = base::OnceCallback<void(bool is_suspicious)>;
+
   NotificationContentDetectionService(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -32,7 +35,8 @@ class NotificationContentDetectionService : public KeyedService {
   // This method is virtual for testing.
   virtual void MaybeCheckNotificationContentDetectionModel(
       const blink::PlatformNotificationData& notification_data,
-      const GURL& origin);
+      const GURL& origin,
+      ModelVerdictCallback model_verdict_callback);
 
  protected:
   friend class NotificationContentDetectionServiceTest;
@@ -44,6 +48,7 @@ class NotificationContentDetectionService : public KeyedService {
       blink::PlatformNotificationData& notification_data,
       const base::TimeTicks start_time,
       const GURL& origin,
+      ModelVerdictCallback model_verdict_callback,
       bool did_match_allowlist,
       std::optional<SafeBrowsingDatabaseManager::
                         HighConfidenceAllowlistCheckLoggingDetails>

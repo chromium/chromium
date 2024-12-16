@@ -161,6 +161,13 @@ class PlatformNotificationServiceImpl
   // Clears |closed_notifications_|. Should only be used for testing purposes.
   void ClearClosedNotificationsForTesting() { closed_notifications_.clear(); }
 
+  // Update the persistent metadata, given the value of `is_suspicious` then
+  // display the notification.
+  void UpdatePersistentMetadataThenDisplay(
+      const message_center::Notification& notification,
+      std::unique_ptr<PersistentNotificationMetadata> metadata,
+      bool is_suspicious);
+
   // The profile for this instance or NULL if the initial profile has been
   // shutdown already.
   raw_ptr<Profile> profile_;
@@ -174,6 +181,8 @@ class PlatformNotificationServiceImpl
 
   // Testing-only closure to observe when a UKM event has been recorded.
   base::OnceClosure ukm_recorded_closure_for_testing_;
+
+  base::WeakPtrFactory<PlatformNotificationServiceImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_

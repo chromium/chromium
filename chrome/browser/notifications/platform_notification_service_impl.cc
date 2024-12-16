@@ -289,7 +289,14 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
         NotificationContentDetectionServiceFactory::GetForProfile(profile_);
     if (notification_content_service) {
       notification_content_service->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin);
+          notification_data, origin,
+          base::FeatureList::IsEnabled(
+              safe_browsing::kShowWarningsForSuspiciousNotifications)
+              ? base::BindOnce(&PlatformNotificationServiceImpl::
+                                   UpdatePersistentMetadataThenDisplay,
+                               weak_ptr_factory_.GetWeakPtr(), notification,
+                               std::move(metadata))
+              : base::DoNothing());
     }
   }
 
@@ -718,4 +725,14 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
           {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
   return app_id.has_value();
 #endif
+}
+
+void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
+    const message_center::Notification& notification,
+    std::unique_ptr<PersistentNotificationMetadata> metadata,
+    bool is_suspicious) {
+  metadata->is_suspicious = is_suspicious;
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, notification,
+      std::move(metadata));
 }

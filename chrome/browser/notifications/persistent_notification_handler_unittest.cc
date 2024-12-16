@@ -282,7 +282,7 @@ TEST_P(PersistentNotificationHandlerWithNotificationContentDetection,
     expected_number_of_calls = 1;
   }
   EXPECT_CALL(*mock_notification_content_detection_service_,
-              MaybeCheckNotificationContentDetectionModel(_, _))
+              MaybeCheckNotificationContentDetectionModel(_, _, _))
       .Times(expected_number_of_calls);
 
   PlatformNotificationServiceFactory::GetForProfile(&profile_)

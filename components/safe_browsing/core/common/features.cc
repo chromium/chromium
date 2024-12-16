@@ -304,6 +304,16 @@ BASE_FEATURE(kSavePasswordHashFromProfilePicker,
              "SavePasswordHashFromProfilePicker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShowWarningsForSuspiciousNotifications,
+             "ShowWarningsForSuspiciousNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int>
+    kShowWarningsForSuspiciousNotificationsScoreThreshold{
+        &kShowWarningsForSuspiciousNotifications,
+        "ShowWarningsForSuspiciousNotificationsScoreThreshold",
+        /*default_value=*/100};
+
 BASE_FEATURE(kSimplifiedUrlDisplay,
              "SimplifiedUrlDisplay",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -364,6 +374,7 @@ base::Value::List GetFeatureStatusList() {
       &kSafeBrowsingAsyncRealTimeCheck,
       &kSafeBrowsingRemoveCookiesInAuthRequests,
       &kSafetyHubAbusiveNotificationRevocation,
+      &kShowWarningsForSuspiciousNotifications,
       &kSimplifiedUrlDisplay,
       &kSuspiciousSiteTriggerQuotaFeature,
       &kTailoredSecurityIntegration,

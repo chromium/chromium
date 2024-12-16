@@ -212,8 +212,8 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
   blink::PlatformNotificationData data = CreateNotificationData(
       u"Non-allowlisted title", u"Hello, world!", {u"Click me!"});
   notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(data,
-                                                    GURL(kNonAllowlistedUrl));
+      ->MaybeCheckNotificationContentDetectionModel(
+          data, GURL(kNonAllowlistedUrl), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -244,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
   notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(data,
-                                                    GURL(kAllowlistedUrl));
+      ->MaybeCheckNotificationContentDetectionModel(data, GURL(kAllowlistedUrl),
+                                                    base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -293,8 +293,8 @@ IN_PROC_BROWSER_TEST_F(
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
   notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(data,
-                                                    GURL(kAllowlistedUrl));
+      ->MaybeCheckNotificationContentDetectionModel(data, GURL(kAllowlistedUrl),
+                                                    base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   optimization_guide::RetryForHistogramUntilCountReached(

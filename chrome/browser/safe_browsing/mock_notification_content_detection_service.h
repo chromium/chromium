@@ -24,8 +24,10 @@ class MockNotificationContentDetectionService
       content::BrowserContext* browser_context);
   ~MockNotificationContentDetectionService() override;
 
-  MOCK_METHOD2(MaybeCheckNotificationContentDetectionModel,
-               void(const blink::PlatformNotificationData&, const GURL&));
+  MOCK_METHOD3(MaybeCheckNotificationContentDetectionModel,
+               void(const blink::PlatformNotificationData&,
+                    const GURL&,
+                    ModelVerdictCallback));
 
   static std::unique_ptr<KeyedService> FactoryForTests(
       optimization_guide::OptimizationGuideModelProvider* model_provider,

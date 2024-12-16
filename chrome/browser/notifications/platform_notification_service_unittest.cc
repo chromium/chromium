@@ -723,7 +723,7 @@ TEST_P(PlatformNotificationServiceTest_NotificationContentDetection,
     expected_number_of_calls = 1;
   }
   EXPECT_CALL(*mock_notification_content_detection_service_,
-              MaybeCheckNotificationContentDetectionModel(_, _))
+              MaybeCheckNotificationContentDetectionModel(_, _, _))
       .Times(expected_number_of_calls);
   service()->DisplayPersistentNotification(
       kNotificationId, GURL() /* service_worker_scope */,

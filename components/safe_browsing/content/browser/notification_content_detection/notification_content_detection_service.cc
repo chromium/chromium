@@ -34,7 +34,8 @@ NotificationContentDetectionService::~NotificationContentDetectionService() =
 void NotificationContentDetectionService::
     MaybeCheckNotificationContentDetectionModel(
         const blink::PlatformNotificationData& notification_data,
-        const GURL& origin) {
+        const GURL& origin,
+        ModelVerdictCallback model_verdict_callback) {
   // Check the high confidence allowlist to determine whether to check the
   // LiteRT model. Since this does not own `notification_data`, create a deep
   // copy and pass it along so that the value is safe to change.
@@ -44,7 +45,8 @@ void NotificationContentDetectionService::
                                  OnCheckUrlForHighConfidenceAllowlist,
                              weak_factory_.GetWeakPtr(),
                              base::OwnedRef(notification_data_copy),
-                             base::TimeTicks::Now(), origin));
+                             base::TimeTicks::Now(), origin,
+                             std::move(model_verdict_callback)));
 }
 
 void NotificationContentDetectionService::SetModelForTesting(
@@ -58,6 +60,7 @@ void NotificationContentDetectionService::OnCheckUrlForHighConfidenceAllowlist(
     blink::PlatformNotificationData& notification_data,
     const base::TimeTicks start_time,
     const GURL& origin,
+    ModelVerdictCallback model_verdict_callback,
     bool did_match_allowlist,
     std::optional<
         SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
@@ -77,8 +80,9 @@ void NotificationContentDetectionService::OnCheckUrlForHighConfidenceAllowlist(
   }
 
   // Perform inference with model on `notification_contents`.
-  notification_content_detection_model_->Execute(notification_data, origin,
-                                                 did_match_allowlist);
+  notification_content_detection_model_->Execute(
+      notification_data, origin, did_match_allowlist,
+      std::move(model_verdict_callback));
 }
 
 }  // namespace safe_browsing

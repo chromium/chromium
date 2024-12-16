@@ -148,7 +148,8 @@ TEST_F(NotificationContentDetectionModelTest, LogNotificationSuspiciousScore) {
       notification_data.actions.push_back(std::move(action));
     }
     notification_content_detection_model()->Execute(
-        notification_data, GURL("url"), /*did_match_allowlist=*/false);
+        notification_data, GURL("url"), /*did_match_allowlist=*/false,
+        /*model_verdict_callback=*/base::DoNothing());
     histogram_tester().ExpectUniqueSample(
         kSuspiciousScoreHistogram, 100 * kSuspiciousScoreTestValue, 1 + i);
     EXPECT_EQ(notification_content_detection_model()->inputs()[i],
@@ -163,7 +164,8 @@ TEST_F(NotificationContentDetectionModelTest,
 
   blink::PlatformNotificationData notification_data;
   notification_content_detection_model()->Execute(
-      notification_data, GURL("url"), /*did_match_allowlist=*/false);
+      notification_data, GURL("url"), /*did_match_allowlist=*/false,
+      /*model_verdict_callback=*/base::DoNothing());
   histogram_tester().ExpectUniqueSample(kSuspiciousScoreHistogram,
                                         100 * kSuspiciousScoreTestValue, 1);
   EXPECT_EQ(notification_content_detection_model()->inputs()[0], ",,");

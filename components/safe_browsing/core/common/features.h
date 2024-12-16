@@ -279,6 +279,16 @@ BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 
+// Enables replacing notification contents with a Chrome warning when the
+// on-device model returns a sufficiently suspicious verdict.
+BASE_DECLARE_FEATURE(kShowWarningsForSuspiciousNotifications);
+// Determines the minimum "suspicious" score returned from the notification
+// content LiteRT model that warrants showing a warning. If the score is higher
+// than this threshold, then the notification contents will be replaced with a
+// warning. By default, no notifications will be replaced by a warning.
+extern const base::FeatureParam<int>
+    kShowWarningsForSuspiciousNotificationsScoreThreshold;
+
 // Status of the SimplifiedUrlDisplay experiments. This does not control the
 // individual experiments, those are controlled by their own feature flags.
 // The feature is only set by Finch so that we can differentiate between
