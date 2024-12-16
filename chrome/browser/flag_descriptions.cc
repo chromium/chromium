@@ -1481,10 +1481,18 @@ const char kEnableControlledFrameDescription[] =
     "for more information.";
 
 const char kEnableFingerprintingProtectionBlocklistName[] =
-    "Enable Fingerprinting Protection Blocklist";
+    "Enable Fingerprinting Protection Blocklist In Regular Browsing";
 const char kEnableFingerprintingProtectionBlocklistDescription[] =
     "Enable Fingerprinting Protection which may block fingerprinting "
-    "resources from loading in a 3p context.";
+    "resources from loading in a 3p context. This flag applies only outside of "
+    "Incognito mode.";
+
+const char kEnableFingerprintingProtectionBlocklistInIncognitoName[] =
+    "Enable Fingerprinting Protection Blocklist In Incognito";
+const char kEnableFingerprintingProtectionBlocklistInIncognitoDescription[] =
+    "Enable Fingerprinting Protection which may block fingerprinting "
+    "resources from loading in a 3p context. This flag applies only in "
+    "Incognito mode.";
 
 const char kEnableShortcutCustomizationName[] =
     "Enable customization in new shortcuts app";

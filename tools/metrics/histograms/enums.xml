@@ -15952,6 +15952,8 @@ from previous Chrome versions.
   <int value="-1782684481"
       label="AutofillAutoTriggerManualFallbackForCards:disabled"/>
   <int value="-1781675786" label="SparklesForESB:enabled"/>
+  <int value="-1781115843"
+      label="EnableFingerprintingProtectionFilterInIncognito:enabled"/>
   <int value="-1780306716"
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:enabled"/>
   <int value="-1780174878" label="SplitTabStrip:disabled"/>
@@ -23749,6 +23751,8 @@ from previous Chrome versions.
       label="AudioFlexibleLoopbackForSystemLoopback:enabled"/>
   <int value="1340690624" label="WebPaymentsMethodSectionOrderV2:disabled"/>
   <int value="1340970682" label="WebViewSendVariationsHeaders:enabled"/>
+  <int value="1342818665"
+      label="EnableFingerprintingProtectionFilterInIncognito:disabled"/>
   <int value="1343050930" label="ContextualSearchUnityIntegration:enabled"/>
   <int value="1343248854" label="ExcludeDisplayInMirrorMode:disabled"/>
   <int value="1343516821" label="ignore-previews-blocklist"/>

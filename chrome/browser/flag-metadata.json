@@ -3089,6 +3089,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-fingerprinting-protection-blocklist-incognito",
+    "owners": [
+      "rizvis@google.com",
+      "bcl@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-follow-IPH-exp-params",
     "owners": [ "sczs@chromium.org", "tinazwang@chromium.org" ],
     "expiry_milestone": 130
