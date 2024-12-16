@@ -906,7 +906,7 @@ const gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
   return nullptr;
 }
 
-gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
+const gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
     const GURL& card_art_url) const {
   if (!IsAutofillWalletImportEnabled()) {
     return nullptr;
@@ -915,18 +915,12 @@ gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
     return nullptr;
   }
 
-  auto images_iterator = credit_card_art_images_.find(card_art_url);
-
-  // If the cache contains the image, return it.
-  if (images_iterator != credit_card_art_images_.end()) {
-    gfx::Image* image = images_iterator->second.get();
-    if (!image->IsEmpty()) {
-      return image;
-    }
+  auto it = credit_card_art_images_.find(card_art_url);
+  if (it == credit_card_art_images_.end()) {
+    return nullptr;
   }
-
-  // The cache does not contain the image, return nullptr.
-  return nullptr;
+  const gfx::Image* const image = it->second.get();
+  return !image->IsEmpty() ? image : nullptr;
 }
 
 const std::vector<BnplIssuer>& PaymentsDataManager::GetUnlinkedBnplIssuers()

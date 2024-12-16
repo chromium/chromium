@@ -2156,7 +2156,7 @@ void BrowserAutofillManager::
 
 const gfx::Image& BrowserAutofillManager::GetCardImage(
     const CreditCard& credit_card) {
-  gfx::Image* card_art_image =
+  const gfx::Image* const card_art_image =
       client()
           .GetPersonalDataManager()
           .payments_data_manager()

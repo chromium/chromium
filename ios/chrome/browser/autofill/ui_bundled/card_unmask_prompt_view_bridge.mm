@@ -101,10 +101,9 @@ void CardUnmaskPromptViewBridge::PerformClose() {
 UIImage* CardUnmaskPromptViewBridge::GetCardIcon() {
   // Firstly check if card art image is available.
   const CreditCard& credit_card = GetController()->GetCreditCard();
-  gfx::Image* image =
-      personal_data_manager_->payments_data_manager()
-          .GetCachedCardArtImageForUrl(credit_card.card_art_url());
-  if (image) {
+  if (const gfx::Image* const image =
+          personal_data_manager_->payments_data_manager()
+              .GetCachedCardArtImageForUrl(credit_card.card_art_url())) {
     return image->ToUIImage();
   }
 

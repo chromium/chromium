@@ -318,7 +318,7 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   if (!credit_card.nickname().empty()) {
     card.nickname = base::UTF16ToUTF8(credit_card.nickname());
   }
-  gfx::Image* card_art_image = nullptr;
+  const gfx::Image* card_art_image = nullptr;
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableCardArtImage)) {
     card_art_image =

@@ -339,7 +339,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // optimization for situations where a separate fetch request after trying to
   // retrieve local card art images is not needed. If the card art image is not
   // present in the cache, this function will return a nullptr.
-  gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
+  const gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
 
   // Checks if a specific card is eligible to see benefits based on its issuer
   // id.

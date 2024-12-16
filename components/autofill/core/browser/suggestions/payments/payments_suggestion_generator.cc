@@ -570,9 +570,8 @@ void SetCardArtURL(Suggestion& suggestion,
     if constexpr (BUILDFLAG(IS_ANDROID)) {
       suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
     } else {
-      gfx::Image* image =
-          payments_data.GetCachedCardArtImageForUrl(card_art_url);
-      if (image) {
+      if (const gfx::Image* const image =
+              payments_data.GetCachedCardArtImageForUrl(card_art_url)) {
         suggestion.custom_icon = *image;
       }
     }
