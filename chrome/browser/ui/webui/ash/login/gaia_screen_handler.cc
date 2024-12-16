@@ -545,7 +545,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   bool is_reauth = !context.email.empty();
   if (is_reauth) {
     const AccountId account_id = login::GetAccountId(
-        context.email, context.gaia_id, AccountType::GOOGLE);
+        context.email, context.gaia_id.ToString(), AccountType::GOOGLE);
     auto* user = user_manager::UserManager::Get()->FindUser(account_id);
     DCHECK(user);
     bool is_child_account = user && user->IsChild();
@@ -764,7 +764,7 @@ void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
 
   // Prepare the data delivered by Gaia
   ash::login::OnlineSigninArtifacts signin_artifacts;
-  signin_artifacts.gaia_id = gaia_id;
+  signin_artifacts.gaia_id = GaiaId(gaia_id);
   signin_artifacts.email = email;
   signin_artifacts.using_saml = using_saml;
 
@@ -785,7 +785,8 @@ void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
         SamlPasswordAttributes::FromJs(password_attributes);
   }
   signin_artifacts.sync_trusted_vault_keys =
-      GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys, gaia_id);
+      GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys,
+                                            GaiaId(gaia_id));
 
   // Special case when client certificates are used (SmartCard flow)
   if (using_saml && ClientCertificatesWereUsed()) {
@@ -901,7 +902,8 @@ void GaiaScreenHandler::CompleteAuthentication(
   }
 
   const AccountId account_id = login::GetAccountId(
-      signin_artifacts.email, signin_artifacts.gaia_id, AccountType::GOOGLE);
+      signin_artifacts.email, signin_artifacts.gaia_id.ToString(),
+      AccountType::GOOGLE);
   // Execute delayed allowlist check that is based on user type. If Gaia done
   // times out and doesn't provide us with services list try to use a saved
   // UserType.
@@ -1443,7 +1445,7 @@ void GaiaScreenHandler::LoadAuthenticator(bool force) {
     // `known_user`.
     if (const std::string* gaia_id =
             known_user.FindGaiaID(AccountId::FromUserEmail(context.email))) {
-      context.gaia_id = *gaia_id;
+      context.gaia_id = GaiaId(*gaia_id);
     }
 
     // TODO(http://b/314902371): This may be dangerous.

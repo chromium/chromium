@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
 
@@ -143,7 +144,7 @@ class ProfileAttributesEntry {
   std::u16string GetGAIAGivenName() const;
   // Gets the opaque string representation of the profile's GAIA ID if it's
   // signed in.
-  std::string GetGAIAId() const;
+  GaiaId GetGAIAId() const;
   // Returns the GAIA picture for the given profile. This may return NULL
   // if the profile does not have a GAIA picture or if the picture must be
   // loaded from disk.
@@ -262,7 +263,7 @@ class ProfileAttributesEntry {
       const ProfileManagementOidcTokens& oidc_tokens);
   void SetProfileManagementId(const std::string& id);
 
-  void SetAuthInfo(const std::string& gaia_id,
+  void SetAuthInfo(const GaiaId& gaia_id,
                    const std::u16string& user_name,
                    bool is_consented_primary_account);
 

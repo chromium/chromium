@@ -63,8 +63,7 @@ class MockGaiaRemoteConsentFlowDelegate
   MOCK_METHOD1(OnGaiaRemoteConsentFlowFailed,
                void(GaiaRemoteConsentFlow::Failure failure));
   MOCK_METHOD2(OnGaiaRemoteConsentFlowApproved,
-               void(const std::string& consent_result,
-                    const std::string& gaia_id));
+               void(const std::string& consent_result, const GaiaId& gaia_id));
 };
 
 class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
@@ -232,8 +231,8 @@ IN_PROC_BROWSER_TEST_F(GaiaRemoteConsentFlowParamBrowserTest,
 
   std::string approved_consent = gaia::GenerateOAuth2MintTokenConsentResult(
       /*approved=*/true, "consent_granted", kGaiaId);
-  EXPECT_CALL(mock(),
-              OnGaiaRemoteConsentFlowApproved(approved_consent, kGaiaId));
+  EXPECT_CALL(mock(), OnGaiaRemoteConsentFlowApproved(approved_consent,
+                                                      GaiaId(kGaiaId)));
   SimulateConsentResult(approved_consent);
 }
 
@@ -245,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(GaiaRemoteConsentFlowParamBrowserTest,
 
   std::string approved_consent = gaia::GenerateOAuth2MintTokenConsentResult(
       /*approved=*/true, "consent_granted", kGaiaId);
-  EXPECT_CALL(mock(),
-              OnGaiaRemoteConsentFlowApproved(approved_consent, kGaiaId));
+  EXPECT_CALL(mock(), OnGaiaRemoteConsentFlowApproved(approved_consent,
+                                                      GaiaId(kGaiaId)));
   SimulateConsentResult(approved_consent);
 }
 

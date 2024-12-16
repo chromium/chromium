@@ -18,6 +18,7 @@
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -60,7 +61,7 @@ class TimeboundUserContextHolder
     CHECK(user_context_);
     return user_context_->GetPassword();
   }
-  std::string GetGaiaID() const {
+  GaiaId GetGaiaID() const {
     CHECK(user_context_);
     return user_context_->GetGaiaID();
   }

@@ -255,7 +255,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Called when the user selects an account on the Lacros-specific account
   // selection screen. Only called for existing profiles, not as part of profile
   // creation.
-  void NotifyAccountSelected(const std::string& gaia_id);
+  void NotifyAccountSelected(const GaiaId& gaia_id);
 #endif
 
   void UpdateAccessibleNameForRootView(views::WebView*);

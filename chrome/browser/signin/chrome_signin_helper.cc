@@ -35,6 +35,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_response_headers.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -482,29 +483,32 @@ void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-std::string ParseGaiaIdFromRemoveLocalAccountResponseHeader(
+GaiaId ParseGaiaIdFromRemoveLocalAccountResponseHeader(
     const net::HttpResponseHeaders* response_headers) {
-  if (!response_headers)
-    return std::string();
+  if (!response_headers) {
+    return GaiaId();
+  }
 
   std::optional<std::string> header_value =
       response_headers->GetNormalizedHeader(
           kGoogleRemoveLocalAccountResponseHeader);
   if (!header_value) {
-    return std::string();
+    return GaiaId();
   }
 
   const SigninHeaderHelper::ResponseHeaderDictionary header_dictionary =
       SigninHeaderHelper::ParseAccountConsistencyResponseHeader(*header_value);
 
-  std::string gaia_id;
   const auto it =
       header_dictionary.find(kRemoveLocalAccountObfuscatedIDAttrName);
-  if (it != header_dictionary.end()) {
-    // The Gaia ID is wrapped in quotes.
-    base::TrimString(it->second, "\"", &gaia_id);
+  if (it == header_dictionary.end()) {
+    return GaiaId();
   }
-  return gaia_id;
+
+  // The Gaia ID is wrapped in quotes.
+  std::string gaia_id_str;
+  base::TrimString(it->second, "\"", &gaia_id_str);
+  return GaiaId(gaia_id_str);
 }
 
 void ProcessRemoveLocalAccountResponseHeaderIfExists(ResponseAdapter* response,
@@ -514,7 +518,7 @@ void ProcessRemoveLocalAccountResponseHeaderIfExists(ResponseAdapter* response,
   if (is_off_the_record)
     return;
 
-  const std::string gaia_id =
+  const GaiaId gaia_id =
       ParseGaiaIdFromRemoveLocalAccountResponseHeader(response->GetHeaders());
 
   if (gaia_id.empty())
@@ -564,7 +568,7 @@ void FixAccountConsistencyRequestHeader(
     bool is_off_the_record,
     int incognito_availability,
     AccountConsistencyMethod account_consistency,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     signin::Tribool is_child_account,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     bool is_secondary_account_addition_allowed,
@@ -644,7 +648,7 @@ void ProcessAccountConsistencyResponseHeaders(ResponseAdapter* response,
   ProcessRemoveLocalAccountResponseHeaderIfExists(response, is_off_the_record);
 }
 
-std::string ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+GaiaId ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
     const net::HttpResponseHeaders* response_headers) {
   return ParseGaiaIdFromRemoveLocalAccountResponseHeader(response_headers);
 }

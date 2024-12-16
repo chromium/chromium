@@ -58,6 +58,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -487,7 +488,7 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
   switch (account_key.account_type()) {
     case account_manager::AccountType::kGaia:
       return account_id.GetAccountType() == AccountType::GOOGLE &&
-             account_id.GetGaiaId() == account_key.id();
+             account_id.GetGaiaId() == GaiaId(account_key.id());
     case account_manager::AccountType::kActiveDirectory:
       return account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY &&
              account_id.GetObjGuid() == account_key.id();

@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 
@@ -102,7 +103,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   void OnGaiaRemoteConsentFlowFailed(
       GaiaRemoteConsentFlow::Failure failure) override;
   void OnGaiaRemoteConsentFlowApproved(const std::string& consent_result,
-                                       const std::string& gaia_id) override;
+                                       const GaiaId& gaia_id) override;
 
   // Starts a login access token request.
   virtual void StartTokenKeyAccountAccessTokenRequest();
@@ -135,7 +136,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // this extension if the account is available on the device. Otherwise,
   // returns an empty string.
   // Exposed for testing.
-  std::string GetSelectedUserId() const;
+  GaiaId GetSelectedUserId() const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   using DeviceOAuth2TokenFetcher = crosapi::DeviceOAuth2TokenServiceAsh;
@@ -164,7 +165,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // If `gaia_id` is empty or the account is not present in Chrome, this will
   // use the primary account if it exists. Otherwise, interactive sign in flow
   // might be started.
-  void GetAuthTokenForAccount(const std::string& gaia_id);
+  void GetAuthTokenForAccount(const GaiaId& gaia_id);
 
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokenUpdatedForAccount(
@@ -259,7 +260,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 
   // The gaia id of the account requested by or previously selected for this
   // extension.
-  std::string selected_gaia_id_;
+  GaiaId selected_gaia_id_;
 
   ExtensionTokenKey token_key_{/*extension_id=*/"",
                                /*account_info=*/CoreAccountInfo(),

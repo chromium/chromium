@@ -52,6 +52,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Enable VLOG level 1.
@@ -559,7 +560,7 @@ void ArcAuthService::OnAccountUnavailableInArc(
     const account_manager::Account& account) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(ash::IsAccountManagerAvailable(profile_));
-  DCHECK(!IsPrimaryGaiaAccount(account.key.id()));
+  DCHECK(!IsPrimaryGaiaAccount(GaiaId(account.key.id())));
 
   RemoveAccountFromArc(account.raw_email);
 }
@@ -806,7 +807,8 @@ void ArcAuthService::CompleteAccountsPushToArc(
       std::vector<mojom::ArcAccountInfoPtr>();
   for (const auto& account : accounts) {
     DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
-    if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id())) {
+    if (filter_primary_account &&
+        IsPrimaryGaiaAccount(GaiaId(account.key.id()))) {
       continue;
     }
 
@@ -821,7 +823,8 @@ void ArcAuthService::CompleteAccountsPushToArc(
                "OnAccountAvailableInArc";
     for (const auto& account : accounts) {
       DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
-      if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id())) {
+      if (filter_primary_account &&
+          IsPrimaryGaiaAccount(GaiaId(account.key.id()))) {
         continue;
       }
 

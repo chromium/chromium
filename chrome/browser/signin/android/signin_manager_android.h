@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace policy {
 class UserCloudPolicyManager;
@@ -100,7 +101,7 @@ class SigninManagerAndroid : public KeyedService {
 
   // Cached value for a previous execution of IsAccountManaged().
   struct CachedIsAccountManaged {
-    std::string gaia_id;
+    GaiaId gaia_id;
     bool is_account_managed;
     base::Time expiration_time;
   };

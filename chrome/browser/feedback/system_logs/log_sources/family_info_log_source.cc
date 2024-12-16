@@ -15,6 +15,7 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace system_logs {
 
@@ -114,7 +115,7 @@ void FamilyInfoLogSource::AppendFamilyMemberRoleForPrimaryAccount(
 
   for (const kidsmanagement::FamilyMember& member :
        list_members_response.members()) {
-    if (member.user_id() == account_info.gaia) {
+    if (GaiaId(member.user_id()) == account_info.gaia) {
       logs_response->emplace(
           supervised_user::kFamilyMemberRoleFeedbackTag,
           supervised_user::FamilyRoleToString(member.role()));

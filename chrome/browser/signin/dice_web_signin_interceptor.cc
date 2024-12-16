@@ -83,6 +83,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
 
@@ -148,7 +149,7 @@ bool IsFirstAccount(signin::IdentityManager* manager,
 // is returned.
 base::TimeDelta GetTimeSinceLastChromeSigninDecline(
     const SigninPrefs& signin_prefs,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   std::optional<base::Time> last_bubble_decline_time =
       signin_prefs.GetChromeSigninInterceptionLastBubbleDeclineTime(gaia_id);
   // If the value does not exist, this means that the user is either not in the
@@ -167,7 +168,7 @@ base::TimeDelta GetTimeSinceLastChromeSigninDecline(
 // Reprompts are not allowed if the user explicitly set the Chrome Signin
 // setting to do not signin.
 bool ShouldAllowChromeSigninBubbleReprompt(const SigninPrefs& signin_prefs,
-                                           const std::string& gaia_id) {
+                                           const GaiaId& gaia_id) {
   // Reprompts are only allowed if the user choice is to not sign in
   // automatically.
   if (signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id) !=
@@ -195,7 +196,7 @@ bool ShouldAllowChromeSigninBubbleReprompt(const SigninPrefs& signin_prefs,
 // bubble and did not override the choice in the settings page (having a
 // declined choice time).
 void MaybeUpdateRepromptInfoAfterDecline(SigninPrefs& signin_prefs,
-                                         const std::string& gaia_id) {
+                                         const GaiaId& gaia_id) {
   // Check if this is was a reprompt.
   if (!ShouldAllowChromeSigninBubbleReprompt(signin_prefs, gaia_id)) {
     return;
@@ -227,7 +228,7 @@ void MaybeUpdateRepromptInfoAfterDecline(SigninPrefs& signin_prefs,
 ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
     PrefService& pref_service,
     signin::IdentityManager* manager,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     signin_metrics::AccessPoint access_point) {
   // If the access point is not set, we cannot accurately know if we have to
   // show the bubble or not, so we will not show it.
@@ -484,7 +485,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_new_account,
     bool is_sync_signin,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     bool update_state,
     const ProfileAttributesEntry** entry) const {
   bool signin_interception_enabled =
@@ -856,7 +857,7 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
 }
 
 bool DiceWebSigninInterceptor::ShouldShowChromeSigninBubble(
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   state_->should_show_chrome_signin_bubble_ = MaybeShouldShowChromeSigninBubble(
       *profile_->GetPrefs(), identity_manager_, gaia_id, state_->access_point_);
   CHECK(state_->should_show_chrome_signin_bubble_.has_value());
@@ -1160,7 +1161,7 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
 SigninInterceptionResult
 DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
     SigninInterceptionResult result,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   SigninPrefs signin_prefs(*profile_->GetPrefs());
   // When in `ChromeSigninUserChoice::kAlwaysAsk` setting mode, the bubble
@@ -1443,7 +1444,7 @@ size_t DiceWebSigninInterceptor::IncrementEmailToCountDictionaryPref(
 }
 
 void DiceWebSigninInterceptor::RecordChromeSigninNumberOfDismissesForAccount(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     SigninInterceptionResult result) {
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   CHECK(result == SigninInterceptionResult::kAccepted ||
@@ -1567,6 +1568,6 @@ AccountInfo DiceWebSigninInterceptor::intercepted_account_info() const {
 base::TimeDelta
 DiceWebSigninInterceptor::GetTimeSinceLastChromeSigninDeclineForTesting(
     const SigninPrefs& signin_prefs,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   return GetTimeSinceLastChromeSigninDecline(signin_prefs, gaia_id);
 }

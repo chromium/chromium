@@ -90,6 +90,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -120,7 +121,7 @@ using webauthn_pb::EnclaveLocalState;
 // Holds the arguments to `StoreKeys` so that they can be processed when the
 // state machine is ready for them.
 struct EnclaveManager::StoreKeysArgs {
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::vector<std::vector<uint8_t>> keys;
   int last_key_version;
 };
@@ -401,7 +402,7 @@ cbor::Value BuildUnregisterMessage(const std::string& device_id) {
 
 EnclaveLocalState::User* StateForUser(EnclaveLocalState* local_state,
                                       const CoreAccountInfo& account) {
-  auto it = local_state->mutable_users()->find(account.gaia);
+  auto it = local_state->mutable_users()->find(account.gaia.ToString());
   if (it == local_state->mutable_users()->end()) {
     return nullptr;
   }
@@ -411,7 +412,7 @@ EnclaveLocalState::User* StateForUser(EnclaveLocalState* local_state,
 EnclaveLocalState::User* CreateStateForUser(EnclaveLocalState* local_state,
                                             const CoreAccountInfo& account) {
   auto pair = local_state->mutable_users()->insert(
-      {account.gaia, EnclaveLocalState::User()});
+      {account.gaia.ToString(), EnclaveLocalState::User()});
   CHECK(pair.second);
   return &(pair.first->second);
 }
@@ -663,20 +664,20 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
   return ret;
 }
 
-base::flat_set<std::string> GetGaiaIDs(
+base::flat_set<GaiaId> GetGaiaIDs(
     const std::vector<gaia::ListedAccount>& listed_accounts) {
-  base::flat_set<std::string> result;
+  base::flat_set<GaiaId> result;
   for (const gaia::ListedAccount& listed_account : listed_accounts) {
     result.insert(listed_account.gaia_id);
   }
   return result;
 }
 
-base::flat_set<std::string> GetGaiaIDs(
+base::flat_set<GaiaId> GetGaiaIDs(
     const google::protobuf::Map<std::string, EnclaveLocalState::User>& users) {
-  base::flat_set<std::string> result;
+  base::flat_set<GaiaId> result;
   for (const auto& it : users) {
-    result.insert(it.first);
+    result.insert(GaiaId(it.first));
   }
   return result;
 }
@@ -3315,7 +3316,7 @@ void EnclaveManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void EnclaveManager::StoreKeys(const std::string& gaia_id,
+void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
                                std::vector<std::vector<uint8_t>> keys,
                                int last_key_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -3607,15 +3608,15 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   if (in_jar.AreAccountsFresh()) {
     // If the user has signed out of any non-primary accounts, erase their
     // enclave state.
-    const base::flat_set<std::string> gaia_ids_in_cookie_jar =
-        base::STLSetUnion<base::flat_set<std::string>>(
+    const base::flat_set<GaiaId> gaia_ids_in_cookie_jar =
+        base::STLSetUnion<base::flat_set<GaiaId>>(
             GetGaiaIDs(in_jar.GetPotentiallyInvalidSignedInAccounts()),
             GetGaiaIDs(in_jar.GetSignedOutAccounts()));
-    const base::flat_set<std::string> gaia_ids_in_state =
+    const base::flat_set<GaiaId> gaia_ids_in_state =
         GetGaiaIDs(local_state_->users());
-    base::flat_set<std::string> to_remove =
-        base::STLSetDifference<base::flat_set<std::string>>(
-            gaia_ids_in_state, gaia_ids_in_cookie_jar);
+    base::flat_set<GaiaId> to_remove =
+        base::STLSetDifference<base::flat_set<GaiaId>>(gaia_ids_in_state,
+                                                       gaia_ids_in_cookie_jar);
     if (primary_account_info_) {
       to_remove.erase(primary_account_info_->gaia);
     }
@@ -3624,7 +3625,7 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     // stopped and thus cannot overwrite these changes.
     CHECK(need_to_stop);
     for (const auto& gaia_id : to_remove) {
-      CHECK(local_state_->mutable_users()->erase(gaia_id));
+      CHECK(local_state_->mutable_users()->erase(gaia_id.ToString()));
     }
     WriteState(local_state_.get());
   }
@@ -3758,7 +3759,8 @@ void EnclaveManager::ClearRegistration() {
   }
 
   user_ = nullptr;  // Prevent dangling raw_ptr error on next line.
-  CHECK(local_state_->mutable_users()->erase(primary_account_info_->gaia));
+  CHECK(local_state_->mutable_users()->erase(
+      primary_account_info_->gaia.ToString()));
   user_ = CreateStateForUser(local_state_.get(), *primary_account_info_);
   WriteState(local_state_.get());
 

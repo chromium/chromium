@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "skia/ext/skia_utils_base.h"
 
 namespace {
@@ -69,7 +70,7 @@ base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
   // GAIA full name/user name can be empty, if the profile is not signed in to
   // chrome.
   profile_entry.Set("gaiaName", entry->GetGAIAName());
-  profile_entry.Set("gaiaId", entry->GetGAIAId());
+  profile_entry.Set("gaiaId", entry->GetGAIAId().ToString());
   profile_entry.Set("userName", entry->GetUserName());
   profile_entry.Set("hostedDomain", entry->GetHostedDomain());
   profile_entry.Set("isSupervised", entry->IsSupervised());

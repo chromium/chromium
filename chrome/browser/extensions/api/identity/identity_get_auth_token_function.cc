@@ -44,6 +44,7 @@
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -150,11 +151,11 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
 
   std::set<std::string> scopes(oauth2_info.scopes.begin(),
                                oauth2_info.scopes.end());
-  std::string gaia_id;
+  GaiaId gaia_id;
 
   if (params->details) {
     if (params->details->account) {
-      gaia_id = params->details->account->id;
+      gaia_id = GaiaId(params->details->account->id);
     }
 
     if (params->details->scopes) {
@@ -198,13 +199,13 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
 }
 
 void IdentityGetAuthTokenFunction::GetAuthTokenForAccount(
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   selected_gaia_id_ = gaia_id;
   if (gaia_id.empty()) {
     selected_gaia_id_ = IdentityAPI::GetFactoryInstance()
                             ->Get(GetProfile())
                             ->GetGaiaIdForExtension(token_key_.extension_id)
-                            .value_or("");
+                            .value_or(GaiaId());
   }
 
   CoreAccountInfo selected_account;
@@ -653,9 +654,10 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
 
 void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
     const std::string& consent_result,
-    const std::string& gaia_id) {
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-      "identity", "OnGaiaRemoteConsentFlowApproved", this, "gaia_id", gaia_id);
+    const GaiaId& gaia_id) {
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("identity",
+                                      "OnGaiaRemoteConsentFlowApproved", this,
+                                      "gaia_id", gaia_id.ToString());
   DCHECK(!consent_result.empty());
   remote_consent_approved_ = true;
 
@@ -915,12 +917,12 @@ bool IdentityGetAuthTokenFunction::enable_granular_permissions() const {
   return enable_granular_permissions_;
 }
 
-std::string IdentityGetAuthTokenFunction::GetSelectedUserId() const {
+GaiaId IdentityGetAuthTokenFunction::GetSelectedUserId() const {
   if (selected_gaia_id_ == token_key_.account_info.gaia) {
     return selected_gaia_id_;
   }
 
-  return "";
+  return GaiaId();
 }
 
 void IdentityGetAuthTokenFunction::ComputeInteractivityStatus(

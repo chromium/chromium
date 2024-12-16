@@ -37,6 +37,8 @@
 #include "crypto/scoped_lacontext.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+class GaiaId;
+
 namespace crypto {
 class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
@@ -276,7 +278,7 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   // This function is called by the MagicArch integration when the user
   // successfully completes recovery.
-  void StoreKeys(const std::string& gaia_id,
+  void StoreKeys(const GaiaId& gaia_id,
                  std::vector<std::vector<uint8_t>> keys,
                  int last_key_version);
 

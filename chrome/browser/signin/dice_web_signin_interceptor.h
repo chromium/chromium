@@ -154,7 +154,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       bool is_new_account,
       bool is_sync_signin,
       const std::string& email,
-      const std::string& gaia_id = std::string(),
+      const GaiaId& gaia_id = GaiaId(),
       bool update_state = false,
       const ProfileAttributesEntry** entry = nullptr) const;
 
@@ -185,7 +185,7 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   static base::TimeDelta GetTimeSinceLastChromeSigninDeclineForTesting(
       const SigninPrefs& signin_prefs,
-      const std::string& gaia_id);
+      const GaiaId& gaia_id);
 
   // KeyedService:
   void Shutdown() override;
@@ -260,7 +260,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowMultiUserBubble(
       const AccountInfo& intercepted_account_info) const;
-  bool ShouldShowChromeSigninBubble(const std::string& gaia_id);
+  bool ShouldShowChromeSigninBubble(const GaiaId& gaia_id);
 
   // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
   void ShowSigninInterceptionBubble(
@@ -304,7 +304,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // - returns the processed result.
   SigninInterceptionResult ProcessChromeSigninUserChoice(
       SigninInterceptionResult result,
-      const std::string& gaia_id);
+      const GaiaId& gaia_id);
 
   // A non `std::nullopt` `profile_presets` will be applied to the
   // `new_profile` when the function is called.
@@ -343,7 +343,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // `SigninInterceptionResult::kAccepted` or
   // `SigninInterceptionResult::kDeclined`.
   void RecordChromeSigninNumberOfDismissesForAccount(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       SigninInterceptionResult result);
 
   // Checks if the user previously declined 2 times creating a new profile for

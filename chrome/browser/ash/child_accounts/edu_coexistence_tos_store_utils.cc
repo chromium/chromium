@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -46,7 +47,7 @@ void UpdateAcceptedToSVersionPref(Profile* profile,
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kEduCoexistenceToSAcceptedVersion);
 
-  update->SetByDottedPath(user_consent_info.edu_account_gaia_id,
+  update->SetByDottedPath(user_consent_info.edu_account_gaia_id.ToString(),
                           user_consent_info.edu_coexistence_tos_version);
 }
 
@@ -56,7 +57,7 @@ void SetUserConsentInfoListForProfile(
   base::Value::Dict user_consent_info_list_value;
   for (const auto& info : user_consent_info_list) {
     user_consent_info_list_value.SetByDottedPath(
-        info.edu_account_gaia_id, info.edu_coexistence_tos_version);
+        info.edu_account_gaia_id.ToString(), info.edu_coexistence_tos_version);
   }
 
   profile->GetPrefs()->SetDict(prefs::kEduCoexistenceToSAcceptedVersion,
@@ -71,7 +72,7 @@ std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
   std::vector<UserConsentInfo> info_list;
 
   for (const auto entry : user_consent_info_dict) {
-    const GaiaId& gaia_id = entry.first;
+    const GaiaId gaia_id(entry.first);
     const std::string& accepted_tos_version = entry.second.GetString();
     info_list.push_back(UserConsentInfo(gaia_id, accepted_tos_version));
   }

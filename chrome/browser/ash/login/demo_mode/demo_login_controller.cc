@@ -380,7 +380,8 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
                          sign_in_scoped_device_id);
   // TODO(crbug.com/383198613): Wait device local account policy loaded since we
   // applied that policy to demo account.
-  LoginDemoAccount(*email, *gaia_id, *auth_code, sign_in_scoped_device_id);
+  LoginDemoAccount(*email, GaiaId(*gaia_id), *auth_code,
+                   sign_in_scoped_device_id);
 }
 
 void DemoLoginController::OnSetupDemoAccountError(
@@ -423,7 +424,7 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
   auto post_data = base::Value::Dict();
 
   post_data.Set(kDeviceIdentifier, GetDeviceIdentifier(login_scope_device_id));
-  post_data.Set(kObfuscatedGaiaId, gaia_id_to_clean_up);
+  post_data.Set(kObfuscatedGaiaId, gaia_id_to_clean_up.ToString());
 
   url_loader_ =
       CreateDemoAccountURLLoader(GetDemoAccountUrl(kCleanUpDemoAccountEndpoint),

@@ -46,7 +46,7 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
     // screen.
     virtual void OnGaiaRemoteConsentFlowApproved(
         const std::string& consent_result,
-        const std::string& gaia_id) = 0;
+        const GaiaId& gaia_id) = 0;
   };
 
   GaiaRemoteConsentFlow(Delegate* delegate,

@@ -78,6 +78,7 @@
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_types.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -589,7 +590,7 @@ void GPMEnclaveController::OnAccountStateTimeOut() {
 }
 
 void GPMEnclaveController::OnAccountStateDownloaded(
-    std::string gaia_id,
+    GaiaId gaia_id,
     std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
     trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
         result) {

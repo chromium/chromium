@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 
 namespace {
@@ -55,7 +56,7 @@ ForceSigninUIError ComputeReauthUIError(ProfilePickerReauthResult result,
 ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
-    const std::string& gaia_id_to_reauth,
+    const GaiaId& gaia_id_to_reauth,
     const std::string& email_to_reauth,
     base::OnceCallback<void(bool, const ForceSigninUIError&)>
         on_reauth_completed)

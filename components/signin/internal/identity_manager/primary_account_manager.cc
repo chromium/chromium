@@ -354,8 +354,8 @@ void PrimaryAccountManager::PrepareToLoadPrefs() {
           account_tracker_service_->FindAccountInfoByEmail(pref_account_id);
       // |account_info.gaia| could be empty if |account_id| is already gaia id.
       if (!account_info.gaia.empty()) {
-        pref_account_id = account_info.gaia;
-        prefs->SetString(prefs::kGoogleServicesAccountId, account_info.gaia);
+        pref_account_id = account_info.gaia.ToString();
+        prefs->SetString(prefs::kGoogleServicesAccountId, pref_account_id);
       }
     }
   }
@@ -780,8 +780,8 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       PrimaryAccountChangeEvent::Type::kCleared) {
     SigninPrefs(*client_->GetPrefs())
-        .SetChromeLastSignoutTime(
-            previous_state.primary_account.gaia.ToString(), base::Time::Now());
+        .SetChromeLastSignoutTime(previous_state.primary_account.gaia,
+                                  base::Time::Now());
   }
 #endif
 

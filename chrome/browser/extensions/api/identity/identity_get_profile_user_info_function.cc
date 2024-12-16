@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace extensions {
 
@@ -62,7 +63,7 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
                             Profile::FromBrowserContext(browser_context()))
                             ->GetPrimaryAccountInfo(consent_level);
     profile_user_info.email = account_info.email;
-    profile_user_info.id = account_info.gaia;
+    profile_user_info.id = account_info.gaia.ToString();
   }
 
   return RespondNow(WithArguments(profile_user_info.ToValue()));

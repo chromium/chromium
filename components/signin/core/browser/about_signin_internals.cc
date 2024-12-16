@@ -30,6 +30,7 @@
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/backoff_entry.h"
 
 namespace {
@@ -95,11 +96,11 @@ void AddSectionEntry(base::Value::List& section_list,
 
 void AddCookieEntry(base::Value::List& accounts_list,
                     const std::string& field_email,
-                    const std::string& field_gaia_id,
+                    const GaiaId& field_gaia_id,
                     const std::string& field_valid) {
   base::Value::Dict entry;
   entry.Set("email", field_email);
-  entry.Set("gaia_id", field_gaia_id);
+  entry.Set("gaia_id", field_gaia_id.ToString());
   entry.Set("valid", field_valid);
   accounts_list.Append(std::move(entry));
 }
@@ -535,7 +536,7 @@ void AboutSigninInternals::OnAccountsInCookieUpdated(
 
   if (accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
           .size() == 0) {
-    AddCookieEntry(cookie_info, "No Accounts Present.", std::string(),
+    AddCookieEntry(cookie_info, "No Accounts Present.", GaiaId(),
                    std::string());
   }
 
@@ -683,7 +684,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
           account_info.account_id.ToString());
       AddSectionEntry(basic_info,
                       SigninStatusFieldToLabel(signin_internals_util::GAIA_ID),
-                      account_info.gaia);
+                      account_info.gaia.ToString());
       AddSectionEntry(basic_info,
                       SigninStatusFieldToLabel(signin_internals_util::USERNAME),
                       account_info.email);

@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 
 // A string-like object representing an obfuscated Gaia ID that allows
 // identifying a Google account. This value can be safely persisted to disk as
@@ -24,9 +25,14 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   };
 
   GaiaId() = default;
-  // Temporary implicit conversion to allow splitting code changes.
-  // TODO(crbug.com/380416867): Make the constructor explicit.
+  // Temporarily allow implicit conversion on iOS to allow splitting code
+  // changes. Also in unit-tests, to allow gradual code changes.
+  // TODO(crbug.com/380416867): Make the constructor explicit on iOS too.
+#if BUILDFLAG(IS_IOS) || defined(UNIT_TEST)
   GaiaId(std::string value);
+#else
+  explicit GaiaId(std::string value);
+#endif  // BUILDFLAG(IS_IOS) || defined(UNIT_TEST)
   GaiaId(const GaiaId&) = default;
   GaiaId(GaiaId&&) noexcept = default;
   ~GaiaId() = default;
@@ -34,6 +40,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   GaiaId& operator=(const GaiaId&) = default;
   GaiaId& operator=(GaiaId&&) noexcept = default;
 
+#if BUILDFLAG(IS_IOS) || defined(UNIT_TEST)
   // Temporary implicit conversion to allow splitting code changes.
   // TODO(crbug.com/380416867): Remove implicit conversions.
   GaiaId(const char gaia_id[]) { id_ = gaia_id; }
@@ -46,6 +53,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   const char* c_str() const { return id_.c_str(); }
   std::string::const_iterator begin() const { return id_.begin(); }
   std::string::const_iterator end() const { return id_.end(); }
+#endif  // BUILDFLAG(IS_IOS) || defined(UNIT_TEST)
 
   // Checks if the ID is valid or not.
   bool empty() const;

@@ -21,6 +21,7 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace supervised_user {
@@ -200,7 +201,7 @@ void ListFamilyMembersService::SetFamilyMemberPrefs(
 
   for (const kidsmanagement::FamilyMember& member :
        list_members_response.members()) {
-    if (member.user_id() == account_info.gaia) {
+    if (member.user_id() == account_info.gaia.ToString()) {
       user_prefs_->SetString(prefs::kFamilyLinkUserMemberRole,
                              FamilyRoleToString(member.role()));
       return;

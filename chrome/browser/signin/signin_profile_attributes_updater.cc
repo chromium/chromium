@@ -49,7 +49,7 @@ void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
 
   bool clear_profile = account_info.IsEmpty();
 
-  if (account_info.gaia.ToString() != entry->GetGAIAId() ||
+  if (account_info.gaia != entry->GetGAIAId() ||
       !gaia::AreEmailsSame(account_info.email,
                            base::UTF16ToUTF8(entry->GetUserName()))) {
     // Reset prefs. Note: this will also update the |ProfileAttributesEntry|.
@@ -58,11 +58,11 @@ void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
   }
 
   if (clear_profile) {
-    entry->SetAuthInfo(std::string(), std::u16string(),
+    entry->SetAuthInfo(GaiaId(), std::u16string(),
                        /*is_consented_primary_account=*/false);
   } else {
     entry->SetAuthInfo(
-        account_info.gaia.ToString(), base::UTF8ToUTF16(account_info.email),
+        account_info.gaia, base::UTF8ToUTF16(account_info.email),
         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
   }
 }

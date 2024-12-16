@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "google_apis/gaia/gaia_id.h"
 
 struct CoreAccountInfo;
 
@@ -59,9 +60,8 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     std::vector<RecoveryMethod> GetRecoveryMethods(const GaiaId& gaia_id) const;
 
    private:
-    std::map<std::string, std::vector<std::vector<uint8_t>>> gaia_id_to_keys_;
-    std::map<std::string, std::vector<RecoveryMethod>>
-        gaia_id_to_recovery_methods_;
+    std::map<GaiaId, std::vector<std::vector<uint8_t>>> gaia_id_to_keys_;
+    std::map<GaiaId, std::vector<RecoveryMethod>> gaia_id_to_recovery_methods_;
   };
 
   // If `auto_complete_requests` set to true, CompleteAllPendingRequests will be
@@ -136,7 +136,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
 
   FakeServer server_;
 
-  std::map<std::string, CachedKeysPerUser> gaia_id_to_cached_keys_;
+  std::map<GaiaId, CachedKeysPerUser> gaia_id_to_cached_keys_;
   base::ObserverList<Observer> observer_list_;
   int fetch_count_ = 0;
   int keys_marked_as_stale_count_ = 0;

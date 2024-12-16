@@ -24,6 +24,7 @@
 #include "chromeos/version/version_loader.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -209,14 +210,14 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
 }
 
 AccountId GetAccountId(const std::string& authenticated_email,
-                       const GaiaId& gaia_id,
+                       const std::string& id,
                        const AccountType& account_type) {
   const std::string canonicalized_email =
       gaia::CanonicalizeEmail(gaia::SanitizeEmail(authenticated_email));
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const AccountId account_id =
-      known_user.GetAccountId(authenticated_email, gaia_id, account_type);
+      known_user.GetAccountId(authenticated_email, id, account_type);
 
   if (account_id.GetUserEmail() != canonicalized_email) {
     LOG(WARNING) << "Existing user '" << account_id.GetUserEmail()

@@ -651,10 +651,12 @@ class UserSessionManager::DeviceAccountGaiaTokenObserver
 
   // account_manager::AccountManager::Observer overrides:
   void OnTokenUpserted(const account_manager::Account& account) override {
-    if (account.key.account_type() != account_manager::AccountType::kGaia)
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       return;
-    if (account.key.id() != account_id_.GetGaiaId())
+    }
+    if (GaiaId(account.key.id()) != account_id_.GetGaiaId()) {
       return;
+    }
 
     callback_.Run(account_id_);
   }
@@ -1412,8 +1414,10 @@ void UserSessionManager::InitProfilePreferences(
       used_extended_account_info = true;
 
       // Use a fake gaia id for tests that do not have it.
-      if (IsRunningTest() && gaia_id.empty())
-        gaia_id = "fake_gaia_id_" + user_context.GetAccountId().GetUserEmail();
+      if (IsRunningTest() && gaia_id.empty()) {
+        gaia_id = GaiaId("fake_gaia_id_" +
+                         user_context.GetAccountId().GetUserEmail());
+      }
 
       // Update http://crbug.com/1454286 if the following line CHECKs.
       CHECK(!gaia_id.empty());
@@ -1434,8 +1438,8 @@ void UserSessionManager::InitProfilePreferences(
 
     DCHECK(account_manager->IsInitialized());
 
-    const ::account_manager::AccountKey account_key{
-        gaia_id, account_manager::AccountType::kGaia};
+    const ::account_manager::AccountKey account_key =
+        ::account_manager::AccountKey::FromGaiaId(gaia_id);
 
     // 1. Make sure that the account is present in
     // `account_manager::AccountManager`.
@@ -1490,8 +1494,9 @@ void UserSessionManager::InitProfilePreferences(
       base::debug::Alias(&used_extended_account_info_copy);
 
       DEBUG_ALIAS_FOR_CSTR(local_gaia_id_str, gaia_id.ToString().c_str(), 32);
-      DEBUG_ALIAS_FOR_CSTR(identity_manager_gaia_id_str,
-                           identity_manager_account_info.gaia.c_str(), 32);
+      DEBUG_ALIAS_FOR_CSTR(
+          identity_manager_gaia_id_str,
+          identity_manager_account_info.gaia.ToString().c_str(), 32);
 
       DEBUG_ALIAS_FOR_CSTR(
           account_id_str, user_context.GetAccountId().Serialize().c_str(), 128);

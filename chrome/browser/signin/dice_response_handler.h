@@ -25,6 +25,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include <optional>
@@ -141,7 +142,7 @@ class DiceResponseHandler : public KeyedService {
   class DiceTokenFetcher : public GaiaAuthConsumer {
    public:
     DiceTokenFetcher(
-        const std::string& gaia_id,
+        const GaiaId& gaia_id,
         const std::string& email,
         const std::string& authorization_code,
         SigninClient* signin_client,
@@ -158,7 +159,7 @@ class DiceResponseHandler : public KeyedService {
 
     ~DiceTokenFetcher() override;
 
-    const std::string& gaia_id() const { return gaia_id_; }
+    const GaiaId& gaia_id() const { return gaia_id_; }
     const std::string& email() const { return email_; }
     const std::string& authorization_code() const {
       return authorization_code_;
@@ -190,7 +191,7 @@ class DiceResponseHandler : public KeyedService {
     // Lock the account reconcilor while tokens are being fetched.
     std::unique_ptr<AccountReconcilor::Lock> account_reconcilor_lock_;
 
-    const std::string gaia_id_;
+    const GaiaId gaia_id_;
     const std::string email_;
     const std::string authorization_code_;
     const std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
@@ -213,7 +214,7 @@ class DiceResponseHandler : public KeyedService {
 
   // Process the Dice signin action.
   void ProcessDiceSigninHeader(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& email,
       const std::string& authorization_code,
       bool no_authorization_code,
@@ -222,7 +223,7 @@ class DiceResponseHandler : public KeyedService {
 
   // Process the Dice enable sync action.
   void ProcessEnableSyncHeader(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& email,
       std::unique_ptr<ProcessDiceHeaderDelegate> delegate);
 

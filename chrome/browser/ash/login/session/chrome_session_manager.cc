@@ -126,8 +126,9 @@ void UpsertStubUserToAccountManager(Profile* user_profile,
 
   DCHECK(account_manager->IsInitialized());
 
-  const ::account_manager::AccountKey account_key{
-      user->GetAccountId().GetGaiaId(), account_manager::AccountType::kGaia};
+  const ::account_manager::AccountKey account_key =
+      ::account_manager::AccountKey::FromGaiaId(
+          user->GetAccountId().GetGaiaId());
 
   account_manager->UpsertAccount(
       account_key, /*raw_email=*/user->GetDisplayEmail(),

@@ -78,6 +78,7 @@
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -159,9 +160,10 @@ credential_provider::UiExitCodes ValidateSigninEmail(
     const std::string& gaia_id_parameter,
     const std::string& email_domains_parameter,
     const std::string& signin_email,
-    const std::string& signin_gaia_id) {
+    const GaiaId& signin_gaia_id) {
   if (!gaia_id_parameter.empty() &&
-      !base::EqualsCaseInsensitiveASCII(gaia_id_parameter, signin_gaia_id)) {
+      !base::EqualsCaseInsensitiveASCII(gaia_id_parameter,
+                                        signin_gaia_id.ToString())) {
     return credential_provider::kUiecEMailMissmatch;
   }
 
@@ -292,7 +294,7 @@ InlineSigninHelper::InlineSigninHelper(
     Profile* profile,
     const GURL& current_url,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
     const std::string& signin_scoped_device_id,
@@ -347,7 +349,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     base::Value::Dict args;
     args.Set(credential_provider::kKeyEmail, base::Value(email_));
     args.Set(credential_provider::kKeyPassword, base::Value(password_));
-    args.Set(credential_provider::kKeyId, base::Value(gaia_id_));
+    args.Set(credential_provider::kKeyId, base::Value(gaia_id_.ToString()));
     args.Set(credential_provider::kKeyRefreshToken,
              base::Value(result.refresh_token));
     args.Set(credential_provider::kKeyAccessToken,
@@ -626,7 +628,7 @@ InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
     const base::FilePath& profile_path,
     bool confirm_untrusted_signin,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
     bool is_force_sign_in_with_usermanager)

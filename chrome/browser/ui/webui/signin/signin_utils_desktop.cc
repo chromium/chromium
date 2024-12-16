@@ -21,9 +21,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 SigninUIError CanOfferSignin(Profile* profile,
-                             const std::string& gaia_id,
+                             const GaiaId& gaia_id,
                              const std::string& email) {
   if (!profile)
     return SigninUIError::Other(email);
@@ -95,7 +96,7 @@ SigninUIError CanOfferSignin(Profile* profile,
           // profile, since the GAIA ID may not have been set yet in the
           // ProfileAttributesStorage.  It will be set once the profile
           // is opened.
-          std::string profile_gaia_id = entry->GetGAIAId();
+          GaiaId profile_gaia_id = entry->GetGAIAId();
           std::string profile_email = base::UTF16ToUTF8(entry->GetUserName());
           if (gaia_id == profile_gaia_id ||
               gaia::AreEmailsSame(email, profile_email)) {
@@ -118,9 +119,9 @@ SigninUIError CanOfferSignin(Profile* profile,
   return SigninUIError::Ok();
 }
 
-bool IsCrossAccountError(Profile* profile, const std::string& gaia_id) {
+bool IsCrossAccountError(Profile* profile, const GaiaId& gaia_id) {
   DCHECK(!gaia_id.empty());
-  std::string last_gaia_id =
-      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
+  const GaiaId last_gaia_id(
+      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
   return !last_gaia_id.empty() && gaia_id != last_gaia_id;
 }

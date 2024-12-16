@@ -33,6 +33,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/fido_types.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -569,8 +570,9 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
       autofill_client_->GetPersonalDataManager()
           .payments_data_manager()
           .GetAccountInfoForPaymentsServer();
-  options->user.id =
-      std::vector<uint8_t>(account_info.gaia.begin(), account_info.gaia.end());
+  const std::string& gaia_id_str = account_info.gaia.ToString();
+  options->user.id = options->user.id =
+      std::vector<uint8_t>(gaia_id_str.begin(), gaia_id_str.end());
   options->user.name = account_info.email;
   options->user.display_name = autofill_client_->GetIdentityManager()
                                    ->FindExtendedAccountInfo(account_info)

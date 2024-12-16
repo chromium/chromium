@@ -47,6 +47,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/common/url_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -392,15 +393,15 @@ void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
     const AccountInfo& account_info) {
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
-      account_info.gaia);
+      account_info.gaia.ToString());
   params.title_params = base::UTF8ToUTF16(account_info.given_name);
   browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
 
-void AvatarToolbarButton::MaybeShowWebSignoutIPH(const std::string& gaia_id) {
+void AvatarToolbarButton::MaybeShowWebSignoutIPH(const GaiaId& gaia_id) {
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   browser_->window()->MaybeShowFeaturePromo(user_education::FeaturePromoParams(
-      feature_engagement::kIPHSignoutWebInterceptFeature, gaia_id));
+      feature_engagement::kIPHSignoutWebInterceptFeature, gaia_id.ToString()));
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {

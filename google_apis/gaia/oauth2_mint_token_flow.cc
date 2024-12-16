@@ -162,7 +162,7 @@ OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
     std::string_view version,
     std::string_view channel,
     std::string_view device_id,
-    std::string_view selected_user_id,
+    const GaiaId& selected_user_id,
     std::string_view consent_result) {
   Parameters parameters;
   parameters.extension_id = extension_id;
@@ -292,10 +292,11 @@ std::string OAuth2MintTokenFlow::CreateApiCallBody() {
         base::EscapeUrlEncodedData(parameters_.device_id, true).c_str()));
   }
   if (!parameters_.selected_user_id.empty()) {
-    body.append(base::StringPrintf(
-        kOAuth2IssueTokenBodyFormatSelectedUserIdAddendum,
-        base::EscapeUrlEncodedData(parameters_.selected_user_id, true)
-            .c_str()));
+    body.append(
+        base::StringPrintf(kOAuth2IssueTokenBodyFormatSelectedUserIdAddendum,
+                           base::EscapeUrlEncodedData(
+                               parameters_.selected_user_id.ToString(), true)
+                               .c_str()));
   }
   if (!parameters_.consent_result.empty()) {
     body.append(base::StringPrintf(

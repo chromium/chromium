@@ -107,8 +107,7 @@ void GaiaRemoteConsentFlow::ReactToConsentResult(
   }
 
   RecordResultHistogram(GaiaRemoteConsentFlow::NONE);
-  delegate_->OnGaiaRemoteConsentFlowApproved(consent_result,
-                                             gaia_id.ToString());
+  delegate_->OnGaiaRemoteConsentFlowApproved(consent_result, gaia_id);
 }
 
 void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {

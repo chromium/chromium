@@ -506,8 +506,9 @@ void AccountTrackerService::MigrateToGaiaId() {
 
 bool AccountTrackerService::AreAllAccountsMigrated() const {
   for (const auto& pair : accounts_) {
-    if (pair.first.ToString() != pair.second.gaia)
+    if (pair.first.ToString() != pair.second.gaia.ToString()) {
       return false;
+    }
   }
 
   return true;
@@ -531,7 +532,8 @@ AccountTrackerService::ComputeNewMigrationState() const {
 
     // Migration is required if at least one account is not keyed to its
     // gaia id.
-    migration_required |= (pair.first.ToString() != pair.second.gaia);
+    migration_required |=
+        (pair.first.ToString() != pair.second.gaia.ToString());
   }
 
   return migration_required ? MIGRATION_IN_PROGRESS : MIGRATION_DONE;

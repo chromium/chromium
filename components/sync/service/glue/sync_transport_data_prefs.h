@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -50,7 +51,7 @@ class SyncTransportDataPrefs {
   // there may be data around. Cleared when sync gets disabled (typically on
   // signout) and data was removed.
   void SetCurrentSyncingGaiaId(const GaiaId& gaia_id);
-  std::string GetCurrentSyncingGaiaId() const;
+  GaiaId GetCurrentSyncingGaiaId() const;
   void ClearCurrentSyncingGaiaId();
   static bool HasCurrentSyncingGaiaId(const PrefService* pref_service);
   static void ClearCurrentSyncingGaiaId(PrefService* pref_service);

@@ -248,12 +248,13 @@ void BabelOrcaConsumer::JoinSessionTachyonGroup() {
   join_group_authed_client_ = std::make_unique<TachyonAuthedClientImpl>(
       std::make_unique<TachyonClientImpl>(url_loader_factory_),
       join_group_token_manager_.get());
-  join_group_url_ = base::StrCat(
-      {boca::kSchoolToolsApiBaseUrl,
-       base::ReplaceStringPlaceholders(
-           boca::kJoinTachyonGroupUrlTemplate,
-           {gaia_id_, tachyon_request_data_provider_->session_id().value()},
-           /*=offsets*/ nullptr)});
+  join_group_url_ =
+      base::StrCat({boca::kSchoolToolsApiBaseUrl,
+                    base::ReplaceStringPlaceholders(
+                        boca::kJoinTachyonGroupUrlTemplate,
+                        {gaia_id_.ToString(),
+                         tachyon_request_data_provider_->session_id().value()},
+                        /*=offsets*/ nullptr)});
   auto request_data = std::make_unique<RequestDataWrapper>(
       kTrafficAnnotation, join_group_url_, /*max_retries_param=*/3,
       base::BindOnce(&BabelOrcaConsumer::OnJoinGroupResponse,

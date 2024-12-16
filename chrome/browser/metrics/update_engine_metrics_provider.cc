@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 
 void UpdateEngineMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto_unused) {
@@ -42,7 +43,7 @@ bool UpdateEngineMetricsProvider::IsConsumerAutoUpdateToggleEligible() {
   if (!identity_manager)
     return false;
 
-  const std::string& gaia_id =
+  const GaiaId& gaia_id =
       user_manager->GetActiveUser()->GetAccountId().GetGaiaId();
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);

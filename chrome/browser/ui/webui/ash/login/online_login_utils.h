@@ -139,7 +139,7 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
 // Returns user canonical e-mail. Finds already used account alias, if
 // user has already signed in.
 AccountId GetAccountId(const std::string& authenticated_email,
-                       const GaiaId& gaia_id,
+                       const std::string& id,
                        const AccountType& account_type);
 
 // Common utility for checking whether family link is allowed.

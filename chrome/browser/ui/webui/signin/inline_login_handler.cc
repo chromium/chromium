@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 
 #include <limits.h>
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -31,6 +32,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -188,7 +190,7 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
   CompleteLoginParams params;
   params.email = CHECK_DEREF(dict.FindString("email"));
   params.password = CHECK_DEREF(dict.FindString("password"));
-  params.gaia_id = CHECK_DEREF(dict.FindString("gaiaId"));
+  params.gaia_id = GaiaId(CHECK_DEREF(dict.FindString("gaiaId")));
 
   for (const auto& cookie_with_access_result : cookies) {
     if (cookie_with_access_result.cookie.Name() == "oauth_code")

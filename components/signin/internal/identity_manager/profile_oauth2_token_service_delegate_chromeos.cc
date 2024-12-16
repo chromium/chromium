@@ -16,6 +16,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "net/base/backoff_entry.h"
@@ -41,7 +42,7 @@ std::vector<CoreAccountId> GetOAuthAccountIdsFromAccountKeys(
 
     CoreAccountId account_id =
         account_tracker_service
-            ->FindAccountInfoByGaiaId(account_key.id() /* gaia_id */)
+            ->FindAccountInfoByGaiaId(GaiaId(account_key.id()))
             .account_id;
     DCHECK(!account_id.empty());
     accounts.emplace_back(account_id);
@@ -187,9 +188,9 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
   }
 
   return account_manager_facade_->CreateAccessTokenFetcher(
-      account_manager::AccountKey{
-          account_tracker_service_->GetAccountInfo(account_id).gaia,
-          account_manager::AccountType::kGaia} /* account_key */,
+      account_manager::AccountKey::FromGaiaId(
+          account_tracker_service_->GetAccountInfo(account_id)
+              .gaia) /* account_key */,
       consumer);
 }
 
@@ -378,7 +379,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::FinishAddingPendingAccount(
   // associated with them (https://crbug.com/933307).
   DCHECK(!account.raw_email.empty());
   CoreAccountId account_id = account_tracker_service_->SeedAccountInfo(
-      account.key.id() /* gaia_id */, account.raw_email);
+      GaiaId(account.key.id()), account.raw_email);
   DCHECK(!account_id.empty());
 
   // Call the parent method - which will not report the error back to
@@ -449,7 +450,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
   }
   CoreAccountId account_id =
       account_tracker_service_
-          ->FindAccountInfoByGaiaId(account.key.id() /* gaia_id */)
+          ->FindAccountInfoByGaiaId(GaiaId(account.key.id()))
           .account_id;
   DCHECK(!account_id.empty());
   ClearAuthError(account_id);
@@ -467,7 +468,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAuthErrorChanged(
     return;
   }
   CoreAccountId account_id =
-      account_tracker_service_->FindAccountInfoByGaiaId(account.id())
+      account_tracker_service_->FindAccountInfoByGaiaId(GaiaId(account.id()))
           .account_id;
 
   if (error == GetAuthError(account_id)) {
@@ -488,8 +489,8 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentialsInternal(
   AccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
   DCHECK(!account_info.IsEmpty());
-  signin_client_->RemoveAccount(account_manager::AccountKey{
-      account_info.gaia, account_manager::AccountType::kGaia});
+  signin_client_->RemoveAccount(
+      account_manager::AccountKey::FromGaiaId(account_info.gaia));
   ClearAuthError(account_id);
 #else
   // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
@@ -526,9 +527,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
       account_tracker_service_->GetAccountInfo(account_id);
   DCHECK(!account_info.IsEmpty());
   account_manager_facade_->ReportAuthError(
-      account_manager::AccountKey{account_info.gaia,
-                                  account_manager::AccountType::kGaia},
-      error);
+      account_manager::AccountKey::FromGaiaId(account_info.gaia), error);
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnConnectionChanged(

@@ -57,6 +57,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -1603,7 +1604,7 @@ void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
     return;
   }
 
-  std::string gaia_id = event_details.GetCurrentState().primary_account.gaia;
+  GaiaId gaia_id = event_details.GetCurrentState().primary_account.gaia;
   const SigninPrefs signin_prefs(*profile_->GetPrefs());
   std::optional<base::Time> last_signout_time =
       signin_prefs.GetChromeLastSignoutTime(gaia_id);
@@ -1627,7 +1628,7 @@ void AvatarToolbarButtonDelegate::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   if (info.gaia == gaia_id_for_signin_choice_remembered_ &&
       !info.given_name.empty()) {
-    gaia_id_for_signin_choice_remembered_.clear();
+    gaia_id_for_signin_choice_remembered_ = GaiaId();
     avatar_toolbar_button_
         ->MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(info);
   }

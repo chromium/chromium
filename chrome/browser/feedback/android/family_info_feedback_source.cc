@@ -14,6 +14,7 @@
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -69,7 +70,7 @@ void FamilyInfoFeedbackSource::OnSuccess(
     const kidsmanagement::ListMembersResponse& response) {
   std::string primary_account_gaia =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
 
   JNIEnv* env = AttachCurrentThread();
   for (const kidsmanagement::FamilyMember& member : response.members()) {
