@@ -21,5 +21,11 @@ class ContentNotificationClient : public PushNotificationClient {
   std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* payload) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
+  void OnSceneActiveForegroundBrowserReady() override;
+
+ private:
+  // Stores a notification interaction if the app is not "foreground active"
+  // when iOS tells the app about the interaction.
+  UNNotificationResponse* stored_interaction_;
 };
 #endif  // IOS_CHROME_BROWSER_CONTENT_NOTIFICATION_MODEL_CONTENT_NOTIFICATION_CLIENT_H_
