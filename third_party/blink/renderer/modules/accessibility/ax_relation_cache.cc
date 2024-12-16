@@ -1184,12 +1184,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
   // Shortcut: used cached value to determine whether this node contributes to
   // a name or description. Return early if not.
   AXObject* obj = Get(node);
-  if (!obj) {
-    // It's expected that any node will have an object at this point.
-    NOTREACHED(base::NotFatalUntil::M140);
-    return;
-  }
-  if (!obj->IsUsedForLabelOrDescription()) {
+  if (!obj || !obj->IsUsedForLabelOrDescription()) {
     // Nothing to do, as this node is not part of a label or description.
     return;
   }
