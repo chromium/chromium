@@ -94,11 +94,13 @@ LEFT JOIN
   USING (latency_id)
 WHERE chrome_inputs.input_type IS NOT NULL;
 
--- For each input, get the latency id of the input that it was coalesced into.
+-- For each input, if it was coalesced into another input, get the other input's
+-- latency id.
 CREATE PERFETTO TABLE chrome_coalesced_inputs(
   -- The `latency_id` of the coalesced input.
   coalesced_latency_id LONG,
-  -- The `latency_id` of the input that the current input was coalesced into.
+  -- The `latency_id` of the other input that the current input was coalesced
+  -- into. Guaranteed to be different from `coalesced_latency_id`.
   presented_latency_id LONG
 ) AS
 SELECT
@@ -108,7 +110,8 @@ FROM chrome_input_pipeline_steps step
 JOIN slice USING (slice_id)
 JOIN args USING (arg_set_id)
 WHERE step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
-  AND args.flat_key = 'chrome_latency_info.coalesced_trace_ids';
+  AND args.flat_key = 'chrome_latency_info.coalesced_trace_ids'
+  AND coalesced_latency_id != presented_latency_id;
 
 
 -- Each scroll update event (except flings) in Chrome starts its life as a touch

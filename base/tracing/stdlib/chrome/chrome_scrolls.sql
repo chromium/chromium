@@ -229,7 +229,6 @@ processed_timestamps_and_metadata AS (
 )
 SELECT
   id,
-  -- TODO(b:380868337): Check/fix this for flings.
   coalesced_into,
   is_presented,
   is_janky,
@@ -399,11 +398,7 @@ LEFT JOIN
 LEFT JOIN chrome_graphics_pipeline_display_frame_steps viz_swap_buffers_step
   ON
     viz_swap_buffers_step.display_trace_id = refs.display_trace_id
-    AND viz_swap_buffers_step.step = 'STEP_BUFFER_SWAP_POST_SUBMIT'
-WHERE
-  chrome_coalesced_input.presented_latency_id IS NOT NULL
-  -- Flings don't coalesce inputs.
-  OR chrome_event_latency.event_type = 'INERTIAL_GESTURE_SCROLL_UPDATE';
+    AND viz_swap_buffers_step.step = 'STEP_BUFFER_SWAP_POST_SUBMIT';
 
 -- Timestamps and durations for the frame-associated (after coalescing inputs
 -- into a frame) stages of a scroll.
@@ -848,7 +843,6 @@ SELECT
   input.is_janky,
   input.is_inertial,
   input.is_first,
-  -- TODO(b:380868337): Check/fix this for flings.
   input.coalesced_into IS NOT NULL AS is_coalesced,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- No applicable utid (duration between two threads).
