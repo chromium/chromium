@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -279,6 +280,21 @@ void CSSStyleRule::deleteRule(unsigned index, ExceptionState& exception_state) {
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
+}
+
+void CSSStyleRule::QuietlyInsertRule(const ExecutionContext* execution_context,
+                                     const String& rule,
+                                     unsigned index) {
+  style_rule_->EnsureChildRules();
+  ParseAndQuietlyInsertRule(execution_context, rule, index,
+                            /*parent_rule=*/*this, *style_rule_->ChildRules(),
+                            child_rule_cssom_wrappers_);
+}
+
+void CSSStyleRule::QuietlyDeleteRule(unsigned index) {
+  CHECK(style_rule_->ChildRules());
+  blink::QuietlyDeleteRule(index, *style_rule_->ChildRules(),
+                           child_rule_cssom_wrappers_);
 }
 
 }  // namespace blink
