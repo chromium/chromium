@@ -282,8 +282,11 @@ public class Promise<T extends @Nullable Object> {
      *
      * @return The promised result.
      */
-    public @Nullable T getResult() {
+    @SuppressWarnings("NullAway")
+    public T getResult() {
         assert isFulfilled();
+        // SuppressWarnings necessary since mResult is @Nullable, but we cannot check that it's
+        // non-null because T might be @Nullable.
         return mResult;
     }
 
