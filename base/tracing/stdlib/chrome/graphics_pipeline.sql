@@ -31,17 +31,35 @@ CREATE PERFETTO TABLE chrome_graphics_pipeline_surface_frame_steps(
   -- Start time of the parent Chrome scheduler task (if any) of this step.
   task_start_time_ts TIMESTAMP)
 AS
+WITH
+-- Same places in Chromium (e.g. WebView) emit -1 as the `surface_frame_trace_id`,
+-- which blows up the joins on that value. Replace them with NULLs to avoid that.
+raw_data AS (
+  SELECT
+    id,
+    ts,
+    dur,
+    extract_arg(arg_set_id, 'chrome_graphics_pipeline.step') AS step,
+    extract_arg(arg_set_id, 'chrome_graphics_pipeline.surface_frame_trace_id')
+      AS surface_frame_trace_raw_id,
+    utid,
+    ts - (
+      EXTRACT_ARG(
+        thread_slice.arg_set_id,
+        'current_task.event_offset_from_task_start_time_us') * 1000
+    ) AS task_start_time_ts
+  FROM thread_slice
+  WHERE name = 'Graphics.Pipeline' AND surface_frame_trace_raw_id IS NOT NULL
+)
 SELECT
   id,
   ts,
   dur,
-  extract_arg(arg_set_id, 'chrome_graphics_pipeline.step') AS step,
-  extract_arg(arg_set_id, 'chrome_graphics_pipeline.surface_frame_trace_id')
-    AS surface_frame_trace_id,
+  step,
+  NULLIF(surface_frame_trace_raw_id, -1) AS surface_frame_trace_id,
   utid,
-  ts - (EXTRACT_ARG(thread_slice.arg_set_id, 'current_task.event_offset_from_task_start_time_us') * 1000) AS task_start_time_ts
-FROM thread_slice
-WHERE name = 'Graphics.Pipeline' AND surface_frame_trace_id IS NOT NULL;
+  task_start_time_ts
+FROM raw_data;
 
 -- `Graphics.Pipeline` steps corresponding to work done on creating and
 -- presenting one frame during/after surface aggregation. Covers steps:
