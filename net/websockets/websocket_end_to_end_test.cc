@@ -732,7 +732,14 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
 
 // Tests that when kHstsTopLevelNavigationsOnly is enabled websocket isn't
 // upgraded.
-TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocketNotApplied) {
+// TODO(crbug.com/40725781): Constantly failing on one of the chromeos bots.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_HstsHttpsToWebSocketNotApplied \
+  DISABLED_HstsHttpsToWebSocketNotApplied
+#else
+#define MAYBE_HstsHttpsToWebSocketNotApplied HstsHttpsToWebSocketNotApplied
+#endif
+TEST_F(WebSocketEndToEndTest, MAYBE_HstsHttpsToWebSocketNotApplied) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kHstsTopLevelNavigationsOnly);
 
