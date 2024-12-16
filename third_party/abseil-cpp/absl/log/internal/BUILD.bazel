@@ -61,6 +61,7 @@ cc_library(
         ":nullguard",
         ":nullstream",
         ":strip",
+        "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:nullability",

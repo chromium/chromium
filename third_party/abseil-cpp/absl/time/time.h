@@ -148,7 +148,8 @@ using EnableIfFloat =
 // the result of subtracting one `absl::Time` from another. Durations behave
 // like unit-safe integers and they support all the natural integer-like
 // arithmetic operations. Arithmetic overflows and saturates at +/- infinity.
-// `Duration` should be passed by value rather than const reference.
+// `Duration` is trivially destructible and should be passed by value rather
+// than const reference.
 //
 // Factory functions `Nanoseconds()`, `Microseconds()`, `Milliseconds()`,
 // `Seconds()`, `Minutes()`, `Hours()` and `InfiniteDuration()` allow for
@@ -748,8 +749,9 @@ std::string UnparseFlag(Duration d);
 // are provided for naturally expressing time calculations. Instances are
 // created using `absl::Now()` and the `absl::From*()` factory functions that
 // accept the gamut of other time representations. Formatting and parsing
-// functions are provided for conversion to and from strings.  `absl::Time`
-// should be passed by value rather than const reference.
+// functions are provided for conversion to and from strings. `absl::Time` is
+// trivially destructible and should be passed by value rather than const
+// reference.
 //
 // `absl::Time` assumes there are 60 seconds in a minute, which means the
 // underlying time scales must be "smeared" to eliminate leap seconds.

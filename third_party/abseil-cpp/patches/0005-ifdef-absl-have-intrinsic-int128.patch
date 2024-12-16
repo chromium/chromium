@@ -1,0 +1,13 @@
+diff --git a/third_party/abseil-cpp/absl/hash/internal/hash.h b/third_party/abseil-cpp/absl/hash/internal/hash.h
+index b4006b2b8940e..93fefde1ae7dc 100644
+--- a/third_party/abseil-cpp/absl/hash/internal/hash.h
++++ b/third_party/abseil-cpp/absl/hash/internal/hash.h
+@@ -339,7 +339,7 @@ struct is_uniquely_represented<
+ template <>
+ struct is_uniquely_represented<bool> : std::false_type {};
+ 
+-#if ABSL_HAVE_INTRINSIC_INT128
++#ifdef ABSL_HAVE_INTRINSIC_INT128
+ // Specialize the trait for GNU extension types.
+ template <>
+ struct is_uniquely_represented<__int128> : std::true_type {};

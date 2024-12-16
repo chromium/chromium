@@ -361,6 +361,7 @@ if (absl_build_tests) {
         "absl/strings:has_absl_stringify_test",
         "absl/strings:has_ostream_operator_test",
         "absl/strings:match_test",
+        "absl/strings:str_cat_test",
         "absl/strings:str_format_arg_test",
         "absl/strings:str_format_bind_test",
         "absl/strings:str_format_checker_test",

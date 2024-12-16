@@ -44,7 +44,8 @@ template <typename T>
 static inline ptrdiff_t ComputeStackFrameSize(const T *low, const T *high) {
   const char *low_char_ptr = reinterpret_cast<const char *>(low);
   const char *high_char_ptr = reinterpret_cast<const char *>(high);
-  return low < high ? high_char_ptr - low_char_ptr : kUnknownFrameSize;
+  return low < high ? static_cast<ptrdiff_t>(high_char_ptr - low_char_ptr)
+                    : kUnknownFrameSize;
 }
 
 // Given a pointer to a stack frame, locate and return the calling stackframe,

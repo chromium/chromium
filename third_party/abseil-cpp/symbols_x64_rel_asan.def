@@ -650,6 +650,7 @@ EXPORTS
     ?Find@Cord@absl@@QEBA?AVCharIterator@12@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?FindAndReportLeaks@absl@@YA_NXZ
     ?FindCommandLineFlag@absl@@YAPEAVCommandLineFlag@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
+    ?FindFirstNonFullAfterResize@HashSetResizeHelper@container_internal@absl@@SA?AUFindInfo@23@AEBVCommonFields@23@_K1@Z
     ?FindFlag@FlagRegistry@flags_internal@absl@@QEAAPEAVCommandLineFlag@3@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?FindFlatStartPiece@InlineRep@Cord@absl@@QEBA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
     ?FindImpl@Cord@absl@@AEBA?AVCharIterator@12@V312@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
