@@ -1182,6 +1182,11 @@ void AttributionDataHostManagerImpl::HandleRegistrationData(
 void AttributionDataHostManagerImpl::HandleNextRegistrationData(
     base::flat_set<Registrations>::iterator it) {
   CHECK(it != registrations_.end());
+
+  if (!it->IsReadyToProcess()) {
+    return;
+  }
+
   CHECK(!it->pending_registration_data().empty());
 
   do {
@@ -1275,9 +1280,7 @@ void AttributionDataHostManagerImpl::HandleRegistrationInfo(
 
 void AttributionDataHostManagerImpl::HandleNextWebDecode(
     const Registrations& registrations) {
-  if (!registrations.IsReadyToProcess()) {
-    return;
-  }
+  CHECK(registrations.IsReadyToProcess());
 
   CHECK(!registrations.pending_web_decodes().empty());
 
@@ -1291,9 +1294,7 @@ void AttributionDataHostManagerImpl::HandleNextWebDecode(
 
 void AttributionDataHostManagerImpl::HandleNextOsDecode(
     const Registrations& registrations) {
-  if (!registrations.IsReadyToProcess()) {
-    return;
-  }
+  CHECK(registrations.IsReadyToProcess());
 
   CHECK(!registrations.pending_os_decodes().empty());
 
@@ -1383,11 +1384,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
         RecordBackgroundNavigationOutcome(
             BackgroundNavigationOutcome::kTiedWithDelay);
 
-        if (!it->pending_web_decodes().empty()) {
-          HandleNextWebDecode(*it);
-        }
-        if (!it->pending_os_decodes().empty()) {
-          HandleNextOsDecode(*it);
+        if (!it->pending_registration_data().empty()) {
+          HandleNextRegistrationData(it);
         }
       }
     }
@@ -2274,14 +2272,11 @@ void AttributionDataHostManagerImpl::ClearRegistrationsDeferUntilNavigation(
   if (!BackgroundRegistrationsEnabled()) {
     return;
   }
-  for (auto& registration : registrations_) {
-    if (registration.defer_until_navigation() == navigation_id) {
-      registration.ClearDeferUntilNavigation();
-      if (!registration.pending_web_decodes().empty()) {
-        HandleNextWebDecode(registration);
-      }
-      if (!registration.pending_os_decodes().empty()) {
-        HandleNextOsDecode(registration);
+  for (auto it = registrations_.begin(); it != registrations_.end(); ++it) {
+    if (it->defer_until_navigation() == navigation_id) {
+      it->ClearDeferUntilNavigation();
+      if (!it->pending_registration_data().empty()) {
+        HandleNextRegistrationData(it);
       }
     }
   }

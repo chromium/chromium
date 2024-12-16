@@ -5597,5 +5597,44 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
   }
 }
 
+// Regression test for crbug.com/382164270.
+TEST_F(
+    AttributionDataHostManagerImplWithInBrowserMigrationTest,
+    BackgroundWithRegistrationInfo_NavigationTiedToCompletedIneligibleNavigation) {
+  const blink::AttributionSrcToken attribution_src_token;
+
+  const auto reporting_url = GURL("https://report.test");
+  const auto reporting_origin = *SuitableOrigin::Create(reporting_url);
+  const auto context_origin =
+      *SuitableOrigin::Deserialize("https://source.test");
+
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+  // A background registrations starts, registers data and completes. The
+  // parsing should not have started.
+  data_host_manager_.NotifyBackgroundRegistrationStarted(
+      kBackgroundId,
+      AttributionSuitableContext::CreateForTesting(
+          context_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      RegistrationEligibility::kSource, attribution_src_token,
+      kDevtoolsRequestId);
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                     kRegisterSourceJson);
+  headers->SetHeader(kAttributionReportingInfoHeader, "foo");
+  EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
+      kBackgroundId, headers.get(), reporting_url));
+  data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+
+  // A navigation completes without starting indicating that it is ineligible.
+  data_host_manager_.NotifyNavigationWithBackgroundRegistrationsWillStart(
+      attribution_src_token, /*expected_registrations=*/1);
+  data_host_manager_.NotifyNavigationRegistrationCompleted(
+      attribution_src_token);
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
 }  // namespace
 }  // namespace content
