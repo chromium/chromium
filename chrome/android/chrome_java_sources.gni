@@ -725,7 +725,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/infobar/KnownInterceptionDisclosureInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/PasswordInfoBarUtils.java",
   "java/src/org/chromium/chrome/browser/infobar/PermissionInfoBar.java",
-  "java/src/org/chromium/chrome/browser/infobar/SafetyTipInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/SubPanelListener.java",
   "java/src/org/chromium/chrome/browser/init/ActivityLifecycleDispatcherImpl.java",
   "java/src/org/chromium/chrome/browser/init/ActivityProfileProvider.java",
