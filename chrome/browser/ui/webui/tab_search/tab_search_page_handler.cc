@@ -191,6 +191,20 @@ tab_search::mojom::TabOrganizationSessionPtr CreateNotStartedMojoSession() {
 
 }  // namespace
 
+DuplicateTabsObserver::DuplicateTabsObserver(
+    content::WebContents* web_contents,
+    base::RepeatingCallback<void()> on_url_changed_callback)
+    : content::WebContentsObserver(web_contents),
+      on_url_changed_callback_(std::move(on_url_changed_callback)) {}
+
+DuplicateTabsObserver::~DuplicateTabsObserver() = default;
+
+void DuplicateTabsObserver::PrimaryPageChanged(content::Page& page) {
+  if (on_url_changed_callback_) {
+    on_url_changed_callback_.Run();
+  }
+}
+
 TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_search::mojom::Page> page,
@@ -481,12 +495,31 @@ void TabSearchPageHandler::RegisterDuplicateTabDeclutterCallbacks(
       },
       base::Unretained(this))));
 
+  subscriptions.push_back(tab->RegisterWillDiscardContents(base::BindRepeating(
+      &TabSearchPageHandler::OnDuplicateTabWillDiscardWebContents,
+      base::Unretained(this))));
+
+  content::WebContents* web_contents = tab->GetContents();
+  if (web_contents) {
+    auto observer = std::make_unique<DuplicateTabsObserver>(
+        web_contents,
+        base::BindRepeating(
+            [](TabSearchPageHandler* handler, tabs::TabInterface* tab) {
+              handler->RemoveDuplicateTab(tab, true);
+              handler->page_->UnusedTabsChanged(handler->GetMojoUnusedTabs());
+            },
+            base::Unretained(this), tab));
+
+    duplicate_tab_webcontents_observers_[tab] = std::move(observer);
+  }
+
   duplicate_tab_subscriptions_map_[tab] = std::move(subscriptions);
 }
 
 void TabSearchPageHandler::UnregisterTabCallbacks() {
   inactive_tab_subscriptions_map_.clear();
   duplicate_tab_subscriptions_map_.clear();
+  duplicate_tab_webcontents_observers_.clear();
 }
 
 void TabSearchPageHandler::RemoveStaleTab(tabs::TabInterface* tab) {
@@ -504,15 +537,25 @@ void TabSearchPageHandler::RemoveStaleTab(tabs::TabInterface* tab) {
   inactive_tab_subscriptions_map_.erase(tab);
 }
 
-void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab) {
+void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab,
+                                              bool url_changed) {
   CHECK(tab);
   CHECK(duplicate_tab_subscriptions_map_.find(tab) !=
         duplicate_tab_subscriptions_map_.end());
 
   GURL tab_url;
 
-  tab_url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
-  CHECK(duplicate_tabs_.find(tab_url) != duplicate_tabs_.end());
+  if (url_changed) {
+    for (const auto& [url, tabs] : duplicate_tabs_) {
+      if (std::find(tabs.begin(), tabs.end(), tab) != tabs.end()) {
+        tab_url = url;
+        break;
+      }
+    }
+  } else {
+    tab_url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
+    CHECK(duplicate_tabs_.find(tab_url) != duplicate_tabs_.end());
+  }
 
   CHECK(tab_url.is_valid());
 
@@ -528,6 +571,7 @@ void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab) {
 
   // Unregister the subscriptions for this TabInterface
   duplicate_tab_subscriptions_map_.erase(tab);
+  duplicate_tab_webcontents_observers_.erase(tab);
 }
 
 void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
@@ -559,6 +603,14 @@ TabSearchPageHandler::FilterDuplicateTabsFromStaleTabs(
 void TabSearchPageHandler::OnStaleTabDidEnterForeground(
     tabs::TabInterface* tab) {
   RemoveStaleTab(static_cast<tabs::TabInterface*>(tab));
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
+}
+
+void TabSearchPageHandler::OnDuplicateTabWillDiscardWebContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_content,
+    content::WebContents* new_content) {
+  RemoveDuplicateTab(tab);
   page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 

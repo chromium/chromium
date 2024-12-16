@@ -57,6 +57,19 @@ enum class TabSearchRecentlyClosedToggleAction {
   kMaxValue = kCollapse,
 };
 
+class DuplicateTabsObserver : public content::WebContentsObserver {
+ public:
+  DuplicateTabsObserver(
+      content::WebContents* web_contents,
+      base::RepeatingCallback<void()> on_url_changed_callback);
+  ~DuplicateTabsObserver() override;
+
+  void PrimaryPageChanged(content::Page& page) override;
+
+ private:
+  base::RepeatingCallback<void()> on_url_changed_callback_;
+};
+
 class TabSearchPageHandler
     : public tab_search::mojom::PageHandler,
       public TabStripModelObserver,
@@ -278,6 +291,9 @@ class TabSearchPageHandler
   void RegisterDuplicateTabDeclutterCallbacks(tabs::TabInterface* tab);
 
   void OnStaleTabDidEnterForeground(tabs::TabInterface* tab);
+  void OnDuplicateTabWillDiscardWebContents(tabs::TabInterface* tab,
+                                            content::WebContents* old_content,
+                                            content::WebContents* new_content);
 
   void OnUnusedTabWillDetach(tabs::TabInterface* tab,
                              tabs::TabInterface::DetachReason reason,
@@ -290,7 +306,7 @@ class TabSearchPageHandler
                                UnusedTabType type);
 
   void RemoveStaleTab(tabs::TabInterface* tab);
-  void RemoveDuplicateTab(tabs::TabInterface* tab);
+  void RemoveDuplicateTab(tabs::TabInterface* tab, bool url_changed = false);
 
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();
@@ -348,6 +364,9 @@ class TabSearchPageHandler
 
   std::map<tabs::TabInterface*, std::vector<base::CallbackListSubscription>>
       duplicate_tab_subscriptions_map_;
+
+  std::map<tabs::TabInterface*, std::unique_ptr<DuplicateTabsObserver>>
+      duplicate_tab_webcontents_observers_;
 
   base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
       tab_organization_observation_{this};

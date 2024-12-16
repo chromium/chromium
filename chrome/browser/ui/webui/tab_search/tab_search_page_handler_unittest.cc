@@ -1214,4 +1214,79 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterUnusedTabChanges) {
             2u);
 }
 
+TEST_F(TabSearchPageHandlerDeclutterTest, TabDuplicateURLChanges) {
+  EXPECT_CALL(page_, UnusedTabsChanged(_)).Times(::testing::AtLeast(1));
+  std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
+
+  // Create 10 stale tabs.
+  for (int i = 0; i < 10; ++i) {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(
+            content::WebContents::Create(
+                content::WebContents::CreateParams(testing_profile())),
+            fake_tab_strip_model());
+    stale_tabs_raw_ptr.push_back(tab_model.get());
+    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+  }
+
+  // Create duplicate tabs.
+  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
+  GURL duplicate_tabs_url("https://duplicate_url.com");
+  for (int i = 0; i < 5; ++i) {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(
+            content::WebContents::Create(
+                content::WebContents::CreateParams(testing_profile())),
+            fake_tab_strip_model());
+
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateBrowserInitiated(
+            duplicate_tabs_url, tab_model->GetContents());
+    navigation_simulator->Commit();
+    duplicate_tabs[duplicate_tabs_url].push_back(tab_model.get());
+    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+  }
+
+  EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
+      .WillRepeatedly(testing::Return(stale_tabs_raw_ptr));
+
+  EXPECT_CALL(*tab_declutter_controller(), GetDuplicateTabs())
+      .WillOnce(testing::Return(duplicate_tabs));
+
+  tab_search::mojom::PageHandler::GetUnusedTabsCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::UnusedTabInfoPtr unused_tabs) {
+            // Verify stale tabs.
+            EXPECT_EQ(10u, unused_tabs->stale_tabs.size());
+
+            // Verify duplicate tabs.
+            auto it =
+                unused_tabs->duplicate_tabs.find(duplicate_tabs_url.spec());
+            ASSERT_NE(it, unused_tabs->duplicate_tabs.end());
+            EXPECT_EQ(5u, it->second.size());
+          });
+
+  handler()->GetUnusedTabs(std::move(callback));
+
+  GURL new_url("https://duplicate_url_two.com");
+
+  auto navigation_simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          new_url,
+          fake_tab_strip_model()
+              ->GetTabAtIndex(fake_tab_strip_model()->GetTabCount() - 1)
+              ->GetContents());
+  navigation_simulator->Commit();
+
+  EXPECT_EQ(handler()->duplicate_tabs_for_testing()[duplicate_tabs_url].size(),
+            4u);
+
+  fake_tab_strip_model()->DiscardWebContentsAt(
+      fake_tab_strip_model()->GetTabCount() - 2,
+      content::WebContents::Create(
+          content::WebContents::CreateParams(testing_profile())));
+  EXPECT_EQ(handler()->duplicate_tabs_for_testing()[duplicate_tabs_url].size(),
+            3u);
+}
+
 }  // namespace
