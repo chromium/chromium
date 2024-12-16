@@ -65,7 +65,15 @@ function generate_test(request_data, integrity, expectation, description) {
     if (expectation == EXPECT_LOADED) {
       return fetcher.then(r => {
         assert_equals(r.status, 200, "Response status is 200.");
-        if (integrity.includes(`ed25519-${kValidKey}`)) {
+
+        // Verify `accept-signatures`: if the invalid key is present, both a valid and invalid
+        // key were set. If just the valid key is present, that's the only key we should see
+        // in the header.
+        if (integrity.includes(`ed25519-${kInvalidKey}`)) {
+          assert_equals(r.headers.get('accept-signatures'),
+                        `sig0=("identity-digest";sf);keyid="${kInvalidKey}";tag="sri", sig1=("identity-digest";sf);keyid="${kValidKey}";tag="sri"`,
+                        "`accept-signatures` was set.");
+        } else if (integrity.includes(`ed25519-${kValidKey}`)) {
           assert_equals(r.headers.get('accept-signatures'),
                         `sig0=("identity-digest";sf);keyid="${kValidKey}";tag="sri"`,
                         "`accept-signatures` was set.");
@@ -77,9 +85,6 @@ function generate_test(request_data, integrity, expectation, description) {
   }, description);
 }
 
-generate_test(kRequestWithValidSignature, `ed25519-${kValidKey}`, EXPECT_LOADED,
-              "Valid signature, matching integrity check: loads.");
-/*
 generate_test({}, "", EXPECT_LOADED,
               "No signature, no integrity check: loads.");
 
@@ -122,4 +127,3 @@ generate_test(kRequestWithInvalidSignature, `ed25519-${kInvalidKey}`, EXPECT_BLO
 generate_test(kRequestWithInvalidSignature,
               `ed25519-${kValidKey} ed25519-${kInvalidKey}`, EXPECT_BLOCKED,
               "Invalid signature, one valid integrity check: blocked.");
-*/
