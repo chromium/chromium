@@ -18,7 +18,15 @@ import org.chromium.ui.base.DeviceFormFactor;
  * </code>
  */
 public final class UiRestriction {
+    private static Boolean sIsDesktop;
     private static Boolean sIsTablet;
+
+    private static boolean isDesktop() {
+      if (sIsDesktop == null) {
+        sIsDesktop = DeviceFormFactor.isDesktop();
+      }
+      return sIsDesktop;
+    }
 
     private static boolean isTablet() {
         if (sIsTablet == null) {
@@ -33,6 +41,7 @@ public final class UiRestriction {
     }
 
     public static void registerChecks(RestrictionSkipCheck check) {
+        check.addHandler(DeviceFormFactor.DESKTOP, () -> isDesktop());
         check.addHandler(DeviceFormFactor.PHONE, () -> isTablet());
         check.addHandler(DeviceFormFactor.TABLET, () -> !isTablet());
     }
