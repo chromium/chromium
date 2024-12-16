@@ -37,9 +37,8 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/generic_error_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/passkey_error_alert_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
-#import "ios/chrome/credential_provider_extension/ui/saving_enterprise_disabled_view_controller.h"
-#import "ios/chrome/credential_provider_extension/ui/signed_out_user_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 #import "ios/components/credential_provider_extension/password_util.h"
 
@@ -440,7 +439,11 @@ UIColor* BackgroundColor() {
 }
 
 - (void)confirmationAlertPrimaryAction {
-  // No-op.
+  if ([self.presentedViewController
+          isKindOfClass:[PasskeyErrorAlertViewController class]]) {
+    [self dismissViewControllerAnimated:YES completion:nil];
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+  }
 }
 
 #pragma mark - CredentialResponseHandler
@@ -858,23 +861,19 @@ UIColor* BackgroundColor() {
 - (void)showSavingDisabledByEnterpriseAlert {
   // TODO(crbug.com/362719658): Check whether it's possible to make the whole
   // VC a half sheet.
-  SavingEnterpriseDisabledViewController*
-      savingEnterpriseDisabledViewController =
-          [[SavingEnterpriseDisabledViewController alloc] init];
-  savingEnterpriseDisabledViewController.actionHandler = self;
-  savingEnterpriseDisabledViewController.presentationController.delegate = self;
+  PasskeyErrorAlertViewController* savingEnterpriseDisabledViewController =
+      [self createPasskeyErrorAlertForErrorType:
+                ErrorType::kEnterpriseDisabledSavingCredentials];
   [self presentViewController:savingEnterpriseDisabledViewController
                      animated:NO
                    completion:nil];
 }
 
-// Displays sheet with information that the user is signed out ans needs to sign
+// Displays sheet with information that the user is signed out and needs to sign
 // in to Chrome.
 - (void)showSignedOutUserAlert {
-  SignedOutUserViewController* signedOutUserViewController =
-      [[SignedOutUserViewController alloc] init];
-  signedOutUserViewController.actionHandler = self;
-  signedOutUserViewController.presentationController.delegate = self;
+  PasskeyErrorAlertViewController* signedOutUserViewController =
+      [self createPasskeyErrorAlertForErrorType:ErrorType::kSignedOut];
   [self presentViewController:signedOutUserViewController
                      animated:NO
                    completion:nil];
@@ -996,6 +995,18 @@ UIColor* BackgroundColor() {
 // view to present the next one.
 - (UIViewController*)presentingView {
   return self.presentedViewController ? self.presentedViewController : self;
+}
+
+// Creates and configures a PasskeyErrorAlertViewController for the given
+// `errorType`.
+- (PasskeyErrorAlertViewController*)createPasskeyErrorAlertForErrorType:
+    (ErrorType)errorType {
+  PasskeyErrorAlertViewController* passkeyErrorAlertViewController =
+      [[PasskeyErrorAlertViewController alloc] initForErrorType:errorType];
+  passkeyErrorAlertViewController.actionHandler = self;
+  passkeyErrorAlertViewController.presentationController.delegate = self;
+
+  return passkeyErrorAlertViewController;
 }
 
 // Creates and presents a PasskeyWelcomeScreenViewController.
