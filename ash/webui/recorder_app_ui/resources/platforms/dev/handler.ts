@@ -125,7 +125,7 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
     }
     const model = await this.load();
     try {
-      return await model.execute(content);
+      return await model.execute(content, language);
     } finally {
       model.close();
     }

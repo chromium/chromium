@@ -99,9 +99,9 @@ export abstract class ModelLoader<T> {
 
 export interface Model<T> {
   /**
-   * Returns the model response based on content.
+   * Returns the model response based on content and language.
    */
-  execute(content: string): Promise<ModelResponse<T>>;
+  execute(content: string, language: LanguageCode): Promise<ModelResponse<T>>;
 
   /**
    * Closes the model connection.

@@ -22,9 +22,8 @@ extern const char kTitleSuggestionXsModelUuid[];
 extern const char kTitleSuggestionXxsModelUuid[];
 
 // Maximum input token to GenAI models.
-// TODO: b/358233121 - Separate the limit of XS and XXS model after XS models
-// start support larger token size.
-extern const uint32_t kInputTokenLimit;
+extern const uint32_t kInputTokenXsModelLimit;
+extern const uint32_t kInputTokenXxsModelLimit;
 
 }  // namespace ash
 
