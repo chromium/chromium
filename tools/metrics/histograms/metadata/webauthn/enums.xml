@@ -304,6 +304,16 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Other Failure"/>
 </enum>
 
+<enum name="WebAuthenticationPinRenewalEvent">
+  <int value="0" label="Considered renewing the PIN"/>
+  <int value="1" label="No PIN to renew"/>
+  <int value="2" label="Another renewal was running concurrently"/>
+  <int value="3" label="Not yet time to renew"/>
+  <int value="4" label="Started renewal"/>
+  <int value="5" label="Successful renewal"/>
+  <int value="6" label="Renewal failed"/>
+</enum>
+
 <enum name="WebAuthenticationRequestMode">
   <int value="0" label="WebAuthn Modal Request"/>
   <int value="1" label="WebAuthn Conditional UI Request"/>

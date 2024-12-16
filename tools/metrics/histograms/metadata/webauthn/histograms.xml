@@ -366,6 +366,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.PinRenewalEvent"
+    enum="WebAuthenticationPinRenewalEvent" expires_after="2025-05-11">
+  <owner>agl@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>Records events related to GPM PIN renewals</summary>
+</histogram>
+
 <histogram
     name="WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey"
     enum="SignalAllAcceptedCredentialsResult" expires_after="2025-09-17">

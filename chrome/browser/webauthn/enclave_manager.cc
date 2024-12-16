@@ -32,6 +32,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -2608,6 +2609,15 @@ EnclaveManager::EnclaveManager(
               trusted_vault_access_token_fetcher_frontend_->GetWeakPtr()))),
       identity_observer_(
           std::make_unique<IdentityObserver>(identity_manager_, this)) {
+  // Automatically load the enclave state shortly after startup so that any
+  // renewals will be considered without the user having to do something to
+  // trigger a WebAuthn operation.
+  load_timer_.Start(
+      FROM_HERE, base::Minutes(4),
+      base::BindOnce(&EnclaveManager::Load, weak_ptr_factory_.GetWeakPtr(),
+                     base::DoNothing()));
+  // Also consider renewing the PIN every day, for users who keep Chrome open
+  // for long periods.
   renewal_timer_.Start(FROM_HERE, base::Hours(24),
                        base::BindRepeating(&EnclaveManager::ConsiderPinRenewal,
                                            weak_ptr_factory_.GetWeakPtr()));
@@ -3781,12 +3791,37 @@ void EnclaveManager::SetSecret(int32_t key_version,
   secret_ = std::vector<uint8_t>(secret.begin(), secret.end());
 }
 
+// A list of PIN-renewal events that are reported to UMA. Do not renumber
+// as the values are persisted.
+enum class PinRenewalEvent {
+  kConsidered = 0,
+  kNothingToRenew = 1,
+  kConcurrentRenewal = 2,
+  kNotYetTime = 3,
+  kStarted = 4,
+  kSuccess = 5,
+  kFailure = 6,
+
+  kMaxValue = kFailure,
+};
+
+static const char kPinRenewalHistogram[] = "WebAuthentication.PinRenewalEvent";
+
 void EnclaveManager::ConsiderPinRenewal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                PinRenewalEvent::kConsidered);
 
   renewal_checks_++;
-  if (!user_ || !user_->registered() || !user_->has_wrapped_pin() ||
-      is_renewing_) {
+  if (!user_ || !user_->registered() || !user_->has_wrapped_pin()) {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kNothingToRenew);
+    return;
+  }
+
+  if (is_renewing_) {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kConcurrentRenewal);
     return;
   }
 
@@ -3797,12 +3832,21 @@ void EnclaveManager::ConsiderPinRenewal() {
     FIDO_LOG(EVENT) << "Renewing GPM PIN based on time since last renewal";
     renewal_attempts_++;
     is_renewing_ = true;
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kStarted);
     RenewPIN(base::BindOnce(&EnclaveManager::OnRenewalComplete,
                             weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kNotYetTime);
   }
 }
 
 void EnclaveManager::OnRenewalComplete(bool success) {
+  base::UmaHistogramEnumeration(
+      kPinRenewalHistogram,
+      success ? PinRenewalEvent::kSuccess : PinRenewalEvent::kFailure);
+
   is_renewing_ = false;
 }
 

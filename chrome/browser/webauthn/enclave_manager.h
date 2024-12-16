@@ -404,6 +404,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   std::unique_ptr<StateMachine> state_machine_;
   std::vector<base::OnceClosure> load_callbacks_;
   std::deque<std::unique_ptr<PendingAction>> pending_actions_;
+  base::OneShotTimer load_timer_;
   base::RepeatingTimer renewal_timer_;
   unsigned renewal_checks_ = 0;
   unsigned renewal_attempts_ = 0;
