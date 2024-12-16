@@ -762,10 +762,7 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
 
     // ATM this will be null if the scope of the view-transition-name comes from
     // e.g. devtools.
-    auto* relevant_tree_scope =
-        RuntimeEnabledFeatures::ViewTransitionTreeScopedNamesEnabled()
-            ? view_transition_name->GetTreeScope()
-            : &node->GetTreeScope();
+    auto* relevant_tree_scope = view_transition_name->GetTreeScope();
 
     if (relevant_tree_scope == tree_scope || !relevant_tree_scope) {
       current_name = view_transition_name->IsAuto()

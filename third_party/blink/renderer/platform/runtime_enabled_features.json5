@@ -4503,10 +4503,6 @@
       implied_by: ["ViewTransitionLayeredCapture"],
     },
     {
-      name: "ViewTransitionTreeScopedNames",
-      status: "stable",
-    },
-    {
       name: "VisibilityCollapseColumn",
     },
     {
