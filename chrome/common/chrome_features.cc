@@ -26,13 +26,6 @@ BASE_FEATURE(kActivityReportingSessionType,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables or disables logging for adaptive screen brightness on Chrome OS.
-BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
-             "AdaptiveScreenBrightnessLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppPreloadService,
              "AppPreloadService",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -1400,11 +1400,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 
   smart_charging_manager_ = power::SmartChargingManager::CreateInstance();
 
-  if (base::FeatureList::IsEnabled(
-          ::features::kAdaptiveScreenBrightnessLogging)) {
-    adaptive_screen_brightness_manager_ =
-        power::ml::AdaptiveScreenBrightnessManager::CreateInstance();
-  }
+  adaptive_screen_brightness_manager_ =
+      power::ml::AdaptiveScreenBrightnessManager::CreateInstance();
 
   // MachineLearningDecisionServiceProvider needs to be created after
   // UserActivityController which depends on UserActivityDetector, not
