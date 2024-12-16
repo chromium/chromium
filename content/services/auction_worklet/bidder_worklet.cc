@@ -1028,9 +1028,7 @@ void BidderWorklet::V8State::ReportWin(
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  bidding_signals_data_version.value())) ||
-      (base::FeatureList::IsEnabled(
-           blink::features::kFledgePassKAnonStatusToReportWin) &&
-       !kanon_status.empty() &&
+      (!kanon_status.empty() &&
        !browser_signals_dict.Set("kAnonStatus", kanon_status)) ||
       (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
        !browser_signals_dict.Set("reportingTimeout",
