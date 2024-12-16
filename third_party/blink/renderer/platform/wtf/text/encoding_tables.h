@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ENCODING_TABLES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ENCODING_TABLES_H_
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
 #include <iterator>
