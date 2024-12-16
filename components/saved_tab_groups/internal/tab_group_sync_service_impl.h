@@ -103,7 +103,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void MakeTabGroupSharedForTesting(const LocalTabGroupID& local_group_id,
                                     std::string_view collaboration_id);
 
-  void AboutToUnShareTabGroup(const LocalTabGroupID& local_group_id) override;
+  void AboutToUnShareTabGroup(const LocalTabGroupID& local_group_id,
+                              base::OnceClosure on_complete_callback) override;
+  void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
+                                 bool success) override;
 
   std::vector<SavedTabGroup> GetAllGroups() const override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
@@ -263,6 +266,23 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // was transitioned.
   bool TransitionSavedToSharedTabGroupIfNeeded(
       const SavedTabGroup& shared_group);
+
+  // Transitions the originating shared tab group to the given saved tab group.
+  // Returns true if the group is transitioned.
+  bool TransitionSharedToSavedTabGroupIfNeeded(
+      const SavedTabGroup& saved_group);
+
+  // Transitions a originating tab group to a new tab group. Called when
+  // either a saved tab group is becoming shared, or when a shared tab group is
+  // becoming private. This call will find the orignating tab group from the
+  // `tab_group`'s originating group guid, and replace it with `tab_group`.
+  // `opening_source` is the reason for adding the new group, and
+  // `closing_source` is the reason for removing the originating tab group.
+  // Returns true if the group is transitioned.
+  bool TransitionOriginatingTabGroupToNewGroupIfNeeded(
+      const SavedTabGroup& tab_group,
+      OpeningSource opening_source,
+      ClosingSource closing_source);
 
   // Helper method called by NavigateTab() when UrlRestriction is retrieved.
   void NavigateTabInternal(

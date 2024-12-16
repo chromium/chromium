@@ -107,6 +107,7 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label="Group closed when the last tab in the strip was closed"/>
   <int value="9" label="Converted to shared group from UI"/>
+  <int value="10" label="Converted to saved group from UI"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:ClosingSource) -->
@@ -125,6 +126,7 @@ chromium-metrics-reviews@google.com.
   <int value="7"
       label="Invoked from session restore after autosave of a V1 group"/>
   <int value="8" label="Group shared from UI"/>
+  <int value="9" label="Group un-shared from UI"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:OpeningSource) -->

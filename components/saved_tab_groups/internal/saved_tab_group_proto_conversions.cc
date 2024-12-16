@@ -170,12 +170,17 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
 
   bool created_before_syncing_tab_groups = false;
   base::Time last_user_interaction_time;
+  base::Uuid originating_tab_group_guid;
   if (data.has_local_tab_group_data()) {
     created_before_syncing_tab_groups =
         data.local_tab_group_data().created_before_syncing_tab_groups();
     last_user_interaction_time = TimeFromWindowsEpochMicros(
         data.local_tab_group_data()
             .last_user_interaction_time_windows_epoch_micros());
+    if (data.local_tab_group_data().has_originating_tab_group_guid()) {
+      originating_tab_group_guid = base::Uuid::ParseLowercase(
+          data.local_tab_group_data().originating_tab_group_guid());
+    }
   }
 
   SavedTabGroup group = SavedTabGroup(
@@ -184,6 +189,9 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
       created_before_syncing_tab_groups, creation_time);
   group.SetUpdateTimeWindowsEpochMicros(update_time);
   group.SetLastUserInteractionTime(last_user_interaction_time);
+  if (originating_tab_group_guid.is_valid()) {
+    group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid));
+  }
 
   return group;
 }
@@ -236,11 +244,15 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
 
   pb_data.mutable_local_tab_group_data()->set_created_before_syncing_tab_groups(
       group.created_before_syncing_tab_groups());
-  pb_data.mutable_local_tab_group_data()
-      ->set_last_user_interaction_time_windows_epoch_micros(
-          group.last_user_interaction_time()
-              .ToDeltaSinceWindowsEpoch()
-              .InMicroseconds());
+  proto::LocalTabGroupData* local_data = pb_data.mutable_local_tab_group_data();
+  local_data->set_last_user_interaction_time_windows_epoch_micros(
+      group.last_user_interaction_time()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  if (group.originating_tab_group_guid().has_value()) {
+    local_data->set_originating_tab_group_guid(
+        group.originating_tab_group_guid().value().AsLowercaseString());
+  }
 
   pb_data.set_version(kCurrentSchemaVersion);
 
@@ -310,8 +322,7 @@ proto::SavedTabGroupData SavedTabGroupTabToData(const SavedTabGroupTab& tab) {
   // Note: When adding a new syncable field, also update IsSyncEquivalent().
 
   pb_data.set_version(kCurrentSchemaVersion);
-  pb_data.mutable_local_tab_group_data()->set_is_tab_pending_sanitization(
-      tab.is_pending_sanitization());
+
   return pb_data;
 }
 

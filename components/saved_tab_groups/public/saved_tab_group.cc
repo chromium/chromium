@@ -221,10 +221,9 @@ SavedTabGroup& SavedTabGroup::SetCollaborationId(
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::SetOriginatingSavedTabGroupGuid(
-    std::optional<base::Uuid> originating_saved_tab_group_guid) {
-  originating_saved_tab_group_guid_ =
-      std::move(originating_saved_tab_group_guid);
+SavedTabGroup& SavedTabGroup::SetOriginatingTabGroupGuid(
+    std::optional<base::Uuid> originating_tab_group_guid) {
+  originating_tab_group_guid_ = std::move(originating_tab_group_guid);
   return *this;
 }
 
@@ -410,21 +409,17 @@ bool SavedTabGroup::IsSyncEquivalent(const SavedTabGroup& other) const {
 
 SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
     CollaborationId collaboration_id) const {
-  SavedTabGroup shared_group(title(), color(), /*urls=*/{});
+  SavedTabGroup shared_group = CopyBaseFieldsWithTabs();
   shared_group.SetCollaborationId(std::move(collaboration_id));
-  shared_group.SetOriginatingSavedTabGroupGuid(saved_guid());
-
-  for (size_t i = 0; i < saved_tabs().size(); ++i) {
-    const SavedTabGroupTab& tab = saved_tabs()[i];
-
-    // Use tab's index as a position for shared tabs because shared tab groups
-    // use unique positions for syncing tabs.
-    SavedTabGroupTab shared_tab(tab.url(), tab.title(),
-                                shared_group.saved_guid(), /*position=*/i);
-    shared_tab.SetFavicon(tab.favicon());
-    shared_group.AddTabLocally(std::move(shared_tab));
-  }
+  shared_group.SetOriginatingTabGroupGuid(saved_guid());
   return shared_group;
+}
+
+SavedTabGroup SavedTabGroup::CloneAsSavedTabGroup() const {
+  DCHECK(is_shared_tab_group());
+  SavedTabGroup saved_group = CopyBaseFieldsWithTabs();
+  saved_group.SetOriginatingTabGroupGuid(saved_guid());
+  return saved_group;
 }
 
 bool SavedTabGroup::IsPendingSanitization() const {
@@ -449,6 +444,22 @@ void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
       saved_tabs_.empty());
   CHECK(ignore_empty_groups_for_testing || !saved_tabs_.empty(),
         base::NotFatalUntil::M135);
+}
+
+SavedTabGroup SavedTabGroup::CopyBaseFieldsWithTabs() const {
+  SavedTabGroup cloned_group(title(), color(), /*urls=*/{});
+
+  for (size_t i = 0; i < saved_tabs().size(); ++i) {
+    const SavedTabGroupTab& tab = saved_tabs()[i];
+
+    // Use tab's index as position for the copied tab as tabs are
+    // displayed in the same order.
+    SavedTabGroupTab cloned_tab(tab.url(), tab.title(),
+                                cloned_group.saved_guid(), /*position=*/i);
+    cloned_tab.SetFavicon(tab.favicon());
+    cloned_group.AddTabLocally(std::move(cloned_tab));
+  }
+  return cloned_group;
 }
 
 }  // namespace tab_groups

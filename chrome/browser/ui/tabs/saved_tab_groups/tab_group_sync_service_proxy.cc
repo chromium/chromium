@@ -217,7 +217,14 @@ void TabGroupSyncServiceProxy::MakeTabGroupShared(
 }
 
 void TabGroupSyncServiceProxy::AboutToUnShareTabGroup(
-    const LocalTabGroupID& local_group_id) {
+    const LocalTabGroupID& local_group_id,
+    base::OnceClosure on_complete_callback) {
+  NOTIMPLEMENTED();
+}
+
+void TabGroupSyncServiceProxy::OnTabGroupUnShareComplete(
+    const LocalTabGroupID& local_group_id,
+    bool success) {
   NOTIMPLEMENTED();
 }
 

@@ -113,7 +113,10 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
       "last_updater_cache_guid_1",  // last_updater_cache_guid
       /*created_before_syncing_tab_groups=*/true,
       creation_time_windows_epoch_micros, update_time_windows_epoch_micros);
+  const base::Uuid kOriginatingSavedTabGroupGuid =
+      base::Uuid::GenerateRandomV4();
   group.SetLastUserInteractionTime(time_);
+  group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid);
 
   proto::SavedTabGroupData proto =
       SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);

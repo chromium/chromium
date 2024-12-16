@@ -202,9 +202,15 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Starts the process of converting a shared tab group to saved tab group. Due
   // to network, Chrome will need to wait for server confirmation before the
   // conversion completes successfully. The tab group must be shared when
-  // calling this.
+  // calling this. `on_complete_callback` will be called on completion.
   virtual void AboutToUnShareTabGroup(
-      const LocalTabGroupID& local_group_id) = 0;
+      const LocalTabGroupID& local_group_id,
+      base::OnceClosure on_complete_callback) = 0;
+
+  // Called when server confirms that the shared tab group has become private
+  // or when unshare fails due to some errors.
+  virtual void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
+                                         bool success) = 0;
 
   // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() const = 0;

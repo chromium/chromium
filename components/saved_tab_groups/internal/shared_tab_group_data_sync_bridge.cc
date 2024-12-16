@@ -122,9 +122,9 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
   sync_pb::SharedTabGroup* pb_group = pb_specifics.mutable_tab_group();
   pb_group->set_color(TabGroupColorToSyncColor(group.color()));
   pb_group->set_title(base::UTF16ToUTF8(group.title()));
-  if (group.originating_saved_tab_group_guid().has_value()) {
+  if (group.originating_tab_group_guid().has_value()) {
     pb_group->set_originating_tab_group_guid(
-        group.originating_saved_tab_group_guid().value().AsLowercaseString());
+        group.originating_tab_group_guid().value().AsLowercaseString());
   }
   return pb_specifics;
 }
@@ -140,9 +140,9 @@ SavedTabGroup SpecificsToSharedTabGroup(
       SyncColorToTabGroupColor(specifics.tab_group().color());
   std::u16string title = base::UTF8ToUTF16(specifics.tab_group().title());
   base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
-  base::Uuid originating_saved_tab_group_guid;
+  base::Uuid originating_tab_group_guid;
   if (specifics.tab_group().has_originating_tab_group_guid()) {
-    originating_saved_tab_group_guid = base::Uuid::ParseLowercase(
+    originating_tab_group_guid = base::Uuid::ParseLowercase(
         specifics.tab_group().originating_tab_group_guid());
   }
 
@@ -162,9 +162,8 @@ SavedTabGroup SpecificsToSharedTabGroup(
       CollaborationId(collaboration_metadata.collaboration_id()));
   group.SetCreatedByAttribution(collaboration_metadata.created_by());
   group.SetUpdatedByAttribution(collaboration_metadata.last_updated_by());
-  if (originating_saved_tab_group_guid.is_valid()) {
-    group.SetOriginatingSavedTabGroupGuid(
-        std::move(originating_saved_tab_group_guid));
+  if (originating_tab_group_guid.is_valid()) {
+    group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid));
   }
 
   // Set the remote update time explicitly because the setters above could have
