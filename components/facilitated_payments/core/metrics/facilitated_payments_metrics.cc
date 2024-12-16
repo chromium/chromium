@@ -161,11 +161,24 @@ void LogInitiatePaymentAttempt() {
                             /*sample=*/true);
 }
 
-void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration) {
+void LogInitiatePaymentResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool result,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.InitiatePayment.",
-                    result ? "Success" : "Failure", ".Latency"}),
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".InitiatePayment.", ResultToString(result), ".Latency"}),
       duration);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                      ".InitiatePayment.", ResultToString(result), ".Latency.",
+                      SchemeToString(*scheme)}),
+        duration);
+  }
 }
 
 void LogInitiatePurchaseActionAttempt() {

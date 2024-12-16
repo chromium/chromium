@@ -99,20 +99,6 @@ TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentAttempt) {
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResultAndLatency) {
-  for (bool result : {true, false}) {
-    base::HistogramTester histogram_tester;
-
-    LogInitiatePaymentResultAndLatency(result, base::Milliseconds(10));
-
-    histogram_tester.ExpectBucketCount(
-        base::StrCat({"FacilitatedPayments.Pix.InitiatePayment.",
-                      result ? "Success" : "Failure", ".Latency"}),
-        /*sample=*/10,
-        /*expected_count=*/1);
-  }
-}
-
 TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionAttempt) {
   base::HistogramTester histogram_tester;
 
@@ -388,6 +374,48 @@ TEST_P(FacilitatedPaymentsMetricsParameterizedTest,
       /*sample=*/10,
       /*expected_bucket_count=*/payment_type() ==
               FacilitatedPaymentsType::kEwallet
+          ? 1
+          : 0);
+}
+
+TEST_P(FacilitatedPaymentsMetricsParameterizedTest,
+       LogInitiatePaymentResultAndLatency_Success) {
+  base::HistogramTester histogram_tester;
+
+  LogInitiatePaymentResultAndLatency(payment_type(), /*result=*/true,
+                                     base::Milliseconds(10), scheme());
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".InitiatePayment.Success.Latency"}),
+      /*sample=*/10,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".InitiatePayment.Success.Latency.", GetSchemeString()}),
+      /*sample=*/10,
+      /*expected_count=*/payment_type() == FacilitatedPaymentsType::kEwallet
+          ? 1
+          : 0);
+}
+
+TEST_P(FacilitatedPaymentsMetricsParameterizedTest,
+       LogInitiatePaymentResultAndLatency_Failure) {
+  base::HistogramTester histogram_tester;
+
+  LogInitiatePaymentResultAndLatency(payment_type(), /*result=*/false,
+                                     base::Milliseconds(10), scheme());
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".InitiatePayment.Failure.Latency"}),
+      /*sample=*/10,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".InitiatePayment.Failure.Latency.", GetSchemeString()}),
+      /*sample=*/10,
+      /*expected_count=*/payment_type() == FacilitatedPaymentsType::kEwallet
           ? 1
           : 0);
 }

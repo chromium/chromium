@@ -95,7 +95,9 @@ class EwalletManager {
 
   // Called after receiving the `result` of the initiate payment call. The
   // `response_details` contains the action token used for payment.
+  // The call was made at `start_time`.
   void OnInitiatePaymentResponseReceived(
+      base::TimeTicks start_time,
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
           response_details);

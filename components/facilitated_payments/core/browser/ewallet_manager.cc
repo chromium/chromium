@@ -194,16 +194,22 @@ void EwalletManager::SendInitiatePaymentRequest() {
   payments_network_interface->InitiatePayment(
       std::move(initiate_payment_request_details_),
       base::BindOnce(&EwalletManager::OnInitiatePaymentResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       client_->GetPaymentsDataManager()->app_locale());
 }
 
 void EwalletManager::OnInitiatePaymentResponseReceived(
+    base::TimeTicks start_time,
     autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
     std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
         response_details) {
-  if (result !=
-      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+  bool is_successful =
+      result ==
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
+  LogInitiatePaymentResultAndLatency(kPaymentsType, /*result=*/is_successful,
+                                     base::TimeTicks::Now() - start_time,
+                                     scheme_);
+  if (!is_successful) {
     client_->ShowErrorScreen();
     return;
   }

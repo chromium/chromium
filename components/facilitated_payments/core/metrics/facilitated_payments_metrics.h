@@ -124,7 +124,14 @@ void LogPayflowExitedReason(PayflowExitedReason reason);
 void LogInitiatePaymentAttempt();
 
 // Log the result and latency for the InitiatePayment backend endpoint.
-void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration);
+// `payment_type` must be either `kEwallet` or `kPix`.
+// The `scheme` parameter is required for the 'kEwallet' payment type and should
+// not be `kInvalid`.
+void LogInitiatePaymentResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool result,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
 // Log the attempt to send the call to the InitiatePurchaseAction backend
 // endpoint.

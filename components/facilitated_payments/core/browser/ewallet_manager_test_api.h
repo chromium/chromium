@@ -68,11 +68,12 @@ class EwalletManagerTestApi {
   }
 
   void OnInitiatePaymentResponseReceived(
+      base::TimeTicks start_time,
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
           response_details) {
     ewallet_manager_->OnInitiatePaymentResponseReceived(
-        result, std::move(response_details));
+        start_time, result, std::move(response_details));
   }
 
  private:

@@ -42,6 +42,22 @@ reviewer.
 </variants>
 
 <histogram
+    name="FacilitatedPayments.Ewallet.InitiatePayment.{Result}.Latency.{Scheme}"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the latency for the InitiatePayment backend endpoint and breaks it down
+    by the result. Logged when an eWallet payflow is triggered, at most once per
+    page-load. The result is {Result}. The payment is supported by {Scheme}.
+  </summary>
+  <token key="Result" variants="BooleanResult"/>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.Ewallet.IsApiAvailable.{Result}.Latency.{Scheme}"
     units="ms" expires_after="2025-07-01">
   <owner>junhuihe@google.com</owner>
@@ -134,21 +150,6 @@ reviewer.
     flow. [Trigger] User selects a payment instrument from the list of options
     shown in the Pix UI.
   </summary>
-</histogram>
-
-<histogram name="FacilitatedPayments.Pix.InitiatePayment.{Result}.Latency"
-    units="ms" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs the latency for the InitiatePayment backend endpoint and breaks it down
-    by the result. The result is {Result}. [Frequency] Logged at most once per
-    Pix payflow. [Trigger] User selects a payment instrument from the list of
-    options shown in the Pix UI.
-  </summary>
-  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.InitiatePurchaseAction.Attempt"
@@ -287,6 +288,24 @@ reviewer.
     settings page. [Frequency] Logged once per toggle update.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.{Result}.Latency"
+    units="ms" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the latency for the InitiatePayment backend endpoint and breaks it down
+    by the result. The result is {Result}. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} payflow. [Trigger] User selects a payment
+    instrument from the list of options shown in the {FacilitatedPaymentsType}
+    UI.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram

@@ -382,6 +382,8 @@ TEST_F(
 // result, purchase action is not invoked. Instead, an error message is shown.
 TEST_F(EwalletManagerTest,
        OnInitiatePaymentResponseReceived_FailureResponse_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(client_, ShowErrorScreen);
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
@@ -391,9 +393,19 @@ TEST_F(EwalletManagerTest,
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
+          base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
               kPermanentFailure,
           std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Failure.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Failure.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the response from
@@ -401,6 +413,8 @@ TEST_F(EwalletManagerTest,
 // token, purchase action is not invoked. Instead, an error message is shown.
 TEST_F(EwalletManagerTest,
        OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(client_, ShowErrorScreen);
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
@@ -408,15 +422,27 @@ TEST_F(EwalletManagerTest,
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
+          base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
               kSuccess,
           std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the core account is std::nullopt, purchase action is not
 // invoked. Instead, an error message is shown.
 TEST_F(EwalletManagerTest,
        OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(client_, GetCoreAccountInfo)
       .Times(1)
       .WillOnce(testing::Return(std::nullopt));
@@ -430,15 +456,26 @@ TEST_F(EwalletManagerTest,
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
+          base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
               kSuccess,
           std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the user is logged out, purchase action is not invoked. Instead,
 // an error message is shown.
 TEST_F(EwalletManagerTest,
        OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
   ON_CALL(client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CoreAccountInfo()));
 
@@ -451,15 +488,27 @@ TEST_F(EwalletManagerTest,
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
+          base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
               kSuccess,
           std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that the puchase action is invoked after receiving a success response
 // from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call.
 TEST_F(EwalletManagerTest,
        OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
 
   auto response_details =
@@ -468,9 +517,19 @@ TEST_F(EwalletManagerTest,
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
+          base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
               kSuccess,
           std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is

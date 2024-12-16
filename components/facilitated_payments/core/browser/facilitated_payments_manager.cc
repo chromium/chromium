@@ -267,12 +267,13 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
       base::TimeTicks::Now() - initiate_payment_network_start_time_;
   if (result !=
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
-    LogInitiatePaymentResultAndLatency(/*result=*/false, latency);
+    LogInitiatePaymentResultAndLatency(kPaymentsType, /*result=*/false,
+                                       latency);
     LogPayflowExitedReason(PayflowExitedReason::kInitiatePaymentFailed);
     ShowErrorScreen();
     return;
   }
-  LogInitiatePaymentResultAndLatency(/*result=*/true, latency);
+  LogInitiatePaymentResultAndLatency(kPaymentsType, /*result=*/true, latency);
 
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
