@@ -21,18 +21,13 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-namespace {
-
-// Max number of most recently used folders.
-const size_t kMaxMRUFolders = 5;
-
-}  // namespace
-
 struct RecentlyUsedFoldersComboModel::Item {
   enum Type {
     TYPE_NODE,
     TYPE_ALL_BOOKMARKS_NODE,
     TYPE_SEPARATOR,
+    TYPE_ACCOUNT_BOOKMARK_HEADING,
+    TYPE_DEVICE_BOOKMARK_HEADING,
     TYPE_CHOOSE_ANOTHER_FOLDER
   };
 
@@ -62,34 +57,41 @@ RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
     const BookmarkNode* node)
     : bookmark_model_(model), parent_node_(node->parent()) {
   bookmark_model_->AddObserver(this);
-  // Use + 2 to account for bookmark bar and other node.
-  std::vector<const BookmarkNode*> nodes =
-      bookmarks::GetMostRecentlyModifiedUserFolders(model, kMaxMRUFolders + 2);
 
-  for (size_t i = 0; i < nodes.size(); ++i)
-    items_.push_back(Item(nodes[i], Item::TYPE_NODE));
+  const bookmarks::RecentlyUsedFolders mru_bookmarks =
+      bookmarks::GetMostRecentlyUsedFoldersForDisplay(model, node);
 
-  // We special case the placement of these, so remove them from the list, then
-  // fix up the order.
-  RemoveNode(model->bookmark_bar_node());
-  RemoveNode(model->mobile_node());
-  RemoveNode(model->other_node());
-  RemoveNode(node->parent());
+  if (!mru_bookmarks.account_nodes.empty()) {
+    const bool show_labels = !mru_bookmarks.local_nodes.empty();
 
-  // Make the parent the first item, unless it's a permanent node, which is
-  // added below.
-  if (!model->is_permanent_node(node->parent()))
-    items_.insert(items_.begin(), Item(node->parent(), Item::TYPE_NODE));
+    // Add account nodes to `items_`.
+    if (show_labels) {
+      items_.emplace_back(nullptr, Item::TYPE_ACCOUNT_BOOKMARK_HEADING);
+    }
 
-  // Make sure we only have kMaxMRUFolders in the first chunk.
-  if (items_.size() > kMaxMRUFolders)
-    items_.erase(items_.begin() + kMaxMRUFolders, items_.end());
+    for (const BookmarkNode* mru_node : mru_bookmarks.account_nodes) {
+      items_.emplace_back(mru_node, mru_node == model->other_node()
+                                        ? Item::TYPE_ALL_BOOKMARKS_NODE
+                                        : Item::TYPE_NODE);
+    }
 
-  // And put the bookmark bar and other nodes at the end of the list.
-  items_.emplace_back(model->bookmark_bar_node(), Item::TYPE_NODE);
-  items_.emplace_back(model->other_node(), Item::TYPE_ALL_BOOKMARKS_NODE);
-  if (model->mobile_node()->IsVisible())
-    items_.emplace_back(model->mobile_node(), Item::TYPE_NODE);
+    // Add local nodes to `items_`.
+    if (show_labels) {
+      items_.emplace_back(nullptr, Item::TYPE_DEVICE_BOOKMARK_HEADING);
+    }
+
+    for (const BookmarkNode* mru_node : mru_bookmarks.local_nodes) {
+      items_.emplace_back(mru_node, mru_node == model->other_node()
+                                        ? Item::TYPE_ALL_BOOKMARKS_NODE
+                                        : Item::TYPE_NODE);
+    }
+  } else {
+    for (const BookmarkNode* mru_node : mru_bookmarks.local_nodes) {
+      items_.emplace_back(mru_node, Item::TYPE_NODE);
+    }
+  }
+
+  // Add a separator + choose another folder last regardless of account/local.
   items_.emplace_back(nullptr, Item::TYPE_SEPARATOR);
   items_.emplace_back(nullptr, Item::TYPE_CHOOSE_ANOTHER_FOLDER);
 }
@@ -106,6 +108,10 @@ std::u16string RecentlyUsedFoldersComboModel::GetItemAt(size_t index) const {
   switch (items_[index].type) {
     case Item::TYPE_NODE:
       return items_[index].node->GetTitle();
+    case Item::TYPE_ACCOUNT_BOOKMARK_HEADING:
+      return l10n_util::GetStringUTF16(IDS_BOOKMARKS_ACCOUNT_BOOKMARKS);
+    case Item::TYPE_DEVICE_BOOKMARK_HEADING:
+      return l10n_util::GetStringUTF16(IDS_BOOKMARKS_DEVICE_BOOKMARKS);
     case Item::TYPE_ALL_BOOKMARKS_NODE:
       return l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS);
     case Item::TYPE_SEPARATOR:
@@ -120,6 +126,20 @@ std::u16string RecentlyUsedFoldersComboModel::GetItemAt(size_t index) const {
 
 bool RecentlyUsedFoldersComboModel::IsItemSeparatorAt(size_t index) const {
   return items_[index].type == Item::TYPE_SEPARATOR;
+}
+
+bool RecentlyUsedFoldersComboModel::IsItemTitleAt(size_t index) const {
+  switch (items_[index].type) {
+    case Item::TYPE_ACCOUNT_BOOKMARK_HEADING:
+    case Item::TYPE_DEVICE_BOOKMARK_HEADING:
+      return true;
+    case Item::TYPE_NODE:
+    case Item::TYPE_SEPARATOR:
+    case Item::TYPE_ALL_BOOKMARKS_NODE:
+    case Item::TYPE_CHOOSE_ANOTHER_FOLDER:
+      return false;
+  }
+  NOTREACHED();
 }
 
 std::optional<size_t> RecentlyUsedFoldersComboModel::GetDefaultIndex() const {

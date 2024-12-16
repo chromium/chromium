@@ -9047,6 +9047,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL" desc="The bookmarks bar menu item which opens the side panel">
         Open Side Panel to see All Bookmarks
       </message>
+      <message name="IDS_BOOKMARKS_ACCOUNT_BOOKMARKS" desc="The header used for account bookmarks">
+        In your Google Account
+      </message>
+      <message name="IDS_BOOKMARKS_DEVICE_BOOKMARKS" desc="The header used for device bookmarks">
+        Only on this device
+      </message>
       <message name="IDS_BOOKMARKS_LABEL_TRACKED_PRODUCTS" desc="Label on a button within the bookmarks side panel for filtering bookmarks by price tracking data.">
         Tracked products
       </message>

@@ -222,50 +222,119 @@ void CloneBookmarkNode(BookmarkModel* model,
 }
 
 std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
-    BookmarkModel* model,
-    size_t max_count) {
+    BookmarkModel* model) {
   std::vector<const BookmarkNode*> nodes;
   ui::TreeNodeIterator<const BookmarkNode> iterator(
       model->root_node(), base::BindRepeating(&PruneInvisibleFolders));
 
   while (iterator.has_next()) {
-    const BookmarkNode* parent = iterator.Next();
-    if (model->client()->IsNodeManaged(parent)) {
+    const BookmarkNode* const node = iterator.Next();
+    // Filter out managed nodes and non-folders.
+    if (model->client()->IsNodeManaged(node) || !node->is_folder()) {
       continue;
     }
-    if (parent->is_folder() && parent->date_folder_modified() > Time()) {
-      if (max_count == 0) {
-        nodes.push_back(parent);
-      } else {
-        auto i = std::upper_bound(nodes.begin(), nodes.end(), parent,
-                                  &MoreRecentlyModified);
-        if (nodes.size() < max_count || i != nodes.end()) {
-          nodes.insert(i, parent);
-          while (nodes.size() > max_count)
-            nodes.pop_back();
-        }
-      }
-    }  // else case, the root node, which we don't care about or imported nodes
-       // (which have a time of 0).
+    nodes.push_back(node);
   }
 
-  if (nodes.size() < max_count) {
-    // Add the permanent nodes if there is space. The permanent nodes are the
-    // only children of the root_node.
-    const BookmarkNode* root_node = model->root_node();
+  // TODO(crbug.com/354892429): Filter local permanent nodes if they shouldn't
+  // visible (user has permanent account nodes but no local bookmarks).
 
-    for (const auto& node : root_node->children()) {
-      if (node->IsVisible() && !model->client()->IsNodeManaged(node.get()) &&
-          !base::Contains(nodes, node.get())) {
-        nodes.push_back(node.get());
+  std::ranges::stable_sort(nodes, &MoreRecentlyModified);
 
-        if (nodes.size() == max_count)
-          break;
-      }
-    }
-  }
   return nodes;
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+RecentlyUsedFolders::RecentlyUsedFolders() = default;
+RecentlyUsedFolders::RecentlyUsedFolders(const RecentlyUsedFolders&) = default;
+RecentlyUsedFolders& RecentlyUsedFolders::operator=(
+    const RecentlyUsedFolders&) = default;
+RecentlyUsedFolders::~RecentlyUsedFolders() = default;
+
+RecentlyUsedFolders GetMostRecentlyUsedFoldersForDisplay(
+    BookmarkModel* model,
+    const BookmarkNode* displayed_node) {
+  // `displayed_node` is meant to be a bookmark. Code below is not tested for
+  // folders.
+  CHECK(!displayed_node->is_folder());
+
+  // Max number of most recently used non-permanent-node folders.
+  static constexpr size_t kMaxMRUFolders = 5;
+
+  std::vector<const BookmarkNode*> mru_nodes =
+      bookmarks::GetMostRecentlyModifiedUserFolders(model);
+  const BookmarkNode* const most_recent_node =
+      mru_nodes.empty() ? nullptr : mru_nodes[0];
+
+  // Special case the parent item, it'll either remain first or filtered out as
+  // a permanent node and added back later.
+  std::erase(mru_nodes, displayed_node->parent());  // No-op if not present.
+  mru_nodes.insert(mru_nodes.begin(), displayed_node->parent());
+
+  // Remove permanent nodes, they'll be re-added at the end if used later.
+  std::erase_if(mru_nodes, [](const BookmarkNode* mru_node) {
+    return mru_node->is_permanent_node();
+  });
+
+  // Figure out which permanent nodes to add.
+  const bool account_nodes_exist =
+      model->account_bookmark_bar_node() != nullptr;
+  const std::vector<const BookmarkNode*> account_permanent_nodes(
+      {model->account_bookmark_bar_node(), model->account_other_node(),
+       model->account_mobile_node()});
+  const std::vector<const BookmarkNode*> local_permanent_nodes(
+      {model->bookmark_bar_node(), model->other_node(), model->mobile_node()});
+
+  std::vector<const BookmarkNode*> permanent_nodes_included;
+  for (const BookmarkNode* permanent_node :
+       account_nodes_exist ? account_permanent_nodes : local_permanent_nodes) {
+    if (!permanent_node->IsVisible()) {
+      continue;
+    }
+    permanent_nodes_included.push_back(permanent_node);
+  }
+
+  if (account_nodes_exist) {
+    // Add back the most recent node and the parent node if either of them are
+    // local permanent nodes. Permanent account nodes are preferred.
+    auto append_if_permanent_local_node = [model, &permanent_nodes_included](
+                                              const BookmarkNode* mru_node) {
+      if (mru_node->is_permanent_node() && model->IsLocalOnlyNode(*mru_node)) {
+        permanent_nodes_included.push_back(mru_node);
+      }
+    };
+    if (most_recent_node) {
+      append_if_permanent_local_node(most_recent_node);
+    }
+    if (displayed_node->parent() != most_recent_node) {
+      append_if_permanent_local_node(displayed_node->parent());
+    }
+  }
+
+  // Cap total number of non-permanent nodes to kMaxMRUFolders.
+  mru_nodes.resize(std::min(mru_nodes.size(), kMaxMRUFolders));
+
+  // Add permanent nodes at the end (note that these lists are both sorted and
+  // will remain sorted (permanent last) when split them up below.
+  mru_nodes.insert(mru_nodes.end(), permanent_nodes_included.begin(),
+                   permanent_nodes_included.end());
+
+  // Split between account and local nodes if there are account nodes.
+  RecentlyUsedFolders result;
+  if (account_nodes_exist) {
+    std::vector<const BookmarkNode*> account_nodes;
+    std::vector<const BookmarkNode*> local_nodes;
+    for (const BookmarkNode* mru_node : mru_nodes) {
+      (model->IsLocalOnlyNode(*mru_node) ? result.local_nodes
+                                         : result.account_nodes)
+          .push_back(mru_node);
+    }
+  } else {
+    result.local_nodes = std::move(mru_nodes);
+  }
+  return result;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void GetMostRecentlyAddedEntries(BookmarkModel* model,
                                  size_t count,
@@ -484,8 +553,8 @@ const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
   }
 
   std::vector<const BookmarkNode*> nodes =
-      GetMostRecentlyModifiedUserFolders(model, 1);
-  DCHECK(!nodes.empty());  // This list is always padded with default folders.
+      GetMostRecentlyModifiedUserFolders(model);
+  CHECK(!nodes.empty());
   return nodes[0];
 }
 

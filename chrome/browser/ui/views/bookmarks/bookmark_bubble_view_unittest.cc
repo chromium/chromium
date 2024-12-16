@@ -37,15 +37,18 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
 using bookmarks::BookmarkModel;
 
 namespace {
@@ -140,14 +143,17 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
 
   const bookmarks::BookmarkNode* GetBookmark() { return bookmark_node_; }
 
-  PriceTrackingView* GetPriceTrackingView() {
+  views::View* GetViewInBookmarkBubble(ui::ElementIdentifier id) {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(
             BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
-    views::View* matched_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kPriceTrackingBookmarkViewElementId, context);
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+        id, context);
+  }
 
+  PriceTrackingView* GetPriceTrackingView() {
+    views::View* const matched_view =
+        GetViewInBookmarkBubble(kPriceTrackingBookmarkViewElementId);
     return matched_view ? views::AsViewClass<PriceTrackingView>(matched_view)
                         : nullptr;
   }
@@ -416,7 +422,7 @@ TEST_F(BookmarkBubbleViewShoppingCollectionTest, IPHNotShown_NotAProduct) {
   const ui::ElementContext context =
       views::ElementTrackerViews::GetContextForView(
           BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
-  views::View* iph_root =
+  views::View* const iph_root =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           commerce::kShoppingCollectionIPHViewId, context);
 
@@ -424,4 +430,30 @@ TEST_F(BookmarkBubbleViewShoppingCollectionTest, IPHNotShown_NotAProduct) {
   EXPECT_FALSE(iph_root);
   EXPECT_FALSE(
       BookmarkBubbleView::bookmark_bubble()->GetFootnoteViewForTesting());
+}
+
+class BookmarkBubbleViewWithAccountBookmarksTest
+    : public BookmarkBubbleViewTestBase {
+ public:
+  BookmarkBubbleViewWithAccountBookmarksTest() {
+    test_features_.InitAndEnableFeature(
+        syncer::kSyncEnableBookmarksInTransportMode);
+  }
+};
+
+// Verifies that the bookmark bubble correctly instantiates a combobox that
+// separates account bookmarks and local bookmarks with headers. It also
+// verifies that RecentlyUsedFoldersComboModel correctly reports those as
+// "title" items and that ComboboxMenuModel correctly translates that to a
+// TYPE_TITLE item that can be rendered differently when the popup menu is
+// displayed.
+TEST_F(BookmarkBubbleViewWithAccountBookmarksTest,
+       ComboboxUsesTitlesForHeaders) {
+  GetBookmarkModel()->CreateAccountPermanentFolders();
+  CreateBubbleView();
+  EXPECT_EQ(ui::MenuModel::TYPE_TITLE,
+            views::AsViewClass<views::Combobox>(
+                GetViewInBookmarkBubble(kBookmarkFolderFieldId))
+                ->menu_model_for_testing()
+                ->GetTypeAt(0));
 }

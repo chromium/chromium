@@ -13,8 +13,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -24,6 +24,7 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -82,6 +83,10 @@ class BookmarkUtilsTest : public testing::Test,
   void GroupedBookmarkChangesEnded() override {
     ++grouped_changes_ended_count_;
   }
+
+  // Some of these tests exercise account bookmarks.
+  base::test::ScopedFeatureList features_override_{
+      syncer::kSyncEnableBookmarksInTransportMode};
 
   // Clipboard requires a full TaskEnvironment.
   base::test::TaskEnvironment task_environment_;
@@ -335,6 +340,155 @@ TEST_F(BookmarkUtilsTest, CleanUpUrlForMatching) {
   EXPECT_EQ(u"http://foo.com/", CleanUpUrlForMatching(GURL("http://Foo.com"),
                                                       /*adjustments=*/nullptr));
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// TODO(crbug.com/380820764): Break this up into smaller parts that:
+// * Add more than 5 custom folders and make sure that permanent nodes still
+//   show.
+// * Add 6 custom folders, make sure that only 5 show and that the folder past
+//   the cutoff starts showing if it's the parent of the currently showing
+//   bookmark.
+// * Permanent nodes don't show up first even if they are the parents of the
+//   currently displaying bookmarks.
+TEST_F(BookmarkUtilsTest, GetRecentlyUsedFoldersWithOnlyLocalBookmarks) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+
+  const std::u16string title = u"Title";
+  const GURL url("http://google.com");
+  // Note that because `other_bookmark` is a child of a permanent node its use
+  // in GetMostRecentlyUsedFoldersForDisplay will not cause other_node() to be
+  // displayed before more recently modified folders.
+  const BookmarkNode* const other_bookmark =
+      model->AddURL(model->other_node(), 0, title, url);
+
+  const bookmarks::RecentlyUsedFolders mru_bookmarks =
+      bookmarks::GetMostRecentlyUsedFoldersForDisplay(model.get(),
+                                                      other_bookmark);
+
+  EXPECT_TRUE(mru_bookmarks.account_nodes.empty());
+  ASSERT_EQ(mru_bookmarks.local_nodes.size(), 2u);
+  // Permanent nodes display in a fixed order even if a bookmark in other_node()
+  // is currently displayed.
+  EXPECT_EQ(mru_bookmarks.local_nodes[0], model->bookmark_bar_node());
+  EXPECT_EQ(mru_bookmarks.local_nodes[1], model->other_node());
+
+  const BookmarkNode* const folder1 =
+      model->AddFolder(model->other_node(), 0, u"Folder");
+  const BookmarkNode* const folder2 =
+      model->AddFolder(model->other_node(), 0, u"Folder2");
+
+  model->SetDateFolderModified(folder1,
+                               base::Time::FromMillisecondsSinceUnixEpoch(1));
+  model->SetDateFolderModified(folder2,
+                               base::Time::FromMillisecondsSinceUnixEpoch(2));
+
+  // folder2 is most recent
+  EXPECT_EQ(folder2, bookmarks::GetMostRecentlyUsedFoldersForDisplay(
+                         model.get(), other_bookmark)
+                         .local_nodes[0]);
+
+  model->SetDateFolderModified(folder1,
+                               base::Time::FromMillisecondsSinceUnixEpoch(3));
+  // folder1 is most recent
+  EXPECT_EQ(folder1, bookmarks::GetMostRecentlyUsedFoldersForDisplay(
+                         model.get(), other_bookmark)
+                         .local_nodes[0]);
+
+  const BookmarkNode* const bookmark = model->AddURL(folder2, 0, title, url);
+
+  // folder2 as a parent to `bookmark` displays first even though not most
+  // recent.
+  EXPECT_EQ(folder2, bookmarks::GetMostRecentlyUsedFoldersForDisplay(
+                         model.get(), bookmark)
+                         .local_nodes[0]);
+}
+
+// TODO(crbug.com/380820764): Break this up into smaller parts and make sure we
+// have full coverage for:
+// * Add more than 5 custom folders and make sure that account permanent nodes
+//   still show.
+// * Add 6 custom folders, make sure that the oldest one is cut off (regardless
+//   of local or account). Make sure that the oldest one starts showing if it's
+//   the parent of a currently-showing bookmarl (and the second-oldest one is
+//   gone instead).
+// * Make sure that local permanent nodes show up if most recently used and if
+//   the displayed bookmark is a child of that local node it's only added once
+//   (no duplicates).
+// * Make sure local permanent nodes show up even if the displayed bookmark is
+//   another permanent node (both local permanent nodes can show).
+// * Make sure that local permanent nodes show up last among local nodes even if
+//   they are the most recent ones or parents of the current currently-displayed
+//   bookmark.
+// * Make sure local nodes are empty if there's >5 more recently used folders
+//   under account bookmarks.
+TEST_F(BookmarkUtilsTest, GetRecentlyUsedFoldersWithAccountBookmarks) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+  model->CreateAccountPermanentFolders();
+
+  const std::u16string title = u"Title";
+  const GURL url("http://google.com");
+  // Note that because `bookmark_in_account_other_node` is a child of a
+  // permanent node its use in GetMostRecentlyUsedFoldersForDisplay will not
+  // cause account_other_node() to be displayed before more recently modified
+  // folders.
+  const BookmarkNode* const bookmark_in_account_other_node =
+      model->AddURL(model->account_other_node(), 0, title, url);
+
+  bookmarks::RecentlyUsedFolders mru_bookmarks =
+      bookmarks::GetMostRecentlyUsedFoldersForDisplay(
+          model.get(), bookmark_in_account_other_node);
+
+  // Permanent nodes are only added to account nodes by default.
+  ASSERT_EQ(mru_bookmarks.account_nodes.size(), 2u);
+  // No local nodes display by default.
+  EXPECT_TRUE(mru_bookmarks.local_nodes.empty());
+
+  // Permanent nodes display in a fixed order even if a bookmark in
+  // account_other_node() is currently displayed.
+  EXPECT_EQ(mru_bookmarks.account_nodes[0], model->account_bookmark_bar_node());
+  EXPECT_EQ(mru_bookmarks.account_nodes[1], model->account_other_node());
+
+  const BookmarkNode* const local_other_bookmark =
+      model->AddURL(model->other_node(), 0, title, url);
+
+  // Make sure local permanent nodes are not the most recently modified ones.
+  model->SetDateFolderModified(model->other_node(),
+                               base::Time::FromMillisecondsSinceUnixEpoch(1));
+  model->SetDateFolderModified(model->account_other_node(),
+                               base::Time::FromMillisecondsSinceUnixEpoch(2));
+
+  mru_bookmarks = bookmarks::GetMostRecentlyUsedFoldersForDisplay(
+      model.get(), local_other_bookmark);
+
+  // Local permanent node included when its children are being displayed.
+  ASSERT_EQ(mru_bookmarks.local_nodes.size(), 1u);
+  EXPECT_EQ(model->other_node(), mru_bookmarks.local_nodes[0]);
+
+  // But not otherwise.
+  EXPECT_TRUE(bookmarks::GetMostRecentlyUsedFoldersForDisplay(
+                  model.get(), bookmark_in_account_other_node)
+                  .local_nodes.empty());
+
+  // The most recent folders under account and local are split up as the topmost
+  // entries.
+  const BookmarkNode* const account_folder =
+      model->AddFolder(model->account_other_node(), 0, u"Folder");
+  const BookmarkNode* const local_folder =
+      model->AddFolder(model->other_node(), 0, u"Folder2");
+
+  model->SetDateFolderModified(account_folder,
+                               base::Time::FromMillisecondsSinceUnixEpoch(20));
+  // Older than `account_folder` but not filtered out (not permanent node).
+  model->SetDateFolderModified(local_folder,
+                               base::Time::FromMillisecondsSinceUnixEpoch(10));
+
+  mru_bookmarks = bookmarks::GetMostRecentlyUsedFoldersForDisplay(
+      model.get(), bookmark_in_account_other_node);
+  EXPECT_EQ(account_folder, mru_bookmarks.account_nodes[0]);
+  EXPECT_EQ(local_folder, mru_bookmarks.local_nodes[0]);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace bookmarks

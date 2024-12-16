@@ -1483,17 +1483,16 @@ TEST_F(BookmarkModelTest, MostRecentlyModifiedFolders) {
 
   // Make sure folder is in the most recently modified.
   std::vector<const BookmarkNode*> most_recent_folders =
-      GetMostRecentlyModifiedUserFolders(model_.get(), 1);
-  ASSERT_EQ(1U, most_recent_folders.size());
-  ASSERT_EQ(folder, most_recent_folders[0]);
+      GetMostRecentlyModifiedUserFolders(model_.get());
+  ASSERT_FALSE(most_recent_folders.empty());
+  EXPECT_EQ(folder, most_recent_folders[0]);
 
   // Nuke the folder and do another fetch, making sure folder isn't in the
   // returned list.
   model_->Remove(folder->parent()->children().front().get(),
                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
-  most_recent_folders = GetMostRecentlyModifiedUserFolders(model_.get(), 1);
-  ASSERT_EQ(1U, most_recent_folders.size());
-  ASSERT_NE(most_recent_folders[0], folder);
+  most_recent_folders = GetMostRecentlyModifiedUserFolders(model_.get());
+  EXPECT_FALSE(base::Contains(most_recent_folders, folder));
 }
 
 // Make sure MostRecentlyAddedEntries stays in sync.

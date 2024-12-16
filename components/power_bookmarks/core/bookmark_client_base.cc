@@ -124,8 +124,7 @@ const bookmarks::BookmarkNode* BookmarkClientBase::GetSuggestedSaveLocation(
   // If there's no suggested folder, ensure we're not accidentally suggesting
   // one via the most recently modified.
   for (const bookmarks::BookmarkNode* node :
-       bookmarks::GetMostRecentlyModifiedUserFolders(
-           bookmark_model_, save_location_providers_.size() + 1)) {
+       bookmarks::GetMostRecentlyModifiedUserFolders(bookmark_model_)) {
     // Suggest first non-suggested folder in the MRU.
     std::string was_saved_to_suggested;
     if (!node->GetMetaInfo(kWasSuggestedFolderKey, &was_saved_to_suggested) ||

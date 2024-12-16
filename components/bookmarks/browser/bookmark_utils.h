@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -79,10 +80,53 @@ void CopyToClipboard(
     metrics::BookmarkEditSource source,
     bool is_off_the_record);
 
-// Returns a vector containing up to `max_count` of the most recently modified
-// user folders. This never returns an empty vector.
+// Returns a vector containing of the most recently modified user folders. This
+// never returns an empty vector.
 std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
-    BookmarkModel* model, size_t max_count);
+    BookmarkModel* model);
+
+// If this should be used on mobile we need to reevaluate if this implementation
+// makes sense. See tests in bookmark_utils_unittest.cc which currently fail
+// outside of desktop. Enable and update those if this is to be used on mobile.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Fields to use, split by account/local bookmarks. Used by
+// RecentlyUsedFoldersComboModel.
+struct RecentlyUsedFolders final {
+  RecentlyUsedFolders();
+  RecentlyUsedFolders(const RecentlyUsedFolders&);
+  RecentlyUsedFolders& operator=(const RecentlyUsedFolders&);
+  ~RecentlyUsedFolders();
+
+  std::vector<const BookmarkNode*> account_nodes;
+  std::vector<const BookmarkNode*> local_nodes;
+};
+
+// Get recently-used-folders, including permanent nodes for display split up by
+// "account" and "local" nodes. If there are no "account" bookmarks all entries
+// are returned as local nodes even if sync'd, to be displayed as a single list
+// without any headers/labels.
+//
+// In case of a mixed account and local bookmarks in the MRU nodes, this would
+// display:
+//   - Account Bookmark Heading
+//     - Most recently used custom account bookmarks
+//     - Account permanent folders if visible
+//   - Local Bookmark Heading
+//     - Most recently used custom local bookmarks
+//     - Local permanent folder if it is the most recently used folder
+//
+// If MRU nodes are only local or account, this would display:
+//   - Most recently used custom
+//   - Account/Local and syncable permanent nodes
+//
+// Note: The parent of `display_node` is pushed on top of its corresponding list
+// if it is a non-permanent folder or at the end if it is a permanent folder
+// that is not already included.
+RecentlyUsedFolders GetMostRecentlyUsedFoldersForDisplay(
+    BookmarkModel* model,
+    const BookmarkNode* displayed_node);
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Returns the most recently added bookmarks. This does not return folders,
 // only nodes of type url.
