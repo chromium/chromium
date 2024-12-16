@@ -538,7 +538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.{IsAccessTokenIncluded}"
+    name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult{IsAccessTokenIncluded}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-05">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -547,8 +547,9 @@ chromium-metrics-reviews@google.com.
     the request {IsAccessTokenIncluded}.
   </summary>
   <token key="IsAccessTokenIncluded">
-    <variant name="NoAccessToken" summary="has no access token"/>
-    <variant name="YesAccessToken" summary="has an access token"/>
+    <variant name="" summary="response is received"/>
+    <variant name=".NoAccessToken" summary="has no access token"/>
+    <variant name=".YesAccessToken" summary="has an access token"/>
   </token>
 </histogram>
 
@@ -1395,6 +1396,15 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether a Safe Browsing cookie exists at profile startup or when a
     new profile is created. Recorded for regular or incognito profiles.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HitReport.NetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-05">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the network result for a Safe Browsing hit report request.
   </summary>
 </histogram>
 

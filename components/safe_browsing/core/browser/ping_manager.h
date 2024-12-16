@@ -13,6 +13,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
@@ -140,6 +141,9 @@ class PingManager : public KeyedService {
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
+  void OnSafeBrowsingHitURLLoaderComplete(
+      network::SimpleURLLoader* source,
+      std::unique_ptr<std::string> response_body);
   void OnThreatDetailsReportURLLoaderComplete(
       network::SimpleURLLoader* source,
       bool has_access_token,
@@ -174,6 +178,8 @@ class PingManager : public KeyedService {
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
   void SetHatsDelegateForTesting(
       std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
+  void SetOnURLLoaderCompleteCallbackForTesting(
+      base::OnceCallback<void()> callback);
 
  protected:
   friend class PingManagerTest;
@@ -251,6 +257,9 @@ class PingManager : public KeyedService {
 
   // Determines whether the user has opted in to send persisted reports.
   base::RepeatingCallback<bool()> get_should_send_persisted_report_;
+
+  // If populated, called once the URL loader completes.
+  base::OnceCallback<void()> on_url_loader_complete_callback_;
 
   base::WeakPtrFactory<PingManager> weak_factory_{this};
 };
