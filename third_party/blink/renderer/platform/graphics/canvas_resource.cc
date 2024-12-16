@@ -855,12 +855,6 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 const gpu::SyncToken
 ExternalCanvasResource::GetSyncTokenWithOptionalVerification(
     bool needs_verified_token) {
-  GenOrFlushSyncToken();
-  return sync_token_;
-}
-
-void ExternalCanvasResource::GenOrFlushSyncToken() {
-  TRACE_EVENT0("blink", "ExternalCanvasResource::GenOrFlushSyncToken");
   // This method is expected to be used both in WebGL and WebGPU, that's why it
   // uses InterfaceBase.
   if (!sync_token_.HasData()) {
@@ -869,7 +863,8 @@ void ExternalCanvasResource::GenOrFlushSyncToken() {
       interface->GenSyncTokenCHROMIUM(sync_token_.GetData());
   } else if (!sync_token_.verified_flush()) {
     // The offscreencanvas usage needs the sync_token to be verified in order to
-    // be able to use it by the compositor.
+    // be able to use it by the compositor. This is why this method produces a
+    // verified token even if `needs_verified_token` is false.
     int8_t* token_data = sync_token_.GetData();
     auto* interface = InterfaceBase();
     DCHECK(interface);
@@ -877,6 +872,8 @@ void ExternalCanvasResource::GenOrFlushSyncToken() {
     interface->VerifySyncTokensCHROMIUM(&token_data, 1);
     sync_token_.SetVerifyFlush();
   }
+
+  return sync_token_;
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>

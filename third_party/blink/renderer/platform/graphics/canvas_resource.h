@@ -444,7 +444,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       bool needs_verified_token) override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
-  void GenOrFlushSyncToken();
 
   ExternalCanvasResource(
       scoped_refptr<gpu::ClientSharedImage> client_si,
