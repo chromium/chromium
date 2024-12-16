@@ -227,15 +227,13 @@ TextDirection GetTextDirectionForLocale(const char* locale_name) {
   return (layout_dir != ULOC_LAYOUT_RTL) ? LEFT_TO_RIGHT : RIGHT_TO_LEFT;
 }
 
-TextDirection GetFirstStrongCharacterDirection(const std::u16string& text) {
-  const char16_t* string = text.c_str();
+TextDirection GetFirstStrongCharacterDirection(std::u16string_view text) {
   size_t length = text.length();
   size_t position = 0;
   while (position < length) {
     UChar32 character;
     size_t next_position = position;
-    // SAFETY: `next_position` is guaranteed to be smaller than `length`.
-    UNSAFE_BUFFERS(U16_NEXT(string, next_position, length, character));
+    U16_NEXT(text, next_position, length, character);
     TextDirection direction = GetCharacterDirection(character);
     if (direction != UNKNOWN_DIRECTION)
       return direction;
@@ -244,15 +242,12 @@ TextDirection GetFirstStrongCharacterDirection(const std::u16string& text) {
   return LEFT_TO_RIGHT;
 }
 
-TextDirection GetLastStrongCharacterDirection(const std::u16string& text) {
-  const char16_t* string = text.c_str();
+TextDirection GetLastStrongCharacterDirection(std::u16string_view text) {
   size_t position = text.length();
   while (position > 0) {
     UChar32 character;
     size_t prev_position = position;
-    // SAFETY: `prev_position` is guaranteed to be >0 and within the bounds of
-    // `string`.
-    UNSAFE_BUFFERS(U16_PREV(string, 0, prev_position, character));
+    U16_PREV(text, 0, prev_position, character);
     TextDirection direction = GetCharacterDirection(character);
     if (direction != UNKNOWN_DIRECTION)
       return direction;
@@ -261,8 +256,7 @@ TextDirection GetLastStrongCharacterDirection(const std::u16string& text) {
   return LEFT_TO_RIGHT;
 }
 
-TextDirection GetStringDirection(const std::u16string& text) {
-  const char16_t* string = text.c_str();
+TextDirection GetStringDirection(std::u16string_view text) {
   size_t length = text.length();
   size_t position = 0;
 
@@ -270,8 +264,7 @@ TextDirection GetStringDirection(const std::u16string& text) {
   while (position < length) {
     UChar32 character;
     size_t next_position = position;
-    // SAFETY: `next_position` is guaranteed to be smaller than `length`.
-    UNSAFE_BUFFERS(U16_NEXT(string, next_position, length, character));
+    U16_NEXT(text, next_position, length, character);
     TextDirection direction = GetCharacterDirection(character);
     if (direction != UNKNOWN_DIRECTION) {
       if (result != UNKNOWN_DIRECTION && result != direction)
@@ -283,10 +276,7 @@ TextDirection GetStringDirection(const std::u16string& text) {
 
   // Handle the case of a string not containing any strong directionality
   // characters defaulting to LEFT_TO_RIGHT.
-  if (result == UNKNOWN_DIRECTION)
-    return LEFT_TO_RIGHT;
-
-  return result;
+  return (result == UNKNOWN_DIRECTION) ? LEFT_TO_RIGHT : result;
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -412,15 +402,13 @@ void SanitizeUserSuppliedString(std::u16string* text) {
   AdjustStringForLocaleDirection(text);
 }
 
-bool StringContainsStrongRTLChars(const std::u16string& text) {
-  const char16_t* string = text.c_str();
+bool StringContainsStrongRTLChars(std::u16string_view text) {
   size_t length = text.length();
   size_t position = 0;
   while (position < length) {
     UChar32 character;
     size_t next_position = position;
-    // SAFETY: `next_position` is guaranteed to be smaller than `length`.
-    UNSAFE_BUFFERS(U16_NEXT(string, next_position, length, character));
+    U16_NEXT(text, next_position, length, character);
 
     // Now that we have the character, we use ICU in order to query for the
     // appropriate Unicode BiDi character type.
@@ -476,20 +464,20 @@ void WrapPathWithLTRFormatting(const FilePath& path,
   rtl_safe_path->push_back(kPopDirectionalFormatting);
 }
 
-std::u16string GetDisplayStringInLTRDirectionality(const std::u16string& text) {
+std::u16string GetDisplayStringInLTRDirectionality(std::u16string_view text) {
   // Always wrap the string in RTL UI (it may be appended to RTL string).
   // Also wrap strings with an RTL first strong character direction in LTR UI.
+  std::u16string text_mutable(text);
   if (IsRTL() || GetFirstStrongCharacterDirection(text) == RIGHT_TO_LEFT) {
-    std::u16string text_mutable(text);
     WrapStringWithLTRFormatting(&text_mutable);
-    return text_mutable;
   }
-  return text;
+  return text_mutable;
 }
 
-std::u16string StripWrappingBidiControlCharacters(const std::u16string& text) {
-  if (text.empty())
-    return text;
+std::u16string StripWrappingBidiControlCharacters(std::u16string_view text) {
+  if (text.empty()) {
+    return std::u16string(text);
+  }
   size_t begin_index = 0;
   char16_t begin = text[begin_index];
   if (begin == kLeftToRightEmbeddingMark ||
@@ -500,7 +488,7 @@ std::u16string StripWrappingBidiControlCharacters(const std::u16string& text) {
   size_t end_index = text.length() - 1;
   if (text[end_index] == kPopDirectionalFormatting)
     --end_index;
-  return text.substr(begin_index, end_index - begin_index + 1);
+  return std::u16string(text.substr(begin_index, end_index - begin_index + 1));
 }
 
 }  // namespace base::i18n
