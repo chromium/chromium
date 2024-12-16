@@ -19,6 +19,7 @@ constexpr std::string_view kIsAuthErrorKey = "is_auth_error";
 constexpr std::string_view kAttachedGaiaIdsKey = "attached_gaia_ids";
 constexpr std::string_view kUserNameKey = "user_name";
 constexpr std::string_view kNewProfile = "new_profile";
+constexpr std::string_view kIsFullyInitializedKey = "fully_initialized";
 constexpr std::string_view kDiscardedSessions = "discarded_sessions";
 
 // Retrieves a bool value from the dictionary.
@@ -125,6 +126,10 @@ bool ProfileAttributesIOS::IsNewProfile() const {
   return GetBool(storage_, kNewProfile);
 }
 
+bool ProfileAttributesIOS::IsFullyInitialized() const {
+  return GetBool(storage_, kIsFullyInitializedKey);
+}
+
 const std::string& ProfileAttributesIOS::GetGaiaId() const {
   return GetString(storage_, kGaiaIdKey);
 }
@@ -153,13 +158,17 @@ bool ProfileAttributesIOS::IsAuthenticated() const {
   return !GetGaiaId().empty() || !GetUserName().empty();
 }
 
+ProfileAttributesIOS::SessionIds ProfileAttributesIOS::GetDiscardedSessions()
+    const {
+  return GetStringSet<SessionIds>(storage_, kDiscardedSessions);
+}
+
 void ProfileAttributesIOS::ClearIsNewProfile() {
   SetBool(storage_, kNewProfile, false);
 }
 
-ProfileAttributesIOS::SessionIds ProfileAttributesIOS::GetDiscardedSessions()
-    const {
-  return GetStringSet<SessionIds>(storage_, kDiscardedSessions);
+void ProfileAttributesIOS::SetFullyInitialized() {
+  SetBool(storage_, kIsFullyInitializedKey, true);
 }
 
 void ProfileAttributesIOS::SetAuthenticationInfo(std::string_view gaia_id,

@@ -279,18 +279,19 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
   }
   // Delete the old managed profile (if it exists).
   if (abandoned_managed_profile_name) {
-    // The old managed profile should still be "new", i.e. not actually created
-    // on disk, so that no actual user data gets deleted here.
-    CHECK(storage
-              ->GetAttributesForProfileWithName(*abandoned_managed_profile_name)
-              .IsNewProfile());
+    // The old managed profile must not have been initialized, so that no actual
+    // user data gets deleted here.
+    CHECK(
+        !storage
+             ->GetAttributesForProfileWithName(*abandoned_managed_profile_name)
+             .IsFullyInitialized());
     // Also, the old managed profile mustn't be loaded, since it's going to be
     // deleted and there's no good way to unload it.
     CHECK(
         !profile_manager_->GetProfileWithName(*abandoned_managed_profile_name));
 
-    // Since the profile doesn't exist on disk, just removing the entry in the
-    // attributes storage is sufficient.
+    // TODO(crbug.com/331783685): Call the proper profile deletion API once it
+    // exists, see crbug.com/380903168.
     storage->RemoveProfile(*abandoned_managed_profile_name);
   }
 

@@ -30,6 +30,17 @@ TEST_F(ProfileAttributesIOSTest, CreateNew) {
   EXPECT_FALSE(attributes.IsNewProfile());
 }
 
+// Tests that IsFullyInitialized() starts out false and can be set to true.
+TEST_F(ProfileAttributesIOSTest, FullyInitialized) {
+  ProfileAttributesIOS attributes =
+      ProfileAttributesIOS::CreateNew(kProfileName);
+  EXPECT_EQ(attributes.GetProfileName(), kProfileName);
+  EXPECT_FALSE(attributes.IsFullyInitialized());
+
+  attributes.SetFullyInitialized();
+  EXPECT_TRUE(attributes.IsFullyInitialized());
+}
+
 // Tests the GetName() method of ProfileAttributesIOS.
 TEST_F(ProfileAttributesIOSTest, GetName) {
   ProfileAttributesIOS attributes =

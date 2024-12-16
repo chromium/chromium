@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -193,10 +194,9 @@ void AuthenticationService::Initialize(
     base::UmaHistogramEnumeration("Signin.IOSDeviceRestoreSignedInState",
                                   signed_in_state);
   }
-  // If opening the managed identity profile, the user needs to be signed in
-  // automatically.
-  // TODO(crbug.com/375605572): Need to create an onboarding screen for a
-  // new profile.
+
+  // If opening a managed profile, the user needs to be signed in automatically.
+  // TODO(crbug.com/375605572): Move the entire logic below into a continuation.
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     // Skip if the feature is not enabled.
     return;
@@ -208,11 +208,31 @@ void AuthenticationService::Initialize(
     CHECK_IS_TEST();
     return;
   }
-  std::string default_profile_name =
-      profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
+  ProfileAttributesStorageIOS* attributes_storage =
+      profile_manager->GetProfileAttributesStorage();
+
   std::string profile_name = account_manager_service_->GetProfileName();
-  if (profile_name == default_profile_name) {
-    // Skip if the current profile is the default profile.
+
+  // If the profile was already initialized before, nothing to do here.
+  if (attributes_storage->GetAttributesForProfileWithName(profile_name)
+          .IsFullyInitialized()) {
+    return;
+  }
+
+  // Once this method returns, the profile is considered fully initialized.
+  base::ScopedClosureRunner mark_profile_initialized(base::BindOnce(
+      [](ProfileAttributesStorageIOS* attributes_storage,
+         std::string_view profile_name) {
+        attributes_storage->UpdateAttributesForProfileWithName(
+            profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
+              attrs.SetFullyInitialized();
+              return attrs;
+            }));
+      },
+      attributes_storage, profile_name));
+
+  if (profile_name == attributes_storage->GetPersonalProfileName()) {
+    // Nothing to do if the current profile is the default profile.
     return;
   }
   NSArray<id<SystemIdentity>>* identities_for_profile =
@@ -221,7 +241,7 @@ void AuthenticationService::Initialize(
   // this CHECK.
   CHECK_EQ(identities_for_profile.count, 1ul);
   if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    // Skip if the profile is already signed in.
+    // Nothing to do if the profile is already signed in.
     return;
   }
   // TODO(crbug.com/375605572): Need to set the right access point.
