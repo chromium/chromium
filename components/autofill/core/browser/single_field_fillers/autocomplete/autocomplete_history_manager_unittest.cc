@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 
 #include <string>
 #include <vector>
@@ -477,9 +477,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   // OnSuggestionsReturned
-  EXPECT_CALL(mock_callback,
-              Run(test_field_.global_id(),
-                  testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(),
+                                 testing::Truly(IsEmptySuggestionVector)));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -650,9 +649,8 @@ TEST_F(AutocompleteHistoryManagerTest,
       test_field_, autofill_client_, mock_callback.GetNewRef()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
-  EXPECT_CALL(mock_callback,
-              Run(test_field_.global_id(),
-                  testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(),
+                                 testing::Truly(IsEmptySuggestionVector)));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,

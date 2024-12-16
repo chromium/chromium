@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/single_field_fill_router.h"
+#include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,9 +11,9 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
-#include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
-#include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_iban_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/payments/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"

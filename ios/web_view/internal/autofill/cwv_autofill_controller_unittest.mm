@@ -11,7 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#import "components/autofill/core/browser/mock_autocomplete_history_manager.h"
+#import "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/core/common/form_data.h"

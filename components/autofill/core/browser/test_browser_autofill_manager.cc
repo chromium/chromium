@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/filling/test_form_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
-#include "components/autofill/core/browser/mock_single_field_fill_router.h"
+#include "components/autofill/core/browser/single_field_fillers/mock_single_field_fill_router.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/ui/suggestion.h"

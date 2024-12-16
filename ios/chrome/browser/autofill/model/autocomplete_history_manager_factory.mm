@@ -7,7 +7,7 @@
 #import <utility>
 
 #import "base/no_destructor.h"
-#import "components/autofill/core/browser/autocomplete_history_manager.h"
+#import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"

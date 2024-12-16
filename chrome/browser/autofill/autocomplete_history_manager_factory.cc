@@ -7,7 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 
 namespace autofill {

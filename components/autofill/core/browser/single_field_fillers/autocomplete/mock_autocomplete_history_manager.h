@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_AUTOCOMPLETE_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_AUTOCOMPLETE_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -44,4 +44,4 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_AUTOCOMPLETE_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_

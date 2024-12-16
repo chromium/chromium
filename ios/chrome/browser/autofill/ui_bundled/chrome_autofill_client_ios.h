@@ -12,7 +12,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "components/autofill/core/browser/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
@@ -21,6 +20,7 @@
 #import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #import "components/autofill/core/browser/password_form_classification.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"

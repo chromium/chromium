@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/single_field_fill_router.h"
+#include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 
 #include <string>
 #include <vector>
 
 #include "base/check_deref.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 
 namespace autofill {
 

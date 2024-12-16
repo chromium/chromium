@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 
 #include <string>
 #include <unordered_map>
@@ -118,8 +118,9 @@ void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
     SuggestionType type) {
-  if (profile_database_)
+  if (profile_database_) {
     profile_database_->RemoveFormValueForElementName(field_name, value);
+  }
 }
 
 void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(

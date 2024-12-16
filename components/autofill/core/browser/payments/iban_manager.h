@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
-#include "components/autofill/core/browser/single_field_fill_router.h"
+#include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
