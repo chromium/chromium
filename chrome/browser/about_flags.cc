@@ -277,6 +277,7 @@
 #include "components/translate/content/android/translate_message.h"
 #include "ui/android/ui_android_features.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -5244,6 +5245,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStrictSiteIsolationDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(switches::kSitePerProcess)},
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
     {"enable-isolated-web-apps", flag_descriptions::kEnableIsolatedWebAppsName,
      flag_descriptions::kEnableIsolatedWebAppsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebApps)},
@@ -5267,11 +5270,23 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppDevModeName,
      flag_descriptions::kEnableIsolatedWebAppDevModeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebAppDevMode)},
+    {"enable-iwa-key-distribution-component",
+     flag_descriptions::kEnableIwaKeyDistributionComponentName,
+     flag_descriptions::kEnableIwaKeyDistributionComponentDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(component_updater::kIwaKeyDistributionComponent)},
+    {"iwa-key-distribution-component-exp-cohort",
+     flag_descriptions::kIwaKeyDistributionComponentExpCohortName,
+     flag_descriptions::kIwaKeyDistributionComponentExpCohortDescription,
+     kOsDesktop,
+     STRING_VALUE_TYPE(component_updater::kIwaKeyDistributionComponentExpCohort,
+                       "")},
 #if BUILDFLAG(IS_CHROMEOS)
     {"install-isolated-web-app-from-url",
      flag_descriptions::kInstallIsolatedWebAppFromUrl,
      flag_descriptions::kInstallIsolatedWebAppFromUrlDescription, kOsAll,
      ORIGIN_LIST_VALUE_TYPE(switches::kInstallIsolatedWebAppFromUrl, "")},
+#endif
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

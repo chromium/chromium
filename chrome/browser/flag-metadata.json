@@ -3276,26 +3276,22 @@
   },
   {
     "name": "enable-isolated-web-app-managed-guest-session-install",
-    "owners": [
-      "rmcelrath@chromium.org",
-      "reillyg@chromium.org",
-      "simonha@google.com",
-      "iwa-team@google.com"
-    ],
+    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "simonha@google.com", "iwa-team@google.com" ],
     "expiry_milestone": 140
   },
   {
     "name": "enable-isolated-web-app-unmanaged-install",
-    "owners": [
-      "rmcelrath@chromium.org",
-      "reillyg@chromium.org",
-      "iwa-team@google.com"
-    ],
+    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
     "expiry_milestone": 140
   },
   {
     "name": "enable-isolated-web-apps",
     "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "enable-iwa-key-distribution-component",
+    "owners": [ "greengrape@google.com", "iwa-team@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -5480,6 +5476,11 @@
     "name": "isolation-by-default",
     "owners": [ "mkwst@chromium.org", "clamy@chromium.org" ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "iwa-key-distribution-component-exp-cohort",
+    "owners": [ "greengrape@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "jump-start-omnibox",

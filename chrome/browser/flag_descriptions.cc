@@ -1431,6 +1431,7 @@ const char kEnableGpuServiceLoggingName[] = "Enable gpu service logging";
 const char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";
 
+#if !BUILDFLAG(IS_ANDROID)
 const char kEnableIsolatedWebAppsName[] = "Enable Isolated Web Apps";
 const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for Isolated Web Apps. "
@@ -1454,12 +1455,24 @@ const char kEnableIsolatedWebAppManagedGuestSessionInstallName[] =
 const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[] =
     "Enables the installation of Isolated Web Apps for users that are logged "
     "into a managed guest session.";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kEnableIsolatedWebAppDevModeName[] =
     "Enable Isolated Web App Developer Mode";
 const char kEnableIsolatedWebAppDevModeDescription[] =
     "Enables the installation of unverified Isolated Web Apps";
+
+const char kEnableIwaKeyDistributionComponentName[] =
+    "Enable the Iwa Key Distribution component";
+const char kEnableIwaKeyDistributionComponentDescription[] =
+    "Enables the Iwa Key Distribution component that supplies key rotation "
+    "data for Isolated Web Apps.";
+
+const char kIwaKeyDistributionComponentExpCohortName[] =
+    "Experimental cohort for the Iwa Key Distribution component";
+const char kIwaKeyDistributionComponentExpCohortDescription[] =
+    "Specifies the experimental cohort for the Iwa Key Distribution component.";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 const char kEnableControlledFrameName[] = "Enable Controlled Frame";
 const char kEnableControlledFrameDescription[] =

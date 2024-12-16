@@ -895,6 +895,7 @@ extern const char kEnableGamepadButtonAxisEventsDescription[];
 extern const char kEnableGamepadMultitouchName[];
 extern const char kEnableGamepadMultitouchDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
 
@@ -907,10 +908,17 @@ extern const char kEnableIsolatedWebAppUnmanagedInstallDescription[];
 
 extern const char kEnableIsolatedWebAppManagedGuestSessionInstallName[];
 extern const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[];
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kEnableIsolatedWebAppDevModeName[];
 extern const char kEnableIsolatedWebAppDevModeDescription[];
+
+extern const char kEnableIwaKeyDistributionComponentName[];
+extern const char kEnableIwaKeyDistributionComponentDescription[];
+
+extern const char kIwaKeyDistributionComponentExpCohortName[];
+extern const char kIwaKeyDistributionComponentExpCohortDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kEnableControlledFrameName[];
 extern const char kEnableControlledFrameDescription[];
