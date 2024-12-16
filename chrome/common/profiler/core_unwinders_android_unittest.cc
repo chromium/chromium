@@ -17,12 +17,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID) &&                                         \
-    ((defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) || \
-     (defined(ARCH_CPU_ARM64) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)))
-#define ANDROID_UNWINDING_SUPPORTED 1
+#if (defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) || \
+    (defined(ARCH_CPU_ARM64) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS))
+#define UNWINDING_SUPPORTED 1
 #else
-#define ANDROID_UNWINDING_SUPPORTED 0
+#define UNWINDING_SUPPORTED 0
 #endif
 
 namespace {
@@ -53,7 +52,7 @@ TEST(UnwindPrerequisitesTest, RequestInstall) {
     {version_info::Channel::BETA, false, false},
     {version_info::Channel::STABLE, false, false},
     {version_info::Channel::UNKNOWN, false, false},
-#if ANDROID_UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
+#if UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {version_info::Channel::CANARY, true, true},
     {version_info::Channel::DEV, true, true},
@@ -109,7 +108,6 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     raw_ptr<UnwindPrerequisitesDelegate> delegate;
     bool are_unwind_prerequisites_expected;
   } test_cases[] = {
-#if BUILDFLAG(IS_ANDROID)
     // Android unwinders require the presence of the unwinder module.
     {version_info::Channel::CANARY, &false_mock_delegate, false},
     {version_info::Channel::DEV, &false_mock_delegate, false},
@@ -117,7 +115,7 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     {version_info::Channel::STABLE, &false_mock_delegate, false},
     {version_info::Channel::UNKNOWN, &false_mock_delegate, false},
 
-#if ANDROID_UNWINDING_SUPPORTED
+#if UNWINDING_SUPPORTED
     {version_info::Channel::CANARY, &true_mock_delegate, true},
     {version_info::Channel::DEV, &true_mock_delegate, true},
     {version_info::Channel::BETA, &true_mock_delegate, true},
@@ -132,31 +130,14 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     {version_info::Channel::STABLE, &true_mock_delegate, true},
     {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
 #endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#else   // ANDROID_UNWINDING_SUPPORTED
+#else   // UNWINDING_SUPPORTED
     // Unwinding on any other platforms is not currently supported for Android.
     {version_info::Channel::CANARY, &true_mock_delegate, false},
     {version_info::Channel::DEV, &true_mock_delegate, false},
     {version_info::Channel::BETA, &true_mock_delegate, false},
     {version_info::Channel::STABLE, &true_mock_delegate, false},
     {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
-#endif  // ANDROID_UNWINDING_SUPPORTED
-#else   // BUILDFLAG(IS_ANDROID)
-    // Non-Android platforms' unwinders do not need any specific prerequisites
-    // beyond what is already bundled and available with Chrome. Therefore,
-    // regardless of the provided delegate or channel, unwind prerequisites are
-    // always considered to be available.
-    {version_info::Channel::CANARY, &false_mock_delegate, true},
-    {version_info::Channel::DEV, &false_mock_delegate, true},
-    {version_info::Channel::BETA, &false_mock_delegate, true},
-    {version_info::Channel::STABLE, &false_mock_delegate, true},
-    {version_info::Channel::UNKNOWN, &false_mock_delegate, true},
-
-    {version_info::Channel::CANARY, &true_mock_delegate, true},
-    {version_info::Channel::DEV, &true_mock_delegate, true},
-    {version_info::Channel::BETA, &true_mock_delegate, true},
-    {version_info::Channel::STABLE, &true_mock_delegate, true},
-    {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // UNWINDING_SUPPORTED
   };
 
   for (const auto& test_case : test_cases) {

@@ -23,37 +23,36 @@
 #include "components/sampling_profiler/process_type.h"
 #include "components/version_info/channel.h"
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) && \
-    BUILDFLAG(ENABLE_ARM_CFI_TABLE)
-#define ANDROID_ARM32_UNWINDING_SUPPORTED 1
+#if defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#define ARM32_UNWINDING_SUPPORTED 1
 #else
-#define ANDROID_ARM32_UNWINDING_SUPPORTED 0
+#define ARM32_UNWINDING_SUPPORTED 0
 #endif
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-#define ANDROID_ARM64_UNWINDING_SUPPORTED 1
+#if defined(ARCH_CPU_ARM64)
+#define ARM64_UNWINDING_SUPPORTED 1
 #else
-#define ANDROID_ARM64_UNWINDING_SUPPORTED 0
+#define ARM64_UNWINDING_SUPPORTED 0
 #endif
 
-#if ANDROID_ARM32_UNWINDING_SUPPORTED || ANDROID_ARM64_UNWINDING_SUPPORTED
-#define ANDROID_UNWINDING_SUPPORTED 1
+#if ARM32_UNWINDING_SUPPORTED || ARM64_UNWINDING_SUPPORTED
+#define UNWINDING_SUPPORTED 1
 #else
-#define ANDROID_UNWINDING_SUPPORTED 0
+#define UNWINDING_SUPPORTED 0
 #endif
 
-#if ANDROID_ARM32_UNWINDING_SUPPORTED
+#if ARM32_UNWINDING_SUPPORTED
 #include "base/android/apk_assets.h"
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/chrome_unwinder_android_32.h"
-#endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
+#endif  // ARM32_UNWINDING_SUPPORTED
 
-#if ANDROID_ARM64_UNWINDING_SUPPORTED
+#if ARM64_UNWINDING_SUPPORTED
 #include "base/profiler/frame_pointer_unwinder.h"
-#endif  // ANDROID_ARM64_UNWINDING_SUPPORTED
+#endif  // ARM64_UNWINDING_SUPPORTED
 
-#if ANDROID_UNWINDING_SUPPORTED
+#if UNWINDING_SUPPORTED
 #include "base/profiler/libunwindstack_unwinder_android.h"
 #include "base/profiler/native_unwinder_android.h"
 #include "chrome/android/modules/stack_unwinder/public/module.h"
@@ -64,7 +63,7 @@ extern "C" {
 // shared library.
 extern char __executable_start;
 }
-#endif  // ANDROID_UNWINDING_SUPPORTED
+#endif  // UNWINDING_SUPPORTED
 
 // See `RequestUnwindPrerequisitesInstallation` below.
 BASE_FEATURE(kInstallAndroidUnwindDfm,
@@ -75,7 +74,7 @@ namespace {
 
 // Encapsulates the setup required to create the Chrome unwinder on 32 bit
 // Android.
-#if ANDROID_ARM32_UNWINDING_SUPPORTED
+#if ARM32_UNWINDING_SUPPORTED
 class ChromeUnwinderCreator {
  public:
   ChromeUnwinderCreator() {
@@ -104,9 +103,9 @@ class ChromeUnwinderCreator {
  private:
   base::MemoryMappedFile chrome_cfi_file_;
 };
-#endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
+#endif  // ARM32_UNWINDING_SUPPORTED
 
-#if ANDROID_UNWINDING_SUPPORTED
+#if UNWINDING_SUPPORTED
 std::vector<std::unique_ptr<base::Unwinder>> CreateLibunwindstackUnwinders() {
   // Ensure that the unwinder initialization occurs off the main thread, since
   // it involves some additional latency.
@@ -121,7 +120,7 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders() {
   // it involves some additional latency.
   CHECK_NE(getpid(), gettid());
 
-#if ANDROID_ARM64_UNWINDING_SUPPORTED
+#if ARM64_UNWINDING_SUPPORTED
   // For now, we only use Libunwindstack on 64 bit (no other unwinders).
   return CreateLibunwindstackUnwinders();
 #else
@@ -151,7 +150,7 @@ class ModuleUnwindPrerequisitesDelegate : public UnwindPrerequisitesDelegate {
     return stack_unwinder::Module::IsInstalled();
   }
 };
-#endif  // ANDROID_UNWINDING_SUPPORTED
+#endif  // UNWINDING_SUPPORTED
 
 }  // namespace
 
@@ -163,7 +162,7 @@ void RequestUnwindPrerequisitesInstallation(
   if (AreUnwindPrerequisitesAvailable(channel, prerequites_delegate)) {
     return;
   }
-#if ANDROID_UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
+#if UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ModuleUnwindPrerequisitesDelegate default_delegate;
   if (prerequites_delegate == nullptr) {
@@ -198,8 +197,7 @@ bool AreUnwindPrerequisitesAvailable(
 // non-Android platforms. Regardless of the provided delegate, unwind
 // prerequisites are always considered to be available for non-Android
 // platforms.
-#if BUILDFLAG(IS_ANDROID)
-#if ANDROID_UNWINDING_SUPPORTED
+#if UNWINDING_SUPPORTED
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Sometimes, DFMs can be installed even if not requested by Chrome
   // explicitly (for instance, in some app stores). Therefore, even if the
@@ -216,32 +214,29 @@ bool AreUnwindPrerequisitesAvailable(
     prerequites_delegate = &default_delegate;
   }
   return prerequites_delegate->AreAvailable(channel);
-#else   // ANDROID_UNWINDING_SUPPORTED
+#else   // UNWINDING_SUPPORTED
   return false;
-#endif  // ANDROID_UNWINDING_SUPPORTED
-#else   // BUILDFLAG(IS_ANDROID)
-  return true;
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // UNWINDING_SUPPORTED
 }
 
-#if ANDROID_UNWINDING_SUPPORTED
+#if UNWINDING_SUPPORTED
 void LoadModule() {
   CHECK(AreUnwindPrerequisitesAvailable(chrome::GetChannel()));
   static base::NoDestructor<std::unique_ptr<stack_unwinder::Module>>
       stack_unwinder_module(stack_unwinder::Module::Load());
 }
-#endif  // ANDROID_UNWINDING_SUPPORTED
+#endif  // UNWINDING_SUPPORTED
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
   if (!AreUnwindPrerequisitesAvailable(chrome::GetChannel())) {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
-#if ANDROID_UNWINDING_SUPPORTED
+#if UNWINDING_SUPPORTED
   LoadModule();
   return base::BindOnce(CreateCoreUnwinders);
-#else   // ANDROID_UNWINDING_SUPPORTED
+#else   // UNWINDING_SUPPORTED
   return base::StackSamplingProfiler::UnwindersFactory();
-#endif  // ANDROID_UNWINDING_SUPPORTED
+#endif  // UNWINDING_SUPPORTED
 }
 
 base::StackSamplingProfiler::UnwindersFactory
@@ -249,9 +244,9 @@ CreateLibunwindstackUnwinderFactory() {
   if (!AreUnwindPrerequisitesAvailable(chrome::GetChannel())) {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
-#if ANDROID_UNWINDING_SUPPORTED
+#if UNWINDING_SUPPORTED
   return base::BindOnce(CreateLibunwindstackUnwinders);
-#else   // ANDROID_UNWINDING_SUPPORTED
+#else   // UNWINDING_SUPPORTED
   return base::StackSamplingProfiler::UnwindersFactory();
-#endif  // ANDROID_UNWINDING_SUPPORTED
+#endif  // UNWINDING_SUPPORTED
 }
