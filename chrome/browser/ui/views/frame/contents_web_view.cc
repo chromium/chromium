@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
+#include "base/check.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -13,6 +14,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/background.h"
 #include "ui/views/view_class_properties.h"
 
@@ -31,6 +33,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
 ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
     : views::WebView(browser_context),
       status_bubble_(nullptr) {
+  // Draws the ContentsWebView background.
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
 #if BUILDFLAG(ENABLE_GLIC)
   glic_border_ = AddChildView(std::make_unique<glic::BorderView>());
@@ -66,19 +70,24 @@ StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
 
 void ContentsWebView::SetBackgroundVisible(bool background_visible) {
   background_visible_ = background_visible;
-  if (GetWidget())
-    UpdateBackgroundColor();
-}
-
-void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
-  if (background_radii_ == radii) {
-    return;
-  }
-
-  background_radii_ = radii;
   if (GetWidget()) {
     UpdateBackgroundColor();
   }
+}
+
+const gfx::RoundedCornersF& ContentsWebView::GetBackgroundRadii() const {
+  const ui::Layer* background_layer = layer();
+
+  CHECK(background_layer);
+  return background_layer->rounded_corner_radii();
+}
+
+void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  ui::Layer* background_layer = layer();
+
+  CHECK(background_layer);
+  background_layer->SetRoundedCornerRadius(radii);
+  background_layer->SetIsFastRoundedCorner(true);
 }
 
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -101,12 +110,12 @@ void ContentsWebView::OnLetterboxingChanged() {
 }
 
 void ContentsWebView::UpdateBackgroundColor() {
-  SkColor color = GetColorProvider()->GetColor(
+  const SkColor color = GetColorProvider()->GetColor(
       is_letterboxing() ? kColorWebContentsBackgroundLetterboxing
                         : kColorWebContentsBackground);
-  SetBackground(background_visible_ ? views::CreateRoundedRectBackground(
-                                          color, background_radii_)
-                                    : nullptr);
+
+  ui::Layer* background_layer = layer();
+  background_layer->SetColor(background_visible_ ? color : SK_ColorTRANSPARENT);
 
   if (web_contents()) {
     content::RenderWidgetHostView* rwhv =
@@ -150,9 +159,7 @@ void ContentsWebView::CloneWebContentsLayer() {
     return;
   }
 
-  SetPaintToLayer();
-
-  // The cloned layer is in a different coordinate system them our layer (which
+  // The cloned layer is in a different coordinate system than our layer (which
   // is now the new parent of the cloned layer). Convert coordinates so that the
   // cloned layer appears at the right location.
   gfx::PointF origin;
@@ -166,7 +173,6 @@ void ContentsWebView::CloneWebContentsLayer() {
 
 void ContentsWebView::DestroyClonedLayer() {
   cloned_layer_tree_.reset();
-  DestroyLayer();
 }
 
 void ContentsWebView::RenderViewReady() {
