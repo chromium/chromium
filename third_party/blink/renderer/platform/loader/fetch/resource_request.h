@@ -400,8 +400,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
   const String& GetFetchIntegrity() const { return fetch_integrity_; }
-  void SetFetchIntegrity(const String& integrity) {
-    fetch_integrity_ = integrity;
+  void SetFetchIntegrity(const String& integrity);
+
+  // The list of expected signatures is set as a side-effect of
+  // `SetFetchIntegrity()`.
+  const WTF::Vector<String>& GetExpectedSignatures() const {
+    return expected_signatures_;
   }
 
   bool CacheControlContainsNoCache() const;
@@ -735,6 +739,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   network::mojom::RedirectMode redirect_mode_;
   // Exposed as Request.integrity in Service Workers
   String fetch_integrity_;
+  // Signature expectations extracted from `fetch_integrity_`
+  WTF::Vector<String> expected_signatures_;
   String referrer_string_;
   network::mojom::ReferrerPolicy referrer_policy_;
   network::mojom::CorsPreflightPolicy cors_preflight_policy_;

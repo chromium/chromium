@@ -727,6 +727,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const mojom::RequestDestination request_destination_ =
       mojom::RequestDestination::kEmpty;
 
+  const std::vector<std::string> expected_signatures_ = {};
+
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder_;

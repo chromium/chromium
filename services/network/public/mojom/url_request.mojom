@@ -321,6 +321,12 @@ struct URLRequest {
   // Exposed as Request.integrity in Service Workers
   string fetch_integrity;
 
+  // The set of public keys asserted in `fetch_integrity`, which will be used
+  // to populate an `Accept-Signatures` header.
+  //
+  // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
+  array<string> expected_signatures;
+
   // https://fetch.spec.whatwg.org/#concept-request-destination
   RequestDestination destination;
 

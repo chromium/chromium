@@ -74,6 +74,7 @@ namespace {
   DO_FIELD(credentials_mode) __VA_ARGS__                       \
   DO_FIELD(redirect_mode) __VA_ARGS__                          \
   DO_FIELD(fetch_integrity) __VA_ARGS__                        \
+  DO_FIELD(expected_signatures) __VA_ARGS__                    \
   DO_FIELD(destination) __VA_ARGS__                            \
   DO_FIELD(original_destination) __VA_ARGS__                   \
   DO_FIELD(request_body) __VA_ARGS__                           \
@@ -212,7 +213,8 @@ enum class FieldsForUma {
   kAttributionReportingSrcToken = 61,
   kIsAdTagged = 62,
   kKeepaliveToken = 63,
-  kMaxValue = kKeepaliveToken,
+  kExpectedSignatures = 64,
+  kMaxValue = kExpectedSignatures,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:PrefetchMatchesResourceRequestField)
 
@@ -243,6 +245,7 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::kcredentials_mode, FieldsForUma::kCredentialsMode},
     {Fields::kredirect_mode, FieldsForUma::kRedirectMode},
     {Fields::kfetch_integrity, FieldsForUma::kFetchIntegrity},
+    {Fields::kexpected_signatures, FieldsForUma::kExpectedSignatures},
     {Fields::kdestination, FieldsForUma::kDestination},
     {Fields::koriginal_destination, FieldsForUma::kOriginalDestination},
     {Fields::krequest_body, FieldsForUma::kRequestBody},

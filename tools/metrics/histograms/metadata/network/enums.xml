@@ -1507,6 +1507,7 @@ chromium-metrics-reviews@google.com.
   <int value="61" label="attribution_reporting_src_token"/>
   <int value="62" label="is_ad_tagged"/>
   <int value="63" label="keepalive_token"/>
+  <int value="64" label="expected_signatures"/>
 </enum>
 
 <!-- LINT.ThenChange() -->

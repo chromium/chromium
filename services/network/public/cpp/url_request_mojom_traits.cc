@@ -167,6 +167,7 @@ bool StructTraits<
       !data.ReadCredentialsMode(&out->credentials_mode) ||
       !data.ReadRedirectMode(&out->redirect_mode) ||
       !data.ReadFetchIntegrity(&out->fetch_integrity) ||
+      !data.ReadExpectedSignatures(&out->expected_signatures) ||
       !data.ReadRequestBody(&out->request_body) ||
       !data.ReadThrottlingProfileId(&out->throttling_profile_id) ||
       !data.ReadFetchWindowId(&out->fetch_window_id) ||

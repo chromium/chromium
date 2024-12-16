@@ -635,6 +635,7 @@ URLLoader::URLLoader(
       has_user_activation_(request.trusted_params &&
                            request.trusted_params->has_user_activation),
       request_destination_(request.destination),
+      expected_signatures_(request.expected_signatures),
       resource_scheduler_client_(context.GetResourceSchedulerClient()),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
       custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
@@ -896,6 +897,8 @@ void URLLoader::ConfigureRequest(
                           has_user_activation_, request_destination_, nullptr,
                           *factory_params_, *origin_access_list_,
                           request_credentials_mode_);
+
+  MaybeSetAcceptSignaturesHeader(url_request_.get(), expected_signatures_);
 
   url_request_->set_first_party_url_policy(first_party_url_policy);
 

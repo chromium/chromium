@@ -14,6 +14,10 @@
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace net {
+class URLRequest;
+}
+
 namespace network {
 
 // Parses the HTTP Message Signature response headers relevant to SRI.
@@ -56,6 +60,13 @@ COMPONENT_EXPORT(NETWORK_CPP)
 std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const network::mojom::URLResponseHead& response);
+
+// Adds an `Accept-Signatures` header to outgoing requests if the request's
+// initiator asserted signature-based integrity expectations.
+COMPONENT_EXPORT(NETWORK_CPP)
+void MaybeSetAcceptSignaturesHeader(
+    net::URLRequest*,
+    const std::vector<std::string>& expected_signatures);
 
 }  // namespace network
 

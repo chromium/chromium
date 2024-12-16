@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
+#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
@@ -18,6 +19,7 @@ namespace {
 
 const size_t kEd25519KeyLength = 32;
 const size_t kEd25519SigLength = 64;
+constexpr std::string_view kAcceptSignatures = "Accept-Signatures";
 
 std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     const net::structured_headers::ParameterizedItem& component) {
@@ -443,6 +445,42 @@ MaybeBlockResponseForSRIMessageSignature(
     return std::nullopt;
   }
   return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;
+}
+
+void MaybeSetAcceptSignaturesHeader(
+    net::URLRequest* request,
+    const std::vector<std::string>& expected_signatures) {
+  // The `Accept-Signature` header is only sent if Signature-based SRI
+  // enforcement is generally enabled.
+  if (!base::FeatureList::IsEnabled(
+          features::kSRIMessageSignatureEnforcement)) {
+    return;
+  }
+  std::stringstream header;
+  int counter = 0;
+  for (const std::string& public_key : expected_signatures) {
+    // We expect these to be validly base64-encoded Ed25519 public keys:
+    std::optional<std::vector<uint8_t>> decoded =
+        base::Base64Decode(public_key);
+    if (!decoded || decoded->size() != kEd25519KeyLength) {
+      continue;
+    }
+
+    // Build an `Accept-Signature` header, as a serialized Structured Field
+    // dictionary, as per
+    // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
+    if (counter) {
+      header << ", ";
+    }
+    header << "sig" << counter << "=(\"identity-digest\";sf);keyid=\""
+           << public_key << "\";tag=\"sri\"";
+    ++counter;
+  }
+  if (header.str().empty()) {
+    return;
+  }
+  request->SetExtraRequestHeaderByName(kAcceptSignatures, header.str(),
+                                       /*overwrite=*/true);
 }
 
 }  // namespace network

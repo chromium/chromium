@@ -302,6 +302,7 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          credentials_mode == request.credentials_mode &&
          redirect_mode == request.redirect_mode &&
          fetch_integrity == request.fetch_integrity &&
+         expected_signatures == request.expected_signatures &&
          destination == request.destination &&
          request_body == request.request_body &&
          keepalive == request.keepalive &&

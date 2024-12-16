@@ -9,9 +9,16 @@
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +35,17 @@ namespace {
 // Base64 encoded Ed25519 Test Keys, pulled from the RFC at
 // https://datatracker.ietf.org/doc/html/rfc9421#appendix-B.1.4
 const char* kPublicKey = "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
+
+// Another base64 encoded Ed25519 key, randomly generated:
+//
+// {
+//   "crv": "Ed25519",
+//   "d": "MTodZiTA9CBsuIvSfO679TThkG3b7ce6R3sq_CdyVp4",
+//   "ext": true,
+//   "kty": "OKP",
+//   "x": "xDnP380zcL4rJ76rXYjeHlfMyPZEOqpJYjsjEppbuXE"
+// }
+const char* kPublicKey2 = "xDnP380zcL4rJ76rXYjeHlfMyPZEOqpJYjsjEppbuXE=";
 
 // The following constants are extracted from this known-good response that
 // matches the constraints described in
@@ -76,6 +94,8 @@ const char* kValidExpiringSignatureHeader =
     "signature=:cQNpdSxWJp2rV5m1omnG780Ei/paw/b2CTFtnxD8YkKWmMFIMcepxB67cK8f836"
     "W5IZhw4zG6wFnvd+T1BG3CQ==:";
 const int64_t kValidExpiringSignatureExpiresAt = 5459212800;
+
+constexpr std::string_view kAcceptSignatures = "Accept-Signatures";
 
 }  // namespace
 
@@ -917,6 +937,138 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
               result.value());
   } else {
     EXPECT_FALSE(result.has_value());
+  }
+}
+
+class SRIMessageSignatureRequestHeaderTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ public:
+  SRIMessageSignatureRequestHeaderTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        context_(net::CreateTestURLRequestContextBuilder()->Build()),
+        url_request_(context_->CreateRequest(GURL("https://example.com/"),
+                                             net::DEFAULT_PRIORITY,
+                                             /*delegate=*/nullptr,
+                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kSRIMessageSignatureEnforcement, GetParam());
+  }
+
+  net::URLRequest* url_request() const { return url_request_.get(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<net::URLRequestContext> context_;
+  std::unique_ptr<net::URLRequest> url_request_;
+};
+
+INSTANTIATE_TEST_SUITE_P(FeatureFlag,
+                         SRIMessageSignatureRequestHeaderTest,
+                         testing::Values(true, false));
+
+TEST_P(SRIMessageSignatureRequestHeaderTest, NoSignaturesNoHeader) {
+  MaybeSetAcceptSignaturesHeader(url_request(), {});
+  EXPECT_FALSE(url_request()
+                   ->extra_request_headers()
+                   .GetHeader(kAcceptSignatures)
+                   .has_value());
+}
+
+TEST_P(SRIMessageSignatureRequestHeaderTest, InvalidSignatures) {
+  const std::vector<std::string> cases[] = {
+      // Not base64:
+      {"invalid"},
+      {"also\rinvalid"},
+      {"also\ninvalid"},
+      {"also\r\ninvalid"},
+      {"also\"invalid"},
+      // Incorrect padding:
+      {"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs"},
+      // base64url:
+      {"JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs="},
+      // Incorrect length:
+      {"YQ=="},
+      // Prefixed:
+      {"ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs="},
+      // Multiple invalid:
+      {"invalid", "and also invalid"},
+      {"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs",
+       "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs"},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(base::JoinString(test, ", "));
+    MaybeSetAcceptSignaturesHeader(url_request(), test);
+    EXPECT_FALSE(url_request()
+                     ->extra_request_headers()
+                     .GetHeader(kAcceptSignatures)
+                     .has_value());
+  }
+}
+
+TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignature) {
+  const std::vector<std::string> cases[] = {
+      {kPublicKey},
+      // Valid, invalid => valid
+      {kPublicKey, "invalid"},
+      // Invalid, valid => valid
+      {"invalid", kPublicKey},
+      // Invalid, valid, invalid => valid
+      {"invalid", kPublicKey, "invalid"},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(base::JoinString(test, ", "));
+    MaybeSetAcceptSignaturesHeader(url_request(), test);
+
+    auto result =
+        url_request()->extra_request_headers().GetHeader(kAcceptSignatures);
+    if (GetParam()) {
+      std::string expected =
+          base::StrCat({"sig0=(\"identity-digest\";sf);keyid=\"", kPublicKey,
+                        "\";tag=\"sri\""});
+      EXPECT_THAT(result, testing::Optional(expected));
+    } else {
+      // Even with valid inputs, we're not writing the header if the flag is
+      // disabled.
+      EXPECT_FALSE(result.has_value());
+    }
+  }
+}
+
+TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignatures) {
+  const std::vector<std::string> cases[] = {
+      {kPublicKey, kPublicKey2},
+      // Valid, invalid => valid
+      {kPublicKey, kPublicKey2, "invalid"},
+      // Invalid, valid => valid
+      {"invalid", kPublicKey, kPublicKey2},
+      // Invalid, valid, invalid => valid
+      {"invalid", kPublicKey, kPublicKey2, "invalid"},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(base::JoinString(test, ", "));
+    MaybeSetAcceptSignaturesHeader(url_request(), test);
+
+    auto result =
+        url_request()->extra_request_headers().GetHeader(kAcceptSignatures);
+    if (GetParam()) {
+      std::string expected = base::StrCat(
+          {"sig0=(\"identity-digest\";sf);keyid=\"", kPublicKey,
+           "\";tag=\"sri\", ",
+           "sig1=(\"identity-digest\";sf);keyid=\"", kPublicKey2,
+           "\";tag=\"sri\""});
+      EXPECT_THAT(result, testing::Optional(expected));
+    } else {
+      // Even with valid inputs, we're not writing the header if the flag is
+      // disabled.
+      EXPECT_FALSE(result.has_value());
+    }
   }
 }
 

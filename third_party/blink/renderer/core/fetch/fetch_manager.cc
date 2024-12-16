@@ -1156,6 +1156,7 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
   }
   request.SetCacheMode(fetch_request_data_->CacheMode());
   request.SetRedirectMode(fetch_request_data_->Redirect());
+  request.SetFetchIntegrity(fetch_request_data_->Integrity());
   request.SetFetchPriorityHint(fetch_request_data_->FetchPriorityHint());
   request.SetPriority(fetch_request_data_->Priority());
   request.SetUseStreamOnResponse(true);

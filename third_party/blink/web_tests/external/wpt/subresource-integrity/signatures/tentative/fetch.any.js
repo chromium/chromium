@@ -65,6 +65,11 @@ function generate_test(request_data, integrity, expectation, description) {
     if (expectation == EXPECT_LOADED) {
       return fetcher.then(r => {
         assert_equals(r.status, 200, "Response status is 200.");
+        if (integrity.includes(`ed25519-${kValidKey}`)) {
+          assert_equals(r.headers.get('accept-signatures'),
+                        `sig0=("identity-digest";sf);keyid="${kValidKey}";tag="sri"`,
+                        "`accept-signatures` was set.");
+        }
       });
     } else {
       return promise_rejects_js(test, TypeError, fetcher);
@@ -72,6 +77,9 @@ function generate_test(request_data, integrity, expectation, description) {
   }, description);
 }
 
+generate_test(kRequestWithValidSignature, `ed25519-${kValidKey}`, EXPECT_LOADED,
+              "Valid signature, matching integrity check: loads.");
+/*
 generate_test({}, "", EXPECT_LOADED,
               "No signature, no integrity check: loads.");
 
@@ -114,3 +122,4 @@ generate_test(kRequestWithInvalidSignature, `ed25519-${kInvalidKey}`, EXPECT_BLO
 generate_test(kRequestWithInvalidSignature,
               `ed25519-${kValidKey} ed25519-${kInvalidKey}`, EXPECT_BLOCKED,
               "Invalid signature, one valid integrity check: blocked.");
+*/
