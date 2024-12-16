@@ -65,7 +65,12 @@ public class TabUiUtils {
             boolean hideTabGroups,
             @Nullable Callback<Boolean> didCloseCallback) {
         TabModel tabModel = filter.getTabModel();
-        int rootId = tabModel.getTabById(tabId).getRootId();
+        @Nullable Tab tab = tabModel.getTabById(tabId);
+        if (tab == null) {
+            Callback.runNullSafe(didCloseCallback, false);
+            return;
+        }
+        int rootId = tab.getRootId();
         TabClosureParams closureParams =
                 TabClosureParams.forCloseTabGroup(filter, rootId)
                         .hideTabGroups(hideTabGroups)
