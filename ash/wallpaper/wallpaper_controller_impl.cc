@@ -2425,37 +2425,6 @@ void WallpaperControllerImpl::OnSeaPenWallpaperSavedToPublic(
   }
 }
 
-void WallpaperControllerImpl::OnSeaPenFilesMigrated(const AccountId& account_id,
-                                                    const bool success) {
-  if (!success) {
-    LOG(WARNING) << "Failed to migrate SeaPen files";
-    return;
-  }
-
-  WallpaperInfo wallpaper_info;
-  if (!GetUserWallpaperInfo(account_id, &wallpaper_info)) {
-    LOG(WARNING) << "Failed to get user wallpaper info post SeaPen migration";
-    return;
-  }
-
-  if (wallpaper_info.type != WallpaperType::kSeaPen) {
-    DVLOG(0) << "Current wallpaper is not SeaPen, migration complete";
-    return;
-  }
-
-  std::optional<uint32_t> sea_pen_image_id =
-      GetIdFromFileName(base::FilePath(wallpaper_info.location));
-  if (!sea_pen_image_id.has_value()) {
-    LOG(WARNING) << "Invalid SeaPen info.location";
-    SetDefaultWallpaper(account_id, /*show_wallpaper=*/IsActiveUser(account_id),
-                        base::DoNothing());
-    return;
-  }
-
-  SetSeaPenWallpaper(account_id, sea_pen_image_id.value(),
-                     /*preview_mode=*/false, base::DoNothing());
-}
-
 void WallpaperControllerImpl::SaveAndSetWallpaper(const AccountId& account_id,
                                                   bool is_ephemeral,
                                                   const std::string& file_name,
