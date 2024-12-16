@@ -90,12 +90,11 @@ class NET_EXPORT SessionService {
                              const Session::Id& id) = 0;
 
   // Delete all sessions that match the filtering arguments. See
-  // `device_bound_sessions.mojom:DeviceBoundSessionFilter` for details
-  // on the filtering logic.
+  // `device_bound_sessions.mojom` for details on the filtering logic.
   virtual void DeleteAllSessions(
       std::optional<base::Time> created_after_time,
       std::optional<base::Time> created_before_time,
-      const std::optional<std::vector<net::SchemefulSite>>& including_sites,
+      base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
       base::OnceClosure completion_callback) = 0;
 
  protected:

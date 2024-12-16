@@ -84,7 +84,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void DeleteAllSessions(
       std::optional<base::Time> created_after_time,
       std::optional<base::Time> created_before_time,
-      const std::optional<std::vector<net::SchemefulSite>>& including_sites,
+      base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
       base::OnceClosure completion_callback) override;
   Session* GetSession(const SchemefulSite& site,
                       const Session::Id& session_id) const;

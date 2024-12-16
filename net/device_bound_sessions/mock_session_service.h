@@ -60,7 +60,7 @@ class SessionServiceMock : public SessionService {
       DeleteAllSessions,
       (std::optional<base::Time> created_after_time,
        std::optional<base::Time> created_before_time,
-       const std::optional<std::vector<net::SchemefulSite>>& including_sites,
+       base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
        base::OnceClosure completion_callback),
       (override));
 };

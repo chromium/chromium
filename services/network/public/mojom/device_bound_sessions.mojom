@@ -6,6 +6,7 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
+import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
@@ -18,21 +19,6 @@ struct DeviceBoundSessionKey {
   string id;
 };
 
-// This struct represents a filter that can be applied to the collection
-// of all sessions. Each field is an optional restriction that can be
-// applied to make the filter apply to fewer sessions. If no fields
-// are set, the filter will match all sessions.
-struct DeviceBoundSessionFilter {
-  // Delete sessions created after a date.
-  mojo_base.mojom.Time? created_after_time;
-
-  // Delete sessions created before a date.
-  mojo_base.mojom.Time? created_before_time;
-
-  // Delete sessions on all of these sites.
-  array<SchemefulSite>? including_sites;
-};
-
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
 [RequireContext=sandbox.mojom.Context.kBrowser]
@@ -43,8 +29,14 @@ interface DeviceBoundSessionManager {
   // Delete a session by key.
   DeleteSession(DeviceBoundSessionKey session);
 
-  // Delete all sessions matching `filter`.
-  DeleteAllSessions(DeviceBoundSessionFilter filter) => ();
+  // Delete all sessions matching the filter logic. Conditions are AND'ed
+  // together and providing no arguments at all will delete all sessions.
+  // - If present, sessions must be created after `created_after_time`.
+  // - If present, sessions must be created before `created_before_time`.
+  // - If present, sessions must match `filter` (see clear_data_filter.mojom).
+  DeleteAllSessions(mojo_base.mojom.Time? created_after_time,
+                    mojo_base.mojom.Time? created_before_time,
+                    ClearDataFilter? filter) => ();
 };
 
 // Observer that is notified on use of a device bound session.

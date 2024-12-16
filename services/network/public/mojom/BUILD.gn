@@ -473,6 +473,7 @@ mojom("url_loader_base") {
     "accept_ch_frame_observer.mojom",
     "blocked_by_response_reason.mojom",
     "chunked_data_pipe_getter.mojom",
+    "clear_data_filter.mojom",
     "client_security_state.mojom",
     "content_security_policy.mojom",
     "cors.mojom",
@@ -1462,7 +1463,6 @@ mojom("mojom") {
   sources = [
     "cert_verifier_service.mojom",
     "cert_verifier_service_updater.mojom",
-    "clear_data_filter.mojom",
     "cookie_encryption_provider.mojom",
     "cors_origin_pattern.mojom",
     "default_credentials.mojom",

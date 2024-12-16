@@ -406,9 +406,10 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
       ->set_creation_date(base::Time::Now() - base::Days(2));
 
   base::RunLoop run_loop;
-  service().DeleteAllSessions(
-      base::Time::Now() - base::Days(5), base::Time::Now() - base::Days(3),
-      /*including_domains=*/std::nullopt, run_loop.QuitClosure());
+  service().DeleteAllSessions(base::Time::Now() - base::Days(5),
+                              base::Time::Now() - base::Days(3),
+                              /*site_matcher=*/
+                              base::NullCallback(), run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(service().GetSession(site, Session::Id("SessionA")));
@@ -426,11 +427,15 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsBySite) {
   SchemefulSite site_a(url_a);
   SchemefulSite site_b(url_b);
 
+  // `site_matcher` only matches `site_a`
+  base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher =
+      base::BindRepeating(std::equal_to<net::SchemefulSite>(), site_a);
+
   base::RunLoop run_loop;
   service().DeleteAllSessions(
       /*created_after_time=*/std::nullopt,
-      /*created_before_time=*/std::nullopt,
-      /*including_domains=*/{{site_a}}, run_loop.QuitClosure());
+      /*created_before_time=*/std::nullopt, site_matcher,
+      run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_FALSE(service().GetSession(site_a, Session::Id(kSessionId)));
