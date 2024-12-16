@@ -884,9 +884,8 @@ void URLLoader::ConfigureRequest(
   // Note: There are some ordering dependencies here. `SetRequestCredentials`
   // depends on `SetLoadFlags`; `CalculateStorageAccessStatus` depends on
   // `cookie_setting_overrides` and `SetRequestCredentials`.
-  // `SetFetchMetadataHeaders` will depend on
-  // `url_request_->storage_access_status()`, once https://crbug.com/366284840
-  // is fixed.
+  // `SetFetchMetadataHeaders` depends on
+  // `url_request_->storage_access_status()`.
   url_request_->cookie_setting_overrides() = cookie_setting_overrides;
   url_request_->SetLoadFlags(request_load_flags);
   SetRequestCredentials(url);
@@ -1675,9 +1674,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   // Note: There are some ordering dependencies here.
   // `CalculateStorageAccessStatus` depends on
-  // `url_request->cookie_setting_overrides()`.  `SetFetchMetadataHeaders` will
-  // depend on `url_request_->storage_access_status()`, once
-  // https://crbug.com/366284840 is fixed.
+  // `url_request->cookie_setting_overrides()`. `SetFetchMetadataHeaders`
+  // depends on `url_request_->storage_access_status()`.
   url_request_->set_storage_access_status(
       url_request_->CalculateStorageAccessStatus(redirect_info));
 
