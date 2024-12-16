@@ -29,6 +29,7 @@ enum UrlQueryParams {
   GROUP_ID = 'group_id',
   TOKEN_SECRET = 'token_secret',
   TAB_GROUP_ID = 'tab_group_id',
+  TAB_GROUP_TITLE = 'tab_group_title',
 }
 
 enum FlowValues {
@@ -56,8 +57,9 @@ function getGroupOwnerEmail(params: DynamicMessageParams): string {
 }
 
 function getTabGroupName(): string {
-  // TODO(crbug.com/383196644): Implement get tab group name.
-  return '';
+  const currentUrl = urlForTesting ? urlForTesting : window.location.href;
+  const params = new URL(currentUrl).searchParams;
+  return params.get(UrlQueryParams.TAB_GROUP_TITLE) || '';
 }
 
 /** */

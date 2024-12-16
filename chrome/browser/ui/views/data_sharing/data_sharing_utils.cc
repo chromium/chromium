@@ -53,6 +53,13 @@ std::optional<GURL> data_sharing::GenerateWebUIUrl(
       url = net::AppendQueryParameter(url, kQueryParamTabGroupId,
                                       local_group_id.ToString());
     }
+    std::string title = base::UTF16ToUTF8(saved_group->title());
+    // If group is unnamed use default name e.g. "1 tab" / "3 tabs".
+    if (title.empty()) {
+      title = l10n_util::GetPluralStringFUTF8(IDS_SAVED_TAB_GROUP_TABS_COUNT,
+                                              saved_group->saved_tabs().size());
+    }
+    url = net::AppendQueryParameter(url, kQueryParamTabGroupTitle, title);
   } else {
     // Return join flow url which requires both collaboration_id and
     // access_token for WebUI to fetch people info.
