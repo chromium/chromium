@@ -862,14 +862,17 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // If the caller wants to add this visit to the VisitedLinkDatabase, it needs
   // to provide values for the `top_level_url`, `frame_url`, `is_ephemeral`
   // parameters. `top_level_url` is a GURL representing the top-level frame that
-  // this navigation originated from. `frame_url` is GURL representing the
+  // this navigation originated from. Context clicks may replace an invalid
+  // `top_level_url` with a valid `opener_url`, which contains only the GURL
+  // from `opener_visit` for quick access. `frame_url` is GURL representing the
   // immediate frame that this navigation originated from. For example, if a
   // link to `c.com` is clicked in an iframe `b.com` that is embedded in
   // `a.com`, the `top_level_url` is `a.com` and the `frame_url` is `b.com` (and
   // the `url` is `c.com`). `is_ephemeral` represents whether our navigation
   // came from a credentialless iframe (which is an ephemeral context). When
-  // true, we want to avoid adding the visit into the VisitedLinkDatabase. This
-  // does not schedule database commits, it is intended to be used as a
+  // true, we want to avoid adding the visit into the VisitedLinkDatabase.
+  //
+  // This does not schedule database commits, it is intended to be used as a
   // subroutine for AddPage only. It also assumes the database is valid.
   // Note that |app_is| is used for mobile only; |nullopt| on other platforms.
   std::pair<URLID, VisitID> AddPageVisit(
@@ -888,6 +891,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       std::optional<std::u16string> title = std::nullopt,
       std::optional<GURL> top_level_url = std::nullopt,
       std::optional<GURL> frame_url = std::nullopt,
+      std::optional<GURL> opener_url = std::nullopt,
       std::optional<std::string> app_id = std::nullopt,
       std::optional<base::TimeDelta> visit_duration = std::nullopt,
       std::optional<std::string> originator_cache_guid = std::nullopt,

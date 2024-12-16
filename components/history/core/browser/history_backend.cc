@@ -284,18 +284,53 @@ bool IsVisitedLinkTransition(ui::PageTransition transition) {
          ui::PageTransitionCoreTypeIs(transition,
                                       ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
 }
-// We require a `top_level_site` and a frame_origin to construct a
-// visited link partition key. So if `top_level_url` and/or `fame_url` are NULL
-// OR the transition type is a context where we know we cannot accurately
-// construct a triple partition key, then we skip the VisitedLinkDatabase.
-// We aren't adding ephemeral keys because inherently, their state shouldn't
-// be persisted across browsing sessions.
+
+// Context Clicks are when a user right clicks on a link and selects one of the
+// "Open in New ..." options. By design, these navigations do not have a valid
+// top-level site, and instead this information is stored in the opener. This
+// function determines the appropriate top-level value (whether `top_level_url`
+// or `opener_url`) to use when constructing our triple-partition key. If no
+// suitable value can be found, this function will return std::nullopt.
+std::optional<GURL> CalculateTopLevelOrOpener(ui::PageTransition transition,
+                                              std::optional<GURL> top_level_url,
+                                              std::optional<GURL> opener_url) {
+  // Determine if `top_level_url` has a valid value.
+  if (top_level_url.has_value() && top_level_url->is_valid()) {
+    return top_level_url.value();
+  } else {
+    // Context clicks may replace their empty or invalid top-level site with a
+    // valid opener value. Check if the navigation transition type matches a
+    // context click.
+    if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK)) {
+      if (opener_url.has_value() && opener_url->is_valid()) {
+        return opener_url.value();
+      }
+    }
+  }
+  // We could not find a suitable top-level value.
+  return std::nullopt;
+}
+
+// We require a `top_level_site` and a `frame_origin` to construct a
+// visited link partition key. So if `top_level_or_opener` and/or `fame_url` are
+// invalid OR the transition type is a context where we know we cannot
+// accurately construct a triple partition key, we DO NOT add this navigation as
+// an entry into VisitedLinkDatabase. We do not add ephemeral keys because,
+// inherently, their state shouldn't be persisted across browsing sessions.
 bool AddToVisitedLinkDatabase(ui::PageTransition transition,
-                              std::optional<GURL> top_level_url,
+                              std::optional<GURL> top_level_or_opener,
                               std::optional<GURL> frame_url,
                               bool is_ephemeral) {
-  return IsVisitedLinkTransition(transition) && top_level_url.has_value() &&
-         frame_url.has_value() && !is_ephemeral;
+  // If our navigation comes from an ephemeral context or does not provide
+  // enough information to construct our triple partition key, do not add it to
+  // the database.
+  if (is_ephemeral || !IsVisitedLinkTransition(transition) ||
+      !top_level_or_opener.has_value() || !frame_url.has_value()) {
+    return false;
+  }
+
+  // Check whether the URLs for our key are valid.
+  return top_level_or_opener->is_valid() && frame_url->is_valid();
 }
 
 }  // namespace
@@ -1008,8 +1043,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                                          request.opener->url);
   }
 
-  // Every url in the redirect chain gets the same `top_level_url` and
-  // `frame_url` values.
+  // Every url in the redirect chain gets the same `top_level_url`,
+  // `frame_url`, and `opener_url` values.
   std::optional<GURL> top_level_url = std::nullopt;
   if (request.top_level_url.has_value() && request.top_level_url->is_valid()) {
     top_level_url = request.top_level_url;
@@ -1017,6 +1052,10 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
   std::optional<GURL> frame_url = std::nullopt;
   if (request.referrer.is_valid()) {
     frame_url = request.referrer;
+  }
+  std::optional<GURL> opener_url = std::nullopt;
+  if (request.opener.has_value() && request.opener->url.is_valid()) {
+    opener_url = std::make_optional<GURL>(request.opener->url);
   }
 
   if (!has_redirects) {
@@ -1027,12 +1066,12 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
 
     // No redirect case (one element means just the page itself).
     last_visit_id =
-        AddPageVisit(request.url, request.time, last_visit_id,
-                     external_referrer_url, t, request.hidden,
-                     request.visit_source, IsTypedIncrement(t), opener_visit,
-                     request.consider_for_ntp_most_visited,
-                     request.is_ephemeral, request.local_navigation_id,
-                     request.title, top_level_url, frame_url, request.app_id)
+        AddPageVisit(
+            request.url, request.time, last_visit_id, external_referrer_url, t,
+            request.hidden, request.visit_source, IsTypedIncrement(t),
+            opener_visit, request.consider_for_ntp_most_visited,
+            request.is_ephemeral, request.local_navigation_id, request.title,
+            top_level_url, frame_url, opener_url, request.app_id)
             .second;
 
     // Update the segment for this visit. KEYWORD_GENERATED visits should not
@@ -1164,7 +1203,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                        redirect_index == 0 ? opener_visit : 0,
                        request.consider_for_ntp_most_visited,
                        request.is_ephemeral, request.local_navigation_id,
-                       request.title, top_level_url, frame_url, request.app_id)
+                       request.title, top_level_url, frame_url, opener_url,
+                       request.app_id)
               .second;
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
@@ -1374,6 +1414,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     std::optional<std::u16string> title,
     std::optional<GURL> top_level_url,
     std::optional<GURL> frame_url,
+    std::optional<GURL> opener_url,
     std::optional<std::string> app_id,
     std::optional<base::TimeDelta> visit_duration,
     std::optional<std::string> originator_cache_guid,
@@ -1420,29 +1461,33 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
 
   VisitedLinkRow visited_link_info;
   if (base::FeatureList::IsEnabled(kPopulateVisitedLinkDatabase)) {
-    // Returns whether or not the current row should be added to the
-    // VisitedLinkDatabase
-    if (AddToVisitedLinkDatabase(transition, top_level_url, frame_url,
+    // Calculate our "top-level value" - see CalculateTopLevelOrOpener() for
+    // more info on how context clicks affect this calculation.
+    const std::optional<GURL> top_level_or_opener =
+        CalculateTopLevelOrOpener(transition, top_level_url, opener_url);
+    // Determine whether or not the current row should be added to the
+    // VisitedLinkDatabase.
+    if (AddToVisitedLinkDatabase(transition, top_level_or_opener, frame_url,
                                  is_ephemeral)) {
       // Determine if the visited link is already in the database.
       VisitedLinkID existing_row_id = db_->GetRowForVisitedLink(
-          url_id, *top_level_url, *frame_url, visited_link_info);
+          url_id, *top_level_or_opener, *frame_url, visited_link_info);
       // If the returned row id is valid, we update this existing row.
       if (existing_row_id) {
         if (!db_->UpdateVisitedLinkRowVisitCount(
                 existing_row_id, visited_link_info.visit_count + 1)) {
           // If the update fails, log an error and return.
           DLOG(ERROR) << "AddPageVisit: Updating VisitedLink failed: " << url
-                      << " " << *top_level_url << " " << *frame_url;
+                      << " " << *top_level_or_opener << " " << *frame_url;
           return std::make_pair(0, 0);
         }
       } else {  // otherwise, insert this new visited link.
         VisitedLinkID new_row_id =
-            db_->AddVisitedLink(url_id, *top_level_url, *frame_url, 1);
+            db_->AddVisitedLink(url_id, *top_level_or_opener, *frame_url, 1);
         if (!new_row_id) {
           // If the insert fails, log an error and return.
           DLOG(ERROR) << "AddPageVisit: Inserting VisitedLink failed: " << url
-                      << " " << *top_level_url << " " << *frame_url;
+                      << " " << *top_level_or_opener << " " << *frame_url;
           return std::make_pair(0, 0);
         }
         db_->GetVisitedLinkRow(new_row_id, visited_link_info);
@@ -1747,10 +1792,11 @@ VisitID HistoryBackend::AddSyncedVisit(
       IsTypedIncrement(visit.transition), visit.opener_visit,
       visit.consider_for_ntp_most_visited, /*is_ephemeral=*/false,
       /*local_navigation_id=*/std::nullopt, title,
-      /*top_level_url=*/std::nullopt, /*frame_url=*/std::nullopt, visit.app_id,
-      visit.visit_duration, visit.originator_cache_guid,
-      visit.originator_visit_id, visit.originator_referring_visit,
-      visit.originator_opener_visit, visit.is_known_to_sync);
+      /*top_level_url=*/std::nullopt, /*frame_url=*/std::nullopt,
+      /*opener_url=*/std::nullopt, visit.app_id, visit.visit_duration,
+      visit.originator_cache_guid, visit.originator_visit_id,
+      visit.originator_referring_visit, visit.originator_opener_visit,
+      visit.is_known_to_sync);
 
   if (visit_id == kInvalidVisitID) {
     // Adding the page visit failed, do not continue.

@@ -5730,6 +5730,7 @@ class HistoryBackendTestForVisitedLinks
                        /*consider_for_ntp_most_visited=*/true, is_ephemeral,
                        /*local_navigation_id=*/std::nullopt,
                        /*title=*/std::nullopt, top_level_url, frame_url,
+                       /*opener_url=*/std::nullopt,
                        /*app_id=*/std::nullopt,
                        /*visit_duration=*/std::nullopt,
                        /*originator_cache_guid=*/std::nullopt,
