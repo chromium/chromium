@@ -287,12 +287,11 @@ bool PrerendererImpl::MaybePrerender(
             url::Origin::Create(candidate->url).Serialize().c_str()));
   }
 
-  std::optional<net::HttpNoVarySearchData> no_vary_search_expected;
+  std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch) &&
       candidate->no_vary_search_hint) {
-    no_vary_search_expected =
-        no_vary_search::ParseHttpNoVarySearchDataFromMojom(
-            candidate->no_vary_search_hint);
+    no_vary_search_hint = no_vary_search::ParseHttpNoVarySearchDataFromMojom(
+        candidate->no_vary_search_hint);
   }
 
   PrerenderAttributes attributes(
@@ -301,9 +300,8 @@ bool PrerendererImpl::MaybePrerender(
           candidate->injection_type),
       /*embedder_histogram_suffix=*/"",
       candidate->target_browsing_context_name_hint,
-      Referrer{*candidate->referrer}, candidate->eagerness,
-      no_vary_search_expected, &rfhi, web_contents->GetWeakPtr(),
-      ui::PAGE_TRANSITION_LINK,
+      Referrer{*candidate->referrer}, candidate->eagerness, no_vary_search_hint,
+      &rfhi, web_contents->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},

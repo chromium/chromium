@@ -477,7 +477,7 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     return std::make_unique<PrefetchContainer>(
         *main_rfhi(), referring_document_token, prefetch_url,
         std::move(prefetch_type), blink::mojom::Referrer(),
-        /*no_vary_search_expected=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         base::MakeRefCounted<PreloadPipelineInfo>(), attempt->GetWeakPtr());
   }
@@ -496,7 +496,7 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     return std::make_unique<PrefetchContainer>(
         *web_contents(), prefetch_url, std::move(prefetch_type),
         blink::mojom::Referrer(), std::move(referring_origin),
-        /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
+        /*no_vary_search_hint=*/std::nullopt, /*attempt=*/nullptr);
   }
 
   void SimulateCookieCopyProcess(PrefetchContainer& prefetch_container) {

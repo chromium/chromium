@@ -66,14 +66,13 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const PreloadingPredictor& enacting_predictor);
 
   // Starts the process to prefetch |url| with the given |prefetch_type|.
-  void PrefetchUrl(
-      const GURL& url,
-      const PrefetchType& prefetch_type,
-      const PreloadingPredictor& enacting_predictor,
-      PreloadingType planned_max_preloading_type,
-      const blink::mojom::Referrer& referrer,
-      const network::mojom::NoVarySearchPtr& no_vary_search_expected,
-      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info);
+  void PrefetchUrl(const GURL& url,
+                   const PrefetchType& prefetch_type,
+                   const PreloadingPredictor& enacting_predictor,
+                   PreloadingType planned_max_preloading_type,
+                   const blink::mojom::Referrer& referrer,
+                   const network::mojom::NoVarySearchPtr& no_vary_search_hint,
+                   scoped_refptr<PreloadPipelineInfo> preload_pipeline_info);
 
   // Checking the canary cache can be a slow and blocking operation (see
   // crbug.com/1266018), so we only do this for the first non-decoy prefetch we

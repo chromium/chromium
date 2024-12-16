@@ -192,14 +192,14 @@ void PrefetchDocumentManager::ProcessCandidates(
 
   std::erase_if(candidates, should_process_entry);
 
-  for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected] :
+  for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_hint] :
        prefetches) {
     // Eager candidates are enacted by the same predictor that creates them.
     const PreloadingPredictor enacting_predictor =
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type());
     PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
                 /*planned_max_preloading_type=*/PreloadingType::kPrefetch,
-                referrer, no_vary_search_expected,
+                referrer, no_vary_search_hint,
                 base::MakeRefCounted<PreloadPipelineInfo>());
   }
 
@@ -215,11 +215,11 @@ bool PrefetchDocumentManager::MaybePrefetch(
     return false;
   }
 
-  auto [prefetch_url, prefetch_type, referrer, no_vary_search_expected] =
+  auto [prefetch_url, prefetch_type, referrer, no_vary_search_hint] =
       SpeculationCandidateToPrefetchUrlParams(candidate);
   PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
               /*planned_max_preloading_type=*/PreloadingType::kPrefetch,
-              referrer, no_vary_search_expected,
+              referrer, no_vary_search_hint,
               base::MakeRefCounted<PreloadPipelineInfo>());
   return true;
 }
@@ -228,12 +228,11 @@ void PrefetchDocumentManager::PrefetchAheadOfPrerender(
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     blink::mojom::SpeculationCandidatePtr candidate,
     const PreloadingPredictor& enacting_predictor) {
-  auto [prefetch_url, prefetch_type, referrer, no_vary_search_expected] =
+  auto [prefetch_url, prefetch_type, referrer, no_vary_search_hint] =
       SpeculationCandidateToPrefetchUrlParams(candidate);
   PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
               /*planned_max_preloading_type=*/PreloadingType::kPrerender,
-              referrer, no_vary_search_expected,
-              std::move(preload_pipeline_info));
+              referrer, no_vary_search_hint, std::move(preload_pipeline_info));
 }
 
 void PrefetchDocumentManager::PrefetchUrl(
@@ -242,7 +241,7 @@ void PrefetchDocumentManager::PrefetchUrl(
     const PreloadingPredictor& enacting_predictor,
     PreloadingType planned_max_preloading_type,
     const blink::mojom::Referrer& referrer,
-    const network::mojom::NoVarySearchPtr& mojo_no_vary_search_expected,
+    const network::mojom::NoVarySearchPtr& mojo_no_vary_search_hint,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info) {
   const std::pair<GURL, PreloadingType> all_prefetches_key =
       std::make_pair(url, planned_max_preloading_type);
@@ -265,11 +264,10 @@ void PrefetchDocumentManager::PrefetchUrl(
       &render_frame_host(),
       blink::mojom::WebFeature::kSpeculationRulesPrefetch);
 
-  std::optional<net::HttpNoVarySearchData> no_vary_search_expected;
-  if (mojo_no_vary_search_expected) {
-    no_vary_search_expected =
-        no_vary_search::ParseHttpNoVarySearchDataFromMojom(
-            mojo_no_vary_search_expected);
+  std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
+  if (mojo_no_vary_search_hint) {
+    no_vary_search_hint = no_vary_search::ParseHttpNoVarySearchDataFromMojom(
+        mojo_no_vary_search_hint);
   }
   PrefetchService* prefetch_service = GetPrefetchService();
   if (!prefetch_service) {
@@ -302,7 +300,7 @@ void PrefetchDocumentManager::PrefetchUrl(
   // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
       static_cast<RenderFrameHostImpl&>(render_frame_host()), document_token_,
-      url, prefetch_type, referrer, std::move(no_vary_search_expected),
+      url, prefetch_type, referrer, std::move(no_vary_search_hint),
       weak_method_factory_.GetWeakPtr(), std::move(preload_pipeline_info),
       attempt->GetWeakPtr());
   DVLOG(1) << *container << ": created";

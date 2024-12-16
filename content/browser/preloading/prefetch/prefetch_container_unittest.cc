@@ -77,7 +77,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
                      /*use_prefetch_proxy=*/true,
                      blink::mojom::SpeculationEagerness::kEager),
         blink::mojom::Referrer(),
-        /*no_vary_search_expected=*/std::nullopt, prefetch_document_manager,
+        /*no_vary_search_hint=*/std::nullopt, prefetch_document_manager,
         base::MakeRefCounted<PreloadPipelineInfo>());
   }
 
@@ -89,7 +89,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
         PrefetchType(PreloadingTriggerType::kEmbedder,
                      /*use_prefetch_proxy=*/true),
         blink::mojom::Referrer(), std::move(referring_origin),
-        /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
+        /*no_vary_search_hint=*/std::nullopt, /*attempt=*/nullptr);
   }
 
   bool SetCookie(const GURL& url, const std::string& value) {
@@ -287,7 +287,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
-      /*no_vary_search_expected=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr,
       base::MakeRefCounted<PreloadPipelineInfo>());
 
@@ -314,7 +314,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
       PrefetchType(PreloadingTriggerType::kEmbedder,
                    /*use_prefetch_proxy=*/false),
       blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
-      /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
+      /*no_vary_search_hint=*/std::nullopt, /*attempt=*/nullptr);
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
             GlobalRenderFrameHostId());
@@ -894,7 +894,7 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/true, test_case.eagerness),
         blink::mojom::Referrer(),
-        /*no_vary_search_expected=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         base::MakeRefCounted<PreloadPipelineInfo>());
 
@@ -969,7 +969,7 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/true, test_case.eagerness),
         blink::mojom::Referrer(),
-        /*no_vary_search_expected=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         base::MakeRefCounted<PreloadPipelineInfo>());
 

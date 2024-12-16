@@ -105,7 +105,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const GURL& url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr);
@@ -119,7 +119,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       std::optional<PreloadingHoldbackStatus> holdback_status_override =
           std::nullopt);
@@ -134,7 +134,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       bool javascript_enabled,
       const std::optional<url::Origin>& referring_origin,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       const net::HttpRequestHeaders& additional_headers = {},
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =

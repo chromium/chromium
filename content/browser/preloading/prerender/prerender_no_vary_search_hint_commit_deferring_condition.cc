@@ -78,7 +78,7 @@ PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
   }
 
   // Reach here only when the No-Vary-Search hint is specified.
-  CHECK(prerender_host.no_vary_search_expected().has_value());
+  CHECK(prerender_host.no_vary_search_hint().has_value());
 
   return base::WrapUnique(new PrerenderNoVarySearchHintCommitDeferringCondition(
       navigation_request, candidate_prerender_frame_tree_node_id.value()));

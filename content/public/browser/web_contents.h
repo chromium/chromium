@@ -1585,7 +1585,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       net::HttpRequestHeaders additional_headers,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       ui::PageTransition page_transition,
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,

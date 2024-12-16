@@ -1507,7 +1507,7 @@ void AwContents::StartPrerendering(
 
   net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
-  std::optional<net::HttpNoVarySearchData> no_vary_search_expected =
+  std::optional<net::HttpNoVarySearchData> no_vary_search_hint =
       GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
 
   // This is the same as the page transition of WebView.loadUrl().
@@ -1519,8 +1519,8 @@ void AwContents::StartPrerendering(
   // - Pass a valid navigation handle callback.
   prerender_handle_ = web_contents_->StartPrerendering(
       GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
-      "WebView", std::move(additional_headers),
-      std::move(no_vary_search_expected), page_transition,
+      "WebView", std::move(additional_headers), std::move(no_vary_search_hint),
+      page_transition,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified,

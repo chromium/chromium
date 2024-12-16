@@ -480,7 +480,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
         prerendering_url, PreloadingTriggerType::kEmbedder,
         "EmbedderSuffixForTest",
         /*additional_headers=*/net::HttpRequestHeaders(),
-        /*no_vary_search_expected=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
         should_warm_up_compositor, /*should_prepare_paint_tree=*/true,
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id);
   ASSERT_TRUE(host);
-  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host->no_vary_search_hint().has_value());
 
   // Add a testing PrerenderHost::Observer to the prerender host that we'd like
   // to activate.
@@ -1096,7 +1096,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id);
   ASSERT_TRUE(host);
-  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host->no_vary_search_hint().has_value());
 
   // Add a testing PrerenderHost::Observer to the prerender host that we'd like
   // to activate.
@@ -1204,7 +1204,7 @@ void NoVarySearchPrerenderBrowserTest::TestNoVarySearchHeaderFailure(
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id);
   ASSERT_TRUE(host);
-  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host->no_vary_search_hint().has_value());
 
   // Add a testing PrerenderHost::Observer to the prerender host that we'd like
   // to activate.
@@ -1323,7 +1323,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id);
   ASSERT_TRUE(host);
-  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host->no_vary_search_hint().has_value());
 
   // Add a PrerenderHost::Observer with default behaviour to increase
   // code coverage.
@@ -1445,7 +1445,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id);
   ASSERT_TRUE(host);
-  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host->no_vary_search_hint().has_value());
 
   TestActivationManager primary_page_manager(shell()->web_contents(),
                                              kNavigationUrl);
@@ -1538,7 +1538,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id);
   ASSERT_TRUE(host);
-  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host->no_vary_search_hint().has_value());
 
   NavigationHandleObserver activation_observer(web_contents(), navigation_url);
   // Start navigation in primary page to kNavigationUrl.
@@ -1641,7 +1641,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id1);
   ASSERT_TRUE(host1);
-  ASSERT_TRUE(host1->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host1->no_vary_search_hint().has_value());
   test::PrerenderHostObserver host_observer1(*web_contents(), host_id1);
 
   // Start prerendering `prerendering_url2`.
@@ -1652,7 +1652,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id2);
   ASSERT_TRUE(host2);
-  ASSERT_TRUE(host2->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host2->no_vary_search_hint().has_value());
   test::PrerenderHostObserver host_observer2(*web_contents(), host_id2);
 
   NavigationHandleObserver activation_observer(web_contents(), navigation_url);
@@ -1735,7 +1735,7 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, HintIsPopulated) {
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id);
   ASSERT_TRUE(host);
-  ASSERT_TRUE(host->no_vary_search_expected().has_value());
+  ASSERT_TRUE(host->no_vary_search_hint().has_value());
 }
 
 // Tests that the speculationrules trigger works in the presence of
@@ -1951,7 +1951,7 @@ IN_PROC_BROWSER_TEST_F(DisabledNoVarySearchPrerenderBrowserTest,
       web_contents_impl()->GetPrerenderHostRegistry()->FindNonReservedHostById(
           host_id);
   ASSERT_TRUE(host);
-  ASSERT_FALSE(host->no_vary_search_expected().has_value());
+  ASSERT_FALSE(host->no_vary_search_hint().has_value());
 }
 
 // Tests that the speculationrules trigger works in the presence of
@@ -11939,7 +11939,7 @@ PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
           prerendering_url, PreloadingTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           /*additional_headers=*/net::HttpRequestHeaders(),
-          /*no_vary_search_expected=*/std::nullopt,
+          /*no_vary_search_hint=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*should_warm_up_compositor=*/false,

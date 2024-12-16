@@ -106,7 +106,7 @@ class NoVarySearchHelperTester final {
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager),
             blink::mojom::Referrer(),
-            /*no_vary_search_expected=*/std::nullopt,
+            /*no_vary_search_hint=*/std::nullopt,
             /*prefetch_document_manager=*/nullptr,
             base::MakeRefCounted<PreloadPipelineInfo>());
 

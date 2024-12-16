@@ -935,9 +935,9 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   } else if (no_vary_search_.has_value()) {
     CHECK(no_vary_search_->AreEquivalent(potential_activation.url,
                                          common_params_->url));
-  } else if (no_vary_search_expected().has_value()) {
-    CHECK(no_vary_search_expected()->AreEquivalent(potential_activation.url,
-                                                   common_params_->url));
+  } else if (no_vary_search_hint().has_value()) {
+    CHECK(no_vary_search_hint()->AreEquivalent(potential_activation.url,
+                                               common_params_->url));
   } else {
     CHECK_EQ(potential_activation.url, common_params_->url);
   }
@@ -1314,8 +1314,8 @@ bool PrerenderHost::IsNoVarySearchHintUrlMatch(const GURL& url) const {
   // Let's check if this PrerenderHost would match by
   // No-Vary-Search hint. We need to check if the headers were already received.
   if (!were_headers_received()) {
-    if (no_vary_search_expected().has_value() &&
-        no_vary_search_expected()->AreEquivalent(GetInitialUrl(), url)) {
+    if (no_vary_search_hint().has_value() &&
+        no_vary_search_hint()->AreEquivalent(GetInitialUrl(), url)) {
       return true;
     }
   }

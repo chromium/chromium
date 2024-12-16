@@ -653,7 +653,7 @@ PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
   return web_contents.StartPrerendering(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*additional_headers=*/net::HttpRequestHeaders(),
-      /*no_vary_search_expected=*/std::nullopt, page_transition,
+      /*no_vary_search_hint=*/std::nullopt, page_transition,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       PreloadingHoldbackStatus::kUnspecified,

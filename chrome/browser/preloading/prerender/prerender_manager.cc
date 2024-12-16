@@ -244,7 +244,7 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
       /*additional_headers=*/net::HttpRequestHeaders(),
-      /*no_vary_search_expected=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       // Considering the characteristics of triggers (e.g., the duration from
       // trigger to activation), warm-up is not enabled for now on this trigger.
@@ -314,7 +314,7 @@ PrerenderManager::StartPrerenderNewTabPage(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
       /*additional_headers=*/net::HttpRequestHeaders(),
-      /*no_vary_search_expected=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       // Considering the characteristics of triggers (e.g., the duration from
       // trigger to activation), warm-up is not enabled for now on this trigger.
@@ -380,7 +380,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kDirectUrlInputMetricSuffix,
       /*additional_headers=*/net::HttpRequestHeaders(),
-      /*no_vary_search_expected=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       /*should_warm_up_compositor=*/true,
@@ -421,7 +421,7 @@ void PrerenderManager::StartPrerenderSearchResult(
           prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           /*additional_headers=*/net::HttpRequestHeaders(),
-          /*no_vary_search_expected=*/std::nullopt,
+          /*no_vary_search_hint=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*should_warm_up_compositor=*/true,

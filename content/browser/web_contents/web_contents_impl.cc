@@ -11429,7 +11429,7 @@ void WebContentsImpl::StartPrefetch(
 
   auto container = std::make_unique<PrefetchContainer>(
       *this, prefetch_url, prefetch_type, referrer, referring_origin,
-      /*no_vary_search_expected=*/std::nullopt, std::move(attempt),
+      /*no_vary_search_hint=*/std::nullopt, std::move(attempt),
       holdback_status_override);
 
   // TODO(crbug.com/40946257): Update this list when prefetch container is
@@ -11443,7 +11443,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
     net::HttpRequestHeaders additional_headers,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     ui::PageTransition page_transition,
     bool should_warm_up_compositor,
     bool should_prepare_paint_tree,
@@ -11457,7 +11457,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*target_hint=*/std::nullopt, content::Referrer(),
-      /*eagerness=*/std::nullopt, std::move(no_vary_search_expected),
+      /*eagerness=*/std::nullopt, std::move(no_vary_search_hint),
       /*initiato_render_frame_host=*/nullptr, GetWeakPtr(), page_transition,
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),

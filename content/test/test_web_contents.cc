@@ -478,7 +478,7 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
       /*embedder_histogram_suffix=*/"",
       blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
       blink::mojom::SpeculationEagerness::kEager,
-      /*no_vary_search_expected=*/std::nullopt, rfhi, GetWeakPtr(),
+      /*no_vary_search_hint=*/std::nullopt, rfhi, GetWeakPtr(),
       ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,

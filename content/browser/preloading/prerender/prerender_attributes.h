@@ -44,7 +44,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       std::optional<blink::mojom::SpeculationTargetHint> target_hint,
       Referrer referrer,
       std::optional<blink::mojom::SpeculationEagerness> eagerness,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       RenderFrameHost* initiator_render_frame_host,
       base::WeakPtr<WebContents> initiator_web_contents,
       ui::PageTransition transition_type,
@@ -91,7 +91,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   // Records the No-Vary-Search hint of the corresponding speculation rule.
   // This is std::nullopt when No-Vary-Search hint is not specified.
-  std::optional<net::HttpNoVarySearchData> no_vary_search_expected;
+  std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
 
   // This is std::nullopt when prerendering is initiated by the browser
   // (not by a renderer using Speculation Rules API).

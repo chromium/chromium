@@ -205,7 +205,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   void StartBrowserPrefetchRequest(
       const GURL& url,
       bool javascript_enabled,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener);
 

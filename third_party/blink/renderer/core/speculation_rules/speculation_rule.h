@@ -53,9 +53,8 @@ class CORE_EXPORT SpeculationRule final
     return referrer_policy_;
   }
   mojom::blink::SpeculationEagerness eagerness() const { return eagerness_; }
-  const network::mojom::blink::NoVarySearchPtr& no_vary_search_expected()
-      const {
-    return no_vary_search_expected_;
+  const network::mojom::blink::NoVarySearchPtr& no_vary_search_hint() const {
+    return no_vary_search_hint_;
   }
   mojom::blink::SpeculationInjectionType injection_type() const {
     return injection_type_;
@@ -71,7 +70,7 @@ class CORE_EXPORT SpeculationRule final
       target_browsing_context_name_hint_;
   const std::optional<network::mojom::ReferrerPolicy> referrer_policy_;
   mojom::blink::SpeculationEagerness eagerness_;
-  network::mojom::blink::NoVarySearchPtr no_vary_search_expected_;
+  network::mojom::blink::NoVarySearchPtr no_vary_search_hint_;
   mojom::blink::SpeculationInjectionType injection_type_ =
       mojom::blink::SpeculationInjectionType::kNone;
 };

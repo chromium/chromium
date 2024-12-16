@@ -356,7 +356,7 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
 
     auto prefetch_container = std::make_unique<PrefetchContainer>(
         *web_contents(), prefetch_url, prefetch_type, referrer,
-        std::move(referring_origin), /*no_vary_search_expected=*/std::nullopt,
+        std::move(referring_origin), /*no_vary_search_hint=*/std::nullopt,
         /*attempt=*/nullptr);
     prefetch_service_->AddPrefetchContainer(std::move(prefetch_container));
   }
@@ -6630,7 +6630,7 @@ class PrefetchServiceAddPrefetchContainerTest : public PrefetchServiceTestBase {
     return std::make_unique<PrefetchContainer>(
         static_cast<content::RenderFrameHostImpl&>(*main_rfh()), document_token,
         prefetch_url, std::move(prefetch_type), blink::mojom::Referrer(),
-        /*no_vary_search_expected=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         base::MakeRefCounted<PreloadPipelineInfo>(), attempt->GetWeakPtr());
   }

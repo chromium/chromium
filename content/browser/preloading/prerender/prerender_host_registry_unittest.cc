@@ -196,8 +196,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
             blink::mojom::SpeculationTargetHint::kNoHint, Referrer(), eagerness,
-            /*no_vary_search_expected=*/std::nullopt, rfh,
-            contents()->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
+            /*no_vary_search_hint=*/std::nullopt, rfh, contents()->GetWeakPtr(),
+            ui::PAGE_TRANSITION_LINK,
             /*should_warm_up_compositor=*/false,
             /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
@@ -208,7 +208,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             url, trigger_type, embedder_histogram_suffix,
             /*target_hint=*/std::nullopt, Referrer(),
             /*eagerness=*/std::nullopt,
-            /*no_vary_search_expected=*/std::nullopt,
+            /*no_vary_search_hint=*/std::nullopt,
             /*initiator_render_frame_host=*/nullptr, contents()->GetWeakPtr(),
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
