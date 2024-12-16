@@ -19,13 +19,13 @@
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 
-using optimization_guide::proto::
+using optimization_guide::proto::features::
     TabOrganizationRequest_TabOrganizationModelStrategy;
-using optimization_guide::proto::
+using optimization_guide::proto::features::
     TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED;
-using optimization_guide::proto::
+using optimization_guide::proto::features::
     TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED;
-using optimization_guide::proto::
+using optimization_guide::proto::features::
     TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED;
 
 #endif

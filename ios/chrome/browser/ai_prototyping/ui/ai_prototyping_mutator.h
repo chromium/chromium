@@ -9,9 +9,11 @@
 
 namespace optimization_guide {
 namespace proto {
-class BlingPrototypingRequest;
 class StringValue;
+namespace features {
+class BlingPrototypingRequest;
 enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
+}  // namespace features
 }  // namespace proto
 }  // namespace optimization_guide
 
@@ -22,14 +24,14 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 // Executes a prototyping request to a server-hosted model.
 - (void)executeServerQuery:
-    (optimization_guide::proto::BlingPrototypingRequest)request;
+    (optimization_guide::proto::features::BlingPrototypingRequest)request;
 
 // Executes a prototyping request to an on-device model.
 - (void)executeOnDeviceQuery:(optimization_guide::proto::StringValue)request;
 
 // Executes a tab organization request with a given organization `strategy`.
 - (void)executeGroupTabsWithStrategy:
-    (optimization_guide::proto::
+    (optimization_guide::proto::features::
          TabOrganizationRequest_TabOrganizationModelStrategy)strategy;
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 

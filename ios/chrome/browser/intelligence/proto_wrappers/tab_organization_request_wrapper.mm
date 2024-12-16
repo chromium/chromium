@@ -31,11 +31,13 @@
   // relinquishes ownership of the TabOrganizationRequest proto to the
   // callback's handler.
   base::OnceCallback<void(
-      std::unique_ptr<optimization_guide::proto::TabOrganizationRequest>)>
+      std::unique_ptr<
+          optimization_guide::proto::features::TabOrganizationRequest>)>
       _completion_callback;
 
   // Unique pointer to the TabOrganizationRequest proto.
-  std::unique_ptr<optimization_guide::proto::TabOrganizationRequest> _request;
+  std::unique_ptr<optimization_guide::proto::features::TabOrganizationRequest>
+      _request;
 
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
@@ -46,13 +48,13 @@
                initWithWebStateList:(WebStateList*)webStateList
     allowReorganizingExistingGroups:(bool)allowReorganizingExistingGroups
                    groupingStrategy:
-                       (optimization_guide::proto::
+                       (optimization_guide::proto::features::
                             TabOrganizationRequest_TabOrganizationModelStrategy)
                            strategy
                  completionCallback:
-                     (base::OnceCallback<
-                         void(std::unique_ptr<optimization_guide::proto::
-                                                  TabOrganizationRequest>)>)
+                     (base::OnceCallback<void(
+                          std::unique_ptr<optimization_guide::proto::features::
+                                              TabOrganizationRequest>)>)
                          completionCallback {
   self = [super init];
   if (self) {
@@ -60,8 +62,8 @@
     _completion_callback = std::move(completionCallback);
 
     // Create the TabOrganizationRequest proto/object.
-    _request =
-        std::make_unique<optimization_guide::proto::TabOrganizationRequest>();
+    _request = std::make_unique<
+        optimization_guide::proto::features::TabOrganizationRequest>();
 
     // Set initial fields.
     _request->set_model_strategy(strategy);
@@ -95,7 +97,7 @@
   // given WebState.
   for (int index = 0; index < _webStateList->count(); ++index) {
     web::WebState* webState = _webStateList->GetWebStateAt(index);
-    ::optimization_guide::proto::Tab* tab = _request->add_tabs();
+    ::optimization_guide::proto::features::Tab* tab = _request->add_tabs();
 
     tab->set_tab_id(webState->GetUniqueIdentifier().identifier());
     tab->set_title(base::UTF16ToUTF8(webState->GetTitle()));
@@ -104,8 +106,8 @@
     PageContextWrapper* pageContextWrapper = [[PageContextWrapper alloc]
           initWithWebState:webState
         completionCallback:base::BindOnce(^(
-                               std::unique_ptr<
-                                   optimization_guide::proto::PageContext>
+                               std::unique_ptr<optimization_guide::proto::
+                                                   features::PageContext>
                                    page_context) {
           [weakSelf asyncWorkCompleteForPageContext:std::move(page_context)
                                       associatedTab:tab];
@@ -138,10 +140,11 @@
 // All async work for a given PageContext is complete, set the PageContext for
 // its associated tab.
 - (void)asyncWorkCompleteForPageContext:
-            (std::unique_ptr<optimization_guide::proto::PageContext>)
+            (std::unique_ptr<optimization_guide::proto::features::PageContext>)
                 page_context
                           associatedTab:
-                              (optimization_guide::proto::Tab*)associated_tab {
+                              (optimization_guide::proto::features::Tab*)
+                                  associated_tab {
   associated_tab->set_allocated_page_context(page_context.release());
 }
 

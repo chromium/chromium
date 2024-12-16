@@ -60,7 +60,7 @@
 #pragma mark - AIPrototypingMutator
 
 - (void)executeServerQuery:
-    (optimization_guide::proto::BlingPrototypingRequest)request {
+    (optimization_guide::proto::features::BlingPrototypingRequest)request {
   __weak __typeof(self) weakSelf = self;
   _service->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kBlingPrototyping, request,
@@ -90,7 +90,7 @@
 }
 
 - (void)executeGroupTabsWithStrategy:
-    (optimization_guide::proto::
+    (optimization_guide::proto::features::
          TabOrganizationRequest_TabOrganizationModelStrategy)strategy {
   __weak __typeof(self) weakSelf = self;
 
@@ -100,14 +100,15 @@
                  initWithWebStateList:_webStateList
       allowReorganizingExistingGroups:true
                      groupingStrategy:strategy
-                   completionCallback:base::BindOnce(^(
-                                          std::unique_ptr<
-                                              optimization_guide::proto::
-                                                  TabOrganizationRequest>
-                                              request) {
-                     [weakSelf
-                         onTabOrganizationRequestCreated:std::move(request)];
-                   })];
+                   completionCallback:
+                       base::BindOnce(^(
+                           std::unique_ptr<optimization_guide::proto::features::
+                                               TabOrganizationRequest>
+                               request) {
+                         [weakSelf
+                             onTabOrganizationRequestCreated:std::move(
+                                                                 request)];
+                       })];
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
 }
 
@@ -120,7 +121,7 @@
 
   if (result.response.has_value()) {
     auto parsed = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::BlingPrototypingResponse>(
+        optimization_guide::proto::features::BlingPrototypingResponse>(
         result.response.value());
     if (!parsed->output().empty()) {
       response = parsed->output();
@@ -166,8 +167,8 @@
 // Handles the populated tab organization request by passing it to the model
 // execution service.
 - (void)onTabOrganizationRequestCreated:
-    (std::unique_ptr<optimization_guide::proto::TabOrganizationRequest>)
-        request {
+    (std::unique_ptr<
+        optimization_guide::proto::features::TabOrganizationRequest>)request {
   // Execute the request.
   __weak __typeof(self) weakSelf = self;
   _service->ExecuteModel(
@@ -192,17 +193,18 @@
   NSMutableSet<NSNumber*>* groupedTabIdentifiers = [NSMutableSet set];
 
   auto parsed = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::TabOrganizationResponse>(
+      optimization_guide::proto::features::TabOrganizationResponse>(
       result.response.value());
 
   // For each tab group, print its name and the information of each tab within
   // it.
-  for (const optimization_guide::proto::TabGroup& tab_group :
+  for (const optimization_guide::proto::features::TabGroup& tab_group :
        parsed->tab_groups()) {
     response +=
         base::StringPrintf("Group name: %s\n", tab_group.label().c_str());
 
-    for (const optimization_guide::proto::Tab& tab : tab_group.tabs()) {
+    for (const optimization_guide::proto::features::Tab& tab :
+         tab_group.tabs()) {
       response += base::StringPrintf("- %s (%s)\n", tab.title().c_str(),
                                      tab.url().c_str());
       [groupedTabIdentifiers addObject:[NSNumber numberWithInt:tab.tab_id()]];
