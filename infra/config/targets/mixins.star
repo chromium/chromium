@@ -872,8 +872,8 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
-            "device_type": "a13",
-            "device_os": "S",
+            "device_type": "a13ve",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
             "pool": "chromium.tests.gpu",
         },

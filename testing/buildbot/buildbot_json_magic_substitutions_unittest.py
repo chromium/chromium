@@ -401,7 +401,7 @@ class GPUTelemetryNoRootForUnrootedDevices(unittest.TestCase):
     self.assertEqual(retval, [])
 
   def testUnrootedDevices(self):
-    devices = ('a13', 'a23', 'dm1q', 'devonn')
+    devices = ('a13', 'a13ve', 'a23', 'dm1q', 'devonn')
     for d in devices:
       test_config = CreateConfigWithDeviceType(d)
       retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(

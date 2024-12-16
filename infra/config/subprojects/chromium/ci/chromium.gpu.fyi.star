@@ -473,7 +473,6 @@ ci.thin_tester(
     list_view = "chromium.gpu.experimental",
 )
 
-# TODO(crbug.com/40282670): Add a trybot for this builder when there's capacity.
 ci.thin_tester(
     name = "Android FYI Release (Samsung A13)",
     triggered_by = ["GPU FYI Android arm Builder"],

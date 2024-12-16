@@ -179,6 +179,7 @@ try/dawn-try-win10-x86-rel
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/dawn-win11-arm64-deps-rel
+try/gpu-fyi-try-android-a13-32
 try/gpu-fyi-try-android-m-nexus-5x-64
 try/gpu-fyi-try-android-nvidia-shield-tv
 try/gpu-fyi-try-android-p-pixel-2-32

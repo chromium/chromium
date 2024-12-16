@@ -108,6 +108,16 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
+    name = "gpu-fyi-try-android-a13-32",
+    description_html = "Runs GPU tests on Samsung A13 phones",
+    mirrors = [
+        "ci/GPU FYI Android arm Builder",
+        "ci/Android FYI Release (Samsung A13)",
+    ],
+    gn_args = "ci/GPU FYI Android arm Builder",
+)
+
+gpu_android_builder(
     name = "gpu-fyi-try-android-s23-64",
     description_html = "Runs GPU tests on Samsung S23 phones",
     mirrors = [
