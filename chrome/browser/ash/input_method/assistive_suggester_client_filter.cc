@@ -262,14 +262,7 @@ AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter(
     GetUrlCallback get_url,
     GetFocusedWindowPropertiesCallback get_window_properties)
     : get_url_(std::move(get_url)),
-      get_window_properties_(std::move(get_window_properties)),
-      denylist_(DenylistAdditions{
-          .autocorrect_denylist_json =
-              GetFieldTrialParam(features::kAutocorrectByDefault,
-                                 ParamName::kDenylist),
-          .multi_word_denylist_json =
-              GetFieldTrialParam(features::kAssistMultiWord,
-                                 ParamName::kDenylist)}) {}
+      get_window_properties_(std::move(get_window_properties)) {}
 
 AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
 
