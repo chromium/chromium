@@ -273,11 +273,9 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
       domain, scheme == net::CookieSourceScheme::kSecure);
   // Pass GURL() as first_party_url since we don't know the context and
   // don't want to match against (*, exception) pattern.
-  // No overrides are given since existing ones only pertain to 3P checks.
-  ContentSetting setting =
-      GetCookieSettingInternal(origin, net::SiteForCookies::FromUrl(origin),
-                               GURL(), net::CookieSettingOverrides(), nullptr)
-          .cookie_setting();
+  SettingInfo setting_info;
+  ContentSetting setting = GetContentSetting(
+      origin, GURL(), ContentSettingsType::COOKIES, &setting_info);
   DCHECK(IsValidSetting(setting));
   if (setting == CONTENT_SETTING_ALLOW) {
     return false;
@@ -362,11 +360,9 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
 bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
   // Pass GURL() as first_party_url since we don't know the context and
   // don't want to match against (*, exception) pattern.
-  // No overrides are given since existing ones only pertain to 3P checks.
-  ContentSetting setting =
-      GetCookieSettingInternal(origin, net::SiteForCookies::FromUrl(origin),
-                               GURL(), net::CookieSettingOverrides(), nullptr)
-          .cookie_setting();
+  SettingInfo setting_info;
+  ContentSetting setting = GetContentSetting(
+      origin, GURL(), ContentSettingsType::COOKIES, &setting_info);
   DCHECK(IsValidSetting(setting));
   return setting == CONTENT_SETTING_SESSION_ONLY;
 }
