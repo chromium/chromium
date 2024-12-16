@@ -180,14 +180,37 @@ void DigitalIdentityProviderDesktop::OnEvent(const std::string& qr_url,
                         break;
                     }
                   },
-                  [](device::cablev2::Event event) {
-                    // caBLE events notify when the user has started the
-                    // transaction on their phone. The desktop UI could update
-                    // at this point to instruct the user to complete the action
-                    // there.
-                  },
+                  [this](device::cablev2::Event event) { OnCableEvent(event); },
               },
               event);
+}
+
+void DigitalIdentityProviderDesktop::OnCableEvent(
+    device::cablev2::Event event) {
+  switch (event) {
+    case device::cablev2::Event::kPhoneConnected:
+    case device::cablev2::Event::kBLEAdvertReceived:
+      ShowConnectingToPhoneDialog();
+      if (!cable_connecting_dialog_timer_.IsRunning()) {
+        cable_connecting_dialog_timer_.Start(
+            FROM_HERE, base::Milliseconds(2500),
+            base::BindOnce(
+                &DigitalIdentityProviderDesktop::OnCableConnectingTimerComplete,
+                weak_ptr_factory_.GetWeakPtr()));
+      }
+      break;
+    case device::cablev2::Event::kReady:
+      // If we are ready before the timer fires, don't show the next dialog
+      // directly to make sure the "connecting to phone" dialog is visible for
+      // long enough time to avoid flashing the UI. Otherwise, show the next
+      // dialog directly.
+      if (cable_connecting_dialog_timer_.IsRunning()) {
+        cable_connecting_ready_to_advance_ = true;
+      } else {
+        ShowContinueStepsOnThePhoneDialog();
+      }
+      break;
+  }
 }
 
 void DigitalIdentityProviderDesktop::OnFinished(
@@ -268,6 +291,20 @@ void DigitalIdentityProviderDesktop::ShowBluetoothManualTurnOnDialog() {
 
 void DigitalIdentityProviderDesktop::OnUserRequestedBluetoothPowerOn() {
   transaction_->PowerBluetoothAdapter();
+}
+
+void DigitalIdentityProviderDesktop::ShowConnectingToPhoneDialog() {
+  // TODO(crbug.com/384423219): implement this method.
+}
+
+void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
+  // TODO(crbug.com/384423219): implement this method.
+}
+
+void DigitalIdentityProviderDesktop::OnCableConnectingTimerComplete() {
+  if (cable_connecting_ready_to_advance_) {
+    ShowContinueStepsOnThePhoneDialog();
+  }
 }
 
 void DigitalIdentityProviderDesktop::OnCanceled() {
