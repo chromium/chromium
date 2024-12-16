@@ -388,6 +388,7 @@
     "linux-cast-x64-rel": "ci/linux-cast-x64-rel/gn-args.json",
     "linux-extended-tracing-rel": "ci/linux-extended-tracing-rel/gn-args.json",
     "linux-gcc-rel": "ci/linux-gcc-rel/gn-args.json",
+    "linux-modules-compile-fyi-rel": "ci/linux-modules-compile-fyi-rel/gn-args.json",
     "linux-v4l2-codec-rel": "ci/linux-v4l2-codec-rel/gn-args.json"
   },
   "chromium.mac": {
@@ -817,6 +818,7 @@
     "linux-js-coverage-rel": "try/linux-js-coverage-rel/gn-args.json",
     "linux-layout-tests-edit-ng": "try/linux-layout-tests-edit-ng/gn-args.json",
     "linux-libfuzzer-asan-rel": "try/linux-libfuzzer-asan-rel/gn-args.json",
+    "linux-modules-compile-fyi-rel": "try/linux-modules-compile-fyi-rel/gn-args.json",
     "linux-multiscreen-fyi-rel": "try/linux-multiscreen-fyi-rel/gn-args.json",
     "linux-perfetto-rel": "try/linux-perfetto-rel/gn-args.json",
     "linux-rel": "try/linux-rel/gn-args.json",

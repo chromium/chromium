@@ -822,6 +822,17 @@ gn_args.config(
     ],
 )
 
+# Do not use this for non-FYI builders.
+gn_args.config(
+    name = "libcxx_modules",
+    args = {
+        # TODO: crbug.com/351909443 - remove once performance of plugins is
+        # improved.
+        "clang_use_chrome_plugins": False,
+        "use_libcxx_modules": True,
+    },
+)
+
 gn_args.config(
     name = "libfuzzer",
     args = {

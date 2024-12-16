@@ -857,6 +857,18 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-modules-compile-fyi-rel",
+    mirrors = [
+        "ci/linux-modules-compile-fyi-rel",
+    ],
+    gn_args = "ci/linux-modules-compile-fyi-rel",
+    cores = 32,
+    ssd = True,
+    contact_team_email = "chrome-build-team@google.com",
+    execution_timeout = 6 * time.hour,
+)
+
+try_.builder(
     name = "linux_upload_clang",
     executable = "recipe:chromium_toolchain/package_clang",
     gn_args = gn_args.config(
