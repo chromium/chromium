@@ -23,6 +23,7 @@
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -97,6 +98,8 @@ const int64_t kValidExpiringSignatureExpiresAt = 5459212800;
 
 constexpr std::string_view kAcceptSignatures = "Accept-Signatures";
 
+const GURL kExampleURL = GURL("https://example.test/");
+
 }  // namespace
 
 class SRIMessageSignatureParserTest : public testing::Test {
@@ -115,6 +118,8 @@ class SRIMessageSignatureParserTest : public testing::Test {
     }
     return builder.Build();
   }
+
+  const GURL& url() { return kExampleURL; }
 
   void ValidateBasicTestHeader(const mojom::SRIMessageSignaturePtr& sig) {
     EXPECT_EQ("signature", sig->label);
@@ -311,6 +316,19 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
       "signature=(\"identity-digest\";sf=%\"display\")",
       "signature=(\"identity-digest\";sf=:badbeef:)",
       "signature=(\"identity-digest\";sf;not-sf)",
+
+      // One valid, one invalid component:
+      "signature=(\"identity-digest\";sf \"unknown\")",
+      "signature=(\"unknown\" \"identity-digest\";sf)",
+      "signature=(\"identity-digest\";sf \"@path\")",  // No `;req` on `@path`
+      "signature=(\"@path\" \"identity-digest\";sf)",
+      "signature=(\"identity-digest\";sf @path;req)",  // `@path` isn't a string
+      "signature=(@path;req \"identity-digest\";sf)",
+
+      // Valid component, without valid `identity-digest`:
+      "signature=(\"identity-digest\" @path;req)",  // No `;sf`
+      "signature=(@path;req \"identity-digest\")",
+      "signature=(@path;req \"not-identity-digest\";sf)",
   };
 
   for (const char* test : cases) {
@@ -447,6 +465,36 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputParameters) {
   }
 }
 
+TEST_F(SRIMessageSignatureParserTest, ValidComponents) {
+  struct {
+    std::string_view components;
+    std::vector<std::string_view> expected_names;
+  } cases[] = {
+      {"\"identity-digest\";sf", {"identity-digest"}},
+      {"\"identity-digest\";sf \"@path\";req", {"identity-digest", "@path"}},
+      {"\"@path\";req \"identity-digest\";sf", {"@path", "identity-digest"}}};
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Component value: `" << test.components << "`");
+
+    // Tack valid parameters onto the test string so that we're actually
+    // just testing the component parsing.
+    std::string test_with_params = base::StrCat({"signature=(", test.components,
+                                                 ");alg=\"ed25519\";keyid=\"",
+                                                 kPublicKey, "\";tag=\"sri\""});
+    auto headers = GetHeaders(kValidSignatureHeader, test_with_params.c_str());
+    std::vector<mojom::SRIMessageSignaturePtr> result =
+        ParseSRIMessageSignaturesFromHeaders(*headers);
+
+    ASSERT_EQ(1u, result.size());
+    ASSERT_EQ(test.expected_names.size(), result[0]->components.size());
+    for (size_t i = 0; i < test.expected_names.size(); i++) {
+      EXPECT_EQ(test.expected_names[i], result[0]->components[i]->name);
+    }
+  }
+}
+
 TEST_F(SRIMessageSignatureParserTest, Created) {
   const char* cases[] = {
       "0",
@@ -566,6 +614,8 @@ class SRIMessageSignatureBaseTest : public testing::Test {
  protected:
   SRIMessageSignatureBaseTest() {}
 
+  const GURL& url() { return kExampleURL; }
+
   scoped_refptr<net::HttpResponseHeaders> ValidHeadersPlusInput(
       const char* input) {
     auto builder =
@@ -585,7 +635,7 @@ TEST_F(SRIMessageSignatureBaseTest, NoSignaturesNoBase) {
   mojom::SRIMessageSignaturePtr signature;
 
   std::optional<std::string> result =
-      ConstructSignatureBase(signature, *headers);
+      ConstructSignatureBase(signature, this->url(), *headers);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -595,7 +645,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersValidBase) {
   ASSERT_EQ(1u, signatures.size());
 
   std::optional<std::string> result =
-      ConstructSignatureBase(signatures[0], *headers);
+      ConstructSignatureBase(signatures[0], this->url(), *headers);
   ASSERT_TRUE(result.has_value());
   std::string expected_base =
       base::StrCat({"\"identity-digest\";sf: ", kValidDigestHeader,
@@ -638,7 +688,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersStrictlySerializedBase) {
     ASSERT_EQ(1u, signatures.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(signatures[0], *headers);
+        ConstructSignatureBase(signatures[0], this->url(), *headers);
     ASSERT_TRUE(result.has_value());
     std::string expected_base =
         base::StrCat({"\"identity-digest\";sf: ", kValidDigestHeader,
@@ -646,6 +696,49 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersStrictlySerializedBase) {
                       "(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"",
                       kPublicKey, "\";tag=\"sri\""});
     EXPECT_EQ(expected_base, result.value());
+  }
+}
+
+TEST_F(SRIMessageSignatureBaseTest, PathComponent) {
+  struct {
+    std::string_view url;
+    std::string_view path;
+  } cases[] = {
+      {"https://url.test/", "/"},
+      {"https://url.test:8080/", "/"},
+      {"https://user:pass@url.test/", "/"},
+      {"https://url.test/?a=b", "/"},
+      {"https://url.test/#anchor", "/"},
+      {"https://url.test/path", "/path"},
+      {"https://url.test/path/", "/path/"},
+      {"https://url.test/pAtH", "/pAtH"},
+      {"https://url.test/%0Apath", "/%0Apath"},
+      {"https://url.test/%0apath", "/%0apath"},
+      {"https://url.test/path/../", "/"},
+      {"https://url.test/ü", "/%C3%BC"},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.url);
+
+    std::string input_header = base::StrCat(
+        {"signature=(\"identity-digest\";sf \"@path\";req);",
+         "alg=\"ed25519\";keyid=\"", kPublicKey, "\";tag=\"sri\""});
+
+    std::stringstream expected_base;
+    expected_base
+        << "\"identity-digest\";sf: " << kValidDigestHeader << '\n'
+        << "\"@path\";req: " << test.path << '\n'
+        << "\"@signature-params\": (\"identity-digest\";sf \"@path\";req);"
+        << "alg=\"ed25519\";keyid=\"" << kPublicKey << "\";tag=\"sri\"";
+
+    auto headers = ValidHeadersPlusInput(input_header.c_str());
+    auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, signatures.size());
+
+    std::optional<std::string> result =
+        ConstructSignatureBase(signatures[0], GURL(test.url), *headers);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
   }
 }
 
@@ -700,7 +793,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
     ASSERT_EQ(1u, signatures.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(signatures[0], *headers);
+        ConstructSignatureBase(signatures[0], this->url(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }
@@ -733,7 +826,7 @@ TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
     ASSERT_EQ(1u, signatures.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(signatures[0], *headers);
+        ConstructSignatureBase(signatures[0], this->url(), *headers);
     EXPECT_THAT(result, testing::Optional(expected_base.str()));
   } while (std::next_permutation(params.begin(), params.end()));
 }
@@ -762,6 +855,8 @@ class SRIMessageSignatureValidationTest : public testing::Test {
     return builder.Build();
   }
 
+  const GURL& url() { return kExampleURL; }
+
   scoped_refptr<net::HttpResponseHeaders> ValidHeaders() {
     return Headers(kValidDigestHeader, kValidSignatureHeader,
                    kValidSignatureInputHeader);
@@ -788,7 +883,8 @@ TEST_F(SRIMessageSignatureValidationTest, NoSignatures) {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200").Build();
   std::vector<mojom::SRIMessageSignaturePtr> signatures;
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignature) {
@@ -796,7 +892,8 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignature) {
   auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(1u, signatures.size());
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
@@ -816,7 +913,8 @@ TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
   auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(2u, signatures.size());
 
-  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                       *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
@@ -831,7 +929,8 @@ TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
   auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(2u, signatures.size());
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
@@ -844,13 +943,16 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
   auto diff = kValidExpiringSignatureExpiresAt -
               base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000 - 1;
   task_environment_.AdvanceClock(base::Seconds(diff));
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
   task_environment_.AdvanceClock(base::Seconds(1));
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
 
   // ...but not after expiration.
   task_environment_.AdvanceClock(base::Seconds(1));
-  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                       *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
@@ -868,7 +970,8 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
     auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, signatures.size());
 
-    EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+    EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(
+        signatures, this->url(), *headers));
   }
 }
 
@@ -899,7 +1002,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, NoHeaders) {
       features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
 
   auto head = ResponseHead("", "", "");
-  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -912,7 +1015,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeaders) {
 
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
-  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
   EXPECT_FALSE(result.has_value());
 }
 TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
@@ -930,7 +1033,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
   auto head = ResponseHead(kValidDigestHeader,
                            SignatureHeader("bad-signature", wrong_signature),
                            SignatureInputHeader("bad-signature", wrong_key));
-  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
   if (feature_flag_enabled) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
@@ -947,7 +1050,7 @@ class SRIMessageSignatureRequestHeaderTest
   SRIMessageSignatureRequestHeaderTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        url_request_(context_->CreateRequest(GURL("https://example.com/"),
+        url_request_(context_->CreateRequest(kExampleURL,
                                              net::DEFAULT_PRIORITY,
                                              /*delegate=*/nullptr,
                                              TRAFFIC_ANNOTATION_FOR_TESTS)) {}

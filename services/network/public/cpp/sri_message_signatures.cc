@@ -5,11 +5,13 @@
 #include "services/network/public/cpp/sri_message_signatures.h"
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -21,14 +23,26 @@ const size_t kEd25519KeyLength = 32;
 const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignatures = "Accept-Signatures";
 
+constexpr std::array<std::string_view, 9u> kDerivedComponents = {
+    "@path"
+    // TODO(383409584): We should support the remaining derived components from
+    // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
+    //
+    // "@authority",      "@method", "@query-param", "@query",
+    // "@request-target", "@scheme", "@status",      "@target-uri",
+};
+
+bool ItemHasSingleBooleanParam(
+    const net::structured_headers::ParameterizedItem& item,
+    std::string_view param) {
+  return item.params.size() == 1u && item.params[0].first == param &&
+         item.params[0].second.is_boolean() &&
+         item.params[0].second.GetBoolean();
+}
+
 std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     const net::structured_headers::ParameterizedItem& component) {
-  // We're quite restrictive at the moment: the only component we'll accept is
-  // `identity-digest`, and we require that it has one and only parameter: `sf`.
-  // Eventually, we'll support a broader set of headers and derived components,
-  // but not today.
-  //
-  // https://wicg.github.io/signature-based-sri/#verification-requirements-for-sri
+  // https://wicg.github.io/signature-based-sri/#profile
   if (!component.item.is_string()) {
     return std::nullopt;
   }
@@ -37,14 +51,22 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
   if (name == "identity-digest") {
     // The "identity-digest" component requires a single `sf` parameter with
     // a `true` boolean value.
-    if (component.params.size() != 1u || component.params[0].first != "sf" ||
-        !component.params[0].second.is_boolean() ||
-        !component.params[0].second.GetBoolean()) {
+    if (!ItemHasSingleBooleanParam(component, "sf")) {
       return std::nullopt;
     }
     auto result = mojom::SRIMessageSignatureComponent::New();
     result->name = name;
     result->params.push_back(Parameters::kStrictStructuredFieldSerialization);
+    return result;
+  } else if (base::Contains(kDerivedComponents, name)) {
+    // Derived components require a single `req` parameter with a `true` boolean
+    // value.
+    if (!ItemHasSingleBooleanParam(component, "req")) {
+      return std::nullopt;
+    }
+    auto result = mojom::SRIMessageSignatureComponent::New();
+    result->name = name;
+    result->params.push_back(Parameters::kRequest);
     return result;
   } else {
     return std::nullopt;
@@ -63,7 +85,7 @@ std::string SerializeParams(const net::structured_headers::Parameters params) {
 
     // We only care about three parameter types for this specific application:
     //
-    // 1.  Boolean for `sf` (which must be `true`).
+    // 1.  Boolean for `sf` and `req` (which must be `true`).
     // 2.  Integers for `created` and `expires`.
     // 3.  String for everything else.
     DCHECK((value.is_boolean() && value.GetBoolean()) || value.is_integer() ||
@@ -90,6 +112,9 @@ std::string SerializeComponentParams(const std::vector<Parameters>& params) {
   for (const auto& param : params) {
     param_list << ';';
     switch (param) {
+      case Parameters::kRequest:
+        param_list << "req";
+        break;
       case Parameters::kStrictStructuredFieldSerialization:
         param_list << "sf";
         break;
@@ -157,6 +182,19 @@ std::string SerializeSignatureParams(
   signature_params << SerializeParams(input.params);
 
   return signature_params.str();
+}
+
+std::string SerializeDerivedComponent(const GURL& request_url,
+                                      const std::string& component) {
+  DCHECK(base::Contains(kDerivedComponents, component));
+
+  if (component == "@path") {
+    // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-path
+    return request_url.path();
+  }
+
+  // TODO(383409584): Support additional derived components.
+  NOTREACHED();
 }
 
 }  // namespace
@@ -293,8 +331,9 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
 
 std::optional<std::string> ConstructSignatureBase(
     const mojom::SRIMessageSignaturePtr& signature,
+    const GURL& request_url,
     const net::HttpResponseHeaders& headers) {
-  if (!signature) {
+  if (!signature || !request_url.is_valid()) {
     return std::nullopt;
   }
 
@@ -323,44 +362,57 @@ std::optional<std::string> ConstructSignatureBase(
     //      (The error conditions listed in the spec for this step do not
     //       apply to the SRI-valid subset of message signatures.)
     //
-    //      *  If the component name does not start with an "at" (`@`)
-    //         character, canonizalize the HTTP field value ... If the field
-    //         cannot be found in the message or the value cannot be obtained
-    //         in the context, produce an error.
+    //      *  If the component name starts with an "at" (@) character, derive
+    //         the component's value from the message according to the specific
+    //         rules defined for the derived component, as provided in Section
+    //         2.2, including processing of any known valid parameters. If the
+    //         derived component name is unknown or the value cannot be derived,
+    //         produce an error.
     std::optional<std::string> component_value;
-    std::optional<std::string> header =
-        headers.GetNormalizedHeader(component->name);
-    if (!header.has_value()) {
-      return std::nullopt;
-    }
-
-    // Determine how to serialize the header:
-    //
-    // SRI requires the `sf` parameter, which forces strict serialization for
-    // structured fields.
-    if (component->params.size() != 1u ||
-        component->params[0] !=
-            Parameters::kStrictStructuredFieldSerialization) {
-      return std::nullopt;
-    }
-
-    // Unfortunately, there doesn't seem to be a good way to decide how a
-    // given structured field should be serialized (as a Dictionary? List?),
-    // other than encoding a list of known headers and their types.
-    // Fortunately, we only support one header at the moment, so the list is
-    // managable.
-    if (component->name == "identity-digest") {
-      std::optional<net::structured_headers::Dictionary> dict =
-          net::structured_headers::ParseDictionary(header.value());
-      if (!dict.has_value()) {
+    if (component->name.starts_with('@')) {
+      if (!base::Contains(kDerivedComponents, component->name)) {
         return std::nullopt;
       }
-      component_value =
-          net::structured_headers::SerializeDictionary(dict.value());
-    } else {
-      return std::nullopt;
-    }
+      component_value = SerializeDerivedComponent(request_url, component->name);
 
+      //      *  If the component name does not start with an "at" (`@`)
+      //         character, canonizalize the HTTP field value ... If the field
+      //         cannot be found in the message or the value cannot be obtained
+      //         in the context, produce an error.
+    } else {
+      std::optional<std::string> header =
+          headers.GetNormalizedHeader(component->name);
+      if (!header.has_value()) {
+        return std::nullopt;
+      }
+
+      // Determine how to serialize the header:
+      //
+      // SRI requires the `sf` parameter, which forces strict serialization for
+      // structured fields.
+      if (component->params.size() != 1u ||
+          component->params[0] !=
+              Parameters::kStrictStructuredFieldSerialization) {
+        return std::nullopt;
+      }
+
+      // Unfortunately, there doesn't seem to be a good way to decide how a
+      // given structured field should be serialized (as a Dictionary? List?),
+      // other than encoding a list of known headers and their types.
+      // Fortunately, we only support one header at the moment, so the list is
+      // manageable.
+      if (component->name == "identity-digest") {
+        std::optional<net::structured_headers::Dictionary> dict =
+            net::structured_headers::ParseDictionary(header.value());
+        if (!dict.has_value()) {
+          return std::nullopt;
+        }
+        component_value =
+            net::structured_headers::SerializeDictionary(dict.value());
+      } else {
+        return std::nullopt;
+      }
+    }
     // 2.6. Append the covered component's canonicalized component value.
     // 2.7. Append a single newline (`\n`).
     if (!component_value.has_value()) {
@@ -383,9 +435,10 @@ std::optional<std::string> ConstructSignatureBase(
 
 bool ValidateSRIMessageSignaturesOverHeaders(
     const std::vector<mojom::SRIMessageSignaturePtr>& message_signatures,
+    const GURL& request_url,
     const net::HttpResponseHeaders& headers) {
   // If no signatures are present, validation automatically succeeds.
-  if (!message_signatures.size()) {
+  if (!message_signatures.size() || !request_url.is_valid()) {
     return true;
   }
 
@@ -401,7 +454,8 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 
     // Generate the signature base:
     std::optional<std::string> signature_base =
-        ConstructSignatureBase(message_signature, headers).value_or("");
+        ConstructSignatureBase(message_signature, request_url, headers)
+            .value_or("");
 
     // Decode the public key, and validate that both the public key and the
     // message's signature are the correct length for Ed25519 (32 and 64 bits,
@@ -428,6 +482,7 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 
 std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
+    const GURL& request_url,
     const network::mojom::URLResponseHead& response) {
   // If the feature is disabled, never block resources.
   if (!base::FeatureList::IsEnabled(
@@ -436,12 +491,12 @@ MaybeBlockResponseForSRIMessageSignature(
   }
 
   // No headers, no blocking.
-  if (!response.headers) {
+  if (!response.headers || !request_url.is_valid()) {
     return std::nullopt;
   }
   auto signatures = ParseSRIMessageSignaturesFromHeaders(*response.headers);
-  if (!signatures.size() ||
-      ValidateSRIMessageSignaturesOverHeaders(signatures, *response.headers)) {
+  if (!signatures.size() || ValidateSRIMessageSignaturesOverHeaders(
+                                signatures, request_url, *response.headers)) {
     return std::nullopt;
   }
   return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;

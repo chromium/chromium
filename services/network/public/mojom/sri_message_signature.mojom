@@ -11,12 +11,13 @@ module network.mojom;
 // While RFC9421 and its related registries create a very flexible system that
 // allows signature components to be pulled from a variety of sources and
 // serialized in many ways, the subset of components supported by SRI is much
-// narrower. See the validation requirements linked above.
+// narrower. See https://wicg.github.io/signature-based-sri/#profile.
 //
 // Signature inputs specifying invalid components or invalid parameters for
 // valid components will be ignored.
 struct SRIMessageSignatureComponent {
   enum Parameter {
+    kRequest,                           // `req`
     kStrictStructuredFieldSerialization // `sf`
   };
 
@@ -35,7 +36,7 @@ struct SRIMessageSignatureComponent {
 //
 // * Signature-Input: https://www.rfc-editor.org/rfc/rfc9421.html#section-4.1
 // * Signature: https://www.rfc-editor.org/rfc/rfc9421.html#section-4.2
-// * Validation requirements: https://wicg.github.io/signature-based-sri/#verification-requirements-for-sri
+// * Validation requirements: https://wicg.github.io/signature-based-sri/#profile
 struct SRIMessageSignature {
   enum Algorithm {
     kEd25519

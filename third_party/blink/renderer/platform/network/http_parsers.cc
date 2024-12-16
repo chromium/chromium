@@ -290,6 +290,8 @@ blink::NoVarySearchWithParseErrorPtr ConvertToBlink(
 blink::SRIMessageSignatureComponent::Parameter ConvertToBlink(
     SRIMessageSignatureComponent::Parameter in) {
   switch (in) {
+    case SRIMessageSignatureComponent::Parameter::kRequest:
+      return blink::SRIMessageSignatureComponent::Parameter::kRequest;
     case SRIMessageSignatureComponent::Parameter::
         kStrictStructuredFieldSerialization:
       return blink::SRIMessageSignatureComponent::Parameter::

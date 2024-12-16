@@ -2033,7 +2033,8 @@ void URLLoader::ContinueOnResponseStarted() {
   //
   // https://wicg.github.io/signature-based-sri/
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
-          MaybeBlockResponseForSRIMessageSignature(*response_)) {
+          MaybeBlockResponseForSRIMessageSignature(url_request_->url(),
+                                                   *response_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking

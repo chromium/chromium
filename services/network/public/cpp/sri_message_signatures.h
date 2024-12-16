@@ -39,6 +39,7 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
 COMPONENT_EXPORT(NETWORK_CPP)
 std::optional<std::string> ConstructSignatureBase(
     const mojom::SRIMessageSignaturePtr& signature,
+    const GURL& request_url,
     const net::HttpResponseHeaders& headers);
 
 // Validates a response's SRI-relevant HTTP Message Signatures.
@@ -49,6 +50,7 @@ std::optional<std::string> ConstructSignatureBase(
 COMPONENT_EXPORT(NETWORK_CPP)
 bool ValidateSRIMessageSignaturesOverHeaders(
     const std::vector<mojom::SRIMessageSignaturePtr>& signatures,
+    const GURL& request_url,
     const net::HttpResponseHeaders& headers);
 
 // Returns `BlockedByResponseReason::kSRIMessageSignatureMismatch` if a response
@@ -59,6 +61,7 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 COMPONENT_EXPORT(NETWORK_CPP)
 std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
+    const GURL& request_url,
     const network::mojom::URLResponseHead& response);
 
 // Adds an `Accept-Signatures` header to outgoing requests if the request's
