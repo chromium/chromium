@@ -54,6 +54,9 @@ class BorderView : public views::View,
   void StartAnimation();
 
   void CancelAnimation();
+
+ private:
+  bool animation_ongoing_ = false;
 };
 
 }  // namespace glic

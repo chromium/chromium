@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/canvas.h"
 #include "ui/views/view_class_properties.h"
 
 namespace glic {
@@ -50,8 +52,15 @@ BorderView::BorderView() = default;
 BorderView::~BorderView() = default;
 
 void BorderView::OnPaint(gfx::Canvas* canvas) {
-  // Paint onto `canvas`.
-  // Call `SchedulePaint()` if the animation hasn't finished.
+  // TODO(baranerf): Modify this to a variable width when adding animation.
+  constexpr static int kBorderWidth = 5;
+
+  views::View::OnPaint(canvas);
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setColor(GetColorProvider()->GetColor(ui::kColorSysPrimary));
+  flags.setStrokeWidth(kBorderWidth);
+  canvas->DrawRect(GetContentsBounds(), flags);
 }
 
 void BorderView::OnChildViewAdded(views::View* observed_view,
@@ -66,10 +75,23 @@ void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
 
 void BorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {}
 
-// TODO(crbug.com/381424645): Implementation.
-void BorderView::StartAnimation() {}
+void BorderView::StartAnimation() {
+  CHECK(!animation_ongoing_);
+  animation_ongoing_ = true;
+  SetBoundsRect(GetVisibleBounds());
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+}
 
-void BorderView::CancelAnimation() {}
+void BorderView::CancelAnimation() {
+  if (!animation_ongoing_) {
+    return;
+  }
+  animation_ongoing_ = false;
+  // `DestroyLayer()` schedules another paint to repaint the affected area by
+  // the destroyed layer.
+  DestroyLayer();
+}
 
 BEGIN_METADATA(BorderView)
 END_METADATA
