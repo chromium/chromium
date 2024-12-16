@@ -144,8 +144,7 @@ public class Promise<T extends @Nullable Object> {
      * Queues a {@link Function} to be run when the Promise is fulfilled. When this Promise is
      * fulfilled, the function will be run and its result will be place in the returned Promise.
      */
-    public <RT extends @Nullable Object> Promise<RT> then(
-            final Function<@Nullable T, RT> function) {
+    public <RT extends @Nullable Object> Promise<RT> then(Function<T, RT> function) {
         checkThread();
 
         // Create a new Promise to store the result of the function.
@@ -175,7 +174,7 @@ public class Promise<T extends @Nullable Object> {
      * Promise is fulfilled, the AsyncFunction will be run. When the result of the AsyncFunction is
      * available, it will be placed in the returned Promise.
      */
-    public <RT extends @Nullable Object> Promise<RT> then(final AsyncFunction<T, RT> function) {
+    public <RT extends @Nullable Object> Promise<RT> then(AsyncFunction<T, RT> function) {
         checkThread();
 
         // Create a new Promise to be returned.
@@ -220,7 +219,7 @@ public class Promise<T extends @Nullable Object> {
      * Fulfills the Promise with the result and passes it to any {@link Callback}s previously queued
      * on the next iteration of the message loop.
      */
-    public void fulfill(final @Nullable T result) {
+    public void fulfill(T result) {
         checkThread();
         assert mState == PromiseState.UNFULFILLED;
 

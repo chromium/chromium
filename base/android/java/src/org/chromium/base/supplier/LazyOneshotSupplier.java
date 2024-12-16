@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
  * @param <T> The type of the wrapped object.
  */
 @NullMarked
-public interface LazyOneshotSupplier<T> {
+public interface LazyOneshotSupplier<T extends @Nullable Object> {
     /**
      * Add a callback that's called when the object owned by this supplier is available. If the
      * object is already available, the callback will be called at the end of the current message

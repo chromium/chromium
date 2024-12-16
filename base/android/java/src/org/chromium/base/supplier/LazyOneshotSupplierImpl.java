@@ -38,7 +38,8 @@ import org.chromium.build.annotations.Nullable;
  * @param <T> The type of the wrapped object.
  */
 @NullMarked
-public abstract class LazyOneshotSupplierImpl<T> implements LazyOneshotSupplier<T> {
+public abstract class LazyOneshotSupplierImpl<T extends @Nullable Object>
+        implements LazyOneshotSupplier<T> {
     private final Promise<T> mPromise = new Promise<>();
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
@@ -87,7 +88,7 @@ public abstract class LazyOneshotSupplierImpl<T> implements LazyOneshotSupplier<
      *
      * @param object The object to supply.
      */
-    public void set(@Nullable T object) {
+    public void set(T object) {
         mThreadChecker.assertOnValidThread();
         assert !mPromise.isFulfilled();
         mPromise.fulfill(object);
