@@ -385,10 +385,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorShareThisTabAudioToggleBackground] = {
       ui::kColorSubtleEmphasisBackground};
   mixer[kColorShareThisTabSourceViewBorder] = {ui::kColorMidground};
-  mixer[kColorShoppingPageActionIconBackgroundVariant] = {
-      ui::kColorSysSecondary};
-  mixer[kColorShoppingPageActionIconForegroundVariant] = {
-      ui::kColorSysOnSecondary};
   mixer[kColorSidePanelBackground] = {kColorToolbar};
   mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSeparator};
   mixer[kColorSidePanelComboboxEntryIcon] = {ui::kColorIcon};

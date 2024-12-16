@@ -57,7 +57,6 @@ BASE_DECLARE_FEATURE(kCompareConfirmationToast);
 BASE_DECLARE_FEATURE(kProductSpecificationsCache);
 BASE_DECLARE_FEATURE(kCompareManagementInterface);
 
-BASE_DECLARE_FEATURE(kShoppingIconColorVariant);
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);

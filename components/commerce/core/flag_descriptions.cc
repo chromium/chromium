@@ -37,12 +37,6 @@ const char kCompareManagementInterfaceDescription[] =
     "Enable showing the comparison tables list in the Compare UI and enable "
     "the new \"Comparison tables\" context menu under \"Bookmarks and Lists\".";
 
-const char kShoppingIconColorVariantName[] =
-    "Enable color variant for shopping icons";
-const char kShoppingIconColorVariantDescription[] =
-    "Enables a color variant for shopping page action icons (Price Insights & "
-    "Price Tracking)";
-
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
 

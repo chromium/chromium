@@ -89,11 +89,6 @@ PriceTrackingIconView::PriceTrackingIconView(
 
   SetUseTonalColorsWhenExpanded(
       base::FeatureList::IsEnabled(commerce::kPriceTrackingIconColors));
-
-  if (base::FeatureList::IsEnabled(commerce::kShoppingIconColorVariant)) {
-    SetCustomForegroundColorId(kColorShoppingPageActionIconForegroundVariant);
-    SetCustomBackgroundColorId(kColorShoppingPageActionIconBackgroundVariant);
-  }
 }
 
 PriceTrackingIconView::~PriceTrackingIconView() = default;

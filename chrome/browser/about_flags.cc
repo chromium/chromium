@@ -6989,11 +6989,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"shopping-icon-color-variant",
-     commerce::flag_descriptions::kShoppingIconColorVariantName,
-     commerce::flag_descriptions::kShoppingIconColorVariantDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(commerce::kShoppingIconColorVariant)},
-
     {"price-tracking-icon-colors",
      commerce::flag_descriptions::kPriceTrackingIconColorsDescription,
      commerce::flag_descriptions::kPriceTrackingIconColorsDescription,

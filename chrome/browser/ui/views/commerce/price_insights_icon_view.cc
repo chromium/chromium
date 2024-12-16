@@ -42,11 +42,6 @@ PriceInsightsIconView::PriceInsightsIconView(
   SetProperty(views::kElementIdentifierKey, kPriceInsightsChipElementId);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
-
-  if (base::FeatureList::IsEnabled(commerce::kShoppingIconColorVariant)) {
-    SetCustomForegroundColorId(kColorShoppingPageActionIconForegroundVariant);
-    SetCustomBackgroundColorId(kColorShoppingPageActionIconBackgroundVariant);
-  }
 }
 PriceInsightsIconView::~PriceInsightsIconView() = default;
 
