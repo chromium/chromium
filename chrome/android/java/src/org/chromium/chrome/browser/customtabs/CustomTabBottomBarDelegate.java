@@ -468,7 +468,10 @@ public class CustomTabBottomBarDelegate
             Supplier<Tab> tabProvider) {
         Intent addedIntent = extraIntent == null ? new Intent() : new Intent(extraIntent);
         Tab tab = tabProvider.get();
-        if (tab != null) addedIntent.setData(Uri.parse(tab.getUrl().getSpec()));
+        if (tab != null) {
+            addedIntent.setData(Uri.parse(tab.getUrl().getSpec()));
+            addedIntent.putExtra(Intent.EXTRA_SUBJECT, tab.getTitle());
+        }
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
