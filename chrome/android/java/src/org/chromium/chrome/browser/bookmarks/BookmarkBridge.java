@@ -42,6 +42,7 @@ class BookmarkBridge {
     private final ObserverList<BookmarkModelObserver> mObservers = new ObserverList<>();
 
     private long mNativeBookmarkBridge;
+    private Profile mProfile;
     private boolean mIsDoingExtensiveChanges;
     private boolean mIsNativeBookmarkModelLoaded;
 
@@ -72,12 +73,13 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    static BookmarkModel createBookmarkModel(long nativeBookmarkBridge) {
-        return new BookmarkModel(nativeBookmarkBridge);
+    static BookmarkModel createBookmarkModel(long nativeBookmarkBridge, Profile profile) {
+        return new BookmarkModel(nativeBookmarkBridge, profile);
     }
 
-    BookmarkBridge(long nativeBookmarkBridge) {
+    BookmarkBridge(long nativeBookmarkBridge, Profile profile) {
         mNativeBookmarkBridge = nativeBookmarkBridge;
+        mProfile = profile;
         mIsDoingExtensiveChanges =
                 BookmarkBridgeJni.get().isDoingExtensiveChanges(mNativeBookmarkBridge);
     }
@@ -181,7 +183,9 @@ class BookmarkBridge {
         // Start reading as a fail-safe measure to avoid waiting forever if the caller forgets to
         // call kickOffReading().
         PartnerBookmarksShim.kickOffReading(
-                ContextUtils.getApplicationContext(), mPartnerBookmarkIteratorSupplier.get());
+                ContextUtils.getApplicationContext(),
+                mProfile,
+                mPartnerBookmarkIteratorSupplier.get());
         return false;
     }
 

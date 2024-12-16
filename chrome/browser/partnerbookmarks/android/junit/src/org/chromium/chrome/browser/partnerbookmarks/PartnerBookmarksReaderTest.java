@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 
 /** Unit tests for PartnerBookmarksReader. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,7 +41,6 @@ public class PartnerBookmarksReaderTest {
 
     @Before
     public void setUp() {
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
         PartnerBookmarksReaderJni.setInstanceForTesting(mJniMock);
         Mockito.doNothing()
                 .when(mBrowserCustomizations)
@@ -55,7 +53,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
+                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
 
         Mockito.verify(mBrowserCustomizations, Mockito.never()).initializeAsync(mContextMock);
 
@@ -70,7 +68,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
+                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
 
         Mockito.verify(mBrowserCustomizations).initializeAsync(mContextMock);
 
@@ -85,7 +83,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
+                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
 
         Mockito.verify(mBrowserCustomizations, Mockito.never()).initializeAsync(mContextMock);
 
@@ -100,7 +98,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
+                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
 
         Mockito.verify(mBrowserCustomizations).initializeAsync(mContextMock);
 
@@ -115,7 +113,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
+                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
         reader.onBookmarksRead();
 
         Mockito.verify(mJniMock, Mockito.never())
@@ -128,7 +126,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
+                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         mBrowserCustomizationsInitCallback.getValue().run();
 
@@ -142,7 +140,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
+                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         mBrowserCustomizationsInitCallback.getValue().run();
         reader.onBookmarksRead();
@@ -157,7 +155,7 @@ public class PartnerBookmarksReaderTest {
 
         @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mBrowserCustomizations);
+                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         reader.onBookmarksRead();
         mBrowserCustomizationsInitCallback.getValue().run();

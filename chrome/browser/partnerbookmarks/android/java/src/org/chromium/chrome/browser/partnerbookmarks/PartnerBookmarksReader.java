@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.HashSet;
@@ -90,13 +89,13 @@ public class PartnerBookmarksReader {
      * Creates the instance of the reader.
      *
      * @param context A Context object.
+     * @param profile The Profile associated with the Bookmarks.
      * @param browserCustomizations Provides status of partner customizations.
      */
     public PartnerBookmarksReader(
-            Context context, PartnerBrowserCustomizations browserCustomizations) {
+            Context context, Profile profile, PartnerBrowserCustomizations browserCustomizations) {
         mContext = context;
-        mNativePartnerBookmarksReader =
-                PartnerBookmarksReaderJni.get().init(ProfileManager.getLastUsedRegularProfile());
+        mNativePartnerBookmarksReader = PartnerBookmarksReaderJni.get().init(profile);
         if (!browserCustomizations.isInitialized()) {
             browserCustomizations.initializeAsync(context);
         }

@@ -220,7 +220,8 @@ BookmarkBridge::BookmarkBridge(
     ExtensiveBookmarkChangesBeginning();
 
   java_bookmark_model_ = Java_BookmarkBridge_createBookmarkModel(
-      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      profile_->GetJavaObject());
 }
 
 BookmarkBridge::~BookmarkBridge() {

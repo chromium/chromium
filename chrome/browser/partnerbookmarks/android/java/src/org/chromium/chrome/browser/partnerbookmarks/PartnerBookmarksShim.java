@@ -9,6 +9,7 @@ import android.content.pm.ApplicationInfo;
 
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * The Java counterpart for the C++ partner bookmarks shim. Responsible for: - checking if we need
@@ -24,12 +25,13 @@ public class PartnerBookmarksShim {
      * attempted before, it won't do anything.
      */
     public static void kickOffReading(
-            Context context, PartnerBookmark.BookmarkIterator bookmarkIterator) {
+            Context context, Profile profile, PartnerBookmark.BookmarkIterator bookmarkIterator) {
         if (sIsReadingAttempted) return;
         sIsReadingAttempted = true;
 
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(context, PartnerBrowserCustomizations.getInstance());
+                new PartnerBookmarksReader(
+                        context, profile, PartnerBrowserCustomizations.getInstance());
 
         boolean systemOrPreStable =
                 (context.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) == 1

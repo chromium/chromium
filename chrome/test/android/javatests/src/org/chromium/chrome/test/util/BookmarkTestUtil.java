@@ -125,6 +125,7 @@ public class BookmarkTestUtil {
                 () ->
                         PartnerBookmarksShim.kickOffReading(
                                 activityTestRule.getActivity(),
+                                activityTestRule.getProfile(false),
                                 AppHooks.get().getPartnerBookmarkIterator()));
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
