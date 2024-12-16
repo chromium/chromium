@@ -89,7 +89,7 @@ NSString* const kOpenExtensionOutcomeFailureOpenInNotFound =
 NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme =
     @"OpenExtensionOutcomeFailureUnsupportedScheme";
 
-NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_devices";
+NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_device";
 NSString* const kHostedDomain = @"hosted_domain";
 NSString* const kPictureUrl = @"picture_url";
 NSString* const kEmail = @"email";
