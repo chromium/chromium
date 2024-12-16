@@ -497,20 +497,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive"
-    units="ms" expires_after="2024-12-08">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    [deprecated - this measures only through the end of commit phase 1 and
-    misses commit phase 2, which includes the backing store commit] The time it
-    takes for an IndexedDB transaction to commit, starting from when it starts
-    executing tasks (when it reaches the front of the scheduling queue).
-    Recorded on transaction commit.
-  </summary>
-  <token key="TransactionType" variants="IdbTransactionTypes"/>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2"
     units="ms" expires_after="2025-04-27">
   <owner>estade@chromium.org</owner>
