@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -166,15 +167,172 @@ TEST_F(HTMLLinkElementTest, TermsOfServiceCounter) {
 TEST_F(HTMLLinkElementTest, PaymentCounter) {
   // <link rel="payment"> is not counted when absent.
   GetDocument().head()->setInnerHTML(R"HTML(
-    <link rel="not-payment" href="/">
+    <link rel="not-payment" href="https://example.com/">
   )HTML");
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelPayment));
 
   // <link rel="payment"> is counted when present.
   GetDocument().head()->setInnerHTML(R"HTML(
-    <link rel="payment" href="/">
+    <link rel="payment" href="https://example.com/">
   )HTML");
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelPayment));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Tests that the payment link is handled when the 'rel' and 'href' attributes
+// are set by order before appending the element to the document.
+TEST_F(HTMLLinkElementTest, PaymentLinkHandledWhenRelAndHrefSetBeforeAppend) {
+  // Ensures Document::HandlePaymentLink is not invoked initially.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+
+  auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags());
+  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kHrefAttr,
+                             AtomicString("https://example.com/"));
+  GetDocument().head()->appendChild(link_element);
+
+  // Ensures Document::HandlePaymentLink is invoked.
+  EXPECT_TRUE(GetDocument().payment_link_handled_);
+}
+
+// Tests that the payment link is handled when the 'href' and 'rel' attributes
+// are set by order before appending the element to the document.
+TEST_F(HTMLLinkElementTest, PaymentLinkHandledWhenHrefAndRelSetBeforeAppend) {
+  // Ensures Document::HandlePaymentLink is not invoked initially.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+
+  auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags());
+  link_element->setAttribute(html_names::kHrefAttr,
+                             AtomicString("https://example.com/"));
+  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  GetDocument().head()->appendChild(link_element);
+
+  // Ensures Document::HandlePaymentLink is invoked.
+  EXPECT_TRUE(GetDocument().payment_link_handled_);
+}
+
+// Tests that the payment link is handled when the 'rel' and 'href' attributes
+// are set by order after appending the element to the document.
+TEST_F(HTMLLinkElementTest, PaymentLinkHandledWhenRelAndHrefSetAfterAppend) {
+  // Ensures Document::HandlePaymentLink is not invoked initially.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+
+  auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags());
+  GetDocument().head()->appendChild(link_element);
+  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kHrefAttr,
+                             AtomicString("https://example.com/"));
+
+  // Ensures Document::HandlePaymentLink is invoked.
+  EXPECT_TRUE(GetDocument().payment_link_handled_);
+}
+
+// Tests that the payment link is handled when the 'href' and 'rel' attributes
+// are set by order after appending the element to the document.
+TEST_F(HTMLLinkElementTest, PaymentLinkHandledWhenHrefAndRelSetAfterAppend) {
+  // Ensures Document::HandlePaymentLink is not invoked initially.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+
+  auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags());
+  GetDocument().head()->appendChild(link_element);
+  link_element->setAttribute(html_names::kHrefAttr,
+                             AtomicString("https://example.com/"));
+  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+
+  // Ensures Document::HandlePaymentLink is invoked.
+  EXPECT_TRUE(GetDocument().payment_link_handled_);
+}
+
+// Tests that the payment link is not handled when the 'rel' attribute is not
+// set.
+TEST_F(HTMLLinkElementTest, PaymentLinkNotHandledWhenRelNotSet) {
+  // Ensures Document::HandlePaymentLink is not invoked initially.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+
+  auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags());
+  link_element->setAttribute(html_names::kHrefAttr,
+                             AtomicString("https://example.com/"));
+  GetDocument().head()->appendChild(link_element);
+
+  // Ensures Document::HandlePaymentLink is not invoked.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+}
+
+// Tests that the payment link is not handled when the 'href' attribute is not
+// set.
+TEST_F(HTMLLinkElementTest, PaymentLinkNotHandledWhenHrefNotSet) {
+  // Ensures Document::HandlePaymentLink is not invoked initially.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+
+  auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags());
+  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  GetDocument().head()->appendChild(link_element);
+
+  // Ensures Document::HandlePaymentLink is not invoked.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+}
+
+// Tests that the payment link is not handled when the element is not appended
+// to the document.
+TEST_F(HTMLLinkElementTest, PaymentLinkNotHandledWhenNotAppended) {
+  // Ensures Document::HandlePaymentLink is not invoked initially.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+
+  auto* link_element = MakeGarbageCollected<HTMLLinkElement>(
+      GetDocument(), CreateElementFlags());
+  link_element->setAttribute(html_names::kRelAttr, AtomicString("payment"));
+  link_element->setAttribute(html_names::kHrefAttr,
+                             AtomicString("https://example.com/"));
+
+  // Ensures Document::HandlePaymentLink is not invoked.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+}
+
+// Tests that the payment link is not handled when the element is in an iFrame.
+TEST_F(HTMLLinkElementSimTest, PaymentLinkNotHandledWhenNotInTheMainFrame) {
+  // Ensures Document::HandlePaymentLink is not invoked initially.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest child_frame_resource("https://example.com/subframe.html",
+                                  "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(
+      R"HTML(
+        <body>
+          <iframe src='https://example.com/subframe.html'></iframe>
+        </body>)HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  child_frame_resource.Complete(R"HTML(
+    <link rel="payment" href='https://paymentlinkexample.com/'>
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* iframe_element = DynamicTo<HTMLIFrameElement>(
+      GetDocument().QuerySelector(AtomicString("iframe")));
+  ASSERT_NE(iframe_element, nullptr);
+  auto* link_element = To<HTMLLinkElement>(
+      iframe_element->contentDocument()->head()->firstChild());
+  ASSERT_NE(link_element, nullptr);
+  ASSERT_EQ(link_element->FastGetAttribute(html_names::kRelAttr),
+            AtomicString("payment"));
+
+  // Ensures Document::HandlePaymentLink is not invoked.
+  EXPECT_FALSE(GetDocument().payment_link_handled_);
+}
+#endif
 
 }  // namespace blink

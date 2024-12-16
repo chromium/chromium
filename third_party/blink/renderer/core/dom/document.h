@@ -2196,6 +2196,22 @@ class CORE_EXPORT Document : public ContainerNode,
   FRIEND_TEST_ALL_PREFIXES(
       RangeTest,
       ContainerNodeRemovalWithSequentialFocusNavigationStartingPoint);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkHandledWhenRelAndHrefSetBeforeAppend);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkHandledWhenHrefAndRelSetBeforeAppend);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkHandledWhenRelAndHrefSetAfterAppend);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkHandledWhenHrefAndRelSetAfterAppend);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkNotHandledWhenRelNotSet);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkNotHandledWhenHrefNotSet);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkNotHandledWhenNotAppended);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementSimTest,
+                           PaymentLinkNotHandledWhenNotInTheMainFrame);
 
   // Listed elements that are not associated to a <form> element.
   class UnassociatedListedElementsList {
