@@ -17267,22 +17267,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Moderate",
+                    "name": "Moderate_20241216",
                     "params": {
-                        "delay": "1000ms",
-                        "distance_from_ptr_down_high": "0",
-                        "distance_from_ptr_down_low": "-0.3",
-                        "largest_anchor_threshold": "0.5"
-                    },
-                    "enable_features": [
-                        "PreloadingViewportHeuristics"
-                    ]
-                },
-                {
-                    "name": "Aggressive",
-                    "params": {
-                        "delay": "1000ms",
-                        "distance_from_ptr_down_high": "0",
+                        "delay": "500ms",
+                        "distance_from_ptr_down_hi": "0",
                         "distance_from_ptr_down_low": "-0.3",
                         "largest_anchor_threshold": "0.25"
                     },
@@ -17291,12 +17279,24 @@
                     ]
                 },
                 {
-                    "name": "Conservative",
+                    "name": "Aggressive_20241216",
                     "params": {
-                        "delay": "1000ms",
-                        "distance_from_ptr_down_high": "0",
-                        "distance_from_ptr_down_low": "-0.3",
-                        "largest_anchor_threshold": "1"
+                        "delay": "500ms",
+                        "distance_from_ptr_down_hi": "0.2",
+                        "distance_from_ptr_down_low": "-0.5",
+                        "largest_anchor_threshold": "0.25"
+                    },
+                    "enable_features": [
+                        "PreloadingViewportHeuristics"
+                    ]
+                },
+                {
+                    "name": "Conservative_20241216",
+                    "params": {
+                        "delay": "500ms",
+                        "distance_from_ptr_down_hi": "0",
+                        "distance_from_ptr_down_low": "-0.2",
+                        "largest_anchor_threshold": "0.25"
                     },
                     "enable_features": [
                         "PreloadingViewportHeuristics"
