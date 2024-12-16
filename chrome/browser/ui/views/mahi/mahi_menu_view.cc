@@ -325,8 +325,7 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
       button_status.summary_of_selection_eligibility));
 
   StyleMenuButton(summary_button_, chromeos::kMahiSummarizeIcon);
-  // TODO(b:374172642): update the icon
-  StyleMenuButton(elucidation_button_, chromeos::kMahiOutlinesIcon);
+  StyleMenuButton(elucidation_button_, chromeos::kMahiSimplifyIcon);
 
   textfield_controller_ =
       std::make_unique<MenuTextfieldController>(weak_ptr_factory_.GetWeakPtr());
