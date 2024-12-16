@@ -338,6 +338,13 @@ BASE_FEATURE(kAutofillDisambiguateContradictingFieldTypes,
              "AutofillDisambiguateContradictingFieldTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the `AutofillPopupHideHelper` will hide the keyboard
+// accessory when the Chrome native view is resized on Android.
+BASE_DECLARE_FEATURE(kAutofillDoNotHideKeyboardAccessoryOnMainFrameResized);
+BASE_FEATURE(kAutofillDoNotHideKeyboardAccessoryOnMainFrameResized,
+             "AutofillDoNotHideKeyboardAccessoryOnMainFrameResized",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, whenever form controls are removed from the DOM, the ChromeClient
 // is informed about this. This enables Autofill to trigger a reparsing of
 // forms.

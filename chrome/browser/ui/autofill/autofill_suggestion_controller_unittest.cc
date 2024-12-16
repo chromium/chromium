@@ -51,6 +51,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -503,8 +504,16 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   // The navigation generates a PrimaryMainFrameWasResized callback.
-  EXPECT_CALL(client().popup_controller(manager()),
-              Hide(SuggestionHidingReason::kWidgetChanged));
+  SuggestionHidingReason reason;
+  // On Android, keyboard accessory is not hidden if the Chrome native widget
+  // changes its size. The keyboard accessory is still hidden because the input
+  // field looses.
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    reason = SuggestionHidingReason::kNavigation;
+  } else {
+    reason = SuggestionHidingReason::kWidgetChanged;
+  }
+  EXPECT_CALL(client().popup_controller(manager()), Hide(reason));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
   // Verify and clear before TearDown() closes the popup.
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
@@ -540,8 +549,16 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
        HideInSubFrameOnMainFrameNavigation) {
   ShowSuggestions(sub_manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
-  EXPECT_CALL(client().popup_controller(sub_manager()),
-              Hide(SuggestionHidingReason::kWidgetChanged));
+  SuggestionHidingReason reason;
+  // On Android, keyboard accessory is not hidden if the Chrome native widget
+  // changes its size. The keyboard accessory is still hidden because the input
+  // field looses.
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    reason = SuggestionHidingReason::kRendererEvent;
+  } else {
+    reason = SuggestionHidingReason::kWidgetChanged;
+  }
+  EXPECT_CALL(client().popup_controller(sub_manager()), Hide(reason));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
 }
 
