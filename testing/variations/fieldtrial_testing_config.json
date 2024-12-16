@@ -13329,6 +13329,7 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "LobsterDogfood",
+                        "LobsterQuickInsertZeroState",
                         "LobsterRightClickMenu"
                     ]
                 }
