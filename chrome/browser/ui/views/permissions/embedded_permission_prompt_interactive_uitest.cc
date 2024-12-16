@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_system_settings_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -486,6 +487,34 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 
   TestPromptElementText(CONTENT_SETTING_ASK, CONTENT_SETTING_ASK,
                         expected_ask_labels, /*check_buttons=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       TestOsPromptButtonsLabel) {
+  base::AutoReset<bool> mock_system_settings =
+      system_permission_settings::MockShowSystemSettingsForTesting();
+
+  std::u16string open_settings_label;
+
+#if BUILDFLAG(IS_MAC)
+  open_settings_label = u"Go to macOS settings";
+#elif BUILDFLAG(IS_WIN)
+  open_settings_label = u"Go to Windows settings";
+#elif BUILDFLAG(IS_CHROMEOS)
+  open_settings_label = u"Go to ChromeOS settings";
+#endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(
+          WaitForShow(EmbeddedPermissionPromptSystemSettingsView::kMainViewId)),
+      InAnyContext(CheckViewProperty(
+          EmbeddedPermissionPromptSystemSettingsView::kOpenSettingsId,
+          &views::MdTextButton::GetText, open_settings_label)));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,

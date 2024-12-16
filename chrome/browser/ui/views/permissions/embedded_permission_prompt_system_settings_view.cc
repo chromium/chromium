@@ -12,6 +12,10 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    EmbeddedPermissionPromptSystemSettingsView,
+    kOpenSettingsId);
+
 EmbeddedPermissionPromptSystemSettingsView::
     EmbeddedPermissionPromptSystemSettingsView(
         Browser* browser,
@@ -70,6 +74,8 @@ EmbeddedPermissionPromptSystemSettingsView::GetButtonsConfiguration() const {
   operating_system_name = l10n_util::GetStringUTF16(IDS_MACOS_NAME_FRAGMENT);
 #elif BUILDFLAG(IS_WIN)
   operating_system_name = l10n_util::GetStringUTF16(IDS_WINDOWS_NAME_FRAGMENT);
+#elif BUILDFLAG(IS_CHROMEOS)
+  operating_system_name = l10n_util::GetStringUTF16(IDS_CHROMEOS_NAME_FRAGMENT);
 #endif
 
   // Do not show buttons if the OS is not supported.
@@ -79,5 +85,6 @@ EmbeddedPermissionPromptSystemSettingsView::GetButtonsConfiguration() const {
 
   return {{l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS,
                                       operating_system_name),
-           ButtonType::kSystemSettings, ui::ButtonStyle::kTonal}};
+           ButtonType::kSystemSettings, ui::ButtonStyle::kTonal,
+           kOpenSettingsId}};
 }
