@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
-#include "chrome/browser/ash/input_method/field_trial.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"

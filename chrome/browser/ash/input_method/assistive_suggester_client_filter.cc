@@ -17,7 +17,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
-#include "chrome/browser/ash/input_method/field_trial.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
