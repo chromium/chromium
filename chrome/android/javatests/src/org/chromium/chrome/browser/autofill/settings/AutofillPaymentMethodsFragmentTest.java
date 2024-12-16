@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -1538,9 +1539,7 @@ public class AutofillPaymentMethodsFragmentTest {
         assertThat(summary)
                 .isEqualTo(activity.getString(R.string.autofill_create_first_credit_card_summary));
 
-        // Simulate click on the preference.
-        ThreadUtils.runOnUiThreadBlocking(promoPreference::performClick);
-        rule.waitForFragmentToBeShown();
+        onView(withId(R.id.card_button)).perform(click());
 
         // Verify that the local card editor fragment is opened.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
