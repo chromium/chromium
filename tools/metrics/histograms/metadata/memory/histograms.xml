@@ -93,17 +93,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ARCVM" summary="ARCVM"/>
 </variants>
 
-<histogram name="HeapProfiling.AndroidStackUnwinder"
-    enum="AndroidStackUnwinder" expires_after="2025-01-26">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    The stack unwinder implementation used by the SamplingHeapProfiler. Emitted
-    on Android devices only each time the profiler is started, which happens at
-    Chrome launch when HeapProfiling.InProcess.Enabled is true.
-  </summary>
-</histogram>
-
 <histogram name="HeapProfiling.InProcess.Enabled{Process}"
     enum="BooleanEnabled" expires_after="2025-04-13">
   <owner>joenotcharles@google.com</owner>

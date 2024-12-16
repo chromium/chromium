@@ -19,7 +19,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
@@ -147,11 +146,6 @@ SamplingHeapProfiler::~SamplingHeapProfiler() {
 
 uint32_t SamplingHeapProfiler::Start() {
   const auto unwinder = ChooseStackUnwinder();
-#if BUILDFLAG(IS_ANDROID)
-  // Record which unwinder is in use on Android, since it's hard to keep track
-  // of which methods are available at runtime.
-  base::UmaHistogramEnumeration("HeapProfiling.AndroidStackUnwinder", unwinder);
-#endif
   if (unwinder == StackUnwinder::kUnavailable) {
     LOG(WARNING) << "Sampling heap profiler: Stack unwinding is not available.";
     return 0;
