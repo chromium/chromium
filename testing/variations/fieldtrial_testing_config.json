@@ -25972,7 +25972,7 @@
                 {
                     "name": "EnabledThrottling0ms",
                     "params": {
-                        "poll_interval_ms": "0"
+                        "poll_interval_ms": "1"
                     },
                     "enable_features": [
                         "YieldWithInputHint"
