@@ -22,7 +22,6 @@
 #include "url/gurl.h"
 
 class SkBitmap;
-class PrefService;
 
 namespace favicon {
 class FaviconService;
@@ -99,7 +98,6 @@ class ASH_EXPORT QuickInsertClient {
                                   const gfx::Size& size,
                                   FetchFileThumbnailCallback callback) = 0;
 
-  virtual PrefService* GetPrefs() = 0;
   // SAFETY: The returned `do_paste` MUST be called synchronously. Calling it
   // after a delay, such as in a different task, may result in use-after-frees.
   virtual std::optional<QuickInsertWebPasteTarget> GetWebPasteTarget() = 0;

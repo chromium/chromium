@@ -66,9 +66,6 @@ class QuickInsertPixelTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
 
-    ON_CALL(client_, GetPrefs)
-        .WillByDefault(Return(
-            Shell::Get()->session_controller()->GetPrimaryUserPrefService()));
     ON_CALL(client_, GetHistoryService)
         .WillByDefault(Return(history_service_.get()));
 

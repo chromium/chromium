@@ -24,7 +24,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-class PrefService;
 class Profile;
 class ChromeSearchResult;
 class QuickInsertFileSuggester;
@@ -78,7 +77,6 @@ class QuickInsertClientImpl
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
-  PrefService* GetPrefs() override;
   std::optional<ash::QuickInsertWebPasteTarget> GetWebPasteTarget() override;
   void Announce(std::u16string_view message) override;
   history::HistoryService* GetHistoryService() override;

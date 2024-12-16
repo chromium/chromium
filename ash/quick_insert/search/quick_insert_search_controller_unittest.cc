@@ -92,10 +92,6 @@ using MockEmojiSearchResultsCallback = ::testing::MockFunction<
 
 class QuickInsertSearchControllerTest : public testing::Test {
  protected:
-  QuickInsertSearchControllerTest() {
-    ON_CALL(client(), GetPrefs).WillByDefault(testing::Return(&prefs_service_));
-  }
-
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
   }

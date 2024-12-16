@@ -172,7 +172,6 @@ class TestQuickInsertClient : public MockQuickInsertClient {
     ON_CALL(*this, GetSharedURLLoaderFactory)
         .WillByDefault(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>);
-    ON_CALL(*this, GetPrefs).WillByDefault(Return(prefs));
     ON_CALL(*this, GetHistoryService)
         .WillByDefault(Return(history_service_.get()));
   }
@@ -913,7 +912,7 @@ TEST_F(QuickInsertControllerTest,
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
-  ScopedDictPrefUpdate update(client().GetPrefs(), prefs::kEmojiPickerHistory);
+  ScopedDictPrefUpdate update(prefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
   controller().ToggleWidget();
@@ -931,7 +930,7 @@ TEST_F(QuickInsertControllerTest, AddsNewRecentEmoji) {
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
-  ScopedDictPrefUpdate update(client().GetPrefs(), prefs::kEmojiPickerHistory);
+  ScopedDictPrefUpdate update(prefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
   controller().ToggleWidget();
@@ -951,7 +950,7 @@ TEST_F(QuickInsertControllerTest, AddsExistingRecentEmoji) {
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
-  ScopedDictPrefUpdate update(client().GetPrefs(), prefs::kEmojiPickerHistory);
+  ScopedDictPrefUpdate update(prefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
   controller().ToggleWidget();
@@ -1057,7 +1056,7 @@ TEST_F(QuickInsertControllerTest,
       base::Value::Dict().Set("text", "symbol1").Set("timestamp", "15"));
   symbol_history_value.Append(
       base::Value::Dict().Set("text", "symbol2").Set("timestamp", "8"));
-  ScopedDictPrefUpdate update(client().GetPrefs(), prefs::kEmojiPickerHistory);
+  ScopedDictPrefUpdate update(prefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(emoji_history_value));
   update->Set("emoticon", std::move(emoticon_history_value));
   update->Set("symbol", std::move(symbol_history_value));

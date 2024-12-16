@@ -463,10 +463,6 @@ void QuickInsertClientImpl::FetchFileThumbnail(
   thumbnail_loader_->Load(path, size, std::move(callback));
 }
 
-PrefService* QuickInsertClientImpl::GetPrefs() {
-  return profile_ == nullptr ? nullptr : profile_->GetPrefs();
-}
-
 // Forked from `ClipboardHistoryControllerDelegateImpl::Paste`.
 std::optional<ash::QuickInsertWebPasteTarget>
 QuickInsertClientImpl::GetWebPasteTarget() {
