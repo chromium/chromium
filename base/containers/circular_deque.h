@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
-#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -592,20 +591,19 @@ class circular_deque {
   // Requires that `first` and `last` are valid iterators into a container, with
   // `first <= last`.
   template <typename InputIterator>
-    requires(std::input_iterator<InputIterator>)
+    requires(std::forward_iterator<InputIterator>)
   UNSAFE_BUFFER_USAGE void assign(InputIterator first, InputIterator last) {
     // Possible future enhancement, dispatch on iterator tag type. For forward
     // iterators we can use std::difference to preallocate the space required
     // and only do one copy.
     ClearRetainCapacity();
-    while (first != last) {
+    // SAFETY: Pointers are iterators, so `first` may be a pointer. We require
+    // the caller to provide valid pointers such that `last` is for the same
+    // allocation and `first <= last`, and we've checked in the loop condition
+    // that `first != last` so incrementing will stay a valid pointer for the
+    // allocation.
+    for (; first != last; UNSAFE_BUFFERS(++first)) {
       emplace_back(*first);
-      // SAFETY: Pointers are iterators, so `first` may be a pointer. We require
-      // the caller to provide valid pointers such that `last` is for the same
-      // allocation and `first <= last`, and we've checked in the loop condition
-      // that `first != last` so incrementing will stay a valid pointer for the
-      // allocation.
-      UNSAFE_BUFFERS(++first);
     }
     IncrementGeneration();
   }
@@ -828,7 +826,7 @@ class circular_deque {
   }
 
   template <class InputIterator>
-    requires(std::input_iterator<InputIterator>)
+    requires(std::forward_iterator<InputIterator>)
   void insert(const_iterator pos, InputIterator first, InputIterator last) {
     ValidateIterator(pos);
 
