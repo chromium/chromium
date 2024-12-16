@@ -49,6 +49,9 @@ class DocumentSuggestionsService : public KeyedService,
       base::OnceCallback<void(const network::SimpleURLLoader* source,
                               std::unique_ptr<std::string> response_body)>;
 
+  // Returns whether the user's primary account is available.
+  bool HasPrimaryAccount();
+
   // Creates and starts a document suggestion request for |query|.
   // May obtain an OAuth2 token for the signed-in user.
   void CreateDocumentSuggestionsRequest(const std::u16string& query,
@@ -65,6 +68,10 @@ class DocumentSuggestionsService : public KeyedService,
   }
 
  private:
+  // Returns whether Enterprise policies are applied to the primary account -
+  // aka Dasher account, obtained from the user account capability.
+  signin::Tribool IsAccountSubjectToEnterprisePolicies();
+
   // Called when an access token request completes (successfully or not).
   void AccessTokenAvailable(std::unique_ptr<network::ResourceRequest> request,
                             std::string request_body,

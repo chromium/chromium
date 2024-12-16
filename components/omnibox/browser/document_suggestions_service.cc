@@ -71,22 +71,6 @@ std::string BuildDocumentSuggestionRequest(const std::u16string& query) {
   return result;
 }
 
-signin::Tribool IsAccountSubjectToEnterprisePolicies(
-    signin::IdentityManager* identity_manager) {
-  if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return signin::Tribool::kUnknown;
-  }
-  const auto& account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  if (account_id.empty()) {
-    return signin::Tribool::kFalse;
-  }
-  const auto& account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-  return account_info.capabilities.is_subject_to_enterprise_policies();
-}
-
 }  // namespace
 
 DocumentSuggestionsService::DocumentSuggestionsService(
@@ -95,7 +79,7 @@ DocumentSuggestionsService::DocumentSuggestionsService(
     : url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       account_is_subject_to_enterprise_policies_(
-          IsAccountSubjectToEnterprisePolicies(identity_manager_)),
+          IsAccountSubjectToEnterprisePolicies()),
       token_fetcher_(nullptr) {
   DCHECK(url_loader_factory);
 
@@ -105,6 +89,11 @@ DocumentSuggestionsService::DocumentSuggestionsService(
 }
 
 DocumentSuggestionsService::~DocumentSuggestionsService() = default;
+
+bool DocumentSuggestionsService::HasPrimaryAccount() {
+  return identity_manager_ &&
+         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
 
 void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
     const std::u16string& query,
@@ -179,6 +168,18 @@ void DocumentSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
       token_fetcher_deleter(std::move(token_fetcher_));
 }
 
+signin::Tribool
+DocumentSuggestionsService::IsAccountSubjectToEnterprisePolicies() {
+  if (!HasPrimaryAccount()) {
+    return signin::Tribool::kFalse;
+  }
+  const auto& account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const auto& account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  return account_info.capabilities.is_subject_to_enterprise_policies();
+}
+
 void DocumentSuggestionsService::AccessTokenAvailable(
     std::unique_ptr<network::ResourceRequest> request,
     std::string request_body,
@@ -225,7 +226,7 @@ void DocumentSuggestionsService::StartDownloadAndTransferLoader(
 void DocumentSuggestionsService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   account_is_subject_to_enterprise_policies_ =
-      IsAccountSubjectToEnterprisePolicies(identity_manager_);
+      IsAccountSubjectToEnterprisePolicies();
 }
 
 void DocumentSuggestionsService::OnExtendedAccountInfoUpdated(
