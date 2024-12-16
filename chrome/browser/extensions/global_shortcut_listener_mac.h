@@ -2,38 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_MAC_H_
-#define UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_MAC_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_MAC_H_
+#define CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_MAC_H_
+
+#include "chrome/browser/extensions/global_shortcut_listener.h"
 
 #include <Carbon/Carbon.h>
 
 #include <map>
 #include <memory>
 
-#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
-namespace ui {
+namespace extensions {
 
-// Mac-specific implementation of the GlobalAcceleratorListener class that
-// listens for global accelerators. Handles basic keyboard intercepting and
+// Mac-specific implementation of the GlobalShortcutListener class that
+// listens for global shortcuts. Handles basic keyboard intercepting and
 // forwards its output to the base class for processing.
 //
 // This class does two things:
 // 1. Intercepts media keys. Uses an event tap for intercepting media keys
 // (PlayPause, NextTrack, PreviousTrack).
-// 2. Binds keyboard accelerators (hot keys). Carbon RegisterEventHotKey API for
+// 2. Binds keyboard shortcuts (hot keys). Carbon RegisterEventHotKey API for
 // binding to non-media key global hot keys (eg. Command-Shift-1).
-class GlobalAcceleratorListenerMac : public GlobalAcceleratorListener,
-                                     public ui::MediaKeysListener::Delegate {
+class GlobalShortcutListenerMac : public GlobalShortcutListener,
+                                  public ui::MediaKeysListener::Delegate {
  public:
-  GlobalAcceleratorListenerMac();
+  GlobalShortcutListenerMac();
 
-  GlobalAcceleratorListenerMac(const GlobalAcceleratorListenerMac&) = delete;
-  GlobalAcceleratorListenerMac& operator=(const GlobalAcceleratorListenerMac&) =
+  GlobalShortcutListenerMac(const GlobalShortcutListenerMac&) = delete;
+  GlobalShortcutListenerMac& operator=(const GlobalShortcutListenerMac&) =
       delete;
 
-  ~GlobalAcceleratorListenerMac() override;
+  ~GlobalShortcutListenerMac() override;
 
  private:
   using KeyId = int;
@@ -44,12 +45,11 @@ class GlobalAcceleratorListenerMac : public GlobalAcceleratorListener,
   // Keyboard event callbacks.
   void OnHotKeyEvent(EventHotKeyID hot_key_id);
 
-  // GlobalAcceleratorListener implementation.
+  // GlobalShortcutListener implementation.
   void StartListening() override;
   void StopListening() override;
-  bool StartListeningForAccelerator(
-      const ui::Accelerator& accelerator) override;
-  void StopListeningForAccelerator(const ui::Accelerator& accelerator) override;
+  bool RegisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
+  void UnregisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
 
   // ui::MediaKeysListener::Delegate:
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override;
@@ -66,17 +66,16 @@ class GlobalAcceleratorListenerMac : public GlobalAcceleratorListener,
   bool IsAnyHotKeyRegistered();
 
   // The callback for when a hot key event happens.
-  static OSStatus HotKeyHandler(EventHandlerCallRef next_handler,
-                                EventRef event,
-                                void* user_data);
+  static OSStatus HotKeyHandler(
+      EventHandlerCallRef next_handler, EventRef event, void* user_data);
 
-  // Whether this object is listening for global accelerators.
+  // Whether this object is listening for global shortcuts.
   bool is_listening_ = false;
 
-  // The hotkey identifier for the next global accelerator that is added.
+  // The hotkey identifier for the next global shortcut that is added.
   KeyId hot_key_id_ = 0;
 
-  // A map of all hotkeys (media keys and accelerators) mapping to their
+  // A map of all hotkeys (media keys and shortcuts) mapping to their
   // corresponding hotkey IDs. For quickly finding if an accelerator is
   // registered.
   AcceleratorIdMap accelerator_ids_;
@@ -84,16 +83,16 @@ class GlobalAcceleratorListenerMac : public GlobalAcceleratorListener,
   // The inverse map for quickly looking up accelerators by hotkey id.
   IdAcceleratorMap id_accelerators_;
 
-  // Keyboard accelerator IDs to hotkeys map for unregistration.
+  // Keyboard shortcut IDs to hotkeys map for unregistration.
   IdHotKeyRefMap id_hot_key_refs_;
 
-  // Event handler for keyboard accelerator hot keys.
+  // Event handler for keyboard shortcut hot keys.
   EventHandlerRef event_handler_ = nullptr;
 
   // Media keys listener.
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;
 };
 
-}  // namespace ui
+}  // namespace extensions
 
-#endif  // UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_MAC_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_MAC_H_

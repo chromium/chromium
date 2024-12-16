@@ -20,14 +20,12 @@ namespace {
 // Test implementation of GlobalShortcutListener that doesn't delegate
 // to an OS-specific implementation. All this does is fail to register an
 // accelerator if it has already been registered.
-class BaseGlobalShortcutListenerForTesting final
-    : public ui::GlobalAcceleratorListener {
+class GlobalShortcutListenerForTesting final : public GlobalShortcutListener {
  public:
   void StartListening() override {}
   void StopListening() override {}
 
-  bool StartListeningForAccelerator(
-      const ui::Accelerator& accelerator) override {
+  bool RegisterAcceleratorImpl(const ui::Accelerator& accelerator) override {
     if (registered_accelerators_.contains(accelerator)) {
       return false;
     }
@@ -36,21 +34,12 @@ class BaseGlobalShortcutListenerForTesting final
     return true;
   }
 
-  void StopListeningForAccelerator(
-      const ui::Accelerator& accelerator) override {
+  void UnregisterAcceleratorImpl(const ui::Accelerator& accelerator) override {
     registered_accelerators_.erase(accelerator);
   }
 
  private:
   std::set<ui::Accelerator> registered_accelerators_;
-};
-
-class ExtensionsGlobalShortcutListenerForTesting final
-    : public extensions::GlobalShortcutListener {
- public:
-  explicit ExtensionsGlobalShortcutListenerForTesting(
-      ui::GlobalAcceleratorListener* global_shortcut_listener)
-      : extensions::GlobalShortcutListener(global_shortcut_listener) {}
 };
 
 class TestObserver final : public GlobalShortcutListener::Observer {
@@ -63,45 +52,39 @@ class TestObserver final : public GlobalShortcutListener::Observer {
                       const std::string& command_id) override {}
 };
 
-class ExtensionsGlobalShortcutListenerTest : public testing::Test {
+class GlobalShortcutListenerTest : public testing::Test {
  public:
-  ExtensionsGlobalShortcutListenerTest()
+  GlobalShortcutListenerTest()
       : task_environment_(content::BrowserTaskEnvironment::MainThreadType::UI) {
-    ui_listener_ = std::make_unique<BaseGlobalShortcutListenerForTesting>();
-    extensions_listener_ =
-        std::make_unique<ExtensionsGlobalShortcutListenerForTesting>(
-            ui_listener_.get());
+    listener_ = std::make_unique<GlobalShortcutListenerForTesting>();
   }
 
-  ExtensionsGlobalShortcutListenerTest(
-      const ExtensionsGlobalShortcutListenerTest&) = delete;
-  ExtensionsGlobalShortcutListenerTest& operator=(
-      const ExtensionsGlobalShortcutListenerTest&) = delete;
+  GlobalShortcutListenerTest(const GlobalShortcutListenerTest&) = delete;
+  GlobalShortcutListenerTest& operator=(const GlobalShortcutListenerTest&) =
+      delete;
 
   void SetUp() override {
-    extensions_listener_->SetShortcutHandlingSuspended(false);
+    listener_->SetShortcutHandlingSuspended(false);
     observer_ = std::make_unique<TestObserver>();
   }
   void TearDown() override {
     observer_ = nullptr;
-    extensions_listener_ = nullptr;
-    ui_listener_ = nullptr;
+    listener_ = nullptr;
   }
 
   GlobalShortcutListener::Observer* GetObserver() { return observer_.get(); }
 
-  GlobalShortcutListener* GetListener() { return extensions_listener_.get(); }
+  GlobalShortcutListener* GetListener() { return listener_.get(); }
 
  private:
-  std::unique_ptr<GlobalShortcutListener> extensions_listener_;
-  std::unique_ptr<BaseGlobalShortcutListenerForTesting> ui_listener_;
+  std::unique_ptr<GlobalShortcutListenerForTesting> listener_;
   std::unique_ptr<TestObserver> observer_ = nullptr;
   // A UI environment is required since GlobalShortcutListener (base class of
   // GlobalShortcutListenerLinux) CHECKs that it's running on a UI thread.
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(ExtensionsGlobalShortcutListenerTest, RegistersAccelerators) {
+TEST_F(GlobalShortcutListenerTest, RegistersAccelerators) {
   GlobalShortcutListener* listener = GetListener();
   const ui::Accelerator accelerator_a(ui::VKEY_A, ui::EF_NONE);
 
@@ -115,7 +98,7 @@ TEST_F(ExtensionsGlobalShortcutListenerTest, RegistersAccelerators) {
   listener->UnregisterAccelerator(accelerator_a, GetObserver());
 }
 
-TEST_F(ExtensionsGlobalShortcutListenerTest, SuspendsShortcutHandling) {
+TEST_F(GlobalShortcutListenerTest, SuspendsShortcutHandling) {
   GlobalShortcutListener* listener = GetListener();
   const ui::Accelerator accelerator_b(ui::VKEY_B, ui::EF_NONE);
 

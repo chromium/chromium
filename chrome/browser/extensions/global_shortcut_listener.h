@@ -7,13 +7,9 @@
 
 #include <map>
 #include <string>
-#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/command.h"
-#include "ui/base/accelerators/accelerator.h"
-#include "ui/base/accelerators/command.h"
-#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 namespace ui {
 class Accelerator;
@@ -21,14 +17,16 @@ class Accelerator;
 
 namespace extensions {
 
-// Extensions-specific wrapper on the general purpose
-// `ui::GlobalAcceleratorListener`. Most calls are delegated to the general
-// purpose service, but there is also a special Linux Dbus implementation that
-// applies only to extensions.
+// Platform-neutral implementation of a class that keeps track of observers and
+// monitors keystrokes. It relays messages to the appropriate observer when a
+// global shortcut has been struck by the user.
 class GlobalShortcutListener {
  public:
-  class Observer : public ui::GlobalAcceleratorListener::Observer {
+  class Observer {
    public:
+    // Called when your global shortcut (|accelerator|) is struck.
+    virtual void OnKeyPressed(const ui::Accelerator& accelerator) = 0;
+
     // Called when a command should be executed directly.
     virtual void ExecuteCommand(const std::string& accelerator_group_id,
                                 const std::string& command_id) = 0;
@@ -81,23 +79,37 @@ class GlobalShortcutListener {
                                  Observer* observer);
 
  protected:
-  explicit GlobalShortcutListener(
-      ui::GlobalAcceleratorListener* global_shortcut_listener);
+  GlobalShortcutListener();
+
+  // Called by platform specific implementations of this class whenever a key
+  // is struck. Only called for keys that have an observer registered.
+  void NotifyKeyPressed(const ui::Accelerator& accelerator);
 
  private:
-  // Removes an accelerator from the list of accelerators registered with this
-  // class.
-  void RemoveAccelerator(const ui::Accelerator& accelerator);
+  // The following methods are implemented by platform-specific implementations
+  // of this class.
+  //
+  // Start/StopListening are called when transitioning between zero and nonzero
+  // registered accelerators. StartListening will be called after
+  // RegisterAcceleratorImpl and StopListening will be called after
+  // UnregisterAcceleratorImpl.
+  //
+  // For RegisterAcceleratorImpl, implementations return false if registration
+  // did not complete successfully.
+  virtual void StartListening() = 0;
+  virtual void StopListening() = 0;
+  virtual bool RegisterAcceleratorImpl(const ui::Accelerator& accelerator) = 0;
+  virtual void UnregisterAcceleratorImpl(
+      const ui::Accelerator& accelerator) = 0;
 
-  // GlobalShortcutListener instance to which where most calls are delegated.
-  raw_ptr<ui::GlobalAcceleratorListener> global_accelerator_listener_;
-
-  // Local tracking of accelerators that need to be registered or unregistered
-  // when shortcut handling is suspended.
-  std::vector<ui::Accelerator> accelerators_;
+  // The map of accelerators that have been successfully registered as global
+  // shortcuts and their observer.
+  typedef std::map<ui::Accelerator, raw_ptr<Observer, CtnExperimental>>
+      AcceleratorMap;
+  AcceleratorMap accelerator_map_;
 
   // Keeps track of whether shortcut handling is currently suspended.
-  bool shortcut_handling_suspended_ = false;
+  bool shortcut_handling_suspended_;
 };
 
 }  // namespace extensions

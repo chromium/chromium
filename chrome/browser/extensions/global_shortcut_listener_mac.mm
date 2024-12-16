@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener_mac.h"
+#include "chrome/browser/extensions/global_shortcut_listener_mac.h"
 
 #include <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
 #include <IOKit/hidsystem/ev_keymap.h>
-
-#include <memory>
 
 #import "base/apple/foundation_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -18,20 +16,21 @@
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
 using content::BrowserThread;
-using ui::GlobalAcceleratorListenerMac;
+using extensions::GlobalShortcutListenerMac;
 
-namespace ui {
+namespace extensions {
 
 // static
-GlobalAcceleratorListener* GlobalAcceleratorListener::GetInstance() {
+GlobalShortcutListener* GlobalShortcutListener::GetInstance() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  static GlobalAcceleratorListenerMac* instance =
-      new GlobalAcceleratorListenerMac();
+  static GlobalShortcutListenerMac* instance =
+      new GlobalShortcutListenerMac();
   return instance;
 }
 
-GlobalAcceleratorListenerMac::GlobalAcceleratorListenerMac() {
+GlobalShortcutListenerMac::GlobalShortcutListenerMac() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
   // If the MediaKeysListenerManager is not enabled, we need to create our own
   // global MediaKeysListener to receive media keys.
   if (!content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled()) {
@@ -41,21 +40,21 @@ GlobalAcceleratorListenerMac::GlobalAcceleratorListenerMac() {
   }
 }
 
-GlobalAcceleratorListenerMac::~GlobalAcceleratorListenerMac() {
+GlobalShortcutListenerMac::~GlobalShortcutListenerMac() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  // By this point, UnregisterAccelerator should have been called for all
-  // keyboard accelerators. Still we should clean up.
-  if (is_listening_) {
-    StopListening();
-  }
 
-  if (IsAnyHotKeyRegistered()) {
+  // By this point, UnregisterAccelerator should have been called for all
+  // keyboard shortcuts. Still we should clean up.
+  if (is_listening_)
+    StopListening();
+
+  if (IsAnyHotKeyRegistered())
     StopWatchingHotKeys();
-  }
 }
 
-void GlobalAcceleratorListenerMac::StartListening() {
+void GlobalShortcutListenerMac::StartListening() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
   DCHECK(!accelerator_ids_.empty());
   DCHECK(!id_accelerators_.empty());
   DCHECK(!is_listening_);
@@ -63,8 +62,9 @@ void GlobalAcceleratorListenerMac::StartListening() {
   is_listening_ = true;
 }
 
-void GlobalAcceleratorListenerMac::StopListening() {
+void GlobalShortcutListenerMac::StopListening() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
   DCHECK(accelerator_ids_.empty());  // Make sure the set is clean.
   DCHECK(id_accelerators_.empty());
   DCHECK(is_listening_);
@@ -72,8 +72,9 @@ void GlobalAcceleratorListenerMac::StopListening() {
   is_listening_ = false;
 }
 
-void GlobalAcceleratorListenerMac::OnHotKeyEvent(EventHotKeyID hot_key_id) {
+void GlobalShortcutListenerMac::OnHotKeyEvent(EventHotKeyID hot_key_id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
   // This hot key should be registered.
   DCHECK(id_accelerators_.find(hot_key_id.id) != id_accelerators_.end());
   // Look up the accelerator based on this hot key ID.
@@ -81,7 +82,7 @@ void GlobalAcceleratorListenerMac::OnHotKeyEvent(EventHotKeyID hot_key_id) {
   NotifyKeyPressed(accelerator);
 }
 
-bool GlobalAcceleratorListenerMac::StartListeningForAccelerator(
+bool GlobalShortcutListenerMac::RegisterAcceleratorImpl(
     const ui::Accelerator& accelerator) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(accelerator_ids_.find(accelerator) == accelerator_ids_.end());
@@ -105,10 +106,9 @@ bool GlobalAcceleratorListenerMac::StartListeningForAccelerator(
       media_keys_listener_->StartWatchingMediaKey(accelerator.key_code());
     }
   } else {
-    // Register hot_key if they are non-media keyboard accelerators.
-    if (!RegisterHotKey(accelerator, hot_key_id_)) {
+    // Register hot_key if they are non-media keyboard shortcuts.
+    if (!RegisterHotKey(accelerator, hot_key_id_))
       return false;
-    }
 
     if (!IsAnyHotKeyRegistered()) {
       StartWatchingHotKeys();
@@ -122,12 +122,12 @@ bool GlobalAcceleratorListenerMac::StartListeningForAccelerator(
   return true;
 }
 
-void GlobalAcceleratorListenerMac::StopListeningForAccelerator(
+void GlobalShortcutListenerMac::UnregisterAcceleratorImpl(
     const ui::Accelerator& accelerator) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(accelerator_ids_.find(accelerator) != accelerator_ids_.end());
 
-  // Unregister the hot_key if it's a keyboard accelerator.
+  // Unregister the hot_key if it's a keyboard shortcut.
   if (!accelerator.IsMediaKey()) {
     UnregisterHotKey(accelerator);
   }
@@ -160,7 +160,7 @@ void GlobalAcceleratorListenerMac::StopListeningForAccelerator(
   }
 }
 
-void GlobalAcceleratorListenerMac::OnMediaKeysAccelerator(
+void GlobalShortcutListenerMac::OnMediaKeysAccelerator(
     const ui::Accelerator& accelerator) {
   if (accelerator_ids_.find(accelerator) != accelerator_ids_.end()) {
     // If matched, callback to the event handling system.
@@ -168,9 +168,8 @@ void GlobalAcceleratorListenerMac::OnMediaKeysAccelerator(
   }
 }
 
-bool GlobalAcceleratorListenerMac::RegisterHotKey(
-    const ui::Accelerator& accelerator,
-    KeyId hot_key_id) {
+bool GlobalShortcutListenerMac::RegisterHotKey(
+    const ui::Accelerator& accelerator, KeyId hot_key_id) {
   EventHotKeyID event_hot_key_id;
 
   // Signature uniquely identifies the application that owns this hot_key.
@@ -194,15 +193,14 @@ bool GlobalAcceleratorListenerMac::RegisterHotKey(
   OSStatus status = RegisterEventHotKey(key_code, modifiers, event_hot_key_id,
                                         GetApplicationEventTarget(),
                                         /*inOptions=*/0, &hot_key_ref);
-  if (status != noErr) {
+  if (status != noErr)
     return false;
-  }
 
   id_hot_key_refs_[hot_key_id] = hot_key_ref;
   return true;
 }
 
-void GlobalAcceleratorListenerMac::UnregisterHotKey(
+void GlobalShortcutListenerMac::UnregisterHotKey(
     const ui::Accelerator& accelerator) {
   // Ensure this accelerator is already registered.
   DCHECK(accelerator_ids_.find(accelerator) != accelerator_ids_.end());
@@ -216,23 +214,23 @@ void GlobalAcceleratorListenerMac::UnregisterHotKey(
   id_hot_key_refs_.erase(key_id);
 }
 
-void GlobalAcceleratorListenerMac::StartWatchingHotKeys() {
+void GlobalShortcutListenerMac::StartWatchingHotKeys() {
   DCHECK(!event_handler_);
   EventHandlerUPP hot_key_function = NewEventHandlerUPP(HotKeyHandler);
   EventTypeSpec event_type;
   event_type.eventClass = kEventClassKeyboard;
   event_type.eventKind = kEventHotKeyPressed;
-  InstallApplicationEventHandler(hot_key_function, 1, &event_type, this,
-                                 &event_handler_);
+  InstallApplicationEventHandler(
+      hot_key_function, 1, &event_type, this, &event_handler_);
 }
 
-void GlobalAcceleratorListenerMac::StopWatchingHotKeys() {
+void GlobalShortcutListenerMac::StopWatchingHotKeys() {
   DCHECK(event_handler_);
   RemoveEventHandler(event_handler_);
   event_handler_ = nullptr;
 }
 
-bool GlobalAcceleratorListenerMac::IsAnyHotKeyRegistered() {
+bool GlobalShortcutListenerMac::IsAnyHotKeyRegistered() {
   for (auto& accelerator_id : accelerator_ids_) {
     if (!accelerator_id.first.IsMediaKey()) {
       return true;
@@ -242,24 +240,21 @@ bool GlobalAcceleratorListenerMac::IsAnyHotKeyRegistered() {
 }
 
 // static
-OSStatus GlobalAcceleratorListenerMac::HotKeyHandler(
-    EventHandlerCallRef next_handler,
-    EventRef event,
-    void* user_data) {
+OSStatus GlobalShortcutListenerMac::HotKeyHandler(
+    EventHandlerCallRef next_handler, EventRef event, void* user_data) {
   // Extract the hotkey from the event.
   EventHotKeyID hot_key_id;
   OSStatus result =
       GetEventParameter(event, kEventParamDirectObject, typeEventHotKeyID,
                         /*outActualType=*/nullptr, sizeof(hot_key_id),
                         /*outActualSize=*/nullptr, &hot_key_id);
-  if (result != noErr) {
+  if (result != noErr)
     return result;
-  }
 
-  GlobalAcceleratorListenerMac* shortcut_listener =
-      static_cast<GlobalAcceleratorListenerMac*>(user_data);
+  GlobalShortcutListenerMac* shortcut_listener =
+      static_cast<GlobalShortcutListenerMac*>(user_data);
   shortcut_listener->OnHotKeyEvent(hot_key_id);
   return noErr;
 }
 
-}  // namespace ui
+}  // namespace extensions

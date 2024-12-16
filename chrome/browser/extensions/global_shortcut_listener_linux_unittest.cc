@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
-#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -151,8 +150,8 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
             activated_callback = signal_callback;
           }));
 
-  auto global_shortcut_listener = std::make_unique<GlobalShortcutListenerLinux>(
-      ui::GlobalAcceleratorListener::GetInstance(), mock_bus);
+  auto global_shortcut_listener =
+      std::make_unique<GlobalShortcutListenerLinux>(mock_bus);
   auto observer = std::make_unique<MockObserver>();
 
   // These object proxies have unique generated names, so are initialized when
