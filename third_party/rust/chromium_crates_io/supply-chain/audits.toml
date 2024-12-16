@@ -314,6 +314,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.10.0 -> 1.11.0"
 notes = "Changes two unsafe blocks to use core::mem::align_of<usize> instead of core::mem::size_of<usize> which shouldn't differ on mainstream platforms."
 
+[[audits.bstr]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.11.0 -> 1.11.1"
+notes = "This release just excludes Unicode data files from being published to crates.io"
+
 [[audits.bytemuck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "safe-to-deploy"

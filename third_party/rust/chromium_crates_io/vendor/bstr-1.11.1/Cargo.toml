@@ -13,12 +13,13 @@
 edition = "2021"
 rust-version = "1.73"
 name = "bstr"
-version = "1.11.0"
+version = "1.11.1"
 authors = ["Andrew Gallant <jamslam@gmail.com>"]
 build = false
 exclude = [
     "/.github",
     "/scripts",
+    "/src/unicode/data",
 ]
 autolib = false
 autobins = false

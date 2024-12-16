@@ -53,7 +53,6 @@ chrome/browser/extensions/api/identity 1 1
 chrome/browser/extensions/commands 3 1
 chrome/browser/feed/android 1 1
 chrome/browser/first_run 1 1
-chrome/browser/lacros 2 1
 chrome/browser/mac 7 1
 chrome/browser/metrics 4 2
 chrome/browser/password_manager 1 1
@@ -89,12 +88,12 @@ chromeos/ash/components/telemetry_extension 2 1
 chromeos/ash/services/ime/public/cpp/shared_lib/proto 2 2
 chromeos/ash/services/ime/public/mojom 2 2
 chromeos/crosapi 2 1
-chromeos/lacros 2 1
 chromeos/process_proxy 7 5
 chrome/test/base/ash/interactive/bluetooth 1 1
 chrome/test/chromedriver 2 2
 chrome/test/chromedriver/chrome 1 1
 chrome/test/chromedriver/server 1 1
+chrome/test/chromeos/autotest 1 1
 chrome/test/data/browsing_topics 1 1
 chrome/test/data/downloads 2 1
 chrome/test/data/dromaeo 13 1
@@ -299,7 +298,6 @@ third_party/afl/src 4 1
 third_party/afl/src/docs 11 2
 third_party/afl/src/llvm_mode 1 1
 third_party/afl/src/qemu_mode 1 1
-third_party/android_build_tools/gradle_wrapper 1 1
 third_party/android_build_tools/json 1 1
 third_party/android_deps/buildSrc/src/main/groovy 36 2
 third_party/android_deps/libs 1 1
