@@ -15,8 +15,8 @@ import fetch_common
 
 _REPO_URL = 'https://repo.maven.apache.org/maven2'
 SPEC = fetch_common.Spec(repo_url=_REPO_URL,
-                         group_name='org/robolectric',
-                         module_name='shadows-versioning',
+                         group_name='com/google/testparameterinjector',
+                         module_name='test-parameter-injector',
                          file_ext='jar',
                          patch_version='cr1',
                          version_override=None,

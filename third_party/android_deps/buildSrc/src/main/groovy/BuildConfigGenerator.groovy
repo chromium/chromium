@@ -227,7 +227,7 @@ class BuildConfigGenerator extends DefaultTask {
                     licenseStrings.add('MIT')
                     break
                 case 'GNU General Public License, version 2, with the Classpath Exception':
-                    licenseStrings.add('GPL v2 with the classpath exception')
+                    licenseStrings.add('GPL-2.0-with-classpath-exception')
                     break
                 default:
                     licenseStrings.add(license.name)

@@ -55,6 +55,7 @@
     "libs/com_google_guava_guava_android",
     "libs/com_google_j2objc_j2objc_annotations",
     "libs/com_google_protobuf_protobuf_javalite",
+    "libs/com_google_testparameterinjector_test_parameter_injector",
     "libs/com_googlecode_java_diff_utils_diffutils",
     "libs/com_squareup_javapoet",
     "libs/com_squareup_javawriter",
@@ -112,7 +113,7 @@
     "libs/org_robolectric_sandbox",
     "libs/org_robolectric_shadowapi",
     "libs/org_robolectric_shadows_framework",
-    "libs/org_robolectric_shadows_versioning",
     "libs/org_robolectric_utils",
-    "libs/org_robolectric_utils_reflector"
+    "libs/org_robolectric_utils_reflector",
+    "libs/org_yaml_snakeyaml"
 ]

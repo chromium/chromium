@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@4.14.1.cr1
-package: chromium/third_party/android_deps/libs/org_robolectric_robolectric
-description: "robolectric"
+# cipd create --pkg-def cipd.yaml -tag version:2@2.3.cr1
+package: chromium/third_party/android_deps/libs/org_yaml_snakeyaml
+description: "SnakeYAML"
 data:
-- file: robolectric-4.14.1.jar
+- file: snakeyaml-2.3.jar

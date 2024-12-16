@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.0.1.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.0.2.cr1
 package: chromium/third_party/android_deps/libs/com_google_guava_failureaccess
 description: "Guava InternalFutureFailureAccess and InternalFutures"
 data:
-- file: failureaccess-1.0.1.jar
+- file: failureaccess-1.0.2.jar

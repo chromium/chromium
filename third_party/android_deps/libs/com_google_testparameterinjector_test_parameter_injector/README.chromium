@@ -1,0 +1,15 @@
+Name: TestParameterInjector for JUnit4
+Short Name: test-parameter-injector
+URL: https://github.com/google/TestParameterInjector
+Version: 1.18
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Testparameterinjector test parameter injector pulled in via gradle.
+
+Local Modifications:
+No modifications.
