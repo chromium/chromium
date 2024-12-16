@@ -221,7 +221,7 @@ constexpr base::FeatureParam<int> kLensOverlaySegmentationMaskCornerRadius{
 
 constexpr base::FeatureParam<bool>
     kLensOverlayImageContextMenuActionsEnableCopyAsImage{
-        &kLensOverlayImageContextMenuActions, "enable-copy-as-image", false};
+        &kLensOverlayImageContextMenuActions, "enable-copy-as-image", true};
 
 constexpr base::FeatureParam<bool>
     kLensOverlayImageContextMenuActionsEnableSaveAsImage{
