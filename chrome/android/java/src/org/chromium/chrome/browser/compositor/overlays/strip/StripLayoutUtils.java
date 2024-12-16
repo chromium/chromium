@@ -19,6 +19,9 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StripLayoutUtils {
     // Position Constants.
     // The bottom indicator should align with the contents of the last tab in group. This value is
@@ -142,6 +145,17 @@ public class StripLayoutUtils {
         float totalTabWidth =
                 effectiveTabWidth * numTabsInGroup - TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
         return groupTitle.getWidth() + totalTabWidth;
+    }
+
+    static List<StripLayoutTab> getGroupedTabs(
+            TabModel tabModel, StripLayoutTab[] stripTabs, int rootId) {
+        ArrayList<StripLayoutTab> groupedTabs = new ArrayList<>();
+        for (int i = 0; i < stripTabs.length; ++i) {
+            final StripLayoutTab stripTab = stripTabs[i];
+            final Tab tab = tabModel.getTabById(stripTab.getTabId());
+            if (tab != null && tab.getRootId() == rootId) groupedTabs.add(stripTab);
+        }
+        return groupedTabs;
     }
 
     // ============================================================================================

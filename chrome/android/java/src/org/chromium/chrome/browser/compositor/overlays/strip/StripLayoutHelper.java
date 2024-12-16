@@ -2867,16 +2867,6 @@ public class StripLayoutHelper
         };
     }
 
-    private ArrayList<StripLayoutTab> getGroupedTabs(int rootId) {
-        ArrayList<StripLayoutTab> groupedTabs = new ArrayList<>();
-        for (int i = 0; i < mStripTabs.length; ++i) {
-            final StripLayoutTab stripTab = mStripTabs[i];
-            final Tab tab = getTabById(stripTab.getTabId());
-            if (tab != null && tab.getRootId() == rootId) groupedTabs.add(stripTab);
-        }
-        return groupedTabs;
-    }
-
     void collapseTabGroupForTesting(StripLayoutGroupTitle groupTitle, boolean isCollapsed) {
         updateTabGroupCollapsed(groupTitle, isCollapsed, true);
         // End animator set to invoke all pending listeners on set.
@@ -2916,7 +2906,8 @@ public class StripLayoutHelper
 
         finishAnimations();
         groupTitle.setCollapsed(isCollapsed);
-        for (StripLayoutTab tab : getGroupedTabs(groupTitle.getRootId())) {
+        for (StripLayoutTab tab :
+                StripLayoutUtils.getGroupedTabs(mModel, mStripTabs, groupTitle.getRootId())) {
             if (collapseAnimationList != null) {
                 Animator animator = updateTabCollapsed(tab, isCollapsed, true);
                 if (animator != null) collapseAnimationList.add(animator);
@@ -3904,7 +3895,8 @@ public class StripLayoutHelper
         // 3. Set initial state.
         mReorderDelegate.setInReorderMode(true);
         mReorderDelegate.setReorderingForTabDrop(true);
-        mReorderDelegate.prepareStripForReorder(mStripTabs, getEffectiveTabWidth(), startX);
+        mReorderDelegate.prepareStripForReorder(getEffectiveTabWidth(), startX);
+        mReorderDelegate.setEdgeMarginsForReorder(mStripTabs[0], mStripTabs[mStripTabs.length - 1]);
 
         // 4. Add a tab group margin to the "interacting" tab to indicate where the tab will be
         // inserted should the drag be dropped.
@@ -4066,7 +4058,7 @@ public class StripLayoutHelper
         final float x =
                 mReorderDelegate.getReorderingForTabDrop()
                         ? adjustXForTabDrop(mReorderDelegate.getLastReorderX())
-                        : mReorderDelegate.getInteractingTab().getDrawX();
+                        : mReorderDelegate.getInteractingView().getDrawX();
 
         // 2. Calculate the gutters for accelerating the scroll speed.
         // Speed: MAX    MIN                  MIN    MAX
@@ -4082,11 +4074,15 @@ public class StripLayoutHelper
         // 3. See if the current draw position is in one of the gutters and figure out how far in.
         // Note that we only allow scrolling in each direction if the user has already manually
         // moved that way.
+        final float width =
+                mReorderDelegate.getReorderingForTabDrop()
+                        ? mCachedTabWidth
+                        : mReorderDelegate.getInteractingView().getWidth();
         float dragSpeedRatio = 0.f;
         if (mReorderDelegate.canReorderScrollLeft() && x < leftMinX) {
             dragSpeedRatio = -(leftMinX - Math.max(x, leftMaxX)) / dragRange;
-        } else if (mReorderDelegate.canReorderScrollRight() && x + mCachedTabWidth > rightMinX) {
-            dragSpeedRatio = (Math.min(x + mCachedTabWidth, rightMaxX) - rightMinX) / dragRange;
+        } else if (mReorderDelegate.canReorderScrollRight() && x + width > rightMinX) {
+            dragSpeedRatio = (Math.min(x + width, rightMaxX) - rightMinX) / dragRange;
         }
 
         dragSpeedRatio = MathUtils.flipSignIf(dragSpeedRatio, LocalizationUtils.isLayoutRtl());

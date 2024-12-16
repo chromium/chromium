@@ -49,4 +49,7 @@ interface ReorderStrategy {
      * @param stripTabs The list of {@link StripLayoutTab}.
      */
     void stopReorderMode(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs);
+
+    /** Returns the dragged {@link StripLayoutView} for the reorder. */
+    StripLayoutView getInteractingView();
 }
