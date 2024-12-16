@@ -3700,10 +3700,14 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
 
   DecodeAdditionalBidsIfReady();
 
+  // Either order of the next two functions is probably fine, but it's better to
+  // call ScoreQueuedBidsIfReady() first, since OnScoringDependencyDone() can
+  // advance state, and start sending pending scoring signals fetches, and
+  // ScoreQueuedBidsIfReady() may enqueue such fetches.
+  ScoreQueuedBidsIfReady();
+
   // Config resolution is done.
   OnScoringDependencyDone();
-
-  ScoreQueuedBidsIfReady();
 }
 
 void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
@@ -6632,8 +6636,13 @@ void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
     for (const auto& buyer_helper : buyer_helpers_) {
       buyer_helper->NotifyConfigDependencyResolved();
     }
-    OnScoringDependencyDone();
+
+    // Either order of the next two functions is probably fine, but it's better
+    // to call ScoreQueuedBidsIfReady() first, since OnScoringDependencyDone()
+    // can advance state, and start sending pending scoring signals fetches, and
+    // ScoreQueuedBidsIfReady() may enqueue such fetches.
     ScoreQueuedBidsIfReady();
+    OnScoringDependencyDone();
   }
 }
 
