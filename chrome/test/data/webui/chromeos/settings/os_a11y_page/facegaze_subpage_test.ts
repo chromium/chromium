@@ -71,12 +71,10 @@ suite('<settings-facegaze-subpage>', () => {
 
   test('toggle button reflects pref value', async () => {
     await initPage();
-    faceGazeSubpage.set(
-        'prefs.settings.a11y.face_gaze.enabled_sentinel.value', true);
+    faceGazeSubpage.set('prefs.settings.a11y.face_gaze.enabled.value', true);
     await flushTasks();
 
-    assertTrue(
-        faceGazeSubpage.prefs.settings.a11y.face_gaze.enabled_sentinel.value);
+    assertTrue(faceGazeSubpage.prefs.settings.a11y.face_gaze.enabled.value);
 
     const toggle = getToggleButton();
     assertTrue(!!toggle);
@@ -88,8 +86,7 @@ suite('<settings-facegaze-subpage>', () => {
   test('clicking toggle button updates pref value', async () => {
     await initPage();
 
-    assertFalse(
-        faceGazeSubpage.prefs.settings.a11y.face_gaze.enabled_sentinel.value);
+    assertFalse(faceGazeSubpage.prefs.settings.a11y.face_gaze.enabled.value);
 
     const toggle = getToggleButton();
     assertTrue(!!toggle);
@@ -101,8 +98,7 @@ suite('<settings-facegaze-subpage>', () => {
     await flushTasks();
 
     assertTrue(toggle.checked);
-    assertTrue(
-        faceGazeSubpage.prefs.settings.a11y.face_gaze.enabled_sentinel.value);
+    assertTrue(faceGazeSubpage.prefs.settings.a11y.face_gaze.enabled.value);
     assertEquals('On', toggle.label);
   });
 });

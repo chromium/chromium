@@ -77,7 +77,7 @@ suite('<facegaze-cursor-card>', () => {
 
     const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
 
-    assertTrue(prefs.cursor_control_enabled_sentinel.value);
+    assertTrue(prefs.cursor_control_enabled.value);
 
     const button = faceGazeCursorCard.shadowRoot!
                        .querySelector<SettingsToggleButtonElement>(
@@ -90,7 +90,7 @@ suite('<facegaze-cursor-card>', () => {
     flush();
 
     assertFalse(button.checked);
-    assertFalse(prefs.cursor_control_enabled_sentinel.value);
+    assertFalse(prefs.cursor_control_enabled.value);
   });
 
   test(
