@@ -438,7 +438,7 @@ void TabSearchPageHandler::RegisterInactiveTabDeclutterCallbacks(
     tabs::TabInterface* tab) {
   std::vector<base::CallbackListSubscription> subscriptions;
 
-  subscriptions.push_back(tab->RegisterDidEnterForeground(
+  subscriptions.push_back(tab->RegisterDidActivate(
       base::BindRepeating(&TabSearchPageHandler::OnStaleTabDidEnterForeground,
                           base::Unretained(this))));
 
@@ -1414,7 +1414,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   auto tab_data = tab_search::mojom::Tab::New();
   const tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
 
-  tab_data->active = tab->IsInForeground();
+  tab_data->active = tab->IsActivated();
   tab_data->tab_id = tab->GetHandle().raw_value();
   tab_data->index = index;
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();

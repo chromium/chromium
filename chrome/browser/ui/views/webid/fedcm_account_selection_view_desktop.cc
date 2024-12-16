@@ -59,10 +59,10 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
     : AccountSelectionView(delegate),
       content::WebContentsObserver(delegate->GetWebContents()),
       tab_(tab) {
-  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&FedCmAccountSelectionView::TabForegrounded,
                           weak_ptr_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterWillEnterBackground(
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&FedCmAccountSelectionView::TabWillEnterBackground,
                           weak_ptr_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
@@ -1208,7 +1208,7 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
     return;
   }
 
-  bool should_show_dialog = tab_->IsInForeground();
+  bool should_show_dialog = tab_->IsActivated();
 
   if (dialog_type_ == DialogType::BUBBLE) {
     // Hide the bubble dialog if it can't fit.

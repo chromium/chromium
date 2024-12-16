@@ -317,7 +317,7 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
     return;
   }
   auto* const tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab || !tab->IsInForeground()) {
+  if (!tab || !tab->IsActivated()) {
     return;
   }
   if (auto* const interface =

@@ -75,7 +75,7 @@ void SavedTabGroupWebContentsListener::OnTabDiscarded(
   Observe(new_content);
 
   tab_foregrounded_subscription_ =
-      tab_interface->RegisterDidEnterForeground(base::BindRepeating(
+      tab_interface->RegisterDidActivate(base::BindRepeating(
           &SavedTabGroupWebContentsListener::OnTabEnteredForeground,
           base::Unretained(this)));
 }
@@ -90,7 +90,7 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
   Observe(local_tab->GetContents());
 
   tab_foregrounded_subscription_ =
-      local_tab->RegisterDidEnterForeground(base::BindRepeating(
+      local_tab->RegisterDidActivate(base::BindRepeating(
           &SavedTabGroupWebContentsListener::OnTabEnteredForeground,
           base::Unretained(this)));
 }
@@ -133,8 +133,7 @@ void SavedTabGroupWebContentsListener::NavigateToUrlInternal(const GURL& url) {
   // If deferring remote navigations is enabled and the tab is in the
   // background, then dont actually perform the navigation, instead cache the
   // URL for performing the navigation later.
-  if (!IsTabGroupsDeferringRemoteNavigations() ||
-      local_tab_->IsInForeground()) {
+  if (!IsTabGroupsDeferringRemoteNavigations() || local_tab_->IsActivated()) {
     PerformNavigation(url);
   } else {
     cached_url_ = url;

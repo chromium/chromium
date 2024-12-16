@@ -268,10 +268,9 @@ LensOverlayController::LensOverlayController(
   LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
                                                        this);
 
-  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
-      base::BindRepeating(&LensOverlayController::TabForegrounded,
-                          weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterWillEnterBackground(
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(base::BindRepeating(
+      &LensOverlayController::TabForegrounded, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&LensOverlayController::TabWillEnterBackground,
                           weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
@@ -379,7 +378,7 @@ void LensOverlayController::ShowUI(
 
   // The UI should only show if the tab is in the foreground or if the tab web
   // contents is not in a crash state.
-  if (!tab_->IsInForeground() || tab_->GetContents()->IsCrashed()) {
+  if (!tab_->IsActivated() || tab_->GetContents()->IsCrashed()) {
     return;
   }
 
@@ -963,7 +962,7 @@ bool LensOverlayController::IsScreenshotPossible(
 void LensOverlayController::OnSidePanelWillHide(
     SidePanelEntryHideReason reason) {
   // If the tab is not in the foreground, this is not relevant.
-  if (!tab_->IsInForeground()) {
+  if (!tab_->IsActivated()) {
     return;
   }
 
@@ -2505,7 +2504,7 @@ void LensOverlayController::DoLensRequest(
 void LensOverlayController::ActivityRequestedByOverlay(
     ui::mojom::ClickModifiersPtr click_modifiers) {
   // The tab is expected to be in the foreground.
-  if (!tab_->IsInForeground()) {
+  if (!tab_->IsActivated()) {
     return;
   }
   tab_->GetBrowserWindowInterface()->OpenGURL(
@@ -2519,7 +2518,7 @@ void LensOverlayController::ActivityRequestedByOverlay(
 
 void LensOverlayController::ActivityRequestedByEvent(int event_flags) {
   // The tab is expected to be in the foreground.
-  if (!tab_->IsInForeground()) {
+  if (!tab_->IsActivated()) {
     return;
   }
   tab_->GetBrowserWindowInterface()->OpenGURL(
@@ -2577,7 +2576,7 @@ void LensOverlayController::GetOverlayInvocationSource(
 void LensOverlayController::InfoRequestedByOverlay(
     ui::mojom::ClickModifiersPtr click_modifiers) {
   // The tab is expected to be in the foreground.
-  if (!tab_->IsInForeground()) {
+  if (!tab_->IsActivated()) {
     return;
   }
   tab_->GetBrowserWindowInterface()->OpenGURL(
@@ -2591,7 +2590,7 @@ void LensOverlayController::InfoRequestedByOverlay(
 
 void LensOverlayController::InfoRequestedByEvent(int event_flags) {
   // The tab is expected to be in the foreground.
-  if (!tab_->IsInForeground()) {
+  if (!tab_->IsActivated()) {
     return;
   }
   tab_->GetBrowserWindowInterface()->OpenGURL(

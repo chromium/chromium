@@ -63,7 +63,7 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(
       base::BindRepeating(&ReadAnythingSidePanelController::TabWillDetach,
                           weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ReadAnythingSidePanelController::TabForegrounded,
                           weak_factory_.GetWeakPtr())));
   Observe(tab_->GetContents());
@@ -181,7 +181,7 @@ void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
-  if (!tab_->IsInForeground()) {
+  if (!tab_->IsActivated()) {
     return;
   }
 
@@ -215,7 +215,7 @@ void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {
 }
 
 void ReadAnythingSidePanelController::UpdateIphVisibility() {
-  if (!tab_->IsInForeground()) {
+  if (!tab_->IsActivated()) {
     return;
   }
 

@@ -307,7 +307,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   if (toast_features::IsEnabled(toast_features::kClearBrowsingDataToast)) {
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
-    if (tab && tab->IsInForeground()) {
+    if (tab && tab->IsActivated()) {
       CHECK(tab->GetBrowserWindowInterface());
       ToastController* const toast_controller =
           tab->GetBrowserWindowInterface()->GetFeatures().toast_controller();

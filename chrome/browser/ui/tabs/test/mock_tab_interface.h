@@ -23,14 +23,23 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               RegisterWillDiscardContents,
               (WillDiscardContentsCallback),
               (override));
-  MOCK_METHOD(bool, IsInForeground, (), (const, override));
+  MOCK_METHOD(bool, IsActivated, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterDidEnterForeground,
-              (DidEnterForegroundCallback),
+              RegisterDidActivate,
+              (DidActivateCallback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterWillEnterBackground,
-              (WillEnterBackgroundCallback),
+              RegisterWillDeactivate,
+              (WillDeactivateCallback),
+              (override));
+  MOCK_METHOD(bool, IsVisible, (), (const, override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterDidBecomeVisible,
+              (DidBecomeVisibleCallback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterWillBecomeHidden,
+              (WillBecomeHiddenCallback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterWillDetach,
