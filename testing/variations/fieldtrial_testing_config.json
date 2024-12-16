@@ -14248,8 +14248,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240723",
+                    "name": "Enabled_20241216",
                     "params": {
+                        "intersection_observation_after_fcp_only": "true",
                         "intersection_observer_delay": "1000ms",
                         "max_intersection_observations": "60",
                         "random_anchor_sampling_period": "1"
