@@ -1174,26 +1174,27 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesMostUniqueTokens) {
 
 TEST_F(AutofillProfileComparatorTest, MergeAddressesWithStructure) {
   AutofillProfile p1 = CreateProfileWithAddress(
-      "6543 CH BACON", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "ca");
+      "6543 CH BACON", "APP 3", "Barcelona", "Catalunya", "HHH999", "ES");
 
   p1.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"StreetName");
   p1.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
   p1.SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"Subpremise");
 
-  AutofillProfile p2 = CreateProfileWithAddress(
-      "6543, Bacon Rd", "", "Montreal", "QC", "hhh 999", "CA");
+  AutofillProfile p2 = p1;
   p2.set_use_date(p1.use_date() + base::Minutes(1));
   p2.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"StreetName2");
   p2.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
   p2.SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
 
-  Address expected(kLegacyHierarchyCountryCode);
+  Address expected(AddressCountryCode("ES"));
   expected.SetRawInfo(ADDRESS_HOME_LINE1, u"6543 CH BACON");
   expected.SetRawInfo(ADDRESS_HOME_LINE2, u"APP 3");
-  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Montreal");
-  expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
-  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
+  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Barcelona");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"Catalunya");
+  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"HHH999");
+  expected.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"StreetName2");
+  expected.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
+  expected.SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
@@ -1201,27 +1202,17 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithStructure) {
 
 TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewrite) {
   AutofillProfile p1 = CreateProfileWithAddress(
-      "6543 CH BACON", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "ca");
-
-  p1.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"StreetName");
-  p1.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
-  p1.SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"Subpremise");
-
+      "6543 CH BACON", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "CA");
   AutofillProfile p2 = CreateProfileWithAddress(
       "6543, Bacon Rd", "", "Montreal", "QC", "hhh 999", "CA");
-  p2.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"StreetName2");
-  p2.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
-  p2.SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
-
   p2.set_use_date(p1.use_date() + base::Minutes(1));
 
-  Address expected(kLegacyHierarchyCountryCode);
+  Address expected(AddressCountryCode("CA"));
   expected.SetRawInfo(ADDRESS_HOME_LINE1, u"6543 CH BACON");
   expected.SetRawInfo(ADDRESS_HOME_LINE2, u"APP 3");
   expected.SetRawInfo(ADDRESS_HOME_CITY, u"Montreal");
   expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
   expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
@@ -1262,23 +1253,22 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewriteDE) {
 
 TEST_F(AutofillProfileComparatorTest,
        MergeAddressesDependentLocalityAndSortingCode) {
-  AutofillProfile p1 = CreateProfileWithAddress(
-      "6543 CH BACON", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "ca");
+  AutofillProfile p1 =
+      CreateProfileWithAddress("6543 CH BACON", "APP 3", "Rio de Janeiro",
+                               "Rio de Janeiro", "HHH999", "BR");
   p1.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Some String");
   p1.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"64205 Biarritz CEDEX");
-  AutofillProfile p2 = CreateProfileWithAddress(
-      "6543, Bacon Rd", "", "Montreal", "QC", "hhh 999", "CA");
+  AutofillProfile p2 = p1;
   p2.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Some Other String");
   p2.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"64205 Biarritz");
   p2.set_use_date(p1.use_date() + base::Minutes(1));
 
-  Address expected(kLegacyHierarchyCountryCode);
+  Address expected(AddressCountryCode("BR"));
   expected.SetRawInfo(ADDRESS_HOME_LINE1, u"6543 CH BACON");
   expected.SetRawInfo(ADDRESS_HOME_LINE2, u"APP 3");
-  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Montreal");
-  expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
-  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
+  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Rio de Janeiro");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"Rio de Janeiro");
+  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"HHH999");
   expected.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Some Other String");
   expected.SetRawInfo(ADDRESS_HOME_SORTING_CODE,
                       u"64205 Biarritz");  // Preferred by use date.

@@ -363,17 +363,17 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
 // one.
 BASE_FEATURE(kAutofillUseAUAddressModel,
              "AutofillUseAUAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a custom address model for Canada, overriding the legacy one.
 BASE_FEATURE(kAutofillUseCAAddressModel,
              "AutofillUseCAAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a custom address model for Germany, overriding the legacy one.
 BASE_FEATURE(kAutofillUseDEAddressModel,
              "AutofillUseDEAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a custom address model for France, overriding the legacy one.
 BASE_FEATURE(kAutofillUseFRAddressModel,

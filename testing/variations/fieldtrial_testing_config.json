@@ -2142,29 +2142,6 @@
             ]
         }
     ],
-    "AutofillI18nAddressModelNewCountries": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillUseAUAddressModel",
-                        "AutofillUseCAAddressModel",
-                        "AutofillUseDEAddressModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillI18nFRAddressModel": [
         {
             "platforms": [

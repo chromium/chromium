@@ -126,7 +126,7 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"ZIP",
                                                 VerificationStatus::kObserved);
 
-  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"DE",
+  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"ZA",
                                                 VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER, u"House Number",
