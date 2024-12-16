@@ -2322,14 +2322,6 @@ TEST_F(WebNNGraphImplTest, EluTest) {
         .Test(*this);
   }
   {
-    // Test the invalid graph when the alpha is less than or equal to 0.
-    EluTester{.input = {.type = OperandDataType::kFloat32, .dimensions = {2}},
-              .output = {.type = OperandDataType::kFloat32, .dimensions = {2}},
-              .alpha = 0,
-              .expected = false}
-        .Test(*this);
-  }
-  {
     // Test the invalid graph when the alpha is NAN.
     EluTester{.input = {.type = OperandDataType::kFloat32, .dimensions = {2}},
               .output = {.type = OperandDataType::kFloat32, .dimensions = {2}},

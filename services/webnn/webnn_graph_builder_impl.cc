@@ -110,8 +110,8 @@ bool ValidateClampAttributes(const mojom::Clamp& clamp) {
 }
 
 bool ValidateEluAttributes(const mojom::Elu& elu) {
-  if (std::isnan(elu.alpha) || elu.alpha <= 0.0f) {
-    // The value of alpha must be greater than 0.
+  if (std::isnan(elu.alpha) || std::isinf(elu.alpha)) {
+    // The value of alpha is nan.
     return false;
   }
 
@@ -1141,6 +1141,7 @@ bool OperationValidationContext::ValidateElu(const mojom::Elu& elu,
           elu, context_properties_->data_type_limits.elu_input, operation_id)) {
     return false;
   }
+
   if (!ValidateEluAttributes(elu)) {
     return false;
   }

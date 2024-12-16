@@ -2091,14 +2091,6 @@ MLOperand* MLGraphBuilder::elu(MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
   const std::string label = options->label().Utf8();
-  // The current spec doesn't restrict the value of alpha. An issue has been
-  // filed to track it: https://github.com/webmachinelearning/webnn/issues/383
-  if (options->alpha() <= 0.0f) {
-    exception_state.ThrowTypeError(
-        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        "The value of alpha must be greater than 0.");
-    return nullptr;
-  }
 
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-elu, the output tensor of
