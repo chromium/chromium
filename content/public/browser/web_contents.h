@@ -1644,6 +1644,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // be bound.
   virtual net::handles::NetworkHandle GetTargetNetwork() = 0;
 
+  // Disconnect any outstanding `FileSelectListener` so that any calls will be
+  // no-op.
+  virtual void DisconnectFileSelectListenerIfAny() = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class WebContentsImpl;

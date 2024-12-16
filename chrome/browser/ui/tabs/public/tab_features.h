@@ -73,6 +73,7 @@ class CollaborationMessagingTabData;
 
 namespace tabs {
 
+class DisconnectFileChooserOnBackgroundController;
 class TabInterface;
 class TabDialogManager;
 
@@ -244,6 +245,9 @@ class TabFeatures {
 
   std::unique_ptr<passage_embeddings::EmbedderTabObserver>
       embedder_tab_observer_;
+
+  std::unique_ptr<DisconnectFileChooserOnBackgroundController>
+      disconnect_file_chooser_on_background_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

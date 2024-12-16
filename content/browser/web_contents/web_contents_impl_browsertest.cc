@@ -3190,6 +3190,44 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DisconnectFileChooserListener) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  GURL url = embedded_test_server()->GetURL("/click-noreferrer-links.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  base::WeakPtr<FileChooserImpl> chooser_weak_ptr = chooser->GetWeakPtr();
+
+  // Request file chooser.
+  base::RunLoop run_loop;
+  base::OnceClosure quit_closure = run_loop.QuitClosure();
+  blink::mojom::FileChooserResultPtr result_received;
+  remote->OpenFileChooser(blink::mojom::FileChooserParams::New(),
+                          base::BindLambdaForTesting(
+                              [&](blink::mojom::FileChooserResultPtr result) {
+                                result_received = std::move(result);
+                                std::move(quit_closure).Run();
+                              }));
+  remote.FlushForTesting();
+  EXPECT_EQ(shell()->run_file_chooser_count(), 1u);
+
+  // Disconnect listener.
+  wc->DisconnectFileSelectListenerIfAny();
+
+  // Send result from listener, which now should be ignored.
+  shell()->held_file_chooser_listener()->FileSelected(
+      {}, base::FilePath(), blink::mojom::FileChooserParams::Mode::kOpen);
+  run_loop.Run();
+
+  // Check that request was cancelled, ie returned null result.
+  EXPECT_FALSE(result_received);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        FrameDetachInCopyDoesNotCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(

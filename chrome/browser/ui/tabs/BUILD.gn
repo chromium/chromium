@@ -288,6 +288,8 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     sources = [
+      "disconnect_file_chooser_on_background_controller.cc",
+      "disconnect_file_chooser_on_background_controller.h",
       "features.cc",
       "hover_tab_selector.cc",
       "pinned_tab_codec.cc",

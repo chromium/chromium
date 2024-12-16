@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/disconnect_file_chooser_on_background_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
@@ -202,6 +204,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           favicon::ContentFaviconDriver::FromWebContents(tab.GetContents()));
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
+
+  if (base::FeatureList::IsEnabled(
+          tabs::kDisconnectFileChooserOnTabDeactivateKillSwitch)) {
+    disconnect_file_chooser_on_background_controller_ =
+        std::make_unique<DisconnectFileChooserOnBackgroundController>(tab);
+  }
 }
 
 TabFeatures::TabFeatures() = default;

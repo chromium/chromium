@@ -11614,6 +11614,12 @@ net::handles::NetworkHandle WebContentsImpl::GetTargetNetwork() {
   return target_network_;
 }
 
+void WebContentsImpl::DisconnectFileSelectListenerIfAny() {
+  if (active_file_chooser_) {
+    active_file_chooser_->FileSelectionCanceled();
+  }
+}
+
 // static
 void WebContentsImpl::UpdateAttributionSupportAllRenderers() {
   for (WebContentsImpl* web_contents : GetAllWebContents()) {
