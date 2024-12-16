@@ -1018,9 +1018,18 @@ INSTANTIATE_TEST_SUITE_P(
 // Test the case the SellerWorklet pipe is closed before any of its methods are
 // invoked. Nothing should happen.
 TEST_F(SellerWorkletTest, PipeClosed) {
-  auto sellet_worklet = CreateWorklet();
-  sellet_worklet.reset();
-  base::RunLoop().RunUntilIdle();
+  base::HistogramTester histogram_tester;
+  auto seller_worklet = CreateWorklet();
+  seller_worklet.reset();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(seller_worklets_.empty());
+
+  // These metrics should get recorded when a seller worklet is destroyed.
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.SellerWorkletIsolateUsedHeapSizeKilobytes", 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.SellerWorkletIsolateTotalHeapSizeKilobytes",
+      1);
 }
 
 TEST_F(SellerWorkletTest, NetworkError) {
