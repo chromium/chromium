@@ -1436,13 +1436,14 @@ export class RemoteCallFilesApp extends RemoteCall {
    *     microsoft_onedrive, google_drive.
    */
   async setLocalFilesMigrationDestination(provider: string) {
-    // Disable local storage - migration destination is ignored otherwise.
-    await sendTestMessage(
-        {name: 'skyvault:setLocalFilesEnabled', enabled: false});
-    // Set the destination.
+    // Set the destination first, otherwise migration can be complete
+    // immediately, if MyFiles are empty.
     await sendTestMessage({
       name: 'skyvault:setMigrationDestination',
       provider: provider,
     });
+    // Disable local storage - migration destination is ignored otherwise.
+    await sendTestMessage(
+        {name: 'skyvault:setLocalFilesEnabled', enabled: false});
   }
 }
