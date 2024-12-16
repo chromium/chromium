@@ -342,7 +342,8 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveAppsToNewDesk) {
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, AsyncGroupTitle) {
   // Create a test coral group with a pending title.
   std::vector<coral::mojom::GroupPtr> test_groups;
-  test_groups.push_back(CreateTestGroup({{"example", "www.example.com"}}));
+  test_groups.push_back(
+      CreateTestGroup({{"example", GURL("www.example.com")}}));
   OverrideTestResponse(std::move(test_groups));
 
   // Set up a callback for a birch data fetch.
@@ -377,7 +378,8 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, AsyncGroupTitle) {
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, GroupTitleLoadingFail) {
   // Create a test coral group with a pending title.
   std::vector<coral::mojom::GroupPtr> test_groups;
-  test_groups.push_back(CreateTestGroup({{"example", "www.example.com"}}));
+  test_groups.push_back(
+      CreateTestGroup({{"example", GURL("www.example.com")}}));
   OverrideTestResponse(std::move(test_groups));
 
   // Set up a callback for a birch data fetch.
