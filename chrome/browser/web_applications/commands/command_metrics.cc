@@ -12,7 +12,7 @@
 namespace web_app {
 namespace {
 constexpr std::string_view ToVariantString(InstallCommand command) {
-  // This must exactly match the string in .../webapps/histograms.xml.
+  // These must exactly match the variant strings in .../webapps/histograms.xml.
   switch (command) {
     case InstallCommand::kFetchManifestAndInstall:
       return ".FetchManifestAndInstall";
@@ -28,16 +28,16 @@ constexpr std::string_view ToVariantString(InstallCommand command) {
 }
 
 constexpr std::string_view ToVariantString(WebAppType type) {
-  // This must exactly match the string in .../webapps/histograms.xml.
+  // These must exactly match the variant strings in .../webapps/histograms.xml.
   switch (type) {
     case WebAppType::kCraftedApp:
-      return ".CraftedApp";
+      return ".Crafted";
     case WebAppType::kDiyApp:
-      return ".DiyApp";
+      return ".Diy";
     case WebAppType::kUnknown:
       return ".Unknown";
     case WebAppType::kIsolatedWebApp:
-      return ".IsolatedWebApp";
+      return ".Isolated";
   }
 }
 }  // namespace

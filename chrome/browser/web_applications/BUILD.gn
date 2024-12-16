@@ -667,6 +667,8 @@ source_set("web_applications_test_support") {
     "isolated_web_apps/test/test_iwa_installer_factory.h",
     "isolated_web_apps/test/test_signed_web_bundle_builder.cc",
     "isolated_web_apps/test/test_signed_web_bundle_builder.h",
+    "test/command_metrics_test_helper.cc",
+    "test/command_metrics_test_helper.h",
     "test/debug_info_printer.cc",
     "test/debug_info_printer.h",
     "test/external_app_registration_waiter.cc",

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/test/command_metrics_test_helper.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -1002,6 +1003,22 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
 
   EXPECT_THAT(histogram_tester.GetAllSamples(GetBucketName()),
               base::BucketsAre(base::Bucket(/*true=*/1, 1)));
+
+  std::string_view app_type_str = IsDiyApp() ? ".Diy" : ".Crafted";
+
+  EXPECT_THAT(histogram_tester,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandResultHistogramNames(
+                      ".FetchManifestAndInstall", app_type_str),
+                  base::BucketsAre(base::Bucket(
+                      webapps::InstallResultCode::kSuccessNewInstall, 1))));
+
+  EXPECT_THAT(histogram_tester,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandSourceHistogramNames(
+                      ".FetchManifestAndInstall", app_type_str),
+                  base::BucketsAre(base::Bucket(
+                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, 1))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

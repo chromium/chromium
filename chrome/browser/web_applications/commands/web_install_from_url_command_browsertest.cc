@@ -5,11 +5,13 @@
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/test/command_metrics_test_helper.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -17,8 +19,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_renderer_host.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace {
@@ -111,6 +116,18 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InstallApp) {
   tester.ExpectUniqueSample("WebApp.LaunchSource", kLaunchSource, 1);
   tester.ExpectUniqueSample("WebApp.NewCraftedAppInstalled.ByUser",
                             /*sample=*/true, 1);
+
+  EXPECT_THAT(tester,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandResultHistogramNames(
+                      ".WebInstallFromUrl", ".Crafted"),
+                  base::BucketsAre(base::Bucket(
+                      webapps::InstallResultCode::kSuccessNewInstall, 1))));
+  EXPECT_THAT(tester, test::ForAllGetAllSamples(
+                          test::GetInstallCommandSourceHistogramNames(
+                              ".WebInstallFromUrl", ".Crafted"),
+                          base::BucketsAre(base::Bucket(
+                              webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -141,6 +158,18 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidUrl) {
   EXPECT_EQ(GetErrorName(), kAbortError);
 
   tester.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource, 1);
+
+  EXPECT_THAT(tester,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandResultHistogramNames(
+                      ".WebInstallFromUrl", ".Crafted"),
+                  base::BucketsAre(base::Bucket(
+                      webapps::InstallResultCode::kInstallURLLoadFailed, 1))));
+  EXPECT_THAT(tester, test::ForAllGetAllSamples(
+                          test::GetInstallCommandSourceHistogramNames(
+                              ".WebInstallFromUrl", ".Crafted"),
+                          base::BucketsAre(base::Bucket(
+                              webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, NoManifest) {
@@ -158,6 +187,19 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, NoManifest) {
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
   tester.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource, 1);
+
+  EXPECT_THAT(
+      tester,
+      test::ForAllGetAllSamples(
+          test::GetInstallCommandResultHistogramNames(".WebInstallFromUrl",
+                                                      ".Crafted"),
+          base::BucketsAre(base::Bucket(
+              webapps::InstallResultCode::kNotValidManifestForWebApp, 1))));
+  EXPECT_THAT(tester, test::ForAllGetAllSamples(
+                          test::GetInstallCommandSourceHistogramNames(
+                              ".WebInstallFromUrl", ".Crafted"),
+                          base::BucketsAre(base::Bucket(
+                              webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidManifest) {
@@ -175,6 +217,19 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidManifest) {
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
   tester.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource, 1);
+
+  EXPECT_THAT(
+      tester,
+      test::ForAllGetAllSamples(
+          test::GetInstallCommandResultHistogramNames(".WebInstallFromUrl",
+                                                      ".Crafted"),
+          base::BucketsAre(base::Bucket(
+              webapps::InstallResultCode::kNotValidManifestForWebApp, 1))));
+  EXPECT_THAT(tester, test::ForAllGetAllSamples(
+                          test::GetInstallCommandSourceHistogramNames(
+                              ".WebInstallFromUrl", ".Crafted"),
+                          base::BucketsAre(base::Bucket(
+                              webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -191,6 +246,18 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
   tester.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource, 1);
+
+  EXPECT_THAT(tester,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandResultHistogramNames(
+                      ".WebInstallFromUrl", ".Crafted"),
+                  base::BucketsAre(base::Bucket(
+                      webapps::InstallResultCode::kNotInstallable, 1))));
+  EXPECT_THAT(tester, test::ForAllGetAllSamples(
+                          test::GetInstallCommandSourceHistogramNames(
+                              ".WebInstallFromUrl", ".Crafted"),
+                          base::BucketsAre(base::Bucket(
+                              webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -208,6 +275,19 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
   tester.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource, 1);
+
+  EXPECT_THAT(
+      tester,
+      test::ForAllGetAllSamples(
+          test::GetInstallCommandResultHistogramNames(".WebInstallFromUrl",
+                                                      ".Crafted"),
+          base::BucketsAre(base::Bucket(
+              webapps::InstallResultCode::kNotValidManifestForWebApp, 1))));
+  EXPECT_THAT(tester, test::ForAllGetAllSamples(
+                          test::GetInstallCommandSourceHistogramNames(
+                              ".WebInstallFromUrl", ".Crafted"),
+                          base::BucketsAre(base::Bucket(
+                              webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidInstallUrl) {
@@ -222,6 +302,18 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidInstallUrl) {
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
   tester.ExpectUniqueSample("WebApp.Install.Source.Failure", kInstallSource, 1);
+
+  EXPECT_THAT(tester,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandResultHistogramNames(
+                      ".WebInstallFromUrl", ".Crafted"),
+                  base::BucketsAre(base::Bucket(
+                      webapps::InstallResultCode::kInstallURLLoadFailed, 1))));
+  EXPECT_THAT(tester, test::ForAllGetAllSamples(
+                          test::GetInstallCommandSourceHistogramNames(
+                              ".WebInstallFromUrl", ".Crafted"),
+                          base::BucketsAre(base::Bucket(
+                              webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
 }  // namespace web_app
