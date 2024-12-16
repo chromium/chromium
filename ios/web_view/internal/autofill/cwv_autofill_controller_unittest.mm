@@ -36,6 +36,7 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_controller+testing.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
@@ -107,11 +108,11 @@ class CWVAutofillControllerTest : public web::WebTest {
 
     auto autofill_client = std::make_unique<autofill::WebViewAutofillClientIOS>(
         &pref_service_, &personal_data_manager_, &autocomplete_history_manager_,
-        &web_state_, /*identity_manager=*/nullptr, &strike_database_,
-        &sync_service_, /*log_router=*/nullptr);
+        &web_state_, /*bridge=*/nil, /*identity_manager=*/nullptr,
+        &strike_database_, &sync_service_, /*log_router=*/nullptr);
     autofill_controller_ = [[CWVAutofillController alloc]
              initWithWebState:&web_state_
-               autofillClient:std::move(autofill_client)
+        autofillClientForTest:std::move(autofill_client)
                 autofillAgent:autofill_agent_
               passwordManager:std::move(password_manager)
         passwordManagerClient:std::move(password_manager_client)

@@ -32,6 +32,7 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_controller+testing.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
@@ -94,10 +95,28 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 
 @synthesize delegate = _delegate;
 
+- (instancetype)initWithWebState:(web::WebState*)webState
+                   autofillAgent:(AutofillAgent*)autofillAgent
+                 passwordManager:
+                     (std::unique_ptr<password_manager::PasswordManager>)
+                         passwordManager
+           passwordManagerClient:
+               (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
+                   passwordManagerClient
+              passwordController:(SharedPasswordController*)passwordController {
+  self = [self initWithWebState:webState
+          autofillClientForTest:nullptr
+                  autofillAgent:autofillAgent
+                passwordManager:std::move(passwordManager)
+          passwordManagerClient:std::move(passwordManagerClient)
+             passwordController:passwordController];
+  return self;
+}
+
 - (instancetype)
          initWithWebState:(web::WebState*)webState
-           autofillClient:(std::unique_ptr<autofill::WebViewAutofillClientIOS>)
-                              autofillClient
+    autofillClientForTest:(std::unique_ptr<autofill::WebViewAutofillClientIOS>)
+                              autofillClientForTest
             autofillAgent:(AutofillAgent*)autofillAgent
           passwordManager:(std::unique_ptr<password_manager::PasswordManager>)
                               passwordManager
@@ -119,11 +138,10 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(webState, self);
 
-    _autofillClient = std::move(autofillClient);
-    _autofillClient->set_bridge(self);
-
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        _webState, _autofillClient.get(), self);
+    _autofillClient =
+        autofillClientForTest
+            ? std::move(autofillClientForTest)
+            : autofill::WebViewAutofillClientIOS::Create(_webState, self);
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);

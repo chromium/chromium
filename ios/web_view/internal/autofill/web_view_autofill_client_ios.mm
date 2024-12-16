@@ -39,14 +39,16 @@ namespace autofill {
 // static
 std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
     web::WebState* web_state,
-    ios_web_view::WebViewBrowserState* browser_state) {
+    id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge) {
+  auto* browser_state = ios_web_view::WebViewBrowserState::FromBrowserState(
+      web_state->GetBrowserState());
   return std::make_unique<autofill::WebViewAutofillClientIOS>(
       browser_state->GetPrefs(),
       ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
           browser_state->GetRecordingBrowserState()),
       ios_web_view::WebViewAutocompleteHistoryManagerFactory::
           GetForBrowserState(browser_state),
-      web_state,
+      web_state, bridge,
       ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
           browser_state->GetRecordingBrowserState()),
       ios_web_view::WebViewStrikeDatabaseFactory::GetForBrowserState(
@@ -62,20 +64,25 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
     PersonalDataManager* personal_data_manager,
     AutocompleteHistoryManager* autocomplete_history_manager,
     web::WebState* web_state,
+    id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
     signin::IdentityManager* identity_manager,
     StrikeDatabase* strike_database,
     syncer::SyncService* sync_service,
     LogRouter* log_router)
-    : pref_service_(pref_service),
+    : web_state_(web_state),
+      bridge_(bridge),
+      pref_service_(pref_service),
       personal_data_manager_(personal_data_manager),
       autocomplete_history_manager_(autocomplete_history_manager),
-      web_state_(web_state),
       identity_manager_(identity_manager),
       strike_database_(strike_database),
       sync_service_(sync_service),
-      log_router_(log_router) {}
+      log_router_(log_router) {
+  AutofillDriverIOSFactory::CreateForWebState(web_state, this, bridge);
+}
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
+  HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
   if (auto* factory = AutofillDriverIOSFactory::FromWebState(web_state_)) {
     // Autofill expects that AutofillDrivers and their ownees are destroyed
     // before the AutofillClient. It's not clear if that's the case on iOS
@@ -83,7 +90,6 @@ WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
     // TODO(crbug.com/380442588): Investigate and look for a better fix.
     static_cast<web::WebStateObserver*>(factory)->WebStateDestroyed(web_state_);
   }
-  HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
 }
 
 base::WeakPtr<AutofillClient> WebViewAutofillClientIOS::GetWeakPtr() {
@@ -105,7 +111,7 @@ WebViewAutofillClientIOS::GetURLLoaderFactory() {
       web_state_->GetBrowserState()->GetURLLoaderFactory());
 }
 
-AutofillDriverFactory& WebViewAutofillClientIOS::GetAutofillDriverFactory() {
+AutofillDriverIOSFactory& WebViewAutofillClientIOS::GetAutofillDriverFactory() {
   return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
 }
 
@@ -306,12 +312,6 @@ LogManager* WebViewAutofillClientIOS::GetCurrentLogManager() {
 autofill_metrics::FormInteractionsUkmLogger&
 WebViewAutofillClientIOS::GetFormInteractionsUkmLogger() {
   return form_interactions_ukm_logger_;
-}
-
-void WebViewAutofillClientIOS::set_bridge(
-    id<CWVAutofillClientIOSBridge> bridge) {
-  bridge_ = bridge;
-  payments_autofill_client_.set_bridge(bridge);
 }
 
 }  // namespace autofill

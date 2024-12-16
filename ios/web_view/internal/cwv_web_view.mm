@@ -990,8 +990,6 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (CWVAutofillController*)newAutofillController {
-  auto autofillClient = autofill::WebViewAutofillClientIOS::Create(
-      _webState.get(), _configuration.browserState);
   AutofillAgent* autofillAgent = [[AutofillAgent alloc]
       initWithPrefService:_configuration.browserState->GetPrefs()
                  webState:_webState.get()];
@@ -1017,7 +1015,6 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
   return [[CWVAutofillController alloc]
            initWithWebState:_webState.get()
-             autofillClient:std::move(autofillClient)
               autofillAgent:autofillAgent
             passwordManager:std::move(passwordManager)
       passwordManagerClient:std::move(passwordManagerClient)

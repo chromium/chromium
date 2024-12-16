@@ -18,10 +18,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-namespace autofill {
-class WebViewAutofillClientIOS;
-}  // namespace autofill
-
 namespace ios_web_view {
 class WebViewPasswordManagerClient;
 }  // namespace ios_web_view
@@ -44,18 +40,15 @@ class WebState;
                                      PasswordManagerClientBridge,
                                      SharedPasswordControllerDelegate>
 
-- (instancetype)
-         initWithWebState:(web::WebState*)webState
-           autofillClient:(std::unique_ptr<autofill::WebViewAutofillClientIOS>)
-                              autofillClient
-            autofillAgent:(AutofillAgent*)autofillAgent
-          passwordManager:(std::unique_ptr<password_manager::PasswordManager>)
-                              passwordManager
-    passwordManagerClient:
-        (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
-            passwordManagerClient
-       passwordController:(SharedPasswordController*)passwordController
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithWebState:(web::WebState*)webState
+                   autofillAgent:(AutofillAgent*)autofillAgent
+                 passwordManager:
+                     (std::unique_ptr<password_manager::PasswordManager>)
+                         passwordManager
+           passwordManagerClient:
+               (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
+                   passwordManagerClient
+              passwordController:(SharedPasswordController*)passwordController;
 
 @end
 

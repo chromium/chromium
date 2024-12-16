@@ -108,6 +108,7 @@ ios_web_view_sources = [
   "internal/app/web_view_io_thread.h",
   "internal/app/web_view_io_thread.mm",
   "internal/autofill/cwv_autofill_client_ios_bridge.h",
+  "internal/autofill/cwv_autofill_controller+testing.h",
   "internal/autofill/cwv_autofill_controller.mm",
   "internal/autofill/cwv_autofill_controller_internal.h",
   "internal/autofill/cwv_autofill_data_manager.mm",
