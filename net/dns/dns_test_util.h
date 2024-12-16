@@ -70,7 +70,7 @@ static const char* const kT0IpAddresses[] = {
 static const char kT0CanonName[] = "www.l.google.com";
 static const base::TimeDelta kT0Ttl = base::Seconds(0x000000e4);
 // +1 for the CNAME record.
-static const unsigned kT0RecordCount = std::size(kT0IpAddresses) + 1;
+static const uint32_t kT0RecordCount = std::size(kT0IpAddresses) + 1;
 
 //-----------------------------------------------------------------------------
 // Query/response set for codereview.chromium.org, ID is fixed to 1.
@@ -100,7 +100,7 @@ static const char* const kT1IpAddresses[] = {
 static const char kT1CanonName[] = "ghs.l.google.com";
 static const base::TimeDelta kT1Ttl = base::Seconds(0x0000010b);
 // +1 for the CNAME record.
-static const unsigned kT1RecordCount = std::size(kT1IpAddresses) + 1;
+static const uint32_t kT1RecordCount = std::size(kT1IpAddresses) + 1;
 
 //-----------------------------------------------------------------------------
 // Query/response set for www.ccs.neu.edu, ID is fixed to 2.
@@ -129,7 +129,7 @@ static const char* const kT2IpAddresses[] = {
 static const char kT2CanonName[] = "vulcan.ccs.neu.edu";
 static const base::TimeDelta kT2Ttl = base::Seconds(0x0000012c);
 // +1 for the CNAME record.
-static const unsigned kT2RecordCount = std::size(kT2IpAddresses) + 1;
+static const uint32_t kT2RecordCount = std::size(kT2IpAddresses) + 1;
 
 //-----------------------------------------------------------------------------
 // Query/response set for www.google.az, ID is fixed to 3.
@@ -171,7 +171,7 @@ static const char* const kT3IpAddresses[] = {
 static const char kT3CanonName[] = "www.l.google.com";
 static const base::TimeDelta kT3Ttl = base::Seconds(0x00000015);
 // +2 for the CNAME records, +1 for TXT record.
-static const unsigned kT3RecordCount = std::size(kT3IpAddresses) + 3;
+static const uint32_t kT3RecordCount = std::size(kT3IpAddresses) + 3;
 
 //-----------------------------------------------------------------------------
 // Query/response set for www.gstatic.com, ID is fixed to 0.
@@ -191,7 +191,7 @@ static const uint8_t kT4ResponseDatagram[] = {
 
 static const char* const kT4IpAddresses[] = {"172.217.6.195"};
 static const base::TimeDelta kT4Ttl = base::Seconds(0x0000012b);
-static const unsigned kT4RecordCount = std::size(kT0IpAddresses);
+static const uint32_t kT4RecordCount = std::size(kT0IpAddresses);
 
 class AddressSorter;
 class DnsClient;
@@ -511,10 +511,10 @@ class MockHostResolverProc : public HostResolverProc {
 
   // Waits until `count` calls to `Resolve` are blocked. Returns false when
   // timed out.
-  bool WaitFor(unsigned count);
+  bool WaitFor(uint32_t count);
 
   // Signals `count` waiting calls to `Resolve`. First come first served.
-  void SignalMultiple(unsigned count);
+  void SignalMultiple(uint32_t count);
 
   // Signals all waiting calls to `Resolve`. Beware of races.
   void SignalAll();
@@ -554,8 +554,8 @@ class MockHostResolverProc : public HostResolverProc {
   mutable base::Lock lock_;
   std::map<ResolveKey, AddressList> rules_;
   CaptureList capture_list_;
-  unsigned num_requests_waiting_ = 0;
-  unsigned num_slots_available_ = 0;
+  uint32_t num_requests_waiting_ = 0;
+  uint32_t num_slots_available_ = 0;
   base::ConditionVariable requests_waiting_;
   base::ConditionVariable slots_available_;
 };

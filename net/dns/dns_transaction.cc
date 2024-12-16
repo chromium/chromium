@@ -4,7 +4,8 @@
 
 #include "net/dns/dns_transaction.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <set>
@@ -1070,7 +1071,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                        probe_stats, network_change, sequence_start_time),
         probe_stats->backoff_entry->GetTimeUntilRelease());
 
-    unsigned attempt_number = probe_stats->probe_attempts.size();
+    uint32_t attempt_number = probe_stats->probe_attempts.size();
     ConstructDnsHTTPAttempt(
         session_.get(), doh_server_index, formatted_probe_qname_,
         dns_protocol::kTypeA, /*opt_rdata=*/nullptr,
@@ -1086,7 +1087,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
         base::TimeTicks::Now() /* query_start_time */));
   }
 
-  void ProbeComplete(unsigned attempt_number,
+  void ProbeComplete(uint32_t attempt_number,
                      size_t doh_server_index,
                      base::WeakPtr<ProbeStats> probe_stats,
                      bool network_change,
@@ -1436,7 +1437,7 @@ class DnsTransactionImpl final : public DnsTransaction {
 
     size_t doh_server_index = dns_server_iterator_->GetNextAttemptIndex();
 
-    unsigned attempt_number = attempts_.size();
+    uint32_t attempt_number = attempts_.size();
     ConstructDnsHTTPAttempt(session_.get(), doh_server_index, qnames_.front(),
                             qtype_, opt_rdata_, &attempts_,
                             resolve_context_->url_request_context(),
@@ -1510,7 +1511,7 @@ class DnsTransactionImpl final : public DnsTransaction {
                 network_quality_estimator, net_log_.net_log(),
                 net_log_.source());
 
-    unsigned attempt_number = attempts_.size();
+    uint32_t attempt_number = attempts_.size();
 
     attempts_.push_back(std::make_unique<DnsTCPAttempt>(
         server_index, std::move(socket), std::move(query)));
@@ -1553,7 +1554,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     return MakeAttempt();
   }
 
-  void OnAttemptComplete(unsigned attempt_number,
+  void OnAttemptComplete(uint32_t attempt_number,
                          bool record_rtt,
                          base::TimeTicks start,
                          int rv) {

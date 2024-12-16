@@ -9,7 +9,8 @@
 
 #include "net/dns/dns_test_util.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>
@@ -161,7 +162,7 @@ DnsResourceRecord BuildTestTextRecord(std::string name,
   for (const std::string& text_string : text_strings) {
     DCHECK(!text_string.empty());
 
-    rdata += base::checked_cast<unsigned char>(text_string.size());
+    rdata += base::checked_cast<uint8_t>(text_string.size());
     rdata += text_string;
   }
 
@@ -888,7 +889,7 @@ MockHostResolverProc::MockHostResolverProc()
 
 MockHostResolverProc::~MockHostResolverProc() = default;
 
-bool MockHostResolverProc::WaitFor(unsigned count) {
+bool MockHostResolverProc::WaitFor(uint32_t count) {
   base::AutoLock lock(lock_);
   base::Time start_time = base::Time::Now();
   while (num_requests_waiting_ < count) {
@@ -900,7 +901,7 @@ bool MockHostResolverProc::WaitFor(unsigned count) {
   return true;
 }
 
-void MockHostResolverProc::SignalMultiple(unsigned count) {
+void MockHostResolverProc::SignalMultiple(uint32_t count) {
   base::AutoLock lock(lock_);
   num_slots_available_ += count;
   slots_available_.Broadcast();

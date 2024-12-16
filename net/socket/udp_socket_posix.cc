@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/socket/udp_socket_posix.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -15,13 +17,12 @@
 #define __APPLE_USE_RFC_3542
 #endif  // BUILDFLAG(IS_APPLE)
 
-#include "net/socket/udp_socket_posix.h"
-
 #include <errno.h>
 #include <fcntl.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <stdint.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
@@ -504,7 +505,7 @@ int UDPSocketPosix::SetRecvTos() {
   DCHECK_NE(socket_, kInvalidSocket);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  unsigned int ecn = 1;
+  uint32_t ecn = 1;
   if (addr_family_ == AF_INET6) {
     if (setsockopt(socket_, IPPROTO_IPV6, IPV6_RECVTCLASS, &ecn, sizeof(ecn)) !=
         0) {
