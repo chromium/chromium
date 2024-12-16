@@ -194,9 +194,6 @@ function createRoutes(): SettingsRoutes {
 
     r.SYNC = r.PEOPLE.createChild('/syncSetup');
     r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
-    if (loadTimeData.getBoolean('enablePageContentSetting')) {
-      r.PAGE_CONTENT = r.SYNC.createChild('/syncSetup/pageContent');
-    }
     if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
         loadTimeData.getBoolean('showHistorySearchControl')) {
       r.HISTORY_SEARCH = r.SYNC.createChild('/historySearch');

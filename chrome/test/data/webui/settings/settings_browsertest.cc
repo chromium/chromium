@@ -797,26 +797,11 @@ IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MemorySaverAggressiveness) {
 }
 
 class SettingsPersonalizationOptionsTest : public SettingsBrowserTest {
- public:
-  SettingsPersonalizationOptionsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPageContentOptIn},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest, AllBuilds) {
   RunTest("settings/personalization_options_test.js",
           "runMochaSuite('AllBuilds')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest,
-                       PageContentSettingOff) {
-  RunTest("settings/personalization_options_test.js",
-          "runMochaSuite('PageContentSettingOff')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

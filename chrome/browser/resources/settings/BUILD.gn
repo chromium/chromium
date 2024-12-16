@@ -105,7 +105,6 @@ build_webui("build") {
     "performance_page/tab_discard/exception_entry.ts",
     "performance_page/tab_discard/exception_list.ts",
     "performance_page/tab_discard/exception_tabbed_add_dialog.ts",
-    "people_page/page_content_page.ts",
     "people_page/people_page.ts",
     "people_page/signout_dialog.ts",
     "people_page/sync_controls.ts",

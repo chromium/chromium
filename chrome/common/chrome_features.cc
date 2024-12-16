@@ -895,11 +895,6 @@ BASE_FEATURE(kOverridePrefetchOnSingleton,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables or disables the page content opt-in and setting.
-BASE_FEATURE(kPageContentOptIn,
-             "PageContentOptIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables usage of Parent Access Code in the login flow for reauth and add
 // user. Requires |kParentAccessCode| to be enabled.

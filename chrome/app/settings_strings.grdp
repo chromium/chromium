@@ -3913,32 +3913,6 @@
     </message>
   </if>
 
-  <!-- Page content -->
-  <message name="IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_ON" desc="Sublabel of the entry point that leads to the setting that enables features that provide contextual help for currently opened pages. This label is shown when the setting is enabled.">
-    Contextual help is on. These features can send open pages to Google.
-  </message>
-  <message name="IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_OFF" desc="Sublabel of the entry point that leads to the setting that enables features that provide contextual help for currently opened pages. This label is shown when the setting is disabled.">
-    Contextual help is off
-  </message>
-  <message name="IDS_SETTINGS_PAGE_CONTENT_PAGE_TITLE" desc="Title of the page of the setting that enables features that provide contextual help for currently opened pages.">
-    Contextual help in features
-  </message>
-  <message name="IDS_SETTINGS_PAGE_CONTENT_TOGGLE_LABEL" desc="Label of the setting that enables features that provide contextual help for currently opened pages.">
-    Get contextual help from some features
-  </message>
-  <message name="IDS_SETTINGS_PAGE_CONTENT_TOGGLE_SUBLABEL" desc="Sublabel of the setting that enables features that provide contextual help for currently opened pages.">
-    Some features can use the content of open pages and related recent pages to provide more useful information or suggestions
-  </message>
-  <message name="IDS_SETTINGS_PAGE_CONTENT_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
-    You'll see more useful information or suggestions in features like the Google Search side panel
-  </message>
-  <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
-    When you use some features, they can send parts of open pages, related recent pages, and their URLs to Google
-  </message>
-  <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_THREE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
-    This setting doesn't change the availability of Google Translate or Lens
-  </message>
-
   <!-- History search -->
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL" desc="Title of the page of the settings that enables history search.">
     History search, powered by AI
