@@ -4,7 +4,6 @@
 
 #include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 
-#include "base/process/memory.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -15,7 +14,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
-#include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/ref_counted_lock.h"
@@ -385,40 +383,9 @@ GpuChannelSharedImageInterface::CreateSharedImage(
 SharedImageInterface::SharedImageMapping
 GpuChannelSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info) {
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
-  DCHECK(si_info.meta.usage ==
-         gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY));
-
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-  CHECK(!si_info.meta.format.PrefersExternalSampler());
-#endif
-
-  SharedImageInterface::SharedImageMapping shared_image_mapping;
-  gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(si_info.meta.format);
-  const size_t buffer_size =
-      gfx::BufferSizeForBufferFormat(si_info.meta.size, buffer_format);
-  auto shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  if (!shared_memory_region.IsValid()) {
-    DLOG(ERROR) << "base::UnsafeSharedMemoryRegion::Create() for SharedImage "
-                   "with SHARED_IMAGE_USAGE_CPU_WRITE_ONLY fails!";
-    base::TerminateBecauseOutOfMemory(buffer_size);
-  }
-
-  shared_image_mapping.mapping = shared_memory_region.Map();
-  if (!shared_image_mapping.mapping.IsValid()) {
-    DLOG(ERROR) << "shared_memory_region.Map() for "
-                   "SHARED_IMAGE_USAGE_CPU_WRITE_ONLY fails!";
-    base::TerminateBecauseOutOfMemory(buffer_size);
-  }
-
+  base::WritableSharedMemoryMapping mapping;
   gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::SHARED_MEMORY_BUFFER;
-  handle.offset = 0;
-  handle.stride = static_cast<int32_t>(
-      gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
-  handle.region = std::move(shared_memory_region);
+  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
 
   auto mailbox = Mailbox::Generate();
   {
@@ -429,6 +396,8 @@ GpuChannelSharedImageInterface::CreateSharedImage(
                     /*sync_token_fences=*/{},
                     MakeSyncToken(next_fence_sync_release_++));
   }
+  SharedImageInterface::SharedImageMapping shared_image_mapping;
+  shared_image_mapping.mapping = std::move(mapping);
   shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info.meta, GenVerifiedSyncToken(), holder_,
       gfx::SHARED_MEMORY_BUFFER);
