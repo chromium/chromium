@@ -27,13 +27,13 @@ class ScopedMappingSharedMemoryMapping
     : public ClientSharedImage::ScopedMapping {
  public:
   ScopedMappingSharedMemoryMapping(SharedImageMetadata metadata,
-                                   base::WritableSharedMemoryMapping mapping)
-      : metadata_(metadata), mapping_(std::move(mapping)) {}
+                                   base::WritableSharedMemoryMapping* mapping)
+      : metadata_(metadata), mapping_(mapping) {}
   ~ScopedMappingSharedMemoryMapping() override = default;
 
   // ClientSharedImage::ScopedMapping:
   base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
-    CHECK(mapping_.IsValid());
+    CHECK(mapping_->IsValid());
     CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
 
     size_t height_in_pixels;
@@ -45,7 +45,7 @@ class ScopedMappingSharedMemoryMapping
     // that mapping guarantee that it contains at least `span_length` bytes
     // beyond the start of the plane.
     return UNSAFE_BUFFERS(base::span<uint8_t>(
-        static_cast<uint8_t*>(mapping_.memory()) +
+        static_cast<uint8_t*>(mapping_->memory()) +
             gfx::BufferOffsetForBufferFormat(Size(), Format(), plane_index),
         span_length));
   }
@@ -68,7 +68,7 @@ class ScopedMappingSharedMemoryMapping
 
  private:
   SharedImageMetadata metadata_;
-  base::WritableSharedMemoryMapping mapping_;
+  raw_ptr<base::WritableSharedMemoryMapping> mapping_;
 };
 
 class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
@@ -229,9 +229,8 @@ uint32_t ComputeTextureTargetForSharedImage(
 std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(
     SharedImageMetadata metadata,
-    base::WritableSharedMemoryMapping mapping) {
-  return std::make_unique<ScopedMappingSharedMemoryMapping>(metadata,
-                                                            std::move(mapping));
+    base::WritableSharedMemoryMapping* mapping) {
+  return std::make_unique<ScopedMappingSharedMemoryMapping>(metadata, mapping);
 }
 
 // static
@@ -290,6 +289,20 @@ ClientSharedImage::ClientSharedImage(
   CHECK(sii_holder_);
   texture_target_ = ComputeTextureTargetForSharedImage(metadata_, gmb_type,
                                                        sii_holder_->Get());
+}
+
+ClientSharedImage::ClientSharedImage(
+    const Mailbox& mailbox,
+    const SharedImageMetadata& metadata,
+    const SyncToken& sync_token,
+    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+    base::WritableSharedMemoryMapping mapping)
+    : ClientSharedImage(mailbox,
+                        metadata,
+                        sync_token,
+                        sii_holder,
+                        gfx::SHARED_MEMORY_BUFFER) {
+  shared_memory_mapping_ = std::move(mapping);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -372,8 +385,14 @@ ClientSharedImage::~ClientSharedImage() {
 }
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
-  auto scoped_mapping = ScopedMapping::Create(gpu_memory_buffer_.get(),
-                                              /*is_already_mapped=*/false);
+  std::unique_ptr<ClientSharedImage::ScopedMapping> scoped_mapping;
+  if (shared_memory_mapping_.IsValid()) {
+    scoped_mapping = ScopedMapping::Create(metadata_, &shared_memory_mapping_);
+  } else {
+    scoped_mapping = ScopedMapping::Create(gpu_memory_buffer_.get(),
+                                           /*is_already_mapped=*/false);
+  }
+
   if (!scoped_mapping) {
     LOG(ERROR) << "Unable to create ScopedMapping";
   }

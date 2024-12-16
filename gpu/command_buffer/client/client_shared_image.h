@@ -88,7 +88,7 @@ class GPU_EXPORT ClientSharedImage
 
     static std::unique_ptr<ScopedMapping> Create(
         SharedImageMetadata metadata_,
-        base::WritableSharedMemoryMapping mapping);
+        base::WritableSharedMemoryMapping* mapping);
     static std::unique_ptr<ScopedMapping> Create(
         gfx::GpuMemoryBuffer* gpu_memory_buffer,
         bool is_already_mapped);
@@ -107,6 +107,13 @@ class GPU_EXPORT ClientSharedImage
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
                     gfx::GpuMemoryBufferType gmb_type);
+
+  // `sii_holder` must not be null.
+  ClientSharedImage(const Mailbox& mailbox,
+                    const SharedImageMetadata& metadata,
+                    const SyncToken& sync_token,
+                    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+                    base::WritableSharedMemoryMapping mapping);
 
   // `sii_holder` must not be null. |shared_memory_pool| can be null and is only
   // used on windows platform.
@@ -338,6 +345,7 @@ class GPU_EXPORT ClientSharedImage
   // Helper to hold the instance of GpuMemoryBufferManager.
   std::unique_ptr<HelperGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
   std::optional<gfx::BufferUsage> buffer_usage_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
 
