@@ -36,11 +36,6 @@ class LargestContentfulPaintTestBrowserTest
     return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "ExposeRenderTimeNonTaoDelayedImage");
-  }
-
   EvalJsResult GetStartTime(std::string type) const {
     std::string script = content::JsReplace("getStartTime($1);", type);
     return EvalJs(shell(), script);

@@ -1438,27 +1438,6 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "owners": [
-      "haoliuk@chromium.org"
-    ],
-    "prefix": "expose-lcp-render-time",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/largest-contentful-paint/non-tao-image-load-after-fcp.tentative.html",
-      "external/wpt/largest-contentful-paint/non-tao-image-load-before-fcp-render-after.tentative.html",
-      "external/wpt/largest-contentful-paint/non-tao-image-load-before-fcp-render-at-fcp.tentative.html",
-      "external/wpt/largest-contentful-paint/non-tao-image-subsequent-lcp-candidate.tentative.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-blink-features=ExposeRenderTimeNonTaoDelayedImage"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "parakeet",
     "owners": ["brandm@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],

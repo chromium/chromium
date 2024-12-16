@@ -5756,12 +5756,6 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/largest-contentful-paint/multiple
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
 
-# These tests should be removed once we enable the flag
-crbug.com/373263977 virtual/expose-lcp-render-time/external/wpt/largest-contentful-paint/non-tao-image-load-after-fcp.tentative.html [ Failure Pass ]
-crbug.com/373263977 virtual/expose-lcp-render-time/external/wpt/largest-contentful-paint/non-tao-image-load-before-fcp-render-after.tentative.html [ Failure Pass ]
-crbug.com/373263977 virtual/expose-lcp-render-time/external/wpt/largest-contentful-paint/non-tao-image-load-before-fcp-render-at-fcp.tentative.html [ Failure Pass ]
-crbug.com/373263977 virtual/expose-lcp-render-time/external/wpt/largest-contentful-paint/non-tao-image-subsequent-lcp-candidate.tentative.html [ Failure Pass ]
-
 # mac-arm CI 10-05-2021
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
