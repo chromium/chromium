@@ -9085,6 +9085,7 @@ test("unit_tests") {
       deps += [
         "//components/dbus",
         "//dbus:test_support",
+        "//ui/base/accelerators/global_accelerator_listener",
         "//ui/linux:test_support",
       ]
     }

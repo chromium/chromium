@@ -4,102 +4,117 @@
 
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 
+#include <algorithm>
+
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "base/feature_list.h"
+#include "chrome/browser/extensions/global_shortcut_listener_linux.h"
+#endif
 
 using content::BrowserThread;
 
 namespace extensions {
 
-GlobalShortcutListener::GlobalShortcutListener()
-    : shortcut_handling_suspended_(false) {
+namespace {
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+BASE_FEATURE(kGlobalShortcutsPortal,
+             "GlobalShortcutsPortal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+}  // namespace
+
+// static
+GlobalShortcutListener* GlobalShortcutListener::GetInstance() {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  static GlobalShortcutListener* instance =
+      new GlobalShortcutListener(ui::GlobalAcceleratorListener::GetInstance());
+  if (instance) {
+    return instance;
+  }
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  if (base::FeatureList::IsEnabled(kGlobalShortcutsPortal)) {
+    static GlobalShortcutListenerLinux* linux_instance =
+        new GlobalShortcutListenerLinux(
+            ui::GlobalAcceleratorListener::GetInstance(), nullptr);
+    return linux_instance;
+  }
+#endif
+  return nullptr;
+}
+
+GlobalShortcutListener::GlobalShortcutListener(
+    ui::GlobalAcceleratorListener* global_accelerator_listener)
+    : global_accelerator_listener_(global_accelerator_listener) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 }
 
-GlobalShortcutListener::~GlobalShortcutListener() {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  DCHECK(accelerator_map_.empty());  // Make sure we've cleaned up.
-}
+GlobalShortcutListener::~GlobalShortcutListener() = default;
 
 bool GlobalShortcutListener::RegisterAccelerator(
-    const ui::Accelerator& accelerator, Observer* observer) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  if (IsShortcutHandlingSuspended())
-    return false;
-
-  AcceleratorMap::const_iterator it = accelerator_map_.find(accelerator);
-  if (it != accelerator_map_.end()) {
-    // The accelerator has been registered.
+    const ui::Accelerator& accelerator,
+    Observer* observer) {
+  if (IsShortcutHandlingSuspended()) {
     return false;
   }
 
-  if (!RegisterAcceleratorImpl(accelerator)) {
-    // If the platform-specific registration fails, mostly likely the shortcut
-    // has been registered by other native applications.
-    return false;
-  }
-
-  if (accelerator_map_.empty())
-    StartListening();
-
-  accelerator_map_[accelerator] = observer;
-  return true;
+  accelerators_.push_back(accelerator);
+  return global_accelerator_listener_->RegisterAccelerator(accelerator,
+                                                           observer);
 }
 
 void GlobalShortcutListener::UnregisterAccelerator(
-    const ui::Accelerator& accelerator, Observer* observer) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  if (IsShortcutHandlingSuspended())
+    const ui::Accelerator& accelerator,
+    Observer* observer) {
+  if (IsShortcutHandlingSuspended()) {
     return;
+  }
 
-  auto it = accelerator_map_.find(accelerator);
-  // We should never get asked to unregister something that we didn't register.
-  CHECK(it != accelerator_map_.end(), base::NotFatalUntil::M130);
-  // The caller should call this function with the right observer.
-  DCHECK(it->second == observer);
-
-  UnregisterAcceleratorImpl(accelerator);
-  accelerator_map_.erase(it);
-  if (accelerator_map_.empty())
-    StopListening();
+  global_accelerator_listener_->UnregisterAccelerator(accelerator, observer);
+  RemoveAccelerator(accelerator);
 }
 
 void GlobalShortcutListener::UnregisterAccelerators(Observer* observer) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  if (IsShortcutHandlingSuspended())
+  if (IsShortcutHandlingSuspended()) {
     return;
+  }
 
-  auto it = accelerator_map_.begin();
-  while (it != accelerator_map_.end()) {
-    if (it->second == observer) {
-      auto to_remove = it++;
-      UnregisterAccelerator(to_remove->first, observer);
-    } else {
-      ++it;
-    }
+  std::vector<ui::Accelerator> removed =
+      global_accelerator_listener_->UnregisterAccelerators(observer);
+  for (const ui::Accelerator& accelerator : removed) {
+    RemoveAccelerator(accelerator);
   }
 }
 
 void GlobalShortcutListener::SetShortcutHandlingSuspended(bool suspended) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  if (shortcut_handling_suspended_ == suspended)
+  if (shortcut_handling_suspended_ == suspended) {
     return;
+  }
 
   shortcut_handling_suspended_ = suspended;
-  for (auto it = accelerator_map_.begin(); it != accelerator_map_.end(); ++it) {
+  for (auto& accelerator : accelerators_) {
     // On Linux, when shortcut handling is suspended we cannot simply early
     // return in NotifyKeyPressed (similar to what we do for non-global
     // shortcuts) because we'd eat the keyboard event thereby preventing the
     // user from setting the shortcut. Therefore we must unregister while
     // handling is suspended and register when handling resumes.
-    if (shortcut_handling_suspended_)
-      UnregisterAcceleratorImpl(it->first);
-    else
-      RegisterAcceleratorImpl(it->first);
+    if (shortcut_handling_suspended_) {
+      global_accelerator_listener_->StopListeningForAccelerator(accelerator);
+    } else {
+      global_accelerator_listener_->StartListeningForAccelerator(accelerator);
+    }
   }
 }
 
@@ -117,16 +132,9 @@ void GlobalShortcutListener::OnCommandsChanged(
     const ui::CommandMap& commands,
     Observer* observer) {}
 
-void GlobalShortcutListener::NotifyKeyPressed(
+void GlobalShortcutListener::RemoveAccelerator(
     const ui::Accelerator& accelerator) {
-  auto iter = accelerator_map_.find(accelerator);
-  if (iter == accelerator_map_.end()) {
-    // This should never occur, because if it does, we have failed to unregister
-    // or failed to clean up the map after unregistering the shortcut.
-    NOTREACHED();
-  }
-
-  iter->second->OnKeyPressed(accelerator);
+  std::erase(accelerators_, accelerator);
 }
 
 }  // namespace extensions

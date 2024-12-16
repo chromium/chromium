@@ -14,6 +14,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
@@ -32,8 +33,9 @@ using DbusShortcut = DbusStruct<DbusString, DbusDictionary>;
 using DbusShortcuts = DbusArray<DbusShortcut>;
 
 GlobalShortcutListenerLinux::GlobalShortcutListenerLinux(
+    ui::GlobalAcceleratorListener* global_shortcut_listener,
     scoped_refptr<dbus::Bus> bus)
-    : bus_(std::move(bus)) {
+    : GlobalShortcutListener(global_shortcut_listener), bus_(std::move(bus)) {
   if (!bus_) {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SESSION;
@@ -117,21 +119,6 @@ void GlobalShortcutListenerLinux::CreateSession(SessionMapPair& pair) {
       MakeDbusDictionary("session_handle_token", DbusString(session_token)),
       base::BindOnce(&GlobalShortcutListenerLinux::OnCreateSession,
                      weak_ptr_factory_.GetWeakPtr(), session_key));
-}
-
-void GlobalShortcutListenerLinux::StartListening() {}
-
-void GlobalShortcutListenerLinux::StopListening() {}
-
-bool GlobalShortcutListenerLinux::RegisterAcceleratorImpl(
-    const ui::Accelerator& accelerator) {
-  // Shortcut registration is now handled in OnCommandsChanged()
-  return false;
-}
-
-void GlobalShortcutListenerLinux::UnregisterAcceleratorImpl(
-    const ui::Accelerator& accelerator) {
-  // Shortcut unregistration is now handled per extension
 }
 
 void GlobalShortcutListenerLinux::UnregisterAccelerators(Observer* observer) {

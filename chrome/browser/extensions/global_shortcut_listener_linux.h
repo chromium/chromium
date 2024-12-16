@@ -31,7 +31,9 @@ namespace extensions {
 // interface.
 class GlobalShortcutListenerLinux : public GlobalShortcutListener {
  public:
-  explicit GlobalShortcutListenerLinux(scoped_refptr<dbus::Bus> bus);
+  GlobalShortcutListenerLinux(
+      ui::GlobalAcceleratorListener* global_shortcut_listener,
+      scoped_refptr<dbus::Bus> bus);
 
   GlobalShortcutListenerLinux(const GlobalShortcutListenerLinux&) = delete;
   GlobalShortcutListenerLinux& operator=(const GlobalShortcutListenerLinux&) =
@@ -86,10 +88,6 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   using SessionMapPair = std::pair<SessionKey, std::unique_ptr<SessionContext>>;
 
   // GlobalShortcutListener:
-  void StartListening() override;
-  void StopListening() override;
-  bool RegisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
-  void UnregisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
   void UnregisterAccelerators(Observer* observer) override;
   bool IsRegistrationHandledExternally() const override;
   void OnCommandsChanged(const std::string& accelerator_group_id,

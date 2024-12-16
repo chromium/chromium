@@ -960,6 +960,7 @@ source_set("extensions") {
       "//ui/accessibility:ax_enums_mojo",
       "//ui/base",
       "//ui/base:ozone_buildflags",
+      "//ui/base/accelerators/global_accelerator_listener",
       "//ui/base/clipboard",
       "//ui/base/dragdrop/mojom:mojom_shared",
       "//ui/base/idle",
@@ -1352,21 +1353,11 @@ source_set("extensions") {
       }
     }
 
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-      sources += [
-        "global_shortcut_listener_ozone.cc",
-        "global_shortcut_listener_ozone.h",
-      ]
-    }
-
     if (is_mac) {
       sources += [
         "api/enterprise_reporting_private/keychain_data_helper_mac.cc",
         "api/enterprise_reporting_private/keychain_data_helper_mac.h",
         "api/image_writer_private/removable_storage_provider_mac.cc",
-        "global_shortcut_listener_mac.h",
-        "global_shortcut_listener_mac.mm",
         "system_display/display_info_provider_mac.cc",
         "system_display/display_info_provider_mac.h",
       ]
@@ -1401,8 +1392,6 @@ source_set("extensions") {
         "api/messaging/launch_context_win.cc",
         "external_registry_loader_win.cc",
         "external_registry_loader_win.h",
-        "global_shortcut_listener_win.cc",
-        "global_shortcut_listener_win.h",
         "system_display/display_info_provider_win.cc",
         "system_display/display_info_provider_win.h",
       ]
