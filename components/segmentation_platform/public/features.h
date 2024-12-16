@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+// Feature flags for the segmentation platform. Don't remove these feature flags.
 namespace segmentation_platform::features {
 
 // Core feature flag for segmentation platform.
