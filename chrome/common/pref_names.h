@@ -4258,20 +4258,22 @@ inline constexpr char kNSSCertsMigratedToServerCertDb[] =
 inline constexpr char kEnterpriseBadgingTemporarySetting[] =
     "temporary_setting.enterpise_badging";
 
-// Url to an image representing the enterprise logo.
-inline constexpr char kEnterpriseLogoUrl[] = "enterprise_logo.url";
+// Url to an image representing the enterprise logo for the browser.
+// This is saved to local state, and so used for browser policies only.
+inline constexpr char kEnterpriseLogoUrlForBrowser[] =
+    "enterprise_logo.url.for_browser";
 
-// Url to an image representing the enterprise logo for ta profile.
+// Url to an image representing the enterprise logo for a profile.
 // This is used for cloud user policies only.
 inline constexpr char kEnterpriseLogoUrlForProfile[] =
     "enterprise_logo.url.for_profile";
 
-// String value of the custom label for the entity managing the profile.
-inline constexpr char kEnterpriseCustomLabel[] =
-    "enterprise_label.custom_value";
+// String value of the custom label for the entity managing the browser.
+// This is saved to local state, and so used for browser policies only.
+inline constexpr char kEnterpriseCustomLabelForBrowser[] =
+    "enterprise_label.custom_value.for_browser";
 
-// String value of the enterprise label for the entity managing the profile
-// only.
+// String value of the enterprise label for the entity managing the profile.
 // This is used for cloud user policies only.
 inline constexpr char kEnterpriseCustomLabelForProfile[] =
     "enterprise_label.custom_value.for_profile";

@@ -397,7 +397,6 @@ std::u16string GetManagementPageSubtitle(Profile* profile) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetManagementBubbleTitle(Profile* profile) {
-  // TODO(347245819): Use EnterpriseCustomLabel for the managers.
   std::optional<std::string> device_manager = GetDeviceManagerIdentity();
 
   switch (GetManagementStringType(profile)) {
@@ -447,7 +446,7 @@ std::optional<std::string> GetDeviceManagerIdentity() {
     std::string custom_management_label =
         g_browser_process->local_state()
             ? g_browser_process->local_state()->GetString(
-                  prefs::kEnterpriseCustomLabel)
+                  prefs::kEnterpriseCustomLabelForBrowser)
             : std::string();
     if (!custom_management_label.empty()) {
       return custom_management_label;
@@ -482,7 +481,7 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   if (base::FeatureList::IsEnabled(
           features::kEnterpriseManagementDisclaimerUsesCustomLabel)) {
     std::string custom_management_label =
-        profile->GetPrefs()->GetString(prefs::kEnterpriseCustomLabel);
+        profile->GetPrefs()->GetString(prefs::kEnterpriseCustomLabelForProfile);
     if (!custom_management_label.empty()) {
       return custom_management_label;
     }

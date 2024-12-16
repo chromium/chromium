@@ -573,7 +573,7 @@ void ProfileMenuView::BuildIdentity() {
                                            base::UTF8ToUTF16(*account_manager))
               : std::u16string();
       if (auto* icon = policy::ManagementServiceFactory::GetForProfile(profile)
-                           ->GetManagementIcon()) {
+                           ->GetManagementIconForProfile()) {
         badge_image_model = *icon;
       } else {
         gfx::ImageSkia sized_icon = gfx::CreateVectorIcon(gfx::IconDescription(
@@ -837,7 +837,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
         l10n_util::GetStringUTF16(IDS_PROFILE_MENU_BROWSER_MANAGED_HEADER);
     ui::ImageModel* custom_management_image =
         policy::ManagementServiceFactory::GetForProfile(profile)
-            ->GetManagementIcon();
+            ->GetManagementIconForProfile();
     params.header_image =
         custom_management_image
             ? *custom_management_image

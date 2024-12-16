@@ -112,7 +112,7 @@ void ManagementService::RefreshCache(CacheRefreshCallback callback) {
   }
 }
 
-ui::ImageModel* ManagementService::GetManagementIcon() {
+ui::ImageModel* ManagementService::GetManagementIconForProfile() {
   return nullptr;
 }
 

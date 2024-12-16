@@ -111,7 +111,7 @@ class POLICY_EXPORT ManagementService {
   // until `callback` is called.
   virtual void RefreshCache(CacheRefreshCallback callback);
 
-  virtual ui::ImageModel* GetManagementIcon();
+  virtual ui::ImageModel* GetManagementIconForProfile();
 
   // Returns true if `authority` is are actively managed.
   bool HasManagementAuthority(EnterpriseManagementAuthority authority);
