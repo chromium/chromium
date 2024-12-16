@@ -871,9 +871,6 @@ class Browser : public TabStripModelObserver,
   web_app::AppBrowserController* GetAppBrowserController() override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
-#if BUILDFLAG(IS_CHROMEOS)
-  void EnsureActiveTab() override;
-#endif
 
   // Called by BrowserView when on active changes.
   void DidBecomeActive();

@@ -1255,28 +1255,6 @@ Browser* Browser::GetBrowserForMigrationOnly() {
   return this;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void Browser::EnsureActiveTab() {
-  if (GetActiveTabInterface()) {
-    return;
-  }
-  auto* app_browser_controller = GetAppBrowserController();
-
-  if (!app_browser_controller->HasReloadButton()) {
-    // Kiosk app not installed yet.
-    CHECK(app_browser_controller->IsInstalled());
-    CHECK_NE(TabStripModel::kNoTab, GetTabStripModel()->active_index());
-  }
-  if (app_browser_controller->IsHostedApp()) {
-    // Hosted app not installed yet.
-    CHECK(app_browser_controller->IsInstalled());
-    CHECK_NE(TabStripModel::kNoTab, GetTabStripModel()->active_index());
-  }
-  CHECK_NE(TabStripModel::kNoTab, GetTabStripModel()->active_index());
-  NOTREACHED();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
   did_become_active_callback_list_.Notify(this);
