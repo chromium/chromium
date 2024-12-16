@@ -38,10 +38,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
   void PlaceFlexItems(
       HeapVector<NGFlexLine>* flex_line_outputs,
       HeapVector<Member<LayoutBox>>* oof_children,
+      LayoutUnit* total_intrinsic_block_size,
       bool is_computing_multiline_column_intrinsic_size = false);
-
-  LayoutUnit CalculateTotalIntrinsicBlockSize(
-      const HeapVector<NGFlexLine>& flex_lines);
 
   bool DoesItemComputedCrossSizeHaveAuto(const BlockNode& child) const;
   bool DoesItemStretch(const BlockNode& child) const;
@@ -82,7 +80,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
   LayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
       HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs,
-      FlexBreakTokenData::FlexBreakBeforeRow* break_before_row);
+      FlexBreakTokenData::FlexBreakBeforeRow* break_before_row,
+      LayoutUnit* total_intrinsic_block_size);
   LayoutResult::EStatus PropagateFlexItemInfo(
       const FlexItem&,
       const PhysicalBoxFragment&,
@@ -102,6 +101,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   bool ShouldApplyAutoMinSize(const BlockNode&) const;
 
   void HandleOutOfFlowPositionedItems(
+      LayoutUnit total_intrinsic_block_size,
       HeapVector<Member<LayoutBox>>& oof_children);
 
   // Set reading flow so they can be accessed by LayoutBox.
@@ -219,10 +219,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // inside a fragmentation context. Otherwise, it will represent the intrinsic
   // block size for the entire flex container.
   LayoutUnit intrinsic_block_size_;
-  // The intrinsic block size for the entire flex container. When not
-  // fragmenting, |total_intrinsic_block_size| and |intrinsic_block_size_| will
-  // be equivalent.
-  LayoutUnit total_intrinsic_block_size_;
 
   // Only one early break is supported per container. However, we may need to
   // return to an early break within multiple flex columns. This stores the

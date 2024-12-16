@@ -334,6 +334,7 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
 }  // namespace
 
 void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
+    LayoutUnit total_intrinsic_block_size,
     HeapVector<Member<LayoutBox>>& oof_children) {
   if (oof_children.empty())
     return;
@@ -354,11 +355,11 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     should_process_block_end = !container_builder_.DidBreakSelf() &&
                                !container_builder_.ShouldBreakInside();
     if (should_process_block_end) {
-      // Recompute the total block size in case |total_intrinsic_block_size_|
+      // Recompute the total block size in case |total_intrinsic_block_size|
       // changed as a result of fragmentation.
       total_block_size_ = ComputeBlockSizeForFragment(
           GetConstraintSpace(), Node(), BorderPadding(),
-          total_intrinsic_block_size_, container_builder_.InlineSize());
+          total_intrinsic_block_size, container_builder_.InlineSize());
     } else {
       LayoutUnit center = total_block_size_ / 2;
       should_process_block_center = center - previous_consumed_block_size <=
@@ -1041,25 +1042,26 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   HeapVector<Member<LayoutBox>> oof_children;
   FlexBreakTokenData::FlexBreakBeforeRow break_before_row =
       FlexBreakTokenData::kNotBreakBeforeRow;
+  LayoutUnit total_intrinsic_block_size;
+
   ClearCollectionScope<HeapVector<NGFlexLine>> scope(&flex_line_outputs);
 
   if (IsBreakInside(GetBreakToken())) {
     const auto* flex_data =
         To<FlexBreakTokenData>(GetBreakToken()->TokenData());
-    total_intrinsic_block_size_ = flex_data->intrinsic_block_size;
+    total_intrinsic_block_size = flex_data->intrinsic_block_size;
     flex_line_outputs = flex_data->flex_lines;
     row_break_between_outputs = flex_data->row_break_between;
     break_before_row = flex_data->break_before_row;
     oof_children = flex_data->oof_children;
   } else {
-    PlaceFlexItems(&flex_line_outputs, &oof_children);
-    total_intrinsic_block_size_ =
-        CalculateTotalIntrinsicBlockSize(flex_line_outputs);
+    PlaceFlexItems(&flex_line_outputs, &oof_children,
+                   &total_intrinsic_block_size);
   }
 
   total_block_size_ = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Node(), BorderPadding(),
-      total_intrinsic_block_size_, container_builder_.InlineSize());
+      GetConstraintSpace(), Node(), BorderPadding(), total_intrinsic_block_size,
+      container_builder_.InlineSize());
 
   if (!IsBreakInside(GetBreakToken())) {
     ApplyReversals(&flex_line_outputs);
@@ -1082,14 +1084,15 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
         flex_line_outputs.empty() && Node().HasLineIfEmpty();
     if (use_empty_line_block_size) {
       intrinsic_block_size_ =
-          (total_intrinsic_block_size_ - BorderScrollbarPadding().block_end -
+          (total_intrinsic_block_size - BorderScrollbarPadding().block_end -
            previously_consumed_block_size)
               .ClampNegativeToZero();
     }
 
     LayoutResult::EStatus status =
         GiveItemsFinalPositionAndSizeForFragmentation(
-            &flex_line_outputs, &row_break_between_outputs, &break_before_row);
+            &flex_line_outputs, &row_break_between_outputs, &break_before_row,
+            &total_intrinsic_block_size);
     if (status != LayoutResult::kSuccess) {
       return container_builder_.Abort(status);
     }
@@ -1103,7 +1106,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
         previously_consumed_block_size + intrinsic_block_size_,
         container_builder_.InlineSize());
   } else {
-    intrinsic_block_size_ = total_intrinsic_block_size_;
+    intrinsic_block_size_ = total_intrinsic_block_size;
     block_size = total_block_size_;
   }
 
@@ -1135,7 +1138,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   }
 
   SetReadingFlowNodes(flex_line_outputs);
-  HandleOutOfFlowPositionedItems(oof_children);
+  HandleOutOfFlowPositionedItems(total_intrinsic_block_size, oof_children);
 
   // For rows, the break-before of the first row and the break-after of the
   // last row are propagated to the container. For columns, treat the set
@@ -1152,8 +1155,8 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<FlexBreakTokenData>(
             container_builder_.GetBreakTokenData(), flex_line_outputs,
-            row_break_between_outputs, oof_children,
-            total_intrinsic_block_size_, break_before_row));
+            row_break_between_outputs, oof_children, total_intrinsic_block_size,
+            break_before_row));
   }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
@@ -1167,6 +1170,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 void FlexLayoutAlgorithm::PlaceFlexItems(
     HeapVector<NGFlexLine>* flex_line_outputs,
     HeapVector<Member<LayoutBox>>* oof_children,
+    LayoutUnit* total_intrinsic_block_size,
     bool is_computing_multiline_column_intrinsic_size) {
   DCHECK(oof_children || is_computing_multiline_column_intrinsic_size);
   ConstructAndAppendFlexItems(is_computing_multiline_column_intrinsic_size
@@ -1183,6 +1187,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   // we use to flex all the lines to.
   const LayoutUnit main_axis_inner_size =
       MainAxisContentExtent(result.max_sum_hypothetical_main_size);
+
+  LayoutUnit sum_line_cross_size;
 
   flex_line_outputs->reserve(result.flex_lines.size());
   for (auto& line : result.flex_lines) {
@@ -1297,41 +1303,38 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       line_cross_size = std::max(line_cross_size, cross_axis_margin_size);
     }
     flex_line_outputs->back().main_axis_free_space = main_axis_free_space;
-    flex_line_outputs->back().sum_hypothetical_main_size =
-        line.sum_hypothetical_main_size;
     flex_line_outputs->back().main_axis_auto_margin_count =
         main_axis_auto_margin_count;
     flex_line_outputs->back().line_cross_size = line_cross_size;
     flex_line_outputs->back().major_baseline = max_major_ascent;
     flex_line_outputs->back().minor_baseline = max_minor_ascent;
-  }
-}
 
-LayoutUnit FlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
-    const HeapVector<NGFlexLine>& flex_lines) {
-  LayoutUnit size = BorderScrollbarPadding().BlockSum();
-
-  if (!flex_lines.empty()) {
-    if (is_column_) {
-      // Take the largest hypothetical main-size.
-      LayoutUnit max_size;
-      for (const auto& flex_line : flex_lines) {
-        max_size = std::max(max_size, flex_line.sum_hypothetical_main_size);
-      }
-      size += max_size;
-    } else {
-      // Add all the line cross-sizes, and the gaps between them.
-      for (const auto& flex_line : flex_lines) {
-        size += flex_line.line_cross_size;
-      }
-      size += (flex_lines.size() - 1) * gap_between_lines_;
-    }
-  } else if (Node().HasLineIfEmpty()) {
-    size += Node().EmptyLineBlockSize(GetBreakToken());
+    sum_line_cross_size += line_cross_size;
   }
 
-  return ClampIntrinsicBlockSize(GetConstraintSpace(), Node(), GetBreakToken(),
-                                 BorderScrollbarPadding(), size);
+  // Determine the intrinsic block-size if within the layout-pass.
+  if (total_intrinsic_block_size) {
+    *total_intrinsic_block_size = ([&]() {
+      LayoutUnit size = BorderScrollbarPadding().BlockSum();
+      if (!flex_line_outputs->empty()) {
+        if (is_column_) {
+          // Take the largest hypothetical main-size.
+          size += result.max_sum_hypothetical_main_size;
+        } else {
+          // Take the sum of all the line cross-sizes (and the gaps between
+          // them).
+          size += sum_line_cross_size;
+          size += (flex_line_outputs->size() - 1) * gap_between_lines_;
+        }
+      } else if (Node().HasLineIfEmpty()) {
+        size += Node().EmptyLineBlockSize(GetBreakToken());
+      }
+
+      return ClampIntrinsicBlockSize(GetConstraintSpace(), Node(),
+                                     GetBreakToken(), BorderScrollbarPadding(),
+                                     size);
+    })();
+  }
 }
 
 void FlexLayoutAlgorithm::ApplyReversals(
@@ -1740,7 +1743,8 @@ LayoutResult::EStatus
 FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     HeapVector<NGFlexLine>* flex_line_outputs,
     Vector<EBreakBetween>* row_break_between_outputs,
-    FlexBreakTokenData::FlexBreakBeforeRow* break_before_row) {
+    FlexBreakTokenData::FlexBreakBeforeRow* break_before_row,
+    LayoutUnit* total_intrinsic_block_size) {
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
   DCHECK(flex_line_outputs);
   DCHECK(row_break_between_outputs);
@@ -2268,8 +2272,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     container_builder_.SetLastBaseline(*last_baseline);
 
   // Update the |total_intrinsic_block_size_| in case things expanded.
-  total_intrinsic_block_size_ =
-      std::max(total_intrinsic_block_size_,
+  *total_intrinsic_block_size =
+      std::max(*total_intrinsic_block_size,
                intrinsic_block_size_ + previously_consumed_block_size);
 
   return status;
@@ -2337,6 +2341,7 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   // the farthest outer inline-end point of all the items.
   HeapVector<NGFlexLine> flex_line_outputs;
   PlaceFlexItems(&flex_line_outputs, /* oof_children */ nullptr,
+                 /* total_intrinsic_block_size */ nullptr,
                  /* is_computing_multiline_column_intrinsic_size */ true);
   min_max_sizes.min_size = largest_min_content_contribution_;
   if (!flex_line_outputs.empty()) {
