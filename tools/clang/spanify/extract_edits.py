@@ -240,9 +240,12 @@ def main():
         line = line.rstrip('\n\r')
         nodes = line.split('@')
 
-        # If there's only one node, it's a buffer node.
+        # Single nodes are buffer nodes; mark them as such.
         if len(nodes) == 1:
-            Node.from_string(nodes[0]).is_buffer = '1'
+            # `from_string()` has the side effect of making the node
+            # available in class member `Node.key_to_node`.
+            buffer_node = Node.from_string(nodes[0])
+            buffer_node.is_buffer = '1'
             continue
 
         # Else, parse the edge between two nodes:
