@@ -405,6 +405,18 @@ class GPU_EXPORT SharedImageInterface
   friend class base::RefCountedThreadSafe<SharedImageInterface>;
   virtual ~SharedImageInterface();
 
+  // Creates a WritableSharedMemoryRegion corresponding to the format/size
+  // passed in `si_info` and populates `mapping` and `handle` from the created
+  // shmem region. Fails if the shmem region cannot be created or mapped. For
+  // usage in implementing APIs that create mappable SharedImages without
+  // holding on to a handle on the client side for usage with the software
+  // compositor. As such, verifies that `si_info`'s usage is
+  // `SHARED_IMAGE_USAGE_CPU_WRITE_ONLY`.
+  static void CreateSharedMemoryRegionFromSIInfo(
+      const SharedImageInfo& si_info,
+      base::WritableSharedMemoryMapping& mapping,
+      gfx::GpuMemoryBufferHandle& handle);
+
   scoped_refptr<SharedImageInterfaceHolder> holder_;
 
  private:
