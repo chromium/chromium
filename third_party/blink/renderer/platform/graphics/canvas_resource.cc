@@ -311,7 +311,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
       },
       this);
   auto image = UnacceleratedStaticBitmapImage::Create(sk_image);
-  image->SetOriginClean(is_origin_clean_);
+  image->SetOriginClean(OriginClean());
   return image;
 }
 
