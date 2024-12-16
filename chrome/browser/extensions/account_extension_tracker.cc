@@ -110,13 +110,8 @@ BrowserContextKeyedServiceFactory* AccountExtensionTracker::GetFactory() {
 
 void AccountExtensionTracker::SetAccountExtensionTypeOnExtensionInstalled(
     const Extension& extension) {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  bool extension_sync_enabled =
-      sync_service && sync_service->GetUserSettings()->GetSelectedTypes().Has(
-                          syncer::UserSelectableType::kExtensions);
-  bool is_syncable_extension =
-      ExtensionSyncService::IsSyncableExtension(profile_, extension);
+  bool extension_sync_enabled = sync_util::IsSyncingExtensionsEnabled(profile_);
+  bool is_syncable_extension = sync_util::ShouldSync(profile_, &extension);
 
   // Set to `kAccountInstalledSignedIn` if this is a syncable extension (by
   // ExtensionSyncService) that was installed when a user is signed in and has

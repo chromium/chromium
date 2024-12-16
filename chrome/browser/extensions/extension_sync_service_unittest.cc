@@ -1913,9 +1913,11 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionSyncServiceTest {
 
 // Test that sync cannot enable blocklisted extensions.
 TEST_F(BlocklistedExtensionSyncServiceTest, SyncBlocklistedExtension) {
-  std::string& extension_id = this->extension_id();
+  // The extension should be syncable before being blocklisted.
+  EXPECT_TRUE(extensions::sync_util::ShouldSync(profile(), extension()));
 
   // Blocklist the extension.
+  std::string& extension_id = this->extension_id();
   test_blocklist().SetBlocklistState(extension_id,
                                      extensions::BLOCKLISTED_MALWARE, true);
   ForceBlocklistUpdate();
@@ -1926,6 +1928,9 @@ TEST_F(BlocklistedExtensionSyncServiceTest, SyncBlocklistedExtension) {
   // The extension should not be enabled.
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(extension_id));
   EXPECT_TRUE(processor()->changes().empty());
+
+  // Double check that the extension is not syncable.
+  EXPECT_FALSE(extensions::sync_util::ShouldSync(profile(), extension()));
 }
 
 // Test that some greylisted extensions can be enabled through sync.

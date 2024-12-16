@@ -14,6 +14,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
@@ -35,7 +36,9 @@ bool ShouldSync(content::BrowserContext* context, const Extension* extension) {
     return false;
   }
   return sync_helper::IsSyncable(extension) &&
-         !ExtensionPrefs::Get(context)->DoNotSync(extension->id());
+         !ExtensionPrefs::Get(context)->DoNotSync(extension->id()) &&
+         !extensions::blocklist_prefs::IsExtensionBlocklisted(
+             extension->id(), ExtensionPrefs::Get(context));
 }
 
 bool IsSyncingExtensionsEnabled(Profile* profile) {

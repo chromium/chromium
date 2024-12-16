@@ -137,17 +137,6 @@ ExtensionSyncService* ExtensionSyncService::Get(
   return ExtensionSyncServiceFactory::GetForBrowserContext(context);
 }
 
-// static
-bool ExtensionSyncService::IsSyncableExtension(
-    content::BrowserContext* browser_context,
-    const Extension& extension) {
-  // Themes are handled by the ThemeSyncableService.
-  return extensions::sync_util::ShouldSync(browser_context, &extension) &&
-         !extension.is_theme() &&
-         !extensions::blocklist_prefs::IsExtensionBlocklisted(
-             extension.id(), ExtensionPrefs::Get(browser_context));
-}
-
 void ExtensionSyncService::SyncExtensionChangeIfNeeded(
     const Extension& extension) {
   if (ignore_updates_ || !ShouldSync(extension)) {
@@ -694,5 +683,11 @@ bool ExtensionSyncService::ShouldSync(const Extension& extension) const {
     return false;
   }
 
-  return IsSyncableExtension(profile_, extension);
+  if (extension.is_theme()) {
+    // Themes are handled by the ThemeSyncableService.
+    return false;
+  }
+
+  // Otherwise, defer to the general extension sync calculation.
+  return extensions::sync_util::ShouldSync(profile_, &extension);
 }

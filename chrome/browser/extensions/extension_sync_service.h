@@ -51,12 +51,6 @@ class ExtensionSyncService : public syncer::SyncableService,
   // Convenience function to get the ExtensionSyncService for a BrowserContext.
   static ExtensionSyncService* Get(content::BrowserContext* context);
 
-  // Returns whether the given extension is eligible to be synced by this class.
-  // Filters out unsyncable extensions as well as themes (which are handled by
-  // ThemeSyncableService instead).
-  static bool IsSyncableExtension(content::BrowserContext* context,
-                                  const extensions::Extension& extension);
-
   // Notifies Sync (if needed) of a newly-installed extension or a change to
   // an existing extension. Call this when you change an extension setting that
   // is synced as part of ExtensionSyncData (e.g. incognito_enabled).
@@ -130,9 +124,7 @@ class ExtensionSyncService : public syncer::SyncableService,
       syncer::DataType type,
       std::vector<extensions::ExtensionSyncData>* sync_data_list) const;
 
-  // Returns if the given `extension` should be synced. This differs from
-  // `IsSyncableExtension` which checks if an extension is eligible to be synced
-  // by this class.
+  // Returns if the given `extension` should be synced by this class.
   bool ShouldSync(const extensions::Extension& extension) const;
 
   // The normal profile associated with this ExtensionSyncService.
