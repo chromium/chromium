@@ -732,16 +732,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Returns true if the LayoutObject is rendered in the top layer or the layer
   // for view transitions. Such objects are rendered as subsequent siblings of
   // the root element box and have specific stacking requirements.
-  bool IsInTopOrViewTransitionLayer() const {
-    NOT_DESTROYED();
-    if (IsViewTransitionRoot()) {
-      return true;
-    }
-    if (Element* element = DynamicTo<Element>(GetNode())) {
-      return StyleRef().IsRenderedInTopLayer(*element);
-    }
-    return false;
-  }
+  bool IsInTopOrViewTransitionLayer() const;
 
   void NotifyPriorityScrollAnchorStatusChanged();
 

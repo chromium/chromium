@@ -1064,5 +1064,37 @@ TEST_F(AIPageContentAgentTest, Links) {
             mojom::blink::AIPageContentAnchorRel::kRelationNoReferrer);
 }
 
+TEST_F(AIPageContentAgentTest, TopLayerContainer) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <dialog id='welcomeDialog' style='position: absolute; overflow: "
+      "visible;'>"
+      "    This is a dialog."
+      "  </dialog>"
+      "  <script>"
+      "    const dialog = document.getElementById('welcomeDialog');"
+      "    dialog.showModal();"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& dialog = root.children_nodes.at(0);
+  EXPECT_EQ(dialog->content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  EXPECT_TRUE(dialog->children_nodes.empty());
+}
+
 }  // namespace
 }  // namespace blink

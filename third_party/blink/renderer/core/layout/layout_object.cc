@@ -758,6 +758,17 @@ void LayoutObject::RemoveChild(LayoutObject* old_child) {
   children->RemoveChildNode(this, old_child);
 }
 
+bool LayoutObject::IsInTopOrViewTransitionLayer() const {
+  NOT_DESTROYED();
+  if (IsViewTransitionRoot()) {
+    return true;
+  }
+  if (Element* element = DynamicTo<Element>(GetNode())) {
+    return StyleRef().IsRenderedInTopLayer(*element);
+  }
+  return false;
+}
+
 void LayoutObject::NotifyPriorityScrollAnchorStatusChanged() {
   NOT_DESTROYED();
   if (!Parent())

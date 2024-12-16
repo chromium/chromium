@@ -109,6 +109,26 @@ const LayoutIFrame* GetIFrame(const LayoutObject& object) {
   return DynamicTo<LayoutIFrame>(object);
 }
 
+bool IsGenericContainer(const LayoutObject& object) {
+  if (object.Style()->GetPosition() == EPosition::kFixed) {
+    return true;
+  }
+
+  if (object.Style()->GetPosition() == EPosition::kSticky) {
+    return true;
+  }
+
+  if (object.Style()->ScrollsOverflow()) {
+    return true;
+  }
+
+  if (object.IsInTopOrViewTransitionLayer()) {
+    return true;
+  }
+
+  return false;
+}
+
 std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
     const LayoutObject& object) {
   if (GetIFrame(object)) {
@@ -199,12 +219,8 @@ std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
 
   // TODO: Add FormData for attribute_type = FORM.
 
-  // If an object is fixed or sticky position or scrolls, set it as its own
-  // container. Keep container at the bottom of the list as it is the least
-  // specific.
-  if (object.Style()->GetPosition() == EPosition::kFixed ||
-      object.Style()->GetPosition() == EPosition::kSticky ||
-      object.Style()->ScrollsOverflow()) {
+  // Keep container at the bottom of the list as it is the least specific.
+  if (IsGenericContainer(object)) {
     return mojom::blink::AIPageContentAttributeType::kContainer;
   }
 
