@@ -60,14 +60,12 @@ static bool g_ignore_window_activation_for_testing = false;
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
-      content::WebContentsUserData<SaveCardBubbleControllerImpl>(
-          *web_contents) {
-  personal_data_manager_ = PersonalDataManagerFactory::GetForBrowserContext(
-      web_contents->GetBrowserContext());
-
-  sync_service_ = SyncServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-}
+      content::WebContentsUserData<SaveCardBubbleControllerImpl>(*web_contents),
+      payments_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
+                                 web_contents->GetBrowserContext())
+                                 ->payments_data_manager()),
+      sync_service_(SyncServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
 
 SaveCardBubbleControllerImpl::~SaveCardBubbleControllerImpl() = default;
 
@@ -338,15 +336,9 @@ AccountInfo SaveCardBubbleControllerImpl::GetAccountInfo() {
   if (!identity_manager) {
     return AccountInfo();
   }
-  PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForBrowserContext(profile);
-  if (!personal_data_manager) {
-    return AccountInfo();
-  }
 
   return identity_manager->FindExtendedAccountInfo(
-      personal_data_manager->payments_data_manager()
-          .GetAccountInfoForPaymentsServer());
+      payments_data_manager_->GetAccountInfoForPaymentsServer());
 }
 
 Profile* SaveCardBubbleControllerImpl::GetProfile() const {
@@ -381,8 +373,7 @@ bool SaveCardBubbleControllerImpl::ShouldRequestExpirationDateFromUser() const {
 
 ui::ImageModel SaveCardBubbleControllerImpl::GetCreditCardImage() const {
   const gfx::Image* const card_art_image =
-      personal_data_manager_->payments_data_manager()
-          .GetCachedCardArtImageForUrl(card_.card_art_url());
+      payments_data_manager_->GetCachedCardArtImageForUrl(card_.card_art_url());
   return ui::ImageModel::FromImage(
       card_art_image ? *card_art_image
                      : ui::ResourceBundle::GetSharedInstance().GetImageNamed(
@@ -420,12 +411,9 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       autofill_metrics::LogSaveCardPromptResultMetric(
           autofill_metrics::SaveCardPromptResult::kAccepted, is_upload_save_,
           is_reshow_, options_,
-          personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics(),
+          payments_data_manager_->GetPaymentsSigninStateForMetrics(),
           /*has_saved_cards=*/
-          !personal_data_manager_->payments_data_manager()
-               .GetCreditCards()
-               .empty());
+          !payments_data_manager_->GetCreditCards().empty());
       autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
           /*is_shown=*/true);
       current_bubble_type_ = BubbleType::UPLOAD_IN_PROGRESS;
@@ -532,12 +520,9 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     case BubbleType::UPLOAD_SAVE:
       autofill_metrics::LogSaveCardPromptResultMetric(
           get_metric(closed_reason), is_upload_save_, is_reshow_, options_,
-          personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics(),
+          payments_data_manager_->GetPaymentsSigninStateForMetrics(),
           /*has_saved_cards=*/
-          !personal_data_manager_->payments_data_manager()
-               .GetCreditCards()
-               .empty());
+          !payments_data_manager_->GetCreditCards().empty());
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
       autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
@@ -641,8 +626,7 @@ bool SaveCardBubbleControllerImpl::
     IsPaymentsSyncTransportEnabledWithoutSyncFeature() const {
   // TODO(crbug.com/40067296): Migrate away from IsSyncFeatureEnabled() when the
   // API returns false on desktop.
-  return personal_data_manager_->payments_data_manager()
-             .IsPaymentsDownloadActive() &&
+  return payments_data_manager_->IsPaymentsDownloadActive() &&
          !sync_service_->IsSyncFeatureEnabled();
 }
 
@@ -761,8 +745,7 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
           is_reshow_, options_,
-          personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics());
+          payments_data_manager_->GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::UPLOAD_CVC_SAVE:
     case BubbleType::LOCAL_CVC_SAVE:
@@ -825,8 +808,7 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
           is_upload_save_, is_reshow_, options_,
-          personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics());
+          payments_data_manager_->GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::UPLOAD_CVC_SAVE:
     case BubbleType::LOCAL_CVC_SAVE:
