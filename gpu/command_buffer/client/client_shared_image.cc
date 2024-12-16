@@ -23,6 +23,54 @@ namespace gpu {
 
 namespace {
 
+class ScopedMappingSharedMemoryMapping
+    : public ClientSharedImage::ScopedMapping {
+ public:
+  ScopedMappingSharedMemoryMapping(SharedImageMetadata metadata,
+                                   base::WritableSharedMemoryMapping mapping)
+      : metadata_(metadata), mapping_(std::move(mapping)) {}
+  ~ScopedMappingSharedMemoryMapping() override = default;
+
+  // ClientSharedImage::ScopedMapping:
+  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
+    CHECK(mapping_.IsValid());
+    CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
+
+    size_t height_in_pixels;
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(
+        Size().height(), Format(), plane_index, &height_in_pixels));
+    size_t span_length = Stride(plane_index) * height_in_pixels;
+
+    // SAFETY: The validity of the mapping combined with the construction of
+    // that mapping guarantee that it contains at least `span_length` bytes
+    // beyond the start of the plane.
+    return UNSAFE_BUFFERS(base::span<uint8_t>(
+        static_cast<uint8_t*>(mapping_.memory()) +
+            gfx::BufferOffsetForBufferFormat(Size(), Format(), plane_index),
+        span_length));
+  }
+  size_t Stride(const uint32_t plane_index) override {
+    CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
+    return gfx::RowSizeForBufferFormat(Size().width(), Format(), plane_index);
+  }
+  gfx::Size Size() override { return metadata_.size; }
+  gfx::BufferFormat Format() override {
+    return viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format);
+  }
+  bool IsSharedMemory() override { return true; }
+  void OnMemoryDump(
+      base::trace_event::ProcessMemoryDump* pmd,
+      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+      uint64_t tracing_process_id,
+      int importance) override {
+    NOTREACHED();
+  }
+
+ private:
+  SharedImageMetadata metadata_;
+  base::WritableSharedMemoryMapping mapping_;
+};
+
 class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
  public:
   ScopedMappingGpuMemoryBuffer() = default;
@@ -176,6 +224,15 @@ uint32_t ComputeTextureTargetForSharedImage(
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<ClientSharedImage::ScopedMapping>
+ClientSharedImage::ScopedMapping::Create(
+    SharedImageMetadata metadata,
+    base::WritableSharedMemoryMapping mapping) {
+  return std::make_unique<ScopedMappingSharedMemoryMapping>(metadata,
+                                                            std::move(mapping));
+}
 
 // static
 std::unique_ptr<ClientSharedImage::ScopedMapping>

@@ -87,6 +87,9 @@ class GPU_EXPORT ClientSharedImage
     friend class ClientSharedImage;
 
     static std::unique_ptr<ScopedMapping> Create(
+        SharedImageMetadata metadata_,
+        base::WritableSharedMemoryMapping mapping);
+    static std::unique_ptr<ScopedMapping> Create(
         gfx::GpuMemoryBuffer* gpu_memory_buffer,
         bool is_already_mapped);
     static void StartCreateAsync(
