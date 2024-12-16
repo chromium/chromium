@@ -83,7 +83,6 @@ public class TabUiThemeUtil {
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param foreground Whether the tab is in the foreground.
-     * @param isReordering Whether the tab is being reordered.
      * @param isPlaceholder Whether the tab is a placeholder "ghost" tab.
      * @param isHovered Whether the tab is hovered on.
      * @return The color for the tab container.
@@ -93,7 +92,6 @@ public class TabUiThemeUtil {
             Context context,
             boolean isIncognito,
             boolean foreground,
-            boolean isReordering,
             boolean isPlaceholder,
             boolean isHovered) {
         if (foreground) {

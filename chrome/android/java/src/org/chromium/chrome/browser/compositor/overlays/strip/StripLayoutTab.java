@@ -157,7 +157,6 @@ public class StripLayoutTab extends StripLayoutView {
 
     private boolean mIsDying;
     private boolean mIsClosed;
-    private boolean mIsReordering;
     private boolean mIsDraggedOffStrip;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
@@ -341,15 +340,6 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * Marks if we are currently reordering this tab.
-     *
-     * @param isReordering Whether the tab is reordering.
-     */
-    public void setIsReordering(boolean isReordering) {
-        mIsReordering = isReordering;
-    }
-
-    /**
      * Marks if the tab has been dragged off the strip for drag and drop.
      *
      * @param isDraggedOffStrip Whether the tab is dragged off the strip.
@@ -433,7 +423,7 @@ public class StripLayoutTab extends StripLayoutView {
         // TODO(crbug.com/40888366): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
         return TabUiThemeUtil.getTabStripContainerColor(
-                mContext, isIncognito(), foreground, mIsReordering, mIsPlaceholder, hovered);
+                mContext, isIncognito(), foreground, mIsPlaceholder, hovered);
     }
 
     /**

@@ -248,7 +248,6 @@ public class StripTabDragShadowViewUnitTest {
                         mActivity,
                         incognito,
                         /* foreground= */ true,
-                        /* isReordering= */ false,
                         /* isPlaceholder= */ false,
                         /* isHovered= */ false);
         assertEquals(

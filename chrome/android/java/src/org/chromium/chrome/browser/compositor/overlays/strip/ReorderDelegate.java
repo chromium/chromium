@@ -151,11 +151,6 @@ public class ReorderDelegate {
     }
 
     void setInteractingTab(StripLayoutTab interactingTab) {
-        // Clear reordering state for previous interacting tab, if non-null.
-        if (mInteractingTab != null) mInteractingTab.setIsReordering(false);
-        // Set reordering state for newly interacting tab, if non-null.
-        if (interactingTab != null) interactingTab.setIsReordering(true);
-
         mInteractingTab = interactingTab;
     }
 
