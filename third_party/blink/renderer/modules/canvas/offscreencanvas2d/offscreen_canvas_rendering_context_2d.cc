@@ -355,10 +355,8 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     size_t row_bytes,
     int x,
     int y) {
-  if (!GetOrCreateCanvasResourceProvider())
-    return false;
+  DCHECK(IsCanvas2DBufferValid());
 
-  DCHECK(IsPaintable());
   Host()->FlushRecording(FlushReason::kWritePixels);
 
   // Short-circuit out if an error occurred while flushing the recording.
