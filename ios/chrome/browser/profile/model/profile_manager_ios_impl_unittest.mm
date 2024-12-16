@@ -309,6 +309,25 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync) {
   EXPECT_EQ(created_profile, loaded_profile);
 }
 
+// Tests that Profile marked for deletion does not create a new profile.
+TEST_F(ProfileManagerIOSImplTest, CreateProfile_MarkedForDeletion) {
+  // Create a few profiles synchronously.
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  // Check that the profiles are accessible.
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+
+  profile_manager().MarkProfileForDeletion(kProfileName2);
+  profile_manager().UnloadProfile(kProfileName2);
+
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+
+  // Ensures that the profile cannot be created.
+  ASSERT_FALSE(profile_manager().CreateProfile(kProfileName2));
+}
+
 // Tests that calling CreateProfileAsync(...) a second time returns the Profile
 // that has already been laoded.
 TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync_Reload) {

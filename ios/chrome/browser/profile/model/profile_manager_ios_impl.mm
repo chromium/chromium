@@ -466,9 +466,15 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     can_create &= CanCreateProfileWithName(name);
   }
 
+  // Profile creation is forbiden for profiles that have been marked for
+  // deletion.
+  const base::Value::List& profiles_to_remove =
+      local_state_->GetList(prefs::kProfilesToRemove);
+  const bool marked_for_deletion = base::Contains(profiles_to_remove, name);
+
   auto iter = profiles_map_.find(name);
   if (iter == profiles_map_.end()) {
-    if (is_new_profile && !can_create) {
+    if (marked_for_deletion || (is_new_profile && !can_create)) {
       if (!initialized_callback.is_null()) {
         std::move(initialized_callback).Run(nullptr);
       }
