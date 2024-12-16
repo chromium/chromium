@@ -43,6 +43,10 @@ class CollaborationMessagingObserver
       const CollaborationMessagingObserver&) = delete;
   ~CollaborationMessagingObserver() override;
 
+  // Testing-only method. Dispatch method as though it came from the
+  // backend service.
+  void DispatchMessageForTests(PersistentMessage message, bool display);
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
                            HandlesMessages);

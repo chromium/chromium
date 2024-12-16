@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
@@ -415,6 +416,10 @@ void LocationBarView::Init() {
       params.types_enabled.insert(params.types_enabled.begin(),
                                   PageActionIconType::kLensOverlay);
     }
+  }
+
+  if (browser_ && tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    params.types_enabled.push_back(PageActionIconType::kCollaborationMessaging);
   }
 
   if (browser_ && !is_popup_mode_) {

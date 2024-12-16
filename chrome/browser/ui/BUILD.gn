@@ -4674,6 +4674,8 @@ static_library("ui") {
       "views/tabs/alert_indicator_button.h",
       "views/tabs/browser_tab_strip_controller.cc",
       "views/tabs/browser_tab_strip_controller.h",
+      "views/tabs/collaboration_messaging_page_action_icon_view.cc",
+      "views/tabs/collaboration_messaging_page_action_icon_view.h",
       "views/tabs/color_picker_view.cc",
       "views/tabs/color_picker_view.h",
       "views/tabs/compound_tab_container.cc",

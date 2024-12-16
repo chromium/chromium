@@ -10980,6 +10980,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/side_panel/side_panel_interactive_uitest.cc",
         "../browser/ui/views/site_data/page_specific_site_data_dialog_interactive_uitest.cc",
         "../browser/ui/views/ssl_client_certificate_selector_browsertest.cc",
+        "../browser/ui/views/tabs/collaboration_messaging_page_action_icon_view_interactive_uitest.cc",
         "../browser/ui/views/tabs/tab_drag_controller_interactive_uitest.cc",
         "../browser/ui/views/tabs/tab_drag_controller_interactive_uitest.h",
         "../browser/ui/views/tabs/tab_hover_card_controller_interactive_uitest.cc",

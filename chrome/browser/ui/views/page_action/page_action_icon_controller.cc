@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
+#include "chrome/browser/ui/views/tabs/collaboration_messaging_page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/common/chrome_features.h"
@@ -276,6 +277,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<OptimizationGuideIconView>(
                       params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate, params.browser));
+        break;
+      case PageActionIconType::kCollaborationMessaging:
+        add_page_action_icon(
+            type, std::make_unique<CollaborationMessagingPageActionIconView>(
+                      params.browser, params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate));
         break;
     }
   }

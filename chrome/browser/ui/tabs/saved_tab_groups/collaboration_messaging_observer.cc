@@ -217,4 +217,12 @@ void CollaborationMessagingObserver::HidePersistentMessage(
   DispatchMessage(message, MessageDisplayStatus::kHide);
 }
 
+void CollaborationMessagingObserver::DispatchMessageForTests(
+    PersistentMessage message,
+    bool display) {
+  CHECK(tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups());
+  DispatchMessage(message, display ? MessageDisplayStatus::kDisplay
+                                   : MessageDisplayStatus::kHide);
+}
+
 }  // namespace tab_groups
