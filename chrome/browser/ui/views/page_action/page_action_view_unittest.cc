@@ -12,8 +12,10 @@
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/actions/actions.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/test/views_test_base.h"
 
 namespace page_actions {
 namespace {
@@ -30,13 +32,22 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
               (const, override));
 };
 
-class PageActionViewTest : public ::testing::Test {
+class PageActionViewTest : public views::ViewsTestBase {
  public:
   PageActionViewTest() = default;
 
   void SetUp() override {
+    views::ViewsTestBase::SetUp();
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(16, 16);
+    bitmap.eraseColor(SK_ColorRED);
+    gfx::ImageSkia test_image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+
     action_item_ = actions::ActionManager::Get().AddAction(
-        actions::ActionItem::Builder().SetActionId(0).Build());
+        actions::ActionItem::Builder()
+            .SetActionId(0)
+            .SetImage(ui::ImageModel::FromImage(gfx::Image(test_image)))
+            .Build());
     page_action_view_ = std::make_unique<PageActionView>(
         action_item_, &icon_label_view_delegate_);
     action_view_controller_ = std::make_unique<views::ActionViewController>();
@@ -45,6 +56,7 @@ class PageActionViewTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    views::ViewsTestBase::TearDown();
     action_view_controller_.reset();
     page_action_view_.reset();
     action_item_ = nullptr;
@@ -176,6 +188,44 @@ TEST_F(PageActionViewTest, NoActiveController) {
 
   view->OnNewActiveController(nullptr);
   EXPECT_FALSE(view->GetVisible());
+}
+
+// Test that OnThemeChanged updates the icon image correctly.
+TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
+  // Simulate OnThemeChanged.
+  page_action_view()->OnThemeChanged();
+
+  // Verify that UpdateIconImage is invoked and sets a valid image model.
+  gfx::ImageSkia image_model =
+      page_action_view()->GetImage(views::Button::STATE_NORMAL);
+  ASSERT_FALSE(image_model.isNull());
+}
+
+// Test that UpdateBorder adjusts the insets based on label visibility.
+TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
+  // Test case: Label visibility is true.
+  page_action_view()->SetShouldShowLabelForTesting(true);
+  gfx::Insets initial_insets = page_action_view()->GetInsets();
+
+  // Simulate UpdateBorder when label is visible.
+  page_action_view()->UpdateBorder();
+  gfx::Insets updated_insets_true = page_action_view()->GetInsets();
+
+  // Verify that insets are updated when the label is visible.
+  EXPECT_NE(initial_insets, updated_insets_true);
+
+  // Test case: Label visibility is false.
+  page_action_view()->SetShouldShowLabelForTesting(false);
+
+  // Simulate UpdateBorder when label is not visible.
+  page_action_view()->UpdateBorder();
+  gfx::Insets updated_insets_false = page_action_view()->GetInsets();
+
+  // Verify that insets remain unchanged when the label is not visible.
+  EXPECT_EQ(initial_insets, updated_insets_false);
+
+  // Verify that true and false cases result in different insets.
+  EXPECT_NE(updated_insets_true, updated_insets_false);
 }
 
 }  // namespace

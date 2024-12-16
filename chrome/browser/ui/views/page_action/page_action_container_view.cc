@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/views/page_action/page_action_constants.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/actions/action_view_controller.h"
 
 namespace page_actions {
@@ -18,6 +20,15 @@ PageActionContainerView::PageActionContainerView(
     const std::vector<actions::ActionItem*>& action_items,
     IconLabelBubbleView::Delegate* icon_view_delegate)
     : action_view_controller_(std::make_unique<views::ActionViewController>()) {
+  SetBetweenChildSpacing(kPageActionBetweenIconSpacing);
+
+  // Right align to clip the leftmost items first when not enough space.
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
+
+  // Ensure that the same spacing that applies to the children is applied
+  // between the PageActionIconContainerView and this container.
+  SetInsideBorderInsets(gfx::Insets().set_right(kPageActionBetweenIconSpacing));
+
   for (actions::ActionItem* action_item : action_items) {
     PageActionView* view = AddChildView(
         std::make_unique<PageActionView>(action_item, icon_view_delegate));

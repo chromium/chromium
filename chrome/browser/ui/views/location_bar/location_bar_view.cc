@@ -862,6 +862,8 @@ void LocationBarView::Layout(PassKey) {
 
   add_trailing_decoration(page_action_icon_container_,
                           /*intra_item_padding=*/0);
+  add_trailing_decoration(page_action_container_,
+                          /*intra_item_padding=*/0);
   for (ContentSettingImageView* view : base::Reversed(content_setting_views_)) {
     int intra_item_padding = kContentSettingIntraItemPadding;
     add_trailing_decoration(view, intra_item_padding);
@@ -1180,7 +1182,8 @@ int LocationBarView::GetMinimumLeadingWidth() const {
 }
 
 int LocationBarView::GetMinimumTrailingWidth() const {
-  int trailing_width = IncrementalMinimumWidth(page_action_icon_container_);
+  int trailing_width = IncrementalMinimumWidth(page_action_icon_container_) +
+                       IncrementalMinimumWidth(page_action_container_);
 
   for (ContentSettingImageView* content_setting_view : content_setting_views_) {
     trailing_width += IncrementalMinimumWidth(content_setting_view);

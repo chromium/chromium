@@ -101,12 +101,8 @@ class LensOverlayPageActionIconViewTest
     : public LensOverlayPageActionIconViewTestBase {
  public:
   LensOverlayPageActionIconViewTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            lens::features::kLensOverlay,
-            ::features::kPageActionsMigration,
-        },
-        {});
+    scoped_feature_list_.InitWithFeatures({lens::features::kLensOverlay},
+                                          {::features::kPageActionsMigration});
   }
 };
 
@@ -142,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   EXPECT_TRUE(focus_manager->GetFocusedView());
   run_loop.Run();
   EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_TRUE(page_action_view->GetVisible());
+  EXPECT_FALSE(page_action_view->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
@@ -175,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   EXPECT_TRUE(focus_manager->GetFocusedView());
   run_loop.Run();
   EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_TRUE(page_action_view->GetVisible());
+  EXPECT_FALSE(page_action_view->GetVisible());
 
   // Executing the lens overlay icon view with keyboard source should open a new
   // tab.
@@ -279,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   EXPECT_TRUE(focus_manager->GetFocusedView());
   run_loop.Run();
   EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_TRUE(page_action_view->GetVisible());
+  EXPECT_FALSE(page_action_view->GetVisible());
 
   // Disable the preference, the entrypoint should immediately disappear.
   browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
@@ -291,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
                                                true);
   EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_TRUE(page_action_view->GetVisible());
+  EXPECT_FALSE(page_action_view->GetVisible());
 }
 
 }  // namespace

@@ -7,6 +7,7 @@ assert(!is_android, "Page actions are for desktop platforms only")
 source_set("page_action") {
   public = [
     "action_ids.h",
+    "page_action_constants.h",
     "page_action_container_view.h",
     "page_action_controller.h",
     "page_action_model.h",

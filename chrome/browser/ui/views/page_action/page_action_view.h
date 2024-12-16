@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "ui/actions/actions.h"
+#include "ui/views/view.h"
 
 namespace page_actions {
 
@@ -37,9 +38,28 @@ class PageActionView : public IconLabelBubbleView,
   void OnPageActionModelChanged(PageActionModel* model) override;
   void OnPageActionModelWillBeDeleted(PageActionModel* model) override;
 
+  // IconLabelBubbleView
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
+  void OnThemeChanged() override;
+  void OnTouchUiChanged() override;
+  bool ShouldShowLabel() const override;
+  void UpdateBorder() override;
+  bool ShouldShowSeparator() const override;
+  bool ShouldUpdateInkDropOnClickCanceled() const override;
+
   actions::ActionId GetActionId() const;
 
+  void SetShouldShowLabelForTesting(bool should_show_label);
+
  private:
+  // The image associated with the `action_item_` size may be different from the
+  // size needed for the location bar page action icon. Therefore, we should to
+  // update the image size if needed.
+  void UpdateIconImage();
+
+  bool should_show_label_ = false;
+
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModel, PageActionModelObserver>
       observation_{this};
