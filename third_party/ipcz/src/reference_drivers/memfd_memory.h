@@ -5,6 +5,8 @@
 #ifndef IPCZ_SRC_REFERENCE_DRIVERS_MEMORY_H_
 #define IPCZ_SRC_REFERENCE_DRIVERS_MEMORY_H_
 
+#include <stdint.h>
+
 #include "reference_drivers/file_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 
