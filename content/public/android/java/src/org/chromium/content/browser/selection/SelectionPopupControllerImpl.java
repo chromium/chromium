@@ -58,7 +58,6 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
@@ -69,7 +68,6 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -986,16 +984,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             Menu menu,
             Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
             @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
-        boolean isSelectionMenuOrderCorrectionEnabled =
-                ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
         for (SelectionMenuGroup group : menuGroups) {
             addMenuItemsToActionMenu(
                     context,
                     group,
                     menu,
                     customMenuItemClickListeners,
-                    additionalMenuItemClickListener,
-                    isSelectionMenuOrderCorrectionEnabled);
+                    additionalMenuItemClickListener);
         }
     }
 
@@ -1009,8 +1004,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             SelectionMenuGroup group,
             Menu menu,
             Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
-            @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener,
-            boolean isSelectionMenuOrderCorrectionEnabled) {
+            @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
         // All menu items and groups are sorted already at this point, so this is just passing
         // 1-indexed value as order.
         int menuItemCount = menu.size();
@@ -1021,10 +1015,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 continue;
             }
             MenuItem menuItem =
-                    menu.add(group.id, item.id, isSelectionMenuOrderCorrectionEnabled
-                                            ? ++menuItemCount
-                                            : item.orderInCategory,
-                                    item.getTitle(context))
+                    menu.add(group.id, item.id, ++menuItemCount, item.getTitle(context))
                             .setShowAsActionFlags(item.showAsActionFlags);
             @Nullable Drawable icon = item.getIcon(context);
             if (icon != null) {
@@ -1117,11 +1108,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 SelectActionMenuHelper.getTextProcessingItems(
                         mContext, false, false, this::processText, mSelectionActionMenuDelegate);
         if (!textProcessingItems.items.isEmpty()) {
-            boolean isSelectionMenuOrderCorrectionEnabled =
-                    ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
             addMenuItemsToActionMenu(
-                    mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null,
-                    isSelectionMenuOrderCorrectionEnabled);
+                    mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null);
         }
     }
 

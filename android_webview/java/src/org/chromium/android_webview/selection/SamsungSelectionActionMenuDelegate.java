@@ -31,11 +31,9 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -249,9 +247,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     }
 
     public static boolean shouldUseSamsungMenuItemOrdering() {
-        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && isSamsungDevice()
-                && ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
+        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM && isSamsungDevice();
     }
 
     private static int getMenuItemOrder(@IdRes int id) {
@@ -279,8 +275,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         }
         if (!isSamsungDevice()
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                || Build.VERSION.SDK_INT > Build.VERSION_CODES.VANILLA_ICE_CREAM
-                || !ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)) {
+                || Build.VERSION.SDK_INT > Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             sIsManageAppsSupported = false;
             return false;
         }
@@ -373,7 +368,6 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
             @NonNull String selectedText, boolean isSelectionPassword) {
         return isSamsungDevice()
                 && Build.VERSION.SDK_INT == Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
                 && !selectedText.isEmpty()
                 && !isSelectionPassword
                 && SCAN_TEXT_ID != 0

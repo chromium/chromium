@@ -695,10 +695,6 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.BACK_FORWARD_CACHE_MEDIA_SESSION_SERVICE,
                 "Enables media session usage when bfcache is enabled"),
         Flag.baseFeature(
-                ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION,
-                "Enables text selection menu item modification based on "
-                        + "embedder implementation."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_AUTO_SAA,
                 "Enable auto granting storage access API requests. This will be done "
                         + "if a relationship is detected between the app and the website."),

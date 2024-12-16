@@ -1364,13 +1364,6 @@ BASE_FEATURE(kReduceGpuPriorityOnBackground,
              "ReduceGpuPriorityOnBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Apply text selection menu order correction logic for Android.
-// TODO(crbug.com/40947146) This is a kill switch landed in M122.
-// Please remove after M124.
-BASE_FEATURE(kSelectionMenuItemModification,
-             "SelectionMenuItemModification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Screen Capture API support for Android.
 // This should not be enabled unless ENABLE_SCREEN_CAPTURE is on, otherwise
 // it won't work.

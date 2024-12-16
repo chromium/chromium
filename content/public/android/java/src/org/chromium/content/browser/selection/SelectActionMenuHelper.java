@@ -31,13 +31,11 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.content.R;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionClient.Result;
 import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -233,8 +231,7 @@ public class SelectActionMenuHelper {
         menuItemBuilders.add(selectAll(delegate.canSelectAll()));
         menuItemBuilders.add(webSearch(context, delegate.canWebSearch()));
         menuItemBuilders.add(pasteAsPlainText(context, delegate.canPasteAsPlainText()));
-        if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
-                && selectionActionMenuDelegate != null) {
+        if (selectionActionMenuDelegate != null) {
             selectionActionMenuDelegate.modifyDefaultMenuItems(
                     menuItemBuilders, isSelectionPassword, isSelectionReadOnly, selectedText);
         }
@@ -323,8 +320,7 @@ public class SelectActionMenuHelper {
         }
         List<ResolveInfo> supportedActivities =
                 PackageManagerUtils.queryIntentActivities(createProcessTextIntent(), 0);
-        if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION) &&
-                selectionActionMenuDelegate != null) {
+        if (selectionActionMenuDelegate != null) {
             supportedActivities =
                     selectionActionMenuDelegate.filterTextProcessingActivities(supportedActivities);
         }
@@ -361,8 +357,7 @@ public class SelectActionMenuHelper {
     private static void addAdditionalTextProcessingItems(
             SelectionMenuGroup textProcessingItems,
             SelectionActionMenuDelegate selectionActionMenuDelegate) {
-        if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
-                && selectionActionMenuDelegate != null) {
+        if (selectionActionMenuDelegate != null) {
             textProcessingItems.addItems(
                     selectionActionMenuDelegate.getAdditionalTextProcessingItems());
         }
