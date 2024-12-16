@@ -693,11 +693,6 @@ BASE_FEATURE(kNotificationContentImage,
              "NotificationContentImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the notification trigger API.
-BASE_FEATURE(kNotificationTriggers,
-             "NotificationTriggers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature which holdbacks NoStatePrefetch on all surfaces.
 BASE_FEATURE(kNoStatePrefetchHoldback,
              "NoStatePrefetchHoldback",

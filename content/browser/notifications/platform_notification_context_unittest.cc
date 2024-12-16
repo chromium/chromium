@@ -14,14 +14,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -950,9 +948,6 @@ TEST_F(PlatformNotificationContextTest, WriteReadNotificationResources) {
 }
 
 TEST_F(PlatformNotificationContextTest, ReDisplayNotifications) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   PlatformNotificationService* service =
       browser_context()->GetPlatformNotificationService();
 
@@ -1003,9 +998,6 @@ TEST_F(PlatformNotificationContextTest, ReDisplayNotifications) {
 }
 
 TEST_F(PlatformNotificationContextTest, CountVisibleNotification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   PlatformNotificationService* service =
       browser_context()->GetPlatformNotificationService();
 

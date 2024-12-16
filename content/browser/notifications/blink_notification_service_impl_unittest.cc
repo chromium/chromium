@@ -794,9 +794,6 @@ TEST_F(BlinkNotificationServiceImplTest, GetNotificationsWithFilter) {
 }
 
 TEST_F(BlinkNotificationServiceImplTest, GetTriggeredNotificationsWithFilter) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
   scoped_refptr<ServiceWorkerRegistration> registration;
@@ -834,9 +831,6 @@ TEST_F(BlinkNotificationServiceImplTest, GetTriggeredNotificationsWithFilter) {
 }
 
 TEST_F(BlinkNotificationServiceImplTest, ResourcesStoredForTriggered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
   scoped_refptr<ServiceWorkerRegistration> registration;
@@ -886,9 +880,6 @@ TEST_F(BlinkNotificationServiceImplTest, ResourcesStoredForTriggered) {
 }
 
 TEST_F(BlinkNotificationServiceImplTest, NotCallingDisplayForTriggered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
   scoped_refptr<ServiceWorkerRegistration> registration;
@@ -909,9 +900,6 @@ TEST_F(BlinkNotificationServiceImplTest, NotCallingDisplayForTriggered) {
 }
 
 TEST_F(BlinkNotificationServiceImplTest, RejectsTriggerTimestampOverAYear) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   ASSERT_TRUE(bad_messages_.empty());
 
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
