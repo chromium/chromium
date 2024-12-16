@@ -95,8 +95,9 @@ New features should be designed to adhere to the "desired state" as closely as
 practical. However, it is currently not possible to implement all functionality
 in Ash according to that state:
 
-- Some functionality (e.g., the `Profile` class) is only available in
-  `//chrome`, and there is no clear alternative to use.
+- Some functionality (e.g., the `Profile` or `BrowserContext` classes) are only
+  available in `//chrome` or `//content`, and there are no clear alternatives
+  to use.
 
 - Legacy code still has significant `//chrome` dependencies and has not been
   migrated away from this state.
