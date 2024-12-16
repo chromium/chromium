@@ -61,9 +61,6 @@ AutofillTabHelper::AutofillTabHelper(web::WebState* web_state)
   autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
       profile_, web_state, infobar_manager, autofill_agent_);
 
-  autofill::AutofillDriverIOSFactory::CreateForWebState(
-      web_state, autofill_client_.get(), autofill_agent_);
-
   if (IsAutofillAcrossIframesEnabled()) {
     autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state)
         ->AddObserver(this);

@@ -395,9 +395,6 @@ void AutofillControllerTest::SetUp() {
       .get_alternative_state_name_map_updater_for_testing()
       ->set_local_state_for_testing(local_state());
 
-  autofill::AutofillDriverIOSFactory::CreateForWebState(
-      web_state(), autofill_client_.get(), autofill_agent_);
-
   autofill_manager_injector_ =
       std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
           web_state());

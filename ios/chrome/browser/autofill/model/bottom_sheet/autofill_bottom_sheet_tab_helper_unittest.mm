@@ -85,9 +85,6 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     // declaration order above `web_state_`.
     autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
         profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
-
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state_.get(), autofill_client_.get(), autofill_agent_);
   }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;

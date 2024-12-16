@@ -100,8 +100,6 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
     autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
         profile_.get(), web_state_.get(),
         InfoBarManagerImpl::FromWebState(web_state_.get()), autofill_agent);
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state_.get(), autofill_client_.get(), autofill_agent);
     autofill_manager_injector_ =
         std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
             web_state_.get());

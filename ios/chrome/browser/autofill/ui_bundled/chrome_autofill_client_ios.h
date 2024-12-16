@@ -25,6 +25,7 @@
 #import "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/plus_addresses/plus_address_types.h"
@@ -50,10 +51,11 @@ enum class SuggestionType;
 // Chrome iOS implementation of AutofillClient.
 class ChromeAutofillClientIOS : public AutofillClient {
  public:
-  ChromeAutofillClientIOS(ProfileIOS* profile,
-                          web::WebState* web_state,
-                          infobars::InfoBarManager* infobar_manager,
-                          id<AutofillClientIOSBridge> bridge);
+  ChromeAutofillClientIOS(
+      ProfileIOS* profile,
+      web::WebState* web_state,
+      infobars::InfoBarManager* infobar_manager,
+      id<AutofillClientIOSBridge, AutofillDriverIOSBridge> bridge);
 
   ChromeAutofillClientIOS(const ChromeAutofillClientIOS&) = delete;
   ChromeAutofillClientIOS& operator=(const ChromeAutofillClientIOS&) = delete;

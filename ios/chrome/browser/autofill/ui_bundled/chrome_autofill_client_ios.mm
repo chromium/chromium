@@ -84,7 +84,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
     ProfileIOS* profile,
     web::WebState* web_state,
     infobars::InfoBarManager* infobar_manager,
-    id<AutofillClientIOSBridge> bridge)
+    id<AutofillClientIOSBridge, AutofillDriverIOSBridge> bridge)
     : pref_service_(profile->GetPrefs()),
       sync_service_(SyncServiceFactory::GetForProfile(profile)),
       personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
@@ -98,7 +98,9 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile())),
       infobar_manager_(infobar_manager),
       log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
-      ablation_study_(GetApplicationContext()->GetLocalState()) {}
+      ablation_study_(GetApplicationContext()->GetLocalState()) {
+  AutofillDriverIOSFactory::CreateForWebState(web_state, this, bridge);
+}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
