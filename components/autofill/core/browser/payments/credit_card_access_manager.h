@@ -162,9 +162,6 @@ class CreditCardAccessManager
   void OnRiskBasedAuthenticationResponseReceived(
       const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
           response) override;
-  void OnVirtualCardRiskBasedAuthenticationResponseReceived(
-      payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::UnmaskResponseDetails& response_details) override;
 
  private:
   friend class CreditCardAccessManagerTestApi;
@@ -406,11 +403,6 @@ class CreditCardAccessManager
   // populated before an authentication is offered. It includes suggested
   // authentication methods and other information to facilitate card unmasking.
   payments::UnmaskDetails unmask_details_;
-
-  // Structs to store information passed to and fetched from the server for
-  // virtual card unmasking.
-  payments::UnmaskRequestDetails virtual_card_unmask_request_details_;
-  payments::UnmaskResponseDetails virtual_card_unmask_response_details_;
 
   // Struct to store response returned by CreditCardRiskBasedAuthenticator.
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse

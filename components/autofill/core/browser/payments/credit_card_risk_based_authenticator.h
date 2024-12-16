@@ -40,7 +40,10 @@ class CreditCardRiskBasedAuthenticator {
       kAuthenticationCancelled = 3,
       // The authentication failed. Also known as red path.
       kError = 4,
-      kMaxValue = kError,
+      // The retrieval failed for virtual card. This is different from kError
+      // to support virtual card specific failure logging.
+      kVirtualCardRetrievalError = 5,
+      kMaxValue = kVirtualCardRetrievalError,
     };
 
     RiskBasedAuthenticationResponse& with_result(Result r) {
@@ -77,6 +80,9 @@ class CreditCardRiskBasedAuthenticator {
     // Stores the latest version of the context token, passed between Payments
     // calls and unmodified by Chrome.
     std::string context_token;
+    // Available card unmask challenge options. This is populated when the card
+    // unmasking requires further authentication.
+    std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
   };
 
   class Requester {
@@ -84,13 +90,6 @@ class CreditCardRiskBasedAuthenticator {
     virtual ~Requester() = default;
     virtual void OnRiskBasedAuthenticationResponseReceived(
         const RiskBasedAuthenticationResponse& response) = 0;
-    // Callback function invoked when an unmask response for a virtual card has
-    // been received.
-    // TODO(crbug.com/40934051): Merge virtual card authentication response
-    // handling logic with OnRiskBasedAuthenticationResponseReceived().
-    virtual void OnVirtualCardRiskBasedAuthenticationResponseReceived(
-        payments::PaymentsAutofillClient::PaymentsRpcResult result,
-        const payments::UnmaskResponseDetails& response_details) = 0;
   };
 
   explicit CreditCardRiskBasedAuthenticator(AutofillClient* client);
@@ -130,6 +129,9 @@ class CreditCardRiskBasedAuthenticator {
   void OnUnmaskResponseReceived(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const payments::UnmaskResponseDetails& response_details);
+
+  // Util method to evaluate if server returned CVC should be used.
+  bool ShouldUseServerProvidedCvc(const CreditCard card);
 
   // Reset the authenticator to its initial state.
   virtual void Reset();

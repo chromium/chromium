@@ -371,8 +371,9 @@ void CreditCardAccessManagerTestBase::
   // unmasking flow.
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  // Mock server response with information regarding VCN auth.
-  payments::UnmaskResponseDetails response;
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
+  response.result = CreditCardRiskBasedAuthenticator::
+      RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
   response.context_token = "fake_context_token";
   response.card_unmask_challenge_options = challenge_options;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
@@ -380,9 +381,8 @@ void CreditCardAccessManagerTestBase::
     response.fido_request_options = GetTestRequestOptions();
   }
 #endif
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kSuccess, response);
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      response);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   // This if-statement ensures that fido-related flows run correctly.

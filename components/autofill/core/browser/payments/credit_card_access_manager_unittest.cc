@@ -1740,29 +1740,31 @@ TEST_F(CreditCardAccessManagerTest,
 
   const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard virtual_card = *masked_server_card;
-  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  CreditCard server_card = *masked_server_card;
+  server_card.set_record_type(CreditCard::RecordType::kVirtualCard);
 
-  FetchCreditCard(&virtual_card);
+  FetchCreditCard(&server_card);
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
   // unmasking flow.
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  // Mock server response with valid card information.
-  payments::UnmaskResponseDetails response;
-  response.real_pan = "4111111111111111";
-  response.dcvv = "321";
-  response.expiration_month = test::NextMonth();
-  response.expiration_year = test::NextYear();
-  response.card_type = PaymentsRpcCardType::kVirtualCard;
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kSuccess, response);
+
+  const CreditCard* virtual_card_enrolled_regular_card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+  CreditCard virtual_card = *virtual_card_enrolled_regular_card;
+  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  virtual_card.set_cvc(u"321");
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kNoAuthenticationRequired)
+          .with_card(virtual_card));
 
   // Ensure the accessor received the correct response.
-  EXPECT_EQ(accessor_->number(), u"4111111111111111");
+  EXPECT_EQ(accessor_->number(), u"4234567890123456");
   EXPECT_EQ(accessor_->cvc(), u"321");
   EXPECT_EQ(accessor_->expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
   EXPECT_EQ(accessor_->expiry_year(), base::UTF8ToUTF16(test::NextYear()));
@@ -1868,27 +1870,28 @@ TEST_F(CreditCardAccessManagerTest,
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   FetchCreditCard(&virtual_card);
 
-  // Mock server response with information regarding VCN auth.
-  payments::UnmaskResponseDetails response;
-  response.context_token = "fake_context_token";
-  response.card_unmask_challenge_options = test::GetCardUnmaskChallengeOptions(
-      {CardUnmaskChallengeOptionType::kThreeDomainSecure});
-
   EXPECT_CALL(*static_cast<payments::MockPaymentsWindowManager*>(
                   autofill_client_.GetPaymentsAutofillClient()
                       ->GetPaymentsWindowManager()),
               InitVcn3dsAuthentication)
       .Times(1)
       .WillOnce([&](payments::PaymentsWindowManager::Vcn3dsContext context) {
-        EXPECT_EQ(context.context_token, response.context_token);
+        EXPECT_EQ(context.context_token, "fake_context_token");
         EXPECT_EQ(context.card, virtual_card);
         EXPECT_EQ(context.challenge_option.type,
                   CardUnmaskChallengeOptionType::kThreeDomainSecure);
         EXPECT_FALSE(context.user_consent_already_given);
       });
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kSuccess, response);
+
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
+  response.context_token = "fake_context_token";
+  response.result = CreditCardRiskBasedAuthenticator::
+      RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
+  response.card_unmask_challenge_options = test::GetCardUnmaskChallengeOptions(
+      {CardUnmaskChallengeOptionType::kThreeDomainSecure});
+
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      response);
 
   // If VCN 3DS is the only challenge option returned, verify that flow type is
   // kThreeDomainSecure.
@@ -2124,13 +2127,14 @@ TEST_F(CreditCardAccessManagerTest,
   // unmasking flow.
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  // Mock server response with information regarding FIDO auth.
-  payments::UnmaskResponseDetails response;
-  response.context_token = "fake_context_token";
-  response.fido_request_options = GetTestRequestOptions();
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kSuccess, response);
+
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kAuthenticationRequired)
+          .with_fido_request_options(GetTestRequestOptions())
+          .with_context_token("fake_context_token"));
 
   // Expect the CreditCardAccessManager invokes the FIDO authenticator.
   ASSERT_TRUE(fido_authenticator().authenticate_invoked());
@@ -2186,16 +2190,17 @@ TEST_F(
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with information regarding both FIDO and OTP auth.
-  payments::UnmaskResponseDetails response;
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
   response.context_token = "fake_context_token";
   CardUnmaskChallengeOption challenge_option =
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kSmsOtp})[0];
   response.card_unmask_challenge_options.emplace_back(challenge_option);
   response.fido_request_options = GetTestRequestOptions();
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kSuccess, response);
+  response.result = CreditCardRiskBasedAuthenticator::
+      RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      response);
 
   // Expect the CreditCardAccessManager invokes the FIDO authenticator.
   ASSERT_TRUE(fido_authenticator().authenticate_invoked());
@@ -2309,13 +2314,14 @@ TEST_F(
   // unmasking flow.
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  // Mock server response with information regarding FIDO auth.
-  payments::UnmaskResponseDetails response;
-  response.context_token = "fake_context_token";
-  response.fido_request_options = GetTestRequestOptions();
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kSuccess, response);
+
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kAuthenticationRequired)
+          .with_fido_request_options(GetTestRequestOptions())
+          .with_context_token("fake_context_token"));
 
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
@@ -2357,12 +2363,12 @@ TEST_F(CreditCardAccessManagerTest,
   // unmasking flow.
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  // Mock server response with no challenge options.
-  payments::UnmaskResponseDetails response;
-  response.context_token = "fake_context_token";
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kPermanentFailure, response);
+
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::kError)
+          .with_context_token("fake_context_token"));
 
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
@@ -2402,11 +2408,12 @@ TEST_F(CreditCardAccessManagerTest,
   // unmasking flow.
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  // Mock server response with no challenge options.
-  payments::UnmaskResponseDetails response;
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kVcnRetrievalPermanentFailure, response);
+
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kVirtualCardRetrievalError));
 
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
@@ -2439,11 +2446,12 @@ TEST_F(CreditCardAccessManagerTest,
   autofill_error_dialog_context.server_returned_description =
       "test_server_returned_description";
 
-  payments::UnmaskResponseDetails response;
-  response.autofill_error_dialog_context = autofill_error_dialog_context;
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kVcnRetrievalTryAgainFailure, response);
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
+  response.error_dialog_context = autofill_error_dialog_context;
+  response.result = CreditCardRiskBasedAuthenticator::
+      RiskBasedAuthenticationResponse::Result::kVirtualCardRetrievalError;
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      response);
 
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->autofill_error_dialog_shown());

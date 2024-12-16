@@ -236,37 +236,38 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
                    CreditCard::RecordType::kVirtualCard);
-  const CreditCard* virtual_card =
+  const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().FetchCreditCard(
-      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                   accessor_->GetWeakPtr()));
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
   // unmasking flow.
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  // Mock server response with valid card information.
-  payments::UnmaskResponseDetails response;
-  response.real_pan = "4111111111111111";
-  response.dcvv = "321";
-  response.expiration_month = test::NextMonth();
-  response.expiration_year = test::NextYear();
-  response.card_type = PaymentsRpcCardType::kVirtualCard;
 
   // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
+  const CreditCard* virtual_card_enrolled_regular_card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+  CreditCard virtual_card = *virtual_card_enrolled_regular_card;
+  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  virtual_card.set_cvc(u"321");
   SetUpDeviceAuthenticatorResponseMock();
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kSuccess, response);
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kNoAuthenticationRequired)
+          .with_card(virtual_card));
 
   // Ensure the accessor received the correct response.
   if (!IsMandatoryReauthEnabled() || !HasAuthenticator() ||
       MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->number(), u"4111111111111111");
+    EXPECT_EQ(accessor_->number(), u"4234567890123456");
     EXPECT_EQ(accessor_->cvc(), u"321");
     EXPECT_EQ(accessor_->expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
     EXPECT_EQ(accessor_->expiry_year(), base::UTF8ToUTF16(test::NextYear()));

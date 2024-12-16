@@ -150,7 +150,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.ServerCard.Result.RiskBased",
-      autofill_metrics::ServerCardUnmaskResult::kUnexpectedError, 1);
+      autofill_metrics::ServerCardUnmaskResult::kAuthenticationError, 1);
 }
 
 // Ensures that the masked server card risk-based unmasking response is

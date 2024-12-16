@@ -7,7 +7,9 @@
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -34,6 +36,7 @@ CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::operator=(
   } else {
     fido_request_options = other.fido_request_options.Clone();
   }
+  card_unmask_challenge_options = other.card_unmask_challenge_options;
   context_token = other.context_token;
   return *this;
 }
@@ -116,32 +119,41 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     Reset();
     return;
   }
-  if (unmask_request_details_->card.record_type() ==
-      CreditCard::RecordType::kVirtualCard) {
-    requester_->OnVirtualCardRiskBasedAuthenticationResponseReceived(
-        result, response_details);
-    Reset();
-    return;
-  }
 
   RiskBasedAuthenticationResponse response;
+  CreditCard::RecordType record_type =
+      unmask_request_details_->card.record_type();
+  CHECK(record_type == CreditCard::RecordType::kMaskedServerCard ||
+        record_type == CreditCard::RecordType::kVirtualCard);
   if (result == PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
       // The Payments server indicates no further authentication is required.
       response.result =
           RiskBasedAuthenticationResponse::Result::kNoAuthenticationRequired;
       card_.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
-      card_.set_record_type(CreditCard::RecordType::kFullServerCard);
-      if (!response_details.dcvv.empty() &&
-          (unmask_request_details_->card
-               .card_info_retrieval_enrollment_state() ==
-           CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled)) {
+      if (record_type == CreditCard::RecordType::kMaskedServerCard) {
+        card_.set_record_type(CreditCard::RecordType::kFullServerCard);
+      }
+
+      // Use server provided expiration date if the unmasked card is a virtual
+      // card. As virtual cards have different expiration dates.
+      if (record_type == CreditCard::RecordType::kVirtualCard) {
+        card_.SetExpirationMonthFromString(
+            base::UTF8ToUTF16(response_details.expiration_month),
+            /*app_locale=*/std::string());
+        card_.SetExpirationYearFromString(
+            base::UTF8ToUTF16(response_details.expiration_year));
+      }
+      // Use server provided CVC if applicable.
+      if (ShouldUseServerProvidedCvc(unmask_request_details_->card)) {
+        CHECK(!response_details.dcvv.empty());
         card_.set_cvc(base::UTF8ToUTF16(response_details.dcvv));
       }
+
       response.card = card_;
 
       autofill_metrics::LogRiskBasedAuthResult(
-          CreditCard::RecordType::kMaskedServerCard,
+          record_type,
           autofill_metrics::RiskBasedAuthEvent::kNoAuthenticationRequired);
     } else {
       // The Payments server indicates further authentication is required.
@@ -152,25 +164,39 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
             response_details.fido_request_options.Clone();
       }
       response.context_token = response_details.context_token;
+      response.card_unmask_challenge_options =
+          std::move(response_details.card_unmask_challenge_options);
 
       autofill_metrics::LogRiskBasedAuthResult(
-          CreditCard::RecordType::kMaskedServerCard,
+          record_type,
           autofill_metrics::RiskBasedAuthEvent::kAuthenticationRequired);
     }
   } else {
     // We received an error when attempting to unmask the card.
     response.result = RiskBasedAuthenticationResponse::Result::kError;
-    CHECK(card_.record_type() == CreditCard::RecordType::kMaskedServerCard);
-    response.error_dialog_context.type =
-        result == PaymentsRpcResult::kNetworkError
-            ? AutofillErrorDialogType::
-                  kMaskedServerCardRiskBasedUnmaskingNetworkError
-            : AutofillErrorDialogType::
-                  kMaskedServerCardRiskBasedUnmaskingPermanentError;
+    if (record_type == CreditCard::RecordType::kMaskedServerCard) {
+      response.error_dialog_context.type =
+          result == PaymentsRpcResult::kNetworkError
+              ? AutofillErrorDialogType::
+                    kMaskedServerCardRiskBasedUnmaskingNetworkError
+              : AutofillErrorDialogType::
+                    kMaskedServerCardRiskBasedUnmaskingPermanentError;
+    } else if (record_type == CreditCard::RecordType::kVirtualCard) {
+      if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+          result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+        response.result =
+            RiskBasedAuthenticationResponse::Result::kVirtualCardRetrievalError;
+      }
+      response.error_dialog_context =
+          response_details.autofill_error_dialog_context.value_or(
+              response.error_dialog_context.AutofillErrorDialogContext::
+                  WithVirtualCardPermanentOrTemporaryError(
+                      /*is_permanent_error=*/result ==
+                      PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+    }
 
     autofill_metrics::LogRiskBasedAuthResult(
-        CreditCard::RecordType::kMaskedServerCard,
-        autofill_metrics::RiskBasedAuthEvent::kUnexpectedError);
+        record_type, autofill_metrics::RiskBasedAuthEvent::kUnexpectedError);
   }
 
   if (requester_) {
@@ -188,6 +214,13 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskCancelled() {
       RiskBasedAuthenticationResponse().with_result(
           RiskBasedAuthenticationResponse::Result::kAuthenticationCancelled));
   Reset();
+}
+
+bool CreditCardRiskBasedAuthenticator::ShouldUseServerProvidedCvc(
+    const CreditCard card) {
+  return (card.record_type() == CreditCard::RecordType::kVirtualCard) ||
+         (card.card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
 }
 
 void CreditCardRiskBasedAuthenticator::Reset() {
