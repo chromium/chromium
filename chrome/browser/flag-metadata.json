@@ -8719,6 +8719,14 @@
     "expiry_milestone" : 135
   },
   {
+    "name": "top-chrome-toast-refinements",
+    "owners": [
+      "agale@google.com",
+      "chrome-performance-ui-team@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "top-chrome-toasts",
     "owners": [
       "agale@google.com",

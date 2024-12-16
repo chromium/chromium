@@ -4609,6 +4609,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(toast_features::kToastFramework,
                                     kToastVariations,
                                     "ToastFramework")},
+    {"top-chrome-toast-refinements",
+     flag_descriptions::kTopChromeToastRefinementsName,
+     flag_descriptions::kTopChromeToastRefinementsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(toast_features::kToastRefinements)},
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

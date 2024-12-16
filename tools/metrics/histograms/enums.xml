@@ -18656,6 +18656,7 @@ from previous Chrome versions.
   <int value="-694943768" label="ContextualSearchSuppressShortView:disabled"/>
   <int value="-694783082" label="MostVisitedTilesSelectExistingTab:enabled"/>
   <int value="-694622753" label="VizHitTest:disabled"/>
+  <int value="-694601891" label="ToastRefinements:enabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
   <int value="-693684972" label="FreezingOnBatterySaverForTesting:enabled"/>
   <int value="-691977647"
@@ -21590,6 +21591,7 @@ from previous Chrome versions.
   <int value="478622074" label="EnableBrightnessControlInSettings:enabled"/>
   <int value="479906041" label="RunAllFlashInAllowMode:disabled"/>
   <int value="480386627" label="OmniboxPedalsBatch3:enabled"/>
+  <int value="480435665" label="ToastRefinements:disabled"/>
   <int value="480481070" label="FilesInlineSyncStatus:disabled"/>
   <int value="480544447" label="NonValidatingReloadOnRefreshContentV2:enabled"/>
   <int value="480677983" label="WebXRARDOMOverlay:disabled"/>

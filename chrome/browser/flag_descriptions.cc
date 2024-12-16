@@ -3744,6 +3744,10 @@ const char kToolbarPinningDescription[] =
 const char kTopChromeToastsName[] = "Top Chrome Toasts";
 const char kTopChromeToastsDescription[] =
     "Enables the use of toasts to present confirmation of user actions.";
+
+const char kTopChromeToastRefinementsName[] = "Top Chrome Toast Refinements";
+const char kTopChromeToastRefinementsDescription[] =
+    "Enables the use of options to control which toasts appear.";
 #endif
 
 const char kTopChromeTouchUiName[] = "Touch UI Layout";

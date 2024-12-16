@@ -2172,6 +2172,9 @@ extern const char kToolbarPinningDescription[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kTopChromeToastsName[];
 extern const char kTopChromeToastsDescription[];
+
+extern const char kTopChromeToastRefinementsName[];
+extern const char kTopChromeToastRefinementsDescription[];
 #endif
 
 extern const char kTopChromeTouchUiName[];
