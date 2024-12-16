@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
+#include "base/profiler/core_unwinders.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -59,7 +60,7 @@ bool IsCurrentProcessBackgrounded() {
 }
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
-  return base::StackSamplingProfiler::UnwindersFactory();
+  return base::CreateCoreUnwindersFactory();
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
