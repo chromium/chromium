@@ -3930,6 +3930,12 @@
       status: "stable",
     },
     {
+      // If enabled, only call ResourceLoadObserver callbacks if the DevTools
+      // panel is open.
+      name: "SkipCallbacksWhenDevToolsNotOpen",
+      status: "experimental",
+    },
+    {
       // If enabled, HTMLPreloadScanner will be skipped.
       name: "SkipPreloadScanning",
       origin_trial_feature_name: "SkipPreloadScanning",

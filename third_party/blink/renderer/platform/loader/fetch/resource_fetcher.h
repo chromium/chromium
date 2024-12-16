@@ -691,13 +691,13 @@ class PLATFORM_EXPORT ResourceFetcher
   // This is not in the bit field below because we want to use AutoReset.
   bool is_in_request_resource_ = false;
 
-  // 27 bits left
   bool auto_load_images_ : 1;
   bool allow_stale_resources_ : 1;
   bool image_fetched_ : 1;
   bool stale_while_revalidate_enabled_ : 1;
   const bool transparent_image_optimization_enabled_ : 1;
   bool speculative_decode_in_flight_ : 1;
+  // 26 bits left (decrease the count when you add bit fields above)
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
 

@@ -946,13 +946,12 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
                                   resource->GetResponse());
   }
 
-  // Only call ResourceLoadObserver callbacks for placeholder images when
-  // devtools is opened to get maximum performance.
-  // TODO(crbug.com/41496436): Explore optimizing this in general for
-  // `is_static_data`.
-  if (!IsSimplifyLoadingTransparentPlaceholderImageEnabled() ||
-      (request.GetKnownTransparentPlaceholderImageIndex() == kNotFound) ||
-      (resource_load_observer_->InterestedInAllRequests())) {
+  // Only call ResourceLoadObserver callbacks when devtools is opened to get
+  // maximum performance.
+  if (!(RuntimeEnabledFeatures::SkipCallbacksWhenDevToolsNotOpenEnabled() ||
+        (IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
+         request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) ||
+      resource_load_observer_->InterestedInAllRequests()) {
     resource_load_observer_->WillSendRequest(
         request, ResourceResponse() /* redirects */, resource->GetType(),
         resource->Options(), render_blocking_behavior, resource);
