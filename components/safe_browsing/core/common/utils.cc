@@ -153,13 +153,10 @@ bool CanGetReputationOfUrl(const GURL& url) {
 
 void LogAuthenticatedCookieResets(network::ResourceRequest& resource_request,
                                   SafeBrowsingAuthenticatedEndpoint endpoint) {
-  // TODO(crbug.com/382303498): Re-enable this on iOS.
-#if !BUILDFLAG(IS_IOS)
   resource_request.trusted_params = network::ResourceRequest::TrustedParams();
   mojo::MakeSelfOwnedReceiver(std::make_unique<CookieWriteLogger>(endpoint),
                               resource_request.trusted_params->cookie_observer
                                   .InitWithNewPipeAndPassReceiver());
-#endif
 }
 
 void SetAccessTokenAndClearCookieInResourceRequest(
