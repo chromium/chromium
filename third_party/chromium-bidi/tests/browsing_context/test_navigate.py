@@ -21,7 +21,7 @@ from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitInteractive_redirect(
-        websocket, context_id, html, url_example, read_sorted_messages):
+        websocket, context_id, html, url_example, read_messages):
     await subscribe(websocket, ["browsingContext.navigationAborted"])
 
     initial_url = html(f"<script>window.location='{url_example}';</script>")
@@ -36,19 +36,18 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
             }
         })
 
-    messages = await read_sorted_messages(2,
-                                          keys_to_stabilize=['navigation'],
-                                          check_no_other_messages=True)
+    messages = await read_messages(2,
+                                   keys_to_stabilize=['navigation'],
+                                   check_no_other_messages=True,
+                                   sort=True)
 
     assert messages == [
-        {
+        AnyExtending({
             'id': command_id,
-            'result': {
-                'navigation': 'stable_0',
-                'url': initial_url,
-            },
-            'type': 'success',
-        },
+            'error': 'unknown error',
+            'message': 'navigation canceled by concurrent navigation',
+            'type': 'error',
+        }),
         {
             'method': 'browsingContext.navigationAborted',
             'params': {
@@ -377,11 +376,11 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_viaScript(
-        websocket, context_id, url_base):
+        websocket, context_id, url_base, read_messages):
     serialized_url = {"type": "string", "value": url_base}
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "script.callFunction",
             "params": {
@@ -396,23 +395,27 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            # TODO: Should report correct string
-            "url": ANY_STR,
+    messages = await read_messages(2, check_no_other_messages=True, sort=True)
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'type': 'success',
+        }), {
+            'type': 'event',
+            "method": "browsingContext.navigationStarted",
+            "params": {
+                "context": context_id,
+                "navigation": ANY_UUID,
+                "timestamp": ANY_TIMESTAMP,
+                "url": url_base,
+            }
         }
-    }
+    ]
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
-        websocket, context_id, url_base, html, iframe, read_sorted_messages):
+        websocket, context_id, url_base, html, iframe, read_messages):
     await subscribe(websocket, ["browsingContext.navigationStarted"])
     iframe_url = html("<h1>FRAME</h1>")
     page_url = html(iframe(iframe_url))
@@ -426,9 +429,10 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
             }
         })
 
-    messages = await read_sorted_messages(3,
-                                          keys_to_stabilize=['navigation'],
-                                          check_no_other_messages=True)
+    messages = await read_messages(3,
+                                   keys_to_stabilize=['navigation'],
+                                   check_no_other_messages=True,
+                                   sort=True)
 
     assert messages == [
         {
@@ -464,7 +468,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
-        websocket, context_id, url_base, html, iframe, read_sorted_messages):
+        websocket, context_id, url_base, html, iframe, read_messages):
     await subscribe(websocket, ["browsingContext.navigationStarted"])
     iframe_url = html("<h1>FRAME</h1>")
     page_url = html(iframe(iframe_url))
@@ -487,9 +491,10 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
             }
         })
 
-    messages = await read_sorted_messages(3,
-                                          keys_to_stabilize=['navigation'],
-                                          check_no_other_messages=True)
+    messages = await read_messages(3,
+                                   keys_to_stabilize=['navigation'],
+                                   check_no_other_messages=True,
+                                   sort=True)
 
     assert messages == [
         AnyExtending({
@@ -521,7 +526,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_viaCommand(
-        websocket, context_id, html, read_sorted_messages):
+        websocket, context_id, html, read_messages):
     url = html()
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
@@ -536,9 +541,10 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
             }
         })
 
-    messages = await read_sorted_messages(2,
-                                          keys_to_stabilize=['navigation'],
-                                          check_no_other_messages=True)
+    messages = await read_messages(2,
+                                   keys_to_stabilize=['navigation'],
+                                   check_no_other_messages=True,
+                                   sort=True)
 
     assert messages == [{
         'id': command_id,
@@ -561,7 +567,7 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavigationEnded_navigationFailed(
-        websocket, context_id, read_sorted_messages, url_hang_forever):
+        websocket, context_id, read_messages, url_hang_forever):
     navigate_command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
@@ -581,13 +587,13 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
     # Command result order is not guaranteed.
     [navigation_command_result,
-     close_command_result] = await read_sorted_messages(2)
+     close_command_result] = await read_messages(2, sort=True)
 
     assert navigation_command_result == AnyExtending({
         'id': navigate_command_id,
         'type': 'error',
         'error': 'unknown error',
-        'message': 'navigation canceled by context disposal',
+        'message': 'net::ERR_ABORTED',
     })
 
     assert close_command_result == AnyExtending({
@@ -598,10 +604,11 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_sameDocumentNavigation(
-        websocket, context_id, url_base):
-    await subscribe(
-        websocket,
-        ["browsingContext.navigationStarted", "browsingContext.load"])
+        websocket, context_id, url_base, assert_no_more_messages):
+    await subscribe(websocket, [
+        "browsingContext.navigationStarted",
+        "browsingContext.fragmentNavigated", "browsingContext.load"
+    ])
 
     # Make an initial navigation.
     command_id = await send_JSON_command(
@@ -666,7 +673,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
     response = await read_JSON_message(websocket)
     assert response == AnyExtending({
         'type': 'event',
-        "method": "browsingContext.navigationStarted",
+        "method": "browsingContext.fragmentNavigated",
         "params": {
             "context": context_id,
             "navigation": ANY_UUID,
@@ -688,26 +695,33 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
                          indirect=True)
 async def test_browsingContext_acceptInsecureCertsCapability_respected(
         websocket, context_id, url_bad_ssl, capabilities):
-    async def navigate():
-        await execute_command(
-            websocket, {
-                'method': "browsingContext.navigate",
-                'params': {
-                    'url': url_bad_ssl,
-                    'wait': 'complete',
-                    'context': context_id
-                }
-            })
+    command_id = await send_JSON_command(
+        websocket, {
+            'method': "browsingContext.navigate",
+            'params': {
+                'url': url_bad_ssl,
+                'wait': 'complete',
+                'context': context_id
+            }
+        })
 
+    resp = await read_JSON_message(websocket)
     if capabilities.get('acceptInsecureCerts'):
-        await navigate()
+        assert resp == {
+            'id': command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_bad_ssl,
+            },
+            'type': 'success',
+        }
     else:
-        with pytest.raises(Exception,
-                           match=str({
-                               'error': 'unknown error',
-                               'message': 'net::ERR_CERT_AUTHORITY_INVALID'
-                           })):
-            await navigate()
+        assert resp == AnyExtending({
+            'error': 'unknown error',
+            'id': command_id,
+            'message': 'net::ERR_CERT_AUTHORITY_INVALID',
+            'type': 'error',
+        })
 
 
 @pytest.mark.asyncio
@@ -716,8 +730,7 @@ async def test_browsingContext_acceptInsecureCertsCapability_respected(
 }],
                          indirect=True)
 async def test_speculationrules_prerender(websocket, context_id, html,
-                                          test_headless_mode,
-                                          read_sorted_messages):
+                                          test_headless_mode, read_messages):
     if test_headless_mode == "old":
         pytest.xfail("Old headless mode does not support prerendering")
 
@@ -748,7 +761,7 @@ async def test_speculationrules_prerender(websocket, context_id, html,
             }
         })
 
-    [command_result, context_created_event] = await read_sorted_messages(2)
+    [command_result, context_created_event] = await read_messages(2, sort=True)
 
     # Assert that the navigation command was finished.
     assert command_result == AnyExtending({

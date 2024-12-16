@@ -19,7 +19,10 @@ from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio
-async def test_print_top_level_context(websocket, context_id, html):
+async def test_print_top_level_context(websocket, context_id, html,
+                                       test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("PDF viewer not available in headless.")
     await goto_url(websocket, context_id, html())
 
     print_result = await execute_command(
@@ -38,15 +41,8 @@ async def test_print_top_level_context(websocket, context_id, html):
     # 'data' is not deterministic, ~a dozen characters differ between runs.
     assert print_result["data"] == ANY_STR
 
-    try:
-        await goto_url(websocket, context_id,
-                       f'data:application/pdf,base64;{print_result["data"]}')
-    except Exception as e:
-        assert e.args[0] == {
-            'error': 'unknown error',
-            'message': 'net::ERR_ABORTED'
-        }
-        pytest.xfail("PDF viewer not available in headless.")
+    await goto_url(websocket, context_id,
+                   f'data:application/pdf,base64;{print_result["data"]}')
 
 
 @pytest.mark.asyncio

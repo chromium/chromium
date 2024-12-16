@@ -221,7 +221,7 @@ async def test_preloadScript_add_sameScriptMultipleTimes(
 @pytest.mark.asyncio
 async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
                                                     url_all_origins, html,
-                                                    read_sorted_messages):
+                                                    read_messages):
     await subscribe(websocket, ["log.entryAdded"])
 
     await execute_command(
@@ -276,7 +276,7 @@ async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
         })
 
     # Event order is not guaranteed, so read 2 messages, sort them and assert.
-    [command_result, log_entry_added] = await read_sorted_messages(2)
+    [command_result, log_entry_added] = await read_messages(2, sort=True)
 
     assert command_result == {
         "type": "success",
@@ -410,7 +410,7 @@ async def test_preloadScript_add_loadedInMultipleContexts(
 
 @pytest.mark.asyncio
 async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
-        websocket, context_id, url_all_origins, html, read_sorted_messages):
+        websocket, context_id, url_all_origins, html, read_messages):
     await subscribe(websocket, ["script.message"])
 
     await goto_url(websocket, context_id, html())
@@ -452,7 +452,7 @@ async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
 
     # Depending on the URL, the iframe can be loaded before or after the script
     # is done.
-    [command_result, script_message_event] = await read_sorted_messages(2)
+    [command_result, script_message_event] = await read_messages(2, sort=True)
 
     assert [command_result, script_message_event] == [
         AnyExtending({
@@ -652,7 +652,7 @@ async def test_preloadScript_add_sandbox_existing_context(
 
 @pytest.mark.asyncio
 async def test_preloadScript_add_withUserGesture_blankTargetLink(
-        websocket, context_id, html, read_sorted_messages, url_example):
+        websocket, context_id, html, read_messages, url_example):
     LINK_WITH_BLANK_TARGET = html(
         f'<a href="{url_example}" target="_blank">new tab</a>')
 
@@ -684,7 +684,7 @@ async def test_preloadScript_add_withUserGesture_blankTargetLink(
             }
         })
 
-    [command_result, log_entry_added] = await read_sorted_messages(2)
+    [command_result, log_entry_added] = await read_messages(2, sort=True)
     assert command_result == AnyExtending({
         "id": command_id,
         "type": "success",
@@ -707,7 +707,7 @@ async def test_preloadScript_add_withUserGesture_blankTargetLink(
 
 @pytest.mark.asyncio
 async def test_preloadScript_channel_navigate(websocket, context_id, html,
-                                              read_sorted_messages):
+                                              read_messages):
     await subscribe(websocket, ["script.message"])
 
     result = await execute_command(
@@ -744,7 +744,7 @@ async def test_preloadScript_channel_navigate(websocket, context_id, html,
             }
         })
 
-    [command_result, channel_message] = await read_sorted_messages(2)
+    [command_result, channel_message] = await read_messages(2, sort=True)
     assert command_result == {
         "type": "success",
         "id": command_id,
@@ -768,8 +768,7 @@ async def test_preloadScript_channel_navigate(websocket, context_id, html,
 
 
 @pytest.mark.asyncio
-async def test_preloadScript_channel_newContext(websocket,
-                                                read_sorted_messages):
+async def test_preloadScript_channel_newContext(websocket, read_messages):
     await subscribe(websocket, ["script.message"])
 
     result = await execute_command(
@@ -797,7 +796,7 @@ async def test_preloadScript_channel_newContext(websocket,
         }
     })
 
-    [command_result, channel_message] = await read_sorted_messages(2)
+    [command_result, channel_message] = await read_messages(2, sort=True)
     assert command_result == {
         "type": "success",
         "id": command_id,

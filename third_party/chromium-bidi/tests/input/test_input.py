@@ -530,7 +530,7 @@ async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
 @pytest.mark.parametrize("same_origin", [True, False])
 @pytest.mark.asyncio
 async def test_click_iframe_context(websocket, context_id, html, same_origin,
-                                    read_sorted_messages):
+                                    read_messages):
     # TODO: add test for double-nested iframes.
     await subscribe(websocket, ["log.entryAdded"])
 
@@ -562,7 +562,7 @@ async def test_click_iframe_context(websocket, context_id, html, same_origin,
 
     # Wait for the iframe to load. It cannot be guaranteed by the "wait"
     # condition.
-    [_, frame_loaded_console_event] = await read_sorted_messages(2)
+    [_, frame_loaded_console_event] = await read_messages(2, sort=True)
     assert frame_loaded_console_event == AnyExtending({
         "method": "log.entryAdded",
         "params": {
@@ -608,7 +608,7 @@ async def test_click_iframe_context(websocket, context_id, html, same_origin,
 
     await wait_for_event(websocket, "log.entryAdded")
 
-    [mousedown_console_event] = await read_sorted_messages(1)
+    [mousedown_console_event] = await read_messages(1, sort=True)
     assert mousedown_console_event == AnyExtending({
         "method": "log.entryAdded",
         "params": {

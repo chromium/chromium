@@ -46,7 +46,7 @@ async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateWaitNone_navigated(
-        websocket, iframe_id, html, read_sorted_messages):
+        websocket, iframe_id, html, read_messages):
     url = html("<h2>iframe</h2>")
 
     await subscribe(
@@ -58,7 +58,8 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
 
     assert result == {"navigation": navigation_id, "url": url}
 
-    [dom_content_loaded, browsing_context_load] = await read_sorted_messages(2)
+    [dom_content_loaded,
+     browsing_context_load] = await read_messages(2, sort=True)
     assert dom_content_loaded == {
         'type': 'event',
         "method": "browsingContext.domContentLoaded",

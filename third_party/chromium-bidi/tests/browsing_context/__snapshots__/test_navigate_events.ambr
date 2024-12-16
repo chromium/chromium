@@ -2,17 +2,32 @@
 # name: test_navigate_aboutBlank_checkEvents
   list([
     dict({
-      'id': 'stable_0',
-      'result': dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
-      'type': 'success',
+      'type': 'event',
     }),
     dict({
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
@@ -21,55 +36,42 @@
     dict({
       'method': 'browsingContext.load',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
       'type': 'event',
     }),
     dict({
-      'method': 'browsingContext.navigationStarted',
-      'params': dict({
-        'context': 'stable_3',
+      'id': 'stable_3',
+      'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
-      'type': 'event',
+      'type': 'success',
     }),
   ])
 # ---
 # name: test_navigate_dataUrl_checkEvents
   list([
     dict({
-      'id': 'stable_0',
-      'result': dict({
-        'navigation': 'stable_1',
-        'url': 'stable_2',
-      }),
-      'type': 'success',
-    }),
-    dict({
-      'method': 'browsingContext.domContentLoaded',
+      'method': 'script.message',
       'params': dict({
-        'context': 'stable_3',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
-      }),
-      'type': 'event',
-    }),
-    dict({
-      'method': 'browsingContext.load',
-      'params': dict({
-        'context': 'stable_3',
-        'navigation': 'stable_1',
-        'url': 'stable_2',
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
       }),
       'type': 'event',
     }),
     dict({
       'method': 'browsingContext.navigationStarted',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'navigation': 'stable_1',
         'url': 'stable_2',
       }),
@@ -78,38 +80,689 @@
     dict({
       'method': 'network.beforeRequestSent',
       'params': dict({
-        'context': 'stable_3',
-        'initiator': dict({
-          'type': 'other',
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_5',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
+# name: test_navigate_nested_scriptFragmentRedirect_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
         }),
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_5',
+        'source': dict({
+          'context': 'stable_0',
+        }),
       }),
       'type': 'event',
     }),
     dict({
-      'method': 'network.responseCompleted',
+      'method': 'browsingContext.navigationStarted',
       'params': dict({
-        'context': 'stable_3',
-        'isBlocked': False,
+        'context': 'stable_0',
         'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_5',
+        'url': 'stable_2',
       }),
       'type': 'event',
     }),
     dict({
-      'method': 'network.responseStarted',
+      'method': 'network.beforeRequestSent',
       'params': dict({
-        'context': 'stable_3',
+        'context': 'stable_0',
         'isBlocked': False,
         'navigation': 'stable_1',
         'redirectCount': 0,
-        'request': 'stable_5',
+        'request': 'stable_4',
       }),
       'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.fragmentNavigated',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_7',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_6',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
+# name: test_navigate_scriptFragmentRedirect_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.fragmentNavigated',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_7',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_6',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
+# name: test_navigate_scriptRedirect_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_5',
+        'redirectCount': 0,
+        'request': 'stable_8',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationAborted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'error': 'unknown error',
+      'id': 'stable_9',
+      'type': 'error',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_reload_aboutBlank_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_3',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
+# name: test_reload_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_5',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
+# name: test_reload_dataUrl_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_5',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
+# name: test_scriptNavigate_aboutBlank_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationAborted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'error': 'unknown error',
+      'id': 'stable_7',
+      'type': 'error',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_scriptNavigate_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_5',
+        'redirectCount': 0,
+        'request': 'stable_8',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationAborted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'error': 'unknown error',
+      'id': 'stable_9',
+      'type': 'error',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_5',
+        'url': 'stable_6',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_scriptNavigate_dataUrl_checkEvents
+  list([
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_5',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
     }),
   ])
 # ---

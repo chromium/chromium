@@ -87,7 +87,7 @@ async def test_browsingContext_noInitialLoadEvents(websocket, html,
 @pytest.mark.asyncio
 async def test_browsingContext_load_properNavigation(websocket, context_id,
                                                      url_example,
-                                                     read_sorted_messages):
+                                                     read_messages):
     await subscribe(websocket, "browsingContext.load")
 
     command_id = await send_JSON_command(
@@ -100,9 +100,10 @@ async def test_browsingContext_load_properNavigation(websocket, context_id,
             }
         })
 
-    messages = await read_sorted_messages(2,
-                                          keys_to_stabilize=['navigation'],
-                                          check_no_other_messages=True)
+    messages = await read_messages(2,
+                                   keys_to_stabilize=['navigation'],
+                                   check_no_other_messages=True,
+                                   sort=True)
 
     assert messages == [
         {
