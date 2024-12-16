@@ -7,10 +7,14 @@ package org.chromium.url;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.net.IDN;
 
 /** This class is used to convert unicode IDN domain names to ASCII, when not building with ICU. */
 @JNINamespace("url::android")
+@NullMarked
 public class IDNStringUtil {
     /**
      * Attempts to convert a Unicode string to an ASCII string using IDN rules. As of May 2014, the
@@ -20,7 +24,7 @@ public class IDNStringUtil {
      * @return String containing only ASCII characters on success, null on failure.
      */
     @CalledByNative
-    private static String idnToASCII(String src) {
+    private static @Nullable String idnToASCII(String src) {
         try {
             return IDN.toASCII(src, IDN.USE_STD3_ASCII_RULES);
         } catch (Exception e) {
