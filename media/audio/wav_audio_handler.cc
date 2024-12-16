@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/wav_audio_handler.h"
 
 #include <algorithm>
@@ -93,9 +88,7 @@ bool ParamsAreValid(const WavAudioParameters& params) {
 
 // Parse a "fmt " chunk from wav data into its parameters. The `data` is in
 // little endian encoding.
-bool ParseFmtChunk(base::span<const uint8_t> data, WavAudioParameters* params) {
-  DCHECK(params);
-
+bool ParseFmtChunk(base::span<const uint8_t> data, WavAudioParameters& params) {
   // If the chunk is too small, return false.
   if (data.size() < kFmtChunkMinimumSize) {
     LOG(ERROR) << "Data size " << data.size() << " is too short.";
@@ -103,46 +96,43 @@ bool ParseFmtChunk(base::span<const uint8_t> data, WavAudioParameters* params) {
   }
 
   // Read in serialized parameters.
-  params->audio_format =
+  params.audio_format =
       static_cast<WavAudioHandler::AudioFormat>(base::U16FromLittleEndian(
           data.subspan<kAudioFormatOffset,
                        sizeof(WavAudioHandler::AudioFormat)>()));
-  params->num_channels =
+  params.num_channels =
       base::U16FromLittleEndian(data.subspan<kChannelOffset, 2u>());
-  params->sample_rate =
+  params.sample_rate =
       base::U32FromLittleEndian(data.subspan<kSampleRateOffset, 4u>());
-  params->bits_per_sample =
+  params.bits_per_sample =
       base::U16FromLittleEndian(data.subspan<kBitsPerSampleOffset, 2u>());
 
-  if (params->audio_format ==
+  if (params.audio_format ==
       WavAudioHandler::AudioFormat::kAudioFormatExtensible) {
     if (data.size() < kFmtChunkExtensibleMinimumSize) {
       LOG(ERROR) << "Data size " << data.size() << " is too short.";
       return false;
     }
 
-    params->is_extensible = true;
-    params->audio_format =
+    params.is_extensible = true;
+    params.audio_format =
         static_cast<WavAudioHandler::AudioFormat>(base::U16FromLittleEndian(
             data.subspan<kSubFormatOffset,
                          sizeof(WavAudioHandler::AudioFormat)>()));
-    params->valid_bits_per_sample = base::U16FromLittleEndian(
+    params.valid_bits_per_sample = base::U16FromLittleEndian(
         data.subspan<kValidBitsPerSampleOffset, 2u>());
   } else {
-    params->is_extensible = false;
+    params.is_extensible = false;
   }
   return true;
 }
 
 // The `wav_data` is encoded in little endian, as will be `audio_data_out`.
-bool ParseWavData(std::string_view wav_data,
-                  std::string_view* audio_data_out,
-                  WavAudioParameters* params_out) {
-  DCHECK(audio_data_out);
-  DCHECK(params_out);
-
+bool ParseWavData(base::span<const uint8_t> wav_data,
+                  base::span<const uint8_t>& audio_data_out,
+                  WavAudioParameters& params_out) {
   // The header should look like: |R|I|F|F|1|2|3|4|W|A|V|E|
-  auto buf = base::SpanReader(base::as_byte_span(wav_data));
+  auto buf = base::SpanReader(wav_data);
 
   // Read the chunk ID and compare to "RIFF".
   std::optional<base::span<const uint8_t, 4u>> chunk_id = buf.Read<4u>();
@@ -183,7 +173,7 @@ bool ParseWavData(std::string_view wav_data,
       if (!ParseFmtChunk(chunk_payload, params_out))
         return false;
     } else if (chunk_fmt == kDataSubchunkId) {
-      *audio_data_out = base::as_string_view(chunk_payload);
+      audio_data_out = chunk_payload;
     } else {
       DVLOG(1) << "Skipping unknown data chunk: "
                << base::as_string_view(chunk_fmt) << ".";
@@ -194,14 +184,14 @@ bool ParseWavData(std::string_view wav_data,
   if (!got_format) {
     LOG(ERROR) << "Invalid: No \"" << kFmtSubchunkId << "\" header found!";
     return false;
-  } else if (!ParamsAreValid(*params_out)) {
+  } else if (!ParamsAreValid(params_out)) {
     LOG(ERROR) << "Format is invalid. "
-               << "num_channels: " << params_out->num_channels << " "
-               << "sample_rate: " << params_out->sample_rate << " "
-               << "bits_per_sample: " << params_out->bits_per_sample << " "
-               << "valid_bits_per_sample: " << params_out->valid_bits_per_sample
+               << "num_channels: " << params_out.num_channels << " "
+               << "sample_rate: " << params_out.sample_rate << " "
+               << "bits_per_sample: " << params_out.bits_per_sample << " "
+               << "valid_bits_per_sample: " << params_out.valid_bits_per_sample
                << " "
-               << "is_extensible: " << params_out->is_extensible;
+               << "is_extensible: " << params_out.is_extensible;
     return false;
   }
   return true;
@@ -209,7 +199,7 @@ bool ParseWavData(std::string_view wav_data,
 
 }  // namespace
 
-WavAudioHandler::WavAudioHandler(std::string_view audio_data,
+WavAudioHandler::WavAudioHandler(base::span<const uint8_t> audio_data,
                                  uint16_t num_channels,
                                  uint32_t sample_rate,
                                  uint16_t bits_per_sample,
@@ -228,13 +218,14 @@ WavAudioHandler::~WavAudioHandler() = default;
 
 // static
 std::unique_ptr<WavAudioHandler> WavAudioHandler::Create(
-    std::string_view wav_data) {
+    base::span<const uint8_t> wav_data) {
   WavAudioParameters params;
-  std::string_view audio_data;
+  base::span<const uint8_t> audio_data;
 
   // Attempt to parse the WAV data.
-  if (!ParseWavData(wav_data, &audio_data, &params))
+  if (!ParseWavData(wav_data, audio_data, params)) {
     return nullptr;
+  }
 
   return base::WrapUnique(
       new WavAudioHandler(audio_data, params.num_channels, params.sample_rate,
@@ -268,7 +259,7 @@ bool WavAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
   const int bytes_per_frame = num_channels_ * bits_per_sample_ / 8;
   const int remaining_frames = (audio_data_.size() - cursor_) / bytes_per_frame;
   const int frames = std::min(bus->frames(), remaining_frames);
-  const auto* source = audio_data_.data() + cursor_;
+  const auto* source = audio_data_.subspan(cursor_).data();
 
   switch (audio_format_) {
     case AudioFormat::kAudioFormatPCM:

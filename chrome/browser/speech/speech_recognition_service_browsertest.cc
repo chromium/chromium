@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -366,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
     ASSERT_TRUE(base::ReadFileToString(audio_file, &buffer));
   }
 
-  auto handler = media::WavAudioHandler::Create(buffer);
+  auto handler = media::WavAudioHandler::Create(base::as_byte_span(buffer));
   ASSERT_TRUE(handler.get());
   ASSERT_EQ(handler->GetNumChannels(), kExpectedChannelCount);
 
@@ -422,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
     ASSERT_TRUE(base::ReadFileToString(audio_file, &buffer));
   }
 
-  auto handler = media::WavAudioHandler::Create(buffer);
+  auto handler = media::WavAudioHandler::Create(base::as_byte_span(buffer));
   ASSERT_TRUE(handler.get());
   ASSERT_EQ(handler->GetNumChannels(), kExpectedChannelCount);
 

@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/cancelable_callback.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -182,7 +183,8 @@ AudioStreamHandler::AudioStreamHandler(
   std::unique_ptr<media::AudioHandler> audio_handler;
   switch (codec) {
     case media::AudioCodec::kPCM: {
-      audio_handler = media::WavAudioHandler::Create(audio_data);
+      audio_handler =
+          media::WavAudioHandler::Create(base::as_byte_span(audio_data));
       if (!audio_handler || !audio_handler->Initialize()) {
         LOG(ERROR) << "wav_data is not valid";
         return;
