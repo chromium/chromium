@@ -3092,6 +3092,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        ThrottleAttemptForSpdyBlockSecondAttempt) {
   constexpr std::string_view kDestination = "https://a.test";
 
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination(kDestination).Build();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   StreamRequester requester1;
@@ -3099,12 +3106,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   StreamRequester requester2;
   requester2.set_destination(kDestination).RequestStream(pool());
-
-  // Set the destination is known to support HTTP/2.
-  HttpStreamKey stream_key = requester1.GetStreamKey();
-  http_server_properties()->SetSupportsSpdy(
-      stream_key.destination(), stream_key.network_anonymization_key(),
-      /*supports_spdy=*/true);
 
   const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
@@ -3133,6 +3134,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        ThrottleAttemptForSpdyDelayPassedHttp2) {
   constexpr std::string_view kDestination = "https://a.test";
 
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination(kDestination).Build();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   StreamRequester requester1;
@@ -3140,12 +3148,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   StreamRequester requester2;
   requester2.set_destination(kDestination).RequestStream(pool());
-
-  // Set the destination is known to support HTTP/2.
-  HttpStreamKey stream_key = requester1.GetStreamKey();
-  http_server_properties()->SetSupportsSpdy(
-      stream_key.destination(), stream_key.network_anonymization_key(),
-      /*supports_spdy=*/true);
 
   const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
@@ -3187,6 +3189,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        ThrottleAttemptForSpdyDelayPassedHttp1) {
   constexpr std::string_view kDestination = "https://a.test";
 
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination(kDestination).Build();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   StreamRequester requester1;
@@ -3194,12 +3203,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   StreamRequester requester2;
   requester2.set_destination(kDestination).RequestStream(pool());
-
-  // Set the destination is known to support HTTP/2.
-  HttpStreamKey stream_key = requester1.GetStreamKey();
-  http_server_properties()->SetSupportsSpdy(
-      stream_key.destination(), stream_key.network_anonymization_key(),
-      /*supports_spdy=*/true);
 
   const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};

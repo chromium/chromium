@@ -70,6 +70,16 @@ std::string_view GetResultHistogramSuffix(std::optional<int> result) {
   return "Canceled";
 }
 
+bool GetSupportsSpdy(HttpNetworkSession* session,
+                     const HttpStreamKey& stream_key) {
+  HttpServerProperties* properties = session->http_server_properties();
+  if (properties) {
+    return properties->GetSupportsSpdy(stream_key.destination(),
+                                       stream_key.network_anonymization_key());
+  }
+  return false;
+}
+
 }  // namespace
 
 // Represents an in-flight stream attempt.
@@ -204,6 +214,25 @@ struct HttpStreamPool::AttemptManager::PreconnectEntry {
 };
 
 // static
+std::string_view HttpStreamPool::AttemptManager::CanAttemptResultToString(
+    CanAttemptResult result) {
+  switch (result) {
+    case CanAttemptResult::kAttempt:
+      return "Attempt";
+    case CanAttemptResult::kReachedPoolLimit:
+      return "ReachedPoolLimit";
+    case CanAttemptResult::kNoPendingJob:
+      return "NoPendingJob";
+    case CanAttemptResult::kBlockedStreamAttempt:
+      return "BlockedStreamAttempt";
+    case CanAttemptResult::kThrottledForSpdy:
+      return "ThrottledForSpdy";
+    case CanAttemptResult::kReachedGroupLimit:
+      return "ReachedGroupLimit";
+  }
+}
+
+// static
 std::string_view HttpStreamPool::AttemptManager::TcpBasedAttemptStateToString(
     TcpBasedAttemptState state) {
   switch (state) {
@@ -237,6 +266,7 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
           net_log,
           NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER)),
       jobs_(NUM_PRIORITIES),
+      supports_spdy_(GetSupportsSpdy(http_network_session(), stream_key())),
       stream_attempt_delay_(GetStreamAttemptDelay()),
       should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
   CHECK(group_);
@@ -735,7 +765,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   }
 }
 
-base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
+base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
   base::Value::Dict dict;
   dict.Set("job_count_all", static_cast<int>(jobs_.size()));
   dict.Set("job_count_pending", static_cast<int>(PendingJobCount()));
@@ -748,7 +778,8 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   dict.Set("in_flight_attempt_count", static_cast<int>(InFlightAttemptCount()));
   dict.Set("slow_attempt_count", static_cast<int>(slow_attempt_count_));
   dict.Set("is_failing", is_failing_);
-  dict.Set("is_stalled", IsStalledByPoolLimit());
+  dict.Set("can_attempt_connection",
+           CanAttemptResultToString(CanAttemptConnection()));
   dict.Set("service_endpoint_request_finished",
            service_endpoint_request_finished_);
   dict.Set("tcp_based_attempt_state",
@@ -1173,7 +1204,7 @@ bool HttpStreamPool::AttemptManager::IsConnectionAttemptReady() {
 }
 
 HttpStreamPool::AttemptManager::CanAttemptResult
-HttpStreamPool::AttemptManager::CanAttemptConnection() {
+HttpStreamPool::AttemptManager::CanAttemptConnection() const {
   size_t pending_count = std::max(PendingJobCount(), PendingPreconnectCount());
   if (pending_count == 0) {
     return CanAttemptResult::kNoPendingJob;
@@ -1212,10 +1243,8 @@ bool HttpStreamPool::AttemptManager::IsAlternativeServiceEnabled() const {
   return alternative_service_disabling_jobs_.empty();
 }
 
-bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() {
-  if (!http_network_session()->http_server_properties()->GetSupportsSpdy(
-          stream_key().destination(),
-          stream_key().network_anonymization_key())) {
+bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
+  if (!supports_spdy_) {
     return false;
   }
 
@@ -1678,6 +1707,7 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
       return;
     }
 
+    supports_spdy_ = true;
     HttpServerProperties* http_server_properties =
         http_network_session()->http_server_properties();
     if (http_server_properties) {
@@ -1906,7 +1936,8 @@ void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
           stream_key().network_anonymization_key());
 }
 
-base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams() {
+base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
+    const {
   if (VerboseNetLog()) {
     return GetInfoAsValue();
   }

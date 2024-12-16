@@ -186,7 +186,7 @@ class HttpStreamPool::AttemptManager
   void OnQuicTaskComplete(int rv, NetErrorDetails details);
 
   // Retrieves information on the current state of `this` as a base::Value.
-  base::Value::Dict GetInfoAsValue();
+  base::Value::Dict GetInfoAsValue() const;
 
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
@@ -231,6 +231,8 @@ class HttpStreamPool::AttemptManager
 
   class InFlightAttempt;
   struct PreconnectEntry;
+
+  static std::string_view CanAttemptResultToString(CanAttemptResult result);
 
   static std::string_view TcpBasedAttemptStateToString(
       TcpBasedAttemptState state);
@@ -303,7 +305,7 @@ class HttpStreamPool::AttemptManager
 
   // Actual implementation of IsConnectionAttemptReady(), without having side
   // effects.
-  CanAttemptResult CanAttemptConnection();
+  CanAttemptResult CanAttemptConnection() const;
 
   // Returns true only when there are no jobs that ignore the pool and group
   // limits.
@@ -317,7 +319,7 @@ class HttpStreamPool::AttemptManager
 
   // Returns true when connection attempts should be throttled because there is
   // an in-flight attempt and the destination is known to support HTTP/2.
-  bool ShouldThrottleAttemptForSpdy();
+  bool ShouldThrottleAttemptForSpdy() const;
 
   // Helper method to calculate pending jobs/preconnects.
   size_t PendingCountInternal(size_t pending_count) const;
@@ -420,7 +422,7 @@ class HttpStreamPool::AttemptManager
   // or not attempted.
   void MaybeMarkQuicBroken();
 
-  base::Value::Dict GetStatesAsNetLogParams();
+  base::Value::Dict GetStatesAsNetLogParams() const;
 
   // Returns true when this can complete.
   bool CanComplete() const;
@@ -499,6 +501,9 @@ class HttpStreamPool::AttemptManager
 
   base::OneShotTimer spdy_throttle_timer_;
   bool spdy_throttle_delay_passed_ = false;
+
+  // True when the destination supports SPDY.
+  bool supports_spdy_ = false;
 
   // When true, try to use IPv6 for the next attempt first.
   bool prefer_ipv6_ = true;
