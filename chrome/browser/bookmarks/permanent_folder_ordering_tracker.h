@@ -82,7 +82,14 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
   bool IsTrackedPermanentNode(const bookmarks::BookmarkNode* node) const;
   void ResetOrderingToDefault();
   bool ShouldTrackOrdering() const;
-  size_t GetExpectedChildrenCount() const;
+  size_t GetExpectedOrderingSize() const;
+
+  void RemoveBookmarkNodeIfTracked(const bookmarks::BookmarkNode* parent,
+                                   size_t old_index,
+                                   const bookmarks::BookmarkNode* node);
+
+  void AddBookmarkNodeIfTracked(const bookmarks::BookmarkNode* parent,
+                                size_t index);
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const bookmarks::BookmarkNode::Type tracked_type_;

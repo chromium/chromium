@@ -5,6 +5,7 @@
 #include "chrome/browser/bookmarks/permanent_folder_ordering_tracker.h"
 
 #include <cstddef>
+#include <vector>
 
 #include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -120,7 +121,7 @@ void PermanentFolderOrderingTracker::ResetOrderingToDefault() {
   for (const auto& node : local_or_syncable_node_->children()) {
     ordering_.push_back(node.get());
   }
-  CHECK_EQ(GetExpectedChildrenCount(), ordering_.size());
+  CHECK_EQ(GetExpectedOrderingSize(), ordering_.size());
 }
 
 void PermanentFolderOrderingTracker::BookmarkModelLoaded(bool ids_reassigned) {
@@ -135,13 +136,110 @@ void PermanentFolderOrderingTracker::BookmarkNodeMoved(
     size_t old_index,
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
-  // TODO(crbug.com/364594278): Update ordering.
+  RemoveBookmarkNodeIfTracked(old_parent, old_index,
+                              new_parent->children()[new_index].get());
+  AddBookmarkNodeIfTracked(new_parent, new_index);
+  CHECK_EQ(GetExpectedOrderingSize(), ordering_.size());
 }
 
 void PermanentFolderOrderingTracker::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
+  AddBookmarkNodeIfTracked(parent, index);
+  CHECK_EQ(GetExpectedOrderingSize(), ordering_.size());
+}
+
+void PermanentFolderOrderingTracker::BookmarkNodeRemoved(
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node,
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
+  RemoveBookmarkNodeIfTracked(parent, old_index, node);
+  CHECK_EQ(GetExpectedOrderingSize(), ordering_.size());
+}
+
+void PermanentFolderOrderingTracker::OnWillRemoveAllUserBookmarks(
+    const base::Location& location) {
+  all_user_bookmarks_remove_in_progress_ = true;
+  ordering_.clear();
+}
+
+void PermanentFolderOrderingTracker::BookmarkAllUserNodesRemoved(
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
+  all_user_bookmarks_remove_in_progress_ = false;
+  CHECK(ordering_.empty());
+}
+
+void PermanentFolderOrderingTracker::BookmarkNodeChildrenReordered(
+    const bookmarks::BookmarkNode* node) {
+  // TODO(crbug.com/364594278): Update ordering.
+}
+
+void PermanentFolderOrderingTracker::SetNodesOrderingForTesting(
+    std::vector<raw_ptr<const bookmarks::BookmarkNode>> ordering) {
+  ordering_ = std::move(ordering);
+}
+
+bool PermanentFolderOrderingTracker::ShouldTrackOrdering() const {
+  bool has_local_children =
+      local_or_syncable_node_ && !local_or_syncable_node_->children().empty();
+  bool has_account_children =
+      account_node_ && !account_node_->children().empty();
+  return has_local_children && has_account_children;
+}
+
+size_t PermanentFolderOrderingTracker::GetExpectedOrderingSize() const {
+  size_t count = 0;
+  if (!ShouldTrackOrdering()) {
+    return count;
+  }
+
+  if (local_or_syncable_node_) {
+    count += local_or_syncable_node_->children().size();
+  }
+
+  if (account_node_) {
+    count += account_node_->children().size();
+  }
+  return count;
+}
+
+void PermanentFolderOrderingTracker::RemoveBookmarkNodeIfTracked(
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node) {
+  if (IsTrackedPermanentNode(node)) {
+    // Account node removed.
+    SetTrackedPermanentNodes();
+    ResetOrderingToDefault();
+    return;
+  }
+
+  if (!IsTrackedPermanentNode(parent)) {
+    // Not a direct child of `tracked_type_`.
+    return;
+  }
+
+  if (!ShouldTrackOrdering()) {
+    ordering_.clear();
+    return;
+  }
+
+  if (all_user_bookmarks_remove_in_progress_) {
+    CHECK(ordering_.empty());
+    return;
+  }
+
+  // std::erase is a no-op unless present.
+  std::erase(ordering_, node);
+}
+
+void PermanentFolderOrderingTracker::AddBookmarkNodeIfTracked(
+    const bookmarks::BookmarkNode* parent,
+    size_t index) {
   const BookmarkNode* new_node = parent->children()[index].get();
   if (IsTrackedPermanentNode(new_node)) {
     // Account node created.
@@ -180,81 +278,4 @@ void PermanentFolderOrderingTracker::BookmarkNodeAdded(
         GetIndexOf(parent->children()[index - 1].get());
     ordering_.insert(ordering_.cbegin() + previous_node_index + 1, new_node);
   }
-  CHECK_EQ(GetExpectedChildrenCount(), ordering_.size());
-}
-
-void PermanentFolderOrderingTracker::BookmarkNodeRemoved(
-    const bookmarks::BookmarkNode* parent,
-    size_t old_index,
-    const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& removed_urls,
-    const base::Location& location) {
-  if (IsTrackedPermanentNode(node)) {
-    // Account node removed.
-    SetTrackedPermanentNodes();
-    ResetOrderingToDefault();
-    return;
-  }
-
-  if (!IsTrackedPermanentNode(parent)) {
-    // Not a direct child of `tracked_type_`.
-    return;
-  }
-
-  if (!ShouldTrackOrdering()) {
-    ordering_.clear();
-    return;
-  }
-
-  if (all_user_bookmarks_remove_in_progress_) {
-    CHECK(ordering_.empty());
-    return;
-  }
-
-  // std::erase is a no-op unless present.
-  std::erase(ordering_, node);
-  CHECK_EQ(GetExpectedChildrenCount(), ordering_.size());
-}
-
-void PermanentFolderOrderingTracker::OnWillRemoveAllUserBookmarks(
-    const base::Location& location) {
-  all_user_bookmarks_remove_in_progress_ = true;
-  ordering_.clear();
-}
-
-void PermanentFolderOrderingTracker::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls,
-    const base::Location& location) {
-  all_user_bookmarks_remove_in_progress_ = false;
-  CHECK(ordering_.empty());
-}
-
-void PermanentFolderOrderingTracker::BookmarkNodeChildrenReordered(
-    const bookmarks::BookmarkNode* node) {
-  // TODO(crbug.com/364594278): Update ordering.
-}
-
-void PermanentFolderOrderingTracker::SetNodesOrderingForTesting(
-    std::vector<raw_ptr<const bookmarks::BookmarkNode>> ordering) {
-  ordering_ = std::move(ordering);
-}
-
-bool PermanentFolderOrderingTracker::ShouldTrackOrdering() const {
-  bool has_local_children =
-      local_or_syncable_node_ && !local_or_syncable_node_->children().empty();
-  bool has_account_children =
-      account_node_ && !account_node_->children().empty();
-  return has_local_children && has_account_children;
-}
-
-size_t PermanentFolderOrderingTracker::GetExpectedChildrenCount() const {
-  size_t count = 0;
-  if (local_or_syncable_node_) {
-    count += local_or_syncable_node_->children().size();
-  }
-
-  if (account_node_) {
-    count += account_node_->children().size();
-  }
-  return count;
 }
