@@ -2226,7 +2226,6 @@
 <translation id="2532146950330687938">正在准备设备…</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 设置中管理安全 DNS</translation>
 <translation id="2532589005999780174">高反差模式</translation>
-<translation id="2532878989288727311">帮助您在网络上撰写评价等简短文字。系统会根据您的提示和网页内容来提供写作建议</translation>
 <translation id="2533649878691950253">已禁止此网站获取您的精确位置信息，因为您通常不会授予这种权限</translation>
 <translation id="253434972992662860">暂停(&amp;P)</translation>
 <translation id="253498598929009420">该网站将能看到您屏幕上的内容</translation>
@@ -8711,7 +8710,6 @@
 <translation id="7243092385765551741">要删除通行密钥吗？</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" />（最佳）</translation>
 <translation id="7246230585855757313">请重新插入您的安全密钥，然后再试一次</translation>
-<translation id="7248245317364871465">自动根据您打开的标签页建议并创建群组，让您更轻松地找到所需内容</translation>
 <translation id="724835896049478274">可用于 Android 应用的账号</translation>
 <translation id="7248802599439396696">将标签页设为非活跃状态</translation>
 <translation id="7249197363678284330">在地址栏中更改此设置。</translation>

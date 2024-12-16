@@ -142,6 +142,7 @@
 Դուք ցանկացած ժամանակ կարող եք ստուգել ձեր գաղտնաբառերը՝ այցելելով <ph name="GOOGLE_PASSWORD_MANAGER" />։</translation>
 <translation id="1084824384139382525">Պատճենել հղումների հաս&amp;ցեները</translation>
 <translation id="1085064499066015002">Միշտ բոլոր կայքերում</translation>
+<translation id="1085558727130096638">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUM_OTHER_MEMBERS" /> օգտատեր</translation>
 <translation id="1085618740036066768">«<ph name="ITEM" />» տարրն ընտրված չէ։ <ph name="INDEX" />՝ <ph name="COUNT" />-ից։ Ընտրելու համար սեղմեք «Որոնում» + բացատ։</translation>
 <translation id="1085697365578766383">Չհաջողվեց մեկնարկել վիրտուալ մեքենան: Նորից փորձեք:</translation>
 <translation id="1090126737595388931">Հետնաշերտում աշխատող հավելվածներ չկան</translation>
@@ -2132,6 +2133,7 @@
 <translation id="2462752602710430187">Ավելացվեց <ph name="PRINTER_NAME" /></translation>
 <translation id="2464079411014186876">Պաղպաղակ</translation>
 <translation id="2467755475704469005">Սարքեր չեն հայտնաբերվել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUM_OTHER_MEMBERS" /> օգտատեր</translation>
 <translation id="2468178265280335214">Հպահարթակով ոլորման արագացում</translation>
 <translation id="2468205691404969808">Օգտագործում է քուքիները՝ ձեր նախընտրանքները հիշելու համար, նույնիսկ եթե չեք այցելում այդ կայքեր</translation>
 <translation id="2468402215065996499">Տամագոչի</translation>
@@ -2234,7 +2236,6 @@
 <translation id="2532146950330687938">Սարքը շուտով պատրաստ կլինի...</translation>
 <translation id="2532198298278778531">Ապահով DNS սերվերի կառավարում ChromeOS Flex-ի կարգավորումներում</translation>
 <translation id="2532589005999780174">Բարձր ցայտունության ռեժիմ</translation>
-<translation id="2532878989288727311">Այս գործառույթն օգնում է ստեղծել կարճ տեքստեր համացանցում, օրինակ՝ գրել կարծիքներ։ Գրության առաջարկները հիմնվում են ձեր հարցումների և վեբ էջի բովանդակության վրա</translation>
 <translation id="2533649878691950253">Ձեր ճշգրիտ տեղադրության տվյալների հասանելիությունն արգելափակված է այս կայքի համար, քանի որ դուք սովորաբար ընտրում եք նման կարգավորումներ։</translation>
 <translation id="253434972992662860">&amp;Դադարեցնել</translation>
 <translation id="253498598929009420">Կայքը կկարողանա տեսնել ձեր էկրանի բովանդակությունը</translation>
@@ -2275,6 +2276,7 @@
 <translation id="256481480019204378">Google հաշվի նույնացուցիչ</translation>
 <translation id="256517381556987641">Ֆայլերի համաժամացման արդյունքնում գտնվել է <ph name="ITEMS_FOUND" /> ֆայլ: Տարածքի ծավալը դեռ ստուգվում է։ Մի քանի րոպեից նորից փորձեք համաժամացնել ֆայլերը։</translation>
 <translation id="2565214867520763227">Միացրեք էկրանի ընթերցիչը</translation>
+<translation id="2566146433999774844">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUM_OTHER_MEMBERS" /> օգտատեր</translation>
 <translation id="2568694057933302218">Ինկոգնիտո ռեժիմում կայքերը չեն կարող օգտագործել քուքիներ՝ դիտարկիչում ձեր գործողությունները տեսնելու համար։ Ձեր գործողությունները դիտարկիչում չեն օգտագործվում, օրինակ, գովազդներն անհատականացնելու համար։ Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="2568774940984945469">Տեղեկագոտու կոնտեյներ</translation>
 <translation id="2569972178052279830">Խանութի անվանումը</translation>
@@ -2282,6 +2284,7 @@
 <translation id="2571655996835834626">Փոխել կարգավորումները, որոնք կառավարում քուքիների, JavaScript-ի, փլագինների, տեղադրության տվյալների, խոսափողի, ֆոտոխցիկի և այլ գործառույթների հասանելիությունը կայքերի համար։</translation>
 <translation id="257175846174451436">Ներդիրների առաջարկվող խումբ</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />-ին միայն կարդալու հնարավորություն է շնորհվել:</translation>
+<translation id="2573147659521059501"><ph name="NUM" /> ներդիր</translation>
 <translation id="2573276323521243649">Վերադառնալ ավատարի ընտրության էջ</translation>
 <translation id="2573417407488272418">Նորացնելուց առաջ պահուստավորեք ֆայլերն ու հավելվածները Ֆայլեր հավելվածի «Իմ ֆայլերը» պանակում</translation>
 <translation id="2573831315551295105">Նշանակեք փոխանջատիչ «<ph name="ACTION" />» գործողության համար</translation>
@@ -2953,6 +2956,7 @@
 <translation id="3038628620670416486">Գտեք մկնիկի կոճակները</translation>
 <translation id="3039491566278747710">Չհաջողվեց սարքում կիրառել անցանց ռեժիմում աշխատանքի քաղաքականությունը:</translation>
 <translation id="3040982432432547149">Օգնեք մեզ բարելավել Steam-ը Chromebook-ի համար</translation>
+<translation id="304169924727249890">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է</translation>
 <translation id="3043016484125065343">Մուտք գործեք՝ ձեր էջանիշները տեսնելու համար</translation>
 <translation id="3043126717220766543">Մաքրել խմբավորման առաջարկները</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3291,6 +3295,7 @@
 <translation id="3308852433423051161">Google Օգնականի բեռնում...</translation>
 <translation id="3309124184713871355">Կառույցներ</translation>
 <translation id="3309330461362844500">Հավաստագրման պրոֆիլի ID-ն</translation>
+<translation id="3310379801837527592">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUM_OTHER_MEMBERS" /> օգտատեր</translation>
 <translation id="331080746368555063">Անձնական կայքերը պետք է ներառեն, օրինակ, ձեր ընկերության ինտրանետը</translation>
 <translation id="3311445899360743395">Այս հավելվածին առնչվող տվյալները կարող են հեռացվել այս սարքից:</translation>
 <translation id="3312470654018965389">Լինուքսի կոնտեյները կարգավորվում է</translation>
@@ -4249,6 +4254,7 @@
 <translation id="3958088479270651626">Էջանիշների և կարգավորումների ներմուծում</translation>
 <translation id="3958110062351175311">Կայքերին թույլատրվում է հարցումներ ցուցադրել գործիքագոտում</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> հավելվածն արդեն տեղադրված է</translation>
+<translation id="3959969108528118741">Սեփականատեր</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Լրացուցիչ գործողություններ <ph name="IBAN_DESCRIPTION" />-ի համար</translation>
 <translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> օգտատերը հեռացավ խմբից</translation>
@@ -4697,6 +4703,7 @@
 <translation id="428963538941819373">Այս կայքերը կարող են օգտագործել ձեր մասին իրենց պահած տեղեկությունները, երբ դուք դիտարկելիս լինեք <ph name="HOST" /> կայքը</translation>
 <translation id="4289732974614035569">Ընտրեք PIN կոդ</translation>
 <translation id="4290791284969893584">Էջը փակելուց հետո ձեր սկսած առաջադրանքները կարող են մնալ անավարտ</translation>
+<translation id="4290826901752066702"><ph name="NUM" /> անդամ</translation>
 <translation id="4290898381118933198">Մատը սահեցնել՝ մի էջից մյուսին անցնելու համար</translation>
 <translation id="4291265871880246274">Մուտքի պատուհան</translation>
 <translation id="429312253194641664">Կայքում մեդիա ֆայլ է նվագարկվում</translation>
@@ -5774,6 +5781,7 @@
 <translation id="5079950360618752063">Օգտագործել առաջարկված գաղտնաբառը</translation>
 <translation id="508059534790499809">Թարմացնել Kerberos տոմսը</translation>
 <translation id="5081124414979006563">&amp;Բացել հյուրի պրոֆիլը</translation>
+<translation id="5081974595802103358">Չհաջողվեց պատճենել հղումը</translation>
 <translation id="508209203623347828">Եթե այս քարտն անջատեք, Microsoft քարտերը (օրինակ՝ Sharepoint-ը և Outlook Calendar-ը) նույնպես կանջատվեն։</translation>
 <translation id="5083035541015925118">ctrl + alt + վերև սլաք</translation>
 <translation id="5084328598860513926">Համաժամացումն ընդհատվել է։ Փորձեք նորից կամ կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
@@ -6615,6 +6623,7 @@
 <translation id="5691581861107245578">Ստացեք էմոջիների առաջարկներ՝ ձեր մուտքագրած տեքստի հիման վրա</translation>
 <translation id="5691772641933328258">Չհաջողվեց ճանաչել մատնահետքը</translation>
 <translation id="5693255400847650006">Խոսափողը ներկայումս օգտագործվում է</translation>
+<translation id="5695046252726616755">Սեղմեք Enter կամ բացատ՝ այլ ընտրանքներ բացելու համար։</translation>
 <translation id="5695184138696833495">Android-ի համար հավելվածների ADB գործիք Լինուքսում</translation>
 <translation id="5696143504434933566">Հաղորդել չարաշահման մասին («<ph name="EXTENSION_NAME" />»)</translation>
 <translation id="5696679855467848181">Ընթացիկ օգտագործվող PPD ֆայլը՝ <ph name="PPD_NAME" /></translation>
@@ -7851,6 +7860,7 @@
 <translation id="6609478180749378879">Մուտքի տվյալները կպահվեն այս սարքում, երբ դուք դուրս գաք ինկոգնիտո ռեժիմից։ Ձեր սարքով դուք նորից կկարողանաք մտնել հաշիվ այս կայքում։</translation>
 <translation id="6610002944194042868">Թարգմանության կարգավորումներ</translation>
 <translation id="6610064275805055636">Կառավարել մեկուսացված վեբ հավելվածները</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> ներդիր</translation>
 <translation id="6611972847767394631">Ձեր ներդիրներն այստեղ են</translation>
 <translation id="661266467055912436">Համացանցը դարձնում է ավելի անվտանգ ձեր և մյուս օգտատերերի համար։</translation>
 <translation id="6613267708691765962">Վնասագրի որոնում...</translation>
@@ -8561,6 +8571,7 @@
 <translation id="7118268675952955085">սքրինշոթ</translation>
 <translation id="711840821796638741">Ցուցադրել կառավարվող էջանիշները</translation>
 <translation id="711985611146095797">Այս էջում կարող եք կառավարել ձեր Google հաշիվները, որոնցում մուտք եք գործել։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="71200494435060621">Միանալ որպես <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="7120762240626567834">Chrome դիտարկիչի և Android սարքի թրաֆիկը կարգելահանվեն, երբ VPN-ի հետ կապը վերականգնվի</translation>
 <translation id="7120904433567247946">Այս էջանիշը պահվում է միայն այս սարքում։ Եթե այն պահեք «<ph name="ACCOUNT_FOLDER" />» պանակում, այս էջանիշը նույնպես կպահվի ձեր հաշվում։</translation>
 <translation id="7121438501124788993">Մշակողի ռեժիմ</translation>
@@ -8722,7 +8733,6 @@
 <translation id="7243092385765551741">Ջնջե՞լ մուտքի բանալին</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (լավագույն)</translation>
 <translation id="7246230585855757313">Նորից տեղադրեք անվտանգության բանալին ու կրկնեք փորձը։</translation>
-<translation id="7248245317364871465">Ավտոմատ առաջարկում և ստեղծում է խմբեր ձեր բաց ներդիրներից, որպեսզի ավելի հեշտությամբ գտնեք այն, ինչ փնտրում եք</translation>
 <translation id="724835896049478274">Հաշիվներ, որոնք հասանելի են Android-ի համար նախատեսված հավելվածների համար</translation>
 <translation id="7248802599439396696">Ապակտիվացնել ներդիրները</translation>
 <translation id="7249197363678284330">Փոխեք այս կարգավորումը հասցեագոտում։</translation>
@@ -9956,6 +9966,7 @@
 <translation id="8105273883928376822">Շարունակելու համար մուտք գործեք հաշիվ։</translation>
 <translation id="8107015733319732394">Google Play Խանութը տեղադրվում է <ph name="DEVICE_TYPE" /> սարքում։ Սա կարող է մի քանի րոպե տևել։</translation>
 <translation id="810728361871746125">Էկրանի լուծաչափ</translation>
+<translation id="8108161424633979910"><ph name="NUM" /> անդամ</translation>
 <translation id="8109109153262930486">Կանխադրված ավատար</translation>
 <translation id="8109991406044913868">Արհեստական բանականության օգնությամբ ստեղծված թեմա</translation>
 <translation id="8110393529211831722">Բաժանորդագրությունը տեղադրված է միայն այս սարքում և չի համաժամացվում ձեր հաշվի ներքո գրանցված այլ սարքերի հետ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>

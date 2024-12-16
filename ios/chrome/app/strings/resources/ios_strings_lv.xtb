@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Atvērt visas</translation>
 <translation id="1408847409015257906">Pieskarieties vienumam “Konfidencialitāte un drošība”.</translation>
 <translation id="1411386976162024013">Lens vizuālā meklēšana</translation>
+<translation id="1417474386970818917">Izrakstīties un dzēst</translation>
 <translation id="1426410128494586442">Jā</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1436671784520050284">Turpināt iestatīšanu</translation>
@@ -1010,6 +1011,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5628388627414062173">{count,plural, =1{Jūsu lasīšanas sarakstā ir {count} lapa.}zero{Jūsu lasīšanas sarakstā ir {count} lapas.}one{Jūsu lasīšanas sarakstā ir {count} lapa.}other{Jūsu lasīšanas sarakstā ir {count} lapas.}}</translation>
 <translation id="5632485077360054581">Parādīt, kā</translation>
 <translation id="5633237939819267663">{count,plural, =1{Grāmatzīme tika saglabāta šeit: “{title}”.}zero{{count} grāmatzīmes tika saglabātas šeit: “{title}”.}one{{count} grāmatzīme tika saglabāta šeit: “{title}”.}other{{count} grāmatzīmes tika saglabātas šeit: “{title}”.}}</translation>
+<translation id="564170563478022912">Vai izrakstīties? Nesaglabātie konta dati tiks dzēsti.</translation>
 <translation id="5642707040609478753">Atzīmēt kā nelasītu</translation>
 <translation id="5646284034397250191">Iezīme izveidota. Vēl nav datuma.</translation>
 <translation id="5647096944343801045">Liels ieejas punkts</translation>
@@ -1022,6 +1024,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5669335982068190158">Jūs tikāt izrakstīts, veicot iPhone tālruņa atiestatīšanu. Lai pierakstītos, pieskarieties vienumam Turpināt.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versija <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Vai pārslēgt kontus? Nesaglabātie konta dati tiks dzēsti.</translation>
 <translation id="5683499062697987550">Lai Google kontā varētu izmantot un saglabāt paroles, apstipriniet savu identitāti.</translation>
 <translation id="5684761169742812828">Šī parole tika atklāta datu aizsardzības pārkāpumā internetā. Ja jums šobrīd nav laika nomainīt paroli, Google iesaka saglabāt šo brīdinājumu kā atgādinājumu sev, lai to izdarītu vēlāk.</translation>
 <translation id="5694848685995373177">Saglabāts konta <ph name="USER_EMAIL" /> Diskā.</translation>
@@ -1223,6 +1226,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="6506996418997555004">Ciļņu grupas “<ph name="GROUP_NAME" />” kopīgošana</translation>
 <translation id="6507973708545996744">Pierakstieties, lai lasīšanas saraksts būtu pieejams visās jūsu ierīcēs.</translation>
 <translation id="6518133107902771759">Verificēt</translation>
+<translation id="6518861084553706202">Cilnes tiks aizvērtas, un tiks dzēsti dati, tostarp paroles, pārlūkošanas vēsture, sīkfaili un citi dati.</translation>
 <translation id="6523575793810663688">Parādīt, kā</translation>
 <translation id="6524082013156754186">Saglabāt kontā</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
@@ -1679,6 +1683,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8545276357312221485">Noklusējuma pārlūka iestatījumu pārbaude</translation>
 <translation id="854938212724803178">Jums ir viena uzlauzta parole. Labojiet to tūlīt, lai gādātu par savu drošību.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Jūs noraidījāt {count} brīdinājumu.}zero{Jūs noraidījāt {count} brīdinājumus.}one{Jūs noraidījāt {count} brīdinājumu.}other{Jūs noraidījāt {count} brīdinājumus.}}</translation>
+<translation id="8558046478684552694">Aizvērt grupu.</translation>
 <translation id="8560253818350321773">Vispirms rādīt bieži izmantotos vienumus.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Virs tastatūras ir pieejams {count} paroles variants.}zero{Virs tastatūras ir pieejami {count} paroles varianti.}one{Virs tastatūras ir pieejams {count} paroles variants.}other{Virs tastatūras ir pieejami {count} paroles varianti.}}</translation>
 <translation id="8564894539416715395">Jaunas cilnes lapa</translation>
@@ -1847,6 +1852,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9205189991633470489">Inkognito ciļņu bloķēšana</translation>
 <translation id="9206887540681440657">Ātrums</translation>
 <translation id="9223358826628549784">Avārijas ziņojums nosūtīts.</translation>
+<translation id="926455622548529175">Pārslēgt un dzēst</translation>
 <translation id="929748059769569925">Atzīmētais teksts</translation>
 <translation id="932305336591073205">{count,plural, =1{Aizvērt cilni}zero{Aizvērt cilnes}one{Aizvērt cilnes}other{Aizvērt cilnes}}</translation>
 <translation id="939472100615258482">Aktīvā vietne</translation>

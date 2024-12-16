@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Đã kết nối với một thiết bị USB</translation>
 <translation id="4194328954146351878">Hỏi trước khi cho phép các trang web xem và thay đổi thông tin trên thiết bị NFC (nên chọn)</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
+<translation id="4213239715282467974">Chrome hiện chia sẻ các thẻ gần đây với thiết bị của bạn. Bạn có thể nhanh chóng truy cập vào các thẻ này trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể tắt tính năng này bất cứ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Được cho phép</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Các trang web không được yêu cầu bạn cho phép sử dụng thông tin mà họ đã lưu về bạn</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
 <translation id="5403592356182871684">Tên</translation>
+<translation id="5408906274948600065">Cho phép Chrome chia sẻ các thẻ gần đây với thiết bị của bạn để xem các thẻ này trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể bật hoặc tắt tính năng này bất cứ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="5438097262470833822">Lựa chọn này sẽ đặt lại các quyền của <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu thông tin vị trí của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể xem thông tin vị trí của bạn.</translation>
 <translation id="5489227211564503167">Thời gian đã trôi qua: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

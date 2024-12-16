@@ -70,6 +70,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="1896836275755235458">Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium updater service</translation>
 <translation id="1911763535808217981">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chromium</translation>
+<translation id="1916451563296275579">Remove this app's data from Chromium</translation>
 <translation id="1929939181775079593">Chromium is unresponsive. Relaunch now?</translation>
 <translation id="1933341829955786215">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chromium</translation>
 <translation id="193439633299369377">Chromium OS needs to be restarted to apply the update.</translation>
@@ -407,6 +408,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6455857529632101747">Welcome to Chromium profiles</translation>
 <translation id="6466344609055215035">Remove account from Chromium</translation>
 <translation id="6475912303565314141">It also controls what page is shown when you start Chromium.</translation>
+<translation id="648062525172759633">These pages are intended for use by Chromium developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, click the button to enable debug pages and then navigate to this page again.</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
 <translation id="6510925080656968729">Uninstall Chromium</translation>
 <translation id="651535675648445253">Shortcuts open in Chromium</translation>
@@ -515,6 +517,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don’t want Chromium to consider.</translation>
 <translation id="7888981273428720788">Set Chromium as your default</translation>
 <translation id="7934340546140346950">Chromium upgrades insecure connections to HTTPS automatically when possible</translation>
+<translation id="7935734571048689933">Chromium is managed</translation>
 <translation id="7937630085815544518">You were signed in to Chromium as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7975919845073681630">This is a secondary installation of Chromium, and cannot be made your default browser.</translation>
 <translation id="7997934263947464652">Extensions, apps and themes from unknown sources can harm your device. Chromium recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>

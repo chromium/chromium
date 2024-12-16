@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Hidupkan penyegerakan?</translation>
 <translation id="1253032109800629289">Sembunyikan "Dapatkan Pemberitahuan Penjejakan Harga"</translation>
 <translation id="1258491128795710625">Perkara Baharu</translation>
+<translation id="1259210743048744967">Data semakan imbas anda yang sedia ada akan tersedia setelah <ph name="USER_EMAIL" /> log keluar. Data tersebut tidak akan disimpan dalam akaun ini.</translation>
 <translation id="1262724000444746916">Sembunyikan Tambahkan pada Penanda Halaman</translation>
 <translation id="1263231323834454256">Senarai bacaan</translation>
 <translation id="1263433075299269530">Tab terbuka anda yang terakhir</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Alih keluar tab dan padamkan kumpulan?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
 <translation id="1709916727352927457">Padamkan kunci laluan</translation>
+<translation id="1712341189152602203">Data semakan imbas sedia ada akan dipautkan kepada <ph name="USER_EMAIL" />. Data ini mungkin boleh dilihat oleh organisasi anda.</translation>
 <translation id="1713777106376424209">Disampaikan oleh</translation>
 <translation id="1715515772563243997">Jika anda mempercayai <ph name="SITE" />, anda boleh menggunakan kata laluan yang disimpan untuk log masuk.</translation>
 <translation id="1728549374069268714">Tampal dan pergi</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Ketik medan kata laluan log masuk pada laman yang menyimpan kata laluan anda.</translation>
 <translation id="1872096359983322073">Lampu suluh</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Pilih perkara yang hendak dilakukan dengan data semakan imbas sedia ada pada peranti ini, seperti kata laluan, sejarah dan pelbagai lagi.</translation>
 <translation id="1881621406744213161">Undang ahli keluarga</translation>
 <translation id="188237709236611317">Bar menu isih pintar</translation>
 <translation id="1883255238294161206">Runtuhkan senarai</translation>
@@ -512,6 +515,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Maklumat tapak</translation>
 <translation id="333229797575847124">Cara mendayakan ciri ini</translation>
+<translation id="3333566504534692948">Tidak, alihkan data kepada ruang kerja anda</translation>
 <translation id="3344485292736684439">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaharu</translation>
 <translation id="3348387552617855658">Kad ini membantu anda menjejaki pakej anda dan memberi anda kemaskinian penghantaran yang penting.</translation>

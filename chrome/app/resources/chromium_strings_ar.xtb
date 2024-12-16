@@ -66,6 +66,7 @@
 <translation id="1896836275755235458">‏يحافظ Chromium على طاقة البطارية من خلال الحدّ من الأنشطة في الخلفية والتأثيرات المرئية، مثل التمرير السلس وعدد اللقطات في الثانية للفيديو. <ph name="BEGIN_LINK" />مزيد من المعلومات حول ميزة "توفير البطارية"<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">‏خدمة Chromium Updater</translation>
 <translation id="1911763535808217981">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chromium</translation>
+<translation id="1916451563296275579">‏إزالة بيانات هذه التطبيقات من Chromium</translation>
 <translation id="1929939181775079593">‏لا يستجيب Chromium. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="1933341829955786215">‏تطلُب المؤسسة (<ph name="MANAGER" />) منك تسجيل الدخول إلى Chromium</translation>
 <translation id="193439633299369377">‏يجب إعادة تشغيل نظام التشغيل Chromium حتى يتم تطبيق التحديث.</translation>
@@ -403,6 +404,7 @@
 <translation id="6455857529632101747">‏مرحبًا بك في الملفات الشخصية على Chromium</translation>
 <translation id="6466344609055215035">‏إزالة الحساب من Chromium</translation>
 <translation id="6475912303565314141">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chromium.</translation>
+<translation id="648062525172759633">‏هذه الصفحات مخصّصة لمطوّري Chromium، وقد لا تتم صيانتها أو اختبارها بشكلٍ منتظم. لتفعيلها، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> والنقر على زر تفعيل صفحات تصحيح الأخطاء، ثم الانتقال إلى هذه الصفحة مرة أخرى.</translation>
 <translation id="648319183876919572">تعزِّز ميزة "الحماية المُحسّنة للتصفّح الآمن" حمايتك من المواقع الإلكترونية الضارة وعمليات التنزيل الخطيرة.</translation>
 <translation id="6510925080656968729">‏إزالة Chromium</translation>
 <translation id="651535675648445253">‏يتم فتح الاختصارات في Chromium</translation>
@@ -511,6 +513,7 @@
 <translation id="7877292582355102282">‏<ph name="BEGIN_BOLD" />كيفية إدارة بياناتك:<ph name="END_BOLD" /> لحماية خصوصيتك، نحذف تلقائيًا اهتماماتك التي يمر عليها أكثر من أربعة أسابيع. وفي حال بحثت عن أحد الاهتمامات مرّة آخرى، سيظهر في القائمة من جديد. يمكنك إزالة الاهتمامات التي لا تريد أن يضيفها Chromium إلى قائمة اهتماماتك.</translation>
 <translation id="7888981273428720788">‏ضبط Chromium كمتصفّح تلقائي</translation>
 <translation id="7934340546140346950">‏يرقِّي متصفِّح Chromium الاتصالات غير الآمنة إلى اتصالات عبر بروتوكول HTTPS تلقائيًا إن أمكن ذلك</translation>
+<translation id="7935734571048689933">‏متصفِّح Chromium مُدار</translation>
 <translation id="7937630085815544518">‏تم تسجيل دخولك إلى Chromium باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
 <translation id="7975919845073681630">‏هذا تثبيت ثانوي من Chromium، ولا يمكن جعله متصفحك التلقائي.</translation>
 <translation id="7997934263947464652">‏إنّ الإضافات والتطبيقات والمظاهر الواردة من مصادر غير معروفة يمكن أن تتسبّب في إلحاق الضرر بجهازك. ينصح Chromium بإجراء عملية التثبيت من خلال <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فقط.</translation>

@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{כרטיסייה אחת (<ph name="ONE_ADDED" />) נוספה}one{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}two{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}other{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}}</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="5339733443032484186">הכרטיסייה האחרונה שלך</translation>
+<translation id="5380159289133845234">העברת כרטיסיות כפולות לארכיון</translation>
 <translation id="5400836586163650660">אפור</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">קבוצות הכרטיסיות נשמרות אוטומטית</translation>
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">הגישה שלך לקבוצת הכרטיסיות <ph name="GROUP_NAME" /> תאבד באופן מיידי</translation>
+<translation id="6109251075362363230">עכשיו גם כל הכרטיסיות הכפולות יועברו לארכיון, חוץ מהעותק האחרון שנעשה בו שימוש.</translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6228793724645064692">(דירוג החנות)</translation>
 <translation id="6271513594716432922">סגירה של כל הכרטיסיות הלא פעילות</translation>

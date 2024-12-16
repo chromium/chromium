@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="1408847409015257906">Tik op Privacy en beveiliging.</translation>
 <translation id="1411386976162024013">Visueel zoeken met Lens</translation>
+<translation id="1417474386970818917">Uitloggen en verwijderen</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1436671784520050284">Doorgaan met instellen</translation>
@@ -1010,6 +1011,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5628388627414062173">{count,plural, =1{{count} pagina op je leeslijst}other{{count} pagina's op je leeslijst}}</translation>
 <translation id="5632485077360054581">Laten zien</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bookmark opgeslagen in {title}}other{{count} bookmarks opgeslagen in {title}}}</translation>
+<translation id="564170563478022912">Uitloggen? Niet-opgeslagen accountgegevens worden verwijderd.</translation>
 <translation id="5642707040609478753">Markeren als ongelezen</translation>
 <translation id="5646284034397250191">Label gemaakt. Datum nog niet bekend.</translation>
 <translation id="5647096944343801045">Groot toegangspunt</translation>
@@ -1022,6 +1024,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5669335982068190158">Je bent uitgelogd omdat je iPhone wordt gereset. Tik hieronder op Doorgaan om in te loggen.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versie <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Ander account? Niet-opgeslagen accountgegevens worden verwijderd.</translation>
 <translation id="5683499062697987550">Bevestig dat jij het bent om wachtwoorden in je Google-account te gebruiken en op te slaan.</translation>
 <translation id="5684761169742812828">Dit wachtwoord is openbaar gemaakt bij een gegevenslek op internet. Als je nu geen tijd hebt om het aan te passen, raadt Google je aan deze waarschuwing ter herinnering te laten staan.</translation>
 <translation id="5694848685995373177">In Drive opgeslagen voor <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="6506996418997555004">Tabbladgroep <ph name="GROUP_NAME" /> delen</translation>
 <translation id="6507973708545996744">Log in om je leeslijst op al je apparaten te gebruiken.</translation>
 <translation id="6518133107902771759">Controleren</translation>
+<translation id="6518861084553706202">Tabbladen worden gesloten en gegevens worden verwijderd, waaronder wachtwoorden, browsegeschiedenis en cookies.</translation>
 <translation id="6523575793810663688">Laat me zien hoe</translation>
 <translation id="6524082013156754186">Opslaan in account</translation>
 <translation id="6527303717912515753">Delen</translation>
@@ -1679,6 +1683,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8545276357312221485">Je standaardbrowserinstellingen checken</translation>
 <translation id="854938212724803178">Je hebt 1 gehackt wachtwoord Los dit nu op om beveiligd te blijven.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Je hebt {count} waarschuwing gesloten}other{Je hebt {count} waarschuwingen gesloten}}</translation>
+<translation id="8558046478684552694">Groep sluiten.</translation>
 <translation id="8560253818350321773">Toon veelgebruikte items eerst.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} optie voor wachtwoord beschikbaar boven je toetsenbord.}other{{count} opties voor wachtwoorden beschikbaar boven je toetsenbord.}}</translation>
 <translation id="8564894539416715395">Pagina Nieuw tabblad</translation>
@@ -1847,6 +1852,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9205189991633470489">Incognitovergrendeling</translation>
 <translation id="9206887540681440657">Snelheid</translation>
 <translation id="9223358826628549784">Crashrapport verzonden.</translation>
+<translation id="926455622548529175">Overschakelen en verwijderen</translation>
 <translation id="929748059769569925">Gemarkeerde tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Tabblad sluiten}other{Tabbladen sluiten}}</translation>
 <translation id="939472100615258482">Huidige site</translation>

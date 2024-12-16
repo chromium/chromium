@@ -2249,7 +2249,6 @@
 <translation id="2532146950330687938">正在準備裝置…</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 設定中管理安全 DNS</translation>
 <translation id="2532589005999780174">高對比度模式</translation>
-<translation id="2532878989288727311">協助在網絡上撰寫評論等短篇文字。系統會根據你的提示和網頁內容提供撰寫建議</translation>
 <translation id="2533649878691950253">由於您通常不允許網站取得您的精確位置，因此系統已禁止此操作</translation>
 <translation id="253434972992662860">暫停(&amp;P)</translation>
 <translation id="253498598929009420">網站將可見到您螢幕上的內容</translation>
@@ -2875,6 +2874,7 @@
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
 <translation id="2983102365694924129">根據您在網站上的活動推薦。此設定已關閉。</translation>
 <translation id="2983373101216420412">充電盒電量係 <ph name="PERCENTAGE" />%。</translation>
+<translation id="2984384421572259426">清理未使用的分頁</translation>
 <translation id="2984727013951557074">檔案仍在同步至「雲端硬碟」。</translation>
 <translation id="2985348301114641460">要向管理員傳送「<ph name="EXTENSION_NAME" />」的安裝要求嗎？</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{「<ph name="APP_NAME" />」已解除安裝 應用程式}other{「<ph name="APP_NAME" />」已解除安裝 # 個應用程式}}</translation>
@@ -4429,6 +4429,7 @@
 <translation id="4072805772816336153">請稍後再試</translation>
 <translation id="4074164314564067597">鍵盤</translation>
 <translation id="407520071244661467">縮放比例</translation>
+<translation id="4077623680826964850">啟動或重新連接虛擬機器逾時。</translation>
 <translation id="4077917118009885966">已封鎖此網站的廣告</translation>
 <translation id="4078738236287221428">積極</translation>
 <translation id="4078903002989614318">排序同埋清單選項</translation>
@@ -4914,6 +4915,7 @@
 <translation id="4437879751057074691">提示儲存密碼和密鑰</translation>
 <translation id="4437947179446780764">新增自訂 DNS 服務供應商</translation>
 <translation id="4438043733494739848">透明</translation>
+<translation id="4439157218765614426">受政策禁止。</translation>
 <translation id="4441124369922430666">您要在裝置開機時自動啟動這個應用程式嗎？</translation>
 <translation id="4441147046941420429">如要繼續，請從裝置上移除安全密鑰，然後重新插入並輕觸密鑰</translation>
 <translation id="444134486829715816">展開…</translation>
@@ -5370,6 +5372,7 @@
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4779136857077979611">飯糰</translation>
 <translation id="4779766576531456629">重新命名 eSIM 卡的流動網絡</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 個重複的分頁</translation>
 <translation id="4780321648949301421">另存網頁…</translation>
 <translation id="4780558987886269159">工作時</translation>
 <translation id="4785719467058219317">您目前使用的安全密鑰並未在此網站註冊</translation>
@@ -5448,6 +5451,7 @@
 <translation id="4833683849865011483">在列印伺服器中找到 1 部打印機</translation>
 <translation id="4835598628985424375">嘟嘴</translation>
 <translation id="4835677468087803981">隱藏 PIN</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> 個重複的分頁</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回使用「Google 搜尋」嗎？</translation>
 <translation id="4837926214103741331">您無權使用這部裝置。如需登入權限，請與裝置擁有者聯絡。</translation>
@@ -6073,6 +6077,7 @@
 <translation id="528208740344463258">如要下載並使用 Android 應用程式，請先安裝此必要更新。<ph name="DEVICE_TYPE" /> 更新時，您將無法使用裝置。安裝完成後，<ph name="DEVICE_TYPE" /> 將會重新啟動。</translation>
 <translation id="5283677936944177147">糟糕！系統無法識別裝置型號或序號。</translation>
 <translation id="5284445933715251131">繼續下載</translation>
+<translation id="5285484405698525101">目前沒有未使用的分頁</translation>
 <translation id="5285635972691565180">顯示屏 <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">正在掃瞄</translation>
 <translation id="5287425679749926365">您的帳戶</translation>
@@ -6346,6 +6351,7 @@
 <translation id="5481941284378890518">新增附近的打印機</translation>
 <translation id="5482417738572414119">登入帳戶，允許 Chrome 提供分頁群組建議及整理分頁</translation>
 <translation id="5483005706243021437">繼續使用</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{沒有未使用的分頁}=1{查看 1 個未使用的分頁}other{查看 # 個未使用的分頁}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您備份資料，並在今天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您備份資料，並在 {NUM_DAYS} 天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
 <translation id="5485435764083510385">偏好的字幕語言</translation>
@@ -7024,6 +7030,7 @@
 <translation id="5982578203375898585">下載完成後顯示下載檔案</translation>
 <translation id="5983716913605894570">生成緊…</translation>
 <translation id="5984222099446776634">最近瀏覽的網站</translation>
+<translation id="5984334442529819751">安裝 DLC 時發生錯誤 (通常需要重新啟動，請前往「設定」\&gt;\&gt; [關於 ChromeOS] 瞭解詳情)。</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
 <translation id="5985556342298151179">由裝置管理員安裝的 Chrome 應用程式。</translation>
 <translation id="598810097218913399">移除指派</translation>
@@ -8737,7 +8744,6 @@
 <translation id="7243092385765551741">要刪除密鑰嗎？</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (最佳)</translation>
 <translation id="7246230585855757313">請重新插入安全密鑰，然後再試一次</translation>
-<translation id="7248245317364871465">自動根據已開啟的分頁建議並建立群組，方便你找到所需內容</translation>
 <translation id="724835896049478274">適用於 Android 應用程式的帳戶</translation>
 <translation id="7248802599439396696">設定為閒置分頁</translation>
 <translation id="7249197363678284330">在網址列中變更此設定。</translation>
@@ -9259,6 +9265,7 @@
 <translation id="762917478230183172">選取各個按鍵的操作</translation>
 <translation id="7629206210984165492">柔和</translation>
 <translation id="7629827748548208700">分頁：<ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">結果不明。</translation>
 <translation id="7630426712700473382">此裝置由 <ph name="MANAGER" /> 管理，每次使用均需要登入。</translation>
 <translation id="7631014249255418691">已成功備份 Linux 應用程式和檔案</translation>
 <translation id="7631722872321401342">裝置上沒有<ph name="LANGUAGE" />語音，你可前往設定安裝。</translation>
@@ -9412,6 +9419,7 @@
 <translation id="7723388585204724670">重設為預設的 Chrome</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7726391492136714301">查看手機上的通知和應用程式</translation>
+<translation id="7727898923446098954">已隱藏分頁</translation>
 <translation id="7728465250249629478">變更裝置語言</translation>
 <translation id="7728570244950051353">在休眠模式下鎖定螢幕</translation>
 <translation id="7728668285692163452">系統會在稍後套用版本變更</translation>
@@ -9804,6 +9812,7 @@
 <translation id="7992203134935383159">語音合成</translation>
 <translation id="799570308305997052">網頁檢視</translation>
 <translation id="7997826902155442747">處理優先次序</translation>
+<translation id="7997828719430450286">成功。</translation>
 <translation id="7998701048266085837">網址</translation>
 <translation id="7999229196265990314">已建立下列檔案：
 
@@ -10454,6 +10463,7 @@
 <translation id="845702320058262034">無法連線。請確保手機已開啟藍牙。</translation>
 <translation id="8457251154056341970">此頁面不會再顯示<ph name="MODULE_NAME" /></translation>
 <translation id="8457451314607652708">匯入書籤</translation>
+<translation id="8458259704995116343">無法啟動虛擬機器。</translation>
 <translation id="8458341576712814616">快捷字詞</translation>
 <translation id="8458627787104127436">在新視窗中開啟所有書籤 (<ph name="URL_COUNT" /> 個)</translation>
 <translation id="8459023460357294721">仍要開啟 <ph name="FILE_NAME" /></translation>
@@ -11111,12 +11121,14 @@
 <translation id="8918900204934259333">正在安裝應用程式…</translation>
 <translation id="891931289445130855">刪除資料和權限</translation>
 <translation id="8920133120839850939">選取「更多手勢」分頁，然後開啟「滑動瀏覽頁面」以瀏覽上一個或下一個頁面</translation>
+<translation id="8921369299636221117">無法提供 Concierge 服務。</translation>
 <translation id="8922348435910470639">重複預約</translation>
 <translation id="8922624386829239660">在滑鼠觸觸畫面邊緣時移動畫面</translation>
 <translation id="8923880975836399332">深藍綠色</translation>
 <translation id="8925124370124776087">已隱藏標題列</translation>
 <translation id="8925458182817574960">設定(&amp;S)</translation>
 <translation id="8926389886865778422">不要再問我</translation>
+<translation id="8926555406617248399">已隱藏分頁</translation>
 <translation id="892706138619340876">已重設部分設定</translation>
 <translation id="8927438609932588163">允許網站在裝置上儲存資料</translation>
 <translation id="8929696694736010839">只套用至目前的無痕工作階段</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1408847409015257906">انقر على "الخصوصية والأمان".</translation>
 <translation id="1411386976162024013">‏البحث المرئي عبر "عدسة Google"</translation>
+<translation id="1417474386970818917">تسجيل الخروج والحذف</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1436671784520050284">متابعة الإعداد</translation>
@@ -1008,6 +1009,7 @@
 <translation id="5628388627414062173">{count,plural, =1{تتضمّن "قائمة القراءة" صفحة واحدة ({count})}zero{تتضمّن "قائمة القراءة" {count} صفحة}two{تتضمّن "قائمة القراءة" صفحتَين ({count})}few{تتضمّن "قائمة القراءة" {count} صفحات}many{تتضمّن "قائمة القراءة" {count} صفحة}other{تتضمّن "قائمة القراءة" {count} صفحة}}</translation>
 <translation id="5632485077360054581">الاطّلاع على الإرشادات</translation>
 <translation id="5633237939819267663">{count,plural, =1{تمّ حفظ إشارة مرجعية واحدة في "{title}"}zero{تمّ حفظ {count} إشارة مرجعية في "{title}"}two{تمّ حفظ إشارتَين مرجعيتَين ({count}) في "{title}"}few{تمّ حفظ {count} إشارات مرجعية في "{title}"}many{تمّ حفظ {count} إشارة مرجعية في "{title}"}other{تمّ حفظ {count} إشارة مرجعية في "{title}"}}</translation>
+<translation id="564170563478022912">هل تريد الخروج؟ سيتم حذف بيانات الحساب غير المحفوظة.</translation>
 <translation id="5642707040609478753">وضع علامة "غير مقروءة"</translation>
 <translation id="5646284034397250191">تم إنشاء التصنيف. في انتظار التاريخ</translation>
 <translation id="5647096944343801045">نقطة دخول كبيرة</translation>
@@ -1020,6 +1022,7 @@
 <translation id="5669335982068190158">‏تم تسجيل خروجك كجزء من عملية إعادة ضبط هاتف iPhone. انقر على زر المتابعة أدناه لتسجيل الدخول.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">الإصدار <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">هل تريد تبديل الحسابات؟ سيتم حذف بيانات الحساب غير المحفوظة.</translation>
 <translation id="5683499062697987550">‏عليك إثبات هويتك لاستخدام كلمات المرور وحفظها في حسابك على Google.</translation>
 <translation id="5684761169742812828">‏تم الكشف عن كلمة المرور هذه في عملية اختراق للبيانات على الإنترنت. إذا لم يكن لديك الوقت لتغييرها الآن، تنصحك Google بإبقاء هذا التحذير لتذكيرك لاحقًا.</translation>
 <translation id="5694848685995373177">‏تم حفظ الملف في الحساب <ph name="USER_EMAIL" /> على Google Drive.</translation>
@@ -1221,6 +1224,7 @@
 <translation id="6506996418997555004">مشاركة مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">سجِّل الدخول لعرض قائمة القراءة على جميع أجهزتك.</translation>
 <translation id="6518133107902771759">تحقق</translation>
+<translation id="6518861084553706202">سيتم إغلاق علامات التبويب. وقد تشمل البيانات المحذوفة كلمات المرور وسجلّ التصفّح وملفات تعريف الارتباط وغير ذلك.</translation>
 <translation id="6523575793810663688">الاطّلاع على الإرشادات</translation>
 <translation id="6524082013156754186">الحفظ في الحساب</translation>
 <translation id="6527303717912515753">مشاركة</translation>
@@ -1679,6 +1683,7 @@
 <translation id="8545276357312221485">التحقُّق من إعدادات المتصفِّح التلقائية</translation>
 <translation id="854938212724803178">لديك كلمة مرور واحدة محتمَل تعرّضها للاختراق. عليك تغييرها الآن للحفاظ على أمانك.</translation>
 <translation id="8556590991644167667">{count,plural, =1{أغلقت تحذيرًا واحدًا ({count}).}zero{أغلقت {count} تحذير.}two{أغلقت تحذيرَين ({count}).}few{أغلقت {count} تحذيرات.}many{أغلقت {count} تحذيرًا.}other{أغلقت {count} تحذير.}}</translation>
+<translation id="8558046478684552694">إغلاق المجموعة</translation>
 <translation id="8560253818350321773">عرض العناصر الأكثر استخدامًا أولاً</translation>
 <translation id="8561999115126307258">{count,plural, =1{يتوفّر خيار واحد ({count}) لكلمة المرور أعلى لوحة المفاتيح.}zero{يتوفّر {count} خيار لكلمة المرور أعلى لوحة المفاتيح.}two{يتوفّر خياران ({count}) لكلمة المرور أعلى لوحة المفاتيح.}few{تتوفّر {count} خيارات لكلمة المرور أعلى لوحة المفاتيح.}many{يتوفّر {count} خيارًا لكلمة المرور أعلى لوحة المفاتيح.}other{يتوفّر {count} خيار لكلمة المرور أعلى لوحة المفاتيح.}}</translation>
 <translation id="8564894539416715395">صفحة علامة تبويب جديدة</translation>
@@ -1847,6 +1852,7 @@
 <translation id="9205189991633470489">قفل وضع التصفّح المتخفي</translation>
 <translation id="9206887540681440657">السرعة</translation>
 <translation id="9223358826628549784">تم إرسال تقرير الأعطال.</translation>
+<translation id="926455622548529175">تبديل وحذف</translation>
 <translation id="929748059769569925">النص المُحدَّد</translation>
 <translation id="932305336591073205">{count,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
 <translation id="939472100615258482">الموقع الإلكتروني الحالي</translation>

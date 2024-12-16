@@ -400,6 +400,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="281504910091592009">Tingnan at pamahalaan ang mga naka-save na password sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2819849308549746319">Mag-unsubscribe sa lahat</translation>
+<translation id="2826576843404243001">Para sa mga site na hindi sinusuportahan ang mga secure na koneksyon, mabigyan ng babala bago bisitahin ang site. Hindi mo mababago ang setting na ito dahil naka-enable sa iyo ang Advanced na Proteksyon.</translation>
 <translation id="2827278682606527653">Half height ng menu ng feed card</translation>
 <translation id="2830783625999891985">Nakatago ang mga content ng clipboard</translation>
 <translation id="2834884592945939112">Mga Setting, error sa Google Account</translation>
@@ -515,8 +516,10 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
 <translation id="3305130791745726624">Ipadala sa mga device</translation>
 <translation id="3305795716056605962">Magsalin ng mga page mula sa button na Higit pang Opsyon</translation>
+<translation id="331080746368555063">Puwedeng magsama ang mga pribadong site ng mga bagay tulad ng intranet ng iyong kumpanya</translation>
 <translation id="3311330810461485557">Maghanap ayon sa app, petsa, at higit pa.</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
+<translation id="333863344734218290">Binabalaan ka para sa mga hindi secure na pampubliko at pribadong site</translation>
 <translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
 <translation id="3351165113450806415">Bagong paraan para mag-swipe</translation>
 <translation id="3359667936385849800">Gamitin ang iyong kasalukuyang service provider</translation>
@@ -901,6 +904,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5085038751173179818">Mag-sign in sa site na ito at sa Chrome para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo</translation>
 <translation id="5091199029769593641">Hindi magtatagal at makakakita ka ng mga kuwento mula sa <ph name="SITE_NAME" /> kapag nagbukas ka ng bagong tab. Mase-save sa iyong Google account ang mga site na sinusubaybayan mo. Puwede mong pamahalaan ang mga ito sa mga setting ng Discover.</translation>
 <translation id="509429900233858213">May naganap na error.</translation>
+<translation id="5096775069898886423">Para sa mga site na hindi sinusuportahan ang mga secure na koneksyon, mabigyan ng babala bago bisitahin ang site</translation>
 <translation id="5097349930204431044">Puwedeng tukuyin ng mga site na binibisita mo kung ano ang gusto mo at pagkatapos ay magmumungkahi ito ng mga ad habang patuloy kang nagba-browse</translation>
 <translation id="510275257476243843">1 oras na lang ang natitira</translation>
 <translation id="5114895953710637392">Nakasara ang sheet para sa filter ng app.</translation>
@@ -1496,6 +1500,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7628417132421583481">Pumunta sa Password Manager</translation>
 <translation id="7630202231528827509">URL ng provider</translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
+<translation id="7646499124171960488">Binabalaan ka para sa mga hindi secure na pampublikong site</translation>
 <translation id="7646772052135772216">Hindi gumagana ang pag-sync ng password</translation>
 <translation id="7655240423373329753">nakaraang 7 araw</translation>
 <translation id="7656721520530864426">Walang site</translation>

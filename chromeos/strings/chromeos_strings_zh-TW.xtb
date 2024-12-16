@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">裝置的右側無線耳機電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3347558044552027859">現代</translation>
+<translation id="3353477144743332882">下載摘要和名稱建立模型</translation>
 <translation id="3359218928534347896">將麥克風切成靜音</translation>
 <translation id="3360306038446926262">視窗</translation>
 <translation id="3361618936611118375">壽司</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">無法使用這組快速鍵，請按不含 <ph name="KEY" /> 鍵的新快速鍵。</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">啟用</translation>
+<translation id="5875913454160982848">下載語音轉錄模型</translation>
 <translation id="5876385649737594562">開啟即可選取選項</translation>
 <translation id="5877503382465267833">暫停「<ph name="RECORDING_NAME" />」</translation>
 <translation id="588258955323874662">全螢幕</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">請稍待幾分鐘…</translation>
 <translation id="8505011850330200833">Gemini 模型需要 2 GB 的儲存空間來處理轉錄稿並建立摘要</translation>
 <translation id="8508640263392900755">APN 詳細資料</translation>
+<translation id="8509574872955173831">進一步瞭解如何建立摘要和名稱</translation>
 <translation id="8522687886059337719">現在起，你可以使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />螢幕保護程式<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">茶室</translation>

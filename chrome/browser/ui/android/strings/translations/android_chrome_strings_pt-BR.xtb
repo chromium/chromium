@@ -398,6 +398,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Ver e gerenciar as senhas salvas na sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
 <translation id="2819849308549746319">Cancelar todas as inscrições</translation>
+<translation id="2826576843404243001">Receba um aviso antes de acessar sites que não têm suporte a conexões seguras. Não é possível mudar essa configuração, porque a Proteção Avançada está ativada.</translation>
 <translation id="2827278682606527653">O menu do card do feed está aberto pela metade</translation>
 <translation id="2830783625999891985">Conteúdo da área de transferência oculto</translation>
 <translation id="2834884592945939112">Configurações, erro na Conta do Google</translation>
@@ -513,8 +514,10 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
 <translation id="3305130791745726624">Enviar para dispositivos</translation>
 <translation id="3305795716056605962">Traduzir páginas com o botão "Mais opções"</translation>
+<translation id="331080746368555063">Sites particulares podem incluir, por exemplo, a intranet da sua empresa</translation>
 <translation id="3311330810461485557">Pesquise por app, data e muito mais.</translation>
 <translation id="3334729583274622784">Mudar extensão do arquivo?</translation>
+<translation id="333863344734218290">Avisa sobre sites públicos e particulares sem segurança</translation>
 <translation id="3341262203274374114">Não foi possível parar de seguir. Algo deu errado.</translation>
 <translation id="3351165113450806415">Uma nova forma de deslizar</translation>
 <translation id="3359667936385849800">Usar o provedor de serviços atual</translation>
@@ -900,6 +903,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5085038751173179818">Faça login neste site e no Google Chrome para conferir seus favoritos e muito mais em todos seus dispositivos</translation>
 <translation id="5091199029769593641">Em breve, você verá stories de <ph name="SITE_NAME" /> quando abrir uma nova guia. Os sites que você segue são armazenados na sua Conta do Google. Você pode gerenciá-los nas configurações do Discover.</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
+<translation id="5096775069898886423">Receba um aviso antes de acessar sites que não têm suporte a conexões seguras</translation>
 <translation id="5097349930204431044">Os sites que você visita podem determinar do que você gosta e sugerir anúncios enquanto continua a navegar</translation>
 <translation id="510275257476243843">Uma hora restante</translation>
 <translation id="5114895953710637392">A página de filtro de apps está fechada.</translation>
@@ -1495,6 +1499,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7628417132421583481">Acessar o Gerenciador de senhas</translation>
 <translation id="7630202231528827509">URL do provedor</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
+<translation id="7646499124171960488">Avisa sobre sites públicos sem segurança</translation>
 <translation id="7646772052135772216">A sincronização de senha não está funcionando</translation>
 <translation id="7655240423373329753">nos últimos 7 dias</translation>
 <translation id="7656721520530864426">Nenhum site</translation>

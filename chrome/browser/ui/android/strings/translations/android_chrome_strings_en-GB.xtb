@@ -400,6 +400,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2819849308549746319">Unsubscribe all</translation>
+<translation id="2826576843404243001">For sites that don't support secure connections, get warned before visiting the site. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">Clipboard contents hidden</translation>
 <translation id="2834884592945939112">Settings, Google Account error</translation>
@@ -515,8 +516,10 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3305130791745726624">Send to devices</translation>
 <translation id="3305795716056605962">Translate pages from the More Options button</translation>
+<translation id="331080746368555063">Private sites might include things like your company's intranet</translation>
 <translation id="3311330810461485557">Search by app, date and more.</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
+<translation id="333863344734218290">Warns you for insecure public and private sites</translation>
 <translation id="3341262203274374114">Can’t unfollow. Something went wrong.</translation>
 <translation id="3351165113450806415">A new way to swipe</translation>
 <translation id="3359667936385849800">Use your current service provider</translation>
@@ -901,6 +904,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5085038751173179818">Sign in to this site and Chrome to get your bookmarks and more on all your devices</translation>
 <translation id="5091199029769593641">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="509429900233858213">An error occurred.</translation>
+<translation id="5096775069898886423">For sites that don't support secure connections, get warned before visiting the site</translation>
 <translation id="5097349930204431044">Sites that you visit can determine what you like and then suggest ads as you continue browsing</translation>
 <translation id="510275257476243843">1 hour left</translation>
 <translation id="5114895953710637392">App filter sheet is closed.</translation>
@@ -1496,6 +1500,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7628417132421583481">Go to Password Manager</translation>
 <translation id="7630202231528827509">Provider URL</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
+<translation id="7646499124171960488">Warns you for insecure public sites</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="7655240423373329753">last seven days</translation>
 <translation id="7656721520530864426">No sites</translation>

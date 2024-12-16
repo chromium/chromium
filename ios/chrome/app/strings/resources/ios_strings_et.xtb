@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="1408847409015257906">Puudutage valikut „Privaatsus ja turvalisus“.</translation>
 <translation id="1411386976162024013">Lensi visuaalne otsing</translation>
+<translation id="1417474386970818917">Logi välja ja kustuta</translation>
 <translation id="1426410128494586442">Jah</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1436671784520050284">Jätka seadistamist</translation>
@@ -1010,6 +1011,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5628388627414062173">{count,plural, =1{{count} leht teie lugemisloendis}other{{count} lehte teie lugemisloendis}}</translation>
 <translation id="5632485077360054581">Kuva juhised</translation>
 <translation id="5633237939819267663">{count,plural, =1{Järjehoidja salvestati kausta „{title}“}other{{count} järjehoidjat salvestati kausta „{title}“}}</translation>
+<translation id="564170563478022912">Kas logida välja? Salvestamata kontoandmed kustutatakse.</translation>
 <translation id="5642707040609478753">Märgi mitteloetuks</translation>
 <translation id="5646284034397250191">Silt on loodud. Kuupäeva ei ole veel</translation>
 <translation id="5647096944343801045">Suur sisenemispunkt</translation>
@@ -1022,6 +1024,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5669335982068190158">Teid logiti iPhone'i lähtestamise käigus välja. Sisselogimiseks puudutage allpool käsku Jätka.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versioon <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Kas vahetada kontot? Salvestamata kontoandmed kustutatakse.</translation>
 <translation id="5683499062697987550">Selleks, et saaksite oma Google'i kontol paroole kasutada ja salvestada, kinnitage oma isik.</translation>
 <translation id="5684761169742812828">See parool langes Internetis andme turberikkumise ohvriks. Kui teil pole praegu aega seda muuta, soovitab Google selle hoiatuse hiljem tegutsemise meeldetuletusena alles hoida.</translation>
 <translation id="5694848685995373177">Kasutajale <ph name="USER_EMAIL" /> Drive'i salvestatud.</translation>
@@ -1223,6 +1226,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6506996418997555004">Jagamine vahelehegrupiga „<ph name="GROUP_NAME" />“</translation>
 <translation id="6507973708545996744">Logige sisse, et hankida lugemisloend kõigisse oma seadmetesse.</translation>
 <translation id="6518133107902771759">Kinnita</translation>
+<translation id="6518861084553706202">Vahelehed kustutatakse ja kustutatavad andmed võivad hõlmata paroole, sirvimisajalugu, küpsisefaile ja muud.</translation>
 <translation id="6523575793810663688">Näita, kuidas seda teha</translation>
 <translation id="6524082013156754186">Salvesta kontole</translation>
 <translation id="6527303717912515753">Jaga</translation>
@@ -1679,6 +1683,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8545276357312221485">Kontrollige vaikebrauseri seadeid</translation>
 <translation id="854938212724803178">Teil on 1 ohustatud parool. Turvalisuse tagamiseks parandage see kohe.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Loobusite {count} hoiatusest}other{Loobusite {count} hoiatusest}}</translation>
+<translation id="8558046478684552694">Grupi sulgemine.</translation>
 <translation id="8560253818350321773">Sageli kasutatavad üksused kuvatakse eespool.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Klaviatuuri kohal on parooli jaoks saadaval {count} valik.}other{Klaviatuuri kohal on parooli jaoks saadaval {count} valikut.}}</translation>
 <translation id="8564894539416715395">Uus vaheleht</translation>
@@ -1847,6 +1852,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9205189991633470489">Inkognito lukk</translation>
 <translation id="9206887540681440657">Kiirus</translation>
 <translation id="9223358826628549784">Krahhiaruanne on saadetud.</translation>
+<translation id="926455622548529175">Vaheta ja kustuta</translation>
 <translation id="929748059769569925">Esiletõstetud tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Sulge vaheleht}other{Sulge vahelehed}}</translation>
 <translation id="939472100615258482">Praegune sait</translation>

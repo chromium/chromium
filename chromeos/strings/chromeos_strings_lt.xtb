@@ -484,6 +484,7 @@
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3340978935015468852">Nustatymai</translation>
 <translation id="3347558044552027859">modernus</translation>
+<translation id="3353477144743332882">Atsisiųsti suvestinės ir pavadinimo kūrimo modelį</translation>
 <translation id="3359218928534347896">perjungti mikrofono nutildymą</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sušis</translation>
@@ -999,6 +1000,7 @@
 <translation id="5859969039821714932">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą be „<ph name="KEY" />“.</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="5860491529813859533">Įjungti</translation>
+<translation id="5875913454160982848">Atsisiųsti transkribavimo modelį</translation>
 <translation id="5876385649737594562">Įjunkite ir pasirinkite parinktis</translation>
 <translation id="5877503382465267833">Pristabdyti „<ph name="RECORDING_NAME" />“</translation>
 <translation id="588258955323874662">Visas ekranas</translation>
@@ -1590,6 +1592,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8503836310948963452">Dar kelios minutės...</translation>
 <translation id="8505011850330200833">„Gemini“ modeliui reikia 2 GB saugyklos vietos, kad būtų galima apdoroti transkribuotą tekstą ir kurti santraukas</translation>
 <translation id="8508640263392900755">Išsami APN informacija</translation>
+<translation id="8509574872955173831">Sužinokite daugiau apie suvestinės ir pavadinimo kūrimą</translation>
 <translation id="8522687886059337719">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ir <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrano užsklandą<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">arbatos namai</translation>

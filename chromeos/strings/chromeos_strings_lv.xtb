@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Labās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">Iestatījumi</translation>
 <translation id="3347558044552027859">moderns</translation>
+<translation id="3353477144743332882">Lejupielādēt kopsavilkuma un nosaukuma izveides modeli</translation>
 <translation id="3359218928534347896">pārslēgt mikrofona skaņu</translation>
 <translation id="3360306038446926262">Logi</translation>
 <translation id="3361618936611118375">suši</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Īsinājumtaustiņi nav pieejami. Nospiediet jaunu īsinājumtaustiņu kombināciju, neizmantojot šo taustiņu: <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Izsl.</translation>
 <translation id="5860491529813859533">Ieslēgt</translation>
+<translation id="5875913454160982848">Lejupielādēt transkribēšanas modeli</translation>
 <translation id="5876385649737594562">Ieslēdziet, lai atlasītu opcijas</translation>
 <translation id="5877503382465267833">Pārtraukt ieraksta “<ph name="RECORDING_NAME" />” atskaņošanu</translation>
 <translation id="588258955323874662">Pilnekrāna</translation>
@@ -1588,6 +1590,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8503836310948963452">Vēl tikai dažas minūtes...</translation>
 <translation id="8505011850330200833">Gemini modelim ir nepieciešama 2 GB liela krātuve, lai varētu apstrādāt transkripcijas un izveidot apkopojumus.</translation>
 <translation id="8508640263392900755">Informācija par APN</translation>
+<translation id="8509574872955173831">Uzzināt vairāk par kopsavilkuma un nosaukuma izveidi</translation>
 <translation id="8522687886059337719">Tagad varat piekļūt jaunām <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fona tapetēm<ph name="END_LINK_WALLPAPER_SUBPAGE" /> un <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrānsaudzētājam<ph name="END_LINK_SCREENSAVER_SUBPAGE" />.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tējas namiņš</translation>

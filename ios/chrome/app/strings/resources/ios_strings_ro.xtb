@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1408847409015257906">Atinge Confidențialitate și securitate.</translation>
 <translation id="1411386976162024013">Căutare vizuală cu Lens</translation>
+<translation id="1417474386970818917">Deconectează-te și șterge</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1436671784520050284">Continuă configurarea</translation>
@@ -1010,6 +1011,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5628388627414062173">{count,plural, =1{{count} pagină din Lista de lecturi}few{{count} pagini din Lista de lecturi}other{{count} de pagini din Lista de lecturi}}</translation>
 <translation id="5632485077360054581">Arată-mi cum</translation>
 <translation id="5633237939819267663">{count,plural, =1{Marcajul s-a salvat în {title}}few{{count} marcaje s-au salvat în {title}}other{{count} de marcaje s-au salvat în {title}}}</translation>
+<translation id="564170563478022912">Te deconectezi? Datele nesalvate ale contului se vor șterge.</translation>
 <translation id="5642707040609478753">Marchează drept necitit</translation>
 <translation id="5646284034397250191">Eticheta a fost creată. Data este în așteptare</translation>
 <translation id="5647096944343801045">Punct de intrare mare</translation>
@@ -1022,6 +1024,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5669335982068190158">Te-ai deconectat în cadrul resetării dispozitivului iPhone. Atinge Continuă pentru a te conecta.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versiunea <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Schimbi contul? Datele nesalvate ale contului se vor șterge.</translation>
 <translation id="5683499062697987550">Confirmă-ți identitatea pentru a folosi și salva parole în Contul Google.</translation>
 <translation id="5684761169742812828">Parola a fost expusă în urma încălcării securității datelor pe internet. Dacă nu ai timp să o modifici acum, Google recomandă să păstrezi acest avertisment pentru a-ți aminti mai târziu.</translation>
 <translation id="5694848685995373177">S-a salvat în Drive pentru <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6506996418997555004">Trimite grupul de file <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Conectează-te pentru a accesa lista de lecturi pe toate dispozitivele.</translation>
 <translation id="6518133107902771759">Confirmați</translation>
+<translation id="6518861084553706202">Filele vor fi închise, iar datele șterse pot include parole, istoricul de navigare, cookie-uri și altele.</translation>
 <translation id="6523575793810663688">Arată-mi cum</translation>
 <translation id="6524082013156754186">Salvează în cont</translation>
 <translation id="6527303717912515753">Trimite</translation>
@@ -1679,6 +1683,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8545276357312221485">Verifică setările browserului prestabilit</translation>
 <translation id="854938212724803178">Ai o parolă compromisă. Remediază problema acum pentru a rămâne în siguranță.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Ai respins {count} avertisment}few{Ai respins {count} avertismente}other{Ai respins {count} de avertismente}}</translation>
+<translation id="8558046478684552694">Închide grupul.</translation>
 <translation id="8560253818350321773">Afișează mai întâi elementele folosite frecvent.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opțiune pentru parolă disponibilă deasupra tastaturii.}few{{count} opțiuni pentru parolă disponibile deasupra tastaturii.}other{{count} de opțiuni pentru parolă disponibile deasupra tastaturii.}}</translation>
 <translation id="8564894539416715395">Pagina Filă nouă</translation>
@@ -1847,6 +1852,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9205189991633470489">Blocare incognito</translation>
 <translation id="9206887540681440657">Viteză</translation>
 <translation id="9223358826628549784">Raportul de blocare a fost trimis.</translation>
+<translation id="926455622548529175">Comută și șterge</translation>
 <translation id="929748059769569925">Text evidențiat</translation>
 <translation id="932305336591073205">{count,plural, =1{Închide fila}few{Închide filele}other{Închide filele}}</translation>
 <translation id="939472100615258482">Site-ul actual</translation>

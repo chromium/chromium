@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">デバイスの右イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3347558044552027859">モダン</translation>
+<translation id="3353477144743332882">要約と名前作成モデルをダウンロード</translation>
 <translation id="3359218928534347896">マイクのミュートを切り替える</translation>
 <translation id="3360306038446926262">ウィンドウ</translation>
 <translation id="3361618936611118375">寿司</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">このショートカットは使用できません。<ph name="KEY" /> を使用しない新しいショートカットを押してください。</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
+<translation id="5875913454160982848">音声文字変換モデルをダウンロード</translation>
 <translation id="5876385649737594562">オプションを選択するにはオンにしてください</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> を一時停止</translation>
 <translation id="588258955323874662">全画面表示</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">もう少しです…</translation>
 <translation id="8505011850330200833">Gemini モデルを使用した文字起こしと要約の作成には 2 GB の保存容量が必要です</translation>
 <translation id="8508640263392900755">APN の詳細</translation>
+<translation id="8509574872955173831">要約と名前作成の詳細</translation>
 <translation id="8522687886059337719">新しい<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁紙<ph name="END_LINK_WALLPAPER_SUBPAGE" />と<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />スクリーン セーバー<ph name="END_LINK_SCREENSAVER_SUBPAGE" />にアクセスできるようになりました</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ティーハウス</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1408847409015257906">Tap Privacy and Security</translation>
 <translation id="1411386976162024013">Lens visual search</translation>
+<translation id="1417474386970818917">Sign out and delete</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1436671784520050284">Continue setup</translation>
@@ -1010,6 +1011,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5628388627414062173">{count,plural, =1{{count} page on your reading list}other{{count} pages on your reading list}}</translation>
 <translation id="5632485077360054581">Show me how</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bookmark saved to ‘{title}’}other{{count} bookmarks saved to ‘{title}’}}</translation>
+<translation id="564170563478022912">Sign out? Unsaved account data will be deleted.</translation>
 <translation id="5642707040609478753">Mark unread</translation>
 <translation id="5646284034397250191">Label created. Date pending</translation>
 <translation id="5647096944343801045">Large entry point</translation>
@@ -1022,6 +1024,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5669335982068190158">You were signed out as part of your iPhone reset. Tap continue below to sign in.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Switch accounts? Unsaved account data will be deleted.</translation>
 <translation id="5683499062697987550">To use and save passwords in your Google Account, verify that it's you.</translation>
 <translation id="5684761169742812828">This password was exposed in a data breach on the Internet. If you don't have time to change it right now, Google recommends keeping this warning to remind yourself later.</translation>
 <translation id="5694848685995373177">Saved in Drive for <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6506996418997555004">Share '<ph name="GROUP_NAME" />' tab group</translation>
 <translation id="6507973708545996744">Sign in to get your reading list on all your devices.</translation>
 <translation id="6518133107902771759">Verify</translation>
+<translation id="6518861084553706202">Tabs will be closed, and data deleted could include passwords, browsing history, cookies and more.</translation>
 <translation id="6523575793810663688">Show me how</translation>
 <translation id="6524082013156754186">Save in account</translation>
 <translation id="6527303717912515753">Share</translation>
@@ -1679,6 +1683,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8545276357312221485">Check your default browser settings</translation>
 <translation id="854938212724803178">You have one compromised password Fix it now to stay safe.</translation>
 <translation id="8556590991644167667">{count,plural, =1{You dismissed {count} warning}other{You dismissed {count} warnings}}</translation>
+<translation id="8558046478684552694">Close group.</translation>
 <translation id="8560253818350321773">Show frequently used items first.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option for password available above your keyboard.}other{{count} options for password available above your keyboard.}}</translation>
 <translation id="8564894539416715395">New tab page</translation>
@@ -1847,6 +1852,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9205189991633470489">Incognito lock</translation>
 <translation id="9206887540681440657">Speed</translation>
 <translation id="9223358826628549784">Crash report sent.</translation>
+<translation id="926455622548529175">Switch and delete</translation>
 <translation id="929748059769569925">Highlighted text</translation>
 <translation id="932305336591073205">{count,plural, =1{Close tab}other{Close tabs}}</translation>
 <translation id="939472100615258482">Current site</translation>

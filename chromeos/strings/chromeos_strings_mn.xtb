@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Төхөөрөмжийн баруун талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="3340978935015468852">тохиргоо</translation>
 <translation id="3347558044552027859">орчин үеийн</translation>
+<translation id="3353477144743332882">Хураангуй, нэр үүсгэх загварыг татах</translation>
 <translation id="3359218928534347896">микрофоны дууг хаах тохиргоог асаах/унтраах</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">сүши</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Товчлол боломжгүй байна. <ph name="KEY" />-гүйгээр шинэ товчлолыг дарна уу.</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5860491529813859533">Асаах</translation>
+<translation id="5875913454160982848">Сийрүүлгийн загварыг татах</translation>
 <translation id="5876385649737594562">Сонголт сонгохын тулд асаана уу</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" />-г түр зогсоох</translation>
 <translation id="588258955323874662">Дэлгэц дүүрэн</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">Цөөн хэдэн минут хүлээнэ үү...</translation>
 <translation id="8505011850330200833">Gemini-н загвар нь сийрүүлгийг боловсруулах болон хураангуй үүсгэх 2ГБ-ын хадгалах санг шаарддаг</translation>
 <translation id="8508640263392900755">APN-н дэлгэрэнгүй</translation>
+<translation id="8509574872955173831">Хураангуй, нэр үүсгэх талаар нэмэлт мэдээлэл авах</translation>
 <translation id="8522687886059337719">Та одоо шинэ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />дэлгэцийн зургууд<ph name="END_LINK_WALLPAPER_SUBPAGE" /> болон <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />дэлгэц амраагчид<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> хандах эрхтэй</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">цайны газар</translation>

@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">setări</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Descarcă modelul pentru rezumatul înregistrării și crearea numelui</translation>
 <translation id="3359218928534347896">dezactivează sunetul microfonului</translation>
 <translation id="3360306038446926262">Ferestre</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Comanda rapidă nu este disponibilă. Apasă pe o nouă comandă rapidă fără <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
+<translation id="5875913454160982848">Descarcă modelul de transcriere</translation>
 <translation id="5876385649737594562">Activează modul pentru a selecta opțiuni</translation>
 <translation id="5877503382465267833">Întrerupe <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Ecran complet</translation>
@@ -1588,6 +1590,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8503836310948963452">Mai sunt câteva minute…</translation>
 <translation id="8505011850330200833">Modelul Gemini necesită un spațiu de stocare de 2 GB pentru a procesa transcrieri și a crea rezumate</translation>
 <translation id="8508640263392900755">Detalii APN</translation>
+<translation id="8509574872955173831">Află mai multe despre rezumatul înregistrării și crearea numelui</translation>
 <translation id="8522687886059337719">Acum ai acces la noi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagini de fundal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> și <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensavere<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ceainărie</translation>

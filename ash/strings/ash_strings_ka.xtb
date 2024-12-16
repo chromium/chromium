@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">მიკროფონი ჩართულია, გადართვისას აუდიოშეყვანა დადუმდება.</translation>
 <translation id="2302092602801625023">ეს ანგარიში იმართება Family Link-ის მეშვეობით</translation>
 <translation id="2303600792989757991">ფანჯრის მიმოხილვის გადართვა</translation>
+<translation id="2304702218354340897">ნამდვილად გსურთ სახით მართვის გამორთვა?</translation>
 <translation id="2305738328104302723">Google ამოცანების სია: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: ეკრანის ბოლოდროინდელი აღბეჭდვები, ჩამოტვირთვები და ჩამაგრებული ფაილები</translation>
 <translation id="2318576281648121272">დღეს, <ph name="TODAY_DATE" /></translation>
@@ -900,6 +901,7 @@
 <translation id="4119928251231465047">PIN-კოდის შეყვანის ზედმეტად ბევრი მცდელობა დაფიქსირდა</translation>
 <translation id="412298498316631026">ფანჯარა</translation>
 <translation id="4123259114412175274">თქვენი Chromebook განსაბლოკად დარწმუნდით, რომ თქვენი ტელეფონის Bluetooth ჩართულია</translation>
+<translation id="4123868835475902435">ეს მხოლოდ დასაწყისია! გადადით „გაცნობის“ ჩაშენებულ აპზე, რომელშიც მინიშნებებსა და დახმარებას გთავაზობთ. მასში გაეცნობით რჩევებს მუშაობის დაწყებასთან დაკავშირებით, სპეციალურ შემოთავაზებებსა და <ph name="PRODUCT_NAME" />-ის უახლეს ფუნქციებს.</translation>
 <translation id="4125970834901680537">აპების სტრიმინგი ვერ მოხერხდება ტაბლეტის რეჟიმში. ცადეთ ხელახლა ლეპტოპის რეჟიმის გამოყენებით.</translation>
 <translation id="4131973331381812765">ტემპერატურა: <ph name="TEMPERATURE" />°C — მიმდინარე სიჩქარე: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> გჰც</translation>
 <translation id="4136724716305260864">ჩართულია მზის ამოსვლამდე</translation>

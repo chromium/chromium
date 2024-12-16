@@ -70,6 +70,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="1896836275755235458">Chromium жылма сыдыруу жана видеодогу кадрлардын жыштыгы сыяктуу визуалдык кубулуштарды жана фондогу аракеттерди чектөө менен батареянын кубатын үнөмдөйт. <ph name="BEGIN_LINK" />Кубатты үнөмдөгүч жөнүндө кеңири маалымат алыңыз<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Ушуну өчүрүү менен Gmail сыяктуу Google сайттарына Chromium'суз кире аласыз</translation>
+<translation id="1916451563296275579">Бул колдонмодогу нерселерди Chromium'дан өчүрүү</translation>
 <translation id="1929939181775079593">Chromium жооп бербей жатат. Өчүрүп кайра ишке киргизесизби?</translation>
 <translation id="1933341829955786215">Уюмуңуз, <ph name="MANAGER" />, Chromium'га кирүүнү талап кылат</translation>
 <translation id="193439633299369377">Жаңыртууну колдонуу үчүн ChromiumOS өчүрүлүп күйгүзүлүшү керек.</translation>
@@ -407,6 +408,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="6455857529632101747">Chromium профилдерине кош келиңиз</translation>
 <translation id="6466344609055215035">Аккаунтту Chromium'дан өчүрүү</translation>
 <translation id="6475912303565314141">Chromium иштеп баштаганда кайсы бет көрүнө тургандыгын белгилейт.</translation>
+<translation id="648062525172759633">Бул беттер Chromium иштеп чыгуучуларына арналган жана жигердүү түрдө иштетилип же сыналбашы мүмкүн. Аларды иштетүү үчүн <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> бөлүмүнө өтүп, мүчүлүштүктөрдү оңдоо беттерин иштетүү үчүн баскычты басып, бул бетке кайтып келиңиз.</translation>
 <translation id="648319183876919572">Өркүндөтүлгөн коопсуз серептөө кооптуу вебсайттардан жана жүктөлүп алынган файлдардан жакшыраак коргойт</translation>
 <translation id="6510925080656968729">Chromium'ду орнотуудан чыгарып салуу</translation>
 <translation id="651535675648445253">Ыкчам баскычтар Chromium'да ачылат</translation>

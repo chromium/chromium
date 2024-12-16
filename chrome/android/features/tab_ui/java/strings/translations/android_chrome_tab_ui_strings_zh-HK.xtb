@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
 <translation id="5161254044473106830">必須提供標題</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
+<translation id="5380159289133845234">封存重複的分頁</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">分頁群組將會自動儲存</translation>
 <translation id="6054741997831917303">呢件商品嘅價格最近由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組</translation>
+<translation id="6109251075362363230">所有重複的分頁現在亦會封存 (最近使用的重複分頁除外)。</translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="6271513594716432922">關閉所有閒置分頁</translation>

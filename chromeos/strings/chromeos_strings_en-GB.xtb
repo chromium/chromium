@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
 <translation id="3340978935015468852">settings</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Download summary and name creation model</translation>
 <translation id="3359218928534347896">toggle microphone mute</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Shortcut not available. Press a new shortcut without <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
+<translation id="5875913454160982848">Download transcription model</translation>
 <translation id="5876385649737594562">Turn on to select options</translation>
 <translation id="5877503382465267833">Pause <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Full screen</translation>
@@ -1588,6 +1590,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8503836310948963452">Just a few more minutes…</translation>
 <translation id="8505011850330200833">The Gemini model requires 2 GB of storage to process transcripts and create summaries</translation>
 <translation id="8508640263392900755">APN details</translation>
+<translation id="8509574872955173831">Learn more about summary and name creation</translation>
 <translation id="8522687886059337719">You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE" /> and <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screen savers<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tea house</translation>

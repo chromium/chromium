@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ustawienia</translation>
 <translation id="3347558044552027859">nowoczesne</translation>
+<translation id="3353477144743332882">Pobierz model do tworzenia podsumowań i nazw</translation>
 <translation id="3359218928534347896">przełącz przycisk wyciszenia mikrofonu</translation>
 <translation id="3360306038446926262">Okna</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Brak dostępnego skrótu. Naciśnij nowy skrót bez klawisza <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
+<translation id="5875913454160982848">Pobierz model do tworzenia transkrypcji</translation>
 <translation id="5876385649737594562">Włącz, aby wybrać opcje</translation>
 <translation id="5877503382465267833">Wstrzymaj: <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pełny ekran</translation>
@@ -1586,6 +1588,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
 <translation id="8505011850330200833">Aby przetwarzać transkrypcje i tworzyć podsumowania, model Gemini wymaga 2 GB miejsca na dane</translation>
 <translation id="8508640263392900755">Dane APN</translation>
+<translation id="8509574872955173831">Więcej informacji o tworzeniu podsumowań i nazw</translation>
 <translation id="8522687886059337719">Teraz masz dostęp do nowych <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapet<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />wygaszacza ekranu<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">herbaciarnia</translation>

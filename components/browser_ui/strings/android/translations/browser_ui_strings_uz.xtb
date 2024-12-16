@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">USB qurilmaga ulandi</translation>
 <translation id="4194328954146351878">Saytlar NFC qurilmalarni koʻrishi va ulardagi axborotni oʻzgartirishidan oldin ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="4200726100658658164">Joylashuv sozlamalarini ochish</translation>
+<translation id="4213239715282467974">Chrome endi yaqinda ochilgan varaqlaringizni qurilmangizga ulashadi. Ularga qurilmangizdagi ilovalar roʻyxati va qidiruv natijalarida tezkor kirishingiz mumkin. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
 <translation id="4226663524361240545">Bildirishnoma kelganida qurilma tebranishi mumkin</translation>
 <translation id="4259722352634471385">Sahifa bloklandi: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Saytlarga saqlangan shaxsiy maʼlumotlardan foydalanishga ruxsat soʻrash taqiqlanadi</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(yana 1 ta)}other{(yana # ta)}}</translation>
 <translation id="5403592356182871684">Ismlar</translation>
+<translation id="5408906274948600065">Chrome yaqinda ochilgan varaqlarni qurilmangizdagi ilovalar roʻyxati va qidiruv natijalarida koʻrishi uchun ularni qurilmangizga ulashishiga ruxsat bering. Istalganda Chrome sozlamalaridan faolsizlantirish mumkin.</translation>
 <translation id="5438097262470833822">Bunda <ph name="WEBSITE" /> ruxsatlari tiklanadi</translation>
 <translation id="5459413148890178711">Yoqilsa, saytlar joylashuvingizni soʻrashi mumkin. Oʻchirilsa, joylashuvingizni koʻra olmaydi.</translation>
 <translation id="5489227211564503167">Ijro etilgan vaqt: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

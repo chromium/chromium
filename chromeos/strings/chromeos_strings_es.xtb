@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Nivel de batería del auricular derecho del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3347558044552027859">moderna</translation>
+<translation id="3353477144743332882">Descargar modelo de creación de nombres y resúmenes</translation>
 <translation id="3359218928534347896">silenciar o dejar de silenciar el micrófono</translation>
 <translation id="3360306038446926262">Ventanas</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas sin <ph name="KEY" /></translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5875913454160982848">Descargar modelo de transcripción</translation>
 <translation id="5876385649737594562">Actívalo para seleccionar opciones</translation>
 <translation id="5877503382465267833">Pausar <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pantalla completa</translation>
@@ -1588,6 +1590,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8503836310948963452">Solo unos minutos más...</translation>
 <translation id="8505011850330200833">El modelo de Gemini necesita 2 GB de almacenamiento para procesar transcripciones y crear resúmenes</translation>
 <translation id="8508640263392900755">Detalles de APN</translation>
+<translation id="8509574872955173831">Más información sobre la creación de resúmenes y nombres</translation>
 <translation id="8522687886059337719">Ahora tienes acceso a nuevos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> y <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />salvapantallas<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">salón de té</translation>

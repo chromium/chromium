@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1408847409015257906">輕按 [私隱權和安全性]。</translation>
 <translation id="1411386976162024013">「智能鏡頭」視像搜尋</translation>
+<translation id="1417474386970818917">登出並刪除</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1436671784520050284">繼續設定</translation>
@@ -1010,6 +1011,7 @@
 <translation id="5628388627414062173">{count,plural, =1{閱讀清單的 {count} 個頁面}other{閱讀清單的 {count} 個頁面}}</translation>
 <translation id="5632485077360054581">顯示方法</translation>
 <translation id="5633237939819267663">{count,plural, =1{書籤已儲存至「{title}」}other{{count} 個書籤已儲存至「{title}」}}</translation>
+<translation id="564170563478022912">要登出嗎？系統將刪除未儲存的帳戶資料。</translation>
 <translation id="5642707040609478753">標示為未讀</translation>
 <translation id="5646284034397250191">已建立標籤，目前無法提供日期資料</translation>
 <translation id="5647096944343801045">大型入口點</translation>
@@ -1022,6 +1024,7 @@
 <translation id="5669335982068190158">您已在重設 iPhone 時登出，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">要切換帳戶嗎？系統將刪除未儲存的帳戶資料。</translation>
 <translation id="5683499062697987550">如要將密碼儲存至 Google 帳戶及使用當中的密碼，請驗證身分。</translation>
 <translation id="5684761169742812828">此密碼已在互聯網的資料外洩中洩露。如果無法立即變更密碼，Google 建議您保留此警告，以便稍後提醒自己。</translation>
 <translation id="5694848685995373177">已儲存至 <ph name="USER_EMAIL" /> 的「雲端硬碟」。</translation>
@@ -1223,6 +1226,7 @@
 <translation id="6506996418997555004">分享「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="6507973708545996744">登入後，即可從任何裝置取得自己的閱讀清單。</translation>
 <translation id="6518133107902771759">驗證</translation>
+<translation id="6518861084553706202">Chrome 會關閉分頁，並刪除可能包括密碼、瀏覽記錄和 Cookie 等資料。</translation>
 <translation id="6523575793810663688">顯示方法</translation>
 <translation id="6524082013156754186">儲存在帳戶中</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -1679,6 +1683,7 @@
 <translation id="8545276357312221485">檢查預設瀏覽器設定</translation>
 <translation id="854938212724803178">你有 1 個密碼被盜用。請立即修正以確保安全。</translation>
 <translation id="8556590991644167667">{count,plural, =1{您已關閉 {count} 個警告}other{您已關閉 {count} 個警告}}</translation>
+<translation id="8558046478684552694">閂群組。</translation>
 <translation id="8560253818350321773">優先顯示常用項目。</translation>
 <translation id="8561999115126307258">{count,plural, =1{鍵盤上方顯示 {count} 個密碼選項。}other{鍵盤上方顯示 {count} 個密碼選項。}}</translation>
 <translation id="8564894539416715395">新分頁</translation>
@@ -1847,6 +1852,7 @@
 <translation id="9205189991633470489">無痕模式鎖定</translation>
 <translation id="9206887540681440657">速度</translation>
 <translation id="9223358826628549784">已傳送當機報告。</translation>
+<translation id="926455622548529175">切換並刪除</translation>
 <translation id="929748059769569925">突顯的文字</translation>
 <translation id="932305336591073205">{count,plural, =1{關閉分頁}other{關閉分頁}}</translation>
 <translation id="939472100615258482">目前網站</translation>

@@ -2238,7 +2238,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2532146950330687938">Qurilma tayyorlanmoqda...</translation>
 <translation id="2532198298278778531">Xavfsiz DNS parametrlarini ChromeOS Flex sozlamalaridan boshqaring</translation>
 <translation id="2532589005999780174">Yuqori kontrastli rejim</translation>
-<translation id="2532878989288727311">Mazkur funksiya internetda sharhlar kabi qisqa matn yaratishda yordam beradi. Matn yozish tavsiyalari veb-sahifadagi kontent hamda kiritilgan soʻrov asosida tuziladi.</translation>
 <translation id="2533649878691950253">Bu sayt aniq joylashuvingizni bila olmaydi, chunki odatda siz bunga ruxsat bermaysiz</translation>
 <translation id="253434972992662860">&amp;Vaqtincha to‘xtatish</translation>
 <translation id="253498598929009420">Sayt ekrandagi kontentni koʻra oladi</translation>
@@ -2329,6 +2328,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2606568927909309675">Ingliz tilidagi audio va video ijrosida taglavhalarni avtomatik yaratadi. Audio va taglavhalar qurilmaning oʻzida qayta ishlanadi.</translation>
 <translation id="2606890864830643943">Diagnostika maʼlumotlari eksport qilinmoqda</translation>
 <translation id="2607101320794533334">Subyekt ochiq kaliti haqida ma’lumot</translation>
+<translation id="2608837922830967145">Boshqa koʻrsatilmasin</translation>
 <translation id="2609896558069604090">Yorliq yaratish...</translation>
 <translation id="2609980095400624569">Aloqa oʻrnatilmadi</translation>
 <translation id="2610157865375787051">Uyqu rejimi</translation>
@@ -8737,7 +8737,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7243092385765551741">Kalit oʻchirilsinmi?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (eng yaxshi)</translation>
 <translation id="7246230585855757313">Elektron kalitni yana suqing va qaytadan urining</translation>
-<translation id="7248245317364871465">Kerakli narsani osonroq topishingiz uchun ochiq varaqlardan avtomatik taklif qiladi va guruhlar yaratadi</translation>
 <translation id="724835896049478274">Hisoblardan Android ilovalari uchun foydalanish mumkin</translation>
 <translation id="7248802599439396696">Varaqlarni nofaol qilish</translation>
 <translation id="7249197363678284330">Bu sozlamani manzil qatori orqali oʻzgartiring.</translation>

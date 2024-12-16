@@ -400,6 +400,7 @@
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2819849308549746319">全部取消訂閱</translation>
+<translation id="2826576843404243001">如果網站不支援安全連線，系統會在瀏覽前發出警告。由於已啟用「進階保護」功能，因此你無法變更此設定。</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">隱藏咗剪貼簿嘅內容</translation>
 <translation id="2834884592945939112">設定，Google 帳戶錯誤</translation>
@@ -515,8 +516,10 @@
 <translation id="3303855915957856445">找不到任何搜尋結果</translation>
 <translation id="3305130791745726624">傳送到裝置</translation>
 <translation id="3305795716056605962">透過「更多選項」掣翻譯頁面</translation>
+<translation id="331080746368555063">私人網站可能包括公司內部網絡等項目</translation>
 <translation id="3311330810461485557">按應用程式、日期等條件搜尋。</translation>
 <translation id="3334729583274622784">要變更副檔名嗎？</translation>
+<translation id="333863344734218290">在你瀏覽不安全的公開和私人網站時發出警告</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3351165113450806415">新的輕掃方式</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
@@ -901,6 +904,7 @@
 <translation id="5085038751173179818">登入此網站和 Chrome，即可在所有裝置上存取書籤及其他設定</translation>
 <translation id="5091199029769593641">不久後，您將會在開啟新分頁時看到 <ph name="SITE_NAME" /> 的內容。您追蹤的網站會儲存在 Google 帳戶中。您可在「探索」設定中管理已儲存的網站。</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
+<translation id="5096775069898886423">如果網站不支援安全連線，系統會在瀏覽前發出警告</translation>
 <translation id="5097349930204431044">您瀏覽的網站可判斷您喜愛的內容，然後在您繼續瀏覽時建議廣告</translation>
 <translation id="510275257476243843">尚餘 1 小時</translation>
 <translation id="5114895953710637392">應用程式篩選器工作表閂咗。</translation>
@@ -1496,6 +1500,7 @@
 <translation id="7628417132421583481">前往「密碼管理工具」</translation>
 <translation id="7630202231528827509">供應商網址</translation>
 <translation id="7638584964844754484">複雜密碼不正確</translation>
+<translation id="7646499124171960488">在你瀏覽不安全的公開網站時發出警告</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="7655240423373329753">最近 7 天</translation>
 <translation id="7656721520530864426">未瀏覽任何網站</translation>

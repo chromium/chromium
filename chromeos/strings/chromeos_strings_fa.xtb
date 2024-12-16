@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
 <translation id="3347558044552027859">مدرن</translation>
+<translation id="3353477144743332882">بارگیری مدل ایجاد خلاصه و نام</translation>
 <translation id="3359218928534347896">تغییر وضعیت بی‌صدا بودن میکروفون</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">سوشی</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">میان‌بر دردسترس نیست. لطفاً میان‌بر جدیدی بدون استفاده از <ph name="KEY" /> اختصاص دهید.</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
+<translation id="5875913454160982848">بارگیری مدل ترانویسی</translation>
 <translation id="5876385649737594562">برای انتخاب گزینه‌ها، این حالت را روشن کنید</translation>
 <translation id="5877503382465267833">موقتاً متوقف کردن <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">تمام صفحه</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">فقط چند دقیقه دیگر…</translation>
 <translation id="8505011850330200833">‏مدل Gemini برای پردازش ترانویسی‌ها و ایجاد خلاصه از قطعه‌های ضبط‌شده به ۲ گیگابایت فضای ذخیره‌سازی نیاز دارد</translation>
 <translation id="8508640263392900755">جزئیات «نام نقطه دستیابی»</translation>
+<translation id="8509574872955173831">درباره ایجاد خلاصه و نام بیشتر بدانید</translation>
 <translation id="8522687886059337719">اکنون به <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />کاغذدیواری‌ها<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />محافظ صفحه<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جدید دسترسی دارید</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">چای‌خانه</translation>

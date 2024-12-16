@@ -70,6 +70,7 @@
 <translation id="1896836275755235458">Chromium የዳራ እንቅስቃሴን እና እንደ ለስላሳ ሽብለላ እና የቪድዮ ፍሬም ፍጥነቶች ያሉ ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ይቆጥባል። <ph name="BEGIN_LINK" />ስለ ኃይል ቆጣቢ የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">የChromium ማዘመኛ አገልግሎት</translation>
 <translation id="1911763535808217981">ይህንን በማጥፋት፣ እንደ Gmail ወደ መሰሉ የGoogle ጣቢያዎች ወደ Chromium በመለያ ሳይገቡ መግባት ይችላሉ</translation>
+<translation id="1916451563296275579">ይህን የመተግበሪያዎች ውሂብ ከChromium ላይ ያስወግዱ</translation>
 <translation id="1929939181775079593">Chromium መልስ አይሰጥም። አሁን ዳግም ይጀምር?</translation>
 <translation id="1933341829955786215">ድርጅትዎ፣ <ph name="MANAGER" /> ወደ Chromium እንዲገቡ ይጠይቃል</translation>
 <translation id="193439633299369377">ChromiumOS ዝማኔውን ለመተግበር ዳግም መጀመር አለበት።</translation>
@@ -407,6 +408,7 @@
 <translation id="6455857529632101747">ወደ Chromium መገለጫዎች እንኳን በደህና መጡ</translation>
 <translation id="6466344609055215035">መለያን ከChromium አስወግድ</translation>
 <translation id="6475912303565314141">እንዲሁም Chromiumን ሲጀምሩት የሚታየውን ገፅ ይቆጣጠራል።</translation>
+<translation id="648062525172759633">እነዚህ ገፆች በChromium ገንቢዎች ጥቅም ላይ እንዲውሉ የታሰቡ ናቸው እና በንቃት ተጠብቀው ላይቆዩ ወይም ላይፈተሹ ይችላሉ። እነሱን ለማንቃት ወደ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> ያስሱ፣ የስሕተት አርም ገፆችን ለማንቃት አዝራሩን ጠቅ ያድርጉ እና ከዚያም እንደገና ወደዚህ ገፅ ያስሱ።</translation>
 <translation id="648319183876919572">የተሻሻለ የደህንነት አሰሳ እርስዎን ከአደገኛ ድር ጣቢያዎች እና ውርዶች ለመጠበቅ ይበልጥ ያደርጋል</translation>
 <translation id="6510925080656968729">Chromiumን ያራግፉ</translation>
 <translation id="651535675648445253">አቋራጮች በChromium ውስጥ ይከፍታሉ</translation>

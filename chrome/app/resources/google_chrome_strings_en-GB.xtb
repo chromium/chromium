@@ -210,6 +210,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="345171907106878721">Add yourself to Chrome</translation>
 <translation id="3453763134178591239">Chrome OS terms</translation>
 <translation id="3503306920980160878">Chrome needs access to your location to share your location with this site</translation>
+<translation id="3512634283363927263">These pages are intended for use by Chrome developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, click the button to enable debug pages and then navigate to this page again.</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
 <translation id="3541482654983822893">Chrome can't check your passwords. Try again after 24 hours.</translation>
 <translation id="3564543103555793392">When you sign in to Chrome, you can save bookmarks, passwords and more, then use them on your phone</translation>
@@ -528,6 +529,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7572537927358445944">Off • Chrome can't verify where this extension comes from</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
+<translation id="7617512710641355143">Chrome is managed</translation>
 <translation id="7626032353295482388">Welcome to Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS terms.</translation>
 <translation id="7629695634924605473">Chrome lets you know if your passwords are ever compromised</translation>
@@ -637,6 +639,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8718062187489036808">Sign out of Chrome</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
 <translation id="8748735421235723888">Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them. <ph name="BEGIN_LINK" />Learn more about Memory Saver<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Remove this app's data from Chrome</translation>
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8781673607513845160">To use your camera, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Install error: Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR" /></translation>

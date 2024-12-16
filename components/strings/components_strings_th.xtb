@@ -1398,6 +1398,7 @@
 <translation id="351522771072578657">ขณะนี้คุณอยู่ในเมนู</translation>
 <translation id="3517264445792388751">ผู้ดูแลระบบปิดใช้ระบบไฟล์</translation>
 <translation id="3518941727116570328">การจัดการออบเจ็กต์หลายรายการ</translation>
+<translation id="3519670528214225835">ถาม <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 นิ้ว</translation>
 <translation id="3525435918300186947">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ไหม</translation>
 <translation id="3527181387426738155">เพลงและเสียง</translation>
@@ -1952,6 +1953,7 @@
 <translation id="4451684391620232683">ข้อความที่แสดงต่อผู้ใช้:</translation>
 <translation id="4452328064229197696">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านบน Google แนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
 <translation id="4456937135469235202">การท่องเที่ยวแบบผจญภัย</translation>
+<translation id="4458013283022578512">ป้อนคำถาม</translation>
 <translation id="4464826014807964867">เว็บไซต์ที่มีข้อมูลจากองค์กรของคุณ</translation>
 <translation id="4466576951214254884">สินเชื่อเพื่อการศึกษา</translation>
 <translation id="4467821340016922962">หากต้องการออกจากโหมดเต็มหน้าจอและดูการดาวน์โหลด ให้กด |<ph name="ACCELERATOR" />|</translation>

@@ -70,6 +70,7 @@
 <translation id="1896836275755235458">Chromium-ը տնտեսում է մարտկոցի լիցքը՝ սահմանափակելով աշխատանքը ֆոնային ռեժիմում և վիզուալ էֆեկտները, օրինակ՝ սահուն ոլորումը և տեսանյութերի կադրերի հաճախականությունը։ <ph name="BEGIN_LINK" />Իմանալ ավելին Էներգիայի խնայման մասին<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater ծառայություն</translation>
 <translation id="1911763535808217981">Անջատելով այս գործառույթը՝ դուք կարող եք մտնել հաշիվ Google-ի կայքերում, օրինակ՝ Gmail, առանց մուտք գործելու Chromium:</translation>
+<translation id="1916451563296275579">Հեռացնել այս հավելվածի տվյալները Chromium-ից</translation>
 <translation id="1929939181775079593">Chromium-ը չի պատասխանում: Վերագործարկե՞լ:</translation>
 <translation id="1933341829955786215">Ձեր կազմակերպության (<ph name="MANAGER" />) կանոնների համաձայն՝ դուք պետք է մուտք գործեք Chromium</translation>
 <translation id="193439633299369377">Թարմացումը կիրառելու համար հարկավոր է վերագործարկել ChromiumOS-ը։</translation>
@@ -407,6 +408,7 @@
 <translation id="6455857529632101747">Բարի գալուստ Chromium պրոֆիլներ</translation>
 <translation id="6466344609055215035">Հեռացնել հաշիվը Chromium-ից</translation>
 <translation id="6475912303565314141">Այն նաև վերահսկում է, թե որ էջը ցուցադրվի Chromium-ը մեկնարկելիս:</translation>
+<translation id="648062525172759633">Այս էջերը, որոնք նախատեսված են Chromium-ի մշակողների համար, չեն կարող պարբերաբար փորձարկվել կամ մշակվել։ Միացնելու համար անցեք <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> էջ, սեղմեք կոճակը՝ վրիպազերծման էջերը միացնելու համար, այնուհետև վերադարձեք այստեղ։</translation>
 <translation id="648319183876919572">Բարելավված Ապահով դիտարկումն օգնում է պաշտպանվել վտանգավոր կայքերից և ներբեռնումներից</translation>
 <translation id="6510925080656968729">Ապատեղադրել Chromium-ը</translation>
 <translation id="651535675648445253">Դյուրանցումները բացվում են Chromium-ում</translation>

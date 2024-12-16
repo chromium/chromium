@@ -68,6 +68,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="1896836275755235458">Chromium akan menghemat daya baterai dengan membatasi aktivitas latar belakang dan efek visual, seperti scroll yang lancar dan kecepatan frame video. <ph name="BEGIN_LINK" />Pelajari lebih lanjut Penghemat Energi<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Layanan Chromium Updater</translation>
 <translation id="1911763535808217981">Dengan menonaktifkan ini, Anda dapat login ke situs Google seperti Gmail tanpa harus login ke Chromium</translation>
+<translation id="1916451563296275579">Hapus data aplikasi ini dari Chromium</translation>
 <translation id="1929939181775079593">Chromium tidak merespons. Luncurkan ulang sekarang?</translation>
 <translation id="1933341829955786215">Organisasi Anda, <ph name="MANAGER" />, mengharuskan Anda login ke Chromium</translation>
 <translation id="193439633299369377">ChromiumOS harus dimulai ulang untuk menerapkan update.</translation>
@@ -405,6 +406,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6455857529632101747">Selamat datang di profil Chromium</translation>
 <translation id="6466344609055215035">Hapus Akun dari Chromium</translation>
 <translation id="6475912303565314141">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium.</translation>
+<translation id="648062525172759633">Halaman ini ditujukan untuk digunakan oleh developer Chromium, dan mungkin tidak dikelola atau diuji secara aktif. Untuk mengaktifkannya, buka <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik tombol untuk mengaktifkan halaman debug, lalu buka lagi halaman ini.</translation>
 <translation id="648319183876919572">Safe Browsing yang Disempurnakan melakukan lebih banyak hal untuk melindungi Anda dari situs dan download berbahaya</translation>
 <translation id="6510925080656968729">Uninstal Chromium</translation>
 <translation id="651535675648445253">Pintasan dibuka di Chromium</translation>

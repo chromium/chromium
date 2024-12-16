@@ -2222,7 +2222,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2532146950330687938">Przygotowuję urządzenie…</translation>
 <translation id="2532198298278778531">Zarządzaj bezpiecznym DNS w ustawieniach ChromeOS Flex</translation>
 <translation id="2532589005999780174">Tryb wysokiego kontrastu</translation>
-<translation id="2532878989288727311">Pomaga w pisaniu krótkich tekstów używanych w internecie, np. opinii. Propozycje tekstów są tworzone na podstawie Twoich promptów i zawartości strony internetowej</translation>
 <translation id="2533649878691950253">Tej witrynie zablokowaliśmy możliwość sprawdzania Twojej dokładnej lokalizacji, bo zazwyczaj na to nie zezwalasz</translation>
 <translation id="253434972992662860">&amp;Wstrzymaj</translation>
 <translation id="253498598929009420">Strona będzie widzieć zawartość ekranu</translation>
@@ -2847,6 +2846,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2981113813906970160">Pokaż duży kursor myszy</translation>
 <translation id="2983102365694924129">Na podstawie Twojej aktywności w witrynie. To ustawienie jest wyłączone.</translation>
 <translation id="2983373101216420412">Poziom naładowania baterii obudowy to <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984384421572259426">Usuń nieużywane karty</translation>
 <translation id="2984727013951557074">Plik nadal jest synchronizowany z Dyskiem.</translation>
 <translation id="2985348301114641460">Wysłać do administratora prośbę o zainstalowanie: „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{Aplikacja <ph name="APP_NAME" /> odinstalowała aplikację}few{Aplikacja <ph name="APP_NAME" /> odinstalowała # aplikacje}many{Aplikacja <ph name="APP_NAME" /> odinstalowała # aplikacji}other{Aplikacja <ph name="APP_NAME" /> odinstalowała # aplikacji}}</translation>
@@ -4401,6 +4401,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4072805772816336153">Spróbuj ponownie później</translation>
 <translation id="4074164314564067597">klawiatura</translation>
 <translation id="407520071244661467">Skala</translation>
+<translation id="4077623680826964850">Przekroczono limit czasu podczas uruchamiania maszyny wirtualnej lub ponownego nawiązywania z nią połączenia.</translation>
 <translation id="4077917118009885966">Reklamy zostały zablokowane na tej stronie</translation>
 <translation id="4078738236287221428">Agresywne</translation>
 <translation id="4078903002989614318">Opcje sortowania i listy</translation>
@@ -4887,6 +4888,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4437879751057074691">Oferuj zapisywanie haseł i kluczy dostępu</translation>
 <translation id="4437947179446780764">Dodaj niestandardowego dostawcę usługi DNS</translation>
 <translation id="4438043733494739848">Przezroczyste</translation>
+<translation id="4439157218765614426">Zabroniona przez zasady.</translation>
 <translation id="4441124369922430666">Chcesz, by ta aplikacja była uruchamiana automatycznie po włączeniu urządzenia?</translation>
 <translation id="4441147046941420429">Aby kontynuować, odłącz klucz bezpieczeństwa od urządzenia, a potem podłącz go ponownie i dotknij</translation>
 <translation id="444134486829715816">Rozwiń...</translation>
@@ -5343,6 +5345,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Zmień nazwę sieci komórkowej eSIM</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 duplikat</translation>
 <translation id="4780321648949301421">Zapisz stronę jako...</translation>
 <translation id="4780558987886269159">Do pracy</translation>
 <translation id="4785719467058219317">Używasz klucza bezpieczeństwa, który nie jest zarejestrowany w tej witrynie</translation>
@@ -5421,6 +5424,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4833683849865011483">Znaleziono jedną drukarkę na serwerze druku</translation>
 <translation id="4835598628985424375">Zaciśnięcie i zmarszczenie warg</translation>
 <translation id="4835677468087803981">Ukryj kod PIN</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • Liczba duplikatów: <ph name="DUPLICATE_COUNT" /></translation>
 <translation id="4836504898754963407">Zarządzaj odciskami palców</translation>
 <translation id="4837128290434901661">Zmienić z powrotem na wyszukiwarkę Google?</translation>
 <translation id="4837926214103741331">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie na logowanie się, skontaktuj się z jego właścicielem.</translation>
@@ -6045,6 +6049,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="528208740344463258">Aby pobrać aplikacje na Androida i ich używać, najpierw musisz zainstalować tę wymaganą aktualizację. Podczas gdy <ph name="DEVICE_TYPE" /> się aktualizuje, nie możesz korzystać z tego urządzenia. Po zakończeniu instalacji <ph name="DEVICE_TYPE" /> uruchomi się ponownie.</translation>
 <translation id="5283677936944177147">Ups! System nie mógł określić modelu lub numeru seryjnego urządzenia.</translation>
 <translation id="5284445933715251131">Pobieraj dalej</translation>
+<translation id="5285484405698525101">Brak nieużywanych kart</translation>
 <translation id="5285635972691565180">Wyświetlacz <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Skanowanie</translation>
 <translation id="5287425679749926365">Twoje konta</translation>
@@ -6317,6 +6322,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5481941284378890518">Dodaj drukarki znalezione w pobliżu</translation>
 <translation id="5482417738572414119">Zaloguj się, aby umożliwić Chrome sugerowanie grup kart i porządkowanie kart</translation>
 <translation id="5483005706243021437">Zostań tutaj</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{Brak nieużywanych kart}=1{Sprawdź 1 nieużywaną kartę}few{Sprawdź # nieużywane karty}many{Sprawdź # nieużywanych kart}other{Sprawdź # nieużywanej karty}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia (<ph name="DEVICE_TYPE" />) dzisiaj. <ph name="LINK_BEGIN" />Zobacz szczegóły<ph name="LINK_END" />}few{<ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia (<ph name="DEVICE_TYPE" />) w ciągu {NUM_DAYS} dni. <ph name="LINK_BEGIN" />Zobacz szczegóły<ph name="LINK_END" />}many{<ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia (<ph name="DEVICE_TYPE" />) w ciągu {NUM_DAYS} dni. <ph name="LINK_BEGIN" />Zobacz szczegóły<ph name="LINK_END" />}other{<ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia (<ph name="DEVICE_TYPE" />) w ciągu {NUM_DAYS} dnia. <ph name="LINK_BEGIN" />Zobacz szczegóły<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Dodaj aplikację</translation>
 <translation id="5485435764083510385">Preferowany język napisów</translation>
@@ -6997,6 +7003,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5982578203375898585">Pokaż pobrane pliki po zakończeniu pobierania</translation>
 <translation id="5983716913605894570">Generuję…</translation>
 <translation id="5984222099446776634">Ostatnio odwiedzone</translation>
+<translation id="5984334442529819751">Błąd podczas instalowania DLC (często wymagane jest ponowne uruchomienie; więcej informacji znajdziesz w sekcji Ustawienia\&gt;\&gt;ChromeOS – informacje).</translation>
 <translation id="5985458664595100876">Nieprawidłowy format adresu URL. Obsługiwane formaty to \\server\share i smb://server/share.</translation>
 <translation id="5985556342298151179">Aplikacja Chrome zainstalowana przez administratora urządzenia.</translation>
 <translation id="598810097218913399">Usuń przypisanie</translation>
@@ -8710,7 +8717,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7243092385765551741">Usunąć klucz dostępu?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (najlepsza)</translation>
 <translation id="7246230585855757313">Ponownie włóż klucz bezpieczeństwa i spróbuj jeszcze raz</translation>
-<translation id="7248245317364871465">Automatycznie sugeruje i tworzy grupy na podstawie otwartych kart, dzięki czemu łatwiej znajdziesz to, czego szukasz</translation>
 <translation id="724835896049478274">Konta dostępne w przypadku aplikacji na Androida</translation>
 <translation id="7248802599439396696">Dezaktywuj karty</translation>
 <translation id="7249197363678284330">Sprawdź to ustawienie w pasku adresu.</translation>
@@ -9232,6 +9238,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="762917478230183172">Wybierz działanie dla każdego klawisza</translation>
 <translation id="7629206210984165492">Przygaszony</translation>
 <translation id="7629827748548208700">Karta: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">Nieznany wynik.</translation>
 <translation id="7630426712700473382">Administrator tego urządzenia (<ph name="MANAGER" />) wymaga logowania się za każdym razem.</translation>
 <translation id="7631014249255418691">Pomyślnie utworzono kopię zapasową aplikacji i plików Linuksa</translation>
 <translation id="7631722872321401342">Na urządzeniu nie ma głosów w języku: <ph name="LANGUAGE" />. Głosy możesz zainstalować w ustawieniach.</translation>
@@ -9385,6 +9392,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7723388585204724670">Przywróć domyślny motyw Chrome</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7726391492136714301">Zobacz powiadomienia i aplikacje z telefonu</translation>
+<translation id="7727898923446098954">Karta została ukryta</translation>
 <translation id="7728465250249629478">Zmień język urządzenia</translation>
 <translation id="7728570244950051353">Blokowanie ekranu w trybie uśpienia</translation>
 <translation id="7728668285692163452">Zmiana wersji nastąpi później</translation>
@@ -9777,6 +9785,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7992203134935383159">Synteza mowy</translation>
 <translation id="799570308305997052">Komponent WebView</translation>
 <translation id="7997826902155442747">Priorytet procesu</translation>
+<translation id="7997828719430450286">Udało się.</translation>
 <translation id="7998701048266085837">Adresy URL</translation>
 <translation id="7999229196265990314">Utworzono następujące pliki:
 
@@ -10426,6 +10435,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="845702320058262034">Nie można nawiązać połączenia. Sprawdź, czy Bluetooth w telefonie jest włączony.</translation>
 <translation id="8457251154056341970">Na tej stronie nie zobaczysz już modułu <ph name="MODULE_NAME" /></translation>
 <translation id="8457451314607652708">Importuj zakładki</translation>
+<translation id="8458259704995116343">Nie udało się uruchomić maszyny wirtualnej.</translation>
 <translation id="8458341576712814616">Skrót</translation>
 <translation id="8458627787104127436">Otwórz wszystkie (<ph name="URL_COUNT" />) w nowym oknie</translation>
 <translation id="8459023460357294721">Otwórz plik <ph name="FILE_NAME" /> mimo to</translation>
@@ -11085,12 +11095,14 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8918900204934259333">Instaluję aplikację…</translation>
 <translation id="891931289445130855">Usuń dane i uprawnienia</translation>
 <translation id="8920133120839850939">Wybierz kartę Więcej gestów, a następnie włącz opcję Przechodzenie między stronami za pomocą przesuwania palcem, aby przechodzić wstecz i do przodu</translation>
+<translation id="8921369299636221117">Usługa Concierge jest niedostępna.</translation>
 <translation id="8922348435910470639">Podwójna rezerwacja</translation>
 <translation id="8922624386829239660">Przesuwaj ekran, gdy mysz dotyka krawędzi ekranu</translation>
 <translation id="8923880975836399332">Ciemny morski</translation>
 <translation id="8925124370124776087">Pasek tytułu jest teraz ukryty</translation>
 <translation id="8925458182817574960">&amp;Ustawienia</translation>
 <translation id="8926389886865778422">Nie pytaj ponownie</translation>
+<translation id="8926555406617248399">Karty zostały ukryte</translation>
 <translation id="892706138619340876">Niektóre ustawienia zostały zresetowane</translation>
 <translation id="8927438609932588163">Zezwalaj witrynom na zapisywanie danych na urządzeniu</translation>
 <translation id="8929696694736010839">Tylko w bieżącej sesji incognito</translation>

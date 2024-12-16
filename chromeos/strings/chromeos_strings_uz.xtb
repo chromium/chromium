@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1807246157184219062">Yorqin</translation>
 <translation id="1808803439260407870">Klassik sanʼat</translation>
+<translation id="181434555916624618">Hozircha odamlarga aloqador natijalar chiqarilmaydi. Boshqa soʻrov yuboring.</translation>
 <translation id="1815850098929213707">Tugma tanlandi: <ph name="KEYS" />. Boshqaruvni tahrirlash uchun tugmani bosing</translation>
 <translation id="1823120442877418684">Qahramonlar</translation>
 <translation id="1827738518074806965">Fotogalereya</translation>
@@ -1293,6 +1294,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Nom serveri}other{Nom serverlari}}</translation>
 <translation id="7135814714616751706">Tezkor tugmalar qidiruvi</translation>
 <translation id="7138614237884624401">Soddalashgan matn</translation>
+<translation id="7138668887584231801">Xulosalash uchun soʻzlar yetarli emas</translation>
 <translation id="7141470099673912333">Kontent uzatish</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>

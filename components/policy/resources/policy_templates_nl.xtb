@@ -1253,6 +1253,7 @@ Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nad
 <translation id="1905061765326052857">Niet-aangesloten gebruikers niet toestaan virtuele machines te gebruiken die nodig zijn om Linux-apps te ondersteunen</translation>
 <translation id="1906871416501278476"><ph name="PRODUCT_NAME" />-service uitzetten en geen extern bureau starten bij inloggen</translation>
 <translation id="1907696459350079081">De screensaver op het inlogscherm niet aanzetten.</translation>
+<translation id="1909567037176216409">Aangepast opladen van de batterij met machine learning om de tijd te voorspellen dat je de oplader loskoppelt en het opladen tot 100% uit te stellen om de batterijduur te verlengen.</translation>
 <translation id="1910704279188129272">Hiermee kun je per app gebruiksbeperkingen instellen.
         Gebruiksbeperkingen kunnen worden toegepast op de apps die voor de betreffende gebruiker in <ph name="PRODUCT_OS_NAME" /> zijn geïnstalleerd.
         Beperkingen moeten worden doorgegeven in de lijst |app_limits|. Er is slechts één item per app toegestaan. Apps die niet op de lijst voorkomen, hebben geen beperkingen.
@@ -2438,6 +2439,12 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 Als je 'command_line' instelt, kan de extensie niet worden geladen via de opdrachtregel.</translation>
 <translation id="2780840673734667062">Inloggen met extra Google-accounts uitzetten</translation>
 <translation id="2784880732336446591">Browsegegevens wissen bij afsluiten</translation>
+<translation id="2785422026482376078">Geeft aan of een model voor aangepast opladen het oplaadproces mag onderbreken om de batterijduur te verlengen.
+
+      Als het apparaat gebruikmaakt van wisselstroom, evalueert het model voor aangepast opladen of het oplaadproces moet worden onderbroken om de batterijduur te verlengen. Onderbreekt het model voor aangepast opladen het oplaadproces, dan wordt de batterij op een bepaald niveau gehouden (bijv. 80%) en wordt het apparaat tot 100% opgeladen als de gebruiker dat nodig heeft.
+      Als je dit beleid instelt op Waar, wordt het model voor aangepast opladen aangezet en mag dit het oplaadproces onderbreken om de batterijduur te verlengen. Als je dit beleid instelt op Onwaar of niet instelt, heeft het model voor aangepast opladen geen invloed op het oplaadproces.
+
+      Opmerking: Dit beleid heeft geen effect als DevicePowerBatteryChargingOptimization is ingesteld.</translation>
 <translation id="2787173078141616821">Informatie over de status van Android rapporteren</translation>
 <translation id="2787774054174244402">Als je het beleid instelt op 'True', kunnen gebruikers niets naar externe opslagapparaten schrijven.
 
@@ -3397,6 +3404,7 @@ Als je dit beleid instelt, kan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAM
       Als dit beleid is ingesteld op 'true' of niet is geconfigureerd, maakt <ph name="PRODUCT_OS_NAME" /> automatisch verbinding met de Quirks Server en worden configuratiebestanden (indien beschikbaar) gedownload en opslagen op het apparaat.  Dergelijke bestanden kunnen bijvoorbeeld worden gebruikt om de weergavekwaliteit van aangesloten beeldschermen te verbeteren.</translation>
 <translation id="3515196503924273265">Hiermee kun je de functie NewBaseUrlInheritanceBehavior aanzetten</translation>
 <translation id="351654132746710200">Nadat <ph name="LACROS_NAME" /> is uitgezet, wordt er geen gegevensmigratie uitgevoerd. De map <ph name="LACROS_NAME" /> wordt verwijderd en gebruikers blijven de resterende gegevens gebruiken.</translation>
+<translation id="3518293344797498431">Laad de batterij op tot ongeveer 80% om de levensduur van de batterij te maximaliseren.</translation>
 <translation id="3518512927469906365">Partitionering van opslag door derden uitzetten voor specifieke oorsprongen op het hoogste niveau</translation>
 <translation id="3522257170445891912">Als je dit beleid instelt, wordt de inlogverificatie op een van de volgende manieren uitgevoerd (afhankelijk van de waarde van de instelling):
 
@@ -5149,6 +5157,7 @@ Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard u
       URL-patronen mogen geen conflict vormen met <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
+<translation id="4891286600098289814">Optimalisatie voor opladen van batterij</translation>
 <translation id="4892647988357350237">De servicevoorwaarden worden standaard getoond als CCT voor het eerst wordt uitgevoerd. Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, wordt het dialoogvenster met servicevoorwaarden niet getoond tijdens de eerste uitvoering of de daaropvolgende uitvoeringen. Als je dit beleid instelt op <ph name="STANDARD_TOS_DIALOG" /> of niet instelt, wordt het dialoogvenster met servicevoorwaarden getoond tijdens de eerste uitvoering. De andere belangrijke aspecten zijn:
 
       - Dit beleid werkt alleen op volledig beheerde Android-apparaten die kunnen worden geconfigureerd door leveranciers van Unified Endpoint Management.
@@ -5771,6 +5780,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="5321624917465764266">Als je het beleid toepast of niet instelt, kunnen de browser- en downloadgeschiedenis in Chrome worden verwijderd. Gebruikers kunnen deze instelling niet wijzigen.
 
 Als je dit beleid niet toepast, kunnen de browser- en downloadgeschiedenis niet worden verwijderd. Ook als je dit beleid niet toepast, kan niet worden gegarandeerd dat de browser- en downloadgeschiedenis behouden blijven. Gebruikers kunnen de databasebestanden van de geschiedenis rechtstreeks bewerken of verwijderen en de browser kan sommige of alle geschiedenisitems op elk moment laten verlopen of archiveren.</translation>
+<translation id="5322649594584715998">De batterij volledig opladen met een normale snelheid. In deze modus worden aangepast en beperkt opladen uitgezet.</translation>
 <translation id="5323200200131319468">Gesproken feedback op het inlogscherm aanzetten</translation>
 <translation id="5323271643727095577">Geen annuleringsdialoogvenster tonen als event.preventDefault() wordt aangeroepen voor beforeunload-gebeurtenis. Annuleringsdialoogvenster tonen als event.returnValue de lege tekenreeks voor de beforeunload-gebeurtenis is.</translation>
 <translation id="5324430722441910403">Instellingen voor Zoekopdrachten op site</translation>
@@ -6181,6 +6191,11 @@ Als je het beleid niet instelt of instelt op een lege lijst, worden bevestigings
       Als je dit beleid niet instelde, volgde <ph name="PRODUCT_NAME" /> het standaard uitrolproces om onveilige hashes te verbieden. Als je het beleid toepaste, stond <ph name="PRODUCT_NAME" /> toe dat onveilige hashes door een server werden gebruikt tijdens de onderhandeling over een TLS-handshake. Als je het beleid niet toepaste, stond <ph name="PRODUCT_NAME" /> niet toe dat onveilige hashes door een server werden gebruikt tijdens de onderhandeling over een TLS-handshake.</translation>
 <translation id="5611869109049836323">Beperkingen afdwingen in lokaal toegevoegde vertrouwensankers</translation>
 <translation id="5612770822986069057">Toestaan dat gebruikers de instelling voor IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan- of uitzetten op hun apparaat.</translation>
+<translation id="561480358503796257">Een URL naar een afbeelding die wordt gebruikt als zakelijke badge voor een beheerd profiel. De URL moet naar een afbeelding verwijzen.
+
+Dit beleid kan alleen worden ingesteld als gebruikersbeleid.
+
+We raden je aan het favicon (bijvoorbeeld https://www.google.com/favicon.ico) of een icoon van minimaal 48 x 48 pixels te gebruiken.</translation>
 <translation id="5614865701790130558">Gebeurtenissen voor op beleid gebaseerde installaties van extensies registreren</translation>
 <translation id="561493980641967737">Als je het beleid toepast, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsen te verbeteren.
 
@@ -7831,6 +7846,21 @@ Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_
 Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncties verwijderd van de werkbalk.
 
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
+<translation id="67952585272033079">De batterijconditie kan worden beïnvloed door factoren zoals vaak volledig opladen en langere oplaadtijden. Dit beleid biedt 3 opties om het oplaadgedrag te optimaliseren en deze factoren te beperken, waardoor de levensduur van de batterij wordt verlengd.
+
+Als je het beleid instelt op Standaard, wordt de batterij normaal opgeladen tot 100%. Hiermee zet je aangepast en beperkt opladen uit.
+
+Als je het beleid instelt op Aangepast, leert het apparaat je oplaadgewoonten kennen en wordt opladen tot 100% uitgesteld totdat dat nodig is. Zo gaat de batterij langer mee.
+
+Als je het beleid instelt op Beperkt, wordt de batterij maar tot ongeveer 80% opgeladen om de levensduur te maximaliseren.
+
+Als je dit beleid niet instelt, wordt de optie Standaard toegepast (indien ondersteund).
+
+Het beleid DevicePowerBatteryChargingOptimization overschrijft het beleid DevicePowerAdaptiveChargingEnabled.
+
+DevicePowerAdaptiveChargingEnabled regelt aangepast opladen als DevicePowerBatteryChargingOptimization niet is ingesteld.
+
+Het beleid DevicePowerBatteryChargingOptimization en het beleid DevicePowerAdaptiveChargingEnabled hebben altijd voorrang op gebruikersinstellingen.</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>

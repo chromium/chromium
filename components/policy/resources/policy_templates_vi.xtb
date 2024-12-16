@@ -4470,6 +4470,11 @@ Chính sách này dùng để tắt tính năng tự động nâng cấp nội d
 
       Xin lưu ý rằng tính năng này chỉ được hỗ trợ bên trong môi trường mạng nội bộ của Google.</translation>
 <translation id="4269859918103560644">Để người dùng quyết định</translation>
+<translation id="4271245613154024710">Nếu bạn đặt chính sách này, thì hệ thống sẽ chỉ rõ những Ứng dụng web tách biệt (IWA) nào có thể kết nối với thẻ thông minh bằng Web Smart Card API mà không cần nhắc người dùng cấp quyền. Chính sách này không chấp nhận các ký tự đại diện.
+
+Chính sách này ghi đè <ph name="POLICY_NAME" />; cụ thể, giá trị danh sách chặn là <ph name="ALL_ISOLATED_WEB_APPS" /> tức là tất cả IWA sẽ không kết nối được với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền) ngoại trừ những ứng dụng được liệt kê trong chính sách này.
+
+Theo mặc định, các IWA chỉ rõ quyền đối với Thẻ thông minh trong tệp kê khai có thể kết nối với thẻ thông minh với điều kiện là người dùng cấp quyền có tính tương tác cho mỗi máy đọc.</translation>
 <translation id="4274691295133617461">Khi bạn đặt chính sách này thành 3, các trang web có thể yêu cầu quyền đọc các tệp và thư mục trong hệ thống tệp của hệ điều hành máy chủ qua API Hệ thống tệp. Khi bạn đặt chính sách này thành 2, quyền truy cập sẽ bị từ chối.
 
       Khi bạn không đặt chính sách này, các trang web có thể yêu cầu quyền truy cập, nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
@@ -6114,6 +6119,11 @@ Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng đượ
       </translation>
 <translation id="5448022937220253000">Chọn điều sẽ xảy ra với dữ liệu người dùng sau khi tắt <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">Sẽ cung cấp API Event.path.</translation>
+<translation id="5450507908812118425">Nếu bạn đặt chính sách này, thì hệ thống sẽ chỉ rõ những Ứng dụng web tách biệt (IWA) nào không thể kết nối với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền). Chính sách này chấp nhận các ký tự đại diện – ví dụ: <ph name="ALL_ISOLATED_WEB_APPS" /> sẽ chặn quyền truy cập đối với tất cả IWA.
+
+Chính sách này bị chính sách <ph name="POLICY_NAME" /> ghi đè; cụ thể, giá trị danh sách chặn là <ph name="ALL_ISOLATED_WEB_APPS" /> tức là tất cả IWA sẽ không kết nối được với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền) ngoại trừ những ứng dụng có trong danh sách <ph name="POLICY_NAME" />.
+
+Theo mặc định, các IWA chỉ rõ quyền đối với Thẻ thông minh trong tệp kê khai có thể kết nối với thẻ thông minh với điều kiện là người dùng cấp quyền có tính tương tác cho mỗi máy đọc.</translation>
 <translation id="5452024130413254050">Kiểm soát việc máy ảo sử dụng cấu hình này có quyền truy cập vào vTPM hay không, giá trị mặc định là false và <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> nếu không được đặt.</translation>
 <translation id="5454128917282602937">Khi người dùng chuyển đổi giữa các thiết bị <ph name="PRODUCT_OS_NAME" />, dịch vụ <ph name="PRODUCT_NAME" /> phiên bản 2 sẽ khởi chạy các cửa sổ trình duyệt và ứng dụng từ thiết bị trước đó sang thiết bị mới.
 Nếu bạn đặt chính sách này thành Bật, hệ thống sẽ tự động mở các cửa sổ trình duyệt và ứng dụng trên thiết bị <ph name="PRODUCT_OS_NAME" /> được sử dụng gần đây nhất của người dùng hiện tại sau khi họ đăng nhập.

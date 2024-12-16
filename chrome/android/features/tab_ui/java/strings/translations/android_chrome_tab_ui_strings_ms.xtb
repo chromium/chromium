@@ -99,6 +99,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="5161254044473106830">Tajuk diperlukan</translation>
 <translation id="5339733443032484186">Tab terakhir anda</translation>
 <translation id="5400836586163650660">Kelabu</translation>
+<translation id="5446043142172831860">Alih keluar tab dan tinggalkan kumpulan</translation>
 <translation id="5490235265819901748">Kumpulan tab dikembangkan</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tutup kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>

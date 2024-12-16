@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Donker thema uitzetten</translation>
 <translation id="1807246157184219062">Licht</translation>
 <translation id="1808803439260407870">Klassieke kunst</translation>
+<translation id="181434555916624618">Resultaten met mensen worden op dit moment niet getoond. Probeer een andere prompt.</translation>
 <translation id="1815850098929213707">De geselecteerde toets is <ph name="KEYS" />. Tik op de knop om het bedieningselement te bewerken.</translation>
 <translation id="1823120442877418684">Personages</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3340978935015468852">instellingen</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Model voor het maken van overzichten en namen downloaden</translation>
 <translation id="3359218928534347896">microfoon aan- of uitzetten</translation>
 <translation id="3360306038446926262">Vensters</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets zonder <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
+<translation id="5875913454160982848">Transcriptiemodel downloaden</translation>
 <translation id="5876385649737594562">Aanzetten om opties te selecteren</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> onderbreken</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
@@ -1588,6 +1591,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
 <translation id="8505011850330200833">Het Gemini-model heeft 2 GB opslag nodig om transcripten te verwerken en samenvattingen te maken</translation>
 <translation id="8508640263392900755">APN-gegevens</translation>
+<translation id="8509574872955173831">Meer informatie over het maken van overzichten en namen</translation>
 <translation id="8522687886059337719">Je hebt nu toegang tot nieuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />achtergronden<ph name="END_LINK_WALLPAPER_SUBPAGE" /> en <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensavers<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">theehuis</translation>

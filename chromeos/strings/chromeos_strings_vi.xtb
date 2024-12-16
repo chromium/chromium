@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Tắt giao diện tối</translation>
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1808803439260407870">Nghệ thuật cổ điển</translation>
+<translation id="181434555916624618">Hiện tại, các kết quả về con người sẽ không hiển thị. Hãy thử một câu lệnh khác.</translation>
 <translation id="1815850098929213707">Phím được chọn là <ph name="KEYS" />. Nhấn vào nút này để chỉnh sửa chế độ điều khiển</translation>
 <translation id="1823120442877418684">Chủ đề</translation>
 <translation id="1827738518074806965">Phòng tranh</translation>
@@ -1295,6 +1296,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Máy chủ định danh}other{Các máy chủ định danh}}</translation>
 <translation id="7135814714616751706">Tìm lối tắt</translation>
 <translation id="7138614237884624401">Văn bản đơn giản</translation>
+<translation id="7138668887584231801">Không đủ từ để tóm tắt</translation>
 <translation id="7141470099673912333">Chuyển nội dung</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
 <translation id="7144878232160441200">Thử lại</translation>

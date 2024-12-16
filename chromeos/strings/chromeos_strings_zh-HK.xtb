@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">停用深色主題背景</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1808803439260407870">經典藝術</translation>
+<translation id="181434555916624618">目前系統不會顯示有人臉的結果，請嘗試其他提示。</translation>
 <translation id="1815850098929213707">揀咗嘅按鍵係 <ph name="KEYS" />。㩒一下個掣就可以修改控制項</translation>
 <translation id="1823120442877418684">角色</translation>
 <translation id="1827738518074806965">畫廊</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">裝置嘅右邊耳機有 <ph name="BATTERY_PERCENTAGE" />% 電。</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3347558044552027859">現代</translation>
+<translation id="3353477144743332882">下載摘要同名稱建立模型</translation>
 <translation id="3359218928534347896">將個咪校去靜音</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">壽司</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">無法使用快速鍵。請按下不包含 <ph name="KEY" /> 鍵的新快速鍵。</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
+<translation id="5875913454160982848">下載轉錄模型</translation>
 <translation id="5876385649737594562">開啟即可選取選項</translation>
 <translation id="5877503382465267833">暫停「<ph name="RECORDING_NAME" />」</translation>
 <translation id="588258955323874662">全螢幕</translation>
@@ -1588,6 +1591,7 @@
 <translation id="8503836310948963452">只需多幾分鐘…</translation>
 <translation id="8505011850330200833">Gemini 模型需要 2GB 儲存空間，處理轉錄文字和建立摘要</translation>
 <translation id="8508640263392900755">APN 詳情</translation>
+<translation id="8509574872955173831">進一步了解點樣建立摘要同名稱</translation>
 <translation id="8522687886059337719">您現可使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />螢幕保護程式<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">茶居</translation>

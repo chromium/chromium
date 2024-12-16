@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">ไมค์เปิดอยู่ การปิดไมค์จะปิดเสียงการป้อนข้อมูล</translation>
 <translation id="2302092602801625023">บัญชีนี้จัดการโดย Family Link</translation>
 <translation id="2303600792989757991">ภาพรวมการสลับหน้าต่าง</translation>
+<translation id="2304702218354340897">คุณแน่ใจไหมว่าต้องการปิดการควบคุมด้วยใบหน้า</translation>
 <translation id="2305738328104302723">รายการงานของ Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: การจับภาพหน้าจอ การดาวน์โหลด และไฟล์ที่ปักหมุดไว้ล่าสุด</translation>
 <translation id="2318576281648121272">วันนี้ <ph name="TODAY_DATE" /></translation>
@@ -896,6 +897,7 @@
 <translation id="4119928251231465047">พยายามป้อน PIN หลายครั้งเกินไป</translation>
 <translation id="412298498316631026">หน้าต่าง</translation>
 <translation id="4123259114412175274">หากต้องการปลดล็อก Chromebook ให้ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
+<translation id="4123868835475902435">นี่คือข้อมูลเบื้องต้น ดูต่อใน "สำรวจ" ซึ่งเป็นแอปในตัวที่มาพร้อมกับเคล็ดลับและความช่วยเหลือ คุณจะพบเคล็ดลับในการเริ่มต้นใช้งาน ข้อเสนอพิเศษ และฟีเจอร์ใหม่ล่าสุดของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4125970834901680537">สตรีมแอปในโหมดแท็บเล็ตไม่ได้ โปรดลองอีกครั้งในโหมดแล็ปท็อป</translation>
 <translation id="4131973331381812765">อุณหภูมิ: <ph name="TEMPERATURE" />°C - ความเร็วในปัจจุบัน: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">เปิดจนถึงพระอาทิตย์ขึ้น</translation>

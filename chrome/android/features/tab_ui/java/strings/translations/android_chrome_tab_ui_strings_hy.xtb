@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է}}</translation>
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
 <translation id="5339733443032484186">Ձեր վերջին ներդիրը</translation>
+<translation id="5380159289133845234">Արխիվացնել կրկնօրինակ ներդիրները</translation>
 <translation id="5400836586163650660">Մոխրագույն</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Ներդիրների խմբերն ավտոմատ պահվում են</translation>
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը</translation>
+<translation id="6109251075362363230">Բոլոր կրկնօրինակ ներդիրները նույնպես կարխիվացվեն՝ բացառությամբ ամենավերջին կրկնօրինակից։</translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
 <translation id="6271513594716432922">Փակել բոլոր անգործուն ներդիրները</translation>

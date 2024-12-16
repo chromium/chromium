@@ -1140,6 +1140,7 @@
 <translation id="306573536155379004">თამაში დაიწყო.</translation>
 <translation id="3067505415088964188">ფასი დაბალია</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />-ზე ფაილის ატვირთვის პროცესი 1 წუთში დაიწყება</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ერთეული}other{{ITEMS} ერთეული}}</translation>
 <translation id="3076865167425975822">ოპერაციული სისტემები</translation>
 <translation id="3080254622891793721">გრაფიკა</translation>
 <translation id="3082007635241601060">მიეცით საშუალება Google-ს, გამოიყენოს თქვენი კალათები, რომ პერსონალურად გიპოვოთ ხელმისაწვდომი ფასდაკლებები</translation>
@@ -2831,6 +2832,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" />-ზე არსებული ვებგვერდი შეიძლება იყოს დროებით გათიშული ან სამუდამოდ ახალ ვებ მისამართზე გადასული.</translation>
 <translation id="6107012941649240045">გაცემულია</translation>
 <translation id="6107924765192360631">წერასთან დაკავშირებით შემოთავაზებები რომ მიიღოთ, დაიწყეთ რამდენიმე სიტყვით ან პირველი მონახაზით.</translation>
+<translation id="6108508372809181847">შეადარეთ <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">სერტიფიკატის დეტალები</translation>
 <translation id="6108702513636120202">თქვენი საძიებო სისტემა Chromium-ში</translation>
 <translation id="6108849843016142864">რეპტილიები და ამფიბიები</translation>

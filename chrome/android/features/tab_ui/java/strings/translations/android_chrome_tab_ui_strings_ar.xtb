@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{تمت إضافة علامة تبويب واحدة (<ph name="ONE_ADDED" />)}zero{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب}two{تمت إضافة علامتَي تبويب (<ph name="MANY_ADDED" />)}few{تمت إضافة <ph name="MANY_ADDED" /> علامات تبويب}many{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب}other{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب}}</translation>
 <translation id="5161254044473106830">العنوان مطلوب</translation>
 <translation id="5339733443032484186">علامة التبويب الأخيرة</translation>
+<translation id="5380159289133845234">أرشفة علامات التبويب المكرّرة</translation>
 <translation id="5400836586163650660">رمادي</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">يتم حفظ مجموعات علامات التبويب تلقائيًا</translation>
 <translation id="6054741997831917303">انخفض مؤخرًا سعر هذا المنتج من <ph name="PREVIOUS_PRICE" /> إلى <ph name="NEW_PRICE" />.</translation>
 <translation id="6082313992897617440">ستفقد على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
+<translation id="6109251075362363230">ستتم أرشفة جميع علامات التبويب المكرّرة أيضًا، باستثناء آخر نسخة تم استخدامها.</translation>
 <translation id="6193448654517602979">اختيار علامات التبويب</translation>
 <translation id="6228793724645064692">(تقييم المتجر)</translation>
 <translation id="6271513594716432922">إغلاق جميع علامات التبويب غير النشطة</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="1408847409015257906">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
 <translation id="1411386976162024013">การค้นหาภาพด้วย Lens</translation>
+<translation id="1417474386970818917">ออกจากระบบและลบ</translation>
 <translation id="1426410128494586442">ยอมรับ</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1436671784520050284">ตั้งค่าต่อ</translation>
@@ -1010,6 +1011,7 @@
 <translation id="5628388627414062173">{count,plural, =1{{count} หน้าในเรื่องรออ่านของคุณ}other{{count} หน้าในเรื่องรออ่านของคุณ}}</translation>
 <translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5633237939819267663">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" แล้ว}}</translation>
+<translation id="564170563478022912">ออกจากระบบไหม ระบบจะลบข้อมูลบัญชีที่ไม่ได้บันทึก</translation>
 <translation id="5642707040609478753">ทำเครื่องหมายว่ายังไม่ได้อ่าน</translation>
 <translation id="5646284034397250191">สร้างป้ายกำกับแล้ว ยังไม่กำหนดวันที่</translation>
 <translation id="5647096944343801045">จุดแรกเข้าขนาดใหญ่</translation>
@@ -1022,6 +1024,7 @@
 <translation id="5669335982068190158">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPhone แตะ "ต่อไป" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">รุ่น <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">ต้องการเปลี่ยนบัญชีไหม ระบบจะลบข้อมูลบัญชีที่ไม่ได้บันทึก</translation>
 <translation id="5683499062697987550">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
 <translation id="5684761169742812828">รหัสผ่านนี้ถูกเปิดเผยจากการละเมิดข้อมูลบนอินเทอร์เน็ต หากคุณยังไม่มีเวลาเปลี่ยนรหัสในตอนนี้ Google ขอแนะนำให้เก็บคำเตือนนี้ไว้เพื่อช่วยเตือนคุณในภายหลัง</translation>
 <translation id="5694848685995373177">บันทึกในไดรฟ์สำหรับ <ph name="USER_EMAIL" /> แล้ว</translation>
@@ -1223,6 +1226,7 @@
 <translation id="6506996418997555004">แชร์กลุ่มแท็บ "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">ลงชื่อเข้าใช้เพื่อรับเรื่องรออ่านในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6518133107902771759">ยืนยัน</translation>
+<translation id="6518861084553706202">ระบบจะปิดแท็บ และข้อมูลที่ลบอาจรวมถึงรหัสผ่าน ประวัติการท่องเว็บ คุกกี้ และอื่นๆ</translation>
 <translation id="6523575793810663688">แสดงวิธีการ</translation>
 <translation id="6524082013156754186">บันทึกในบัญชี</translation>
 <translation id="6527303717912515753">แชร์</translation>
@@ -1679,6 +1683,7 @@
 <translation id="8545276357312221485">ตรวจสอบการตั้งค่าเบราว์เซอร์เริ่มต้น</translation>
 <translation id="854938212724803178">คุณมีรหัสผ่านที่ถูกละเมิด 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="8556590991644167667">{count,plural, =1{คุณได้ปิดคำเตือน {count} รายการ}other{คุณได้ปิดคําเตือน {count} รายการ}}</translation>
+<translation id="8558046478684552694">ปิดกลุ่ม</translation>
 <translation id="8560253818350321773">แสดงรายการที่ใช้บ่อยก่อน</translation>
 <translation id="8561999115126307258">{count,plural, =1{ตัวเลือกรหัสผ่าน {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{ตัวเลือกรหัสผ่าน {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="8564894539416715395">หน้าแท็บใหม่</translation>
@@ -1847,6 +1852,7 @@
 <translation id="9205189991633470489">การล็อกโหมดไม่ระบุตัวตน</translation>
 <translation id="9206887540681440657">ความเร็ว</translation>
 <translation id="9223358826628549784">ส่งรายงานข้อขัดข้องแล้ว</translation>
+<translation id="926455622548529175">สลับและลบ</translation>
 <translation id="929748059769569925">ข้อความที่ไฮไลต์</translation>
 <translation id="932305336591073205">{count,plural, =1{ปิดแท็บ}other{ปิดแท็บ}}</translation>
 <translation id="939472100615258482">เว็บไซต์ปัจจุบัน</translation>

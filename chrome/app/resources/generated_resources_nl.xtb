@@ -2236,7 +2236,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2532146950330687938">Het apparaat voorbereiden...</translation>
 <translation id="2532198298278778531">Beveiligde DNS beheren in de instellingen van Chrome OS Flex</translation>
 <translation id="2532589005999780174">Modus voor hoog contrast</translation>
-<translation id="2532878989288727311">Helpt je korte teksten te schrijven voor zaken op internet, zoals reviews. Schrijfsuggesties zijn gebaseerd op je prompts en de content van de webpagina.</translation>
 <translation id="2533649878691950253">Deze site heeft geen toegang tot je exacte locatie omdat je dit gewoonlijk niet toestaat</translation>
 <translation id="253434972992662860">&amp;Onderbreken</translation>
 <translation id="253498598929009420">De site kan de content van je scherm bekijken</translation>
@@ -2863,6 +2862,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2981113813906970160">Grote cursor bekijken</translation>
 <translation id="2983102365694924129">Gebaseerd op je activiteit op een site. Deze instelling staat uit.</translation>
 <translation id="2983373101216420412">Batterijniveau case: <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984384421572259426">Ongebruikte tabbladen opschonen</translation>
 <translation id="2984727013951557074">Het bestand wordt nog gesynchroniseerd met Drive.</translation>
 <translation id="2985348301114641460">Een verzoek naar je beheerder sturen om '<ph name="EXTENSION_NAME" />' te installeren?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> heeft een app verwijderd}other{<ph name="APP_NAME" /> heeft # apps verwijderd}}</translation>
@@ -4422,6 +4422,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4072805772816336153">Probeer het later opnieuw</translation>
 <translation id="4074164314564067597">toetsenbord</translation>
 <translation id="407520071244661467">Schaal</translation>
+<translation id="4077623680826964850">Time-out bij opstarten of opnieuw verbinden met VM.</translation>
 <translation id="4077917118009885966">Advertenties geblokkeerd op deze site</translation>
 <translation id="4078738236287221428">Agressief</translation>
 <translation id="4078903002989614318">Opties voor sorteren en lijstweergave</translation>
@@ -4908,6 +4909,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4437879751057074691">Aanbieden om wachtwoorden en toegangssleutels op te slaan</translation>
 <translation id="4437947179446780764">Aangepaste DNS-serviceprovider toevoegen</translation>
 <translation id="4438043733494739848">Transparant</translation>
+<translation id="4439157218765614426">Verboden op basis van beleid.</translation>
 <translation id="4441124369922430666">Wil je dat deze app automatisch start wanneer het apparaat wordt aangezet?</translation>
 <translation id="4441147046941420429">Als je wilt doorgaan, verwijder je de beveiligingssleutel uit je apparaat, steek je hem er opnieuw en tik je erop</translation>
 <translation id="444134486829715816">Uitvouwen...</translation>
@@ -5364,6 +5366,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Naam van mobiel netwerk voor e-simkaart wijzigen</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 duplicaat</translation>
 <translation id="4780321648949301421">Bewaar pagina als...</translation>
 <translation id="4780558987886269159">Voor het werk</translation>
 <translation id="4785719467058219317">Je gebruikt een beveiligingssleutel die niet is geregistreerd voor deze website</translation>
@@ -5442,6 +5445,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4833683849865011483">Er is één printer gevonden op de printerserver</translation>
 <translation id="4835598628985424375">Je lippen samendrukken</translation>
 <translation id="4835677468087803981">Pincode verbergen</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> duplicaten</translation>
 <translation id="4836504898754963407">Vingerafdrukken beheren</translation>
 <translation id="4837128290434901661">Teruggaan naar Google Zoeken?</translation>
 <translation id="4837926214103741331">Je beschikt niet over de rechten om dit apparaat te gebruiken. Neem contact op met de eigenaar van het apparaat voor toestemming om in te loggen.</translation>
@@ -6067,6 +6071,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="528208740344463258">Als je Android-apps wilt downloaden en gebruiken, moet je eerst deze vereiste update installeren. Je kunt je <ph name="DEVICE_TYPE" /> tijdens het updaten niet gebruiken. Je <ph name="DEVICE_TYPE" /> wordt opnieuw opgestart nadat de installatie is voltooid.</translation>
 <translation id="5283677936944177147">Het systeem kan het model of serienummer van het apparaat niet bepalen.</translation>
 <translation id="5284445933715251131">Doorgaan met downloaden</translation>
+<translation id="5285484405698525101">Op dit moment geen ongebruikte tabbladen</translation>
 <translation id="5285635972691565180">Scherm <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Scannen</translation>
 <translation id="5287425679749926365">Je accounts</translation>
@@ -6340,6 +6345,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5481941284378890518">Printers in de buurt toevoegen</translation>
 <translation id="5482417738572414119">Log in om Chrome tabbladgroepen te laten voorstellen en je tabbladen overzichtelijk te houden</translation>
 <translation id="5483005706243021437">Hier blijven</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{Geen ongebruikte tabbladen}=1{1 ongebruikt tabblad controleren}other{# ongebruikte tabbladen controleren}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen {NUM_DAYS} dagen terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">App toevoegen</translation>
 <translation id="5485435764083510385">Voorkeurstaal voor ondertiteling</translation>
@@ -7018,6 +7024,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5982578203375898585">Downloads tonen als ze klaar zijn</translation>
 <translation id="5983716913605894570">Genereren…</translation>
 <translation id="5984222099446776634">Recent bezocht</translation>
+<translation id="5984334442529819751">Fout bij het installeren van DLC (vaak is opnieuw opstarten vereist, controleer Instellingen\&gt;\&gt;Over ChromeOS voor meer informatie).</translation>
 <translation id="5985458664595100876">Ongeldige URL-indeling. Ondersteunde formaten zijn \\server\share en smb://server/share.</translation>
 <translation id="5985556342298151179">Chrome-app geïnstalleerd door je apparaatbeheerder.</translation>
 <translation id="598810097218913399">Toewijzing verwijderen</translation>
@@ -8731,7 +8738,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7243092385765551741">Toegangssleutel verwijderen?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
 <translation id="7246230585855757313">Plaats de beveiligingssleutel opnieuw en probeer het opnieuw.</translation>
-<translation id="7248245317364871465">Stelt automatisch groepen voor en maakt ze op basis van je geopende tabbladen, zodat je makkelijker vindt wat je zoekt</translation>
 <translation id="724835896049478274">Beschikbare accounts voor Android-apps</translation>
 <translation id="7248802599439396696">Tabbladen inactief maken</translation>
 <translation id="7249197363678284330">Wijzig deze instelling in de adresbalk.</translation>
@@ -9253,6 +9259,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="762917478230183172">Selecteer een actie voor elke toets</translation>
 <translation id="7629206210984165492">Ingetogen</translation>
 <translation id="7629827748548208700">Tabblad: <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">Onbekend resultaat.</translation>
 <translation id="7630426712700473382">Dit apparaat wordt beheerd door <ph name="MANAGER" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7631014249255418691">Back-up maken van Linux-apps en -bestanden is geslaagd</translation>
 <translation id="7631722872321401342">Er staan geen stemmen voor het <ph name="LANGUAGE" /> op je apparaat. Je kunt stemmen installeren via de instellingen.</translation>
@@ -9406,6 +9413,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7723388585204724670">Resetten naar Chrome-standaard</translation>
 <translation id="7724603315864178912">Knippen</translation>
 <translation id="7726391492136714301">Meldingen en apps van je telefoon bekijken</translation>
+<translation id="7727898923446098954">Tabblad verborgen</translation>
 <translation id="7728465250249629478">Taal van apparaat wijzigen</translation>
 <translation id="7728570244950051353">Scherm vergrendelen vanuit slaapmodus</translation>
 <translation id="7728668285692163452">Wijziging van kanaal wordt later toegepast</translation>
@@ -9797,6 +9805,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7992203134935383159">Spraaksynthese</translation>
 <translation id="799570308305997052">Webweergave</translation>
 <translation id="7997826902155442747">Procesprioriteit</translation>
+<translation id="7997828719430450286">Geslaagd.</translation>
 <translation id="7998701048266085837">URL's</translation>
 <translation id="7999229196265990314">De volgende bestanden zijn gemaakt:
 
@@ -10447,6 +10456,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="845702320058262034">Kan geen verbinding maken. Controleer of Bluetooth aanstaat op je telefoon.</translation>
 <translation id="8457251154056341970">Je ziet <ph name="MODULE_NAME" /> niet meer op deze pagina</translation>
 <translation id="8457451314607652708">Bookmarks importeren</translation>
+<translation id="8458259704995116343">VM starten is mislukt.</translation>
 <translation id="8458341576712814616">Snelkoppeling</translation>
 <translation id="8458627787104127436">Alles (<ph name="URL_COUNT" />) openen in nieuw venster</translation>
 <translation id="8459023460357294721"><ph name="FILE_NAME" /> toch openen</translation>
@@ -11107,12 +11117,14 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8918900204934259333">App installeren...</translation>
 <translation id="891931289445130855">Gegevens en rechten verwijderen</translation>
 <translation id="8920133120839850939">Selecteer het tabblad Meer gebaren en zet Swipen tussen pagina's aan om terug en vooruit te navigeren</translation>
+<translation id="8921369299636221117">De Concierge-service is niet beschikbaar.</translation>
 <translation id="8922348435910470639">Dubbel geboekt</translation>
 <translation id="8922624386829239660">Scherm bewegen zodra de muis aan de rand van het scherm komt</translation>
 <translation id="8923880975836399332">Donkerblauwgroen</translation>
 <translation id="8925124370124776087">De titelbalk is nu verborgen</translation>
 <translation id="8925458182817574960">&amp;Instellingen</translation>
 <translation id="8926389886865778422">Niet meer vragen</translation>
+<translation id="8926555406617248399">Tabbladen verborgen</translation>
 <translation id="892706138619340876">Sommige instellingen zijn gereset</translation>
 <translation id="8927438609932588163">Toestaan dat sites gegevens opslaan op je apparaat</translation>
 <translation id="8929696694736010839">Alleen huidige incognitosessie</translation>

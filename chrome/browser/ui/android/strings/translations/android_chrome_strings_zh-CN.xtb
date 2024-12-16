@@ -400,6 +400,7 @@
 <translation id="2805756323405976993">应用</translation>
 <translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" />中保存的密码</translation>
 <translation id="2819849308549746319">全部退订</translation>
+<translation id="2826576843404243001">在您访问不支持安全连接的网站前，系统会发出警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
 <translation id="2830783625999891985">已隐藏剪贴板内容</translation>
 <translation id="2834884592945939112">设置、Google 账号错误</translation>
@@ -515,8 +516,10 @@
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3305130791745726624">发送到设备</translation>
 <translation id="3305795716056605962">通过“更多选项”按钮翻译网页</translation>
+<translation id="331080746368555063">私密网站可能包括公司内网等</translation>
 <translation id="3311330810461485557">按应用、日期等进行搜索。</translation>
 <translation id="3334729583274622784">更改文件扩展名？</translation>
+<translation id="333863344734218290">在您访问不安全的公共网站和私密网站时发出警告</translation>
 <translation id="3341262203274374114">无法取消关注。出了点问题。</translation>
 <translation id="3351165113450806415">全新滑动方式</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
@@ -901,6 +904,7 @@
 <translation id="5085038751173179818">登录此网站和 Chrome 即可获取您在所有设备上保存的书签及其他信息</translation>
 <translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="509429900233858213">出现错误。</translation>
+<translation id="5096775069898886423">在您访问不支持安全连接的网站前，系统会发出警告</translation>
 <translation id="5097349930204431044">您访问的网站能判断您的喜好，然后在您继续浏览时向您展示建议的广告</translation>
 <translation id="510275257476243843">还剩 1 小时</translation>
 <translation id="5114895953710637392">应用过滤器工作表已关闭。</translation>
@@ -1494,6 +1498,7 @@
 <translation id="7628417132421583481">前往密码管理工具</translation>
 <translation id="7630202231528827509">提供商网址</translation>
 <translation id="7638584964844754484">密码不正确</translation>
+<translation id="7646499124171960488">在您访问不安全的公共网站时发出警告</translation>
 <translation id="7646772052135772216">无法同步密码</translation>
 <translation id="7655240423373329753">过去 7 天</translation>
 <translation id="7656721520530864426">尚未访问任何网站</translation>

@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3340978935015468852">параметрлер</translation>
 <translation id="3347558044552027859">заманауи</translation>
+<translation id="3353477144743332882">Қорытынды жазу және ат беру үлгісін жүктеп алу</translation>
 <translation id="3359218928534347896">микрофон дыбысын қосу/өшіру</translation>
 <translation id="3360306038446926262">Терезелер</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Пернелер тіркесімі қолжетімді емес. <ph name="KEY" /> пернесін қоспай, қайтадан басып көріңіз.</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="5860491529813859533">Қосу</translation>
+<translation id="5875913454160982848">Транскрипция үлгісін жүктеп алу</translation>
 <translation id="5876385649737594562">Опцияларды таңдау үшін қосыңыз</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> жазбасын кідірту</translation>
 <translation id="588258955323874662">Толық экран</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">Бірнеше минут қана…</translation>
 <translation id="8505011850330200833">Gemini моделіне транскрипцияларды өңдеу және қорытындылар жасау үшін 2 ГБ жад қажет.</translation>
 <translation id="8508640263392900755">APN мәліметтері</translation>
+<translation id="8509574872955173831">Қорытынды жазу және ат беру туралы толық ақпарат</translation>
 <translation id="8522687886059337719">Енді жаңа <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тұсқағаздар<ph name="END_LINK_WALLPAPER_SUBPAGE" /> мен <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />скринсейверді<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> пайдалана алатын боласыз</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">шайхана</translation>

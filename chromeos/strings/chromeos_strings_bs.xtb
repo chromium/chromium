@@ -484,7 +484,7 @@
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3347558044552027859">moderno</translation>
-<translation id="3353477144743332882">Preuzmite sažetak i model izrade naziva</translation>
+<translation id="3353477144743332882">Preuzimanje sažetka i modela kreiranja naziva</translation>
 <translation id="3359218928534347896">uključivanje/isključivanje zvuka mikrofona</translation>
 <translation id="3360306038446926262">Prozori</translation>
 <translation id="3361618936611118375">Suši</translation>
@@ -1000,7 +1000,7 @@
 <translation id="5859969039821714932">Prečica nije dostupna. Pritisnite novu prečicu bez tipke <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="5860491529813859533">Uključi</translation>
-<translation id="5875913454160982848">Preuzmite model prijepisa</translation>
+<translation id="5875913454160982848">Preuzimanje modela transkripcije</translation>
 <translation id="5876385649737594562">Uključite da odaberete opcije</translation>
 <translation id="5877503382465267833">Pauziranje snimka <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Cijeli ekran</translation>
@@ -1591,7 +1591,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
 <translation id="8505011850330200833">Geminijev model zahtijeva 2 GB pohrane za obradu transkripata i kreiranje sažetaka</translation>
 <translation id="8508640263392900755">Detalji APN-a</translation>
-<translation id="8509574872955173831">Saznajte više o sažetku i izradi naziva</translation>
+<translation id="8509574872955173831">Više informacija o sažetku i kreiranju naziva</translation>
 <translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru ekrana<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajdžinica</translation>

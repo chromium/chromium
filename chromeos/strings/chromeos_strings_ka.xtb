@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">მუქი თემის გათიშვა</translation>
 <translation id="1807246157184219062">ნათელი</translation>
 <translation id="1808803439260407870">კლასიკური ხელოვნება</translation>
+<translation id="181434555916624618">ამ ეტაპზე არ გაჩვენებთ ადამიანების შემცველ შედეგებს. ცადეთ სხვა მოთხოვნა.</translation>
 <translation id="1815850098929213707">არჩეული კლავიში არის <ph name="KEYS" />. შეეხეთ ღილაკს, მართვის საშუალება რომ ჩაასწოროთ</translation>
 <translation id="1823120442877418684">სიმბოლოები</translation>
 <translation id="1827738518074806965">ხელოვნების გალერეა</translation>
@@ -1295,6 +1296,7 @@
 <translation id="7134436342991564651">{0,plural, =1{სახელთა სერვერი}other{სახელთა სერვერები}}</translation>
 <translation id="7135814714616751706">მალსახმობების ძიება</translation>
 <translation id="7138614237884624401">გამარტივებული ტექსტი</translation>
+<translation id="7138668887584231801">შეჯამებისთვის საკმარისი სიტყვა არ არის</translation>
 <translation id="7141470099673912333">კონტენტის გადატანა</translation>
 <translation id="7143207342074048698">დაკავშირება</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>

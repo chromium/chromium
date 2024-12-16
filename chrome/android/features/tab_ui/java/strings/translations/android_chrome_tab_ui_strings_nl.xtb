@@ -98,6 +98,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tabblad toegevoegd}other{<ph name="MANY_ADDED" /> tabbladen toegevoegd}}</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="5339733443032484186">Je laatste tabblad</translation>
+<translation id="5380159289133845234">Dubbele tabbladen archiveren</translation>
 <translation id="5400836586163650660">Grijs</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
@@ -117,6 +118,7 @@ Als je de groep verlaat, raak je meteen de toegang tot de tabbladgroep <ph name=
 <translation id="6051432659151380973">Je tabbladgroepen worden automatisch opgeslagen</translation>
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Je raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt</translation>
+<translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
 <translation id="6271513594716432922">Alle inactieve tabbladen sluiten</translation>

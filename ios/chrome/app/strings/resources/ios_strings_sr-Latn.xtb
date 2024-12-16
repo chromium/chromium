@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Želite li da uključite sinhronizaciju?</translation>
 <translation id="1253032109800629289">Sakrij opciju Dobijaj obaveštenja o praćenju cena</translation>
 <translation id="1258491128795710625">Šta je novo</translation>
+<translation id="1259210743048744967">Postojeći podaci pregledanja će biti dostupni kada se odjavite sa: <ph name="USER_EMAIL" />. Neće biti sačuvani na ovom nalogu.</translation>
 <translation id="1262724000444746916">Sakrij opciju Dodaj u obeleživače</translation>
 <translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1263433075299269530">Poslednja otvorena kartica</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Želite da uklonite karticu i izbrišete grupu?</translation>
 <translation id="1700629756560807968">Broj izabranih stavki je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Izbrišite pristupni kôd</translation>
+<translation id="1712341189152602203">Postojeći podaci pregledanja će biti povezani sa: <ph name="USER_EMAIL" />. Vaša organizacija može da vidi ove podatke.</translation>
 <translation id="1713777106376424209">Isporuka do</translation>
 <translation id="1715515772563243997">Ako veb-sajt <ph name="SITE" /> smatrate pouzdanim, možete da koristite sačuvanu lozinku za prijavljivanje.</translation>
 <translation id="1728549374069268714">Nalepi i idi</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Na sajtu na kom ste sačuvali lozinku, dodirnite polje za lozinku za prijavljivanje.</translation>
 <translation id="1872096359983322073">Blic</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Odaberite šta želite da uradite sa postojećim podacima pregledanja na ovom uređaju, poput lozinki, istorije i drugog sadržaja.</translation>
 <translation id="1881621406744213161">Pozovite članove porodice</translation>
 <translation id="188237709236611317">Traka menija pametnog sortiranja</translation>
 <translation id="1883255238294161206">Skupi listu</translation>
@@ -512,6 +515,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3324193307694657476">2. red za adresu</translation>
 <translation id="3328801116991980348">Informacije o sajtu</translation>
 <translation id="333229797575847124">Kako da omogućite ovu funkciju</translation>
+<translation id="3333566504534692948">Ne, premesti ih u radni prostor</translation>
 <translation id="3344485292736684439">{count,plural, =1{Obeleživač je sačuvan u folderu {title} na nalogu, {email}}one{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}few{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}other{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}}</translation>
 <translation id="334690320928261823">Nedavne kartice</translation>
 <translation id="3348387552617855658">Ova kartica vam pomaže da pratite pakete i prikazuje vam važne novosti o isporuci.</translation>

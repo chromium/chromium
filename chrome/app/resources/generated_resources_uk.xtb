@@ -142,6 +142,7 @@
 Ви можете будь-коли перевірити свої паролі в <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Копіювати адр&amp;есу посилання</translation>
 <translation id="1085064499066015002">Завжди на всіх сайтах</translation>
+<translation id="1085558727130096638">Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUM_OTHER_MEMBERS" /> користувач</translation>
 <translation id="1085618740036066768">Пункт списку "<ph name="ITEM" />" не вибрано. <ph name="INDEX" /> з <ph name="COUNT" />. Щоб вибрати його, натисніть клавішу пошуку й пробіл.</translation>
 <translation id="1085697365578766383">Не вдалося запустити віртуальну машину. Повторіть спробу.</translation>
 <translation id="1090126737595388931">Не запущено жодну фонову програму</translation>
@@ -2146,6 +2147,7 @@
 <translation id="2462752602710430187">Додано принтер <ph name="PRINTER_NAME" /></translation>
 <translation id="2464079411014186876">Морозиво</translation>
 <translation id="2467755475704469005">Пристроїв не виявлено. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525">Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще стільки користувачів: <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="2468178265280335214">Прискорення прокрутки сенсорною панеллю</translation>
 <translation id="2468205691404969808">Використовує файли cookie, щоб запам’ятовувати налаштування, навіть якщо ви не відвідуєте ці сторінки</translation>
 <translation id="2468402215065996499">Тамагочі</translation>
@@ -2250,7 +2252,6 @@
 <translation id="2532146950330687938">Підготовка пристрою…</translation>
 <translation id="2532198298278778531">Керувати захищеним DNS-сервером у налаштуваннях ОС Chrome Flex</translation>
 <translation id="2532589005999780174">Режим високого контрасту</translation>
-<translation id="2532878989288727311">Допомагає писати короткі тексти в Інтернеті, наприклад відгуки. Пропозиції надаються на основі ваших запитів і вмісту вебсторінки.</translation>
 <translation id="2533649878691950253">Цьому сайту заблоковано доступ до даних про ваше точне місцезнаходження, оскільки ви зазвичай вибираєте такі налаштування</translation>
 <translation id="253434972992662860">&amp;Пауза</translation>
 <translation id="253498598929009420">Сайт зможе переглядати вміст вашого екрана</translation>
@@ -2291,6 +2292,7 @@
 <translation id="256481480019204378">Ідентифікатор облікового запису Google</translation>
 <translation id="256517381556987641">Під час синхронізації знайдено стільки файлів: <ph name="ITEMS_FOUND" />. Триває перевірка обсягу пам’яті. Спробуйте знову ввімкнути синхронізацію файлів за кілька хвилин.</translation>
 <translation id="2565214867520763227">Увімкніть програму зчитування з екрана</translation>
+<translation id="2566146433999774844">Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще стільки користувачів: <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="2568694057933302218">У режимі анонімного перегляду сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі. Дані про такі дії не використовуються для персоналізації реклами. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="2568774940984945469">Контейнер інформаційної панелі</translation>
 <translation id="2569972178052279830">Ім’я або назва продавця</translation>
@@ -2298,6 +2300,7 @@
 <translation id="2571655996835834626">Змінювати налаштування, які контролюють доступ веб-сайтів до файлів cookie, файлів JavaScript, плагінів, даних геолокації, мікрофона, камери тощо.</translation>
 <translation id="257175846174451436">Запропоновано групу вкладок</translation>
 <translation id="2572032849266859634">Надано доступ лише для перегляду (<ph name="VOLUME_NAME" />).</translation>
+<translation id="2573147659521059501">Вкладок: <ph name="NUM" /></translation>
 <translation id="2573276323521243649">Повернутися назад зі сторінки вибору аватара</translation>
 <translation id="2573417407488272418">Перед оновленням збережіть резервні копії додатків і файлів у папці "Файли" &gt; "Мої файли".</translation>
 <translation id="2573831315551295105">Призначити перемикач для дії "<ph name="ACTION" />"</translation>
@@ -2969,6 +2972,7 @@
 <translation id="3038628620670416486">Знайдіть кнопки на миші</translation>
 <translation id="3039491566278747710">Не вдалося встановити на пристрій політику щодо використання в режимі офлайн.</translation>
 <translation id="3040982432432547149">Допоможіть нам покращити додаток Steam для Chromebook</translation>
+<translation id="304169924727249890">Приєднатися до групи вкладок, з якою працює <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3043016484125065343">Щоб переглянути закладки, увійдіть в обліковий запис</translation>
 <translation id="3043126717220766543">Очистити пропозиції груп</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3309,6 +3313,7 @@
 <translation id="3308852433423051161">Завантажується Google Асистент…</translation>
 <translation id="3309124184713871355">Споруди</translation>
 <translation id="3309330461362844500">Ідентифікатор профілю сертифіката</translation>
+<translation id="3310379801837527592">Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUM_OTHER_MEMBERS" /> користувач</translation>
 <translation id="331080746368555063">До приватних сайтів може належати, наприклад, інтранет вашої компанії</translation>
 <translation id="3311445899360743395">Дані, пов'язані з цим додатком, може бути видалено з пристрою.</translation>
 <translation id="3312470654018965389">Налаштовується контейнер Linux</translation>
@@ -4267,6 +4272,7 @@
 <translation id="3958088479270651626">Імпорт закладок і налаштувань</translation>
 <translation id="3958110062351175311">Дозволено показувати запити на панелі інструментів</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> уже встановлено</translation>
+<translation id="3959969108528118741">Власник</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Інші дії для номера "<ph name="IBAN_DESCRIPTION" />"</translation>
 <translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> залишає групу</translation>
@@ -4715,6 +4721,7 @@
 <translation id="428963538941819373">Ці сайти можуть використовувати збережену про вас інформацію, коли ви переглядаєте <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Виберіть PIN-код</translation>
 <translation id="4290791284969893584">Після того, як ви закриєте сторінку, виконання розпочатих завдань може не завершитися</translation>
+<translation id="4290826901752066702"><ph name="NUM" /> учасник</translation>
 <translation id="4290898381118933198">Проводьте пальцем по екрану, щоб переходити між сторінками</translation>
 <translation id="4291265871880246274">Вікно входу</translation>
 <translation id="429312253194641664">Сайт відтворює медіа-вміст</translation>
@@ -5791,6 +5798,7 @@
 <translation id="5079950360618752063">Використати запропонований пароль</translation>
 <translation id="508059534790499809">Оновити квиток Kerberos</translation>
 <translation id="5081124414979006563">&amp;Відкрити профіль гостя</translation>
+<translation id="5081974595802103358">Не вдалося скопіювати посилання</translation>
 <translation id="508209203623347828">Якщо вимкнути цю картку, такі картки Microsoft, як Sharepoint і Outlook Calendar, також буде вимкнено.</translation>
 <translation id="5083035541015925118">ctrl + alt + стрілка вгору</translation>
 <translation id="5084328598860513926">Налаштування перервано. Повторіть спробу або зв'яжіться з адміністратором чи власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
@@ -6632,6 +6640,7 @@
 <translation id="5691581861107245578">Отримувати підказки смайлів на основі введених слів</translation>
 <translation id="5691772641933328258">Відбиток не розпізнано</translation>
 <translation id="5693255400847650006">Використовується мікрофон</translation>
+<translation id="5695046252726616755">Щоб переглянути інші варіанти, натисніть клавішу пробілу або Enter.</translation>
 <translation id="5695184138696833495">ADB в додатках для Android у Linux</translation>
 <translation id="5696143504434933566">Поскаржитися на розширення <ph name="EXTENSION_NAME" /></translation>
 <translation id="5696679855467848181">Поточний файл PPD: <ph name="PPD_NAME" /></translation>
@@ -7872,6 +7881,7 @@
 <translation id="6609478180749378879">Дані для входу зберігатимуться на цьому пристрої після виходу з режиму анонімного перегляду. Ви зможете знову ввійти на цей сайт зі свого пристрою пізніше.</translation>
 <translation id="6610002944194042868">Параметри перекладу</translation>
 <translation id="6610064275805055636">Керувати ізольованими веб-додатками</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> вкладка</translation>
 <translation id="6611972847767394631">Знайдіть свої вкладки тут</translation>
 <translation id="661266467055912436">Покращує захист усіх користувачів в Інтернеті.</translation>
 <translation id="6613267708691765962">Пошук зловмисного програмного забезпечення…</translation>
@@ -8583,6 +8593,7 @@
 <translation id="7118268675952955085">знімок</translation>
 <translation id="711840821796638741">Показати закладки, якими керує адміністратор</translation>
 <translation id="711985611146095797">На цій сторінці можна керувати обліковими записами Google, у які ви ввійшли. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="71200494435060621">Приєднатися як <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="7120762240626567834">Без підключення до VPN веб-переглядач Chrome і трафік Android буде заблоковано</translation>
 <translation id="7120904433567247946">Ця закладка зберігається лише на поточному пристрої. Якщо додати її в папку "<ph name="ACCOUNT_FOLDER" />", вона також зберігатиметься у вашому обліковому записі.</translation>
 <translation id="7121438501124788993">Режим розробника</translation>
@@ -8744,7 +8755,6 @@
 <translation id="7243092385765551741">Видалити ключ доступу?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" /> (найвища)</translation>
 <translation id="7246230585855757313">Знову вставте ключ безпеки та повторіть спробу</translation>
-<translation id="7248245317364871465">Автоматично пропонує і створює групи з відкритих вкладок, щоб вам було легше знаходити потрібну інформацію</translation>
 <translation id="724835896049478274">Облікові записи, доступні для додатків для Android</translation>
 <translation id="7248802599439396696">Зробити вкладки неактивними</translation>
 <translation id="7249197363678284330">Змініть це налаштування в адресному рядку.</translation>
@@ -9979,6 +9989,7 @@
 <translation id="8105273883928376822">Увійдіть, щоб продовжити</translation>
 <translation id="8107015733319732394">Встановлення додатка Google Play Store на ваш <ph name="DEVICE_TYPE" />. Це може зайняти кілька хвилин.</translation>
 <translation id="810728361871746125">Роздільна здатність дисплея</translation>
+<translation id="8108161424633979910">Кількість учасників: <ph name="NUM" /></translation>
 <translation id="8109109153262930486">Аватар за умовчанням</translation>
 <translation id="8109991406044913868">Тема, створена за допомогою ШІ</translation>
 <translation id="8110393529211831722">Підписку встановлено лише на цьому пристрої. Її не синхронізовано з іншими пристроями у вашому обліковому записі. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>

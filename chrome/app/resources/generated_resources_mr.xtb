@@ -142,6 +142,7 @@
 तुमचे पासवर्ड <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये कधीही तपासा.</translation>
 <translation id="1084824384139382525">लिंक पत्ता कॉपी करा</translation>
 <translation id="1085064499066015002">सर्व साइटसाठी नेहमी सुरू</translation>
+<translation id="1085558727130096638"><ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUM_OTHER_MEMBERS" /> व्यक्तीसोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> निवडलेला नाही. <ph name="COUNT" /> पैकी <ph name="INDEX" /> क्रमांकाचा आयटम. निवडण्यासाठी सर्च आणि स्पेस प्रेस करा.</translation>
 <translation id="1085697365578766383">व्हर्च्युअल मशीन सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="1090126737595388931">कोणतेही पार्श्वभूमी ॲप्लिकेशन चालत नाहीत</translation>
@@ -2142,6 +2143,7 @@
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> जोडले</translation>
 <translation id="2464079411014186876">आईस्क्रीम</translation>
 <translation id="2467755475704469005">कोणतेही डिव्हाइस डिटेक्ट केले नाही. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUM_OTHER_MEMBERS" /> लोकांसोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="2468178265280335214">टचपॅड स्क्रोल अ‍ॅक्सिलरेशन</translation>
 <translation id="2468205691404969808">जरी तुम्ही त्या पेजना भेट देत नसलात तरी, तुमची प्राधान्ये लक्षात ठेवण्यासाठी कुकीजचा वापर करते</translation>
 <translation id="2468402215065996499">तामागोची</translation>
@@ -2246,7 +2248,6 @@
 <translation id="2532146950330687938">डिव्हाइस तयार केले जात आहे...</translation>
 <translation id="2532198298278778531">ChromeOS Flex सेटिंग्जमध्ये सुरक्षित DNS व्यवस्थापित करा</translation>
 <translation id="2532589005999780174">उच्च तीव्रता मोड</translation>
-<translation id="2532878989288727311">वेबवर असलेल्या गोष्टींसाठी तुम्हाला परीक्षणांसारखा लघु स्वरूपातील मजकूर लिहिण्यास मदत करते. लेखनासाठी सूचना या तुमचे प्रॉम्प्ट आणि वेब पेजवरील आशय यांवर आधारित असतात</translation>
 <translation id="2533649878691950253">तुम्ही सहसा यास परवानगी देत नसल्याने, या साइटला तुमचे अचूक स्थान जाणून घेण्यापासून ब्लॉक केले गेले</translation>
 <translation id="253434972992662860">&amp;विराम द्या</translation>
 <translation id="253498598929009420">साइट तुमच्या स्क्रीनवरील आशय पाहू शकेल</translation>
@@ -2287,6 +2288,7 @@
 <translation id="256481480019204378">Google खाते आयडी</translation>
 <translation id="256517381556987641">फाइल सिंकला आतापर्यंत <ph name="ITEMS_FOUND" /> फाइल आढळल्या आहेत आणि ते अजूनही स्टोरेज जागा तपासत आहे. काही मिनिटांमध्ये फाइल सिंक पुन्हा सुरू करून पहा.</translation>
 <translation id="2565214867520763227">स्क्रीन रीडर सुरू करा</translation>
+<translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUM_OTHER_MEMBERS" /> लोकांसोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="2568694057933302218">गुप्त मोडमध्ये असताना, साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट तुमच्या कुकी वापरू शकत नाहीत. जाहिराती पर्सनलाइझ करणे यासारख्या गोष्टींसाठी तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी वापरली जात नाही. काही साइटवरील वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="2568774940984945469">इंफोबार कंटेनर</translation>
 <translation id="2569972178052279830">रिटेल विक्रेत्याचे नाव</translation>
@@ -2294,6 +2296,7 @@
 <translation id="2571655996835834626">कुकी, JavaScript, प्लग-इन, भौगोलिक स्थान, मायक्रोफोन, कॅमेरा इ. सारख्या वैशिष्ट्यांवरील वेबसाइटचे अ‍ॅक्सेस नियंत्रित करणार्‍या तुमच्या सेटिंग्ज बदला.</translation>
 <translation id="257175846174451436">टॅब गट सुचवला आहे</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> साठी रीड-ओन्ली ॲक्सेस मंजूर केला गेला आहे.</translation>
+<translation id="2573147659521059501"><ph name="NUM" /> टॅब</translation>
 <translation id="2573276323521243649">अवतार निवड पेजवरून मागे जा</translation>
 <translation id="2573417407488272418">अपग्रेड करण्याआधी अ‍ॅप्स आणि फाइल यांचा फाइल &gt; माझ्या फाइल यामध्ये बॅकअप घ्या.</translation>
 <translation id="2573831315551295105">“<ph name="ACTION" />” साठी स्विच असाइन करा</translation>
@@ -2966,6 +2969,7 @@
 <translation id="3038628620670416486">तुमच्या माउसवरील बटणे शोधा</translation>
 <translation id="3039491566278747710">डिव्हाइसवर ऑफलाइन धोरण इंस्टॉल करता आले नाही.</translation>
 <translation id="3040982432432547149">Chromebook साठी Steam मध्ये सुधारणा करण्यात मदत करा</translation>
+<translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> सोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="3043016484125065343">तुमचे बुकमार्क पाहण्यासाठी साइन इन करा</translation>
 <translation id="3043126717220766543">गटासंबंधित सूचना साफ करा</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3306,6 +3310,7 @@
 <translation id="3308852433423051161">Google Assistant लोड करत आहे...</translation>
 <translation id="3309124184713871355">रचना</translation>
 <translation id="3309330461362844500">सर्टिफिकेट प्रोफाइल आयडी</translation>
+<translation id="3310379801837527592"><ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUM_OTHER_MEMBERS" /> व्यक्तीसोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="331080746368555063">खाजगी साइटवर तुमच्या कंपनीच्या इंट्रानेटसारख्या गोष्टींचा समावेश असू शकतो</translation>
 <translation id="3311445899360743395">या अ‍ॅपशी संबंधित डेटा डिव्हाइसवरून काढला जाऊ शकतो.</translation>
 <translation id="3312470654018965389">Linux कंटेनर कॉन्फिगर करत आहे</translation>
@@ -4264,6 +4269,7 @@
 <translation id="3958088479270651626">बुकमार्क आणि सेटिंग्ज इंपोर्ट करा</translation>
 <translation id="3958110062351175311">टूलबारमध्ये विनंत्या दाखवण्याची अनुमती दिली आहे</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> आधीपासून इंस्टॉल केले आहे</translation>
+<translation id="3959969108528118741">मालक</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> साठी आणखी कृती</translation>
 <translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> यांनी गट सोडला आहे</translation>
@@ -4711,6 +4717,7 @@
 <translation id="428963538941819373">तुम्ही <ph name="HOST" /> ब्राउझ करत असताना या साइटनी तुमच्याविषयी सेव्ह केलेली माहिती त्या वापरू शकतात</translation>
 <translation id="4289732974614035569">एक पिन निवडा</translation>
 <translation id="4290791284969893584">पेज बंद केल्यानंतर, तुम्ही सुरू केलेली टास्क कदाचित पूर्ण होणार नाहीत</translation>
+<translation id="4290826901752066702"><ph name="NUM" /> सदस्य</translation>
 <translation id="4290898381118933198">पेजदरम्यान नेव्हिगेट करण्यासाठी स्वाइप करा</translation>
 <translation id="4291265871880246274">लॉग इन डायलॉग</translation>
 <translation id="429312253194641664">साइट मीडिया प्ले करत आहे</translation>
@@ -5791,6 +5798,7 @@
 <translation id="5079950360618752063">सुचवलेला पासवर्ड वापरा</translation>
 <translation id="508059534790499809">Kerberos तिकीट रिफ्रेश करा</translation>
 <translation id="5081124414979006563">&amp;अतिथी प्रोफाइल उघडा</translation>
+<translation id="5081974595802103358">लिंक कॉपी करता आली नाही</translation>
 <translation id="508209203623347828">हे कार्ड बंद केले असल्यास, तुमची Sharepoint आणि Outlook Calendar यांसारखी Microsoft कार्डदेखील बंद केली जातील.</translation>
 <translation id="5083035541015925118">ctrl + alt + up arrow</translation>
 <translation id="5084328598860513926">तरतूद प्रवाहात व्यत्यय आला. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या डिव्हाइसच्या मालकाशी अथवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
@@ -6637,6 +6645,7 @@
 <translation id="5691581861107245578">तुम्ही काय टाइप करत आहात यावर आधारित इमोजी सूचना मिळवा</translation>
 <translation id="5691772641933328258">फिंगरप्रिंट ओळखली नाही</translation>
 <translation id="5693255400847650006">मायक्रोफोन वापरात आहे</translation>
+<translation id="5695046252726616755">आणखी पर्यायांसाठी एंटर किंवा स्पेस प्रेस करा.</translation>
 <translation id="5695184138696833495">Linux Android अ‍ॅप ADB</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" च्‍‍‍‍या गैरवापराची तक्रार करा</translation>
 <translation id="5696679855467848181">वापरातली सद्य PPD फाइल: <ph name="PPD_NAME" /></translation>
@@ -7876,6 +7885,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6609478180749378879">तुम्ही गुप्त मोड यामधून बाहेर पडल्यानंतर साइन इन डेटा या डिव्हाइसवर सेव्ह केला जाईल. तुम्हाला नंतर पुन्हा तुमचे डिव्हाइस वापरून या वेबसाइटवर साइन करता येईल.</translation>
 <translation id="6610002944194042868">भाषांतराचे पर्याय</translation>
 <translation id="6610064275805055636">आयसोलेटेड वेब ॲप्स व्यवस्थापित करा</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> टॅब</translation>
 <translation id="6611972847767394631">येथे तुमचे टॅब शोधा</translation>
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6613267708691765962">मालवेअरसाठी स्कॅन करत आहे…</translation>
@@ -8587,6 +8597,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7118268675952955085">स्क्रीनशॉट</translation>
 <translation id="711840821796638741">व्यवस्थापित बुकमार्क दर्शवा</translation>
 <translation id="711985611146095797">हे पेज तुम्हाला तुमची साइन-इन केलेली Google खाती व्यवस्थापित करू देते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="71200494435060621"><ph name="OWNER_FULL_NAME" /> म्हणून सामील व्हा</translation>
 <translation id="7120762240626567834">VPN कनेक्ट करेपर्यंत Chrome ब्राउझर आणि Android ट्रॅफिक ब्लॉक केले जाईल</translation>
 <translation id="7120904433567247946">हा बुकमार्क फक्त या डिव्हाइसवर सेव्ह केला आहे. तुम्ही तो <ph name="ACCOUNT_FOLDER" /> वर सेव्ह केल्यास, हा बुकमार्क तुमच्या खात्यामध्येदेखील सेव्ह केले जाईल.</translation>
 <translation id="7121438501124788993">डेव्हलपर मोड</translation>
@@ -8748,7 +8759,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7243092385765551741">पासकी हटवायची आहे का?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (उत्कृष्‍ट)</translation>
 <translation id="7246230585855757313">तुमची सिक्युरिटी की पुन्हा घाला आणि पुन्हा प्रयत्न करा</translation>
-<translation id="7248245317364871465">तुमच्या उघड्या टॅबमधून आपोआप गट सुचवतो आणि तयार करतो, ज्यामुळे तुम्ही जे शोधत आहात ते मिळवणे आणखी सोपे होते</translation>
 <translation id="724835896049478274">Android अ‍ॅप्ससाठी उपलब्ध खाती</translation>
 <translation id="7248802599439396696">टॅब इनॅक्टिव्ह करा</translation>
 <translation id="7249197363678284330">अ‍ॅड्रेस बारमध्ये हे सेटिंग बदला.</translation>
@@ -9985,6 +9995,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8105273883928376822">पुढे सुरू ठेवण्यासाठी कृपया साइन इन करा.</translation>
 <translation id="8107015733319732394">तुमच्या <ph name="DEVICE_TYPE" /> वर Google Play स्टोअर इंस्टॉल करत आहे. यासाठी काही मिनिटे लागतील.</translation>
 <translation id="810728361871746125">डिस्प्ले रिझोल्युशन</translation>
+<translation id="8108161424633979910"><ph name="NUM" /> सदस्य</translation>
 <translation id="8109109153262930486">डीफॉल्ट अवतार</translation>
 <translation id="8109991406044913868">AI वापरून तयार केलेली थीम</translation>
 <translation id="8110393529211831722">सदस्‍यत्व फक्त या डिव्‍हाइसवर इंस्टॉल केले आहे आणि तुमच्या खात्‍याच्या अंतर्गत असलेल्या इतर डिव्‍हाइसशी सिंक केलेले नाही. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>

@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="3340978935015468852">설정</translation>
 <translation id="3347558044552027859">현대적</translation>
+<translation id="3353477144743332882">요약 및 이름 생성 모델 다운로드</translation>
 <translation id="3359218928534347896">마이크 음소거를 전환합니다</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">초밥</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">단축키를 사용할 수 없습니다. <ph name="KEY" />을 누르지 않은 상태로 새 단축키를 누르세요.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
+<translation id="5875913454160982848">스크립트 작성 모델 다운로드</translation>
 <translation id="5876385649737594562">옵션을 선택하려면 사용 설정하세요.</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> 일시중지</translation>
 <translation id="588258955323874662">전체화면</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
 <translation id="8505011850330200833">Gemini 모델이 스크립트를 처리하고 요약을 생성하려면 2GB의 저장용량이 필요합니다.</translation>
 <translation id="8508640263392900755">APN 세부정보</translation>
+<translation id="8509574872955173831">요약 및 이름 생성에 관해 자세히 알아보기</translation>
 <translation id="8522687886059337719">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" /> 및 <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />화면 보호기<ph name="END_LINK_SCREENSAVER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">찻집</translation>

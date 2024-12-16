@@ -101,6 +101,7 @@
 <translation id="1407135791313364759">Atidaryti viską</translation>
 <translation id="1408847409015257906">Palieskite „Privatumas ir sauga“.</translation>
 <translation id="1411386976162024013">„Lens“ vaizdinė paieška</translation>
+<translation id="1417474386970818917">Atsijungti ir ištrinti</translation>
 <translation id="1426410128494586442">Taip</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1436671784520050284">Tęsti sąranką</translation>
@@ -1014,6 +1015,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5628388627414062173">{count,plural, =1{{count} puslapis skaitymo sąraše}one{{count} puslapis skaitymo sąraše}few{{count} puslapiai skaitymo sąraše}many{{count} puslapio skaitymo sąraše}other{{count} puslapių skaitymo sąraše}}</translation>
 <translation id="5632485077360054581">Peržiūrėti, kaip tai padaryti</translation>
 <translation id="5633237939819267663">{count,plural, =1{Žymė išsaugota skiltyje „{title}“}one{{count} žymė išsaugota skiltyje „{title}“}few{{count} žymės išsaugotos skiltyje „{title}“}many{{count} žymės išsaugota skiltyje „{title}“}other{{count} žymių išsaugota skiltyje „{title}“}}</translation>
+<translation id="564170563478022912">Atsijungti? Neišsaugoti paskyros duomenys bus ištrinti.</translation>
 <translation id="5642707040609478753">Pažymėti kaip neperskaitytą</translation>
 <translation id="5646284034397250191">Etiketė sukurta. Laukiama datos</translation>
 <translation id="5647096944343801045">Didelis įėjimo taškas</translation>
@@ -1026,6 +1028,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5669335982068190158">Buvote atjungti nustatant „iPhone“ iš naujo. Toliau palieskite „Tęsti“, kad prisijungtumėte.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" /> versija</translation>
+<translation id="5680012489335339762">Perjungti paskyras? Neišsaugoti paskyros duomenys bus ištrinti.</translation>
 <translation id="5683499062697987550">Jei norite naudoti ir saugoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
 <translation id="5684761169742812828">Šis slaptažodis atskleistas įvykus duomenų saugos pažeidimui internete. Jei dabar neturite laiko jo pakeisti, „Google“ rekomenduoja išsaugoti šį perspėjimą, kad prisimintumėte vėliau.</translation>
 <translation id="5694848685995373177">Išsaugota Diske (<ph name="USER_EMAIL" />).</translation>
@@ -1227,6 +1230,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="6506996418997555004">Skirtukų grupės „<ph name="GROUP_NAME" />“ bendrinimas</translation>
 <translation id="6507973708545996744">Prisijunkite, kad gautumėte skaitymo sąrašą visuose įrenginiuose.</translation>
 <translation id="6518133107902771759">Patvirtinti</translation>
+<translation id="6518861084553706202">Skirtukai bus uždaryti, o ištrinti duomenys gali apimti slaptažodžius, naršymo istoriją, slapukus ir kt.</translation>
 <translation id="6523575793810663688">Peržiūrėti, kaip tai padaryti</translation>
 <translation id="6524082013156754186">Išsaugoti paskyroje</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
@@ -1683,6 +1687,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8545276357312221485">Numatytųjų naršyklės nustatymų tikrinimas</translation>
 <translation id="854938212724803178">Turite vieną pažeistą slaptažodį. Pataisykite dabar, kad užtikrintumėte saugą.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Atsisakėte {count} perspėjimo}one{Atsisakėte {count} perspėjimo}few{Atsisakėte {count} perspėjimų}many{Atsisakėte {count} perspėjimo}other{Atsisakėte {count} perspėjimų}}</translation>
+<translation id="8558046478684552694">Uždaryti grupę.</translation>
 <translation id="8560253818350321773">Pirmiausia rodykite dažnai naudojamus elementus.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Virš klaviatūros pasiekiama {count} slaptažodžio parinktis.}one{Virš klaviatūros pasiekiama {count} slaptažodžio parinktis.}few{Virš klaviatūros pasiekiamos {count} slaptažodžio parinktys.}many{Virš klaviatūros pasiekiama {count} slaptažodžio parinkties.}other{Virš klaviatūros pasiekiama {count} slaptažodžio parinkčių.}}</translation>
 <translation id="8564894539416715395">Naujo skirtuko puslapis</translation>
@@ -1851,6 +1856,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9205189991633470489">Inkognito režimo užraktas</translation>
 <translation id="9206887540681440657">Sparta</translation>
 <translation id="9223358826628549784">Strigties ataskaita išsiųsta.</translation>
+<translation id="926455622548529175">Perjungti ir ištrinti</translation>
 <translation id="929748059769569925">Paryškintas tekstas</translation>
 <translation id="932305336591073205">{count,plural, =1{Uždaryti skirtuką}one{Uždaryti skirtukus}few{Uždaryti skirtukus}many{Uždaryti skirtukus}other{Uždaryti skirtukus}}</translation>
 <translation id="939472100615258482">Dabartinė svetainė</translation>

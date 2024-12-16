@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">إيقاف المظهر الداكن</translation>
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1808803439260407870">الفن الكلاسيكي</translation>
+<translation id="181434555916624618">لن يتم عرض النتائج التي تتضمّن أشخاصًا في الوقت الحالي. يُرجى تجربة طلب آخر.</translation>
 <translation id="1815850098929213707">المفتاح الذي تم اختياره: <ph name="KEYS" />. انقر على الزر لتعديل عنصر التحكّم.</translation>
 <translation id="1823120442877418684">أصناف</translation>
 <translation id="1827738518074806965">معرض الفنون</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3347558044552027859">عصري</translation>
+<translation id="3353477144743332882">تنزيل نموذج إنشاء الملخّص والاسم</translation>
 <translation id="3359218928534347896">إيقاف/تفعيل كتم صوت الميكروفون</translation>
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3361618936611118375">سوشي</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">هذا الاختصار غير متاح. اضغط على اختصار جديد بدون "<ph name="KEY" />".</translation>
 <translation id="5860033963881614850">غير مفعّلة</translation>
 <translation id="5860491529813859533">تفعيل</translation>
+<translation id="5875913454160982848">تنزيل نموذج تحويل الصوت إلى نص</translation>
 <translation id="5876385649737594562">يُرجى تفعيل "وضع الاستراحة" لتحديد الخيارات.</translation>
 <translation id="5877503382465267833">إيقاف تنزيل "<ph name="RECORDING_NAME" />" مؤقتًا</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
@@ -1588,6 +1591,7 @@
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
 <translation id="8505011850330200833">‏يتطلّب نموذج Gemini مساحة تخزين تبلغ 2 غيغابايت لمعالجة النصوص وإنشاء الملخّصات</translation>
 <translation id="8508640263392900755">‏تفاصيل APN</translation>
+<translation id="8509574872955173831">مزيد من المعلومات حول نموذج إنشاء الملخّص والاسم</translation>
 <translation id="8522687886059337719">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />شاشة استراحة<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جديدة.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">لتقديم الشاي</translation>

@@ -98,7 +98,9 @@ Agar tark etsangiz, “<ph name="TITLE_OF_GROUP" />” varaqlar guruhiga boshqa 
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ta varaq kiritildi}other{<ph name="MANY_ADDED" /> ta varaq kiritildi}}</translation>
 <translation id="5161254044473106830">Sarlavha kiriting</translation>
 <translation id="5339733443032484186">Oxirgi varaq</translation>
+<translation id="5380159289133845234">Takroriy varaqlarni arxivlash</translation>
 <translation id="5400836586163650660">Kulrang</translation>
+<translation id="5446043142172831860">Varaqni olib tashlash va guruhni tark etish</translation>
 <translation id="5490235265819901748">Varaqlar guruhi yoyildi</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Varaqlar guruhini yopish, varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{Varaqlar guruhini yopish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +119,7 @@ Agar tark etsangiz, “<ph name="TITLE_OF_GROUP" />” varaqlar guruhiga boshqa 
 <translation id="6051432659151380973">Varaqlar guruhi avtomatik saqlanadi</translation>
 <translation id="6054741997831917303">Bu mahsulot narxi yaqinda <ph name="PREVIOUS_PRICE" /> dan <ph name="NEW_PRICE" /> ga tushdi</translation>
 <translation id="6082313992897617440"><ph name="GROUP_NAME" /> varaqlar guruhiga ruxsat yopiladi</translation>
+<translation id="6109251075362363230">Barcha takroriy varaqlar ham arxivlanadi, oxirgi ishlatilgan nusxasi bundan mustasno.</translation>
 <translation id="6193448654517602979">Varaqlarni tanlang</translation>
 <translation id="6228793724645064692">(doʻkon reytingi)</translation>
 <translation id="6271513594716432922">Barcha nofaol varaqlarni yopish</translation>

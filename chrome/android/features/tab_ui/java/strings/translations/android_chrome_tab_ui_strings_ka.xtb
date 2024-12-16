@@ -98,7 +98,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ჩანართი დაემატა}other{<ph name="MANY_ADDED" /> ჩანართი დაემატა}}</translation>
 <translation id="5161254044473106830">საჭიროა სათაური</translation>
 <translation id="5339733443032484186">თქვენი ბოლო ჩანართი</translation>
+<translation id="5380159289133845234">დუბლირებული ჩანართების დაარქივება</translation>
 <translation id="5400836586163650660">ნაცრისფერი</translation>
+<translation id="5446043142172831860">ჩანართის ამოშლა და ჯგუფიდან გასვლა</translation>
 <translation id="5490235265819901748">ჩანართების ჯგუფი გაფართოვდა</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{დახურეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{დახურეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
@@ -117,6 +119,7 @@
 <translation id="6051432659151380973">თქვენი ჩანართების ჯგუფი ავტომატურად ინახება</translation>
 <translation id="6054741997831917303">ამ ერთეულის ფასმა ახლახან დაიკლო <ph name="PREVIOUS_PRICE" />-დან <ph name="NEW_PRICE" />-მდე</translation>
 <translation id="6082313992897617440">თქვენ მყისიერად დაკარგავთ წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“</translation>
+<translation id="6109251075362363230">ყველა დუბლირებული ჩანართი დაარქივდება, ყველაზე ხშირად გამოყენებული დუბლიკატის გარდა.</translation>
 <translation id="6193448654517602979">აირჩიეთ ჩანართები</translation>
 <translation id="6228793724645064692">(მაღაზიის შეფასება)</translation>
 <translation id="6271513594716432922">ყველა უმოქმედო ჩანართის დახურვა</translation>

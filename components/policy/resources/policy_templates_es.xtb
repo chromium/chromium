@@ -1253,6 +1253,7 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
 <translation id="1905061765326052857">No permitir que los usuarios no afiliados usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
 <translation id="1906871416501278476">Inhabilitar el servicio <ph name="PRODUCT_NAME" /> y no iniciar el escritorio remoto al iniciar sesión</translation>
 <translation id="1907696459350079081">No habilitar el salvapantallas en la pantalla de inicio de sesión.</translation>
+<translation id="1909567037176216409">Carga inteligente de la batería usa el aprendizaje automático para predecir el momento en el que desconectas el cargador y retrasa la carga al 100 % para prolongar la duración de la batería.</translation>
 <translation id="1910704279188129272">Permite especificar restricciones de uso por aplicación.
         Se pueden aplicar restricciones de uso a las aplicaciones instaladas en <ph name="PRODUCT_OS_NAME" /> para un usuario determinado.
         Las restricciones se deben especificar en la lista |app_limits|. Solo se permite una entrada por aplicación. Las aplicaciones no incluidas en la lista no tienen restricciones.
@@ -2442,6 +2443,12 @@ Si se asigna el valor "command_line" a una extensión, se impedirá que se cargu
 dicha extensión desde la línea de comandos.</translation>
 <translation id="2780840673734667062">Inhabilitar el inicio de sesión con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borrar datos de navegación al salir</translation>
+<translation id="2785422026482376078">Especifica si se permite que el modelo de Carga inteligente suspenda el proceso de carga para prolongar la duración de la batería.
+
+      Cuando el dispositivo está conectado a la red eléctrica, el modelo de Carga inteligente evalúa si se debe suspender el proceso de carga para aumentar la duración de la batería. Si el modelo de Carga inteligente suspende el proceso de carga, mantendrá la batería a un determinado nivel (por ejemplo, al 80 %) y, después, cargará el dispositivo al 100 % cuando el usuario lo necesite.
+      Si se asigna el valor True a esta política, se habilitará el modelo de Carga inteligente y se permitirá que suspenda el proceso de carga para ampliar la duración de la batería. Si se le asigna el valor False o no se le asigna ningún valor, el modelo de Carga inteligente no influirá en el proceso de carga.
+
+      Nota: Esta política no tendrá efecto si se establece la política DevicePowerBatteryChargingOptimization.</translation>
 <translation id="2787173078141616821">Proporcionar información sobre el estado de Android</translation>
 <translation id="2787774054174244402">Si se le asigna el valor "true" a esta política, se evita que los usuarios deban escribir en dispositivos de almacenamiento externos.
 
@@ -3408,6 +3415,7 @@ Si se establece esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NA
       Si a esta política se le asigna el valor "True" o no se le asigna ninguno, <ph name="PRODUCT_OS_NAME" /> se pondrá en contacto automáticamente con Quirks Server, descargará los archivos de configuración (si están disponibles) y los almacenará en el dispositivo.  Estos archivos pueden utilizarse, por ejemplo, para mejorar la calidad de la pantalla de los monitores conectados.</translation>
 <translation id="3515196503924273265">Permite habilitar la función NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Después de que se inhabilite <ph name="LACROS_NAME" />, no se realizará ninguna migración de datos. Se eliminará la carpeta <ph name="LACROS_NAME" /> y los usuarios seguirán utilizando los datos restantes.</translation>
+<translation id="3518293344797498431">Cargar la batería hasta aproximadamente el 80 % para maximizar su vida útil.</translation>
 <translation id="3518512927469906365">Inhabilitar la partición del almacenamiento de terceros en orígenes de nivel superior específicos</translation>
 <translation id="3522257170445891912">El flujo de autenticación de inicio de sesión puede ser de dos formas diferentes, en función del valor que se le asigne a esta política:
 
@@ -5181,6 +5189,7 @@ Si no se define esta política, <ph name="PRODUCT_NAME" /> seguirá el proceso d
       Los patrones de URL no deben entrar en conflicto con <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
+<translation id="4891286600098289814">Optimización de la carga de la batería</translation>
 <translation id="4892647988357350237">De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor <ph name="STANDARD_TOS_DIALOG" /> o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
 
       - Esta política solo funciona en dispositivos Android totalmente gestionados que los proveedores de Unified Endpoint Management (administración unificada de puntos finales) puedan configurar.
@@ -5829,6 +5838,7 @@ Para obtener más información sobre contextos seguros, consulta la página Secu
 <translation id="5321624917465764266">Si la política se habilita o no se define, el historial de navegación y el historial de descargas se podrán eliminar en Chrome, y los usuarios no podrán cambiar este ajuste.
 
 Si la política se inhabilita, el historial de navegación y el de descargas no se podrán eliminar. Aunque la política esté desactivada, no se garantiza que los historiales de navegación y de descargas se puedan conservar. Es posible que los usuarios puedan editar o eliminar directamente los archivos de la base de datos del historial. Además, el propio navegador puede archivar o clasificar como caducados elementos del historial en cualquier momento.</translation>
+<translation id="5322649594584715998">Carga totalmente la batería a velocidad estándar. Este modo inhabilita Carga inteligente y la carga limitada.</translation>
 <translation id="5323200200131319468">Habilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
 <translation id="5323271643727095577">No mostrar el cuadro de diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload. Mostrar el cuadro de diálogo de cancelación cuando beforeunload event.returnValue sea la cadena vacía del evento beforeunload.</translation>
 <translation id="5324430722441910403">Configuración de búsquedas en el sitio</translation>
@@ -6240,6 +6250,11 @@ Si no se define esta política o se le asigna una lista vacía, se le mostrarán
       Si esta política no se configuraba, <ph name="PRODUCT_NAME" /> seguía el proceso de lanzamiento predeterminado para bloquear los hashes no seguros. Si se habilitaba, <ph name="PRODUCT_NAME" /> permitía que un servidor usase hashes no seguros al negociar un handshake TLS. Si se inhabilitaba, <ph name="PRODUCT_NAME" /> no permitía que un servidor usase hashes no seguros al negociar un handshake TLS.</translation>
 <translation id="5611869109049836323">Implementar obligatoriamente restricciones en las anclas de confianza añadidas de forma local</translation>
 <translation id="5612770822986069057">Permitir que los usuarios activen o desactiven la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" /> en su dispositivo.</translation>
+<translation id="561480358503796257">La URL de una imagen que se usará como insignia de la empresa en un perfil gestionado. La URL debe dirigir a una imagen.
+
+Esta política solo se puede establecer como política de usuarios.
+
+Se recomienda usar el icono de página (por ejemplo, https://www.google.com/favicon.ico) o un icono de al menos 48x48 px.</translation>
 <translation id="5614865701790130558">Registrar eventos de instalación de extensiones basados en políticas</translation>
 <translation id="561493980641967737">Si se habilita esta política, siempre estará activa la recogida de datos anónima con clave de URL, que enviará las URLs de las páginas que el usuario visite a Google para mejorar las búsquedas y la navegación.
 
@@ -7921,6 +7936,21 @@ Hasta Chrome 114, esta política requería que se asignara el valor true a la po
       Si se inhabilita, se elimina el icono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otro medio de activar o desactivar las funciones del navegador se seguirán comportando como se espera independientemente de si esta política está habilitada o inhabilitada.</translation>
+<translation id="67952585272033079">El estado de la batería puede verse afectado por factores como las cargas completas frecuentes y las duraciones de carga prolongadas. Esta política ofrece tres opciones para optimizar el comportamiento de carga y mitigar estos factores, lo que, en última instancia, prolonga la vida útil de la batería.
+
+Si se asigna el valor Estándar a la política, la batería se cargará con normalidad hasta el 100 %. Se inhabilita Carga inteligente y la carga limitada.
+
+Si se asigna el valor Adaptativa a la política, el dispositivo aprende tus hábitos de carga y retrasa la carga al 100 % hasta que sea necesario. Esto ayuda a prolongar el estado de la batería.
+
+Si se asigna el valor Limitada, la batería solo se cargará hasta el 80 % aproximadamente para maximizar su vida útil.
+
+Si no se establece esta política, se aplicará la opción Estándar (si se admite).
+
+La política DevicePowerBatteryChargingOptimization anula la política DevicePowerAdaptiveChargingEnabled.
+
+DevicePowerAdaptiveChargingEnabled controla Carga inteligente si DevicePowerBatteryChargingOptimization no se ha definido.
+
+Las políticas DevicePowerBatteryChargingOptimization y DevicePowerAdaptiveChargingEnabled siempre tienen prioridad sobre la configuración del usuario.</translation>
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
 <translation id="6796215185873669533">Asigna el valor predeterminado de la configuración del navegador a la versión de la cadena user-agent.</translation>
 <translation id="6800181452282128474">No realizar consultas a Quirks Servers</translation>

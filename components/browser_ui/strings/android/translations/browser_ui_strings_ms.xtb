@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Disambungkan kepada peranti USB</translation>
 <translation id="4194328954146351878">Tanya sebelum membenarkan laman melihat dan menukar maklumat pada peranti NFC (disyorkan)</translation>
 <translation id="4200726100658658164">Buka Tetapan Lokasi</translation>
+<translation id="4213239715282467974">Kini Chrome berkongsi tab terbaharu anda dengan peranti anda. Anda boleh mengakses tab tersebut dengan pantas dalam senarai apl dan hasil carian peranti anda. Anda boleh mematikan ciri ini dalam tetapan Chrome pada bila-bila masa.</translation>
 <translation id="4226663524361240545">Pemberitahuan boleh menggetarkan peranti</translation>
 <translation id="4259722352634471385">Navigasi disekat: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dibenarkan</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Laman disekat daripada meminta anda menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lagi)}other{(+ # lagi)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
+<translation id="5408906274948600065">Benarkan Chrome berkongsi tab terbaharu anda dengan peranti anda untuk melihat tab tersebut dalam senarai apl dan hasil carian peranti anda. Anda boleh menghidupkan atau mematikan ciri ini dalam tetapan Chrome pada bila-bila masa.</translation>
 <translation id="5438097262470833822">Pilihan ini akan menetapkan semula kebenaran untuk <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Apabila dihidupkan, laman dapat meminta lokasi anda. Apabila dimatikan, laman tidak dapat melihat lokasi anda.</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> masa berlalu daripada <ph name="TOTAL_TIME" /></translation>
