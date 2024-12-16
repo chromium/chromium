@@ -1124,6 +1124,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ExtensionTelemetry.UploadSize.{SignalType}"
+    units="bytes" expires_after="2025-04-20">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The data size of the {SignalType} generated for an extension. The size is
+    recorded at the time of telemetry report creation, regardless of whether the
+    report is uploaded or not.
+  </summary>
+  <token key="SignalType">
+    <variant name="CookiesGet" summary="CookiesGet telemetry signal"/>
+    <variant name="CookiesGetAll" summary="CookiesGetAll telemetry signal"/>
+    <variant name="DeclarativeNetRequest"
+        summary="DeclarativeNetRequest telemetry signal"/>
+    <variant name="DeclarativeNetRequestAction"
+        summary="DeclarativeNetRequestAction telemetry signal"/>
+    <variant name="PotentialPasswordTheft"
+        summary="PotentialPasswordTheft telemetry signal"/>
+    <variant name="RemoteHostContacted"
+        summary="RemoteHostContacted telemetry signal"/>
+    <variant name="TabsApi" summary="TabsApi signal"/>
+    <variant name="TabsExecuteScript"
+        summary="TabsExecuteScript telemetry signal"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionTelemetry.UploadSuccess"
     enum="BooleanSuccess" expires_after="2025-10-31">
   <owner>anunoy@chromium.org</owner>

@@ -142,6 +142,53 @@ void RecordWhenFileWasPersisted(bool persisted_at_write_interval) {
       persisted_at_write_interval);
 }
 
+void RecordSignalUploadSize(size_t size, ExtensionSignalType signal_type) {
+  switch (signal_type) {
+    case ExtensionSignalType::kTabsExecuteScript:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.TabsExecuteScript", size);
+      break;
+    case ExtensionSignalType::kRemoteHostContacted:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.RemoteHostContacted",
+          size);
+      break;
+    case ExtensionSignalType::kCookiesGetAll:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.CookiesGetAll", size);
+      break;
+    case ExtensionSignalType::kPotentialPasswordTheft:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.PotentialPasswordTheft",
+          size);
+      break;
+    case ExtensionSignalType::kCookiesGet:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.CookiesGet", size);
+      break;
+    case ExtensionSignalType::kDeclarativeNetRequest:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.DeclarativeNetRequest",
+          size);
+      break;
+    case ExtensionSignalType::kTabsApi:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize.TabsApi", size);
+      break;
+    case ExtensionSignalType::kDeclarativeNetRequestAction:
+      base::UmaHistogramCounts1M(
+          "SafeBrowsing.ExtensionTelemetry.UploadSize."
+          "DeclarativeNetRequestAction",
+          size);
+      break;
+    case ExtensionSignalType::kPasswordReuse:
+    // This signal is used to construct the potential password theft signal and
+    // is not itself included in a telemetry report.
+    default:
+      break;
+  }
+}
+
 void RecordNumOffstoreExtensions(int num_extensions) {
   base::UmaHistogramCounts100(
       "SafeBrowsing.ExtensionTelemetry.FileData.NumOffstoreExtensions",
@@ -854,6 +901,8 @@ ExtensionTelemetryService::CreateReport() {
           signal_info_pb = processor_it.second->GetSignalInfoForReport(
               extension_store_it.first);
       if (signal_info_pb) {
+        RecordSignalUploadSize(signal_info_pb->ByteSizeLong(),
+                               processor_it.first);
         signals_pb->AddAllocated(signal_info_pb.release());
       }
     }
