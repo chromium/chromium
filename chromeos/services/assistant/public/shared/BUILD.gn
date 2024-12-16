@@ -24,3 +24,25 @@ component("shared") {
 
   deps = [ "//base:base" ]
 }
+
+source_set("new_entry_point_constants") {
+  if (is_chromeos && is_chrome_branded) {
+    deps = [ "//chromeos/assistant/internal:new_entry_point_constants" ]
+  } else {
+    deps = [ ":new_entry_point_constants_placeholder" ]
+  }
+}
+
+source_set("new_entry_point_constants_placeholder") {
+  sources = [ "new_entry_point_constants.cc" ]
+  deps = [
+    ":new_entry_point_constants_interface",
+    "//chrome/app/theme:theme_resources_grit",
+  ]
+}
+
+source_set("new_entry_point_constants_interface") {
+  sources = [ "new_entry_point_constants.h" ]
+
+  deps = [ "//base" ]
+}
