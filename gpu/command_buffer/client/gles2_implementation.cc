@@ -29,6 +29,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -290,7 +291,7 @@ gpu::ContextResult GLES2Implementation::Initialize(
   util_.set_num_shader_binary_formats(
       gl_capabilities_.num_shader_binary_formats);
 
-  texture_units_ = std::make_unique<TextureUnit[]>(
+  texture_units_ = base::HeapArray<internal::TextureUnit>::WithSize(
       gl_capabilities_.max_combined_texture_image_units);
 
   buffer_tracker_ = std::make_unique<BufferTracker>(mapped_memory_.get());
@@ -5357,7 +5358,7 @@ void GLES2Implementation::BindSamplerHelper(GLuint unit, GLuint sampler) {
 void GLES2Implementation::BindTextureHelper(GLenum target, GLuint texture) {
   // TODO(gman): See note #1 above.
   bool changed = false;
-  TextureUnit& unit = texture_units_[active_texture_unit_];
+  internal::TextureUnit& unit = texture_units_[active_texture_unit_];
   switch (target) {
     case GL_TEXTURE_2D:
       if (unit.bound_texture_2d != texture) {
@@ -5554,7 +5555,7 @@ void GLES2Implementation::UnbindTexturesHelper(GLsizei n,
   for (GLsizei ii = 0; ii < n; ++ii) {
     for (GLint tt = 0; tt < gl_capabilities_.max_combined_texture_image_units;
          ++tt) {
-      TextureUnit& unit = texture_units_[tt];
+      internal::TextureUnit& unit = texture_units_[tt];
       if (textures[ii] == unit.bound_texture_2d) {
         unit.bound_texture_2d = 0;
       }

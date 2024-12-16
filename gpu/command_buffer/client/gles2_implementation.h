@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -50,6 +51,29 @@ namespace gles2 {
 class GLES2CmdHelper;
 class VertexArrayObjectManager;
 class ReadbackBufferShadowTracker;
+
+namespace internal {
+
+struct TextureUnit {
+  TextureUnit() = default;
+
+  // texture currently bound to this unit's GL_TEXTURE_2D with glBindTexture
+  GLuint bound_texture_2d = 0;
+
+  // texture currently bound to this unit's GL_TEXTURE_CUBE_MAP with
+  // glBindTexture
+  GLuint bound_texture_cube_map = 0;
+
+  // texture currently bound to this unit's GL_TEXTURE_EXTERNAL_OES with
+  // glBindTexture
+  GLuint bound_texture_external_oes = 0;
+
+  // texture currently bound to this unit's GL_TEXTURE_RECTANGLE_ARB with
+  // glBindTexture
+  GLuint bound_texture_rectangle_arb = 0;
+};
+
+}  // namespace internal
 
 // This class emulates GLES2 over command buffers. It can be used by a client
 // program so that the program does not need deal with shared memory and command
@@ -321,25 +345,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
     GLenum target;
     GLintptr offset;
     GLsizeiptr size;
-  };
-
-  struct TextureUnit {
-    TextureUnit() {}
-
-    // texture currently bound to this unit's GL_TEXTURE_2D with glBindTexture
-    GLuint bound_texture_2d = 0;
-
-    // texture currently bound to this unit's GL_TEXTURE_CUBE_MAP with
-    // glBindTexture
-    GLuint bound_texture_cube_map = 0;
-
-    // texture currently bound to this unit's GL_TEXTURE_EXTERNAL_OES with
-    // glBindTexture
-    GLuint bound_texture_external_oes = 0;
-
-    // texture currently bound to this unit's GL_TEXTURE_RECTANGLE_ARB with
-    // glBindTexture
-    GLuint bound_texture_rectangle_arb = 0;
   };
 
   // Prevents problematic reentrancy during error callbacks.
@@ -725,7 +730,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   // unpack skip images as last set by glPixelStorei
   GLint unpack_skip_images_;
 
-  std::unique_ptr<TextureUnit[]> texture_units_;
+  base::HeapArray<internal::TextureUnit> texture_units_;
 
   // 0 to gl_state_.max_combined_texture_image_units.
   GLuint active_texture_unit_;
