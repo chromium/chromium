@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui.h"
@@ -167,6 +169,9 @@ class PageInfoViewFactory {
   // Returns the image model for the vector icon.
   static const ui::ImageModel GetImageModel(const gfx::VectorIcon& icon);
 
+  [[nodiscard]] std::unique_ptr<views::View> CreatePageView(
+      std::u16string title,
+      std::unique_ptr<views::View> content_view);
   [[nodiscard]] std::unique_ptr<views::View> CreateMainPageView(
       base::OnceClosure initialized_callback);
   [[nodiscard]] std::unique_ptr<views::View> CreateSecurityPageView();

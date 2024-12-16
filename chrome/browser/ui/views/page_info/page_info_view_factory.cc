@@ -127,6 +127,14 @@ PageInfoViewFactory::PageInfoViewFactory(
       history_controller_(history_controller),
       allow_about_this_site_(allow_about_this_site) {}
 
+std::unique_ptr<views::View> PageInfoViewFactory::CreatePageView(
+    std::u16string title,
+    std::unique_ptr<views::View> content_view) {
+  return std::make_unique<PageInfoSubpageView>(
+      CreateSubpageHeader(title, presenter_->GetSubjectNameForDisplay()),
+      std::move(content_view));
+}
+
 std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
     base::OnceClosure initialized_callback) {
   return std::make_unique<PageInfoMainView>(

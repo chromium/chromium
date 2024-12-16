@@ -6,7 +6,9 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/browser/ui/views/page_info/star_rating_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
@@ -20,9 +22,19 @@ PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
   // TODO(crbug.com/378854730): Set up layout.
 
   AddChildView(CreateDescriptionLabel());
+  view_reviews_button_ = AddChildView(CreateViewReviewsButton());
 }
 
 PageInfoMerchantTrustContentView::~PageInfoMerchantTrustContentView() = default;
+
+void PageInfoMerchantTrustContentView::SetRating(double rating) {
+  star_rating_view_->SetRating(rating);
+}
+
+void PageInfoMerchantTrustContentView::SetReviewCount(int count) {
+  view_reviews_button_->SetTitleText(l10n_util::GetPluralStringFUTF16(
+      IDS_PAGE_INFO_MERCHANT_TRUST_VIEW_ALL_REVIEWS, count));
+}
 
 std::unique_ptr<views::View>
 PageInfoMerchantTrustContentView::CreateDescriptionLabel() {
@@ -57,7 +69,27 @@ PageInfoMerchantTrustContentView::CreateDescriptionLabel() {
   return description_label;
 }
 
+std::unique_ptr<RichHoverButton>
+PageInfoMerchantTrustContentView::CreateViewReviewsButton() {
+  // TODO(crbug.com/383361518): Add proper icons.
+  auto merchant_trust_button = std::make_unique<RichHoverButton>(
+      base::BindRepeating(
+          &PageInfoMerchantTrustContentView::OpenReviewsInSidePanel,
+          base::Unretained(this)),
+      PageInfoViewFactory::GetMerchantTrustIcon(), std::u16string(),
+      std::u16string(), PageInfoViewFactory::GetLaunchIcon());
+  merchant_trust_button->SetTitleTextStyleAndColor(
+      views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
+  star_rating_view_ = merchant_trust_button->AddCustomSubtitle(
+      std::make_unique<StarRatingView>());
+  return merchant_trust_button;
+}
+
 void PageInfoMerchantTrustContentView::LearnMoreLinkClicked(
     const ui::Event& event) {
   // TODO(crbug.com/381405880): Open learn more link.
+}
+
+void PageInfoMerchantTrustContentView::OpenReviewsInSidePanel() {
+  // TODO(crbug.com/378854730): Open side panel.
 }

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_merchant_trust_content_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_merchant_trust_coordinator.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -179,6 +182,12 @@ PageInfoBubbleView::PageInfoBubbleView(
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(std::move(main_page_view)));
 
+  if (page_info::IsMerchantTrustFeatureEnabled()) {
+    merchant_trust_coordinator_ =
+        std::make_unique<PageInfoMerchantTrustCoordinator>(ui_delegate_.get(),
+                                                           view_factory_.get());
+  }
+
   views::BubbleDialogDelegateView::CreateBubble(this);
 }
 
@@ -277,10 +286,8 @@ void PageInfoBubbleView::OpenCookiesPage() {
 
 void PageInfoBubbleView::OpenMerchantTrustPage() {
   // TODO(crbug.com/378854730): Record open action.
-  std::unique_ptr<views::View> page_view =
-      view_factory_->CreateMerchantTrustPageView();
-  page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
-  page_container_->SwitchToPage(std::move(page_view));
+  CHECK(merchant_trust_coordinator_);
+  page_container_->SwitchToPage(merchant_trust_coordinator_->CreatePage());
   AnnouncePageOpened(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER));
 }

@@ -838,6 +838,12 @@
   <message name="IDS_PAGE_INFO_MERCHANT_TRUST_LEARN_MORE_LINK" desc="The link in the description of the merchant trust feature in the page info that opens help center article" translateable="false">
     Learn more
   </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_VIEW_ALL_REVIEWS" desc="The title of the button to view all reviews of a store, located in the page info merchant trust subpage. It has a placeholder for the number of reviews" translateable="false">
+    {NUM_REVIEWS, plural,
+                    =0 {View 0 reviews}
+                    =1 {View 1 review}
+                    other {View all # reviews}}
+  </message>
 
   <!-- History strings -->
   <if expr="is_ios">
