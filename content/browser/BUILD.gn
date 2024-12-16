@@ -3216,6 +3216,7 @@ source_set("browser") {
       "date_time_chooser/android/date_time_chooser_android.h",
       "device_posture/device_posture_platform_provider_android.cc",
       "device_posture/device_posture_platform_provider_android.h",
+      "file_system_access/file_path_watcher/file_path_watcher_stub.cc",
       "font_unique_name_lookup/font_unique_name_lookup_android.cc",
       "font_unique_name_lookup/font_unique_name_lookup_android.h",
       "font_unique_name_lookup/font_unique_name_lookup_service.cc",

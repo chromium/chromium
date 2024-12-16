@@ -31,7 +31,10 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
  public:
   using ChangeEvent = FilePathWatcherFSEventsChangeTracker::ChangeEvent;
 
-  static constexpr size_t kNumberOfWatches = 1;
+  // We only call FSEventStreamCreate once per FilePathWatcher. This number is
+  // used to report usage. If more FSEventStreamCreate calls are added, this
+  // number must be updated.
+  static constexpr size_t kNumberOfFSEventStreamCreateCalls = 1;
 
   FilePathWatcherFSEvents();
   FilePathWatcherFSEvents(const FilePathWatcherFSEvents&) = delete;

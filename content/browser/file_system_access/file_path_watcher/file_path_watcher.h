@@ -265,6 +265,8 @@ class CONTENT_EXPORT FilePathWatcher {
  private:
   explicit FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate);
 
+  static size_t GetQuotaLimitImpl();
+
   std::unique_ptr<PlatformDelegate> impl_;
 
   SEQUENCE_CHECKER(sequence_checker_);

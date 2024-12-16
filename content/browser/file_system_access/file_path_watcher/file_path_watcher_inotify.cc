@@ -45,6 +45,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_histogram.h"
 
@@ -58,11 +59,6 @@ namespace {
 constexpr char kInotifyMaxUserWatchesPath[] =
     "/proc/sys/fs/inotify/max_user_watches";
 
-// This is a soft limit. If there are more than |kExpectedFilePathWatches|
-// FilePathWatchers for a user, than they might affect each other's inotify
-// watchers limit.
-constexpr size_t kExpectedFilePathWatchers = 16u;
-
 // The default max inotify watchers limit per user, if reading
 // /proc/sys/fs/inotify/max_user_watches fails.
 constexpr size_t kDefaultInotifyMaxUserWatches = 8192u;
@@ -74,6 +70,23 @@ class InotifyReader;
 
 // Used by test to override inotify watcher limit.
 size_t g_override_max_inotify_watches = 0u;
+
+// Rounds `value` down to nearest multiple of `multiple`.
+size_t RoundDownToNearestMultiple(size_t value, size_t multiple) {
+  return value / multiple * multiple;
+}
+
+size_t GetQuotaLimitFromSystemLimit(size_t system_limit) {
+  size_t nearest_bucket = RoundDownToNearestMultiple(
+      system_limit,
+      features::kFileSystemObserverQuotaLimitLinuxBucketSize.Get());
+
+  size_t effective_system_limit = std::max(
+      nearest_bucket, features::kFileSystemObserverQuotaLimitLinuxMin.Get());
+
+  return features::kFileSystemObserverQuotaLimitLinuxPercent.Get() *
+         effective_system_limit;
+}
 
 class InotifyReaderThreadDelegate final
     : public base::PlatformThread::Delegate {
@@ -1345,10 +1358,10 @@ size_t GetMaxNumberOfInotifyWatches() {
     std::ifstream in(kInotifyMaxUserWatchesPath);
     if (!in.is_open() || !(in >> max_number_of_inotify_watches)) {
       LOG(ERROR) << "Failed to read " << kInotifyMaxUserWatchesPath;
-      return kDefaultInotifyMaxUserWatches / kExpectedFilePathWatchers;
+      return kDefaultInotifyMaxUserWatches;
     }
 
-    return max_number_of_inotify_watches / kExpectedFilePathWatchers;
+    return max_number_of_inotify_watches;
   }();
   return g_override_max_inotify_watches ? g_override_max_inotify_watches : max;
 #endif  // if BUILDFLAG(IS_FUCHSIA)
@@ -1365,8 +1378,17 @@ ScopedMaxNumberOfInotifyWatchesOverrideForTest::
   g_override_max_inotify_watches = 0u;
 }
 
+size_t GetQuotaLimitFromSystemLimitForTesting(size_t system_limit) {
+  return GetQuotaLimitFromSystemLimit(system_limit);
+}
+
 FilePathWatcher::FilePathWatcher()
     : FilePathWatcher(std::make_unique<FilePathWatcherImpl>()) {}
+
+// static
+size_t FilePathWatcher::GetQuotaLimitImpl() {
+  return GetQuotaLimitFromSystemLimit(GetMaxNumberOfInotifyWatches());
+}
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Put inside "BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)" because Android
