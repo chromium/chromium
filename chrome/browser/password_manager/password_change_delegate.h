@@ -62,6 +62,8 @@ class PasswordChangeDelegate {
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  virtual base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_

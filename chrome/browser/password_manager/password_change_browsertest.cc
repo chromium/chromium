@@ -13,13 +13,17 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using affiliations::AffiliationService;
 using affiliations::MockAffiliationService;
@@ -326,4 +330,34 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   WaitForPasswordStore();
   CheckThatCredentialsStored(base::UTF16ToUTF8(form.username_value),
                              new_password);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       SignInCheckBubbleIsHiddenWhenStateIsUpdated) {
+  GURL main_url("https://example.com/");
+
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+
+  // Activate tab with password change to simplify testing.
+  SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
+  PasswordsNavigationObserver navigation_observer(WebContents());
+  EXPECT_TRUE(navigation_observer.Wait());
+
+  PasswordBubbleViewBase::ShowBubble(
+      WebContents(), LocationBarBubbleDelegateView::USER_GESTURE);
+  auto* bubble = PasswordBubbleViewBase::manage_password_bubble();
+  ASSERT_EQ(
+      bubble->GetController()->GetTitle(),
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_TITLE));
+
+  WaitForElementValue("password", "pa$$word");
+  // The state should have changed to `kChangingPassword` and the sign in check
+  // bubble should not show any more.
+  bubble = PasswordBubbleViewBase::manage_password_bubble();
+  ASSERT_FALSE(bubble);
 }

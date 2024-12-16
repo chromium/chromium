@@ -188,3 +188,7 @@ void PasswordChangeDelegateImpl::FillChangePasswordForm(
   form_manager_->PresaveGeneratedPassword(form.form_data, generated_password_);
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
 }
+
+base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}

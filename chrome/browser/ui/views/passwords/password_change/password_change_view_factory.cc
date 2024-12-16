@@ -17,6 +17,7 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
-      return new SignInCheckBubbleView(web_contents, anchor_view);
+      return new SignInCheckBubbleView(web_contents, anchor_view,
+                                       delegate->GetCurrentState());
   }
 }

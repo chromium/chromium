@@ -15,7 +15,8 @@ class SignInCheckBubbleView : public PasswordBubbleViewBase {
 
  public:
   SignInCheckBubbleView(content::WebContents* web_contents,
-                        views::View* anchor_view);
+                        views::View* anchor_view,
+                        PasswordChangeDelegate::State state);
 
  private:
   ~SignInCheckBubbleView() override;

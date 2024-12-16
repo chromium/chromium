@@ -40,6 +40,8 @@ class PasswordChangeDelegateImpl
   PasswordChangeDelegateImpl& operator=(const PasswordChangeDelegateImpl&) =
       delete;
 
+  base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
+
  private:
   // password_manager::PasswordFormManagerObserver Impl
   void OnPasswordFormParsed(
