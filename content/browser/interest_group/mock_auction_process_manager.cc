@@ -159,6 +159,7 @@ void MockBidderWorklet::ReportWin(
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
     std::optional<uint32_t> bidding_signals_data_version,
+    const std::optional<std::string>& aggregate_win_signals,
     uint64_t trace_id,
     ReportWinCallback report_win_callback) {
   // While the real BidderWorklet implementation supports multiple pending
@@ -306,9 +307,10 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
 
   bids.push_back(auction_worklet::mojom::BidderWorkletBid::New(
       bid_role, "ad", *bid, bid_currency, /*ad_cost=*/std::nullopt,
-      std::move(ad_descriptor),
-      selected_buyer_and_seller_reporting_id_, ad_component_descriptors,
-      /*modeling_signals=*/std::nullopt, duration));
+      std::move(ad_descriptor), selected_buyer_and_seller_reporting_id_,
+      ad_component_descriptors,
+      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
+      duration));
   bids.insert(bids.end(), std::make_move_iterator(further_bids.begin()),
               std::make_move_iterator(further_bids.end()));
 

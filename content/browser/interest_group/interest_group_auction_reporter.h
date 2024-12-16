@@ -183,6 +183,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // Modeling signals returned by the bidder.
     std::optional<uint16_t> modeling_signals;
 
+    // Arbitrary data passed from generateBid to use in `reportAggregateWin()`.
+    std::optional<std::string> aggregate_win_signals;
+
     // How long it took to generate the bid.
     base::TimeDelta bid_duration;
 

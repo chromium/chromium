@@ -25329,7 +25329,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       /*ad_cost=*/std::nullopt, blink::AdDescriptor(kKAnonUrl),
       /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
       /*ad_component_urls=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, base::TimeDelta());
+      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
+      base::TimeDelta());
 
   auto enforced_bid = auction_worklet::mojom::BidderWorkletBid::New(
       auction_worklet::mojom::BidRole::kEnforcedKAnon, "ad", 5.0,
@@ -25337,7 +25338,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       /*ad_cost=*/std::nullopt, blink::AdDescriptor(kKAnonUrl),
       /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
       /*ad_component_urls=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, base::TimeDelta());
+      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
+      base::TimeDelta());
 
   auto non_kanon_bid = auction_worklet::mojom::BidderWorkletBid::New(
       auction_worklet::mojom::BidRole::kUnenforcedKAnon, "ad", 5.0,
@@ -25345,7 +25347,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       /*ad_cost=*/std::nullopt, blink::AdDescriptor(kNonKAnonUrl),
       /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
       /*ad_component_urls=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, base::TimeDelta());
+      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
+      base::TimeDelta());
 
   const struct TestCase {
     std::set<KAnonMode> run_in_modes;

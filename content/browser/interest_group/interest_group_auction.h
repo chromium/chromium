@@ -361,6 +361,7 @@ class CONTENT_EXPORT InterestGroupAuction
         blink::AdDescriptor ad_descriptor,
         std::vector<blink::AdDescriptor> ad_component_descriptors,
         std::optional<uint16_t> modeling_signals,
+        std::optional<std::string> aggregate_win_signals,
         base::TimeDelta bid_duration,
         std::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
@@ -403,6 +404,7 @@ class CONTENT_EXPORT InterestGroupAuction
     const blink::AdDescriptor ad_descriptor;
     const std::vector<blink::AdDescriptor> ad_component_descriptors;
     const std::optional<uint16_t> modeling_signals;
+    const std::optional<std::string> aggregate_win_signals;
     const base::TimeDelta bid_duration;
     const std::optional<uint32_t> bidding_signals_data_version;
 

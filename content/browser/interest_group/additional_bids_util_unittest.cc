@@ -669,6 +669,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
             bid->ad_descriptor);
   EXPECT_EQ(0u, bid->ad_component_descriptors.size());
   EXPECT_EQ(std::nullopt, bid->modeling_signals);
+  EXPECT_EQ(std::nullopt, bid->aggregate_win_signals);
   EXPECT_EQ(&bid_state->bidder->interest_group, bid->interest_group);
   EXPECT_EQ(&bid_state->bidder->interest_group.ads.value()[0], bid->bid_ad);
   EXPECT_EQ(bid_state, bid->bid_state);
@@ -715,6 +716,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, MinimalValid) {
             bid->ad_descriptor);
   EXPECT_EQ(0u, bid->ad_component_descriptors.size());
   EXPECT_EQ(std::nullopt, bid->modeling_signals);
+  EXPECT_EQ(std::nullopt, bid->aggregate_win_signals);
   EXPECT_EQ(&bid_state->bidder->interest_group, bid->interest_group);
   EXPECT_EQ(&bid_state->bidder->interest_group.ads.value()[0], bid->bid_ad);
   EXPECT_EQ(bid_state, bid->bid_state);
@@ -843,6 +845,64 @@ TEST_F(AdditionalBidsUtilTest, BadTypeModelingSignals) {
       "Additional bid on auction with seller 'https://seller.test' rejected "
       "due to non-numeric modelingSignals.",
       result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, ValidAggregateWinSignals) {
+  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::Value::Dict aggregate_win_signals_dict;
+  aggregate_win_signals_dict.Set("test_string", "hello");
+  aggregate_win_signals_dict.Set("test_number", 1.0);
+  base::Value::List test_array;
+  test_array.Append(1);
+  test_array.Append(2);
+  test_array.Append(3);
+  aggregate_win_signals_dict.Set("test_array", std::move(test_array));
+  additional_bid_dict.SetByDottedPath("bid.aggregateWinSignals",
+                                      std::move(aggregate_win_signals_dict));
+
+  base::Value input(std::move(additional_bid_dict));
+  auto result = DecodeAdditionalBid(
+      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
+      kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  ASSERT_TRUE(result->bid);
+  ASSERT_TRUE(result->bid->aggregate_win_signals);
+  EXPECT_EQ(
+      *result->bid->aggregate_win_signals,
+      R"({"test_array":[1,2,3],"test_number":1.0,"test_string":"hello"})");
+}
+
+TEST_F(AdditionalBidsUtilTest, InvalidAggregateWinSignals) {
+  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::Value::Dict aggregate_win_signals_dict;
+
+  // Create a deeply nested list that exceeds the maximum depth
+  // for JSON serialization.
+  const size_t kMaxDepth = 200;
+  base::Value::List deep_list;
+  for (size_t i = 0; i < kMaxDepth + 1; ++i) {
+    base::Value::List new_top_list;
+    new_top_list.Append(std::move(deep_list));
+    deep_list = std::move(new_top_list);
+  }
+  aggregate_win_signals_dict.Set("deeply_nested", std::move(deep_list));
+
+  additional_bid_dict.SetByDottedPath("bid.aggregateWinSignals",
+                                      std::move(aggregate_win_signals_dict));
+
+  base::Value input(std::move(additional_bid_dict));
+  auto result = DecodeAdditionalBid(
+      /*auction=*/nullptr, input, kAuctionNonce, /*seller_nonce=*/std::nullopt,
+      kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
+
+  // Expect the decoding to fail due to exceeding max depth
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            base::StrCat({"Additional bid on auction with seller '",
+                          kSeller.Serialize(),
+                          "' rejected due to invalid aggregateWinSignals."}));
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidModelingSignals) {

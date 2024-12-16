@@ -2036,6 +2036,12 @@
       status: "stable",
     },
     {
+      // Enables the private model training API in Protected Audience.
+      // https://github.com/WICG/turtledove/blob/main/PA_private_model_training.md
+      name: "FledgePrivateModelTraining",
+      status: "test",
+    },
+    {
       // Enables real time reporting API in Protected Audience.
       // https://github.com/WICG/turtledove/blob/main/PA_real_time_monitoring.md
       name: "FledgeRealTimeReporting",

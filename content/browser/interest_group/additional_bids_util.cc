@@ -336,6 +336,21 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     }
   }
 
+  std::optional<std::string> aggregate_win_signals;
+  const base::Value* aggregate_win_signals_val =
+      bid_dict->Find("aggregateWinSignals");
+  if (aggregate_win_signals_val) {
+    std::optional<std::string> serialized_aggregate_win_signals =
+        base::WriteJson(*aggregate_win_signals_val);
+    if (serialized_aggregate_win_signals) {
+      aggregate_win_signals =
+          std::move(serialized_aggregate_win_signals).value();
+    } else {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to invalid aggregateWinSignals."}));
+    }
+  }
   std::vector<blink::AdDescriptor> ad_components;
   const base::Value* ad_components_val = bid_dict->Find("adComponents");
   if (ad_components_val) {
@@ -455,6 +470,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       /*ad_component_descriptors=*/std::move(ad_components),
       /*modeling_signals=*/
       static_cast<std::optional<uint16_t>>(modeling_signals),
+      /*aggregate_wins_signals=*/std::move(aggregate_win_signals),
       /*bid_duration=*/base::TimeDelta(),
       /*bidding_signals_data_version=*/std::nullopt, bid_ad,
       /*selected_buyer_and_seller_reporting_id=*/std::nullopt,

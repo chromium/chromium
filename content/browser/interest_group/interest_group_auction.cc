@@ -1285,6 +1285,7 @@ InterestGroupAuction::Bid::Bid(
     blink::AdDescriptor ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
     std::optional<uint16_t> modeling_signals,
+    std::optional<std::string> aggregate_win_signals,
     base::TimeDelta bid_duration,
     std::optional<uint32_t> bidding_signals_data_version,
     const blink::InterestGroup::Ad* bid_ad,
@@ -1299,6 +1300,7 @@ InterestGroupAuction::Bid::Bid(
       ad_descriptor(std::move(ad_descriptor)),
       ad_component_descriptors(std::move(ad_component_descriptors)),
       modeling_signals(modeling_signals),
+      aggregate_win_signals(std::move(aggregate_win_signals)),
       bid_duration(bid_duration),
       bidding_signals_data_version(bidding_signals_data_version),
       selected_buyer_and_seller_reporting_id(
@@ -2033,6 +2035,7 @@ class InterestGroupAuction::BuyerHelper
         /*ad_cost=*/std::nullopt, std::move(ad_descriptor),
         std::move(ad_component_descriptors),
         /*modeling_signals=*/std::nullopt,
+        /*aggregate_win_signals=*/std::nullopt,
         /*bid_duration=*/base::Seconds(0),
         /*bidding_signals_data_version=*/std::nullopt, matching_ad,
         selected_buyer_and_seller_reporting_id, bid_state, auction_);
@@ -2862,7 +2865,8 @@ class InterestGroupAuction::BuyerHelper
         mojo_bid->bid_role, std::move(mojo_bid->ad), mojo_bid->bid,
         std::move(mojo_bid->bid_currency), mojo_bid->ad_cost,
         std::move(ad_descriptor), std::move(ad_component_descriptors),
-        std::move(mojo_bid->modeling_signals), mojo_bid->bid_duration,
+        std::move(mojo_bid->modeling_signals),
+        std::move(mojo_bid->aggregate_win_signals), mojo_bid->bid_duration,
         bidding_signals_data_version, matching_ad,
         std::move(mojo_bid->selected_buyer_and_seller_reporting_id), &bid_state,
         auction_);
@@ -3479,6 +3483,7 @@ InterestGroupAuction::CreateReporter(
       bidder_bid->bid_state->additional_bid_buyer.has_value();
   winning_bid_info.ad_cost = bidder_bid->ad_cost;
   winning_bid_info.modeling_signals = bidder_bid->modeling_signals;
+  winning_bid_info.aggregate_win_signals = bidder_bid->aggregate_win_signals;
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
@@ -5373,8 +5378,8 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
                                            : component_bid->bid_currency,
       component_bid->ad_cost, component_bid->ad_descriptor,
       component_bid->ad_component_descriptors, component_bid->modeling_signals,
-      component_bid->bid_duration, component_bid->bidding_signals_data_version,
-      component_bid->bid_ad,
+      component_bid->aggregate_win_signals, component_bid->bid_duration,
+      component_bid->bidding_signals_data_version, component_bid->bid_ad,
       component_bid->selected_buyer_and_seller_reporting_id,
       component_bid->bid_state, component_bid->auction);
 }
