@@ -5,6 +5,7 @@
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 namespace payments {

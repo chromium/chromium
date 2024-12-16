@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POLICY_TEST_SUPPORT_CLIENT_STORAGE_H_
 #define COMPONENTS_POLICY_TEST_SUPPORT_CLIENT_STORAGE_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <optional>
 #include <set>
