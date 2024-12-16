@@ -17,6 +17,13 @@
   [super buildMenuWithBuilder:builder];
   if (!base::FeatureList::IsEnabled(
           web::features::kRestoreWKWebViewEditMenuHandler)) {
+    if (![self canPerformAction:@selector(copy:) withSender:self]) {
+      // `WKWebView buildMenuWithBuilder:` is called too often in WKWebView,
+      // sometimes when there is no selection.
+      // As a proxy to detect if we should add our items, only add Chrome
+      // features if there is something to copy in the view.
+      return;
+    }
     [self.editMenuBuilder buildMenuWithBuilder:builder];
   }
 }
