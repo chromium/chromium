@@ -127,7 +127,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   }
 
   DCHECK_EQ(old_layer_bounds, cc_picture_layer_->bounds());
-  only_empty_invalidations_ = false;
+  has_empty_invalidations_ = false;
   raster_invalidator_->Generate(paint_chunks, layer_offset, layer_bounds,
                                 layer_state);
 
@@ -157,11 +157,13 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
       cc_display_item_list_ && layer_bounds == old_layer_bounds &&
       cc_picture_layer_->draws_content() == pending_layer.DrawsContent() &&
       !raster_under_invalidation_params;
+  bool only_empty_invalidations =
+      has_empty_invalidations_ && cc_display_item_list_;
   if (may_be_unchanged) {
     DCHECK_EQ(cc_picture_layer_->bounds(), layer_bounds);
     if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
         // See InvalidateRect().
-        !only_empty_invalidations_) {
+        !only_empty_invalidations) {
       return;
     }
   }
@@ -176,7 +178,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
 
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     if ((had_raster_inducing_scroll || HasRasterInducingScroll()) &&
-        only_empty_invalidations_) {
+        only_empty_invalidations) {
       // See InvalidateRect().
       cc_picture_layer_->SetForceUpdateRecordingSource();
     } else if (may_be_unchanged) {
@@ -231,11 +233,10 @@ void ContentLayerClientImpl::InvalidateRect(const gfx::Rect& rect) {
     // Set a flag so that UpdateCcPictureLayer can force update of the layer to
     // ensure the recording source is up to date.
     if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
-      only_empty_invalidations_ = true;
+      has_empty_invalidations_ = true;
     }
     return;
   }
-  only_empty_invalidations_ = false;
   cc_display_item_list_ = nullptr;
   cc_picture_layer_->SetNeedsDisplayRect(rect);
 }
