@@ -181,6 +181,7 @@ bool StructTraits<
       !data.ReadNavigationRedirectChain(&out->navigation_redirect_chain) ||
       !data.ReadAttributionReportingSrcToken(
           &out->attribution_reporting_src_token) ||
+      !data.ReadKeepaliveToken(&out->keepalive_token) ||
       !data.ReadStorageAccessApiStatus(&out->storage_access_api_status) ||
       !data.ReadSocketTag(&out->socket_tag)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.

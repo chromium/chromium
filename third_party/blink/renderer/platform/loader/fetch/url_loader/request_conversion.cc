@@ -417,6 +417,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->attribution_reporting_src_token = src.GetAttributionSrcToken();
 
+  dest->keepalive_token = src.GetKeepaliveToken();
+
   dest->shared_dictionary_writer_enabled = src.SharedDictionaryWriterEnabled();
 
   dest->is_ad_tagged = src.IsAdResource();

@@ -280,7 +280,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   // True if the request can work after the fetch group is terminated.
   bool GetKeepalive() const { return keepalive_; }
-  void SetKeepalive(bool keepalive) { keepalive_ = keepalive; }
+  void SetKeepalive(bool keepalive) {
+    keepalive_ = keepalive;
+    keepalive_token_ =
+        keepalive_ ? std::make_optional(base::UnguessableToken::Create())
+                   : std::nullopt;
+  }
 
   // True if the request should be considered for computing and attaching the
   // topics headers.
@@ -644,6 +649,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return known_transparent_placeholder_image_index_;
   }
 
+  const std::optional<base::UnguessableToken>& GetKeepaliveToken() const {
+    return keepalive_token_;
+  }
+
   // Indicates that both FetchContext::PrepareResourceRequestForCacheAccess()
   // and FetchContext::UpgradeResourceRequestForLoader() must be called. See
   // FetchContext::UpgradeResourceRequestForLoader() for details.
@@ -801,6 +810,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   std::optional<base::UnguessableToken>
       service_worker_race_network_request_token_;
+
+  // The unique identifier set when this request's `keepalive_` is true.
+  // TODO(crbug.com/382527001): Consider merge this field with `keepalive_`.
+  std::optional<base::UnguessableToken> keepalive_token_;
+
 #if DCHECK_IS_ON()
   bool is_set_url_allowed_ = true;
 #endif

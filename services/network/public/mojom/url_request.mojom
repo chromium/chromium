@@ -542,6 +542,12 @@ struct URLRequest {
   // eligible navigation request to which the current request is associated.
   mojo_base.mojom.UnguessableToken? attribution_reporting_src_token;
 
+  // When applicable, i.e. `keepalive` is true, indicates a fetch keepalive
+  // request.
+  // Used in UKM logging to identify the lifetime of a fetch keepalive request.
+  // TODO(crbug.com/382527001): Consider merge this field with `keepalive`.
+  mojo_base.mojom.UnguessableToken? keepalive_token;
+
   // Indicates whether this request has been determined to be used for
   // advertising purposes.
   bool is_ad_tagged = false;

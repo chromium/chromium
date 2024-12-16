@@ -227,6 +227,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::AttributionReportingEligibility::kUnset;
   bool shared_dictionary_writer_enabled = false;
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
+  std::optional<base::UnguessableToken> keepalive_token;
   bool is_ad_tagged = false;
   std::optional<base::UnguessableToken> prefetch_token;
   net::SocketTag socket_tag;

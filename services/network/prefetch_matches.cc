@@ -114,7 +114,8 @@ namespace {
   DO_FIELD(attribution_reporting_src_token) __VA_ARGS__        \
   DO_FIELD(is_ad_tagged) __VA_ARGS__                           \
   DO_FIELD(prefetch_token) __VA_ARGS__                         \
-  DO_FIELD(socket_tag)
+  DO_FIELD(socket_tag) __VA_ARGS__                             \
+  DO_FIELD(keepalive_token)
 
 // clang-format on
 
@@ -210,7 +211,8 @@ enum class FieldsForUma {
   kSharedDictionaryWriterEnabled = 60,
   kAttributionReportingSrcToken = 61,
   kIsAdTagged = 62,
-  kMaxValue = kIsAdTagged,
+  kKeepaliveToken = 63,
+  kMaxValue = kKeepaliveToken,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:PrefetchMatchesResourceRequestField)
 
@@ -287,6 +289,7 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::kattribution_reporting_src_token,
      FieldsForUma::kAttributionReportingSrcToken},
     {Fields::kis_ad_tagged, FieldsForUma::kIsAdTagged},
+    {Fields::kkeepalive_token, FieldsForUma::kKeepaliveToken},
 });
 
 // Fields that should be completely ignored for the purposes of matching should
