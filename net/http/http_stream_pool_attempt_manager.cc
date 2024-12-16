@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -894,7 +895,9 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
   if (CanUseExistingSessionAfterEndpointChanges()) {
     // TODO(crbug.com/383220402): Remove GetInfoAsValue() once we found the root
     // cause of the associated bug.
-    CHECK(in_flight_attempts_.empty()) << GetInfoAsValue();
+    std::string info = GetInfoAsValue().DebugString();
+    DEBUG_ALIAS_FOR_CSTR(aliased_info, info.c_str(), 512);
+    CHECK(in_flight_attempts_.empty()) << info;
     return;
   }
   MaybeRunStreamAttemptDelayTimer();
