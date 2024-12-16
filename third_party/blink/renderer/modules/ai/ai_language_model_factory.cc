@@ -106,7 +106,7 @@ class CreateLanguageModelClient
     CHECK(info);
     AILanguageModel* language_model = MakeGarbageCollected<AILanguageModel>(
         ai_->GetExecutionContext(), std::move(language_model_remote),
-        ai_->GetTaskRunner(), std::move(info), /*current_tokens=*/0);
+        ai_->GetTaskRunner(), std::move(info));
     GetResolver()->Resolve(language_model);
 
     Cleanup();

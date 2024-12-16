@@ -84,7 +84,7 @@ void EchoAILanguageModel::Fork(
   client_remote->OnResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInfo::New(
-          EchoAIManagerImpl::kMaxContextSizeInTokens,
+          EchoAIManagerImpl::kMaxContextSizeInTokens, current_tokens_,
           blink::mojom::AILanguageModelSamplingParams::New(
               optimization_guide::features::GetOnDeviceModelDefaultTopK(),
               optimization_guide::features::

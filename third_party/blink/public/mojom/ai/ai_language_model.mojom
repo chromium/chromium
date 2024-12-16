@@ -29,10 +29,16 @@ struct AIModelInfo {
   float default_temperature;
 };
 
-// The information of an AILanguageModel, this should be returned from any method
-// that creates a new AILanguageModel.
+// The information of an AILanguageModel instance, this should be returned
+// from any method that creates a new AILanguageModel.
 struct AILanguageModelInfo {
+  // The maximum number of tokens that the AILanguageModel can hold in the
+  // context. When the new prompt or response is being stored in the context,
+  // the AILanguageModel will ensure the context stores no more than
+  // `max_tokens`, by optionally evicting some oldest entries.
   uint64 max_tokens;
+  // The number of tokens that are already in the context.
+  uint64 current_tokens;
 
   AILanguageModelSamplingParams sampling_params;
 };

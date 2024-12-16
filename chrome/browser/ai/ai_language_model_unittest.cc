@@ -309,16 +309,26 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     AITestUtils::MockCreateLanguageModelClient
         mock_create_language_model_client;
     base::RunLoop creation_run_loop;
+    bool is_initial_prompts_or_system_prompt_set =
+        options.initial_prompts.size() > 0 ||
+        (options.system_prompt.has_value() &&
+         options.system_prompt->size() > 0);
     EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
-        .WillOnce(testing::Invoke(
-            [&](mojo::PendingRemote<blink::mojom::AILanguageModel>
-                    language_model,
-                blink::mojom::AILanguageModelInfoPtr info) {
-              EXPECT_TRUE(language_model);
-              mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
-                  std::move(language_model));
-              creation_run_loop.Quit();
-            }));
+        .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
+                          language_model,
+                      blink::mojom::AILanguageModelInfoPtr info) {
+          EXPECT_TRUE(language_model);
+          EXPECT_EQ(info->max_tokens,
+                    AITestUtils::GetFakeTokenLimits().max_context_tokens);
+          if (is_initial_prompts_or_system_prompt_set) {
+            EXPECT_GT(info->current_tokens, 0ul);
+          } else {
+            EXPECT_EQ(info->current_tokens, 0ul);
+          }
+          mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
+              std::move(language_model));
+          creation_run_loop.Quit();
+        });
 
     mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
 

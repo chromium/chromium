@@ -70,7 +70,7 @@ class CloneLanguageModelClient
         MakeGarbageCollected<AILanguageModel>(
             language_model_->GetExecutionContext(),
             std::move(language_model_remote), language_model_->GetTaskRunner(),
-            std::move(info), language_model_->GetCurrentTokens());
+            std::move(info));
     GetResolver()->Resolve(cloned_language_model);
     Cleanup();
   }
@@ -152,15 +152,16 @@ AILanguageModel::AILanguageModel(
     ExecutionContext* execution_context,
     mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    blink::mojom::blink::AILanguageModelInfoPtr info,
-    uint64_t current_tokens)
+    blink::mojom::blink::AILanguageModelInfoPtr info)
     : ExecutionContextClient(execution_context),
-      current_tokens_(current_tokens),
       task_runner_(task_runner),
       language_model_remote_(execution_context) {
   language_model_remote_.Bind(std::move(pending_remote), task_runner);
   if (info) {
-    SetInfo(base::PassKey<AILanguageModel>(), std::move(info));
+    max_tokens_ = info->max_tokens;
+    current_tokens_ = info->current_tokens;
+    top_k_ = info->sampling_params->top_k;
+    temperature_ = info->sampling_params->temperature;
   }
 }
 
@@ -357,16 +358,6 @@ void AILanguageModel::OnResponseComplete(
       OnContextOverflow();
     }
   }
-}
-
-void AILanguageModel::SetInfo(
-    std::variant<base::PassKey<AILanguageModelFactory>,
-                 base::PassKey<AILanguageModel>> pass_key,
-    const blink::mojom::blink::AILanguageModelInfoPtr info) {
-  CHECK(info);
-  top_k_ = info->sampling_params->top_k;
-  temperature_ = info->sampling_params->temperature;
-  max_tokens_ = info->max_tokens;
 }
 
 HeapMojoRemote<mojom::blink::AILanguageModel>&

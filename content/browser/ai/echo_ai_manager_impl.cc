@@ -159,6 +159,7 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInfo::New(
           kMaxContextSizeInTokens,
+          /*current_tokens=*/0,
           blink::mojom::AILanguageModelSamplingParams::New(
               optimization_guide::features::GetOnDeviceModelDefaultTopK(),
               optimization_guide::features::

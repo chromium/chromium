@@ -29,8 +29,7 @@ class AILanguageModel final : public EventTarget,
       ExecutionContext* execution_context,
       mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      mojom::blink::AILanguageModelInfoPtr info,
-      uint64_t current_tokens);
+      mojom::blink::AILanguageModelInfoPtr info);
   ~AILanguageModel() override = default;
 
   void Trace(Visitor* visitor) const override;
@@ -67,13 +66,6 @@ class AILanguageModel final : public EventTarget,
       const AILanguageModelCloneOptions* options,
       ExceptionState& exception_state);
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
-
-  // Allows `AILanguageModelFactory` (for creating language model) and
-  // `AILanguageModel` (for cloning language model) to set the info after
-  // getting it from the remote.
-  void SetInfo(std::variant<base::PassKey<AILanguageModelFactory>,
-                            base::PassKey<AILanguageModel>> pass_key,
-               const mojom::blink::AILanguageModelInfoPtr info);
 
   HeapMojoRemote<mojom::blink::AILanguageModel>& GetAILanguageModelRemote();
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();

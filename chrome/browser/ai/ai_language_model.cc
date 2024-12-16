@@ -380,7 +380,7 @@ blink::mojom::AILanguageModelInfoPtr AILanguageModel::GetLanguageModelInfo() {
   const optimization_guide::SamplingParams session_sampling_params =
       session_->GetSamplingParams();
   return blink::mojom::AILanguageModelInfo::New(
-      context_->max_tokens(),
+      context_->max_tokens(), context_->current_tokens(),
       blink::mojom::AILanguageModelSamplingParams::New(
           session_sampling_params.top_k, session_sampling_params.temperature));
 }
