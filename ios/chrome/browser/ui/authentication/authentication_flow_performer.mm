@@ -521,11 +521,18 @@ NSString* const kAuthenticationSnackbarCategory =
   _managedConfirmationAlertCoordinator = nil;
   [self managedConfirmationDidAccept:accepted
                              browser:browser
-            keepBrowsingDataSeparate:NO];
+            keepBrowsingDataSeparate:
+                AreSeparateProfilesForManagedAccountsEnabled()];
 }
 
 // Called when the user accepted to continue to sign-in with a managed account.
 // `accepted` is YES when the user confirmed or NO if the user canceled.
+// If `keepBrowsingDataSeparate` is `YES`, the managed account gets signed in to
+// a new empty work profile. This must only be specified if
+// AreSeparateProfilesForManagedAccountsEnabled() is true.
+// If `keepBrowsingDataSeparate` is `NO`, the account gets signed in to the
+// current profile. If AreSeparateProfilesForManagedAccountsEnabled() is true,
+// this involves converting the current profile into a work profile.
 - (void)managedConfirmationDidAccept:(BOOL)accepted
                              browser:(Browser*)browser
             keepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
@@ -536,6 +543,8 @@ NSString* const kAuthenticationSnackbarCategory =
     [self.delegate didCancelManagedConfirmation];
     return;
   }
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled() ||
+        !keepBrowsingDataSeparate);
   base::RecordAction(
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Confirmed"));
