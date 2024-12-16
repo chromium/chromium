@@ -4,14 +4,13 @@
 
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 
-#include <openssl/base.h>
-
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 void ShowCertificateDialog(base::WeakPtr<content::WebContents> web_contents,
                            bssl::UniquePtr<CRYPTO_BUFFER> cert) {
