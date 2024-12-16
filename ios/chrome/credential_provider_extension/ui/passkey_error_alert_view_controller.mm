@@ -26,6 +26,8 @@ UIImage* GetImage(ErrorType error_type) {
       image_name = @"cpe_enterprise_icon";
       break;
     case ErrorType::kSignedOut:
+    case ErrorType::kUserDisabledSavingCredentialsInPasswordSettings:
+    case ErrorType::kUserDisabledSavingCredentialsToAccount:
       image_name = @"multicolor_chrome";
       is_multicolor_symbol = YES;
       break;
@@ -53,6 +55,8 @@ BOOL ShouldShowImageAsFavicon(ErrorType error_type) {
     case ErrorType::kEnterpriseDisabledSavingCredentials:
       return NO;
     case ErrorType::kSignedOut:
+    case ErrorType::kUserDisabledSavingCredentialsInPasswordSettings:
+    case ErrorType::kUserDisabledSavingCredentialsToAccount:
       return YES;
   }
 }
@@ -68,6 +72,11 @@ NSString* GetTitleString(ErrorType error_type) {
     case ErrorType::kSignedOut:
       string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_SIGNED_OUT_USER_TITLE";
       break;
+    case ErrorType::kUserDisabledSavingCredentialsInPasswordSettings:
+    case ErrorType::kUserDisabledSavingCredentialsToAccount:
+      string_id =
+          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_TITLE";
+      break;
   }
   return NSLocalizedString(string_id, @"The title of the screen.");
 }
@@ -82,6 +91,14 @@ NSString* GetSubtitleString(ErrorType error_type) {
       break;
     case ErrorType::kSignedOut:
       string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_SIGNED_OUT_USER_SUBTITLE";
+      break;
+    case ErrorType::kUserDisabledSavingCredentialsInPasswordSettings:
+      string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_"
+                  @"IN_PASSWORD_SETTINGS_SUBTITLE";
+      break;
+    case ErrorType::kUserDisabledSavingCredentialsToAccount:
+      string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_"
+                  @"FOR_ACCOUNT_SUBTITLE";
       break;
   }
   return NSLocalizedString(string_id, @"The subtitle of the screen.");

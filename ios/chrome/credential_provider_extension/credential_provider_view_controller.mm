@@ -324,20 +324,13 @@ UIColor* BackgroundColor() {
     if (IsPasswordCreationManaged()) {
       [self showSavingDisabledByEnterpriseAlert];
     } else {
-      // TODO(crbug.com/379247744): Replace this generic error with a more
-      // appropriate one. Users in this state have manually disabled the "Offer
-      // to save passwords" option, and need to enable it to complete saving a
-      // passkey.
-      [self showGenericErrorAlert];
+      [self showSavingManuallyDisabledAlert];
     }
     return;
   }
 
   if (!IsPasswordSyncEnabled()) {
-    // TODO(crbug.com/379247744): Replace this generic error with a more
-    // appropriate one. Users in this state have disabled saving passwords to
-    // their account (sync).
-    [self showGenericErrorAlert];
+    [self showSavingToAccountDisabledAlert];
     return;
   }
 
@@ -875,6 +868,28 @@ UIColor* BackgroundColor() {
   PasskeyErrorAlertViewController* signedOutUserViewController =
       [self createPasskeyErrorAlertForErrorType:ErrorType::kSignedOut];
   [self presentViewController:signedOutUserViewController
+                     animated:NO
+                   completion:nil];
+}
+
+// Displays sheet with information that credential saving has been manually
+// disabled in Password Settings by the user.
+- (void)showSavingManuallyDisabledAlert {
+  PasskeyErrorAlertViewController* savingDisabledInSettingsViewController =
+      [self createPasskeyErrorAlertForErrorType:
+                ErrorType::kUserDisabledSavingCredentialsInPasswordSettings];
+  [self presentViewController:savingDisabledInSettingsViewController
+                     animated:NO
+                   completion:nil];
+}
+
+// Displays sheet with information that credential saving to account (sync) is
+// disabled.
+- (void)showSavingToAccountDisabledAlert {
+  PasskeyErrorAlertViewController* savingToAccountDisabledViewController =
+      [self createPasskeyErrorAlertForErrorType:
+                ErrorType::kUserDisabledSavingCredentialsToAccount];
+  [self presentViewController:savingToAccountDisabledViewController
                      animated:NO
                    completion:nil];
 }

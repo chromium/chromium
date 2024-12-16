@@ -77,3 +77,49 @@ TEST_F(PasskeyErrorAlertViewControllerTest, TestContentWithSignedOutErrorType) {
   EXPECT_NSEQ(controller.primaryActionString,
               @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE");
 }
+
+// Tests that the view's content with the
+// `kUserDisabledSavingCredentialsInPasswordSettings` error type is as expected.
+TEST_F(PasskeyErrorAlertViewControllerTest,
+       TestContentWithPasswordSettingsErrorType) {
+  PasskeyErrorAlertViewController* controller = CreateController(
+      ErrorType::kUserDisabledSavingCredentialsInPasswordSettings);
+  [controller loadView];
+
+  EXPECT_NSEQ(controller.image,
+              GetImage(@"multicolor_chrome", /*is_multicolor_symbol=*/YES));
+  EXPECT_TRUE(controller.imageHasFixedSize);
+  EXPECT_EQ(controller.customFaviconSideLength, 42);
+  EXPECT_TRUE(controller.imageEnclosedWithShadowWithoutBadge);
+  EXPECT_NSEQ(
+      controller.titleString,
+      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_TITLE");
+  EXPECT_NSEQ(controller.subtitleString,
+              @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_IN_"
+              @"PASSWORD_SETTINGS_SUBTITLE");
+  EXPECT_NSEQ(controller.primaryActionString,
+              @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE");
+}
+
+// Tests that the view's content with the
+// `kUserDisabledSavingCredentialsToAccount` error type is as expected.
+TEST_F(PasskeyErrorAlertViewControllerTest,
+       TestContentWithAccountSettingsErrorType) {
+  PasskeyErrorAlertViewController* controller =
+      CreateController(ErrorType::kUserDisabledSavingCredentialsToAccount);
+  [controller loadView];
+
+  EXPECT_NSEQ(controller.image,
+              GetImage(@"multicolor_chrome", /*is_multicolor_symbol=*/YES));
+  EXPECT_TRUE(controller.imageHasFixedSize);
+  EXPECT_EQ(controller.customFaviconSideLength, 42);
+  EXPECT_TRUE(controller.imageEnclosedWithShadowWithoutBadge);
+  EXPECT_NSEQ(
+      controller.titleString,
+      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_TITLE");
+  EXPECT_NSEQ(controller.subtitleString,
+              @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_FOR_"
+              @"ACCOUNT_SUBTITLE");
+  EXPECT_NSEQ(controller.primaryActionString,
+              @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE");
+}

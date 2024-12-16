@@ -14,6 +14,12 @@ enum class ErrorType {
 
   // User is signed out of Chrome.
   kSignedOut,
+
+  // Saving credentials to account has been disabled by the user.
+  kUserDisabledSavingCredentialsInPasswordSettings,
+
+  // Saving credentials has been disabled by the user in Password Settings.
+  kUserDisabledSavingCredentialsToAccount,
 };
 
 // Displays a view informing the user of why it's not possible to proceed with
