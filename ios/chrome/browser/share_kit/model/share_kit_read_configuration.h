@@ -27,10 +27,6 @@
 // Configuration object for reading a shared group.
 @interface ShareKitReadConfiguration : NSObject
 
-// The list of collabs ID to be read.
-// TODO(crbug.com/383530755): Remove this.
-@property(nonatomic, copy) NSArray<NSString*>* collabIDs;
-
 // The parameters for the groups to be read.
 @property(nonatomic, copy)
     NSArray<ShareKitReadGroupParamConfiguration*>* groupsParam;
