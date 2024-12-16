@@ -49,21 +49,12 @@ void CoralChipButton::ShutdownSelectionWidget() {
 }
 
 void CoralChipButton::ReloadIcon() {
-  GetItem()->LoadIcon(base::BindOnce(&CoralChipButton::SetIconImage,
-                                     weak_factory_.GetWeakPtr()));
+  item_->LoadIcon(base::BindOnce(&CoralChipButton::SetIconImage,
+                                 weak_factory_.GetWeakPtr()));
 }
 
-void CoralChipButton::UpdateTitle() {
-  // Gets the real title from the group.
-  auto* coral_provider = BirchCoralProvider::Get();
-  const std::optional<std::string>& group_title =
-      coral_provider
-          ? coral_provider
-                ->GetGroupById(
-                    static_cast<BirchCoralItem*>(GetItem())->group_id())
-                ->title
-          : std::string();
-
+void CoralChipButton::UpdateTitle(
+    const std::optional<std::string>& group_title) {
   views::Label* title_label = title();
   if (group_title) {
     // If the title is not empty, reset the `title_` with the real title.
@@ -87,6 +78,8 @@ void CoralChipButton::UpdateTitle() {
             *title_loading_animated_image_->animated_image()->skottie(),
             IDR_CORAL_LOADING_TITLE_ANIMATION));
   }
+
+  SetAccessibleName(item_->GetAccessibleName());
 }
 
 void CoralChipButton::Init(BirchItem* item) {
@@ -94,13 +87,20 @@ void CoralChipButton::Init(BirchItem* item) {
 
   BirchChipButton::Init(item);
 
-  // Override the title, callback and addon.
-  UpdateTitle();
+  // Override the title, callback and addon. Gets the real title from the group.
+  auto* coral_provider = BirchCoralProvider::Get();
+  const std::optional<std::string>& group_title =
+      coral_provider
+          ? coral_provider
+                ->GetGroupById(static_cast<BirchCoralItem*>(item_)->group_id())
+                ->title
+          : std::string();
+  UpdateTitle(group_title);
 
-  SetCallback(base::BindRepeating(
-      &BirchCoralItem::LaunchGroup,
-      base::Unretained(static_cast<BirchCoralItem*>(GetItem())),
-      base::Unretained(this)));
+  SetCallback(
+      base::BindRepeating(&BirchCoralItem::LaunchGroup,
+                          base::Unretained(static_cast<BirchCoralItem*>(item_)),
+                          base::Unretained(this)));
 
   base::RepeatingClosure callback = base::BindRepeating(
       &CoralChipButton::OnCoralAddonClicked, weak_factory_.GetWeakPtr());

@@ -154,6 +154,8 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // BirchCoralProvider::Observer:
   void OnCoralGroupRemoved(const base::Token& group_id) override;
+  void OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                const std::string& title) override;
 
   BirchDataProvider* GetWeatherProviderForTest();
   void OverrideWeatherProviderForTest(

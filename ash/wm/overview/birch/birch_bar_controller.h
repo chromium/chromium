@@ -113,7 +113,8 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   void OnCoralGroupRemoved(const base::Token& group_id) override;
   void OnCoralEntityRemoved(const base::Token& group_id,
                             std::string_view identifier) override;
-  void OnCoralGroupTitleUpdated(const base::Token& group_id) override;
+  void OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                const std::string& title) override;
 
   BirchBarMenuModelAdapter* chip_menu_model_adapter_for_testing() {
     return chip_menu_model_adapter_.get();

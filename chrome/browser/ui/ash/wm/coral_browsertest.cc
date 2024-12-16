@@ -371,6 +371,8 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, AsyncGroupTitle) {
   BirchCoralProvider::Get()->TitleUpdated(base::Token(), "Updated Title");
   ASSERT_TRUE(coral_chip->title()->GetVisible());
   EXPECT_EQ(coral_chip->title()->GetText(), u"Updated Title");
+  EXPECT_EQ(coral_chip->GetAccessibleName(),
+            u"Updated Title Organize in a new desk");
 }
 
 // Tests that the chip will show placeholder title when corresponding group
@@ -407,6 +409,8 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, GroupTitleLoadingFail) {
   BirchCoralProvider::Get()->TitleUpdated(base::Token(), "");
   ASSERT_TRUE(coral_chip->title()->GetVisible());
   EXPECT_EQ(coral_chip->title()->GetText(), u"Suggested Group");
+  EXPECT_EQ(coral_chip->GetAccessibleName(),
+            u"Suggested Group Organize in a new desk");
 }
 
 // Tests that the coral chip gets updated while corresponding tab/app items are

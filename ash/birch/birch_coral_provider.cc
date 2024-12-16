@@ -243,7 +243,8 @@ void BirchCoralProvider::Observer::OnCoralEntityRemoved(
     std::string_view identifier) {}
 
 void BirchCoralProvider::Observer::OnCoralGroupTitleUpdated(
-    const base::Token& group_id) {}
+    const base::Token& group_id,
+    const std::string& title) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // BirchCoralProvider:
@@ -444,7 +445,7 @@ void BirchCoralProvider::TitleUpdated(const base::Token& id,
   for (coral::mojom::GroupPtr& group : response_->groups()) {
     if (group->id == id) {
       group->title = title;
-      observers_.Notify(&Observer::OnCoralGroupTitleUpdated, group->id);
+      observers_.Notify(&Observer::OnCoralGroupTitleUpdated, group->id, title);
       return;
     }
   }

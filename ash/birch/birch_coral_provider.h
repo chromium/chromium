@@ -42,7 +42,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
     virtual void OnCoralGroupRemoved(const base::Token& group_id);
     virtual void OnCoralEntityRemoved(const base::Token& group_id,
                                       std::string_view identifier);
-    virtual void OnCoralGroupTitleUpdated(const base::Token& group_id);
+    virtual void OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                          const std::string& title);
   };
 
   BirchCoralProvider();
