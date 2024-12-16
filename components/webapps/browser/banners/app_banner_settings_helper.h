@@ -159,9 +159,6 @@ class AppBannerSettingsHelper {
   static base::AutoReset<double> ScopeTotalEngagementForTesting(
       double total_engagement);
 
-  // Updates all values from field trial.
-  static void UpdateFromFieldTrial();
-
   // Returns whether we are out of |scope|'s animation suppression period and
   // can show an animation.
   static bool CanShowInstallTextAnimation(content::WebContents* web_contents,

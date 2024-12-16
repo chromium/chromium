@@ -16,19 +16,6 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Keys to use when querying the variations params.
-BASE_FEATURE(kAppBannerTriggering,
-             "AppBannerTriggering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey{
-    &kAppBannerTriggering, "site_engagement_total",
-    kDefaultTotalEngagementToTrigger};
-extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey{
-    &kAppBannerTriggering, "days_after_dismiss",
-    kMinimumBannerBlockedToBannerShown};
-extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
-    &kAppBannerTriggering, "days_after_ignore", kMinimumDaysBetweenBannerShows};
-
 // Do not remove this feature flag, since it serves as a kill-switch for the ML
 // promotion model. Kill switches are required for all ML model-backed features.
 BASE_FEATURE(kWebAppsEnableMLModelForPromotion,

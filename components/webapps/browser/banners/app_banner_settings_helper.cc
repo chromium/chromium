@@ -39,6 +39,14 @@ namespace webapps {
 
 namespace {
 
+// Default number of days that dismissing or ignoring the banner will prevent it
+// being seen again for.
+constexpr unsigned int kMinimumBannerBlockedToBannerShown = 90;
+constexpr unsigned int kMinimumDaysBetweenBannerShows = 7;
+
+// Default site engagement required to trigger the banner.
+constexpr unsigned int kDefaultTotalEngagementToTrigger = 2;
+
 // Max number of apps (including ServiceWorker based web apps) that a particular
 // site may show a banner for.
 const size_t kMaxAppsPerSite = 3;
@@ -55,11 +63,10 @@ constexpr const char* kBannerEventKeys[] = {
 };
 
 // Total engagement score required before a banner will actually be triggered.
-double gTotalEngagementToTrigger = features::kDefaultTotalEngagementToTrigger;
+double gTotalEngagementToTrigger = kDefaultTotalEngagementToTrigger;
 
-unsigned int gDaysAfterDismissedToShow =
-    features::kMinimumBannerBlockedToBannerShown;
-unsigned int gDaysAfterIgnoredToShow = features::kMinimumDaysBetweenBannerShows;
+unsigned int gDaysAfterDismissedToShow = kMinimumBannerBlockedToBannerShown;
+unsigned int gDaysAfterIgnoredToShow = kMinimumDaysBetweenBannerShows;
 
 base::Value::Dict GetOriginAppBannerData(HostContentSettingsMap* settings,
                                          const GURL& origin_url) {
@@ -117,24 +124,6 @@ class AppPrefs {
   base::Value::Dict origin_dict_;
   raw_ptr<base::Value::Dict> dict_ = nullptr;
 };
-
-// Queries variations for the number of days which dismissing and ignoring the
-// banner should prevent a banner from showing.
-void UpdateDaysBetweenShowing() {
-  AppBannerSettingsHelper::SetDaysAfterDismissAndIgnoreToTrigger(
-      features::kBannerParamsDaysAfterBannerDismissedKey.Get(),
-      features::kBannerParamsDaysAfterBannerIgnoredKey.Get());
-}
-
-// Queries variations for the maximum site engagement score required to trigger
-// the banner showing.
-void UpdateSiteEngagementToTrigger() {
-  double total_engagement = features::kBannerParamsEngagementTotalKey.Get();
-
-  if (total_engagement >= 0) {
-    AppBannerSettingsHelper::SetTotalEngagementToTrigger(total_engagement);
-  }
-}
 
 // Reports whether |event| was recorded within the |period| up until |now|.
 // If we get nullopt, we cannot store any more values for |origin_url|.
@@ -353,13 +342,6 @@ void AppBannerSettingsHelper::SetTotalEngagementToTrigger(
 base::AutoReset<double> AppBannerSettingsHelper::ScopeTotalEngagementForTesting(
     double total_engagement) {
   return base::AutoReset<double>(&gTotalEngagementToTrigger, total_engagement);
-}
-
-void AppBannerSettingsHelper::UpdateFromFieldTrial() {
-  // If we are using the site engagement score, only extract the total
-  // engagement to trigger from the params variations.
-  UpdateDaysBetweenShowing();
-  UpdateSiteEngagementToTrigger();
 }
 
 bool AppBannerSettingsHelper::CanShowInstallTextAnimation(

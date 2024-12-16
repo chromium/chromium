@@ -290,8 +290,6 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
       manager_(InstallableManager::FromWebContents(web_contents)),
       status_reporter_(std::make_unique<NullStatusReporter>()) {
   DCHECK(manager_);
-
-  AppBannerSettingsHelper::UpdateFromFieldTrial();
 }
 
 AppBannerManager::~AppBannerManager() = default;
