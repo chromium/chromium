@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -135,6 +136,10 @@ class NotificationContentDetectionServiceTest : public ::testing::Test {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+ protected:
+  base::MockCallback<NotificationContentDetectionModel::ModelVerdictCallback>
+      model_verdict_callback_;
+
  private:
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager_;
   std::unique_ptr<TestModelObserverTracker> model_observer_tracker_;
@@ -190,10 +195,10 @@ TEST_F(NotificationContentDetectionServiceTest,
   EXPECT_CALL(*notification_content_detection_model(),
               Execute(_, origin, false, _))
       .Times(1);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(0);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin,
-          /*model_verdict_callback=*/base::DoNothing());
+          notification_data, origin, model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
@@ -211,10 +216,10 @@ TEST_F(NotificationContentDetectionServiceTest,
   EXPECT_CALL(*notification_content_detection_model(),
               Execute(_, origin, true, _))
       .Times(1);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(0);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin,
-          /*model_verdict_callback=*/base::DoNothing());
+          notification_data, origin, model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
@@ -231,10 +236,10 @@ TEST_F(NotificationContentDetectionServiceTest,
   SetUpTestNotificationContentDetectionModel();
   EXPECT_CALL(*notification_content_detection_model(), Execute(_, _, _, _))
       .Times(0);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin,
-          /*model_verdict_callback=*/base::DoNothing());
+          notification_data, origin, model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);

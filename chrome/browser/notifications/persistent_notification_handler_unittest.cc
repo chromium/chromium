@@ -92,8 +92,10 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
 
   // ::testing::Test overrides:
   void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        safe_browsing::kOnDeviceNotificationContentDetectionModel);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {safe_browsing::kOnDeviceNotificationContentDetectionModel,
+             safe_browsing::kShowWarningsForSuspiciousNotifications});
+
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
         &profile_, HistoryServiceFactory::GetDefaultFactory());
 
@@ -221,11 +223,13 @@ class PersistentNotificationHandlerWithNotificationContentDetection
  public:
   void SetUp() override {
     if (IsNotificationContentDetectionEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          safe_browsing::kOnDeviceNotificationContentDetectionModel);
+      scoped_feature_list_.InitWithFeatures(
+          {safe_browsing::kOnDeviceNotificationContentDetectionModel},
+          {safe_browsing::kShowWarningsForSuspiciousNotifications});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          safe_browsing::kOnDeviceNotificationContentDetectionModel);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {safe_browsing::kOnDeviceNotificationContentDetectionModel,
+               safe_browsing::kShowWarningsForSuspiciousNotifications});
     }
     if (IsSafeBrowsingEnabled()) {
       profile_.GetTestingPrefService()->SetManagedPref(

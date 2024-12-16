@@ -168,6 +168,12 @@ class PlatformNotificationServiceImpl
       std::unique_ptr<PersistentNotificationMetadata> metadata,
       bool is_suspicious);
 
+  // Logs metrics when displaying a persistent notification.
+  void LogPersistentNotificationShownMetrics(
+      const blink::PlatformNotificationData& notification_data,
+      const GURL& origin,
+      const GURL& notification_origin);
+
   // The profile for this instance or NULL if the initial profile has been
   // shutdown already.
   raw_ptr<Profile> profile_;

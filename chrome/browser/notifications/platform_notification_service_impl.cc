@@ -288,15 +288,27 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
     auto* notification_content_service = safe_browsing::
         NotificationContentDetectionServiceFactory::GetForProfile(profile_);
     if (notification_content_service) {
+      bool is_show_warnings_for_suspicious_notifications_enabled =
+          base::FeatureList::IsEnabled(
+              safe_browsing::kShowWarningsForSuspiciousNotifications);
       notification_content_service->MaybeCheckNotificationContentDetectionModel(
           notification_data, origin,
-          base::FeatureList::IsEnabled(
-              safe_browsing::kShowWarningsForSuspiciousNotifications)
+          is_show_warnings_for_suspicious_notifications_enabled
               ? base::BindOnce(&PlatformNotificationServiceImpl::
                                    UpdatePersistentMetadataThenDisplay,
                                weak_ptr_factory_.GetWeakPtr(), notification,
                                std::move(metadata))
               : base::DoNothing());
+      // When this feature is enabled, the
+      // `MaybeCheckNotificationContentDetectionModel` method will also include
+      // displaying the notification. In this case, the metrics should be logged
+      // and the method should return without calling `Display`. Otherwise, the
+      // notification should be displayed below.
+      if (is_show_warnings_for_suspicious_notifications_enabled) {
+        LogPersistentNotificationShownMetrics(notification_data, origin,
+                                              notification.origin_url());
+        return;
+      }
     }
   }
 
@@ -304,23 +316,8 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
       NotificationHandler::Type::WEB_PERSISTENT, notification,
       std::move(metadata));
 
-  NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
-      ->LogPersistentNotificationShown();
-  if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
-    NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
-        ->LogPersistentNotificationSize(profile_, notification_data, origin);
-  }
-
-  auto* service =
-      NotificationsEngagementServiceFactory::GetForProfile(profile_);
-  // This service might be missing for incognito profiles and in tests.
-  if (service) {
-    service->RecordNotificationDisplayed(notification.origin_url());
-  }
-
-  permissions::PermissionUmaUtil::RecordPermissionUsage(
-      ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
-      notification.origin_url());
+  LogPersistentNotificationShownMetrics(notification_data, origin,
+                                        notification.origin_url());
 }
 
 void PlatformNotificationServiceImpl::CloseNotification(
@@ -735,4 +732,27 @@ void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::WEB_PERSISTENT, notification,
       std::move(metadata));
+}
+
+void PlatformNotificationServiceImpl::LogPersistentNotificationShownMetrics(
+    const blink::PlatformNotificationData& notification_data,
+    const GURL& origin,
+    const GURL& notification_origin) {
+  NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
+      ->LogPersistentNotificationShown();
+  if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
+    NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
+        ->LogPersistentNotificationSize(profile_, notification_data, origin);
+  }
+
+  auto* service =
+      NotificationsEngagementServiceFactory::GetForProfile(profile_);
+  // This service might be missing for incognito profiles and in tests.
+  if (service) {
+    service->RecordNotificationDisplayed(notification_origin);
+  }
+
+  permissions::PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
+      notification_origin);
 }

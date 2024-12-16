@@ -8,6 +8,10 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/platform_notification_service_factory.h"
+#include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -31,6 +35,7 @@ namespace {
 
 constexpr char kAllowlistedUrl[] = "https://allowlisted.url/";
 constexpr char kNonAllowlistedUrl[] = "https://non-allowlisted.url/";
+constexpr char kNotificationId[] = "my-notification-id";
 
 }  // namespace
 
@@ -128,7 +133,8 @@ class NotificationContentDetectionBrowserTest
         /*enabled_features=*/{safe_browsing::
                                   kOnDeviceNotificationContentDetectionModel},
         /*disabled_features=*/{
-            optimization_guide::features::kPreventLongRunningPredictionModels});
+            optimization_guide::features::kPreventLongRunningPredictionModels,
+            safe_browsing::kShowWarningsForSuspiciousNotifications});
     NotificationContentDetectionBrowserTestBase::SetUp();
   }
 
@@ -136,7 +142,9 @@ class NotificationContentDetectionBrowserTest
     notification_content_detection_service_ =
         NotificationContentDetectionServiceFactory::GetForProfile(
             browser()->profile());
-    UpdateNotificationContentDetectionModel();
+    display_service_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(
+            browser()->profile());
 
     // Set up allowlisted and non-allowlisted URLs.
     SetURLHighConfidenceAllowlistMatch(GURL(kAllowlistedUrl),
@@ -164,6 +172,11 @@ class NotificationContentDetectionBrowserTest
     return data;
   }
 
+  PlatformNotificationServiceImpl* service() {
+    return PlatformNotificationServiceFactory::GetForProfile(
+        browser()->profile());
+  }
+
   NotificationContentDetectionService*
   notification_content_detection_service() {
     return notification_content_detection_service_;
@@ -171,7 +184,20 @@ class NotificationContentDetectionBrowserTest
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
- private:
+  std::vector<message_center::Notification>
+  GetDisplayedPersistentNotifications() {
+    return display_service_tester_->GetDisplayedNotificationsForType(
+        NotificationHandler::Type::WEB_PERSISTENT);
+  }
+
+  bool IsNotificationSuspicious(
+      const message_center::Notification& notification) {
+    return PersistentNotificationMetadata::From(
+               display_service_tester_->GetMetadataForNotification(
+                   notification))
+        ->is_suspicious;
+  }
+
   void UpdateNotificationContentDetectionModel() {
     base::FilePath source_root_dir;
     ASSERT_TRUE(
@@ -191,6 +217,7 @@ class NotificationContentDetectionBrowserTest
                 .Build());
   }
 
+ private:
   void SetURLHighConfidenceAllowlistMatch(const GURL& url,
                                           bool match_allowlist) {
     TestSafeBrowsingService* service = factory_.test_safe_browsing_service();
@@ -204,17 +231,18 @@ class NotificationContentDetectionBrowserTest
   raw_ptr<NotificationContentDetectionService>
       notification_content_detection_service_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
                        NonAllowlistedSiteSuccessfullyExecutesModel) {
+  UpdateNotificationContentDetectionModel();
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  blink::PlatformNotificationData data = CreateNotificationData(
-      u"Non-allowlisted title", u"Hello, world!", {u"Click me!"});
-  notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(
-          data, GURL(kNonAllowlistedUrl), base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL(kNonAllowlistedUrl) /* service_worker_scope */,
+      GURL(kNonAllowlistedUrl), data, blink::NotificationResources());
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester(),
@@ -240,13 +268,13 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
                        AllowlistedSiteDoesNotExecuteModel_ByDefault) {
+  UpdateNotificationContentDetectionModel();
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
-  notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(data, GURL(kAllowlistedUrl),
-                                                    base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL(kAllowlistedUrl) /* service_worker_scope */,
+      GURL(kAllowlistedUrl), data, blink::NotificationResources());
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester(),
@@ -281,7 +309,8 @@ class NotificationContentDetectionAllowlistedChecksEnabledBrowserTest
           {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
             "100"}}}},
         /*disabled_features=*/{
-            optimization_guide::features::kPreventLongRunningPredictionModels});
+            optimization_guide::features::kPreventLongRunningPredictionModels,
+            safe_browsing::kShowWarningsForSuspiciousNotifications});
     NotificationContentDetectionBrowserTestBase::SetUp();
   }
 };
@@ -289,13 +318,13 @@ class NotificationContentDetectionAllowlistedChecksEnabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     NotificationContentDetectionAllowlistedChecksEnabledBrowserTest,
     AllowlistedSiteExecutesModel) {
+  UpdateNotificationContentDetectionModel();
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
-  notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(data, GURL(kAllowlistedUrl),
-                                                    base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL(kAllowlistedUrl) /* service_worker_scope */,
+      GURL(kAllowlistedUrl), data, blink::NotificationResources());
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester(),
@@ -318,6 +347,153 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1u, ukm_entries.size());
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", true);
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
+
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  EXPECT_FALSE(
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NotificationContentDetectionAllowlistedChecksEnabledBrowserTest,
+    NotificationDisplayedWhenModelNotAvailable) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL(kAllowlistedUrl) /* service_worker_scope */,
+      GURL("https://chrome.com/"), data, blink::NotificationResources());
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      0);
+
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  EXPECT_FALSE(
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+}
+
+class NotificationContentDetectionShowWarningsEnabledBrowserTest
+    : public NotificationContentDetectionBrowserTest,
+      public testing::WithParamInterface<std::tuple<std::string, std::string>> {
+ public:
+  NotificationContentDetectionShowWarningsEnabledBrowserTest() = default;
+
+  void SetUp() override {
+    // Disable the `kPreventLongRunningPredictionModels` feature to prevent
+    // flaky test failures, since these tests may prompt models and obtaining
+    // the result can take a long time.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{safe_browsing::kOnDeviceNotificationContentDetectionModel,
+          {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
+            GetAllowlistSamplingRate()}}},
+         {safe_browsing::kShowWarningsForSuspiciousNotifications,
+          {{"ShowWarningsForSuspiciousNotificationsScoreThreshold",
+            GetSuspiciousNotificationThreshold()}}}},
+        /*disabled_features=*/{
+            optimization_guide::features::kPreventLongRunningPredictionModels});
+    NotificationContentDetectionBrowserTestBase::SetUp();
+  }
+
+  std::string GetAllowlistSamplingRate() { return std::get<0>(GetParam()); }
+  std::string GetSuspiciousNotificationThreshold() {
+    return std::get<1>(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    NotificationContentDetectionShowWarningsEnabledBrowserTest,
+    testing::Values(std::make_tuple("0", "0"),
+                    std::make_tuple("100", "0"),
+                    std::make_tuple("100", "100")));
+
+IN_PROC_BROWSER_TEST_P(
+    NotificationContentDetectionShowWarningsEnabledBrowserTest,
+    NonAllowlistedSiteNotificationGetsDisplayed) {
+  UpdateNotificationContentDetectionModel();
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL() /* service_worker_scope */,
+      GURL(kNonAllowlistedUrl), data, blink::NotificationResources());
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      1);
+
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  // When the suspicious threshold is 0, every non-allowlisted notification is
+  // suspicious.
+  if (GetSuspiciousNotificationThreshold() == "0") {
+    EXPECT_TRUE(
+        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  } else {
+    EXPECT_FALSE(
+        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NotificationContentDetectionShowWarningsEnabledBrowserTest,
+    AllowlistedSiteNotificationGetsDisplayed) {
+  UpdateNotificationContentDetectionModel();
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL() /* service_worker_scope */, GURL(kAllowlistedUrl),
+      data, blink::NotificationResources());
+
+  if (GetAllowlistSamplingRate() == "100") {
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester(),
+        "OptimizationGuide.ModelExecutor.ExecutionStatus."
+        "NotificationContentDetection",
+        1);
+  } else {
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester(),
+        "OptimizationGuide.ModelExecutor.ExecutionStatus."
+        "NotificationContentDetection",
+        0);
+  }
+
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  // When the model is checked for all allowlisted sites and the suspicious
+  // threshold is 0, the notification is suspicious.
+  if (GetAllowlistSamplingRate() == "100" &&
+      GetSuspiciousNotificationThreshold() == "0") {
+    EXPECT_TRUE(
+        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  } else {
+    EXPECT_FALSE(
+        IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NotificationContentDetectionShowWarningsEnabledBrowserTest,
+    NotificationDisplayedWhenModelNotAvailable) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL(kAllowlistedUrl) /* service_worker_scope */,
+      GURL("https://chrome.com/"), data, blink::NotificationResources());
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      0);
+
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  EXPECT_FALSE(
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
 }
 
 }  // namespace safe_browsing

@@ -75,6 +75,7 @@ void NotificationContentDetectionService::OnCheckUrlForHighConfidenceAllowlist(
     // parameter.
     if (base::RandDouble() * 100 >=
         kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate.Get()) {
+      std::move(model_verdict_callback).Run(/*is_suspicious=*/false);
       return;
     }
   }
