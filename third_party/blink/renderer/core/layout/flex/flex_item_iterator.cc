@@ -16,9 +16,9 @@ FlexItemIterator::FlexItemIterator(const HeapVector<FlexLine>& flex_lines,
       break_token_(break_token),
       is_column_(is_column) {
   if (flex_lines_.size()) {
-    DCHECK(flex_lines_[0].line_items.size());
+    DCHECK(flex_lines_[0].line_items_data.size());
     next_unstarted_item_ =
-        const_cast<FlexItemData*>(&flex_lines_[0].line_items[0]);
+        const_cast<FlexItemData*>(&flex_lines_[0].line_items_data[0]);
     flex_item_idx_++;
   }
   if (break_token_) {
@@ -113,9 +113,9 @@ FlexItemData* FlexItemIterator::FindNextItem(
   while (flex_line_idx_ < flex_lines_.size()) {
     const auto& flex_line = flex_lines_[flex_line_idx_];
     if (!flex_line.has_seen_all_children || item_break_token) {
-      while (flex_item_idx_ < flex_line.line_items.size()) {
-        FlexItemData* flex_item =
-            const_cast<FlexItemData*>(&flex_line.line_items[flex_item_idx_++]);
+      while (flex_item_idx_ < flex_line.line_items_data.size()) {
+        FlexItemData* flex_item = const_cast<FlexItemData*>(
+            &flex_line.line_items_data[flex_item_idx_++]);
         if (!item_break_token ||
             flex_item->block_node == item_break_token->InputNode()) {
           return flex_item;

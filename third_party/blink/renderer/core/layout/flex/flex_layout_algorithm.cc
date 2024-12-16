@@ -441,8 +441,8 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
   }
   HeapVector<Member<blink::Node>> reading_flow_nodes;
   // Add flex item if it is a DOM node
-  auto AddItemIfNeeded = [&](const FlexItemData& item) {
-    if (blink::Node* node = item.block_node.GetDOMNode()) {
+  auto AddItemIfNeeded = [&](const wtf_size_t item_index) {
+    if (blink::Node* node = flex_items_[item_index].block_node.GetDOMNode()) {
       reading_flow_nodes.push_back(node);
     }
   };
@@ -451,12 +451,12 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
   auto AddFlexItems = [&](const FlexLine& line) {
     if (reading_flow == EReadingFlow::kFlexFlow &&
         style.ResolvedIsReverseFlexDirection()) {
-      for (const auto& item : base::Reversed(line.line_items)) {
-        AddItemIfNeeded(item);
+      for (const wtf_size_t item_index : base::Reversed(line.item_indices)) {
+        AddItemIfNeeded(item_index);
       }
     } else {
-      for (const auto& item : line.line_items) {
-        AddItemIfNeeded(item);
+      for (const wtf_size_t item_index : line.item_indices) {
+        AddItemIfNeeded(item_index);
       }
     }
   };
@@ -1196,11 +1196,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
                line.sum_flex_base_size, main_axis_inner_size)
         .Run();
 
-    if (layout_info_for_devtools_) [[unlikely]] {
-      layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
-    }
-
-    flex_lines->push_back(FlexLine(line.line_items.size()));
+    Vector<wtf_size_t> item_indices;
+    item_indices.ReserveInitialCapacity(line.line_items.size());
 
     LayoutUnit main_axis_free_space =
         main_axis_inner_size -
@@ -1214,16 +1211,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
 
     for (wtf_size_t i = 0; i < line.line_items.size(); ++i) {
       FlexItem& flex_item = line.line_items[i];
-      FlexItemData& flex_item_output = flex_lines->back().line_items[i];
 
-      flex_item_output.item_index = flex_item.item_index;
-      flex_item_output.block_node = flex_item.block_node;
-      flex_item_output.main_axis_final_size = flex_item.FlexedBorderBoxSize();
-      flex_item_output.is_initial_block_size_indefinite =
-          flex_item.is_initial_block_size_indefinite;
-      flex_item_output.is_used_flex_basis_indefinite =
-          flex_item.is_used_flex_basis_indefinite;
-
+      item_indices.push_back(flex_item.item_index);
       main_axis_free_space -= flex_item.FlexedMarginBoxSize();
       main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count;
 
@@ -1301,12 +1290,10 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       }
       line_cross_size = std::max(line_cross_size, cross_axis_margin_size);
     }
-    flex_lines->back().main_axis_free_space = main_axis_free_space;
-    flex_lines->back().main_axis_auto_margin_count =
-        main_axis_auto_margin_count;
-    flex_lines->back().line_cross_size = line_cross_size;
-    flex_lines->back().major_baseline = max_major_ascent;
-    flex_lines->back().minor_baseline = max_minor_ascent;
+
+    flex_lines->emplace_back(std::move(item_indices), main_axis_free_space,
+                             line_cross_size, max_major_ascent,
+                             max_minor_ascent, main_axis_auto_margin_count);
 
     sum_line_cross_size += line_cross_size;
   }
@@ -1343,7 +1330,7 @@ void FlexLayoutAlgorithm::ApplyReversals(HeapVector<FlexLine>* flex_lines) {
 
   if (Style().ResolvedIsReverseFlexDirection()) {
     for (auto& flex_line : *flex_lines) {
-      flex_line.line_items.Reverse();
+      flex_line.item_indices.Reverse();
     }
   }
 }
@@ -1515,6 +1502,10 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
   for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_lines->size();
        ++flex_line_idx) {
+    if (layout_info_for_devtools_) [[unlikely]] {
+      layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
+    }
+
     FlexLine& flex_line = (*flex_lines)[flex_line_idx];
     flex_line.cross_axis_offset = line_cross_axis_offset;
 
@@ -1538,7 +1529,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                   flex_line.main_axis_auto_margin_count
             : LayoutUnit();
 
-    const wtf_size_t line_items_size = flex_line.line_items.size();
+    const wtf_size_t line_items_size = flex_line.item_indices.size();
     const LayoutUnit space_between_items = ContentDistributionSpace(
         justify_content, main_axis_free_space, line_items_size);
     LayoutUnit main_axis_offset =
@@ -1548,24 +1539,21 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                                      main_axis_free_space, line_items_size,
                                      is_reverse_direction);
 
-    for (FlexItemData& flex_item : flex_line.line_items) {
-      const FlexItem& item = flex_items_[flex_item.item_index];
+    for (wtf_size_t item_index : flex_line.item_indices) {
+      const FlexItem& item = flex_items_[item_index];
 
       const LayoutResult* layout_result = nullptr;
-      if (DoesItemStretch(flex_item.block_node)) {
+      if (DoesItemStretch(item.block_node)) {
         ConstraintSpace child_space = BuildSpaceForLayout(
-            flex_item.block_node, flex_item.main_axis_final_size,
-            flex_item.is_initial_block_size_indefinite,
+            item.block_node, item.FlexedBorderBoxSize(),
+            item.is_initial_block_size_indefinite,
             /* override_inline_size */ std::nullopt, flex_line.line_cross_size);
-        layout_result = flex_item.block_node.Layout(child_space);
+        layout_result = item.block_node.Layout(child_space);
       } else {
         layout_result = item.layout_result;
       }
 
-      flex_item.has_descendant_that_depends_on_percentage_block_size =
-          layout_result->HasDescendantThatDependsOnPercentageBlockSize();
-
-      const auto& item_style = flex_item.Style();
+      const auto& item_style = item.block_node.Style();
 
       if (should_propagate_row_break_values) {
         auto item_break_before = JoinFragmentainerBreakValues(
@@ -1592,11 +1580,11 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           // Treat all columns as a "row" of columns, and accumulate the initial
           // and final break values for all columns, which will be propagated to
           // the container.
-          if (&flex_item == &flex_line.line_items.front()) {
+          if (item_index == flex_line.item_indices.front()) {
             (*row_break_between_outputs)[0] = JoinFragmentainerBreakValues(
                 (*row_break_between_outputs)[0], item_break_before);
           }
-          if (&flex_item == &flex_line.line_items.back()) {
+          if (item_index == flex_line.item_indices.back()) {
             (*row_break_between_outputs)[1] = JoinFragmentainerBreakValues(
                 (*row_break_between_outputs)[1], item_break_after);
           }
@@ -1694,7 +1682,6 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       const LogicalOffset offset =
           is_column_ ? LogicalOffset(cross_axis_offset, main_axis_offset)
                      : LogicalOffset(main_axis_offset, cross_axis_offset);
-      flex_item.offset = offset;
 
       main_axis_offset += item.FlexedBorderBoxSize() + margin.MainEnd() +
                           space_between_items + gap_between_items_;
@@ -1707,8 +1694,13 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         baseline_accumulator.AccumulateItem(fragment, offset.block_offset,
                                             is_first_line, is_last_line);
       } else {
-        flex_item.total_remaining_block_size = fragment.BlockSize();
-        flex_item.margin_block_end = logical_margins.block_end;
+        // Store the information we need for later if we have fragmentation.
+        flex_line.line_items_data.emplace_back(
+            item.block_node, item.item_index, offset,
+            item.FlexedBorderBoxSize(), logical_margins.block_end,
+            fragment.BlockSize(), item.is_initial_block_size_indefinite,
+            item.is_used_flex_basis_indefinite,
+            layout_result->HasDescendantThatDependsOnPercentageBlockSize());
       }
 
       if (PropagateFlexItemInfo(item, physical_fragment, physical_margins,
@@ -1795,7 +1787,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     wtf_size_t flex_line_idx = entry.flex_line_idx;
     FlexLine& flex_line = (*flex_lines)[flex_line_idx];
     const auto* item_break_token = To<BlockBreakToken>(entry.token);
-    bool last_item_in_line = flex_item_idx == flex_line.line_items.size() - 1;
+    bool last_item_in_line =
+        flex_item_idx == flex_line.line_items_data.size() - 1;
 
     bool is_first_line = flex_line_idx == 0;
     bool is_last_line = flex_line_idx == flex_lines->size() - 1;
