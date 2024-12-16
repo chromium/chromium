@@ -829,9 +829,16 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // shown.
 TEST_F(FacilitatedPaymentsManagerTest,
        OnPurchaseActionResult_CouldNotInvoke_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(*client_, ShowErrorScreen);
 
   manager_->OnPurchaseActionResult(PurchaseActionResult::kCouldNotInvoke);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kPurchaseActionCouldNotBeInvoked,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that when Chrome is successful in invoking the purchase action, the UI

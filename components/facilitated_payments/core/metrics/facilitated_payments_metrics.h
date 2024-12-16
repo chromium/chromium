@@ -28,8 +28,11 @@ enum class FacilitatedPaymentsType {
 // Reasons for why the payflow was exited early. These only include the reasons
 // after the renderer has detected a valid code and sent the signal to the
 // browser process.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(PayflowExitedReason)
 enum class PayflowExitedReason {
   // The code validator encountered an error.
   kCodeValidatorFailed = 0,
@@ -59,8 +62,11 @@ enum class PayflowExitedReason {
   // The FOP selector was dismissed by a user action e.g., swiping down, tapping
   // on the webpage behind the FOP selector, or tapping on the omnibox.
   kFopSelectorClosedByUser = 12,
-  kMaxValue = kFopSelectorClosedByUser
+  // Chrome attempted, but was unable to invoke purchase action.
+  kPurchaseActionCouldNotBeInvoked = 13,
+  kMaxValue = kPurchaseActionCouldNotBeInvoked
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PayFlowExitedReason)
 
 // Log when a Pix code is copied to the clippboard on an allowlisted merchant
 // website.

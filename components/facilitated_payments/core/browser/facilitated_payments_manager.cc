@@ -307,9 +307,12 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
     PurchaseActionResult result) {
   switch (result) {
     case PurchaseActionResult::kCouldNotInvoke:
+      LogPayflowExitedReason(
+          PayflowExitedReason::kPurchaseActionCouldNotBeInvoked);
       ShowErrorScreen();
       break;
-    case PurchaseActionResult::kResultOk:  // Intentional fallthrough.
+    case PurchaseActionResult::kResultOk:
+      [[fallthrough]];  // Intentional fallthrough.
     case PurchaseActionResult::kResultCanceled:
       DismissPrompt();
       break;

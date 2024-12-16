@@ -39,6 +39,8 @@ reviewer.
   <int value="2" label="Abandoned"/>
 </enum>
 
+<!-- LINT.IfChange(FacilitatedPayments.PayFlowExitedReason) -->
+
 <enum name="FacilitatedPayments.PayFlowExitedReason">
   <int value="0" label="Code validator failed"/>
   <int value="1" label="Invalid code"/>
@@ -58,7 +60,10 @@ reviewer.
       label="The FOP selector either wasn't shown, or was dismissed not as a
              result of a user action"/>
   <int value="12" label="The FOP selector was closed by the user"/>
+  <int value="13" label="The purchase action could not be invoked"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PayflowExitedReason) -->
 
 <!-- LINT.IfChange(FacilitatedPayments.UiScreen) -->
 
