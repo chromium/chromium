@@ -306,6 +306,7 @@
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 #include "ash/webui/sanitize_ui/mojom/sanitize_ui.mojom.h"
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
+#include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
@@ -1791,6 +1792,9 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
       .Add<ash::media_app_ui::mojom::UntrustedServiceFactory>();
 
   registry.ForWebUI<ash::HelpAppUntrustedUI>()
+      .Add<color_change_listener::mojom::PageHandler>();
+
+  registry.ForWebUI<ash::ScannerFeedbackUntrustedUI>()
       .Add<color_change_listener::mojom::PageHandler>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

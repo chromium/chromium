@@ -4,7 +4,9 @@
 
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
@@ -14,8 +16,13 @@
 #include "ash/webui/scanner_feedback_ui/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace ash {
@@ -63,8 +70,19 @@ ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
   untrusted_source->AddResourcePath("", IDR_ASH_SCANNER_FEEDBACK_UI_INDEX_HTML);
 
   ash::EnableTrustedTypesCSP(untrusted_source);
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src-elem 'self' theme;");
 }
 
 ScannerFeedbackUntrustedUI::~ScannerFeedbackUntrustedUI() = default;
+
+void ScannerFeedbackUntrustedUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ScannerFeedbackUntrustedUI)
 
 }  // namespace ash

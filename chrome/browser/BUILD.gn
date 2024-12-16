@@ -4934,6 +4934,7 @@ static_library("browser") {
       "//ash/webui/recorder_app_ui/mojom",
       "//ash/webui/sanitize_ui",
       "//ash/webui/sanitize_ui/mojom",
+      "//ash/webui/scanner_feedback_ui",
       "//ash/webui/scanning",
       "//ash/webui/scanning/mojom",
       "//ash/webui/shimless_rma",

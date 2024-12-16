@@ -4,6 +4,7 @@
 
 import '//resources/cros_components/orca_feedback/orca-feedback.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {OrcaFeedback} from '//resources/cros_components/orca_feedback/orca-feedback.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -67,3 +68,7 @@ declare global {
 }
 
 customElements.define(ScannerFeedbackAppElement.is, ScannerFeedbackAppElement);
+
+document.addEventListener('DOMContentLoaded', () => {
+  ColorChangeUpdater.forDocument().start();
+});
