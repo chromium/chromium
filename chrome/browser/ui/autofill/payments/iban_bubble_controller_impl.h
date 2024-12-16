@@ -125,9 +125,6 @@ class IbanBubbleControllerImpl
   // Returns empty vector if no legal message should be shown.
   const LegalMessageLines& GetLegalMessageLines() const override;
 
-  // Should outlive this object.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
-
   // Observer for when a bubble is created. Initialized only during tests.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 

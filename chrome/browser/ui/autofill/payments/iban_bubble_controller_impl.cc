@@ -358,9 +358,7 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
 IbanBubbleControllerImpl::IbanBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
-      content::WebContentsUserData<IbanBubbleControllerImpl>(*web_contents),
-      personal_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext())) {}
+      content::WebContentsUserData<IbanBubbleControllerImpl>(*web_contents) {}
 
 IbanBubbleType IbanBubbleControllerImpl::GetBubbleType() const {
   return current_bubble_type_;
