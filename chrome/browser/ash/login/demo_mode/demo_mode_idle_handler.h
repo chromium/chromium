@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -22,9 +23,7 @@ class IdleDetector;
 // and wait for next user.
 class DemoModeIdleHandler : public ui::UserActivityObserver {
  public:
-  using LaunchDemoAppCallback = base::RepeatingCallback<void()>;
-
-  explicit DemoModeIdleHandler(LaunchDemoAppCallback launch_demo_app_callback);
+  explicit DemoModeIdleHandler(DemoModeWindowCloser* window_closer);
   DemoModeIdleHandler(const DemoModeIdleHandler&) = delete;
   DemoModeIdleHandler& operator=(const DemoModeIdleHandler&) = delete;
   ~DemoModeIdleHandler() override;
@@ -38,14 +37,14 @@ class DemoModeIdleHandler : public ui::UserActivityObserver {
   // True when the device is not idle.
   bool is_user_active_ = false;
 
-  // Triggered when the device has been idle for kReLuanchDemoAppIdleDuration
-  // seconds.
-  LaunchDemoAppCallback launch_demo_app_callback_;
 
   // Detect idle when attract loop is not playing. If the attract loop is well
   // function and it is not playing, it indicates that a user is actively engage
   // with device.
   std::unique_ptr<IdleDetector> idle_detector_;
+
+  // Not owned:
+  raw_ptr<DemoModeWindowCloser> window_closer_;
 
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observer_{this};
