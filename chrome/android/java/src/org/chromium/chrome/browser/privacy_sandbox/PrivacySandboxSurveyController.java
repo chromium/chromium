@@ -9,6 +9,7 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -42,7 +43,37 @@ import java.util.Map;
 
 /** Class that controls and manages when and if surveys should be shown. */
 public class PrivacySandboxSurveyController {
-    private static final String SENTIMENT_SURVEY_TRIGGER = "privacy-sandbox-sentiment-survey";
+    private enum PrivacySandboxSurveyType {
+        CCT_EEA_ACCEPTED,
+        CCT_EEA_DECLINED,
+        CCT_EEA_CONTROL,
+        CCT_ROW_ACKNOWLEDGED,
+        CCT_ROW_CONTROL,
+        SENTIMENT_SURVEY,
+    }
+
+    private static final Map<PrivacySandboxSurveyType, String> sSurveyTriggers =
+            ImmutableMap.<PrivacySandboxSurveyType, String>builder()
+                    .put(
+                            PrivacySandboxSurveyType.CCT_EEA_ACCEPTED,
+                            "privacy-sandbox-cct-ads-notice-eea-accepted")
+                    .put(
+                            PrivacySandboxSurveyType.CCT_EEA_DECLINED,
+                            "privacy-sandbox-cct-ads-notice-eea-declined")
+                    .put(
+                            PrivacySandboxSurveyType.CCT_EEA_CONTROL,
+                            "privacy-sandbox-cct-ads-notice-eea-control")
+                    .put(
+                            PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED,
+                            "privacy-sandbox-cct-ads-notice-row-acknowledged")
+                    .put(
+                            PrivacySandboxSurveyType.CCT_ROW_CONTROL,
+                            "privacy-sandbox-cct-ads-notice-row-control")
+                    .put(
+                            PrivacySandboxSurveyType.SENTIMENT_SURVEY,
+                            "privacy-sandbox-sentiment-survey")
+                    .build();
+
     private ActivityTabTabObserver mActivityTabTabObserver;
     private Activity mActivity;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -90,8 +121,7 @@ public class PrivacySandboxSurveyController {
         if (BuildConfig.IS_FOR_TEST && !sEnableForTesting) {
             return null;
         }
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)) {
-            recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.FEATURE_DISABLED);
+        if (!shouldInitializeForActiveStudy()) {
             return null;
         }
         if (profile.isOffTheRecord()) {
@@ -106,10 +136,10 @@ public class PrivacySandboxSurveyController {
                 profile);
     }
 
-    private SurveyClient constructSentimentSurveyClient() {
-        SurveyConfig sentimentSurveyConfig = SurveyConfig.get(SENTIMENT_SURVEY_TRIGGER);
-        if (sentimentSurveyConfig == null) {
-            recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.INVALID_SURVEY_CONFIG);
+    private SurveyClient constructSurveyClient(PrivacySandboxSurveyType survey) {
+        SurveyConfig surveyConfig = SurveyConfig.get(sSurveyTriggers.get(survey));
+        if (surveyConfig == null) {
+            emitInvalidSurveyConfigHistogram(survey);
             return null;
         }
         MessageSurveyUiDelegate messageDelegate =
@@ -120,7 +150,7 @@ public class PrivacySandboxSurveyController {
                         SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
         SurveyClient surveyClient =
                 SurveyClientFactory.getInstance()
-                        .createClient(sentimentSurveyConfig, messageDelegate, mProfile);
+                        .createClient(surveyConfig, messageDelegate, mProfile);
         return surveyClient;
     }
 
@@ -135,13 +165,13 @@ public class PrivacySandboxSurveyController {
                 mActivity.getResources(), mMessage);
     }
 
-    private void maybeLaunchSurvey() {
-        SurveyClient sentimentSurveyClient = constructSentimentSurveyClient();
-        if (sentimentSurveyClient == null) {
+    private void maybeLaunchSurvey(PrivacySandboxSurveyType survey) {
+        SurveyClient surveyClient = constructSurveyClient(survey);
+        if (surveyClient == null) {
             return;
         }
 
-        sentimentSurveyClient.showSurvey(
+        surveyClient.showSurvey(
                 mActivity,
                 mActivityLifecycleDispatcher,
                 getSentimentSurveyPsb(),
@@ -158,7 +188,7 @@ public class PrivacySandboxSurveyController {
                         }
                         if (UrlUtilities.isNtpUrl(tab.getUrl())) {
                             if (mHasSeenNtp) {
-                                maybeLaunchSurvey();
+                                maybeLaunchSurvey(PrivacySandboxSurveyType.SENTIMENT_SURVEY);
                             }
                             mHasSeenNtp = true;
                         }
@@ -212,6 +242,18 @@ public class PrivacySandboxSurveyController {
         }
     }
 
+    private static boolean shouldInitializeForActiveStudy() {
+        // TODO(crbug.com/379930582): Add a check for CCT surveys
+
+        // Sentiment survey should be checked last as it should always be on.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)) {
+            emitFeatureDisabledHistogram(PrivacySandboxSurveyType.SENTIMENT_SURVEY);
+            return false;
+        }
+
+        return true;
+    }
+
     private static void recordSentimentSurveyStatus(
             @PrivacySandboxSentimentSurveyStatus int status) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -220,7 +262,30 @@ public class PrivacySandboxSurveyController {
                 PrivacySandboxSentimentSurveyStatus.MAX_VALUE + 1);
     }
 
-    // Set whether to trigger the start up survey in tests.
+    private static void emitInvalidSurveyConfigHistogram(PrivacySandboxSurveyType survey) {
+        switch (survey) {
+            case SENTIMENT_SURVEY:
+                recordSentimentSurveyStatus(
+                        PrivacySandboxSentimentSurveyStatus.INVALID_SURVEY_CONFIG);
+                return;
+                // TODO(crbug.com/379930582): Add support for CCT survey histograms
+            default:
+                return;
+        }
+    }
+
+    private static void emitFeatureDisabledHistogram(PrivacySandboxSurveyType survey) {
+        switch (survey) {
+            case SENTIMENT_SURVEY:
+                recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.FEATURE_DISABLED);
+                return;
+                // TODO(crbug.com/379930582): Add support for CCT survey histograms
+            default:
+                return;
+        }
+    }
+
+    /** Set whether to trigger the start up survey in tests. */
     public static void setEnableForTesting() {
         sEnableForTesting = true;
         ResettersForTesting.register(() -> sEnableForTesting = false);
