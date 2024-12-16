@@ -862,12 +862,11 @@ TEST_F(LayoutShiftTrackerTest, StableCompositingChanges) {
     // - add/remove a cc::Layer when there is already a PaintLayer
     // - add/remove a cc::Layer and a PaintLayer together
 
-    static const char* states[] = {"", "pl", "pl tr", "pl", "", "tr", ""};
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    element->setAttribute(html_names::kClassAttr,
-                          AtomicString(UNSAFE_TODO(states[state])));
+    static const std::array<const char*, 7> states = {"", "pl", "pl tr", "pl",
+                                                      "", "tr", ""};
+    element->setAttribute(html_names::kClassAttr, AtomicString(states[state]));
     UpdateAllLifecyclePhasesForTest();
-    return ++state < sizeof states / sizeof *states;
+    return ++state < states.size();
   };
   while (advance()) {
   }
