@@ -22,6 +22,7 @@ class ChromeScannerDelegate : public ash::ScannerDelegate {
 
   // ash::ScannerDelegate:
   ash::ScannerProfileScopedDelegate* GetProfileScopedDelegate() override;
+  void OpenFeedbackDialog() override;
 };
 
 #endif  // CHROME_BROWSER_ASH_SCANNER_CHROME_SCANNER_DELEGATE_H_

@@ -17,6 +17,12 @@ class ASH_PUBLIC_EXPORT ScannerDelegate {
   virtual ~ScannerDelegate() = default;
 
   virtual ScannerProfileScopedDelegate* GetProfileScopedDelegate() = 0;
+
+  // Opens a feedback form system dialog for the active user profile.
+  //
+  // TODO: b/382562555 - Consider taking in a `context::BrowserContext*` here
+  // to ensure that the dialog is opened for the correct user.
+  virtual void OpenFeedbackDialog() = 0;
 };
 
 }  // namespace ash

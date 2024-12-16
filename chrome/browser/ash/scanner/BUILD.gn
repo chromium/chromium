@@ -25,6 +25,7 @@ static_library("scanner") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/scanner_feedback_dialog",
     "//components/drive",
     "//components/keyed_service/core",
     "//content/public/browser",

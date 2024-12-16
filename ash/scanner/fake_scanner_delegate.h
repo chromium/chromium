@@ -20,6 +20,7 @@ class FakeScannerDelegate : public ScannerDelegate {
 
   // ScannerDelegate:
   ScannerProfileScopedDelegate* GetProfileScopedDelegate() override;
+  void OpenFeedbackDialog() override {}
 
  private:
   FakeScannerProfileScopedDelegate fake_scanner_profile_scoped_delegate_;
