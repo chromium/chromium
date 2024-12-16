@@ -146,21 +146,20 @@ bool HasValidAvgCharWidth(const Font& font) {
     return false;
   }
 
-  static HashSet<AtomicString>* font_families_with_invalid_char_width_map =
-      nullptr;
-
   const AtomicString& family = font.GetFontDescription().Family().FamilyName();
   if (family.empty()) {
     return false;
   }
 
+  static HashSet<AtomicString>* font_families_with_invalid_char_width_map =
+      nullptr;
   if (!font_families_with_invalid_char_width_map) {
     font_families_with_invalid_char_width_map = new HashSet<AtomicString>;
-
-    for (size_t i = 0; i < std::size(kFontFamiliesWithInvalidCharWidth); ++i) {
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    font_families_with_invalid_char_width_map->ReserveCapacityForSize(
+        std::size(kFontFamiliesWithInvalidCharWidth));
+    for (const auto* font_family : kFontFamiliesWithInvalidCharWidth) {
       font_families_with_invalid_char_width_map->insert(
-          AtomicString(UNSAFE_TODO(kFontFamiliesWithInvalidCharWidth[i])));
+          AtomicString(font_family));
     }
   }
 
