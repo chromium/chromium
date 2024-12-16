@@ -6062,6 +6062,12 @@ crbug.com/1317007 external/wpt/mimesniff/mime-types/charset-parameter.window.htm
 # TODO(crbug.com/1334265): [Failure] Bug fix temporarily reverted while compat issues are worked out
 crbug.com/1316144 external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Crash Failure Pass ]
 
+# test_driver.bless() bug fix triggered failures
+crbug.com/384009734 external/wpt/html/semantics/links/links-created-by-a-and-area-elements/target_blank_useractivation_multi_globals.html [ Timeout ]
+crbug.com/384009734 external/wpt/html/semantics/forms/form-submission-target/form-target-blank-useractivation-multi-globals.html [ Timeout ]
+crbug.com/384009734 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html [ Timeout ]
+crbug.com/384050894 external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html [ Timeout ]
+crbug.com/384050894 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html [ Timeout ]
 
 # CustomizableSelect
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]

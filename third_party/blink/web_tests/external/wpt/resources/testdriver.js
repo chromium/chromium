@@ -250,8 +250,8 @@
             let wait_click = new Promise(resolve => button.addEventListener("click", resolve));
 
             return test_driver.click(button)
-                .then(wait_click)
-                .then(function() {
+                .then(() => wait_click)
+                .then(() => {
                     button.remove();
 
                     if (typeof action === "function") {
