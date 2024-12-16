@@ -475,6 +475,21 @@ try_.gpu.optional_tests_builder(
             "win_optional_gpu_tests_rel_isolated_scripts",
         ],
         per_test_modifications = {
+            "pixel_skia_gold_passthrough_graphite_test 10de:2184": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
             "trace_test 8086:9bc5": targets.remove(
                 reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
             ),

@@ -110,15 +110,6 @@
       'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
   },
-  'context_lost_passthrough_graphite_tests': {
-    'remove_from': [
-      # TODO(b/297347572): Re-enable these tests once the driver version
-      # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
-      # on certain drivers due to this blocklist entry.
-      # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
-      'Win V8 FYI Release (NVIDIA)',
-    ],
-  },
   'expected_color_pixel_gl_passthrough_ganesh_test': {
     'replacements': {
       'Mac V8 FYI Release (Intel)': {
@@ -147,13 +138,6 @@
     },
   },
   'expected_color_pixel_passthrough_graphite_test': {
-    'remove_from': [
-      # TODO(b/297347572): Re-enable these tests once the driver version
-      # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
-      # on certain drivers due to this blocklist entry.
-      # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
-      'Win V8 FYI Release (NVIDIA)',
-    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -335,19 +319,23 @@
     },
   },
   'pixel_skia_gold_passthrough_graphite_test': {
-    'remove_from': [
-      # TODO(b/297347572): Re-enable these tests once the driver version
-      # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
-      # on certain drivers due to this blocklist entry.
-      # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
-      'Win V8 FYI Release (NVIDIA)',
-    ],
+    'modifications': {
+      'Win V8 FYI Release (NVIDIA)': {
+        'args': [
+          # TODO(crbug.com/382422293): Remove when fixed
+          '--jobs=1',
+        ],
+      },
+    },
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
       'Win V8 FYI Release (NVIDIA)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
         },
       },
     },
@@ -416,15 +404,6 @@
         },
       },
     },
-  },
-  'screenshot_sync_passthrough_graphite_tests': {
-    'remove_from': [
-      # TODO(b/297347572): Re-enable these tests once the driver version
-      # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
-      # on certain drivers due to this blocklist entry.
-      # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
-      'Win V8 FYI Release (NVIDIA)',
-    ],
   },
   'telemetry_perf_unittests': {
     'modifications': {

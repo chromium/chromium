@@ -6360,16 +6360,12 @@ targets.bundle(
                 "WIN10_NVIDIA_GTX_1660_STABLE",
             ],
         ),
-        # TODO(b/297347572): Re-enable these tests once the driver version
-        # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
-        # on certain drivers due to this blocklist entry.
-        # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
-        # targets.bundle(
-        #     targets = "gpu_passthrough_graphite_telemetry_tests",
-        #     variants = [
-        #         "WIN10_NVIDIA_GTX_1660_STABLE",
-        #     ],
-        # ),
+        targets.bundle(
+            targets = "gpu_passthrough_graphite_telemetry_tests",
+            variants = [
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
         targets.bundle(
             targets = "gpu_webcodecs_telemetry_test",
             variants = [

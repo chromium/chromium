@@ -2562,62 +2562,22 @@ ci.thin_tester(
         # should be running the same test_suites as
         # 'Win10 FYI x64 Release (NVIDIA)'
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_release_telemetry_tests",
-            "gpu_fyi_win_optional_isolated_scripts",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
             "win10_nvidia_gtx_1660_experimental",
         ],
-        per_test_modifications = {
-            # TODO(crbug.com/380431384): Re-enable when fixed
-            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
-                reason = [
-                    "crbug.com/380431384 flaky crashes in random tests",
-                ],
-            ),
-            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    args = [
-                        # TODO(crbug.com/382422293): Remove when fixed
-                        "--jobs=1",
-                    ],
-                ),
-                replacements = targets.replacements(
-                    args = {
-                        # Magic substitution happens after regular replacement, so remove it
-                        # now since we are manually applying the number of jobs above.
-                        targets.magic_args.GPU_PARALLEL_JOBS: None,
-                    },
-                ),
-            ),
-            "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    args = [
-                        # TODO(crbug.com/382422293): Remove when fixed
-                        "--jobs=1",
-                    ],
-                ),
-                replacements = targets.replacements(
-                    args = {
-                        # Magic substitution happens after regular replacement, so remove it
-                        # now since we are manually applying the number of jobs above.
-                        targets.magic_args.GPU_PARALLEL_JOBS: None,
-                    },
-                ),
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Nvidia",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Windows|10|x64|Nvidia",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -2801,34 +2761,10 @@ ci.thin_tester(
             "win10_nvidia_gtx_1660_stable",
         ],
         per_test_modifications = {
-            # TODO(b/297347572): Re-enable these tests once the driver version
-            # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
-            # on certain drivers due to this blocklist entry.
-            # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
-            "context_lost_passthrough_graphite_tests": targets.remove(
-                reason = [
-                    "Graphite does not currently work properly on Win/NVIDIA ",
-                ],
-            ),
-            "expected_color_pixel_passthrough_graphite_test": targets.remove(
-                reason = [
-                    "Graphite does not currently work properly on Win/NVIDIA ",
-                ],
-            ),
             "media_foundation_browser_tests": targets.remove(
                 reason = [
                     "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
                     "gpu bots once the Windows OS supports HW secure decryption.",
-                ],
-            ),
-            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
-                reason = [
-                    "Graphite does not currently work properly on Win/NVIDIA ",
-                ],
-            ),
-            "screenshot_sync_passthrough_graphite_tests": targets.remove(
-                reason = [
-                    "Graphite does not currently work properly on Win/NVIDIA ",
                 ],
             ),
             # TODO(crbug.com/380431384): Re-enable when fixed
@@ -2836,6 +2772,21 @@ ci.thin_tester(
                 reason = [
                     "crbug.com/380431384 flaky crashes in random tests",
                 ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
             ),
             "pixel_skia_gold_passthrough_test": targets.per_test_modification(
                 mixins = targets.mixin(
@@ -2971,34 +2922,10 @@ ci.thin_tester(
             "win10_nvidia_gtx_1660_stable",
         ],
         per_test_modifications = {
-            # TODO(b/297347572): Re-enable these tests once the driver version
-            # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
-            # on certain drivers due to this blocklist entry.
-            # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
-            "context_lost_passthrough_graphite_tests": targets.remove(
-                reason = [
-                    "Graphite does not currently work properly on Win/NVIDIA ",
-                ],
-            ),
-            "expected_color_pixel_passthrough_graphite_test": targets.remove(
-                reason = [
-                    "Graphite does not currently work properly on Win/NVIDIA ",
-                ],
-            ),
             "media_foundation_browser_tests": targets.remove(
                 reason = [
                     "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
                     "gpu bots once the Windows OS supports HW secure decryption.",
-                ],
-            ),
-            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
-                reason = [
-                    "Graphite does not currently work properly on Win/NVIDIA ",
-                ],
-            ),
-            "screenshot_sync_passthrough_graphite_tests": targets.remove(
-                reason = [
-                    "Graphite does not currently work properly on Win/NVIDIA ",
                 ],
             ),
             # TODO(crbug.com/380431384): Re-enable when fixed
@@ -3006,6 +2933,21 @@ ci.thin_tester(
                 reason = [
                     "crbug.com/380431384 flaky crashes in random tests",
                 ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
             ),
             "pixel_skia_gold_passthrough_test": targets.per_test_modification(
                 mixins = targets.mixin(
