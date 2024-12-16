@@ -5,6 +5,7 @@
 #include "chrome/common/profiler/core_unwinders.h"
 
 #include "base/command_line.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/profiler_buildflags.h"

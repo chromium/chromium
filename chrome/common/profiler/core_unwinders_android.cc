@@ -46,6 +46,8 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/chrome_unwinder_android_32.h"
+#include "chrome/android/modules/stack_unwinder/public/module.h"
+#include "chrome/common/profiler/native_unwinder_android_map_delegate_impl.h"
 #endif  // ARM32_UNWINDING_SUPPORTED
 
 #if ARM64_UNWINDING_SUPPORTED
@@ -55,8 +57,6 @@
 #if UNWINDING_SUPPORTED
 #include "base/profiler/libunwindstack_unwinder_android.h"
 #include "base/profiler/native_unwinder_android.h"
-#include "chrome/android/modules/stack_unwinder/public/module.h"
-#include "chrome/common/profiler/native_unwinder_android_map_delegate_impl.h"
 
 extern "C" {
 // The address of |__executable_start| is the base address of the executable or
@@ -124,6 +124,8 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders() {
   // For now, we only use Libunwindstack on 64 bit (no other unwinders).
   return CreateLibunwindstackUnwinders();
 #else
+  // The ARM32_UNWINDING_SUPPORTED branch, since this code is within an #if
+  // UNWINDING_SUPPORTED.
   static base::NoDestructor<NativeUnwinderAndroidMapDelegateImpl> map_delegate;
   static base::NoDestructor<ChromeUnwinderCreator> chrome_unwinder_creator;
 
@@ -137,7 +139,9 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders() {
   return unwinders;
 #endif
 }
+#endif  // UNWINDING_SUPPORTED
 
+#if ARM32_UNWINDING_SUPPORTED
 // Manages installation of the module prerequisite for unwinding. Android, in
 // particular, requires a dynamic feature module to provide the native unwinder.
 class ModuleUnwindPrerequisitesDelegate : public UnwindPrerequisitesDelegate {
@@ -150,7 +154,7 @@ class ModuleUnwindPrerequisitesDelegate : public UnwindPrerequisitesDelegate {
     return stack_unwinder::Module::IsInstalled();
   }
 };
-#endif  // UNWINDING_SUPPORTED
+#endif  // ARM32_UNWINDING_SUPPORTED
 
 }  // namespace
 
@@ -159,15 +163,17 @@ void RequestUnwindPrerequisitesInstallation(
     UnwindPrerequisitesDelegate* prerequites_delegate) {
   CHECK_EQ(sampling_profiler::ProfilerProcessType::kBrowser,
            GetProfilerProcessType(*base::CommandLine::ForCurrentProcess()));
+#if ARM32_UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
+    BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (AreUnwindPrerequisitesAvailable(channel, prerequites_delegate)) {
     return;
   }
-#if UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   ModuleUnwindPrerequisitesDelegate default_delegate;
   if (prerequites_delegate == nullptr) {
     prerequites_delegate = &default_delegate;
   }
+
   // We only want to incur the cost of universally downloading the module in
   // early channels, where profiling will occur over substantially all of
   // the population. When supporting later channels in the future we will
@@ -187,7 +193,8 @@ bool AreUnwindPrerequisitesAvailable(
     UnwindPrerequisitesDelegate* prerequites_delegate) {
 // While non-Android platforms do not need any specific prerequisites beyond
 // what is already bundled and available with Chrome for their platform-specific
-// unwinders to work, Android, in particular, requires a DFM to be installed.
+// unwinders to work, Android, in particular, requires a DFM to be installed on
+// arm32.
 //
 // Therefore, unwind prerequisites for non-supported Android platforms are not
 // considered to be available by default, but prerequisites for non-Android
@@ -197,7 +204,7 @@ bool AreUnwindPrerequisitesAvailable(
 // non-Android platforms. Regardless of the provided delegate, unwind
 // prerequisites are always considered to be available for non-Android
 // platforms.
-#if UNWINDING_SUPPORTED
+#if ARM32_UNWINDING_SUPPORTED
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Sometimes, DFMs can be installed even if not requested by Chrome
   // explicitly (for instance, in some app stores). Therefore, even if the
@@ -214,25 +221,29 @@ bool AreUnwindPrerequisitesAvailable(
     prerequites_delegate = &default_delegate;
   }
   return prerequites_delegate->AreAvailable(channel);
-#else   // UNWINDING_SUPPORTED
+#elif ARM64_UNWINDING_SUPPORTED
+  return true;
+#else
   return false;
-#endif  // UNWINDING_SUPPORTED
+#endif  // ARM32_UNWINDING_SUPPORTED
 }
 
-#if UNWINDING_SUPPORTED
+#if ARM32_UNWINDING_SUPPORTED
 void LoadModule() {
   CHECK(AreUnwindPrerequisitesAvailable(chrome::GetChannel()));
   static base::NoDestructor<std::unique_ptr<stack_unwinder::Module>>
       stack_unwinder_module(stack_unwinder::Module::Load());
 }
-#endif  // UNWINDING_SUPPORTED
+#endif  // ARM32_UNWINDING_SUPPORTED
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
   if (!AreUnwindPrerequisitesAvailable(chrome::GetChannel())) {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
 #if UNWINDING_SUPPORTED
+#if ARM32_UNWINDING_SUPPORTED
   LoadModule();
+#endif  // ARM32_UNWINDING_SUPPORTED
   return base::BindOnce(CreateCoreUnwinders);
 #else   // UNWINDING_SUPPORTED
   return base::StackSamplingProfiler::UnwindersFactory();
