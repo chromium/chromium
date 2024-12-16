@@ -5,6 +5,7 @@
 #ifndef UI_ANDROID_RESOURCES_UI_RESOURCE_PROVIDER_H_
 #define UI_ANDROID_RESOURCES_UI_RESOURCE_PROVIDER_H_
 
+#include "base/feature_list.h"
 #include "cc/resources/ui_resource_client.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
@@ -13,6 +14,8 @@
 
 namespace ui {
 
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCompressBitmapAtBackgroundPriority);
+
 class UI_ANDROID_EXPORT UIResourceProvider {
  public:
   // Compresses `raw_data` using ETC1 compression into an SkPixelRef. Can be
@@ -20,6 +23,11 @@ class UI_ANDROID_EXPORT UIResourceProvider {
   // The compressed bitmap can then be used to create a UIResource.
   static sk_sp<SkPixelRef> CompressBitmap(SkBitmap raw_data,
                                           bool supports_etc_npot);
+  // Same as above, lowering the thread priority while compression is in
+  // progress. Only use in cases where latency is not important.
+  static sk_sp<SkPixelRef> CompressBitmapAtBackgroundPriority(
+      SkBitmap raw_data,
+      bool supports_etc_npot);
 
   virtual cc::UIResourceId CreateUIResource(cc::UIResourceClient* client) = 0;
   virtual void DeleteUIResource(cc::UIResourceId resource_id) = 0;
