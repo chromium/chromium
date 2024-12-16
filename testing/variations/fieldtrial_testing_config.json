@@ -21148,24 +21148,6 @@
             ]
         }
     ],
-    "SearchEngineChoiceGuestExperience": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SearchEngineChoiceGuestExperience"
-                    ]
-                }
-            ]
-        }
-    ],
     "SearchInCCT": [
         {
             "platforms": [
