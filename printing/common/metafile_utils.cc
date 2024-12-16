@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -381,7 +382,12 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
 }
 
 sk_sp<SkImage> DeserializeRasterImage(const void* bytes, size_t length, void*) {
-  auto data = SkData::MakeWithoutCopy(bytes, length);
+  // SAFETY: The caller must provide a valid pointer and length.
+  auto bytes_span =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bytes), length));
+  // Safe for `data` to be a span over `bytes_span` because `bytes_span` will
+  // outlive `data`.
+  auto data = gfx::MakeSkDataFromSpanWithoutCopy(bytes_span);
   //TODO(b/40045064): Explicitly decode other supported codecs
   auto codec = SkPngDecoder::Decode(data, nullptr);
   if (codec) {

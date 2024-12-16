@@ -25,6 +25,10 @@ GFX_SKIA_EXPORT base::span<const uint8_t> SkDataToSpan(
 GFX_SKIA_EXPORT sk_sp<SkData> MakeSkDataFromSpanWithCopy(
     base::span<const uint8_t> data);
 
+// Wrapper around SkData::MakeWithoutCopy().
+GFX_SKIA_EXPORT sk_sp<SkData> MakeSkDataFromSpanWithoutCopy(
+    base::span<const uint8_t> data);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_SKIA_SPAN_UTIL_H_

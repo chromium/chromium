@@ -34,4 +34,8 @@ sk_sp<SkData> MakeSkDataFromSpanWithCopy(base::span<const uint8_t> data) {
   return SkData::MakeWithCopy(data.data(), data.size());
 }
 
+sk_sp<SkData> MakeSkDataFromSpanWithoutCopy(base::span<const uint8_t> data) {
+  return SkData::MakeWithoutCopy(data.data(), data.size());
+}
+
 }  // namespace gfx
