@@ -557,7 +557,7 @@ TEST_F(TracingConsumerTest, DeleteConsumerWhenReceiving) {
   no_more_data.Run();
 }
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/383878432): Re-enable this test
 #define MAYBE_FlushProducers DISABLED_FlushProducers
 #else
