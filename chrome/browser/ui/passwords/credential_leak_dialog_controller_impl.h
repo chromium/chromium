@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
@@ -34,7 +32,7 @@ class CredentialLeakDialogControllerImpl
   ~CredentialLeakDialogControllerImpl() override;
 
   // Pop up the credential leak dialog.
-  void ShowCredentialLeakPrompt(std::unique_ptr<CredentialLeakPrompt> dialog);
+  void ShowCredentialLeakPrompt(CredentialLeakPrompt* dialog);
 
   // CredentialLeakDialogController:
   bool IsShowingAccountChooser() const override;
@@ -50,7 +48,7 @@ class CredentialLeakDialogControllerImpl
   bool ShouldShowCancelButton() const override;
 
  private:
-  std::unique_ptr<CredentialLeakPrompt> credential_leak_dialog_;
+  raw_ptr<CredentialLeakPrompt> credential_leak_dialog_ = nullptr;
   raw_ptr<PasswordsLeakDialogDelegate> delegate_;
   std::unique_ptr<password_manager::LeakDialogTraits> leak_dialog_traits_;
   GURL url_;

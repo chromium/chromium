@@ -17,7 +17,8 @@ class WebContents;
 
 class CredentialLeakDialogController;
 
-class CredentialLeakDialogView : public views::DialogDelegateView {
+class CredentialLeakDialogView : public views::DialogDelegateView,
+                                 public CredentialLeakPrompt {
   METADATA_HEADER(CredentialLeakDialogView, views::DialogDelegateView)
 
  public:
@@ -27,16 +28,17 @@ class CredentialLeakDialogView : public views::DialogDelegateView {
   CredentialLeakDialogView& operator=(const CredentialLeakDialogView&) = delete;
   ~CredentialLeakDialogView() override;
 
-  // Sets up the child views.
-  void InitWindow();
-
-  CredentialLeakDialogController* controller() { return controller_; }
-  content::WebContents* web_contents() { return web_contents_; }
+  // CredentialsLeakedPrompt:
+  void ShowCredentialLeakPrompt() override;
+  void ControllerGone() override;
 
  private:
   // views::DialogDelegateView:
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
+
+  // Sets up the child views.
+  void InitWindow();
 
   // A weak pointer to the controller.
   raw_ptr<CredentialLeakDialogController> controller_ = nullptr;

@@ -1201,8 +1201,7 @@ AutoSigninFirstRunPrompt* ManagePasswordsUIController::CreateAutoSigninPrompt(
   return CreateAutoSigninPromptView(controller, web_contents());
 }
 
-std::unique_ptr<CredentialLeakPrompt>
-ManagePasswordsUIController::CreateCredentialLeakPrompt(
+CredentialLeakPrompt* ManagePasswordsUIController::CreateCredentialLeakPrompt(
     CredentialLeakDialogController* controller) {
   return CreateCredentialLeakPromptView(controller, web_contents());
 }

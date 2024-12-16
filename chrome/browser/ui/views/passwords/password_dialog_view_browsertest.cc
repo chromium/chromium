@@ -64,7 +64,7 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
       CredentialManagerDialogController* controller) override;
   AutoSigninFirstRunPrompt* CreateAutoSigninPrompt(
       CredentialManagerDialogController* controller) override;
-  std::unique_ptr<CredentialLeakPrompt> CreateCredentialLeakPrompt(
+  CredentialLeakPrompt* CreateCredentialLeakPrompt(
       CredentialLeakDialogController* controller) override;
 
   AccountChooserDialogView* current_account_chooser() const {
@@ -76,8 +76,9 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
         current_autosignin_prompt_);
   }
 
-  views::Widget* current_credential_leak_widget() const {
-    return current_credential_leak_prompt_->GetWidgetForTesting();
+  CredentialLeakDialogView* current_credential_leak_prompt() const {
+    return static_cast<CredentialLeakDialogView*>(
+        current_credential_leak_prompt_);
   }
 
   MOCK_METHOD(void, OnDialogClosed, (), ());
@@ -125,13 +126,12 @@ TestManagePasswordsUIController::CreateAutoSigninPrompt(
   return current_autosignin_prompt_;
 }
 
-std::unique_ptr<CredentialLeakPrompt>
+CredentialLeakPrompt*
 TestManagePasswordsUIController::CreateCredentialLeakPrompt(
     CredentialLeakDialogController* controller) {
-  auto current_credential_leak_prompt =
+  current_credential_leak_prompt_ =
       ManagePasswordsUIController::CreateCredentialLeakPrompt(controller);
-  current_credential_leak_prompt_ = current_credential_leak_prompt.get();
-  return current_credential_leak_prompt;
+  return current_credential_leak_prompt_;
 }
 
 std::unique_ptr<password_manager::PasswordFormManagerForUI> WrapFormInManager(
@@ -488,12 +488,13 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupCredentialsLeakedPrompt) {
   controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
       leak_type, GURL("https://example.com"), u"Eve", u"qwerty",
       /*in_account_store=*/false));
-  ASSERT_TRUE(controller()->current_credential_leak_widget());
+  ASSERT_TRUE(controller()->current_credential_leak_prompt());
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
-  views::Widget* dialog = controller()->current_credential_leak_widget();
-  views::test::WidgetDestroyedWaiter bubble_observer(dialog);
+  CredentialLeakDialogView* dialog =
+      controller()->current_credential_leak_prompt();
+  views::test::WidgetDestroyedWaiter bubble_observer(dialog->GetWidget());
   ui::Accelerator esc(ui::VKEY_ESCAPE, 0);
-  EXPECT_TRUE(dialog->client_view()->AcceleratorPressed(esc));
+  EXPECT_TRUE(dialog->GetWidget()->client_view()->AcceleratorPressed(esc));
   bubble_observer.Wait();
 }
 

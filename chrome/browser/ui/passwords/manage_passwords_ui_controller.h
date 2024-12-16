@@ -248,7 +248,7 @@ class ManagePasswordsUIController
       CredentialManagerDialogController* controller);
 
   // Called to create the credentials leaked dialog.
-  virtual std::unique_ptr<CredentialLeakPrompt> CreateCredentialLeakPrompt(
+  virtual CredentialLeakPrompt* CreateCredentialLeakPrompt(
       CredentialLeakDialogController* controller);
 
   // Check if |web_contents()| is attached to some Browser. Mocked in tests.
