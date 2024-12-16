@@ -441,7 +441,7 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
   }
   HeapVector<Member<blink::Node>> reading_flow_nodes;
   // Add flex item if it is a DOM node
-  auto AddItemIfNeeded = [&](const NGFlexItem& item) {
+  auto AddItemIfNeeded = [&](const FlexItemData& item) {
     if (blink::Node* node = item.block_node.GetDOMNode()) {
       reading_flow_nodes.push_back(node);
     }
@@ -1214,7 +1214,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
 
     for (wtf_size_t i = 0; i < line.line_items.size(); ++i) {
       FlexItem& flex_item = line.line_items[i];
-      NGFlexItem& flex_item_output = flex_lines->back().line_items[i];
+      FlexItemData& flex_item_output = flex_lines->back().line_items[i];
 
       flex_item_output.item_index = flex_item.item_index;
       flex_item_output.block_node = flex_item.block_node;
@@ -1548,7 +1548,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                                      main_axis_free_space, line_items_size,
                                      is_reverse_direction);
 
-    for (NGFlexItem& flex_item : flex_line.line_items) {
+    for (FlexItemData& flex_item : flex_line.line_items) {
       const FlexItem& item = flex_items_[flex_item.item_index];
 
       const LayoutResult* layout_result = nullptr;
@@ -1789,7 +1789,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   bool broke_before_row =
       *break_before_row != FlexBreakTokenData::kNotBreakBeforeRow;
   for (auto entry = item_iterator.NextItem(broke_before_row);
-       NGFlexItem* flex_item = entry.flex_item;
+       FlexItemData* flex_item = entry.flex_item;
        entry = item_iterator.NextItem(broke_before_row)) {
     wtf_size_t flex_item_idx = entry.flex_item_idx;
     wtf_size_t flex_line_idx = entry.flex_line_idx;
@@ -2705,7 +2705,7 @@ const LayoutResult* FlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
 // We are interested in cases where the flex item *may* expand due to
 // fragmentation (lines pushed down by a fragmentation line, etc).
 bool FlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
-    const NGFlexItem& item) const {
+    const FlexItemData& item) const {
   // If this item has (any) descendant that is percentage based, we can end
   // up in a situation where we'll constantly try and expand the row. E.g.
   // <div style="display: flex;">

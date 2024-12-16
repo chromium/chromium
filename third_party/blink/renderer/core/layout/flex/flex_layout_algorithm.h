@@ -17,7 +17,7 @@ namespace blink {
 class BlockBreakToken;
 class BlockNode;
 struct DevtoolsFlexInfo;
-struct NGFlexItem;
+struct FlexItemData;
 
 class CORE_EXPORT FlexLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
@@ -180,7 +180,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   // Used to determine when to allow an item to expand as a result of
   // fragmentation.
-  bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) const;
+  bool MinBlockSizeShouldEncompassIntrinsicSize(const FlexItemData& item) const;
 
   HeapVector<FlexItem, 4> flex_items_;
 

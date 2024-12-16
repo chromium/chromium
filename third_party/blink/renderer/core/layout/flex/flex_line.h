@@ -10,11 +10,11 @@
 
 namespace blink {
 
-struct NGFlexItem {
+struct FlexItemData {
   DISALLOW_NEW();
 
  public:
-  NGFlexItem() : block_node(nullptr) {}
+  FlexItemData() : block_node(nullptr) {}
 
   const ComputedStyle& Style() const { return block_node.Style(); }
 
@@ -56,12 +56,12 @@ struct FlexLine {
   LayoutUnit minor_baseline;
   LayoutUnit item_offset_adjustment;
   bool has_seen_all_children = false;
-  HeapVector<NGFlexItem> line_items;
+  HeapVector<FlexItemData> line_items;
 };
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGFlexItem)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::FlexItemData)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::FlexLine)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_LINE_H_

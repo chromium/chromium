@@ -18,7 +18,7 @@ FlexItemIterator::FlexItemIterator(const HeapVector<FlexLine>& flex_lines,
   if (flex_lines_.size()) {
     DCHECK(flex_lines_[0].line_items.size());
     next_unstarted_item_ =
-        const_cast<NGFlexItem*>(&flex_lines_[0].line_items[0]);
+        const_cast<FlexItemData*>(&flex_lines_[0].line_items[0]);
     flex_item_idx_++;
   }
   if (break_token_) {
@@ -41,7 +41,7 @@ FlexItemIterator::Entry FlexItemIterator::NextItem(bool broke_before_row) {
   DCHECK(!is_column_ || !broke_before_row);
 
   const BlockBreakToken* current_child_break_token = nullptr;
-  NGFlexItem* current_item = next_unstarted_item_;
+  FlexItemData* current_item = next_unstarted_item_;
   wtf_size_t current_item_idx = 0;
   wtf_size_t current_line_idx = 0;
 
@@ -108,14 +108,14 @@ FlexItemIterator::Entry FlexItemIterator::NextItem(bool broke_before_row) {
                current_child_break_token);
 }
 
-NGFlexItem* FlexItemIterator::FindNextItem(
+FlexItemData* FlexItemIterator::FindNextItem(
     const BlockBreakToken* item_break_token) {
   while (flex_line_idx_ < flex_lines_.size()) {
     const auto& flex_line = flex_lines_[flex_line_idx_];
     if (!flex_line.has_seen_all_children || item_break_token) {
       while (flex_item_idx_ < flex_line.line_items.size()) {
-        NGFlexItem* flex_item =
-            const_cast<NGFlexItem*>(&flex_line.line_items[flex_item_idx_++]);
+        FlexItemData* flex_item =
+            const_cast<FlexItemData*>(&flex_line.line_items[flex_item_idx_++]);
         if (!item_break_token ||
             flex_item->block_node == item_break_token->InputNode()) {
           return flex_item;
