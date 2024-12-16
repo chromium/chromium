@@ -41,11 +41,6 @@ namespace {
 // SetLatencyHint(), so we needed to peg this with a constant.
 constexpr int kAbsoluteMaxFrames = 24;
 
-bool ShouldUseLowDelayMode(DemuxerStream* stream) {
-  return base::FeatureList::IsEnabled(kLowDelayVideoRenderingOnLiveStream) &&
-         stream->liveness() == StreamLiveness::kLive;
-}
-
 }  // namespace
 
 VideoRendererImpl::VideoRendererImpl(
@@ -194,7 +189,7 @@ void VideoRendererImpl::Initialize(
         base::Unretained(gpu_memory_buffer_pool_.get())));
   }
 
-  low_delay_ = ShouldUseLowDelayMode(demuxer_stream_);
+  low_delay_ = stream->liveness() == StreamLiveness::kLive;
   if (low_delay_) {
     MEDIA_LOG(DEBUG, media_log_) << "Video rendering in low delay mode.";
 

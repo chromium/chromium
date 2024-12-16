@@ -1034,11 +1034,6 @@ BASE_FEATURE(kResolutionBasedDecoderPriority,
 #endif
 );
 
-// Enables low-delay video rendering in media pipeline on "live" stream.
-BASE_FEATURE(kLowDelayVideoRenderingOnLiveStream,
-             "low-delay-video-rendering-on-live-stream",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows the AutoPictureInPictureTabHelper to automatically enter
 // picture-in-picture for websites with video playback (instead of only websites
 // using camera or microphone).
