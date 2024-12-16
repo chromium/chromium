@@ -16,6 +16,7 @@
 #include "base/hash/sha1.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/extensions/fake_arc_support.h"
@@ -105,10 +106,18 @@ class MockErrorDelegate : public ArcSupportHost::ErrorDelegate {
 namespace arc {
 
 class ArcTermsOfServiceDefaultNegotiatorTest
-    : public BrowserWithTestWindowTest {
+    : public BrowserWithTestWindowTest,
+      public testing::WithParamInterface<bool> {
  public:
   ArcTermsOfServiceDefaultNegotiatorTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()) {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          ash::features::kCrosPrivacyHub);
+    }
+
     ::ash::OwnerSettingsServiceAshFactory::GetInstance()
         ->SetOwnerKeyUtilForTesting(owner_key_util_);
   }
@@ -211,6 +220,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   policy::DevicePolicyBuilder device_policy_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   ::ash::FakeSessionManagerClient session_manager_client_;
@@ -230,6 +240,10 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   std::unique_ptr<MockErrorDelegate> error_delegate_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcTermsOfServiceDefaultNegotiatorTest,
+                         testing::Bool());
+
 class ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest
     : public ArcTermsOfServiceDefaultNegotiatorTest {
  protected:
@@ -246,6 +260,10 @@ class ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest
     ArcTermsOfServiceDefaultNegotiatorTest::SetUp();
   }
 };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
+                         testing::Bool());
 
 namespace {
 
@@ -265,7 +283,9 @@ ArcGoogleLocationServiceConsent CreateBaseGoogleLocationServiceConsent() {
   google_location_service_consent.set_confirmation_grd_id(
       IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE);
   google_location_service_consent.add_description_grd_ids(
-      IDS_ARC_OPT_IN_LOCATION_SETTING);
+      ash::features::IsCrosPrivacyHubLocationEnabled()
+          ? IDS_CROS_OPT_IN_LOCATION_SETTING
+          : IDS_ARC_OPT_IN_LOCATION_SETTING);
   return google_location_service_consent;
 }
 
@@ -309,8 +329,8 @@ ArcTermsOfServiceNegotiator::NegotiationCallback UpdateStatusCallback(
       status);
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
-  // Configure mock expections for proper consent recording.
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
+  // Configure mock expectations for proper consent recording.
   consent_auditor::FakeConsentAuditor* auditor = consent_auditor();
   Mock::VerifyAndClearExpectations(auditor);
 
@@ -361,7 +381,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcBackupRestoreEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(fake_arc_support()->backup_and_restore_mode());
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     profile()->GetTestingPrefService()->SetInteger(
         ash::prefs::kUserGeolocationAccessLevel,
         static_cast<int>(ash::GeolocationAccessLevel::kDisallowed));
@@ -370,7 +390,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
       prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(fake_arc_support()->location_service_mode());
 
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     // Toggle kArcLocationServiceEnabled to trigger the computation again as we
     // are listening on it. Now even with kArcLocationServiceEnabled false, we
     // should still get true as we will now honor kUserGeolocationAccessLevel.
@@ -418,8 +438,8 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     profile()->GetTestingPrefService()->SetBoolean(
         prefs::kArcInitialLocationSettingSyncRequired, true);
     profile()->GetTestingPrefService()->SetBoolean(
@@ -455,7 +475,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
   // Make sure preference values are now updated.
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
-  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
         prefs::kArcInitialLocationSettingSyncRequired));
     EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
@@ -467,7 +487,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
   }
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
   // Configure the mock consent auditor to make sure consent auditing records
   // the ToS accept as GIVEN, but the other consents as NOT_GIVEN.
   consent_auditor::FakeConsentAuditor* ca = consent_auditor();
@@ -537,10 +557,16 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcBackupRestoreEnabled));
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    EXPECT_EQ(ash::GeolocationAccessLevel::kDisallowed,
+              static_cast<ash::GeolocationAccessLevel>(
+                  profile()->GetPrefs()->GetInteger(
+                      ash::prefs::kUserGeolocationAccessLevel)));
+  }
 }
 
 // TODO(crbug.com/383267605): Fix flakiness and re-enable.
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, DISABLED_AcceptMetricsNoOwner) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, DISABLED_AcceptMetricsNoOwner) {
   // Show Terms of service page.
   Status status = Status::PENDING;
   negotiator()->StartNegotiation(UpdateStatusCallback(&status));
@@ -575,7 +601,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, DISABLED_AcceptMetricsNoOwner) {
 }
 
 // TODO(crbug.com/383267605): Fix flakiness and re-enable.
-TEST_F(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
+TEST_P(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
        DISABLED_AcceptMetricsUserOptIn) {
   // Show Terms of service page.
   Status status = Status::PENDING;
@@ -616,7 +642,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
   EXPECT_EQ(expected_metrics_state, GetUserMetricsState());
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
   consent_auditor::FakeConsentAuditor* auditor = consent_auditor();
   Mock::VerifyAndClearExpectations(auditor);
 
@@ -673,7 +699,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithManagedToS) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
   consent_auditor::FakeConsentAuditor* auditor = consent_auditor();
   Mock::VerifyAndClearExpectations(auditor);
 
@@ -733,7 +759,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
 }
 
-TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Retry) {
+TEST_P(ArcTermsOfServiceDefaultNegotiatorTest, Retry) {
   error_delegate_ = std::make_unique<MockErrorDelegate>();
   support_host()->SetErrorDelegate(error_delegate_.get());
 
