@@ -4,7 +4,7 @@
 
 // https://streams.spec.whatwg.org/#readablestreambyobrequest
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface ReadableStreamBYOBRequest {
     readonly attribute ArrayBufferView? view;
 

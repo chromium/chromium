@@ -26,7 +26,7 @@
 // https://dom.spec.whatwg.org/#interface-customevent
 
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface CustomEvent : Event {
     [CallWith=ScriptState] constructor(DOMString type, optional CustomEventInit eventInitDict = {});
     [CallWith=ScriptState] readonly attribute any detail;

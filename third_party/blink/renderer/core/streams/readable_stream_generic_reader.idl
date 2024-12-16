@@ -4,7 +4,7 @@
 
 // https://streams.spec.whatwg.org/#readablestreamgenericreader
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface mixin ReadableStreamGenericReader {
     [CallWith=ScriptState] readonly attribute Promise<undefined> closed;
     [CallWith=ScriptState, RaisesException] Promise<undefined> cancel(optional any reason);

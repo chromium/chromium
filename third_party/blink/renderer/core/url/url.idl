@@ -27,7 +27,7 @@
 // https://url.spec.whatwg.org/#url
 
 [
-    Exposed=(Window,Worker),
+    Exposed=(Window,Worker,ShadowRealm), // TODO(crbug.com/41480387): This should be Exposed=*
     ImplementedAs=DOMURL,
     LegacyWindowAlias=webkitURL
 ] interface URL {
