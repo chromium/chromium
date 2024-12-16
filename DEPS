@@ -496,7 +496,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '2394cbb7cbc6683052e6ecb33633b293baf161eb',
+  'llvm_libc_revision':    '041cef88b6348d661621e73106180a956c815f47',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
