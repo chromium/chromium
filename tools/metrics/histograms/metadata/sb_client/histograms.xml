@@ -225,6 +225,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.DownloadRequestNetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-13">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code after sending a
+    CheckClientDownloadRequest.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.DownloadRequestResponseCode"
     enum="HttpResponseCode" expires_after="2025-06-08">
   <owner>drubery@chromium.org</owner>
@@ -264,6 +274,16 @@ chromium-metrics-reviews@google.com.
     Records events related to user interaction with local decryption prompts.
     This includes when the prompt is shown, when it is accepted or rejected, and
     when the provided password is incorrect.
+  </summary>
+</histogram>
+
+<histogram name="SBClientDownload.PPAPIDownloadRequest.NetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-13">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code after sending PPAPI download
+    request.
   </summary>
 </histogram>
 

@@ -513,6 +513,11 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     response_code = loader_->ResponseInfo()->headers->response_code();
   DVLOG(2) << "Received a response for URL: " << source_url_
            << ": success=" << success << " response_code=" << response_code;
+  RecordHttpResponseOrErrorCode("SBClientDownload.DownloadRequestNetworkResult",
+                                loader_->NetError(), response_code);
+  // TODO: crbug.com/383994656 - Remove these metrics once
+  // SBClientDownload.DownloadRequestNetworkResult available on Stable. Alert
+  // monitoring should also be modified.
   if (success) {
     base::UmaHistogramSparse("SBClientDownload.DownloadRequestResponseCode",
                              response_code);

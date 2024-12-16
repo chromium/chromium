@@ -303,6 +303,9 @@ void PPAPIDownloadRequest::OnURLLoaderComplete(
   int response_code = 0;
   if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers)
     response_code = loader_->ResponseInfo()->headers->response_code();
+  RecordHttpResponseOrErrorCode(
+      "SBClientDownload.PPAPIDownloadRequest.NetworkResult",
+      loader_->NetError(), response_code);
   if (loader_->NetError() != net::OK || net::HTTP_OK != response_code) {
     Finish(RequestOutcome::FETCH_FAILED, DownloadCheckResult::UNKNOWN);
     return;

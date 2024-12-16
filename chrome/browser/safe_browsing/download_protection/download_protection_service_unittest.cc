@@ -1234,6 +1234,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
 }
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadFetchFailed) {
+  base::HistogramTester histogram_tester;
   // HTTP request will fail.
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_INTERNAL_SERVER_ERROR,
                   net::ERR_FAILED);
@@ -1262,6 +1263,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadFetchFailed) {
                           base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SBClientDownload.DownloadRequestNetworkResult",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
@@ -1292,6 +1297,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
   ClientDownloadResponse expected_response;
 
   {
+    base::HistogramTester histogram_tester;
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -1300,6 +1306,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_TRUE(HasClientDownloadRequest());
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SBClientDownload.DownloadRequestNetworkResult",
+        /*sample=*/200,
+        /*expected_bucket_count=*/1);
     ClearClientDownloadRequest();
   }
   {
@@ -2763,6 +2773,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_AllowlistedURL) {
 }
 
 TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_FetchFailed) {
+  base::HistogramTester histogram_tester;
   base::FilePath default_file_path(FILE_PATH_LITERAL("/foo/bar/test.crx"));
   std::vector<base::FilePath::StringType> alternate_extensions;
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK,
@@ -2782,6 +2793,10 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_FetchFailed) {
   run_loop.Run();
 
   ASSERT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SBClientDownload.PPAPIDownloadRequest.NetworkResult",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_InvalidResponse) {
@@ -2829,6 +2844,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Timeout) {
 }
 
 TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Payload) {
+  base::HistogramTester histogram_tester;
   RunLoop interceptor_run_loop;
 
   std::string upload_data;
@@ -2869,6 +2885,11 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Payload) {
   EXPECT_EQ(".txt", request.alternate_extensions(0));
   EXPECT_EQ(".abc", request.alternate_extensions(1));
   EXPECT_EQ(".sdF", request.alternate_extensions(2));
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SBClientDownload.PPAPIDownloadRequest.NetworkResult",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DownloadProtectionServiceTest,
@@ -3812,6 +3833,7 @@ TEST_F(DownloadProtectionServiceTest,
 
 TEST_F(DownloadProtectionServiceTest,
        FileSystemAccessWriteRequest_FetchFailed) {
+  base::HistogramTester histogram_tester;
   // HTTP request will fail.
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_INTERNAL_SERVER_ERROR,
                   net::ERR_FAILED);
@@ -3837,6 +3859,10 @@ TEST_F(DownloadProtectionServiceTest,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SBClientDownload.DownloadRequestNetworkResult",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
@@ -3861,6 +3887,7 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
   ClientDownloadResponse expected_response;
 
   {
+    base::HistogramTester histogram_tester;
     RunLoop run_loop;
     download_service_->CheckFileSystemAccessWrite(
         CloneFileSystemAccessWriteItem(item.get()),
@@ -3869,6 +3896,10 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_TRUE(HasClientDownloadRequest());
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SBClientDownload.DownloadRequestNetworkResult",
+        /*sample=*/200,
+        /*expected_bucket_count=*/1);
     ClearClientDownloadRequest();
   }
   {
