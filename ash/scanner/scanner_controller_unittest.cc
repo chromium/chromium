@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_system_state.h"
@@ -18,7 +17,6 @@
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/auto_reset.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -56,8 +54,6 @@ class ScannerControllerTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
-  base::AutoReset<bool> ignore_scanner_update_secret_key_ =
-      switches::SetIgnoreScannerUpdateSecretKeyForTest();
 };
 
 TEST_F(ScannerControllerTest, CanStartSessionIfSystemStateEnabled) {

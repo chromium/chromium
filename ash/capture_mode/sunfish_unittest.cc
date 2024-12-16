@@ -2059,8 +2059,6 @@ class ScannerTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
-  base::AutoReset<bool> ignore_scanner_update_secret_key_ =
-      switches::SetIgnoreScannerUpdateSecretKeyForTest();
 };
 
 // Tests that a Scanner session is created when a Sunfish session begins.

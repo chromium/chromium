@@ -31,7 +31,6 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_url_generator.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -152,14 +151,6 @@ drive::DriveServiceInterface* ScannerKeyedService::GetDriveService() {
 
 google_apis::RequestSender* ScannerKeyedService::GetGoogleApisRequestSender() {
   return request_sender_.get();
-}
-
-bool ScannerKeyedService::IsGoogler() {
-  return identity_manager_ != nullptr &&
-         gaia::IsGoogleInternalAccountEmail(
-             identity_manager_
-                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                 .email);
 }
 
 void ScannerKeyedService::Shutdown() {}

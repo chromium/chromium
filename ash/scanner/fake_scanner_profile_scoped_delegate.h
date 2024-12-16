@@ -72,7 +72,6 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
               (override));
   drive::DriveServiceInterface* GetDriveService() override;
   google_apis::RequestSender* GetGoogleApisRequestSender() override;
-  bool IsGoogler() override;
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(

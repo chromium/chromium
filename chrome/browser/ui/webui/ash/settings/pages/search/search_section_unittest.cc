@@ -110,8 +110,6 @@ TEST_F(SearchSectionTest, IncludesSunfishSettingsWhenSunfishEnabled) {
 }
 
 TEST_F(SearchSectionTest, IncludesSunfishSettingsWhenScannerEnabled) {
-  base::AutoReset<bool> ignore_scanner_secret_key =
-      switches::SetIgnoreScannerUpdateSecretKeyForTest();
   base::test::ScopedFeatureList feature_list(features::kScannerUpdate);
   search_section_ =
       std::make_unique<SearchSection>(profile(), search_tag_registry());

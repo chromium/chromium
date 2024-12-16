@@ -86,11 +86,6 @@ bool ScannerController::CanStartSession() {
     return false;
   }
 
-  if (!profile_scoped_delegate->IsGoogler() &&
-      !switches::IsScannerUpdateSecretKeyMatched()) {
-    return false;
-  }
-
   return profile_scoped_delegate->GetSystemState().status ==
          ScannerStatus::kEnabled;
 }

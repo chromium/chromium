@@ -40,15 +40,6 @@ constexpr char kSparkyHashKey[] =
     "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
     "\x44\x77";
 
-// The hash value for the secret key of the Scanner feature update.
-constexpr std::string_view kScannerUpdateHashKey(
-    "\xF0\xC9\xFD\x45\x31\x92\x95\xAC\xBB\xD8\xD4\xB3\x5F\xF8\x98\x3B\x3B\x4F"
-    "\x02\xF1",
-    base::kSHA1Length);
-
-// Whether checking the Scanner update secret key is ignored.
-bool g_ignore_scanner_update_secret_key = false;
-
 // The hash value for the secret key of the Sunfish feature.
 constexpr std::string_view kSunfishFeatureHashKey(
     "\xce\x89\xdb\x48\xdc\x19\x49\x2a\xba\xd8\xaa\x48\xaa\x28\xc0\xd1\xc0\x10"
@@ -1045,9 +1036,6 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";
 
-// Supply the secret key for Scanner (for more details see b/363103871).
-const char kScannerUpdateKey[] = "scanner-update-key";
-
 // Supply the secret key for Sunfish.
 const char kSunfishFeatureKey[] = "sunfish-feature-key";
 
@@ -1412,30 +1400,6 @@ std::optional<std::string> ObtainSparkyServerUrl() {
             kSparkyServerUrl));
   }
   return std::nullopt;
-}
-
-bool IsScannerUpdateSecretKeyMatched() {
-  if (g_ignore_scanner_update_secret_key) {
-    return true;
-  }
-
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --scanner-update-key="INSERT KEY HERE" --enable-features=ScannerUpdate
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kScannerUpdateKey));
-
-  const bool scanner_key_matched = (provided_key_hash == kScannerUpdateHashKey);
-  if (!scanner_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
-
-  return scanner_key_matched;
-}
-
-base::AutoReset<bool> SetIgnoreScannerUpdateSecretKeyForTest() {
-  return {&g_ignore_scanner_update_secret_key, true};
 }
 
 bool IsSunfishSecretKeyMatched() {

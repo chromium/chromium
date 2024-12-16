@@ -52,9 +52,6 @@ class ASH_PUBLIC_EXPORT ScannerProfileScopedDelegate {
   // Returns a reference to a `google_apis::RequestSender` to send Google API
   // requests.
   virtual google_apis::RequestSender* GetGoogleApisRequestSender() = 0;
-
-  // Returns true if the currently logged in user account is a Googler account.
-  virtual bool IsGoogler() = 0;
 };
 
 }  // namespace ash
