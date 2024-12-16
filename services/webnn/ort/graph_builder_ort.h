@@ -57,14 +57,14 @@ class GraphBuilderOrt {
     Result& operator=(const Result&) = delete;
     ~Result();
 
-    const std::vector<uint8_t>& GetModelData();
+    const std::string& GetModelData();
 
     [[nodiscard]] const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
 
     [[nodiscard]] const std::map<uint64_t, OperandInfo>&
     id_to_operand_info_map() const;
 
-    std::vector<uint8_t> model_data;
+    std::string model_data_;
     std::map<uint64_t, OperandInfo> operand_infos;
   };
 

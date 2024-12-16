@@ -132,8 +132,8 @@ GraphBuilderOrt::OperandInfo::OperandInfo(OperandInfo&&) = default;
 GraphBuilderOrt::Result::Result() = default;
 GraphBuilderOrt::Result::~Result() = default;
 
-const std::vector<uint8_t>& GraphBuilderOrt::Result::GetModelData() {
-  return model_data;
+const std::string& GraphBuilderOrt::Result::GetModelData() {
+  return model_data_;
 }
 
 const GraphBuilderOrt::OperandInfo& GraphBuilderOrt::Result::GetOperandInfo(
@@ -661,16 +661,12 @@ GraphBuilderOrt::BuildModel() {
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderOrt::SerializeModel() {
-  std::stringstream model_stream;
-  bool result = model_.SerializeToOstream(&model_stream);
+  bool result = model_.SerializeToString(&result_->model_data_);
 
   if (!result) {
     LOG(ERROR) << "[WebNN] Failed to serialize model to stream.";
     return NewUnknownError(kBuildGraphError);
   }
-
-  std::string serialized_data = model_stream.str();
-  result_->model_data.assign(serialized_data.begin(), serialized_data.end());
 
   return base::ok();
 }
