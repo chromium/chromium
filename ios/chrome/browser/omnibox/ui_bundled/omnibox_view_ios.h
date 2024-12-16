@@ -187,16 +187,9 @@ class OmniboxViewIOS : public OmniboxView,
 
   OmniboxTextFieldIOS* field_;
 
-  // Focuser, used to transition the location bar to focused/defocused state as
-  // necessary.
-  __weak id<OmniboxCommands> omnibox_focuser_;
-
   // Delegate that manages the browser UI changes in response to omnibox being
   // focused and defocused.
   __weak id<OmniboxFocusDelegate> focus_delegate_;
-
-  // Handler for ToolbarCommands.
-  __weak id<ToolbarCommands> toolbar_commands_handler_;
 
   // Consumer for this class.
   __weak id<OmniboxViewConsumer> consumer_;
