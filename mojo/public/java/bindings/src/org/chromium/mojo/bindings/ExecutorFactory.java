@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MessagePipeHandle.ReadMessageResult;
@@ -23,12 +25,13 @@ import java.util.concurrent.Executor;
  * A factory which provides per-thread executors, which enable execution on the thread from which
  * they were obtained.
  */
+@NullMarked
 public class ExecutorFactory {
     /**
      * A null buffer which is used to send messages without any data on the PipedExecutor's
      * signaling handles.
      */
-    private static final ByteBuffer NOTIFY_BUFFER = null;
+    private static final @Nullable ByteBuffer NOTIFY_BUFFER = null;
 
     /**
      * Implementation of the executor which uses a pair of {@link MessagePipeHandle} for signaling.
@@ -143,9 +146,10 @@ public class ExecutorFactory {
     private static final ThreadLocal<Executor> EXECUTORS = new ThreadLocal<Executor>();
 
     /** Returns an {@link Executor} that will run all of its actions in the current thread. */
-    public static Executor getExecutorForCurrentThread(Core core) {
+    public static Executor getExecutorForCurrentThread(@Nullable Core core) {
         Executor executor = EXECUTORS.get();
         if (executor == null) {
+            assert core != null;
             executor = new PipedExecutor(core);
             EXECUTORS.set(executor);
         }

@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.bindings.Interface.Proxy.Handler;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.Handle;
@@ -20,6 +22,7 @@ import java.util.List;
  * Helper class to encode a mojo struct. It keeps track of the output buffer, resizing it as needed.
  * It also keeps track of the associated handles, and the offset of the current data section.
  */
+@NullMarked
 public class Encoder {
 
     /**
@@ -29,7 +32,7 @@ public class Encoder {
     private static class EncoderState {
 
         /** The core used to encode interfaces. */
-        public final Core core;
+        public final @Nullable Core core;
 
         /** The ByteBuffer to which the message will be encoded. */
         public ByteBuffer byteBuffer;
@@ -46,7 +49,7 @@ public class Encoder {
          * @param bufferSize A hint on the size of the message. Used to build the initial byte
          *            buffer.
          */
-        private EncoderState(Core core, int bufferSize) {
+        private EncoderState(@Nullable Core core, int bufferSize) {
             assert bufferSize % BindingsHelper.ALIGNMENT == 0;
             this.core = core;
             byteBuffer =
@@ -102,7 +105,7 @@ public class Encoder {
      *            structure being encoded contains interfaces, can be |null| otherwise.
      * @param sizeHint A hint on the size of the message. Used to build the initial byte buffer.
      */
-    public Encoder(Core core, int sizeHint) {
+    public Encoder(@Nullable Core core, int sizeHint) {
         this(new EncoderState(core, sizeHint));
     }
 
@@ -169,7 +172,7 @@ public class Encoder {
     }
 
     /** Encode a {@link Struct} at the given offset. */
-    public void encode(Struct v, int offset, boolean nullable) {
+    public void encode(@Nullable Struct v, int offset, boolean nullable) {
         if (v == null) {
             encodeNullPointer(offset, nullable);
             return;
@@ -179,7 +182,7 @@ public class Encoder {
     }
 
     /** Encode a {@link Union} at the given offset. */
-    public void encode(Union v, int offset, boolean nullable) {
+    public void encode(@Nullable Union v, int offset, boolean nullable) {
         if (v == null && !nullable) {
             throw new SerializationException(
                     "Trying to encode a null pointer for a non-nullable type.");
@@ -193,7 +196,7 @@ public class Encoder {
     }
 
     /** Encodes a String. */
-    public void encode(String v, int offset, boolean nullable) {
+    public void encode(@Nullable String v, int offset, boolean nullable) {
         if (v == null) {
             encodeNullPointer(offset, nullable);
             return;
@@ -219,7 +222,7 @@ public class Encoder {
 
     /** Encode an {@link Interface}. */
     public <T extends Interface> void encode(
-            T v, int offset, boolean nullable, Interface.Manager<T, ?> manager) {
+            @Nullable T v, int offset, boolean nullable, Interface.Manager<T, ?> manager) {
         if (v == null) {
             encodeInvalidHandle(offset, nullable);
             encode(0, offset + BindingsHelper.SERIALIZED_HANDLE_SIZE);
@@ -358,7 +361,7 @@ public class Encoder {
     }
 
     /** Encodes an array of bytes. */
-    public void encode(byte[] v, int offset, int arrayNullability, int expectedLength) {
+    public void encode(byte @Nullable [] v, int offset, int arrayNullability, int expectedLength) {
         if (v == null) {
             encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
             return;

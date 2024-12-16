@@ -4,11 +4,14 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Base class for bit field used as flags.
  *
  * @param <F> the type of the flags.
  */
+@NullMarked
 public abstract class Flags<F extends Flags<F>> {
     private int mFlags;
     private boolean mImmutable;

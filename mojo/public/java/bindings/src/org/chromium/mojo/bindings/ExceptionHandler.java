@@ -4,10 +4,14 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * An {@link ExceptionHandler} is notified of any {@link RuntimeException} happening in the
  * bindings or any of the callbacks.
  */
+@NullMarked
 public interface ExceptionHandler {
     /**
      * Receives a notification that an unhandled {@link RuntimeException} has been thrown in an
@@ -23,7 +27,7 @@ public interface ExceptionHandler {
      * also delegate the handling of the exceptions to another instance of ExceptionHandler.
      */
     public static class DefaultExceptionHandler implements ExceptionHandler {
-        private ExceptionHandler mDelegate;
+        private @Nullable ExceptionHandler mDelegate;
 
         @Override
         public boolean handleException(RuntimeException e) {

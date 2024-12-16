@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MessagePipeHandle.ReadMessageResult;
@@ -22,6 +24,7 @@ import java.nio.ByteBuffer;
  * The method |start| must be called before the {@link Connector} will start listening to incoming
  * messages.
  */
+@NullMarked
 public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle> {
 
     /** The callback that is notified when the state of the owned handle changes. */
@@ -34,17 +37,17 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
     private final Watcher mWatcher;
 
     /** The {@link MessageReceiver} to which received messages are sent. */
-    private MessageReceiver mIncomingMessageReceiver;
+    private @Nullable MessageReceiver mIncomingMessageReceiver;
 
     /** The error handler to notify of errors. */
-    private ConnectionErrorHandler mErrorHandler;
+    private @Nullable ConnectionErrorHandler mErrorHandler;
 
     /**
      * Create a new connector over a |messagePipeHandle|. The created connector will use the default
      * {@link AsyncWaiter} from the {@link Core} implementation of |messagePipeHandle|.
      */
     public Connector(MessagePipeHandle messagePipeHandle) {
-        this(messagePipeHandle, BindingsHelper.getWatcherForHandle(messagePipeHandle));
+        this(messagePipeHandle, BindingsHelper.getWatcherForHandleNonNull(messagePipeHandle));
     }
 
     /**
@@ -180,7 +183,7 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
      *            be <code>null</code>, in which case the message is discarded.
      */
     static ResultAnd<Boolean> readAndDispatchMessage(
-            MessagePipeHandle handle, MessageReceiver receiver) {
+            MessagePipeHandle handle, @Nullable MessageReceiver receiver) {
         ResultAnd<ReadMessageResult> result = handle.readMessage(MessagePipeHandle.ReadFlags.NONE);
         if (result.getMojoResult() != MojoResult.OK) {
             return new ResultAnd<Boolean>(result.getMojoResult(), false);

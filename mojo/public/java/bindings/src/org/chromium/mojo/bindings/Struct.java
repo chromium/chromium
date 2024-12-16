@@ -4,11 +4,14 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 
 import java.nio.ByteBuffer;
 
 /** Base class for all mojo structs. */
+@NullMarked
 public abstract class Struct {
     /** The base size of the encoded struct. */
     private final int mEncodedBaseSize;
@@ -36,7 +39,7 @@ public abstract class Struct {
      * @param core the |Core| implementation used to generate handles. Only used if the data
      *            structure being encoded contains interfaces, can be |null| otherwise.
      */
-    public Message serialize(Core core) {
+    public Message serialize(@Nullable Core core) {
         Encoder encoder = new Encoder(core, mEncodedBaseSize);
         encode(encoder);
         return encoder.getMessage();

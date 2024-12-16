@@ -4,5 +4,8 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Associated interface is not supported yet. */
+@NullMarked
 public class AssociatedInterfaceRequestNotSupported {}

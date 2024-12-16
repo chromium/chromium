@@ -10,12 +10,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.DataPipe;
 import org.chromium.mojo.system.DataPipe.ConsumerHandle;
 import org.chromium.mojo.system.DataPipe.ProducerHandle;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.MessagePipeHandle;
+import org.chromium.mojo.system.MessagePipeHandle.CreateOptions;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.MojoResult;
 import org.chromium.mojo.system.Pair;
@@ -83,7 +85,7 @@ public class CoreImpl implements Core {
      */
     @Override
     public Pair<MessagePipeHandle, MessagePipeHandle> createMessagePipe(
-            MessagePipeHandle.CreateOptions options) {
+            @Nullable CreateOptions options) {
         ByteBuffer optionsBuffer = null;
         if (options != null) {
             optionsBuffer = allocateDirectBuffer(8);

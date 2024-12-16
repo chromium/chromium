@@ -4,11 +4,14 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core.HandleSignalsState;
 
 import java.io.Closeable;
 
 /** A generic mojo handle. */
+@NullMarked
 public interface Handle extends Closeable {
 
     /**
@@ -40,7 +43,7 @@ public interface Handle extends Closeable {
      * Returns the {@link Core} implementation for this handle. Can be null if this handle is
      * invalid.
      */
-    public Core getCore();
+    public @Nullable Core getCore();
 
     /**
      * Passes ownership of the handle from this handle to the newly created Handle object,

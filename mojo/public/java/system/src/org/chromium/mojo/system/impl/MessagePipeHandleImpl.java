@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.system.impl;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.ResultAnd;
@@ -39,7 +40,10 @@ class MessagePipeHandleImpl extends HandleBase implements MessagePipeHandle {
      * @see MessagePipeHandle#writeMessage(ByteBuffer, List, WriteFlags)
      */
     @Override
-    public void writeMessage(ByteBuffer bytes, List<? extends Handle> handles, WriteFlags flags) {
+    public void writeMessage(
+            @Nullable ByteBuffer bytes,
+            @Nullable List<? extends Handle> handles,
+            WriteFlags flags) {
         mCore.writeMessage(this, bytes, handles, flags);
     }
 
