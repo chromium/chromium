@@ -4837,9 +4837,9 @@ GraphBuilderCoreml::SetInputFromTwoConstantsReordered(
         for (size_t i = 0u; i < subspan_size; ++i) {
           // TODO(crbug.com/360052663): add tests for overflow
           base::CheckedNumeric<float> data =
-              fp16_ieee_to_fp32_bits(base::U16FromNativeEndian(
+              fp16_ieee_to_fp32_value(base::U16FromNativeEndian(
                   a_subspan.subspan(i * sizeof(Float16)).first<2u>()));
-          data += fp16_ieee_to_fp32_bits(base::U16FromNativeEndian(
+          data += fp16_ieee_to_fp32_value(base::U16FromNativeEndian(
               b_subspan.subspan(i * sizeof(Float16)).first<2u>()));
           float16s[i].data = fp16_ieee_from_fp32_value(
               data.ValueOrDefault(std::numeric_limits<float>::infinity()));

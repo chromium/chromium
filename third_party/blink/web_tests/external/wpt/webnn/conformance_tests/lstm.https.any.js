@@ -50,7 +50,7 @@
 
 
 const getLstmPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 1};
+  const toleranceValueDict = {float32: 1, float16: 1};
   const expectedDataType =
       graphResources
           .expectedOutputs[Object.keys(graphResources.expectedOutputs)[0]]
@@ -862,6 +862,67 @@ const lstmTests = [
             518.948974609375, 1, 8, 1, 8
           ],
           'descriptor': {shape: [2, 1, 2, 2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'lstm float16 tensors steps=1 with options.bias, options.recurrentBias',
+    'graph': {
+      'inputs': {
+        'lstmInput': {
+          'data': [1, 2, 2, 1],
+          'descriptor': {shape: [1, 2, 2], dataType: 'float16'}
+        },
+        'lstmWeight': {
+          'data': [1, -1, 2, -2, 1, -1, 2, -2, 1, -1, 2, -2, 1, -1, 2, -2],
+          'descriptor': {shape: [1, 8, 2], dataType: 'float16'},
+          'constant': true
+        },
+        'lstmRecurrentWeight': {
+          'data': [
+            0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+            0.1, 0.1, 0.1
+          ],
+          'descriptor': {shape: [1, 8, 2], dataType: 'float16'},
+          'constant': true
+        },
+        'lstmBias': {
+          'data': [1, 2, 1, 2, 1, 2, 1, 2],
+          'descriptor': {shape: [1, 8], dataType: 'float16'},
+          'constant': true
+        },
+        'lstmRecurrentBias': {
+          'data': [1, 2, 1, 2, 1, 2, 1, 2],
+          'descriptor': {shape: [1, 8], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'lstm',
+        'arguments': [
+          {'input': 'lstmInput'}, {'weight': 'lstmWeight'},
+          {'recurrentWeight': 'lstmRecurrentWeight'}, {'steps': 1},
+          {'hiddenSize': 2}, {
+            'options': {
+              'bias': 'lstmBias',
+              'recurrentBias': 'lstmRecurrentBias',
+              'returnSequence': false,
+              'activations': ['relu', 'relu', 'relu']
+            }
+          }
+        ],
+        'outputs': ['lstmOutput1', 'lstmOutput2']
+      }],
+      'expectedOutputs': {
+        'lstmOutput1': {
+          'data': [1, 8, 27, 216],
+          'descriptor': {shape: [1, 2, 2], dataType: 'float16'}
+        },
+        'lstmOutput2': {
+          'data': [1, 4, 9, 36],
+          'descriptor': {shape: [1, 2, 2], dataType: 'float16'}
         }
       }
     }
