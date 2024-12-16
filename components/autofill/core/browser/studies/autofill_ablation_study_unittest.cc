@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_ablation_study.h"
+#include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"

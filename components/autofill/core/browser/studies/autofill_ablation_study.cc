@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_ablation_study.h"
+#include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 
 #include "base/base64.h"
 #include "base/check_op.h"
@@ -221,8 +221,9 @@ AblationGroup AutofillAblationStudy::GetAblationGroup(
 
   // Do some basic checks for plausibility. See above.
   int ablation_weight = kAutofillAblationStudyAblationWeightPerMilleParam.Get();
-  if (ablation_weight <= 0 || ablation_weight > 1000)
+  if (ablation_weight <= 0 || ablation_weight > 1000) {
     return AblationGroup::kDefault;
+  }
   return GetAblationGroupImpl(url, now, ablation_weight);
 }
 
@@ -234,10 +235,12 @@ AblationGroup AutofillAblationStudy::GetAblationGroupImpl(
     return AblationGroup::kDefault;
   }
   uint64_t hash = GetAblationHash(seed_, url, now) % 1000;
-  if (hash < ablation_weight_per_mille)
+  if (hash < ablation_weight_per_mille) {
     return AblationGroup::kAblation;
-  if (hash < 2 * ablation_weight_per_mille)
+  }
+  if (hash < 2 * ablation_weight_per_mille) {
     return AblationGroup::kControl;
+  }
   return AblationGroup::kDefault;
 }
 
