@@ -326,7 +326,7 @@ void WebAppTabHelper::SubscribeToTabState(tabs::TabInterface* tab_interface) {
   tab_subscriptions_.clear();
   CHECK(tab_interface);
   tab_subscriptions_.push_back(
-      tab_interface->RegisterWillDeactivate(base::BindRepeating(
+      tab_interface->RegisterWillEnterBackground(base::BindRepeating(
           &WebAppTabHelper::OnTabBackgrounded, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(
       tab_interface->RegisterWillDetach(base::BindRepeating(

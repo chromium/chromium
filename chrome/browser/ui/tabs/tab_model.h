@@ -113,17 +113,11 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   content::WebContents* GetContents() const override;
   base::CallbackListSubscription RegisterWillDiscardContents(
       TabInterface::WillDiscardContentsCallback callback) override;
-  bool IsActivated() const override;
-  base::CallbackListSubscription RegisterDidActivate(
-      TabInterface::DidActivateCallback callback) override;
-  base::CallbackListSubscription RegisterWillDeactivate(
-      TabInterface::WillDeactivateCallback callback) override;
-  bool IsVisible() const override;
-  base::CallbackListSubscription RegisterDidBecomeVisible(
-      DidBecomeVisibleCallback callback) override;
-  base::CallbackListSubscription RegisterWillBecomeHidden(
-      WillBecomeHiddenCallback callback) override;
-
+  bool IsInForeground() const override;
+  base::CallbackListSubscription RegisterDidEnterForeground(
+      TabInterface::DidEnterForegroundCallback callback) override;
+  base::CallbackListSubscription RegisterWillEnterBackground(
+      TabInterface::WillEnterBackgroundCallback callback) override;
   base::CallbackListSubscription RegisterWillDetach(
       TabInterface::WillDetach callback) override;
   base::CallbackListSubscription RegisterDidInsert(
@@ -194,21 +188,13 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
       void(TabInterface*, content::WebContents*, content::WebContents*)>;
   WillDiscardContentsCallbackList will_discard_contents_callback_list_;
 
-  using DidActivateCallbackList =
+  using DidEnterForegroundCallbackList =
       base::RepeatingCallbackList<void(TabInterface*)>;
-  DidActivateCallbackList did_enter_foreground_callback_list_;
+  DidEnterForegroundCallbackList did_enter_foreground_callback_list_;
 
-  using WillDeactivateCallbackList =
+  using WillEnterBackgroundCallbackList =
       base::RepeatingCallbackList<void(TabInterface*)>;
-  WillDeactivateCallbackList will_enter_background_callback_list_;
-
-  using DidBecomeVisibleCallback =
-      base::RepeatingCallbackList<void(TabInterface*)>;
-  DidActivateCallbackList did_become_visible_callback_list_;
-
-  using WillBecomeHiddenCallback =
-      base::RepeatingCallbackList<void(TabInterface*)>;
-  WillBecomeHiddenCallback will_become_hidden_callback_list_;
+  WillEnterBackgroundCallbackList will_enter_background_callback_list_;
 
   using WillDetachCallbackList =
       base::RepeatingCallbackList<void(TabInterface*,

@@ -82,7 +82,7 @@ class ListenerDeferredTest : public InProcessBrowserTest,
         tab_strip_model()->GetIndexOfTab(test_tab_));
 
     // Ensure that the tab was foregrounded.
-    ASSERT_TRUE(test_tab_->IsActivated()) << "The tab was not foregrounded.";
+    ASSERT_TRUE(test_tab_->IsInForeground()) << "The tab was not foregrounded.";
   }
 
   void BackgroundTestTab() {
@@ -90,7 +90,8 @@ class ListenerDeferredTest : public InProcessBrowserTest,
         tab_strip_model()->GetIndexOfTab(other_tab_));
 
     // Ensure that the tab was backgrounded.
-    ASSERT_FALSE(test_tab_->IsActivated()) << "The tab was not backgrounded.";
+    ASSERT_FALSE(test_tab_->IsInForeground())
+        << "The tab was not backgrounded.";
   }
 
   void WaitForNavigationCompleted() {

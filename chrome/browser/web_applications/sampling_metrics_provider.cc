@@ -72,7 +72,7 @@ void EmitUkmMetricsForTab(tabs::TabInterface* tab) {
 
   interaction.promotable = !registrar.IsDiyApp(*app_id);
 
-  if (tab->IsActivated() && browser->IsActive()) {
+  if (tab->IsInForeground() && browser->IsActive()) {
     interaction.foreground_duration = base::Seconds(kTimerIntervalInSeconds);
   } else {
     interaction.background_duration = base::Seconds(kTimerIntervalInSeconds);
@@ -223,7 +223,7 @@ void SamplingMetricsProvider::EmitMetrics() {
         std::optional<webapps::AppId> app_id = web_app_helper->app_id();
         if (app_id) {
           ++tabbed_pwas_count;
-          if (tab->IsActivated() && browser->IsActive()) {
+          if (tab->IsInForeground() && browser->IsActive()) {
             tabbed_pwas_in_active_use = true;
           }
 
