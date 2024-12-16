@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_ai_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/web_contents.h"
 
