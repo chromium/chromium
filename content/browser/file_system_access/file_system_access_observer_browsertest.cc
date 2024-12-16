@@ -29,10 +29,11 @@ namespace content {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) && \
+    !BUILDFLAG(IS_MAC)
 constexpr int kBFCacheTestTimeoutMs = 3000;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_FUCHSIA)
+        // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_MAC)
 constexpr char kAttemptToObserveSymlinkHistogram[] =
     "Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction";
 
@@ -595,6 +596,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, CreateObserver) {
              "const observer = new FileSystemObserver(() => {}); })()"));
 }
 
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
   base::HistogramTester histogram_tester;
   base::FilePath file_path = CreateFileToBePicked();
@@ -615,6 +618,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
                                         /*sample=*/false, 1);
   }
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -822,6 +826,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 
 // TODO(crbug.com/321980469): Add a ReObserveAfterUnobserve test once the
 // unobserve() method is no longer racy. See https://crrev.com/c/4814709.
+//
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ReObserveAfterDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -841,7 +848,11 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(crbug.com/357134621): FSEvents (Mac) reports two events when the swap
+// file is closed. This test fails due to a "disappear" event being reported.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsType) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -860,7 +871,10 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("modified"));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsCorrectHandle) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -904,6 +918,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(*records.front().GetDict().FindList("relativePathComponents"),
               testing::IsEmpty());
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectChangeTypeForSubDir) {
@@ -1004,14 +1019,11 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
               testing::SizeIs(1));
 }
 
-// TODO(crbug.com/360153904): Re-enable on Mac, after fixing the failing
-// expectations and/or test setup.
-//
-// These tests only fail on local file system. This is likely due to events
-// that occur within the test, before the observation begins, being reported
-// first, which results in failing expectations. Note that
-// `ObserveDirectoryReportsMoveChangeInfo` consistently crashes and
-// the other disabled tests are failures due to a mismatch in reported events.
+// TODO(b/321980270): Re-enable these tests on Mac, after fixing the failing
+// expectations. It's possible that some of the failing expectations are due to
+// historical create flags, which can affect the reported change type (reporting
+// 'create' events when other change types should be reported). See b/357062364
+// for more context.
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsMoveChangeInfo) {
@@ -1043,7 +1055,11 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(*record_dict.FindList("relativePathMovedFrom"),
               testing::ElementsAre("subdir", "oldFile.txt"));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(b/321980270) Re-enable these tests on Mac, which only fail when the
+// modified path is reported.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsAppearedOnMoveIntoScope) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
@@ -1134,7 +1150,11 @@ IN_PROC_BROWSER_TEST_P(
               testing::ElementsAre("oldFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(b/321980270) Re-enable this test on Mac, which only fails when the
+// modified path is reported.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(
     FileSystemAccessObserverBrowserTest,
     NonRecursiveWatchReportsAppearedWhenDirectDescendentMovedFromNonDirectDescendent) {
@@ -1167,7 +1187,11 @@ IN_PROC_BROWSER_TEST_P(
               testing::ElementsAre("newFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(b/321980270): Filter out changes to swap files reported by FSEvents,
+// and re-enable this test on Mac.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        WritableReportsSingleModifiedEventOnClose) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
@@ -1245,6 +1269,7 @@ class FileSystemAccessObserverWithBFCacheBrowserTest
 // TODO(b/360153904): This test is flaky on Mac, likely as a result of FSEvents
 // reporting events later than expected, on occasion. Re-enable once flake is
 // resolved.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                        ReceivesFileUpdatesAfterReturningFromBFCache) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -1331,6 +1356,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                 .ExtractInt(),
             1);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                        NotifyOnReturnFromBFCacheWhenFileUpdates) {
