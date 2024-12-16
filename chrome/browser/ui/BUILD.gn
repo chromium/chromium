@@ -846,8 +846,6 @@ static_library("ui") {
       "android/infobars/duplicate_download_infobar.h",
       "android/infobars/infobar_container_android.cc",
       "android/infobars/infobar_container_android.h",
-      "android/infobars/near_oom_infobar.cc",
-      "android/infobars/near_oom_infobar.h",
       "android/infobars/permission_infobar.cc",
       "android/infobars/permission_infobar.h",
       "android/infobars/simple_confirm_infobar_builder.cc",
