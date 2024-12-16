@@ -888,6 +888,13 @@ RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet) {
   return &sheet.Contents()->EnsureRuleSet(*media_query_evaluator_);
 }
 
+RuleSet* StyleEngine::CreateUnconnectedRuleSet(CSSStyleSheet& sheet) {
+  if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator())) {
+    return nullptr;
+  }
+  return sheet.Contents()->CreateUnconnectedRuleSet(*media_query_evaluator_);
+}
+
 RuleSet* StyleEngine::RuleSetScope::RuleSetForSheet(StyleEngine& engine,
                                                     CSSStyleSheet* css_sheet) {
   RuleSet* rule_set = engine.RuleSetForSheet(*css_sheet);

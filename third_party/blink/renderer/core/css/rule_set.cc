@@ -946,7 +946,7 @@ bool RuleSet::MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
   return match_media;
 }
 
-void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
+void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
                                 const MediaQueryEvaluator& medium,
                                 CascadeLayer* cascade_layer,
                                 const StyleScope* style_scope) {

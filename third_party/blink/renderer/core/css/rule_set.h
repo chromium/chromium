@@ -375,7 +375,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   RuleSet(const RuleSet&) = delete;
   RuleSet& operator=(const RuleSet&) = delete;
 
-  void AddRulesFromSheet(StyleSheetContents*,
+  void AddRulesFromSheet(const StyleSheetContents*,
                          const MediaQueryEvaluator&,
                          CascadeLayer* = nullptr,
                          const StyleScope* = nullptr);

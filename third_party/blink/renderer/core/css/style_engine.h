@@ -300,6 +300,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   };
 
   RuleSet* RuleSetForSheet(CSSStyleSheet&);
+  // See StyleSheetContents::CreateUnconnectedRuleSet.
+  //
+  // Note that this can return nullptr when the associated media query
+  // does not match.
+  RuleSet* CreateUnconnectedRuleSet(CSSStyleSheet&);
   void MediaQueryAffectingValueChanged(MediaValueChange change);
   void UpdateActiveStyle();
 
@@ -790,7 +795,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       const HeapVector<Member<StyleRuleBase>>& rules);
 
   typedef HeapHashSet<Member<TreeScope>> UnorderedTreeScopeSet;
-
   bool MediaQueryAffectingValueChanged(const ActiveStyleSheetVector&,
                                        MediaValueChange);
   void MediaQueryAffectingValueChanged(TreeScope&, MediaValueChange);

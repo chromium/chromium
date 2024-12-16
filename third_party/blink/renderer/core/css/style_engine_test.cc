@@ -7049,4 +7049,45 @@ TEST_F(StyleEngineTest, UseCountMediaQueryRangeSyntax) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
 }
 
+TEST_F(StyleEngineTest, CreateUnconnectedRuleSet) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id=style>
+      .a { color: green; }
+      .a { width: 100px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  CSSStyleSheet* sheet =
+      To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
+          ->sheet();
+  ASSERT_TRUE(sheet);
+  EXPECT_TRUE(sheet->Contents()->HasRuleSet());
+
+  sheet->Contents()->ClearRuleSet();
+  EXPECT_FALSE(sheet->Contents()->HasRuleSet());
+
+  RuleSet* rule_set = GetStyleEngine().CreateUnconnectedRuleSet(*sheet);
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(2u, rule_set->ClassRules(AtomicString("a")).size());
+
+  // As the above RuleSet is unconnected, it should not have affected
+  // the RuleSet held by StyleSheetContents.
+  EXPECT_FALSE(sheet->Contents()->HasRuleSet());
+}
+
+TEST_F(StyleEngineTest, CreateUnconnectedRuleSetMedia) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id=style media=print>
+      .a { color: green; }
+      .a { width: 100px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  CSSStyleSheet* sheet =
+      To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
+          ->sheet();
+  EXPECT_FALSE(GetStyleEngine().CreateUnconnectedRuleSet(*sheet));
+}
+
 }  // namespace blink
