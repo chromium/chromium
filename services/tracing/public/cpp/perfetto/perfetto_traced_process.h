@@ -112,6 +112,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     // allows overriding that task runner.
     virtual base::SequencedTaskRunner* GetTaskRunner();
 
+    static void ResetTaskRunnerForTesting(
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
    protected:
     SEQUENCE_CHECKER(perfetto_sequence_checker_);
 
@@ -164,8 +167,12 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     perfetto::DataSourceConfig data_source_config_;
   };
 
+  // Creates the process-wide instance of the PerfettoTracedProcess.
+  static PerfettoTracedProcess& MaybeCreateInstance();
+  static PerfettoTracedProcess& MaybeCreateInstanceForTesting();
+
   // Returns the process-wide instance of the PerfettoTracedProcess.
-  static PerfettoTracedProcess* Get();
+  static PerfettoTracedProcess& Get();
 
   PerfettoTracedProcess(const PerfettoTracedProcess&) = delete;
   PerfettoTracedProcess& operator=(const PerfettoTracedProcess&) = delete;
@@ -185,7 +192,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
   // Returns the task runner used by any Perfetto service. Can be called on any
   // thread.
-  static base::tracing::PerfettoTaskRunner* GetTaskRunner();
+  static base::SequencedTaskRunner* GetTaskRunner();
 
   // Attempt to enable startup tracing for the current process and given
   // producer. Returns false on failure, e.g. because another concurrent tracing
@@ -204,7 +211,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   void SetAllowSystemTracingConsumerCallback(base::RepeatingCallback<bool()>);
 
   // Overrides SetAllowSystemTracingConsumerCallback() for testing.
-  void SetAllowSystemTracingConsumerForTesting(bool allow);
+  static void SetAllowSystemTracingConsumerForTesting(bool allow);
 
   // Sets the task runner used by the tracing infrastructure in this process.
   // The returned handle will automatically tear down tracing when destroyed, so
@@ -213,16 +220,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Be careful when using SetupForTesting. There is a PostTask in the
   // constructor of PerfettoTracedProcess, so before this class is constructed
   // is the only safe time to call this.
-  struct COMPONENT_EXPORT(TRACING_CPP) TestHandle {
-    TestHandle() = default;
-    ~TestHandle();
-    TestHandle(const TestHandle&) = delete;
-    TestHandle(TestHandle&&) = default;
-    TestHandle& operator=(const TestHandle&) = delete;
-    TestHandle& operator=(TestHandle&&) = default;
-  };
-  static std::unique_ptr<TestHandle> SetupForTesting(
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
+  void SetupForTesting(scoped_refptr<base::SequencedTaskRunner> task_runner);
+  void ResetForTesting();
 
   base::tracing::PerfettoPlatform* perfetto_platform_for_testing() const {
     return platform_.get();
@@ -237,12 +236,11 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
       const perfetto::TraceConfig& config,
       const perfetto::Tracing::SetupStartupTracingOpts& opts);
 
- protected:
-  // protected for testing.
-  PerfettoTracedProcess();
-
  private:
   friend class base::NoDestructor<PerfettoTracedProcess>;
+
+  PerfettoTracedProcess(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
 
   // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
   // process.
@@ -265,6 +263,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
           GUARDED_BY(allow_system_consumer_lock_);
   bool system_consumer_enabled_for_testing_
       GUARDED_BY(allow_system_consumer_lock_) = false;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Platform implementation for the Perfetto client library.
   std::unique_ptr<base::tracing::PerfettoPlatform> platform_;

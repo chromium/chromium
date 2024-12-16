@@ -101,7 +101,6 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
     {
       base::RunLoop wait_for_destruction;
       PerfettoTracedProcess::GetTaskRunner()
-          ->GetOrCreateTaskRunner()
           ->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                              wait_for_destruction.QuitClosure());
       wait_for_destruction.Run();
@@ -363,12 +362,10 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
   bool tracing_enabled_ = false;
 };
 
-// TODO(crbug.com/42050015): Switch this to use TracingUnitTest.
-class TracingConsumerTest : public TracingUnitTest,
+class TracingConsumerTest : public testing::Test,
                             public mojo::DataPipeDrainer::Client {
  public:
   void SetUp() override {
-    TracingUnitTest::SetUp();
     threaded_service_ = std::make_unique<ThreadedPerfettoService>();
 
     matching_packet_count_ = 0;
@@ -377,7 +374,6 @@ class TracingConsumerTest : public TracingUnitTest,
 
   void TearDown() override {
     threaded_service_.reset();
-    TracingUnitTest::TearDown();
   }
 
   // mojo::DataPipeDrainer::Client
@@ -486,7 +482,7 @@ class TracingConsumerTest : public TracingUnitTest,
   bool IsTracingEnabled() {
     // Flush any other pending tasks on the perfetto task runner to ensure that
     // any pending data source start callbacks have propagated.
-    RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     return threaded_service_->IsTracingEnabled();
   }
@@ -498,6 +494,10 @@ class TracingConsumerTest : public TracingUnitTest,
   }
 
  private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  TracedProcessForTesting traced_process_{
+      base::SingleThreadTaskRunner::GetCurrentDefault()};
   std::unique_ptr<ThreadedPerfettoService> threaded_service_;
   base::OnceClosure on_data_complete_;
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;

@@ -1243,9 +1243,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
     BrowserTaskExecutor::PostFeatureListSetup();
 
-    tracing::PerfettoTracedProcess::Get()
-        ->SetAllowSystemTracingConsumerCallback(
-            base::BindRepeating(&ShouldAllowSystemTracingConsumer));
+    tracing::PerfettoTracedProcess::Get().SetAllowSystemTracingConsumerCallback(
+        base::BindRepeating(&ShouldAllowSystemTracingConsumer));
     tracing::InitTracingPostThreadPoolStartAndFeatureList(
         /* enable_consumer */ true);
 

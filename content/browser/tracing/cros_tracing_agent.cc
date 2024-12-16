@@ -213,10 +213,8 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     session_started_ = false;
     producer_ = nullptr;
 
-    tracing::PerfettoTracedProcess::Get()
-        ->GetTaskRunner()
-        ->GetOrCreateTaskRunner()
-        ->PostTask(FROM_HERE, std::move(stop_complete_callback));
+    tracing::PerfettoTracedProcess::GetTaskRunner()->PostTask(
+        FROM_HERE, std::move(stop_complete_callback));
   }
 
   SEQUENCE_CHECKER(ui_sequence_checker_);

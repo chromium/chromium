@@ -6,8 +6,8 @@
 #define BASE_TRACING_PERFETTO_PLATFORM_H_
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_local_storage.h"
 #include "third_party/perfetto/include/perfetto/base/thread_utils.h"
 #include "third_party/perfetto/include/perfetto/tracing/platform.h"
@@ -20,18 +20,7 @@ class PerfettoTaskRunner;
 
 class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
  public:
-  // Specifies the type of task runner used by Perfetto.
-  // TODO(skyostil): Move all scenarios to use the default task runner to
-  // avoid problems with unexpected re-entrancy and IPC deadlocks.
-  enum class TaskRunnerType {
-    // Use Perfetto's own task runner which runs tasks on a dedicated (internal)
-    // thread.
-    kBuiltin,
-    // Use base::ThreadPool.
-    kThreadPool,
-  };
-
-  explicit PerfettoPlatform(PerfettoTaskRunner* task_runner);
+  explicit PerfettoPlatform(scoped_refptr<base::SequencedTaskRunner>);
   ~PerfettoPlatform() override;
 
   // perfetto::Platform implementation:
@@ -45,8 +34,12 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
   // thread IDs.
   perfetto::base::PlatformThreadId GetCurrentThreadId() override;
 
+  void ResetTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
  private:
-  raw_ptr<PerfettoTaskRunner> task_runner_;
+  WeakPtr<PerfettoTaskRunner> perfetto_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ThreadLocalStorage::Slot thread_local_object_;
 };
 

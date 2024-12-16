@@ -122,7 +122,7 @@ class TracingSampleProfilerTest : public testing::Test {
 
     events_stack_received_count_ = 0u;
 
-    PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     TracingSamplerProfiler::ResetDataSourceForTesting();
   }

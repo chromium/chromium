@@ -18,12 +18,7 @@ constexpr size_t PerfettoProducer::kSMBPageSizeBytes;
 // static
 constexpr size_t PerfettoProducer::kDefaultSMBSizeBytes;
 
-PerfettoProducer::PerfettoProducer(
-    base::tracing::PerfettoTaskRunner* task_runner)
-    : task_runner_(task_runner) {
-  DCHECK(task_runner_);
-}
-
+PerfettoProducer::PerfettoProducer() = default;
 PerfettoProducer::~PerfettoProducer() = default;
 
 std::unique_ptr<perfetto::TraceWriter> PerfettoProducer::CreateTraceWriter(
@@ -37,10 +32,6 @@ std::unique_ptr<perfetto::TraceWriter> PerfettoProducer::CreateTraceWriter(
   buffer_exhausted_policy = perfetto::BufferExhaustedPolicy::kDrop;
   return MaybeSharedMemoryArbiter()->CreateTraceWriter(target_buffer,
                                                        buffer_exhausted_policy);
-}
-
-base::tracing::PerfettoTaskRunner* PerfettoProducer::task_runner() {
-  return task_runner_;
 }
 
 size_t PerfettoProducer::GetPreferredSmbSizeBytes() {

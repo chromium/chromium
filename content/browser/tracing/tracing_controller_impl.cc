@@ -199,7 +199,7 @@ TracingControllerImpl::TracingControllerImpl() {
                          weak_ptr_factory_.GetWeakPtr()));
 #endif
 
-  tracing::PerfettoTracedProcess::Get()->SetConsumerConnectionFactory(
+  tracing::PerfettoTracedProcess::Get().SetConsumerConnectionFactory(
       &GetTracingService, base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 

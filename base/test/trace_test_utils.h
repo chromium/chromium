@@ -5,8 +5,6 @@
 #ifndef BASE_TEST_TRACE_TEST_UTILS_H_
 #define BASE_TEST_TRACE_TEST_UTILS_H_
 
-#include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
-
 namespace base {
 
 namespace test {
@@ -20,9 +18,6 @@ class TracingEnvironment {
   // platform.
   TracingEnvironment();
   ~TracingEnvironment();
-
-  // Builds a default Perfetto trace config with track events enabled.
-  static perfetto::protos::gen::TraceConfig GetDefaultTraceConfig();
 };
 
 }  // namespace test

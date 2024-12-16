@@ -108,9 +108,7 @@ class ArcTracingDataSource
 
   ArcTracingDataSource()
       : DataSourceBase(tracing::mojom::kArcTraceDataSourceName),
-        perfetto_task_runner_(tracing::PerfettoTracedProcess::Get()
-                                  ->GetTaskRunner()
-                                  ->GetOrCreateTaskRunner()) {
+        perfetto_task_runner_(GetTaskRunner()) {
     perfetto::DataSourceDescriptor dsd;
     dsd.set_name(tracing::mojom::kArcTraceDataSourceName);
     DataSourceProxy::Register(dsd, this);

@@ -46,7 +46,7 @@ class TracingObserverProtoTest : public testing::Test {
         false);
     memory_instrumentation::TracingObserverProto::GetInstance()
         ->ResetForTesting();
-    PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 

@@ -180,24 +180,11 @@ class MockConsumer : public MockConsumerBase {
   perfetto::TraceConfig trace_config_;
 };
 
-// Base class for various tracing unit tests, ensuring cleanup of
-// PerfettoTracedProcess. Tracing tasks are run on the test thread.
-class TracingUnitTest : public testing::Test {
+class TracedProcessForTesting {
  public:
-  TracingUnitTest();
-  ~TracingUnitTest() override;
-
-  void SetUp() override;
-  void TearDown() override;
-
- protected:
-  void RunUntilIdle() { task_environment_->RunUntilIdle(); }
-
- private:
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-  std::unique_ptr<PerfettoTracedProcess::TestHandle> test_handle_;
-  bool setup_called_ = false;
-  bool teardown_called_ = false;
+  explicit TracedProcessForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~TracedProcessForTesting();
 };
 
 }  // namespace tracing

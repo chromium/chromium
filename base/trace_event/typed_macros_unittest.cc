@@ -30,9 +30,20 @@ namespace {
 
 std::unique_ptr<perfetto::TracingSession> g_tracing_session;
 
+perfetto::protos::gen::TraceConfig GetDefaultTraceConfig() {
+  perfetto::protos::gen::TraceConfig trace_config;
+  auto* buffer_config = trace_config.add_buffers();
+  buffer_config->set_size_kb(32 * 1024);
+  auto* data_source = trace_config.add_data_sources();
+  auto* source_config = data_source->mutable_config();
+  source_config->set_name("track_event");
+  source_config->set_target_buffer(0);
+  return trace_config;
+}
+
 void EnableTrace(bool filter_debug_annotations = false) {
   g_tracing_session = perfetto::Tracing::NewTrace();
-  auto config = test::TracingEnvironment::GetDefaultTraceConfig();
+  auto config = GetDefaultTraceConfig();
   if (filter_debug_annotations) {
     for (auto& data_source : *config.mutable_data_sources()) {
       perfetto::protos::gen::TrackEventConfig track_event_config;

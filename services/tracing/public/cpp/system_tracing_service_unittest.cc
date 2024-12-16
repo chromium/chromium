@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "services/tracing/perfetto/system_test_utils.h"
+#include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,10 +37,6 @@ class SystemTracingServiceTest : public testing::Test {
     saved_producer_sock_env_ = getenv(kProducerSockEnvName);
     ASSERT_EQ(0, setenv(kProducerSockEnvName,
                         system_service_->producer().c_str(), 1));
-
-    // Use the current thread as the Perfetto task runner.
-    test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {
@@ -56,9 +53,10 @@ class SystemTracingServiceTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  tracing::TracedProcessForTesting traced_process_{
+      base::SingleThreadTaskRunner::GetCurrentDefault()};
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<MockSystemService> system_service_;
-  std::unique_ptr<PerfettoTracedProcess::TestHandle> test_handle_;
   const char* saved_producer_sock_env_ = nullptr;
 };
 

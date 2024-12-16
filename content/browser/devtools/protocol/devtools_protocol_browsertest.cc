@@ -3694,8 +3694,8 @@ class PosixSystemTracingDevToolsProtocolTest
  public:
   PosixSystemTracingDevToolsProtocolTest() {
     feature_list_.InitAndEnableFeature(features::kEnablePerfettoSystemTracing);
-    tracing::PerfettoTracedProcess::Get()
-        ->SetAllowSystemTracingConsumerForTesting(true);
+    tracing::PerfettoTracedProcess::SetAllowSystemTracingConsumerForTesting(
+        true);
     const char* producer_sock = getenv("PERFETTO_PRODUCER_SOCK_NAME");
     saved_producer_sock_name_ = producer_sock ? producer_sock : std::string();
     const char* consumer_sock = getenv("PERFETTO_CONSUMER_SOCK_NAME");
@@ -3809,8 +3809,8 @@ class FakeSystemTracingForbiddenDevToolsProtocolTest
     : public PosixSystemTracingDevToolsProtocolTest {
  public:
   void SetUp() override {
-    tracing::PerfettoTracedProcess::Get()
-        ->SetAllowSystemTracingConsumerForTesting(false);
+    tracing::PerfettoTracedProcess::SetAllowSystemTracingConsumerForTesting(
+        false);
     PosixSystemTracingDevToolsProtocolTest::SetUp();
   }
 };

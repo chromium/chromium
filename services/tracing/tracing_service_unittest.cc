@@ -44,7 +44,7 @@ namespace tracing {
 
 using ::testing::_;
 
-class TracingServiceTest : public TracingUnitTest {
+class TracingServiceTest : public testing::Test {
  public:
   TracingServiceTest() : service_(&perfetto_service_) {}
 
@@ -52,11 +52,8 @@ class TracingServiceTest : public TracingUnitTest {
   TracingServiceTest& operator=(const TracingServiceTest&) = delete;
 
   void SetUp() override {
-    TracingUnitTest::SetUp();
     perfetto_service()->SetActiveServicePidsInitialized();
   }
-
-  void TearDown() override { TracingUnitTest::TearDown(); }
 
  protected:
   PerfettoService* perfetto_service() { return &perfetto_service_; }
@@ -68,7 +65,7 @@ class TracingServiceTest : public TracingUnitTest {
     static mojom::TracingService* s_service;
     s_service = service();
     auto factory = []() -> mojom::TracingService& { return *s_service; };
-    PerfettoTracedProcess::Get()->SetConsumerConnectionFactory(
+    PerfettoTracedProcess::Get().SetConsumerConnectionFactory(
         factory, base::SequencedTaskRunner::GetCurrentDefault());
   }
 
@@ -118,7 +115,11 @@ class TracingServiceTest : public TracingUnitTest {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
   PerfettoService perfetto_service_;
+  TracedProcessForTesting traced_process_{
+      base::SingleThreadTaskRunner::GetCurrentDefault()};
   TracingService service_;
 
   std::unique_ptr<mojo::Receiver<tracing::mojom::TracedProcess>>

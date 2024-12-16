@@ -8,9 +8,7 @@
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/tracing/perfetto_platform.h"
-#include "services/tracing/public/cpp/perfetto/shared_memory.h"
+#include "base/task/sequenced_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/client_identity.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"
@@ -23,58 +21,6 @@
 
 namespace tracing {
 namespace {
-
-// A proxy task runner which can be dynamically pointed to route tasks into a
-// different task runner.
-class RebindableTaskRunner : public base::SequencedTaskRunner {
- public:
-  RebindableTaskRunner();
-
-  void set_task_runner(scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    task_runner_ = task_runner;
-  }
-
-  // base::SequencedTaskRunner implementation.
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override;
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override;
-  bool RunsTasksInCurrentSequence() const override;
-
- private:
-  ~RebindableTaskRunner() override;
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-};
-
-RebindableTaskRunner::RebindableTaskRunner() = default;
-RebindableTaskRunner::~RebindableTaskRunner() = default;
-
-bool RebindableTaskRunner::PostDelayedTask(const base::Location& from_here,
-                                           base::OnceClosure task,
-                                           base::TimeDelta delay) {
-  return task_runner_->PostDelayedTask(from_here, std::move(task), delay);
-}
-
-bool RebindableTaskRunner::PostNonNestableDelayedTask(
-    const base::Location& from_here,
-    base::OnceClosure task,
-    base::TimeDelta delay) {
-  return task_runner_->PostNonNestableDelayedTask(from_here, std::move(task),
-                                                  delay);
-}
-
-bool RebindableTaskRunner::RunsTasksInCurrentSequence() const {
-  return task_runner_->RunsTasksInCurrentSequence();
-}
-
-RebindableTaskRunner* GetClientLibTaskRunner() {
-  static base::NoDestructor<scoped_refptr<RebindableTaskRunner>> task_runner(
-      base::MakeRefCounted<RebindableTaskRunner>());
-  return task_runner.get()->get();
-}
 
 perfetto::TraceConfig GetDefaultTraceConfig(
     const std::vector<std::string>& data_sources) {
@@ -334,37 +280,15 @@ void MockConsumer::CheckForAllDataSourcesStopped() {
   }
 }
 
-TracingUnitTest::TracingUnitTest()
-    : task_environment_(std::make_unique<base::test::TaskEnvironment>(
-          base::test::TaskEnvironment::MainThreadType::IO)) {
-  // Also tell PerfettoTracedProcess to use the current task environment.
-  auto* client_lib_task_runner = GetClientLibTaskRunner();
-  client_lib_task_runner->set_task_runner(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-  test_handle_ = PerfettoTracedProcess::SetupForTesting(client_lib_task_runner);
+TracedProcessForTesting::TracedProcessForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  PerfettoTracedProcess::MaybeCreateInstanceForTesting().SetupForTesting(
+      task_runner);
 }
 
-TracingUnitTest::~TracingUnitTest() {
-  CHECK(setup_called_ && teardown_called_);
-}
-
-void TracingUnitTest::SetUp() {
-  setup_called_ = true;
-
-  // Wait for any posted construction tasks to execute.
-  RunUntilIdle();
-}
-
-void TracingUnitTest::TearDown() {
-  teardown_called_ = true;
-
-  // Wait for any posted destruction tasks to execute.
-  RunUntilIdle();
-
-  // Clear task runner and data sources.
-  PerfettoTracedProcess::Get()->GetTaskRunner()->ResetTaskRunnerForTesting(
-      nullptr);
-  test_handle_.reset();
+TracedProcessForTesting::~TracedProcessForTesting() {
+  base::RunLoop().RunUntilIdle();
+  PerfettoTracedProcess::Get().ResetForTesting();
 }
 
 }  // namespace tracing

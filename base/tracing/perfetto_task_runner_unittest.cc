@@ -170,8 +170,8 @@ TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
 
   base::RunLoop run_loop;
 
-  task_runner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&] {
+  task_runner()->PostTask(
+      [&] {
         // The 1st add operation posts a task.
         task_runner()->AddFileDescriptorWatch(fd.get(), [&] {
           run_callback_1 = true;
@@ -187,7 +187,7 @@ TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
           ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
           run_loop.Quit();
         });
-      }));
+      });
 
   // Make all posted tasks run.
   run_loop.Run();
@@ -196,11 +196,10 @@ TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
   ASSERT_TRUE(run_callback_2);
   ASSERT_EQ(data, data_value);
 
-  task_runner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&] {
-        // Cleanup the FD watcher.
-        task_runner()->RemoveFileDescriptorWatch(fd.get());
-      }));
+  task_runner()->PostTask([&] {
+    // Cleanup the FD watcher.
+    task_runner()->RemoveFileDescriptorWatch(fd.get());
+  });
   task_environment().RunUntilIdle();
 }
 #endif

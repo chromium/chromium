@@ -21,6 +21,7 @@
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -409,7 +410,7 @@ TracingSamplerProfiler::TracingProfileBuilder::~TracingProfileBuilder() {
   // when TracingProfileBuilder gets destructed, so we make sure this happens on
   // a different sequence.
   if (base::ThreadPoolInstance::Get()) {
-    PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->DeleteSoon(
+    base::ThreadPool::CreateSequencedTaskRunner({})->DeleteSoon(
         FROM_HERE, std::move(trace_writer_));
   } else {
     // Intentionally leak; we have no way of safely destroying this at this

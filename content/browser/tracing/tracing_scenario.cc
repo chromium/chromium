@@ -478,8 +478,8 @@ bool TracingScenario::OnStartTrigger(
     perfetto::Tracing::SetupStartupTracingOpts opts;
     opts.timeout_ms = kStartupTracingTimeoutMs;
     opts.backend = perfetto::kCustomBackend;
-    tracing::PerfettoTracedProcess::Get()->RequestStartupTracing(trace_config_,
-                                                                 opts);
+    tracing::PerfettoTracedProcess::Get().RequestStartupTracing(trace_config_,
+                                                                opts);
   }
 
   tracing_session_->SetOnStopCallback([task_runner = task_runner_,

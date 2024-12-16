@@ -19,17 +19,17 @@
 #include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 
-#include "base/debug/stack_trace.h"
-
 namespace base {
 namespace tracing {
 
 PerfettoTaskRunner::PerfettoTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {}
+    : task_runner_(std::move(task_runner)) {
+  CHECK(task_runner_);
+}
 
 PerfettoTaskRunner::~PerfettoTaskRunner() {
-  DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   fd_controllers_.clear();
 #endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
@@ -42,7 +42,7 @@ void PerfettoTaskRunner::PostTask(std::function<void()> task) {
 void PerfettoTaskRunner::PostDelayedTask(std::function<void()> task,
                                          uint32_t delay_ms) {
   base::ScopedDeferTaskPosting::PostOrDefer(
-      GetOrCreateTaskRunner(), FROM_HERE,
+      task_runner_, FROM_HERE,
       base::BindOnce(
           [](std::function<void()> task) {
             // We block any trace events that happens while any
@@ -73,7 +73,7 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
     perfetto::base::PlatformHandle fd,
     std::function<void()> callback) {
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
-  DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!base::Contains(fd_controllers_, fd));
   // Set up the |fd| in the map to signal intent to add a watch. We need to
   // PostTask the WatchReadable creation because if we do it in this task we'll
@@ -84,8 +84,7 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
       base::BindOnce(
           [](PerfettoTaskRunner* perfetto_runner, int fd,
              std::function<void()> callback) {
-            DCHECK(perfetto_runner->GetOrCreateTaskRunner()
-                       ->RunsTasksInCurrentSequence());
+            DCHECK(perfetto_runner->task_runner_->RunsTasksInCurrentSequence());
             // When this callback runs, we must not have removed |fd|'s watch.
             CHECK(base::Contains(perfetto_runner->fd_controllers_, fd));
             auto& controller_and_cb = perfetto_runner->fd_controllers_[fd];
@@ -107,7 +106,7 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
 void PerfettoTaskRunner::RemoveFileDescriptorWatch(
     perfetto::base::PlatformHandle fd) {
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
-  DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(base::Contains(fd_controllers_, fd));
   // This also cancels the base::FileDescriptorWatcher::WatchReadable() task if
   // it's pending.
@@ -120,20 +119,6 @@ void PerfettoTaskRunner::RemoveFileDescriptorWatch(
 void PerfettoTaskRunner::ResetTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   task_runner_ = std::move(task_runner);
-}
-
-scoped_refptr<base::SequencedTaskRunner>
-PerfettoTaskRunner::GetOrCreateTaskRunner() {
-  // TODO(eseckler): This is not really thread-safe. We should probably add a
-  // lock around this. At the moment we can get away without one because this
-  // method is called for the first time on the process's main thread before the
-  // tracing service connects.
-  if (!task_runner_) {
-    DCHECK(base::ThreadPoolInstance::Get());
-    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
-  }
-  return task_runner_;
 }
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)

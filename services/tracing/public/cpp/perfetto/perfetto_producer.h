@@ -28,7 +28,7 @@ namespace tracing {
 // implement the remaining methods of the ProducerEndpoint interface.
 class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
  public:
-  explicit PerfettoProducer(base::tracing::PerfettoTaskRunner*);
+  explicit PerfettoProducer();
 
   virtual ~PerfettoProducer();
 
@@ -86,15 +86,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // commits while a datasource is being stopped.
   static constexpr uint32_t kShmArbiterBatchCommitDurationMs = 1000;
 
-  base::tracing::PerfettoTaskRunner* task_runner();
-
   size_t GetPreferredSmbSizeBytes();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  const raw_ptr<base::tracing::PerfettoTaskRunner, DanglingUntriaged>
-      task_runner_;
 };
 }  // namespace tracing
 #endif  // SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_PRODUCER_H_

@@ -61,16 +61,14 @@ void TracedProcessImpl::OnTracedProcessRequest(
 mojo::Remote<mojom::SystemTracingService>&
 TracedProcessImpl::system_tracing_service() {
   // |system_tracing_service_| can only be used on the Perfetto task runner.
-  auto task_runner =
-      PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+  auto* task_runner = PerfettoTracedProcess::GetTaskRunner();
   DCHECK(task_runner && task_runner->RunsTasksInCurrentSequence());
   return system_tracing_service_;
 }
 
 void TracedProcessImpl::EnableSystemTracingService(
     mojo::PendingRemote<mojom::SystemTracingService> remote) {
-  auto task_runner =
-      PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+  auto* task_runner = PerfettoTracedProcess::GetTaskRunner();
   if (!task_runner->RunsTasksInCurrentSequence()) {
     // |system_tracing_service_| is bound on the Perfetto task runner.
     task_runner->PostTask(
@@ -122,7 +120,7 @@ void TracedProcessImpl::ConnectToTracingService(
   // Ensure the TraceEventAgent has been created.
   TraceEventAgent::GetInstance();
 
-  PerfettoTracedProcess::Get()->ConnectProducer(
+  PerfettoTracedProcess::Get().ConnectProducer(
       std::move(request->perfetto_service));
 }
 
