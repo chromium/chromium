@@ -126,7 +126,7 @@ TEST_P(WelcomeTourChangedExperimentalArmMetricTest,
     Shell::Get()
         ->session_controller()
         ->GetLastActiveUserPrefService()
-        ->SetInteger("ash.welcome_tour.v2.experimental_arm.first",
+        ->SetInteger("ash.welcome_tour.v3.experimental_arm.first",
                      static_cast<int>(pref_value.value()));
   }
 
@@ -280,8 +280,8 @@ INSTANTIATE_TEST_SUITE_P(
 // appropriate histogram is submitted.
 TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   SimulateNewUserFirstLogin("user@test");
-  ClearPref("ash.welcome_tour.v2.prevented.first_reason");
-  ClearPref("ash.welcome_tour.v2.prevented.first_time");
+  ClearPref("ash.welcome_tour.v3.prevented.first_reason");
+  ClearPref("ash.welcome_tour.v3.prevented.first_time");
 
   base::HistogramTester histogram_tester;
   PrefService* prefs = user_education_util::GetLastActiveUserPrefService();

@@ -33,15 +33,15 @@ using welcome_tour_metrics::PreventedReason;
 // Constants -------------------------------------------------------------------
 
 static constexpr char kFirstExperimentalArm[] =
-    "ash.welcome_tour.v2.experimental_arm.first";
+    "ash.welcome_tour.v3.experimental_arm.first";
 static constexpr char kTimeOfFirstTourAborted[] =
-    "ash.welcome_tour.v2.aborted.first_time";
+    "ash.welcome_tour.v3.aborted.first_time";
 static constexpr char kTimeOfFirstTourCompletion[] =
-    "ash.welcome_tour.v2.completed.first_time";
+    "ash.welcome_tour.v3.completed.first_time";
 static constexpr char kTimeOfFirstTourPrevention[] =
-    "ash.welcome_tour.v2.prevented.first_time";
+    "ash.welcome_tour.v3.prevented.first_time";
 static constexpr char kReasonForFirstTourPrevention[] =
-    "ash.welcome_tour.v2.prevented.first_reason";
+    "ash.welcome_tour.v3.prevented.first_reason";
 
 }  // namespace
 
