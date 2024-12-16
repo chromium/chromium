@@ -531,21 +531,6 @@ TEST(BreakIteratorTest, GetStringAfterSetText) {
   EXPECT_EQ(u",", iter.GetString());
 }
 
-TEST(BreakIteratorTest, GetStringView) {
-  const std::u16string initial_string(u"some string");
-  BreakIterator iter(initial_string, BreakIterator::BREAK_WORD);
-  ASSERT_TRUE(iter.Init());
-
-  EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(iter.GetString(), iter.GetStringView());
-  EXPECT_EQ(std::u16string_view(u"some"), iter.GetStringView());
-
-  EXPECT_TRUE(iter.Advance());
-  EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(iter.GetString(), iter.GetStringView());
-  EXPECT_EQ(std::u16string_view(u"string"), iter.GetStringView());
-}
-
 // Make sure that when not in RULE_BASED or BREAK_WORD mode we're getting
 // IS_LINE_OR_CHAR_BREAK.
 TEST(BreakIteratorTest, GetWordBreakStatusBreakLine) {

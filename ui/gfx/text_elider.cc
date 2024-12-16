@@ -15,6 +15,7 @@
 #include <memory>
 #include <numeric>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -345,7 +346,7 @@ class RectangleString {
   // AddString() may be called multiple times to concatenate together
   // multiple strings into the region (the current caller doesn't do
   // this, however).
-  void AddString(const std::u16string& input);
+  void AddString(std::u16string_view input);
 
   // Perform any deferred output processing.  Must be called after the
   // last AddString() call has occurred.
@@ -354,15 +355,15 @@ class RectangleString {
  private:
   // Add a line to the rectangular region at the current position,
   // either by itself or by breaking it into words.
-  void AddLine(const std::u16string& line);
+  void AddLine(std::u16string_view line);
 
   // Add a word to the rectangular region at the current position,
   // either by itself or by breaking it into characters.
-  void AddWord(const std::u16string& word);
+  void AddWord(std::u16string_view word);
 
   // Add text to the output string if the rectangular boundaries
   // have not been exceeded, advancing the current position.
-  void Append(const std::u16string& string);
+  void Append(std::u16string_view string);
 
   // Set the current position to the beginning of the next line.  If
   // |output| is true, add a newline to the output string if the rectangular
@@ -397,7 +398,7 @@ class RectangleString {
   raw_ptr<std::u16string> output_;
 };
 
-void RectangleString::AddString(const std::u16string& input) {
+void RectangleString::AddString(std::u16string_view input) {
   base::i18n::BreakIterator lines(input,
                                   base::i18n::BreakIterator::BREAK_NEWLINE);
   if (lines.Init()) {
@@ -416,7 +417,7 @@ bool RectangleString::Finalize() {
   return false;
 }
 
-void RectangleString::AddLine(const std::u16string& line) {
+void RectangleString::AddLine(std::u16string_view line) {
   if (line.length() < max_cols_) {
     Append(line);
   } else {
@@ -434,7 +435,7 @@ void RectangleString::AddLine(const std::u16string& line) {
   current_col_ = 0;
 }
 
-void RectangleString::AddWord(const std::u16string& word) {
+void RectangleString::AddWord(std::u16string_view word) {
   if (word.length() < max_cols_) {
     // Word can be made to fit, no need to fragment it.
     if (current_col_ + word.length() >= max_cols_)
@@ -460,7 +461,7 @@ void RectangleString::AddWord(const std::u16string& word) {
   }
 }
 
-void RectangleString::Append(const std::u16string& string) {
+void RectangleString::Append(std::u16string_view string) {
   if (current_row_ < max_rows_)
     output_->append(string);
   else
@@ -586,14 +587,14 @@ void RectangleText::AddString(const std::u16string& input) {
                                   base::i18n::BreakIterator::BREAK_NEWLINE);
   if (lines.Init()) {
     while (!insufficient_height_ && lines.Advance()) {
-      std::u16string line = lines.GetString();
+      std::u16string_view line = lines.GetString();
       // The BREAK_NEWLINE iterator will keep the trailing newline character,
       // except in the case of the last line, which may not have one.  Remove
       // the newline character, if it exists.
       last_line_ended_in_lf_ = !line.empty() && line.back() == '\n';
       if (last_line_ended_in_lf_)
-        line.resize(line.length() - 1);
-      AddLine(line);
+        line.remove_suffix(1);
+      AddLine(std::u16string(line));
     }
   } else {
     NOTREACHED() << "BreakIterator (lines) init failed";
@@ -627,8 +628,8 @@ void RectangleText::AddLine(const std::u16string& line) {
     if (words.Init()) {
       while (words.Advance()) {
         const bool truncate = !current_line_.empty();
-        const std::u16string& word = words.GetString();
-        const int lines_added = AddWord(word);
+        const std::u16string_view word = words.GetString();
+        const int lines_added = AddWord(std::u16string(word));
         if (lines_added) {
           if (truncate) {
             // Trim trailing whitespace from the line that was added.

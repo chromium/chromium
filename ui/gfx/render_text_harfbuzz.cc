@@ -240,8 +240,7 @@ size_t FindRunBreakingCharacter(const std::u16string& text,
   }
 
   // Retrieve the first grapheme and its codepoint properties.
-  const std::u16string_view first_grapheme_text =
-      grapheme_iterator.GetStringView();
+  const std::u16string_view first_grapheme_text = grapheme_iterator.GetString();
   const GraphemeProperties first_grapheme_properties =
       RetrieveGraphemeProperties(first_grapheme_text, is_common_script);
 
@@ -249,7 +248,7 @@ size_t FindRunBreakingCharacter(const std::u16string& text,
   // compatible, otherwise break the current run.
   while (grapheme_iterator.Advance()) {
     const std::u16string_view current_grapheme_text =
-        grapheme_iterator.GetStringView();
+        grapheme_iterator.GetString();
     const GraphemeProperties current_grapheme_properties =
         RetrieveGraphemeProperties(current_grapheme_text, is_common_script);
 

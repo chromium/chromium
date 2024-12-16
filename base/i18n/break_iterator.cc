@@ -262,12 +262,9 @@ bool BreakIterator::IsGraphemeBoundary(size_t position) const {
   return !!ubrk_isBoundary(iter_.get(), static_cast<int32_t>(position));
 }
 
-std::u16string BreakIterator::GetString() const {
-  return std::u16string(GetStringView());
-}
-
-std::u16string_view BreakIterator::GetStringView() const {
-  DCHECK(prev_ != npos && pos_ != npos);
+std::u16string_view BreakIterator::GetString() const {
+  DCHECK_NE(prev_, npos);
+  DCHECK_NE(pos_, npos);
   return string_.substr(prev_, pos_ - prev_);
 }
 
