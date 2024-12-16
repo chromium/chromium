@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/quick_insert/resources/grit/quick_insert_resources.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
@@ -143,7 +144,8 @@ QuickInsertFeatureTour::~QuickInsertFeatureTour() {
 
 void QuickInsertFeatureTour::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kQuickInsertFeatureTourCompletedPref, false);
+  registry->RegisterBooleanPref(prefs::kQuickInsertFeatureTourCompletedPref,
+                                false);
 }
 
 bool QuickInsertFeatureTour::MaybeShowForFirstUse(
@@ -151,7 +153,8 @@ bool QuickInsertFeatureTour::MaybeShowForFirstUse(
     EditorStatus editor_status,
     base::RepeatingClosure learn_more_callback,
     base::RepeatingClosure completion_callback) {
-  auto* pref = prefs->FindPreference(kQuickInsertFeatureTourCompletedPref);
+  auto* pref =
+      prefs->FindPreference(prefs::kQuickInsertFeatureTourCompletedPref);
   // Don't show if `pref` is null (this happens in unit tests that don't call
   // `RegisterProfilePrefs`).
   if (pref == nullptr || pref->GetValue()->GetBool()) {
@@ -177,7 +180,7 @@ bool QuickInsertFeatureTour::MaybeShowForFirstUse(
 
   widget_->Show();
 
-  prefs->SetBoolean(kQuickInsertFeatureTourCompletedPref, true);
+  prefs->SetBoolean(prefs::kQuickInsertFeatureTourCompletedPref, true);
   return true;
 }
 

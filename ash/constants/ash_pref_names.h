@@ -2616,6 +2616,11 @@ inline constexpr char kSunfishLauncherNudgeShownCount[] =
 inline constexpr char kSunfishLauncherNudgeLastShown[] =
     "ash.capture_mode.sunfish_launcher_nudge_last_shown";
 
+// A boolean pref storing whether the Quick Insert first-use feature tour was
+// completed.
+inline constexpr char kQuickInsertFeatureTourCompletedPref[] =
+    "ash.picker.feature_tour.completed";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

@@ -31,10 +31,6 @@ class ActivationClient;
 
 namespace ash {
 
-// Pref storing whether the feature tour was completed.
-inline constexpr char kQuickInsertFeatureTourCompletedPref[] =
-    "ash.picker.feature_tour.completed";
-
 class ASH_EXPORT QuickInsertFeatureTour : public wm::ActivationChangeObserver {
  public:
   enum class EditorStatus {
