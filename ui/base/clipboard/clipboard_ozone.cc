@@ -189,7 +189,7 @@ class ClipboardOzone::AsyncClipboardOzone {
 
   std::optional<DataTransferEndpoint> ReadSourceAndWait(
       ClipboardBuffer buffer) {
-    auto data = ReadClipboardDataAndWait(buffer, kMimeTypeLinuxSourceUrl);
+    auto data = ReadClipboardDataAndWait(buffer, kMimeTypeSourceUrl);
     if (data.empty()) {
       return std::nullopt;
     }
@@ -760,7 +760,7 @@ void ClipboardOzone::AddSourceToClipboard(
     const std::string& string_url = data_src->GetURL()->spec();
     async_clipboard_ozone_->InsertData(
         std::vector<uint8_t>(string_url.begin(), string_url.end()),
-        {kMimeTypeLinuxSourceUrl});
+        {kMimeTypeSourceUrl});
   }
 }
 
