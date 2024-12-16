@@ -147,6 +147,9 @@ void UDPReadableStreamWrapper::OnReceived(
   if (result != net::OK) {
     if (result == net::ERR_MSG_TOO_BIG) {
       // TODO(crbug.com/362145407): Figure out the root cause.
+      // Error codes are negative.
+      base::UmaHistogramSparse("DirectSockets.UDPReadableStreamError", -result);
+
       DCHECK_GT(pending_receive_requests_, 0);
       pending_receive_requests_--;
 
