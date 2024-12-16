@@ -4,6 +4,8 @@
 
 #include "testing/perf/confidence/ratio_bootstrap_estimator.h"
 
+#include <limits>
+
 #define _USE_MATH_DEFINES  // Needed to get M_SQRT1_2 on Windows.
 #include <math.h>
 
