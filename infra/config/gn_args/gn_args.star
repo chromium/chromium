@@ -1417,6 +1417,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "v8_sandbox_testing",
+    args = {
+        "v8_enable_memory_corruption_api": True,
+    },
+)
+
+gn_args.config(
     name = "volteer",
     args_file = "//build/args/chromeos/volteer.gni",
 )
