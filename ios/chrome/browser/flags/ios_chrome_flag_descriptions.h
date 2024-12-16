@@ -487,6 +487,11 @@ extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
 
+// Title and description for the flag to enable the new following feed entry
+// points.
+extern const char kIOSNewFollowingFeedEntryPointsName[];
+extern const char kIOSNewFollowingFeedEntryPointsDescription[];
+
 // Title and description for the flag to enable password bottom sheet triggering
 // on autofocus on IOS.
 extern const char kIOSPasswordBottomSheetAutofocusName[];

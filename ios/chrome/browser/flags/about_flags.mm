@@ -2267,6 +2267,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(set_up_list::kSetUpListShortenedDuration,
                                     kSetUpListDurationVariations,
                                     "SetUpListShortenedDuration")},
+    // TODO(crbug.com/359325090): Update value type to include params needed for
+    // the multi-arm experiment.
+    {"ios-new-following-feed-entry-points",
+     flag_descriptions::kIOSNewFollowingFeedEntryPointsName,
+     flag_descriptions::kIOSNewFollowingFeedEntryPointsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSNewFollowingFeedEntryPoints)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
