@@ -21,46 +21,10 @@ namespace chrome_checker {
 llvm::StringMap<bool> g_checked_files_cache;
 
 struct CheckFilePrefixes {
-  // Owns the memory holding the strings.
+  // `buffer` owns the memory for the strings in `prefix_map`.
   std::unique_ptr<llvm::MemoryBuffer> buffer;
-  // Pointers into the `buffer`, in sorted order.
-  std::vector<llvm::StringRef> opt_out;
-  // Pointers into the `buffer`, in sorted order.
-  std::vector<llvm::StringRef> opt_in;
+  std::map<llvm::StringRef, char> prefix_map;
 };
-
-// Sort the prefixes and remove duplicates.
-void NormalizePrefixList(std::vector<llvm::StringRef>& prefixes) {
-  if (prefixes.empty()) {
-    return;
-  }
-
-  // TODO(danakj): Use std::ranges::sort when Clang is build with C++20.
-  std::sort(prefixes.begin(), prefixes.end());
-
-  // Remove ~duplicate in a general sense, where a prefix is a prefix of another
-  // prefix. This is useful when two unrelated patches are merged/reverted
-  // around the same time and the prefixes overlap. This avoids one to hide the
-  // other when searching them via std::upper_bound.
-  //
-  // Note that we could use std::unique here, but its behavior is not
-  // guaranteed by the standard when the predicate is not an equivalence
-  // relation.
-  {
-    auto it = prefixes.begin();
-    for (auto next = std::next(it); next != prefixes.end(); ++next) {
-      if (next->starts_with(*it)) {
-        continue;  // Skip the prefix.
-      }
-      ++it;
-      // Fill in the gap in between the two iterators.
-      if (it != next) {
-        *it = std::move(*next);
-      }
-    }
-    prefixes.erase(std::next(it), prefixes.end());
-  }
-}
 
 class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
  public:
@@ -264,42 +228,19 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     // Drop the ../ prefixes.
     while (cmp_filename.consume_front("./") ||
            cmp_filename.consume_front("../"))
-      ;
-    if (cmp_filename.empty()) {
-      return false;
-    }
+      continue;
 
-    // Look for prefix match (whether any of `check_file_prefixes_` is a prefix
-    // of the filename). We first check for opt-ins, as these force checking for
-    // the file. If none are found, we look for opt-outs, which have lower
-    // precedence and remove checks from the file. If there's neither, the file
-    // is checked.
-    if (!check_file_prefixes_.opt_in.empty()) {
-      const auto begin = check_file_prefixes_.opt_in.begin();
-      const auto end = check_file_prefixes_.opt_in.end();
-      auto it = std::upper_bound(begin, end, cmp_filename);
-      if (it != begin) {
-        --it;  // Now `it` will be either the exact or prefix match.
-        if (*it == cmp_filename.take_front(it->size())) {
-          g_checked_files_cache.insert({filename, true});
-          return true;
-        }
+    bool should_check = true;
+    while (!cmp_filename.empty()) {
+      auto it = check_file_prefixes_.prefix_map.find(cmp_filename);
+      if (it != check_file_prefixes_.prefix_map.end()) {
+        should_check = (it->second == '+');
+        break;
       }
+      cmp_filename = llvm::sys::path::parent_path(cmp_filename);
     }
-    if (!check_file_prefixes_.opt_out.empty()) {
-      const auto begin = check_file_prefixes_.opt_out.begin();
-      const auto end = check_file_prefixes_.opt_out.end();
-      auto it = std::upper_bound(begin, end, cmp_filename);
-      if (it != begin) {
-        --it;  // Now `it` will be either the exact or prefix match.
-        if (*it == cmp_filename.take_front(it->size())) {
-          g_checked_files_cache.insert({filename, false});
-          return false;
-        }
-      }
-    }
-    g_checked_files_cache.insert({filename, true});
-    return true;
+    g_checked_files_cache.insert({filename, should_check});
+    return should_check;
   }
 
   // Used to prevent recursing into HandleDiagnostic() when we're emitting a
@@ -385,13 +326,13 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
             << "[unsafe-buffers] Extra argument to unsafe-buffers plugin: '"
             << args[i] << ". Usage: [SWITCHES] PATH_TO_CHECK_FILE'\n";
         return false;
-      } else {
-        found_file_arg = true;
-        if (!LoadCheckFilePrefixes(args[i])) {
-          llvm::errs() << "[unsafe-buffers] Failed to load paths from file '"
-                       << args[i] << "'\n";
-        }
       }
+      if (!LoadCheckFilePrefixes(args[i])) {
+        llvm::errs() << "[unsafe-buffers] Failed to load paths from file '"
+                     << args[i] << "'\n";
+        return false;
+      }
+      found_file_arg = true;
     }
     return true;
   }
@@ -405,23 +346,25 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
       return false;
     }
 
-    // Parse out the paths into `check_file_prefixes_.prefixes`.
+    // Parse out the paths into `check_file_prefixes_`.
     //
     // The file format is as follows:
-    // * Lines that begin with `#` are comments are are ignored.
+    // * `#` introduces a comment until the end of the line.
     // * Empty lines are ignored.
     // * Every other line is a path prefix from the source tree root using
     //   unix-style delimiters.
     //   * Each line either removes a path from checks or adds a path to checks.
-    //   * If the line starts with `+` paths matching the line will be
-    //     checked. This takes precedence over the `-` operation.
-    //   * If the line starts with `-` paths matching the line will not be
-    //     checked.
-    //   * For instance `+a/b` will match the file at `//a/b/c.h` but will *not*
-    //     match `//other/a/b/c.h`.
-    // * Exact file paths look like `+a/b/c.h` and directory prefixes should end
-    //   with a `/` such as `+a/b/`.
-    // * Files that do not match anything in the file will be checked.
+    //   * If the line starts with `+` paths matching the line will be added.
+    //   * If the line starts with `-` paths matching the line will removed.
+    //   * Other starting characters are not allowed.
+    //   * Paths naming directories match the entire sub-directory. For instance
+    //     `+a/b/` will match the file at `//a/b/c.h` but will *not* match
+    //     `//other/a/b/c.h`.
+    //   * Paths naming files match the single file and look like `+a/b/c.h`.
+    //   * Trailing slashes for directories are recommended, but not enforced.
+    // * The longest (most specific) match takes precedence.
+    // * Files that do not match any of the prefixes file will be checked.
+    // * Duplicate entries are not allowed and produce compilation errors.
     //
     // Example:
     // ```
@@ -434,35 +377,37 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
     // # Matches a specific file at //my/file.cc, overriding the `-my/` above
     // # for this one file.
     // +my/file.cc
-
+    //
     llvm::StringRef string = check_file_prefixes_.buffer->getBuffer();
     while (!string.empty()) {
-      auto [lhs, rhs] = string.split('\n');
-      string = rhs;
-      bool keep_lhs = false;
-      for (char c : lhs) {
-        if (c != ' ') {
-          keep_lhs = c != '#';
-          break;
-        }
+      auto [line, remainder] = string.split('\n');
+      string = remainder;
+      auto [active, comment] = line.split('#');
+      active = active.trim();
+      if (active.empty()) {
+        continue;
       }
-      if (keep_lhs) {
-        if (lhs[0u] == '+' && lhs.size() > 1u) {
-          check_file_prefixes_.opt_in.push_back(lhs.substr(1u));
-        } else if (lhs[0u] == '-' && lhs.size() > 1u) {
-          check_file_prefixes_.opt_out.push_back(lhs.substr(1u));
-        } else {
-          llvm::errs() << "[unsafe-buffers] Invalid line in paths file, must "
-                          "start with +/-: '"
-                       << lhs << "'\n";
-          return false;
-        }
+      char symbol = active[0u];
+      if (symbol != '+' && symbol != '-') {
+        llvm::errs() << "[unsafe-buffers] Invalid line in paths file, must "
+                     << "start with +/-: '" << line << "'\n";
+        return false;
+      }
+      llvm::StringRef prefix = active.substr(1u).rtrim('/');
+      if (prefix.empty()) {
+        llvm::errs() << "[unsafe-buffers] Invalid line in paths file, path "
+                     << "must immediately follow +/-: '" << line << "'\n";
+        return false;
+      }
+      auto [ignore, was_inserted] =
+          check_file_prefixes_.prefix_map.insert({prefix, symbol});
+      if (!was_inserted) {
+        llvm::errs() << "[unsafe-buffers] Duplicate entry in paths file "
+                        "for '"
+                     << line << "'\n";
+        return false;
       }
     }
-
-    NormalizePrefixList(check_file_prefixes_.opt_in);
-    NormalizePrefixList(check_file_prefixes_.opt_out);
-
     return true;
   }
 

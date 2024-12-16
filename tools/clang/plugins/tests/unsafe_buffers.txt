@@ -17,6 +17,11 @@ In file included from unsafe_buffers.cpp:17:
          ^
 ./unsafe_buffers_not_clean.h:9:10: note: See //docs/unsafe_buffers.md for help.
 In file included from unsafe_buffers.cpp:18:
+./unsafe_buffers_not_clean_dir/clean_dir_1/not_clean_header.h:11:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return i[s];
+         ^
+./unsafe_buffers_not_clean_dir/clean_dir_1/not_clean_header.h:11:10: note: See //docs/unsafe_buffers.md for help.
+In file included from unsafe_buffers.cpp:20:
 ./unsafe_buffers_not_clean_dir/clean_header.h:11:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
   return i[s];  // This is in a "clean" file, so it should make a warning.
          ^
@@ -45,7 +50,7 @@ ptrs_
 <scratch space>:20:1: note: expanded from here
 ptrs_
 ^
-In file included from unsafe_buffers.cpp:21:
+In file included from unsafe_buffers.cpp:23:
 ./unsafe_buffers_not_clean_dir/opt_in_header.h:12:44: warning: unsafe buffer access [-Wunsafe-buffer-usage]
 DO_UNSAFE_THING_FROM_CHECKED_HEADER(OptIn, N, i, s);    // Should error.
                                            ^
@@ -78,4 +83,4 @@ DO_UNSAFE_THING_FROM_UNCHECKED_HEADER(OptIn, N, i, s);  // Should error.
          i[s];                                              // Should error.
          ^
 ./unsafe_buffers_not_clean_dir/opt_in_header.h:23:10: note: See //docs/unsafe_buffers.md for help.
-13 warnings generated.
+14 warnings generated.
