@@ -8,6 +8,10 @@
     --cr-searchbox-min-width: 306px;
   }
 
+  :host(:not([is-translate-button-enabled])) {
+    --cr-searchbox-min-width: 306px;
+  }
+
   .app-container {
     height: 100%;
     width: 100%;
@@ -235,6 +239,7 @@
 
   #searchboxContainer {
     --color-searchbox-background: #FFFFFF;
+    --color-searchbox-background-hovered: #FFFFFF;
     --color-searchbox-results-background: #ffffffff;
     --color-searchbox-google-g-background: var(--color-primary);
     --cr-searchbox-height: 48px;
@@ -245,6 +250,10 @@
     inset-inline-end: 140px;
   }
 
+  :host(:not([is-translate-button-enabled])) #searchboxContainer {
+    inset-inline-end: 84px;
+  }
+
   :host([show-ghost-loader]) #searchboxContainer {
     --color-searchbox-background: var(--color-searchbox-results-background);
   }
@@ -252,6 +261,7 @@
   :host([is-searchbox-focused]) #searchboxContainer {
     inset-inline-end: 84px;
     --cr-searchbox-height: 52px;
+    inset-block-start: 34px;
   }
 
   #searchboxContainer {
