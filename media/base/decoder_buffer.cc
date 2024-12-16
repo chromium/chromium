@@ -8,6 +8,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/subsample_entry.h"
 
 namespace media {
