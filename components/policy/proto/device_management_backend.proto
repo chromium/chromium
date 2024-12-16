@@ -1114,6 +1114,7 @@ message ActiveTimePeriod {
     SESSION_KIOSK = 3;
     SESSION_ARC_KIOSK = 4;
     SESSION_WEB_KIOSK = 5;
+    SESSION_IWA_KIOSK = 6;
   }
 
   optional SessionType session_type = 4;

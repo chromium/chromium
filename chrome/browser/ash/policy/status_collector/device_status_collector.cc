@@ -662,8 +662,7 @@ em::ActiveTimePeriod::SessionType GetSessionType(
       return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
 
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
-      // TODO(crbug.com/369516363): add ActiveTimePeriod value for IWA.
-      return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
+      return em::ActiveTimePeriod::SESSION_IWA_KIOSK;
 
     default:
       NOTREACHED();

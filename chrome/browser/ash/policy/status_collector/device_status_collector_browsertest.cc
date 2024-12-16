@@ -49,6 +49,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
@@ -294,8 +295,12 @@ constexpr base::TimeDelta kHour = base::Hours(1);
 
 const char kKioskAccountId[] = "kiosk_user@localhost";
 const char kWebKioskAccountId[] = "web_kiosk_user@localhost";
+const char kIwaKioskAccountId[] = "iwa_kiosk_user@localhost";
 const char kKioskAppId[] = "kiosk_app_id";
 const char kWebKioskAppUrl[] = "http://example.com";
+const char kIwaKioskWebBundleId[] =
+    "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+const char kIwaKioskUpdateUrl[] = "https://example.com/update.json";
 const char kExternalMountPoint[] = "/a/b/c";
 const char kPublicAccountId[] = "public_user@localhost";
 const char kArcStatus[] = R"(
@@ -853,6 +858,11 @@ class DeviceStatusCollectorTest : public testing::Test {
             DeviceLocalAccount::EphemeralMode::kUnset,
             fake_web_kiosk_app_basic_info_,
             kWebKioskAccountId),
+        fake_iwa_kiosk_basic_info_(kIwaKioskWebBundleId, kIwaKioskUpdateUrl),
+        fake_iwa_kiosk_device_local_account_(
+            DeviceLocalAccount::EphemeralMode::kUnset,
+            fake_iwa_kiosk_basic_info_,
+            kIwaKioskAccountId),
         user_data_dir_override_(chrome::DIR_USER_DATA),
         crash_dumps_dir_override_(chrome::DIR_CRASH_DUMPS) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
@@ -1092,6 +1102,9 @@ class DeviceStatusCollectorTest : public testing::Test {
       case DeviceLocalAccountType::kWebKioskApp:
         user = user_manager->AddWebKioskAppUser(account_id);
         break;
+      case DeviceLocalAccountType::kKioskIsolatedWebApp:
+        user = user_manager->AddKioskIwaUser(account_id);
+        break;
       default:
         FAIL() << "Unexpected kiosk app type.";
     }
@@ -1160,6 +1173,22 @@ class DeviceStatusCollectorTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void MockAutoLaunchKioskIwa(
+      const DeviceLocalAccount& auto_launch_app_account) {
+    kiosk_iwa_manager_ = std::make_unique<ash::KioskIwaManager>();
+    kiosk_iwa_manager_->AddAppForTesting(auto_launch_app_account);
+
+    std::vector<DeviceLocalAccount> accounts;
+    accounts.push_back(auto_launch_app_account);
+    SetDeviceLocalAccountsForTesting(&owner_settings_service_, accounts);
+
+    owner_settings_service_.SetString(
+        ash::kAccountsPrefDeviceLocalAccountAutoLoginId,
+        auto_launch_app_account.account_id);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
   void AddActivityPeriodForUser(const std::string& user_email) {
     base::Time start_time = test_clock_.Now();
     test_clock_.Advance(base::Hours(1));
@@ -1194,6 +1223,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
   // Only set after MockAutoLaunchWebKioskApp was called.
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
+  // Only set after MockAutoLaunchKioskIwa was called.
+  std::unique_ptr<ash::KioskIwaManager> kiosk_iwa_manager_;
   // Only set after MockAutoLaunchKioskAppWithRequiredPlatformVersion was
   // called.
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
@@ -1208,6 +1239,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   const DeviceLocalAccount fake_kiosk_device_local_account_;
   const WebKioskAppBasicInfo fake_web_kiosk_app_basic_info_;
   const DeviceLocalAccount fake_web_kiosk_device_local_account_;
+  const IsolatedWebAppKioskBasicInfo fake_iwa_kiosk_basic_info_;
+  const DeviceLocalAccount fake_iwa_kiosk_device_local_account_;
   base::ScopedPathOverride user_data_dir_override_;
   base::ScopedPathOverride crash_dumps_dir_override_;
   raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged> update_engine_client_;
@@ -1567,6 +1600,35 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
   EXPECT_EQ(em::ActiveTimePeriod::SESSION_WEB_KIOSK,
+            device_status_.active_periods(0).session_type());
+}
+
+TEST_F(DeviceStatusCollectorTest, ActivityWithIwaKioskUser) {
+  DisableDefaultSettings();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kActivityReportingSessionType);
+  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
+                                 ui::IDLE_STATE_ACTIVE};
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceActivityTimes, true);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceUsers, true);
+  const AccountId kiosk_account_id(AccountId::FromUserEmail(
+      "public@isolated-kiosk-apps.device-local.localhost"));
+  auto* user_manager = GetFakeChromeUserManager();
+  auto* user = user_manager->AddPublicAccountUser(kiosk_account_id);
+  user_manager->UserLoggedIn(kiosk_account_id, user->username_hash(),
+                             /*browser_restart=*/false,
+                             /*is_child=*/false);
+
+  EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
+  EXPECT_FALSE(status_collector_->IsReportingUsers());
+
+  status_collector_->Simulate(test_states, 3);
+  GetStatus();
+  EXPECT_EQ(1, device_status_.active_periods_size());
+  EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_EQ(em::ActiveTimePeriod::SESSION_IWA_KIOSK,
             device_status_.active_periods(0).session_type());
 }
 
@@ -2618,6 +2680,28 @@ TEST_F(DeviceStatusCollectorTest, ReportWebKioskSessionStatus) {
   EXPECT_FALSE(session_status_.has_user_dm_token());
 }
 
+TEST_F(DeviceStatusCollectorTest, ReportIwaKioskSessionStatus) {
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceSessionStatus, true);
+  status_collector_->set_kiosk_account(std::make_unique<DeviceLocalAccount>(
+      fake_iwa_kiosk_device_local_account_));
+
+  // Set up a device-local account for single-app Web kiosk mode.
+  MockRunningKioskApp(fake_iwa_kiosk_device_local_account_,
+                      DeviceLocalAccountType::kKioskIsolatedWebApp);
+
+  GetStatus();
+  EXPECT_TRUE(got_session_status_);
+  ASSERT_EQ(1, session_status_.installed_apps_size());
+  EXPECT_EQ(kIwaKioskAccountId, session_status_.device_local_account_id());
+  const em::AppStatus app = session_status_.installed_apps(0);
+  EXPECT_EQ(kIwaKioskWebBundleId, app.app_id());
+  EXPECT_FALSE(app.has_status());
+  EXPECT_FALSE(app.has_error());
+  // Expect no User DM Token for kiosk sessions.
+  EXPECT_FALSE(session_status_.has_user_dm_token());
+}
+
 TEST_F(DeviceStatusCollectorTest, NoOsUpdateStatusByDefault) {
   auto scoped_version = MockPlatformVersion(kDefaultPlatformVersion);
   MockAutoLaunchKioskAppWithRequiredPlatformVersion(
@@ -2896,6 +2980,25 @@ TEST_F(DeviceStatusCollectorTest, ReportRunningWebKioskApp) {
   ASSERT_TRUE(device_status_.has_running_kiosk_app());
   const em::AppStatus app = device_status_.running_kiosk_app();
   EXPECT_EQ(kWebKioskAppUrl, app.app_id());
+  EXPECT_FALSE(app.has_status());
+  EXPECT_FALSE(app.has_error());
+}
+
+TEST_F(DeviceStatusCollectorTest, ReportRunningIwaKioskApp) {
+  DisableDefaultSettings();
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportRunningKioskApp, true);
+  MockAutoLaunchKioskIwa(fake_iwa_kiosk_device_local_account_);
+
+  MockRunningKioskApp(fake_iwa_kiosk_device_local_account_,
+                      DeviceLocalAccountType::kKioskIsolatedWebApp);
+  status_collector_->set_kiosk_account(std::make_unique<DeviceLocalAccount>(
+      fake_iwa_kiosk_device_local_account_));
+
+  GetStatus();
+  ASSERT_TRUE(device_status_.has_running_kiosk_app());
+  const em::AppStatus app = device_status_.running_kiosk_app();
+  EXPECT_EQ(kIwaKioskWebBundleId, app.app_id());
   EXPECT_FALSE(app.has_status());
   EXPECT_FALSE(app.has_error());
 }
