@@ -10,6 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
+#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -169,6 +170,13 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   bool ForceInlineBaselineSynthesis() const {
     return use_last_baseline_for_inline_baseline_ && IsScrollContainer() &&
            !Style().ShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  }
+
+  const GapFragmentData::GapGeometry* GapGeometry() const {
+    if (const auto* field = GetRareField(FieldId::kGapGeometry)) {
+      return field->gap_geometry.get();
+    }
+    return nullptr;
   }
 
   LogicalRect TableGridRect() const {

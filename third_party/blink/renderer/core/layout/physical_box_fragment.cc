@@ -334,7 +334,7 @@ PhysicalBoxFragment::PhysicalBoxFragment(
       has_scrollable_overflow + !!builder->frame_set_layout_data_ +
       !!builder->mathml_paint_info_ + !!builder->table_grid_rect_ +
       !!builder->table_collapsed_borders_ +
-      !!builder->table_collapsed_borders_geometry_ +
+      !!builder->table_collapsed_borders_geometry_ + !!builder->gap_geometry_ +
       !!builder->table_cell_column_index_ +
       (builder->table_section_row_offsets_.empty() ? 0 : 2) +
       !!builder->page_name_ + !!borders + !!scrollbar + !!padding +

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
+#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
@@ -574,6 +575,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     use_last_baseline_for_inline_baseline_ = true;
   }
 
+  void SetGapGeometry(
+      std::unique_ptr<GapFragmentData::GapGeometry> gap_geometry) {
+    gap_geometry_ = std::move(gap_geometry);
+  }
+
   void SetTableGridRect(const LogicalRect& table_grid_rect) {
     table_grid_rect_ = table_grid_rect;
   }
@@ -749,6 +755,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   std::optional<LayoutUnit> first_baseline_;
   std::optional<LayoutUnit> last_baseline_;
   LayoutUnit math_italic_correction_;
+
+  std::unique_ptr<GapFragmentData::GapGeometry> gap_geometry_;
 
   // Table specific types.
   std::optional<LogicalRect> table_grid_rect_;

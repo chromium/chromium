@@ -7,6 +7,7 @@
 
 #include <climits>
 
+#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -73,8 +74,9 @@ class PhysicalFragmentRareData
     kTableSectionRowOffsets,
     kPageName,
     kMargins,
+    kGapGeometry,
 
-    kMaxValue = kMargins,
+    kMaxValue = kGapGeometry,
   };
   static_assert(sizeof(RareBitFieldType) * CHAR_BIT >
                     static_cast<unsigned>(FieldId::kMaxValue),
@@ -92,6 +94,7 @@ class PhysicalFragmentRareData
       scoped_refptr<const TableBorders> table_collapsed_borders;
       std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
           table_collapsed_borders_geometry;
+      std::unique_ptr<GapFragmentData::GapGeometry> gap_geometry;
       wtf_size_t table_cell_column_index;
       wtf_size_t table_section_start_row_index;
       Vector<LayoutUnit> table_section_row_offsets;
