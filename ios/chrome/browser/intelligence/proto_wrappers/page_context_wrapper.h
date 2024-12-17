@@ -49,6 +49,9 @@ class WebState;
 // callback.
 - (void)populatePageContextFieldsAsync;
 
+// Enables force taking snapshots if none could be retrieved from storage.
+@property(nonatomic, assign) BOOL shouldForceUpdateMissingSnapshots;
+
 // Boolean flags for enabling/disabling the async tasks that the PageContext
 // wrapper can execute.
 

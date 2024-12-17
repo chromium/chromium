@@ -12,6 +12,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
@@ -90,16 +91,27 @@
   // execute the `barrier` callback, otherwise the `BarrierClosure` will never
   // execute its completion block.
 
-  // Take WebState snapshot, if enabled.
+  // Retrieve WebState snapshot, if enabled.
   if (_shouldGetSnapshot) {
-    if (_webState->CanTakeSnapshot()) {
-      CGRect rect = [_webState->GetView() bounds];
-      _webState->TakeSnapshot(rect, base::BindRepeating(^(UIImage* image) {
-                                [weakSelf encodeImageAndSetTabScreenshot:image];
-                                barrier.Run();
-                              }));
-    } else {
+    auto callback = ^(UIImage* image) {
+      if ([weakSelf shouldUpdateSnapshotWithImage:image]) {
+        [weakSelf updateSnapshotWithBarrier:barrier];
+        return;
+      }
+
+      [weakSelf encodeImageAndSetTabScreenshot:image];
       barrier.Run();
+    };
+
+    // If the WebState is currently visible, update the snapshot in case the
+    // user was scrolling, otherwise retrieve the latest version in cache or on
+    // disk.
+    if (_webState->IsVisible()) {
+      SnapshotTabHelper::FromWebState(_webState.get())
+          ->UpdateSnapshotWithCallback(callback);
+    } else {
+      SnapshotTabHelper::FromWebState(_webState.get())
+          ->RetrieveColorSnapshot(callback);
     }
   }
 
@@ -144,9 +156,29 @@
   std::move(_completion_callback).Run(std::move(_page_context));
 }
 
+// Returns YES if the image is nil and forcing the update of missing snapshots
+// is enabled.
+- (BOOL)shouldUpdateSnapshotWithImage:(UIImage*)image {
+  return !image && _shouldForceUpdateMissingSnapshots;
+}
+
+// Updates the snapshot for the given WebState, and executes the `barrier`
+// callback when finished.
+- (void)updateSnapshotWithBarrier:(base::RepeatingClosure)barrier {
+  SnapshotTabHelper::FromWebState(_webState.get())
+      ->UpdateSnapshotWithCallback(^(UIImage* image) {
+        [self encodeImageAndSetTabScreenshot:image];
+        barrier.Run();
+      });
+}
+
 // Convert UIImage snapshot to PNG, and then to base64 encoded string. Set the
 // tab screenshot on the current PageContext.
 - (void)encodeImageAndSetTabScreenshot:(UIImage*)image {
+  if (!image) {
+    return;
+  }
+
   NSData* imageData = UIImagePNGRepresentation(image);
   NSString* base64String = [imageData base64EncodedStringWithOptions:0];
   _page_context->set_tab_screenshot(base::SysNSStringToUTF8(base64String));
