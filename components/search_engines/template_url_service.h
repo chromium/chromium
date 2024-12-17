@@ -300,9 +300,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // It's OK to return a copy since we expect this set to be very small.
   std::set<std::string> GetUnscopedModeExtensionIds() const;
 
-  // Returns whether `unscoped_mode_extension_ids_` contains `extension_id`.
-  bool IsUnscopedModeExtensionId(const std::string& extension_id);
-
   // Returns the set of URLs describing the keywords. The elements are owned
   // by TemplateURLService and should not be deleted.
   TemplateURLVector GetTemplateURLs();

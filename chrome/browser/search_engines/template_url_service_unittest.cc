@@ -857,12 +857,10 @@ TEST_P(TemplateURLServiceTest, AddAndRemoveExtensionIdWithUnscopedMode) {
 
   // Register an extension with unscoped mode allowed.
   model()->AddToUnscopedModeExtensionIds("id");
-  EXPECT_TRUE(model()->IsUnscopedModeExtensionId("id"));
   EXPECT_TRUE(model()->GetUnscopedModeExtensionIds().contains("id"));
 
   // Remove the registered extension.
   model()->RemoveFromUnscopedModeExtensionIdsIfPresent("id");
-  EXPECT_FALSE(model()->IsUnscopedModeExtensionId("id"));
   EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
 }
 
@@ -877,7 +875,6 @@ TEST_P(TemplateURLServiceTest, ExtensionWithUnscopedModeRegisteredCorrectly) {
   EXPECT_TRUE(extension_with_permission);
   EXPECT_EQ(extension_with_permission,
             model()->GetTemplateURLForKeyword(u"keyword"));
-  EXPECT_TRUE(model()->IsUnscopedModeExtensionId("id"));
   EXPECT_TRUE(model()->GetUnscopedModeExtensionIds().contains("id"));
 
   // Remove the registered extension.
@@ -886,7 +883,6 @@ TEST_P(TemplateURLServiceTest, ExtensionWithUnscopedModeRegisteredCorrectly) {
   const TemplateURL* removed_extension =
       model()->GetTemplateURLForKeyword(u"keyword");
   EXPECT_FALSE(removed_extension);
-  EXPECT_FALSE(model()->IsUnscopedModeExtensionId("id"));
   EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
 
   // Register an extension again without allowing unscoped mode.
@@ -897,7 +893,6 @@ TEST_P(TemplateURLServiceTest, ExtensionWithUnscopedModeRegisteredCorrectly) {
   EXPECT_TRUE(extension_without_permission);
   EXPECT_EQ(extension_without_permission,
             model()->GetTemplateURLForKeyword(u"keyword"));
-  EXPECT_FALSE(model()->IsUnscopedModeExtensionId("id"));
   EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
 }
 

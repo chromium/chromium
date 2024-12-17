@@ -2397,11 +2397,6 @@ std::set<std::string> TemplateURLService::GetUnscopedModeExtensionIds() const {
   return unscoped_mode_extension_ids_;
 }
 
-bool TemplateURLService::IsUnscopedModeExtensionId(
-    const std::string& extension_id) {
-  return unscoped_mode_extension_ids_.contains(extension_id);
-}
-
 void TemplateURLService::UpdateTemplateURLVisitTime(TemplateURL* url) {
   TemplateURLData data(url->data());
   data.last_visited = clock_->Now();
