@@ -34133,7 +34133,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="152" label="AudioWorklet"/>
   <int value="153" label="WebMidi"/>
   <int value="154" label="RequestVideoFrameCallback"/>
-  <int value="155" label="SvgContextFillOrStroke"/>
+  <int value="155" label="ContextFillStroke"/>
   <int value="156" label="ObjectViewBox"/>
   <int value="157" label="Cap"/>
   <int value="158" label="Rcap"/>
@@ -34206,11 +34206,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="225" label="IteratorMethods"/>
   <int value="226" label="PromiseAny"/>
   <int value="227" label="SetMethods"/>
-  <int value="228" label="ScrollSnapEvent"/>
+  <int value="228" label="ScrollSnapEvents"/>
   <int value="229" label="MoveBeforeAPI"/>
   <int value="230" label="ScrollDrivenAnimations"/>
   <int value="231" label="WebAnimations"/>
-  <int value="232" label="CrossDocumentViewTransition"/>
+  <int value="232" label="CrossDocumentViewTransitions"/>
   <int value="233" label="DisplayAnimation"/>
   <int value="234" label="CalcSize"/>
   <int value="235" label="InterpolateSize"/>
@@ -34240,7 +34240,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="259" label="Closewatcher"/>
   <int value="260" label="ReferrerPolicy"/>
   <int value="261" label="UrlCanparse"/>
-  <int value="262" label="WritingSuggestions"/>
+  <int value="262" label="Writingsuggestions"/>
   <int value="263" label="Ink"/>
   <int value="264" label="VirtualKeyboard"/>
   <int value="265" label="NonCookieStorageAccess"/>
