@@ -235,6 +235,42 @@ std::optional<tab_groups::SavedTabGroupTab> GetTabFromGroup(
   return std::nullopt;
 }
 
+DirtyType GetDirtyTypeFromPersistentNotificationTypeForQuery(
+    std::optional<PersistentNotificationType> type) {
+  if (!type) {
+    // Ask for all dirty messages.
+    return DirtyType::kAll;
+  }
+  if (*type == PersistentNotificationType::DIRTY_TAB) {
+    return DirtyType::kDot;
+  } else if (*type == PersistentNotificationType::CHIP) {
+    return DirtyType::kChip;
+  } else {
+    // Ask for all dirty messages.
+    return DirtyType::kAll;
+  }
+}
+
+std::vector<PersistentMessage> RemoveDuplicateDirtyTabGroupMessages(
+    const std::vector<PersistentMessage>& messages) {
+  std::unordered_set<data_sharing::GroupId> dirty_tab_groups;
+  std::vector<PersistentMessage> result;
+  for (const auto& message : messages) {
+    if (message.type == PersistentNotificationType::DIRTY_TAB_GROUP) {
+      // We only want one DIRTY_TAB_GROUP per collaboration.
+      if (dirty_tab_groups.find(message.attribution.collaboration_id) ==
+          dirty_tab_groups.end()) {
+        // This is the first one, so we add it.
+        dirty_tab_groups.emplace(message.attribution.collaboration_id);
+        result.emplace_back(message);
+      }
+    } else {
+      // If this is not a dirty tab group, add it to the result
+      result.emplace_back(message);
+    }
+  }
+  return result;
+}
 }  // namespace
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
@@ -279,24 +315,67 @@ bool MessagingBackendServiceImpl::IsInitialized() {
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForTab(
     tab_groups::EitherTabID tab_id,
     std::optional<PersistentNotificationType> type) {
-  // TODO(345856704): Implement this and DCHECK(IsInitialized()) and update
-  // interface description.
-  return {};
+  std::optional<tab_groups::SavedTabGroupTab> tab = GetTabFromTabId(tab_id);
+  if (!tab) {
+    // Unable to find tab.
+    return {};
+  }
+
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(tab->saved_group_guid());
+  if (!tab_group) {
+    // Unable to find group.
+    return {};
+  }
+
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GroupIdForTabGroup(*tab_group);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration ID.
+    return {};
+  }
+
+  DirtyType dirty_type =
+      GetDirtyTypeFromPersistentNotificationTypeForQuery(type);
+
+  std::optional<collaboration_pb::Message> message =
+      store_->GetDirtyMessageForTab(*collaboration_group_id,
+                                    tab->saved_tab_guid(), dirty_type);
+  if (!message) {
+    return {};
+  }
+  return ConvertMessageToPersistentMessages(
+      *message, dirty_type, type, /*allow_dirty_tab_group_message=*/false);
 }
 
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForGroup(
     tab_groups::EitherGroupID group_id,
     std::optional<PersistentNotificationType> type) {
-  // TODO(345856704): Implement this and DCHECK(IsInitialized()) and update
-  // interface description.
-  return {};
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GetCollaborationGroupId(group_id);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration.
+    return {};
+  }
+
+  DirtyType dirty_type =
+      GetDirtyTypeFromPersistentNotificationTypeForQuery(type);
+
+  std::vector<collaboration_pb::Message> messages =
+      store_->GetDirtyMessagesForGroup(*collaboration_group_id, dirty_type);
+  return RemoveDuplicateDirtyTabGroupMessages(
+      ConvertMessagesToPersistentMessages(messages, dirty_type, type));
 }
 
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessages(
     std::optional<PersistentNotificationType> type) {
-  // TODO(345856704): Implement this and DCHECK(IsInitialized()) and update
-  // interface description.
-  return {};
+  DirtyType dirty_type =
+      GetDirtyTypeFromPersistentNotificationTypeForQuery(type);
+
+  std::vector<collaboration_pb::Message> messages =
+      store_->GetDirtyMessages(dirty_type);
+  return RemoveDuplicateDirtyTabGroupMessages(
+      ConvertMessagesToPersistentMessages(messages, dirty_type, type));
 }
 
 std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
@@ -737,6 +816,133 @@ MessagingBackendServiceImpl::GetGroupMemberFromGaiaId(
     return group_member_data->ToGroupMember();
   }
   return std::nullopt;
+}
+
+std::optional<data_sharing::GroupId>
+MessagingBackendServiceImpl::GetCollaborationGroupId(
+    tab_groups::EitherGroupID group_id) {
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(group_id);
+  if (!tab_group) {
+    return std::nullopt;
+  }
+  return GroupIdForTabGroup(*tab_group);
+}
+
+std::optional<tab_groups::SavedTabGroupTab>
+MessagingBackendServiceImpl::GetTabFromTabId(tab_groups::EitherTabID tab_id) {
+  if (std::holds_alternative<base::Uuid>(tab_id)) {
+    base::Uuid sync_tab_id = std::get<base::Uuid>(tab_id);
+    for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
+      if (group.ContainsTab(sync_tab_id)) {
+        return std::make_optional(*group.GetTab(sync_tab_id));
+      }
+    }
+  }
+  if (std::holds_alternative<tab_groups::LocalTabID>(tab_id)) {
+    tab_groups::LocalTabID local_tab_id =
+        std::get<tab_groups::LocalTabID>(tab_id);
+    for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
+      if (group.ContainsTab(local_tab_id)) {
+        return std::make_optional(*group.GetTab(local_tab_id));
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+std::vector<PersistentMessage>
+MessagingBackendServiceImpl::ConvertMessagesToPersistentMessages(
+    const std::vector<collaboration_pb::Message>& messages,
+    DirtyType lookup_dirty_type,
+    const std::optional<PersistentNotificationType>& type) {
+  std::vector<PersistentMessage> result;
+  for (const auto& message : messages) {
+    // Each DB message might result in multiple individual PersistentMessages.
+    std::vector<PersistentMessage> converted_messages =
+        ConvertMessageToPersistentMessages(
+            message, lookup_dirty_type, type,
+            /*allow_dirty_tab_group_message=*/true);
+    result.insert(result.end(), converted_messages.begin(),
+                  converted_messages.end());
+  }
+  return result;
+}
+
+std::vector<PersistentMessage>
+MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
+    const collaboration_pb::Message& message,
+    DirtyType lookup_dirty_type,
+    const std::optional<PersistentNotificationType>& type,
+    bool allow_dirty_tab_group_message) {
+  std::vector<PersistentMessage> persistent_messages;
+  if (GetMessageCategory(message) != MessageCategory::kTab) {
+    return persistent_messages;
+  }
+
+  // Helper local variables to increase readability of code below.
+  bool has_dirty_chip = message.dirty() & static_cast<int>(DirtyType::kChip);
+  bool looking_for_dirty_chip = lookup_dirty_type == DirtyType::kAll ||
+                                lookup_dirty_type == DirtyType::kChip;
+  bool has_dirty_dot = message.dirty() & static_cast<int>(DirtyType::kDot);
+  bool looking_for_dirty_dot = lookup_dirty_type == DirtyType::kAll ||
+                               lookup_dirty_type == DirtyType::kDot;
+  bool add_dirty_tab_messages =
+      !type || *type == PersistentNotificationType::DIRTY_TAB;
+  bool add_dirty_tab_group_messages =
+      allow_dirty_tab_group_message &&
+      (!type || *type == PersistentNotificationType::DIRTY_TAB_GROUP);
+  bool has_dirty_tab_messages_in_group =
+      !store_
+           ->GetDirtyMessagesForGroup(
+               data_sharing::GroupId(message.collaboration_id()),
+               DirtyType::kDot)
+           .empty();
+
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      GetTabGroupFromMessage(message);
+
+  if (has_dirty_chip && looking_for_dirty_chip) {
+    persistent_messages.push_back(CreatePersistentMessage(
+        message, tab_group, PersistentNotificationType::CHIP));
+  }
+
+  if (has_dirty_dot && looking_for_dirty_dot) {
+    if (add_dirty_tab_messages) {
+      persistent_messages.push_back(CreatePersistentMessage(
+          message, tab_group, PersistentNotificationType::DIRTY_TAB));
+    }
+
+    if (add_dirty_tab_group_messages && has_dirty_tab_messages_in_group) {
+      PersistentMessage persistent_message = CreatePersistentMessage(
+          message, tab_group, PersistentNotificationType::DIRTY_TAB_GROUP);
+      // Override collaboration event and tab metadata since this is about
+      // a group.
+      persistent_message.collaboration_event = CollaborationEvent::UNDEFINED;
+      persistent_message.attribution.tab_metadata = TabMessageMetadata();
+      persistent_messages.push_back(persistent_message);
+    }
+  }
+  return persistent_messages;
+}
+
+PersistentMessage MessagingBackendServiceImpl::CreatePersistentMessage(
+    const collaboration_pb::Message& message,
+    const std::optional<tab_groups::SavedTabGroup>& tab_group,
+    PersistentNotificationType type) {
+  PersistentMessage persistent_message;
+  persistent_message.collaboration_event =
+      ToCollaborationEvent(message.event_type());
+  persistent_message.attribution.tab_group_metadata =
+      CreateTabGroupMessageMetadataFromMessageOrTabGroup(message, tab_group);
+  persistent_message.attribution.tab_metadata =
+      CreateTabMessageMetadataFromMessageOrTab(
+          message, GetTabFromGroup(message, tab_group));
+  persistent_message.attribution.triggering_user = GetGroupMemberFromGaiaId(
+      data_sharing::GroupId(message.collaboration_id()),
+      GaiaId(message.triggering_user_gaia_id()));
+  persistent_message.type = type;
+  return persistent_message;
 }
 
 }  // namespace collaboration::messaging

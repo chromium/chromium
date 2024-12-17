@@ -20,6 +20,7 @@
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -859,6 +860,204 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
   EXPECT_EQ("Given Name 2", activity_log[2].user_display_name);
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[2].activity_metadata.triggering_user->email);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestGetMessagesNoMessages) {
+  CreateAndInitializeService();
+
+  std::vector<collaboration_pb::Message> db_messages;
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessages(DirtyType::kAll))
+      .WillOnce(Return(db_messages));
+  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  EXPECT_EQ(0u, messages.size());
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestGetMessagesOneMessage) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  base::Time now = base::Time::Now();
+
+  std::vector<collaboration_pb::Message> db_messages;
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessages(DirtyType::kAll))
+      .WillOnce(Return(db_messages));
+  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  EXPECT_EQ(0u, messages.size());
+
+  collaboration_pb::Message message = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kDotAndChip, now);
+  db_messages.emplace_back(message);
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessages(DirtyType::kAll))
+      .WillOnce(Return(db_messages));
+  // Our service will need to also query for dirty dot messages for a group.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillOnce(Return(db_messages));
+  messages = service_->GetMessages(std::nullopt);
+  // Should become two PersistentMessages for the tab, and one for the tab
+  // group.
+  ASSERT_EQ(3u, messages.size());
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(0).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::CHIP, messages.at(0).type);
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(1).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, messages.at(1).type);
+  EXPECT_EQ(CollaborationEvent::UNDEFINED, messages.at(2).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB_GROUP, messages.at(2).type);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestGetMessagesTwoMessages) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  base::Time now = base::Time::Now();
+
+  std::vector<collaboration_pb::Message> db_messages;
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessages(DirtyType::kAll))
+      .WillOnce(Return(db_messages));
+  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  EXPECT_EQ(0u, messages.size());
+
+  collaboration_pb::Message message1 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kDotAndChip, now);
+  collaboration_pb::Message message2 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_UPDATED,
+      DirtyType::kDotAndChip, now);
+  db_messages.emplace_back(message1);
+  db_messages.emplace_back(message2);
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessages(DirtyType::kAll))
+      .WillRepeatedly(Return(db_messages));
+  // Our service will need to also query for dirty dot messages for a group.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(db_messages));
+  messages = service_->GetMessages(std::nullopt);
+  // Should become two PersistentMessages for each tab, and one for the tab
+  // group.
+  ASSERT_EQ(5u, messages.size());
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(0).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::CHIP, messages.at(0).type);
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(1).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, messages.at(1).type);
+  EXPECT_EQ(CollaborationEvent::UNDEFINED, messages.at(2).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB_GROUP, messages.at(2).type);
+  EXPECT_EQ(CollaborationEvent::TAB_UPDATED,
+            messages.at(3).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::CHIP, messages.at(3).type);
+  EXPECT_EQ(CollaborationEvent::TAB_UPDATED,
+            messages.at(4).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, messages.at(4).type);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForGroup) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  base::Time now = base::Time::Now();
+
+  std::vector<collaboration_pb::Message> db_messages;
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessages(DirtyType::kAll))
+      .WillOnce(Return(db_messages));
+  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  EXPECT_EQ(0u, messages.size());
+
+  collaboration_pb::Message message = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kDotAndChip, now);
+  db_messages.emplace_back(message);
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kAll))
+      .WillOnce(Return(db_messages));
+  // Our service will need to query for dirty dot messages for a group.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillOnce(Return(db_messages));
+
+  // The query should come for the given tab group.
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  EXPECT_CALL(*mock_tab_group_sync_service_,
+              GetGroup(tab_groups::EitherGroupID(tab_group.saved_guid())))
+      .WillOnce(Return(tab_group));
+
+  messages = service_->GetMessagesForGroup(
+      tab_groups::EitherGroupID(tab_group.saved_guid()), std::nullopt);
+  // Should become two PersistentMessages for the tab, and one for the tab
+  // group.
+  ASSERT_EQ(3u, messages.size());
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(0).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::CHIP, messages.at(0).type);
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(1).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, messages.at(1).type);
+  EXPECT_EQ(CollaborationEvent::UNDEFINED, messages.at(2).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB_GROUP, messages.at(2).type);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  base::Time now = base::Time::Now();
+
+  std::vector<collaboration_pb::Message> db_messages;
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessages(DirtyType::kAll))
+      .WillOnce(Return(db_messages));
+  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  EXPECT_EQ(0u, messages.size());
+
+  collaboration_pb::Message message = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kDotAndChip, now);
+  db_messages.emplace_back(message);
+
+  // The query should come for the given tab's tab group.
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+  base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessageForTab(collaboration_group_id, tab1_sync_id,
+                                    DirtyType::kAll))
+      .WillRepeatedly(Return(db_messages.at(0)));
+  // Our service will need to query for dirty dot messages for a group.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(db_messages));
+
+  messages = service_->GetMessagesForTab(tab_groups::EitherTabID(tab1_sync_id),
+                                         std::nullopt);
+  // Should become two PersistentMessages for the tab, but nothing from the
+  // group.
+  ASSERT_EQ(2u, messages.size());
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(0).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::CHIP, messages.at(0).type);
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(1).collaboration_event);
+  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, messages.at(1).type);
 }
 
 }  // namespace collaboration::messaging

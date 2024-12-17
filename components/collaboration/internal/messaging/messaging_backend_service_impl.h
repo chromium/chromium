@@ -136,6 +136,35 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       const data_sharing::GroupId& collaboration_group_id,
       std::optional<GaiaId> gaia_id);
 
+  // Retrieves the relevant tab group from the TabGroupSyncService and looks up
+  // its collaboration group id.
+  std::optional<data_sharing::GroupId> GetCollaborationGroupId(
+      tab_groups::EitherGroupID group_id);
+
+  // Looks up the tab from tab group sync service.
+  std::optional<tab_groups::SavedTabGroupTab> GetTabFromTabId(
+      tab_groups::EitherTabID tab_id);
+
+  // Convert all the provided stored Messages to PersistentMessages.
+  std::vector<PersistentMessage> ConvertMessagesToPersistentMessages(
+      const std::vector<collaboration_pb::Message>& messages,
+      DirtyType lookup_dirty_type,
+      const std::optional<PersistentNotificationType>& type);
+
+  // Convert a single stored Message to PersistentMessages. Each stored message
+  // may result in multiple PersistentMessages, e.g. both CHIP and DIRTY_TAB.
+  std::vector<PersistentMessage> ConvertMessageToPersistentMessages(
+      const collaboration_pb::Message& message,
+      DirtyType lookup_dirty_type,
+      const std::optional<PersistentNotificationType>& type,
+      bool allow_dirty_tab_group_message);
+
+  // Creates a PersistentMessage based on the provided information.
+  PersistentMessage CreatePersistentMessage(
+      const collaboration_pb::Message& message,
+      const std::optional<tab_groups::SavedTabGroup>& tab_group,
+      PersistentNotificationType type);
+
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.
   std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier_;
