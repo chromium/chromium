@@ -11,6 +11,7 @@
 #import "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
 #import "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
 #import "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
+#import "components/collaboration/public/features.h"
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
@@ -49,7 +50,8 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
 
   if (!base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature) ||
-      !IsSharedTabGroupsJoinEnabled(profile)) {
+      !IsSharedTabGroupsJoinEnabled(profile) ||
+      !base::FeatureList::IsEnabled(kCollaborationMessaging)) {
     return std::make_unique<EmptyMessagingBackendService>();
   }
 

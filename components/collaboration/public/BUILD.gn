@@ -20,6 +20,8 @@ static_library("core_public") {
   sources = [
     "collaboration_controller_delegate.h",
     "collaboration_service.h",
+    "features.cc",
+    "features.h",
     "service_status.cc",
     "service_status.h",
   ]

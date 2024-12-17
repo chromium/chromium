@@ -19,6 +19,7 @@
 #include "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
+#include "components/collaboration/public/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -62,7 +63,8 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
   // to be enabled.
   if (!base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature) ||
-      !tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs())) {
+      !tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs()) ||
+      !base::FeatureList::IsEnabled(kCollaborationMessaging)) {
     return std::make_unique<EmptyMessagingBackendService>();
   }
 
