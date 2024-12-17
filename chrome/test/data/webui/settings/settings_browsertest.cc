@@ -183,27 +183,27 @@ IN_PROC_BROWSER_TEST_F(SettingsAiPageTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, AiInfoCard) {
-  RunTest("settings/ai_info_card_test.js", "runMochaSuite('AiInfoCard')");
+  RunTest("settings/ai_info_card_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, TabOrganizationSubpage) {
-  RunTest("settings/ai_tab_organization_subpage_test.js",
-          "runMochaSuite('TabOrganizationSubpage')");
+  RunTest("settings/ai_tab_organization_subpage_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, HistorySearchSubpage) {
-  RunTest("settings/ai_history_search_subpage_test.js",
-          "runMochaSuite('HistorySearchSubpage')");
+  RunTest("settings/ai_history_search_subpage_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, CompareSubpage) {
-  RunTest("settings/ai_compare_subpage_test.js",
-          "runMochaSuite('CompareSubpage')");
+  RunTest("settings/ai_compare_subpage_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, LoggingInfoBullet) {
-  RunTest("settings/ai_logging_info_bullet_test.js",
-          "runMochaSuite('LoggingInfoBullet')");
+  RunTest("settings/ai_logging_info_bullet_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, PolicyIndicator) {
+  RunTest("settings/ai_policy_indicator_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {

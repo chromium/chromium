@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './ai_policy_indicator.js';
 import '../controls/settings_toggle_button.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';

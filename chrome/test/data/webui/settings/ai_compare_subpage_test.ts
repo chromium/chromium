@@ -87,4 +87,14 @@ suite('CompareSubpage', function() {
         learnMoreLink.href,
         loadTimeData.getString('compareLearnMoreManagedUrl'));
   });
+
+  test('comparePolicyIndicatorPref', async () => {
+    await createPage();
+
+    const indicator =
+        subpage.shadowRoot!.querySelector('settings-ai-policy-indicator');
+    assertTrue(!!indicator);
+    assertTrue(!!indicator.pref);
+    assertEquals(AiEnterpriseFeaturePrefName.COMPARE, indicator.pref.key);
+  });
 });

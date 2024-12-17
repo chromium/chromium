@@ -176,6 +176,16 @@ suite('ComposePage', function() {
         loadTimeData.getString('composeLearnMorePageManagedURL'),
         learnMoreLink.href);
   });
+
+  test('ComposePolicyIndicatorPref', async () => {
+    await createPage();
+
+    const indicator =
+        page.shadowRoot!.querySelector('settings-ai-policy-indicator');
+    assertTrue(!!indicator);
+    assertTrue(!!indicator.pref);
+    assertEquals(AiEnterpriseFeaturePrefName.COMPOSE, indicator.pref.key);
+  });
 });
 
 // TODO(crbug.com/362225975): Remove after AiSettingsPageRefresh is launched.

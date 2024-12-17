@@ -4559,6 +4559,9 @@
   <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_LOGGING_MANAGED_DISABLED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
     Your content will not be used by human reviewers to improve AI. Your organization may change these settings at any time
   </message>
+  <message name="IDS_SETTINGS_AI_SUBPAGE_FEATURE_MANAGED_DISABLED_LABEL" translateable="false">
+    This feature is disabled by your organization
+  </message>
 
   <!-- Experimental settings - Tab Organization -->
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description">

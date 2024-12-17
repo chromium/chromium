@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import './ai_policy_indicator.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
