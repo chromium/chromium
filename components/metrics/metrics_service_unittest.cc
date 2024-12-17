@@ -26,7 +26,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -35,7 +34,6 @@
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/log_decoder.h"
-#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_scheduler.h"
@@ -337,43 +335,12 @@ class MetricsServiceTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   std::unique_ptr<TestEnabledStateProvider> enabled_state_provider_;
   TestingPrefServiceSimple testing_local_state_;
   std::unique_ptr<MetricsStateManager> metrics_state_manager_;
   base::ScopedTempDir temp_dir_;
-};
-
-class MetricsServiceTestWithFeatures
-    : public MetricsServiceTest,
-      public ::testing::WithParamInterface<std::tuple<bool>> {
- public:
-  MetricsServiceTestWithFeatures() = default;
-  ~MetricsServiceTestWithFeatures() override = default;
-
-  bool ShouldSnapshotInBg() { return std::get<0>(GetParam()); }
-
-  void SetUp() override {
-    MetricsServiceTest::SetUp();
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (ShouldSnapshotInBg()) {
-      enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
-                                    base::FieldTrialParams());
-    } else {
-      disabled_features.emplace_back(
-          features::kMetricsServiceDeltaSnapshotInBg);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 struct StartupVisibilityTestParams {
@@ -383,34 +350,7 @@ struct StartupVisibilityTestParams {
 
 class MetricsServiceTestWithStartupVisibility
     : public MetricsServiceTest,
-      public ::testing::WithParamInterface<
-          std::tuple<StartupVisibilityTestParams, bool>> {
- public:
-  MetricsServiceTestWithStartupVisibility() = default;
-  ~MetricsServiceTestWithStartupVisibility() override = default;
-
-  bool ShouldSnapshotInBg() { return std::get<1>(GetParam()); }
-
-  void SetUp() override {
-    MetricsServiceTest::SetUp();
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (ShouldSnapshotInBg()) {
-      enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
-                                    base::FieldTrialParams());
-    } else {
-      disabled_features.emplace_back(
-          features::kMetricsServiceDeltaSnapshotInBg);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+      public ::testing::WithParamInterface<StartupVisibilityTestParams> {};
 
 class ExperimentTestMetricsProvider : public TestMetricsProvider {
  public:
@@ -451,11 +391,7 @@ base::HistogramBase::Count GetHistogramDeltaTotalCount(std::string_view name) {
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MetricsServiceTestWithFeatures,
-                         ::testing::Combine(::testing::Bool()));
-
-TEST_P(MetricsServiceTestWithFeatures, RecordId) {
+TEST_F(MetricsServiceTest, RecordId) {
   EnableMetricsReporting();
   GetMetricsStateManager(user_data_dir_path())->ForceClientIdCreation();
 
@@ -475,7 +411,7 @@ TEST_P(MetricsServiceTestWithFeatures, RecordId) {
   EXPECT_EQ(1003, log3->uma_proto()->record_id());
 }
 
-TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAfterCleanShutDown) {
+TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   // Write a beacon file indicating that Chrome exited cleanly. Note that the
@@ -514,7 +450,7 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAfterCleanShutDown) {
                                      StabilityEventType::kBrowserCrash, 0);
 }
 
-TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAtProviderRequest) {
+TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
 
@@ -595,7 +531,7 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAtProviderRequest) {
                                      StabilityEventType::kBrowserCrash, 0);
 }
 
-TEST_P(MetricsServiceTestWithFeatures, IndependentLogAtProviderRequest) {
+TEST_F(MetricsServiceTest, IndependentLogAtProviderRequest) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -665,7 +601,7 @@ TEST_P(MetricsServiceTestWithFeatures, IndependentLogAtProviderRequest) {
   EXPECT_EQ(GetHistogramSampleCount(uma_log, test_histogram), 1);
 }
 
-TEST_P(MetricsServiceTestWithFeatures, OnDidCreateMetricsLogAtShutdown) {
+TEST_F(MetricsServiceTest, OnDidCreateMetricsLogAtShutdown) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -698,7 +634,7 @@ TEST_P(MetricsServiceTestWithFeatures, OnDidCreateMetricsLogAtShutdown) {
       kOnDidCreateMetricsLogHistogramName);
 }
 
-TEST_P(MetricsServiceTestWithFeatures, ProvideHistograms) {
+TEST_F(MetricsServiceTest, ProvideHistograms) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -730,7 +666,7 @@ TEST_P(MetricsServiceTestWithFeatures, ProvideHistograms) {
       kProvideHistogramsHistogramName);
 }
 
-TEST_P(MetricsServiceTestWithFeatures, ProvideHistogramsEarlyReturn) {
+TEST_F(MetricsServiceTest, ProvideHistogramsEarlyReturn) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -772,18 +708,16 @@ TEST_P(MetricsServiceTestWithFeatures, ProvideHistogramsEarlyReturn) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     MetricsServiceTestWithStartupVisibility,
-    ::testing::Combine(
-        ::testing::Values(
-            StartupVisibilityTestParams{
-                .startup_visibility = StartupVisibility::kUnknown,
-                .expected_beacon_value = true},
-            StartupVisibilityTestParams{
-                .startup_visibility = StartupVisibility::kBackground,
-                .expected_beacon_value = true},
-            StartupVisibilityTestParams{
-                .startup_visibility = StartupVisibility::kForeground,
-                .expected_beacon_value = false}),
-        ::testing::Bool()));
+    ::testing::Values(
+        StartupVisibilityTestParams{
+            .startup_visibility = StartupVisibility::kUnknown,
+            .expected_beacon_value = true},
+        StartupVisibilityTestParams{
+            .startup_visibility = StartupVisibility::kBackground,
+            .expected_beacon_value = true},
+        StartupVisibilityTestParams{
+            .startup_visibility = StartupVisibility::kForeground,
+            .expected_beacon_value = false}));
 
 TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   base::HistogramTester histogram_tester;
@@ -819,7 +753,7 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   const std::string kCurrentVersion = "5.0.322.0-64-devel";
   client.set_version_string(kCurrentVersion);
 
-  StartupVisibilityTestParams params = std::get<0>(GetParam());
+  StartupVisibilityTestParams params = GetParam();
   TestMetricsService service(
       GetMetricsStateManager(user_data_dir_path(), params.startup_visibility),
       &client, local_state);
@@ -894,8 +828,7 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
                                      StabilityEventType::kBrowserCrash, 1);
 }
 
-TEST_P(MetricsServiceTestWithFeatures,
-       InitialLogsHaveOnDidCreateMetricsLogHistograms) {
+TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -962,7 +895,7 @@ TEST_P(MetricsServiceTestWithFeatures,
       kOnDidCreateMetricsLogHistogramName);
 }
 
-TEST_P(MetricsServiceTestWithFeatures, MarkCurrentHistogramsAsReported) {
+TEST_F(MetricsServiceTest, MarkCurrentHistogramsAsReported) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -994,7 +927,7 @@ TEST_P(MetricsServiceTestWithFeatures, MarkCurrentHistogramsAsReported) {
   base::StatisticsRecorder::ForgetHistogramForTesting("Test.After.Histogram");
 }
 
-TEST_P(MetricsServiceTestWithFeatures, LogHasUserActions) {
+TEST_F(MetricsServiceTest, LogHasUserActions) {
   // This test verifies that user actions are properly captured in UMA logs.
   // In particular, it checks that the first log has actions, a behavior that
   // was buggy in the past, plus additional checks for subsequent logs with
@@ -1056,7 +989,7 @@ TEST_P(MetricsServiceTestWithFeatures, LogHasUserActions) {
   EXPECT_EQ(2, GetNumberOfUserActions(test_log_store));
 }
 
-TEST_P(MetricsServiceTestWithFeatures, FirstLogCreatedBeforeUnsentLogsSent) {
+TEST_F(MetricsServiceTest, FirstLogCreatedBeforeUnsentLogsSent) {
   // This test checks that we will create and serialize the first ongoing log
   // before starting to send unsent logs from the past session. The latter is
   // simulated by injecting some fake ongoing logs into the MetricsLogStore.
@@ -1105,7 +1038,7 @@ TEST_P(MetricsServiceTestWithFeatures, FirstLogCreatedBeforeUnsentLogsSent) {
   EXPECT_EQ(2u, test_log_store->ongoing_log_count());
 }
 
-TEST_P(MetricsServiceTestWithFeatures,
+TEST_F(MetricsServiceTest,
        MetricsProviderOnRecordingDisabledCalledOnInitialStop) {
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1121,7 +1054,7 @@ TEST_P(MetricsServiceTestWithFeatures,
   EXPECT_TRUE(test_provider->on_recording_disabled_called());
 }
 
-TEST_P(MetricsServiceTestWithFeatures, MetricsProvidersInitialized) {
+TEST_F(MetricsServiceTest, MetricsProvidersInitialized) {
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
                              GetLocalState());
@@ -1137,7 +1070,7 @@ TEST_P(MetricsServiceTestWithFeatures, MetricsProvidersInitialized) {
 
 // Verify that FieldTrials activated by a MetricsProvider are reported by the
 // FieldTrialsProvider.
-TEST_P(MetricsServiceTestWithFeatures, ActiveFieldTrialsReported) {
+TEST_F(MetricsServiceTest, ActiveFieldTrialsReported) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1173,8 +1106,7 @@ TEST_P(MetricsServiceTestWithFeatures, ActiveFieldTrialsReported) {
       IsFieldTrialPresent(uma_log.system_profile(), trial_name2, group_name2));
 }
 
-TEST_P(MetricsServiceTestWithFeatures,
-       SystemProfileDataProvidedOnEnableRecording) {
+TEST_F(MetricsServiceTest, SystemProfileDataProvidedOnEnableRecording) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1200,7 +1132,7 @@ TEST_P(MetricsServiceTestWithFeatures,
 
 // Verify that the two separate MetricsSchedulers (MetricsRotationScheduler and
 // MetricsUploadScheduler) function together properly.
-TEST_P(MetricsServiceTestWithFeatures, SplitRotation) {
+TEST_F(MetricsServiceTest, SplitRotation) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1363,7 +1295,7 @@ TEST_P(MetricsServiceTestWithFeatures, SplitRotation) {
   EXPECT_EQ(1U, task_environment_.GetPendingMainThreadTaskCount());
 }
 
-TEST_P(MetricsServiceTestWithFeatures, LastLiveTimestamp) {
+TEST_F(MetricsServiceTest, LastLiveTimestamp) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1421,7 +1353,7 @@ TEST_P(MetricsServiceTestWithFeatures, LastLiveTimestamp) {
       GetLocalState()->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp));
 }
 
-TEST_P(MetricsServiceTestWithFeatures, EnablementObserverNotification) {
+TEST_F(MetricsServiceTest, EnablementObserverNotification) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1446,7 +1378,7 @@ TEST_P(MetricsServiceTestWithFeatures, EnablementObserverNotification) {
 }
 
 // Verifies that when a cloned install is detected, logs are purged.
-TEST_P(MetricsServiceTestWithFeatures, PurgeLogsOnClonedInstallDetected) {
+TEST_F(MetricsServiceTest, PurgeLogsOnClonedInstallDetected) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1496,7 +1428,7 @@ TEST_P(MetricsServiceTestWithFeatures, PurgeLogsOnClonedInstallDetected) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // ResetClientId is only enabled on certain targets.
-TEST_P(MetricsServiceTestWithFeatures, SetClientIdToExternalId) {
+TEST_F(MetricsServiceTest, SetClientIdToExternalId) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1516,7 +1448,7 @@ TEST_P(MetricsServiceTestWithFeatures, SetClientIdToExternalId) {
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_P(MetricsServiceTestWithFeatures,
+TEST_F(MetricsServiceTest,
        OngoingLogNotFlushedBeforeInitialLogWhenUserLogStoreSet) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -1567,7 +1499,7 @@ TEST_P(MetricsServiceTestWithFeatures,
   EXPECT_EQ(1u, alternate_ongoing_log_store_ptr->size());
 }
 
-TEST_P(MetricsServiceTestWithFeatures,
+TEST_F(MetricsServiceTest,
        OngoingLogFlushedAfterInitialLogWhenUserLogStoreSet) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -1614,8 +1546,7 @@ TEST_P(MetricsServiceTestWithFeatures,
   ASSERT_EQ(2u, test_log_store->ongoing_log_count());
 }
 
-TEST_P(MetricsServiceTestWithFeatures,
-       OngoingLogDiscardedAfterEarlyUnsetUserLogStore) {
+TEST_F(MetricsServiceTest, OngoingLogDiscardedAfterEarlyUnsetUserLogStore) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1653,8 +1584,7 @@ TEST_P(MetricsServiceTestWithFeatures,
   base::StatisticsRecorder::ForgetHistogramForTesting("Test.After.Histogram");
 }
 
-TEST_P(MetricsServiceTestWithFeatures,
-       UnsettingLogStoreShouldDisableRecording) {
+TEST_F(MetricsServiceTest, UnsettingLogStoreShouldDisableRecording) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,

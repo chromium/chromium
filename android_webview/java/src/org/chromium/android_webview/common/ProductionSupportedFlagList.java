@@ -517,11 +517,6 @@ public final class ProductionSupportedFlagList {
                 "Controls whether to schedule a flush of persistent histogram memory "
                         + "immediately after writing a system profile to it."),
         Flag.baseFeature(
-                MetricsFeatures.METRICS_SERVICE_DELTA_SNAPSHOT_IN_BG,
-                "Controls whether to perform histogram delta snapshots in a background "
-                        + "thread (in contrast to snapshotting unlogged samples in the "
-                        + "background, then marking them as logged on the main thread)."),
-        Flag.baseFeature(
                 MetricsFeatures.REPORTING_SERVICE_ALWAYS_FLUSH,
                 "Determines whether to always flush Local State immediately after an UMA/UKM "
                         + "log upload."),
