@@ -40,6 +40,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
+#include "sql/transaction.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
@@ -1069,6 +1070,9 @@ Database::Database() {
   db_path = db_path.AppendASCII("atspi_in_process_fuzzer_controls.db");
   CHECK(db_->Open(db_path));
   CHECK(db_->Execute("PRAGMA foreign_keys = ON"));
+  // Atomically delete and create tables
+  sql::Transaction transaction(db_.get());
+  CHECK(transaction.Begin());
   // Delete some tables from older versions of this fuzzer
   DropTableIfExists("roles");
   DropTableIfExists("names");
@@ -1097,6 +1101,7 @@ Database::Database() {
         "controlsv4(id) ON DELETE CASCADE,  FOREIGN KEY(action_id) REFERENCES "
         "actionsv2(id) ON DELETE CASCADE, unique(control_id, action_id))"));
   }
+  CHECK(transaction.Commit());
 }
 
 void Database::DropTableIfExists(const std::string& table_name) {
