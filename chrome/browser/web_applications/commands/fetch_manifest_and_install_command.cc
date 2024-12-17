@@ -693,9 +693,21 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
 
   bool is_shortcut_created = IsShortcutCreated(app_lock_->registrar(), app_id);
   DCHECK(app_lock_);
+
+  const WebAppTabHelper* tab_helper =
+      WebAppTabHelper::FromWebContents(web_contents_.get());
+  bool is_in_app_window = false;
+  if (tab_helper) {
+    // The tab helper doesn't exist in unit tests.
+    is_in_app_window = tab_helper->is_in_app_window();
+  }
+
+  // TODO(https://crbug.com/383360269): Turn the is_in_app_window into a CHECK
+  // after all user installs can no longer overlap each other.
   const bool can_reparent_tab =
       app_lock_->ui_manager().CanReparentAppTabToWindow(app_id,
-                                                        is_shortcut_created);
+                                                        is_shortcut_created) &&
+      !is_in_app_window;
 
   SCOPED_CRASH_KEY_NUMBER("PWA", "install_surface",
                           static_cast<int>(install_surface_));
@@ -703,8 +715,6 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
       "PWA", "install_url",
       web_contents_->GetLastCommittedURL().possibly_invalid_spec());
   SCOPED_CRASH_KEY_STRING64("PWA", "install_app_id", app_id);
-  WebAppTabHelper* tab_helper =
-      WebAppTabHelper::FromWebContents(web_contents_.get());
   if (tab_helper) {
     SCOPED_CRASH_KEY_STRING64("PWA", "source_window_app_id",
                               tab_helper->window_app_id().value_or("<none>"));
