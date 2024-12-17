@@ -1220,9 +1220,8 @@ Desk* DesksController::CreateNewDeskForSavedDesk(
       NewDesk(DesksCreationRemovalSource::kFloatingWorkspace);
       break;
     case DeskTemplateType::kCoral:
-      // TODO(crbug.com/371447150): Create a new desk with a new creation
-      // source.
-      return nullptr;
+      NewDesk(DesksCreationRemovalSource::kCoral);
+      break;
     case DeskTemplateType::kUnknown:
       return nullptr;
   }

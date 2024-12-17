@@ -414,6 +414,33 @@ TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {
       "coral_max_saved_groups_toast"));
 }
 
+// Tests that clicking a saved group item creates a coral desk.
+TEST_F(CoralSavedGroupTest, LaunchSavedGroup) {
+  AddCoralEntry("saved_group_1");
+
+  // Ensure we have one desk currently.
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 1);
+
+  // Enter overview, ensure the library button is visible and click it.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  RunScheduledLayoutForAllOverviewDeskBars();
+  auto* button = GetLibraryButton();
+  ASSERT_TRUE(button);
+  ASSERT_TRUE(button->GetVisible());
+  LeftClickOn(button);
+
+  // Click on the only saved desk entry.
+  const views::Button* saved_group_launch_button =
+      GetSavedDeskItemButton(/*index=*/0);
+  LeftClickOn(saved_group_launch_button);
+
+  // Test that we create a new desk of type coral.
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 2);
+  EXPECT_EQ(desks_controller->desks().back()->type(), Desk::Type::kCoral);
+}
+
 // Tests that the saved desk library has the expected amount of grid items.
 TEST_F(CoralSavedGroupTest, CheckGridItems) {
   AddCoralEntry("saved_group_1");
