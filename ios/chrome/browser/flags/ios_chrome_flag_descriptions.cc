@@ -686,6 +686,12 @@ extern const char kLensOverlayDisablePriceInsightsDescription[] =
     "trumps lens overlay entrypoint in the location bar. This should only be "
     "used for experiments.";
 
+extern const char kLensOverlayPriceInsightsCounterfactualName[] =
+    "Lens overlay disable price insights counterfactual.";
+extern const char kLensOverlayPriceInsightsCounterfactualDescription[] =
+    "When enabled, show the lens overlay location bar entrypoint only when "
+    "price insights should have triggered.";
+
 extern const char kLensOverlayEnableIPadCompatibilityName[] =
     "Allow Lens overlay to also run on iPad devices if the feature is enabled";
 extern const char kLensOverlayEnableIPadCompatibilityDescription[] =

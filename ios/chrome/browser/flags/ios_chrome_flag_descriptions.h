@@ -590,6 +590,11 @@ extern const char kLensOverlayForceShowOnboardingScreenDescription[];
 extern const char kLensOverlayDisablePriceInsightsName[];
 extern const char kLensOverlayDisablePriceInsightsDescription[];
 
+// Title and description for the flag to enable the lens overlay location bar
+// entrypoint only when price insights should have triggered.
+extern const char kLensOverlayPriceInsightsCounterfactualName[];
+extern const char kLensOverlayPriceInsightsCounterfactualDescription[];
+
 // Title and description for the flag to allow lens overlay on iPad devices.
 extern const char kLensOverlayEnableIPadCompatibilityName[];
 extern const char kLensOverlayEnableIPadCompatibilityDescription[];

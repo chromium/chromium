@@ -2273,6 +2273,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSNewFollowingFeedEntryPointsName,
      flag_descriptions::kIOSNewFollowingFeedEntryPointsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSNewFollowingFeedEntryPoints)},
+    {"enable-lens-overlay-price-insights-counterfactual",
+     flag_descriptions::kLensOverlayPriceInsightsCounterfactualName,
+     flag_descriptions::kLensOverlayPriceInsightsCounterfactualDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensOverlayPriceInsightsCounterfactual)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

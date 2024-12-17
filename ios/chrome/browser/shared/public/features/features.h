@@ -319,6 +319,11 @@ BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypoint);
 // should only be used for experiment.
 BASE_DECLARE_FEATURE(kLensOverlayDisablePriceInsights);
 
+// Feature flag to enable lens overlay location bar entrypoint only when price
+// insights should trigger. This is used as counterfactual for
+// kLensOverlayDisablePriceInsights.
+BASE_DECLARE_FEATURE(kLensOverlayPriceInsightsCounterfactual);
+
 // Feature to force allow iPad support of lens overlay.
 BASE_DECLARE_FEATURE(kLensOverlayEnableIPadCompatibility);
 
