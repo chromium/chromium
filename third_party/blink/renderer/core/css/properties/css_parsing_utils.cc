@@ -2745,6 +2745,18 @@ static CSSValue* ConsumeDeprecatedRadialGradient(
              : nullptr;
 }
 
+static void MaybeLogUnsupportedGradientInterpolationSpaceWarning(
+    const CSSParserContext& context,
+    Color::ColorSpace color_space) {
+  if (const auto* document = context.GetDocument()) {
+    document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRecommendation,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        Color::ColorSpaceToString(color_space) +
+            " is not yet supported as a gradient interpolation space."));
+  }
+}
+
 static CSSValue* ConsumeRadialGradient(CSSParserTokenStream& stream,
                                        const CSSParserContext& context,
                                        cssvalue::CSSGradientRepeat repeating) {
@@ -2854,6 +2866,11 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenStream& stream,
           vertical_size, repeating, cssvalue::kCSSRadialGradient);
 
   if (has_color_space) {
+    if (Color::IsUndefinedColorSpaceForGradientInterpolation(color_space)) {
+      MaybeLogUnsupportedGradientInterpolationSpaceWarning(context,
+                                                           color_space);
+      return nullptr;
+    }
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
     context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
@@ -2922,6 +2939,11 @@ static CSSValue* ConsumeLinearGradient(
           end_x, end_y, nullptr, nullptr, angle, repeating, gradient_type);
 
   if (has_color_space) {
+    if (Color::IsUndefinedColorSpaceForGradientInterpolation(color_space)) {
+      MaybeLogUnsupportedGradientInterpolationSpaceWarning(context,
+                                                           color_space);
+      return nullptr;
+    }
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
     context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
@@ -2974,6 +2996,11 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenStream& stream,
       center_x, center_y, from_angle, repeating);
 
   if (has_color_space) {
+    if (Color::IsUndefinedColorSpaceForGradientInterpolation(color_space)) {
+      MaybeLogUnsupportedGradientInterpolationSpaceWarning(context,
+                                                           color_space);
+      return nullptr;
+    }
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
     context.Count(WebFeature::kCSSColorGradientColorSpace);
   }

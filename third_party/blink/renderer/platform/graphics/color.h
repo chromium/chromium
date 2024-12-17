@@ -117,6 +117,16 @@ class PLATFORM_EXPORT Color {
     kNone,
   };
 
+  // TODO(crbug.com/383270111): As of 2024-12-12 Skia does not yet support these
+  // color spaces for gradient interpolation.
+  static bool IsUndefinedColorSpaceForGradientInterpolation(
+      ColorSpace color_space) {
+    return color_space == ColorSpace::kDisplayP3 ||
+           color_space == ColorSpace::kA98RGB ||
+           color_space == ColorSpace::kProPhotoRGB ||
+           color_space == ColorSpace::kRec2020;
+  }
+
   // For testing purposes and for serializer.
   static WTF::String ColorSpaceToString(Color::ColorSpace color_space);
 

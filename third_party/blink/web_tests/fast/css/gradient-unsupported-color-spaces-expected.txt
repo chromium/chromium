@@ -1,0 +1,13 @@
+CONSOLE WARNING: display-p3 is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: a98-rgb is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: rec2020 is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: prophoto-rgb is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: display-p3 is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: a98-rgb is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: rec2020 is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: prophoto-rgb is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: display-p3 is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: a98-rgb is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: rec2020 is not yet supported as a gradient interpolation space.
+CONSOLE WARNING: prophoto-rgb is not yet supported as a gradient interpolation space.
+

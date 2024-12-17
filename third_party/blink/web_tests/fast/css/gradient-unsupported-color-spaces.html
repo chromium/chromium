@@ -1,0 +1,19 @@
+<!DOCTYPE html
+><body></body>
+<script>
+  if (window.testRunner)
+   testRunner.dumpAsText();
+
+  const gradientTypes = ["linear", "conic", "radial"];
+  // TODO(crbug.com/383270111): These color spaces are valid by css, but not yet
+  // supported as interpolation spaces for gradients by Skia.
+  const unsupporedColorSpaces = ["display-p3", "a98-rgb", "rec2020", "prophoto-rgb"];
+
+  for (gradientType of gradientTypes) {
+    for (colorSpace of unsupporedColorSpaces) {
+      gradient = `${gradientType}-gradient(in ${colorSpace}, red, blue)`;
+      document.body.style.background = gradient;
+    }
+  }
+</script>
+</html>
