@@ -74,6 +74,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
+  TRACE_EVENT0("loading", "PrefetchURLLoaderInterceptor::MaybeCreateLoader");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!loader_callback_);
@@ -163,6 +164,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     PrefetchMatchResolver& prefetch_match_resolver,
     base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback)
     const {
+  TRACE_EVENT0("loading", "PrefetchURLLoaderInterceptor::GetPrefetch");
   PrefetchService* prefetch_service =
       PrefetchService::GetFromFrameTreeNodeId(frame_tree_node_id_);
   if (!prefetch_service) {
@@ -212,6 +214,8 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     PrefetchContainer::Reader reader) {
+  TRACE_EVENT0("loading",
+               "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
   PrefetchRequestHandler request_handler;
   if (!reader || !(request_handler = reader.CreateRequestHandler())) {
     // Do not intercept the request.

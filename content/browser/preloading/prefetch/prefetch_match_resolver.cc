@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
@@ -200,6 +201,7 @@ void PrefetchMatchResolver2::FindPrefetch(
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container,
     Callback callback) {
+  TRACE_EVENT0("loading", "PrefetchMatchResolver2::FindPrefetch");
   // See the comment of `self_`.
   auto prefetch_match_resolver = base::WrapUnique(new PrefetchMatchResolver2(
       std::move(navigated_key), prefetch_service.GetWeakPtr(),
@@ -431,6 +433,8 @@ void PrefetchMatchResolver2::OnTimeout(PrefetchContainer::Key prefetch_key) {
 
 void PrefetchMatchResolver2::UnblockForMatch(
     const PrefetchContainer::Key& prefetch_key) {
+  TRACE_EVENT0("loading", "PrefetchMatchResolver2::UnblockForMatch");
+
   // By #prefetch-key-availability
   CHECK(candidates_.contains(prefetch_key));
   auto& candidate_data = candidates_[prefetch_key];
@@ -472,6 +476,7 @@ void PrefetchMatchResolver2::UnblockForMatch(
 }
 
 void PrefetchMatchResolver2::UnblockForNoCandidates() {
+  TRACE_EVENT0("loading", "PrefetchMatchResolver2::UnblockForNoCandidates");
   UnblockInternal({});
 }
 
