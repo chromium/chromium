@@ -6,8 +6,6 @@
  * @fileoverview
  * Suite of tests for page visibility in the CrOS Settings UI.
  *
- * - These tests expect the OsSettingsRevampWayfinding feature flag to be
- *   enabled.
  * - This suite is separated into a dedicated file to mitigate test timeouts
  *   since the element is very large.
  */
@@ -138,9 +136,6 @@ suite('<os-settings-ui> page visibility', () => {
   suiteSetup(async () => {
     browserProxy = new TestAccountManagerBrowserProxy();
     AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    assertTrue(
-        loadTimeData.getBoolean('isRevampWayfindingEnabled'),
-        'This suite expects OsSettingsRevampWayfinding to be enabled.');
     loadTimeData.overrideValues({
       isKerberosEnabled: true,  // Simulate kerberos route exists
     });

@@ -75,9 +75,6 @@ export const RouteOriginMixin = dedupingMixin(
           }
 
           // Route change does not apply to the route for this page.
-          // When infinite scroll exists (OsSettingsRevampWayfinding disabled)
-          // subpage triggers should be refocused if the previous route was the
-          // root page.
           if (newRoute !== this.route && newRoute !== routes.BASIC) {
             return;
           }
