@@ -2195,6 +2195,7 @@ chromium-metrics-reviews@google.com.
   <int value="1321" label="SmartCardConnectBlockedForUrls"/>
   <int value="1322" label="DeviceFlexArcPreloadEnabled"/>
   <int value="1323" label="AllowedInputMethodsForceEnabled"/>
+  <int value="1324" label="WebRtcIPHandlingUrl"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

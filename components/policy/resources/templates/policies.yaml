@@ -1322,6 +1322,8 @@ policies:
   1321: SmartCardConnectBlockedForUrls
   1322: DeviceFlexArcPreloadEnabled
   1323: AllowedInputMethodsForceEnabled
+  1324: WebRtcIPHandlingUrl
+
 
 atomic_groups:
   1: Homepage
@@ -1379,3 +1381,4 @@ atomic_groups:
   53: SkyVaultSettings
   54: BrowserEventReporting
   55: SmartCardConnectSettings
+  56: WebRtc

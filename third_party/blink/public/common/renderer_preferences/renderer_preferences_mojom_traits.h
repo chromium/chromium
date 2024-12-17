@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_url_entry_mojom_traits.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_mojom_traits.h"
 #include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
@@ -142,6 +143,11 @@ struct BLINK_COMMON_EXPORT
   static const ::blink::mojom::WebRtcIpHandlingPolicy&
   webrtc_ip_handling_policy(const ::blink::RendererPreferences& data) {
     return data.webrtc_ip_handling_policy;
+  }
+
+  static const std::vector<::blink::WebRtcIpHandlingUrlEntry>&
+  webrtc_ip_handling_urls(const ::blink::RendererPreferences& data) {
+    return data.webrtc_ip_handling_urls;
   }
 
   static const uint16_t& webrtc_udp_min_port(

@@ -854,7 +854,8 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
       Platform::Current()->GetWebRTCRendererPreferences(
           web_frame, &webrtc_ip_handling_policy, &min_port, &max_port,
           &allow_mdns_obfuscation);
-
+      DVLOG(1) << "Active WebRtcIPHandlingPolicy: "
+               << ToString(webrtc_ip_handling_policy);
       // TODO(guoweis): |enable_multiple_routes| should be renamed to
       // |request_multiple_routes|. Whether local IP addresses could be
       // collected depends on if mic/camera permission is granted for this

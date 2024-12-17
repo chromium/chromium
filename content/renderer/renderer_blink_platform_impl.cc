@@ -40,6 +40,7 @@
 #include "base/time/time_delta_from_string.h"
 #include "build/build_config.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "content/child/child_process.h"
@@ -626,13 +627,24 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
   if (!render_frame)
     return;
 
+  GURL gurl = url::Origin(web_frame->Top()->GetSecurityOrigin()).GetURL();
+
   *ip_handling_policy =
       render_frame->GetRendererPreferences().webrtc_ip_handling_policy;
+  std::vector<blink::WebRtcIpHandlingUrlEntry> ip_handling_urls =
+      render_frame->GetRendererPreferences().webrtc_ip_handling_urls;
+  for (const auto& per_url_entry : ip_handling_urls) {
+    if (per_url_entry.url_pattern.Matches(gurl)) {
+      *ip_handling_policy = per_url_entry.handling;
+      break;
+    }
+  }
+
   *udp_min_port = render_frame->GetRendererPreferences().webrtc_udp_min_port;
   *udp_max_port = render_frame->GetRendererPreferences().webrtc_udp_max_port;
+  const std::string url(web_frame->GetSecurityOrigin().ToString().Utf8());
   const std::vector<std::string>& allowed_urls =
       render_frame->GetRendererPreferences().webrtc_local_ips_allowed_urls;
-  const std::string url(web_frame->GetSecurityOrigin().ToString().Utf8());
   for (const auto& allowed_url : allowed_urls) {
     if (base::MatchPattern(url, allowed_url)) {
       *allow_mdns_obfuscation = false;

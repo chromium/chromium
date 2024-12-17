@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -125,6 +126,33 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 
   prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
       pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
+
+  const base::Value::List& webrtc_ip_handling_urls =
+      pref_service->GetList(prefs::kWebRTCIPHandlingUrl);
+  for (const base::Value& entry : webrtc_ip_handling_urls) {
+    const base::Value::Dict& dict = entry.GetDict();
+    const std::string* url = dict.FindString("url");
+    if (!url) {
+      DVLOG(1) << "Malformed WebRtcIPHandlingUrl entry: Missing 'url' value.";
+      continue;
+    }
+    ContentSettingsPattern pattern = ContentSettingsPattern::FromString(*url);
+    if (!pattern.IsValid()) {
+      DVLOG(1)
+          << "Malformed WebRtcIPHandlingUrl entry: Invalid pattern found: '"
+          << *url << "'.";
+      continue;
+    }
+    const std::string* handling = dict.FindString("handling");
+    if (!handling) {
+      DVLOG(1)
+          << "Malformed WebRtcIPHandlingUrl entry: Missing 'handling' value.";
+      continue;
+    }
+    prefs->webrtc_ip_handling_urls.push_back(
+        {pattern, blink::ToWebRTCIPHandlingPolicy(*handling)});
+  }
+
   std::string webrtc_udp_port_range =
       pref_service->GetString(prefs::kWebRTCUDPPortRange);
   ParsePortRange(webrtc_udp_port_range, &prefs->webrtc_udp_min_port,

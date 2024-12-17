@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "components/content_settings/core/common/content_settings.mojom";
+import "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom";
+
+// A struct describing the IP handling policy entry used for WebRTC connections
+// with a specific URL pattern.
+struct WebRtcIpHandlingUrlEntry {
+    // URL pattern matching the Enterprise policy URL pattern format (https://chromeenterprise.google/policies/url-patterns/).
+    content_settings.mojom.ContentSettingsPattern url_pattern;
+
+    // Handling method. Should be one of 'default', 'default_public_and_private_interfaces',
+    // 'default_public_interface_only' or 'disable_non_proxied_udp'.
+    // If an invalid value is used, 'default' should be used as a fallback instead.
+    WebRtcIpHandlingPolicy handling;
+};

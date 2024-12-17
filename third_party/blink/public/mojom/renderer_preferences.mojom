@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "ui/gfx/mojom/font_render_params.mojom";
+import "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_url_entry.mojom";
 
 const int64 kDefaultCaretBlinkIntervalInMilliseconds = 500;
 
@@ -101,11 +102,21 @@ struct RendererPreferences {
   // This is the IP handling policy override for WebRTC.
   WebRtcIpHandlingPolicy webrtc_ip_handling_policy;
 
+  // This is an array of pairs of patterns and strings representing the
+  // IP handling policy override for WebRTC.
+  // When a pattern matches the serialized security origin of the top frame, the
+  // matching IP handling policy override will be used and will take precedence
+  // over the value for webrtc_ip_handling_policy.
+  array<WebRtcIpHandlingUrlEntry> webrtc_ip_handling_urls;
+
   // This is the range of UDP ports allowed to be used by WebRTC. A value of
   // zero in both fields means all ports are allowed.
   uint16 webrtc_udp_min_port = 0;
   uint16 webrtc_udp_max_port = 0;
 
+  // This is an array of patterns matched against the serialized security
+  // origin of the top frame to allow WebRTC to reveal local IP addresses instead
+  // of using mDNS hostnames for ICE candidates.
   array<string> webrtc_local_ips_allowed_urls;
 
   // The user agent given to WebKit when it requests one and the user agent is

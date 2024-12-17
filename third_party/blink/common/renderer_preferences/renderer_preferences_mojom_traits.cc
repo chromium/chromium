@@ -59,6 +59,10 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   if (!data.ReadWebrtcIpHandlingPolicy(&out->webrtc_ip_handling_policy))
     return false;
 
+  if (!data.ReadWebrtcIpHandlingUrls(&out->webrtc_ip_handling_urls)) {
+    return false;
+  }
+
   out->webrtc_udp_min_port = data.webrtc_udp_min_port();
   out->webrtc_udp_max_port = data.webrtc_udp_max_port();
 

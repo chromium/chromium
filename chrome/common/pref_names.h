@@ -1870,6 +1870,10 @@ inline constexpr char kToolbarIconSurfacingBubbleLastShowTime[] =
 // Define the IP handling policy override that WebRTC should follow. When not
 // set, it defaults to "default".
 inline constexpr char kWebRTCIPHandlingPolicy[] = "webrtc.ip_handling_policy";
+// Define the IP handling policy override per URL that WebRTC should follow.
+// When no URL pattern matches, WebRTC will default to the policy
+// WebRTCIPHandlingPolicy above.
+inline constexpr char kWebRTCIPHandlingUrl[] = "webrtc.ip_handling_url";
 // Define range of UDP ports allowed to be used by WebRTC PeerConnections.
 inline constexpr char kWebRTCUDPPortRange[] = "webrtc.udp_port_range";
 // Whether WebRTC event log collection by Google domains is allowed.
