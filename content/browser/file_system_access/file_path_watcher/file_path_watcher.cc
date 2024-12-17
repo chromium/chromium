@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "content/browser/file_system_access/features.h"
 
 namespace content {
 
@@ -135,12 +134,8 @@ size_t FilePathWatcher::current_usage() const {
 
 // static
 size_t FilePathWatcher::quota_limit() {
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessObserverQuotaLimit)) {
-    return GetQuotaLimitImpl();
-  }
-
-  return std::numeric_limits<size_t>::max();
+  // TODO(crbug.com/338457523): Decide per platform limits.
+  return SIZE_MAX;
 }
 
 }  // namespace content

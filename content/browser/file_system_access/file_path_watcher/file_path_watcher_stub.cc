@@ -42,9 +42,4 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 FilePathWatcher::FilePathWatcher()
     : FilePathWatcher(std::make_unique<FilePathWatcherImpl>()) {}
 
-// static
-size_t FilePathWatcher::GetQuotaLimitImpl() {
-  return std::numeric_limits<size_t>::max();
-}
-
 }  // namespace content
