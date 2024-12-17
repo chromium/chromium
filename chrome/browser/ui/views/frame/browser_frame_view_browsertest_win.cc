@@ -139,6 +139,48 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
   EXPECT_TRUE(maximize_button->GetEnabled());
 }
 
+class CaptionButtonContainerTest : public BrowserFrameViewWinTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  CaptionButtonContainerTest() = default;
+  CaptionButtonContainerTest(const CaptionButtonContainerTest&) = delete;
+  CaptionButtonContainerTest& operator=(const CaptionButtonContainerTest&) =
+      delete;
+  ~CaptionButtonContainerTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CaptionButtonContainerTest,
+                         ::testing::Values(false, true));
+
+// Test that the caption button hit tests returns the correct non-client
+// hit test result in LTR/RTL mode.
+IN_PROC_BROWSER_TEST_P(CaptionButtonContainerTest,
+                       VerifyCaptionButtonHitTestResults) {
+  const bool is_rtl = GetParam();
+  base::i18n::SetRTLForTesting(is_rtl);
+
+  auto* frame_view = GetBrowserFrameViewWin();
+  auto* maximize_button = GetMaximizeButton();
+
+  // Hit test maximize button.
+  const gfx::Point maximize_button_center =
+      maximize_button->GetBoundsInScreen().CenterPoint();
+  EXPECT_EQ(frame_view->NonClientHitTest(maximize_button_center), HTMAXBUTTON);
+
+  const int button_width = maximize_button->width();
+
+  EXPECT_EQ(frame_view->NonClientHitTest(
+                gfx::Point(maximize_button_center.x() + button_width,
+                           maximize_button_center.y())),
+            is_rtl ? HTMINBUTTON : HTCLOSE);
+
+  EXPECT_EQ(frame_view->NonClientHitTest(
+                gfx::Point(maximize_button_center.x() - button_width,
+                           maximize_button_center.y())),
+            is_rtl ? HTCLOSE : HTMINBUTTON);
+}
+
 class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
  public:
   WebAppBrowserFrameViewWinTest() = default;
