@@ -13,6 +13,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -83,7 +86,11 @@ public class DeviceLockViewBinder {
                             model.get(DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED));
             return;
         }
-        view.getContinueButton().setText(R.string.device_lock_create_lock_button);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+            view.getContinueButton().setText(R.string.history_sync_primary_action);
+        } else {
+            view.getContinueButton().setText(R.string.device_lock_create_lock_button);
+        }
         if (model.get(DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT)) {
             view.getContinueButton()
                     .setOnClickListener(
@@ -101,11 +108,13 @@ public class DeviceLockViewBinder {
             view.getTitle().setTextAppearance(R.style.TextAppearance_Headline_Primary);
             view.getDescription().setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
             view.getNoticeText().setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
-            view.getNoticeText()
-                    .setDrawableTintColor(
-                            AppCompatResources.getColorStateList(
-                                    view.getContext(),
-                                    R.color.default_icon_color_accent1_tint_list));
+            if (!SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+                ((TextViewWithCompoundDrawables) view.getNoticeText())
+                        .setDrawableTintColor(
+                                AppCompatResources.getColorStateList(
+                                        view.getContext(),
+                                        R.color.default_icon_color_accent1_tint_list));
+            }
             view.getContinueButton().setEnabled(true);
             view.getDismissButton().setEnabled(true);
         } else {
@@ -113,10 +122,13 @@ public class DeviceLockViewBinder {
             view.getTitle().setTextAppearance(R.style.TextAppearance_Headline_Disabled);
             view.getDescription().setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
             view.getNoticeText().setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
-            view.getNoticeText()
-                    .setDrawableTintColor(
-                            AppCompatResources.getColorStateList(
-                                    view.getContext(), R.color.default_text_color_disabled_list));
+            if (!SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+                ((TextViewWithCompoundDrawables) view.getNoticeText())
+                        .setDrawableTintColor(
+                                AppCompatResources.getColorStateList(
+                                        view.getContext(),
+                                        R.color.default_text_color_disabled_list));
+            }
             view.getContinueButton().setEnabled(false);
             view.getDismissButton().setEnabled(false);
         }
@@ -130,7 +142,11 @@ public class DeviceLockViewBinder {
                         .setOnClickListener(
                                 model.get(DeviceLockProperties.ON_USE_WITHOUT_AN_ACCOUNT_CLICKED));
             } else {
-                view.getDismissButton().setText(R.string.dialog_not_now);
+                if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+                    view.getDismissButton().setText(R.string.history_sync_secondary_action);
+                } else {
+                    view.getDismissButton().setText(R.string.dialog_not_now);
+                }
                 view.getDismissButton()
                         .setOnClickListener(model.get(DeviceLockProperties.ON_DISMISS_CLICKED));
             }

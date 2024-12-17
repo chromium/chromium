@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.device_lock;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -16,6 +17,8 @@ import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 
 /**
  * View that displays the device lock page to users and prompts them to create one if none are
@@ -25,7 +28,8 @@ public class DeviceLockView extends LinearLayout {
     private MaterialProgressBar mProgressBar;
     private TextView mTitle;
     private TextView mDescription;
-    private TextViewWithCompoundDrawables mNoticeText;
+    private TextView mNoticeText;
+    private TextViewWithCompoundDrawables mNoticeTextLegacy;
     private DualControlLayout mButtonBar;
     private Button mContinueButton;
     private Button mDismissButton;
@@ -49,6 +53,15 @@ public class DeviceLockView extends LinearLayout {
         mProgressBar.setIndeterminate(true);
         mDescription = findViewById(R.id.device_lock_description);
         mNoticeText = findViewById(R.id.device_lock_notice);
+        mNoticeTextLegacy = findViewById(R.id.device_lock_notice_legacy);
+
+        if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+            findViewById(R.id.device_lock_notice_container).setVisibility(View.GONE);
+            mNoticeText.setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.device_lock_notice_container).setVisibility(View.VISIBLE);
+            mNoticeText.setVisibility(View.GONE);
+        }
 
         mDismissButton =
                 DualControlLayout.createButtonForLayout(
@@ -82,8 +95,10 @@ public class DeviceLockView extends LinearLayout {
         return mDescription;
     }
 
-    TextViewWithCompoundDrawables getNoticeText() {
-        return mNoticeText;
+    TextView getNoticeText() {
+        return SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)
+                ? mNoticeText
+                : mNoticeTextLegacy;
     }
 
     TextView getContinueButton() {

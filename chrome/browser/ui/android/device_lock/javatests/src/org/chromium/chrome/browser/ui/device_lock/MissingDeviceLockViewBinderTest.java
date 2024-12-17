@@ -28,7 +28,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -38,6 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link MissingDeviceLockViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@Features.EnableFeatures(SigninFeatures.UNO_FOR_AUTO)
 public class MissingDeviceLockViewBinderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
