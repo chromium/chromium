@@ -505,7 +505,7 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
         "method": "network.beforeRequestSent",
         "params": {
             "isBlocked": False,
-            "context": None,
+            "context": context_id,
             "navigation": None,
             "redirectCount": 0,
             "request": {
