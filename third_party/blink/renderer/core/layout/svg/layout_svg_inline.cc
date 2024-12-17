@@ -91,13 +91,17 @@ void LayoutSVGInline::ObjectBoundingBoxForCursor(InlineCursor& cursor,
 
 gfx::RectF LayoutSVGInline::ObjectBoundingBox() const {
   NOT_DESTROYED();
-  gfx::RectF bounds;
-  if (IsInLayoutNGInlineFormattingContext()) {
-    InlineCursor cursor;
-    cursor.MoveToIncludingCulledInline(*this);
-    ObjectBoundingBoxForCursor(cursor, bounds);
+  if (!RuntimeEnabledFeatures::SvgTspanBboxCacheEnabled() ||
+      needs_update_bounding_box_) {
+    needs_update_bounding_box_ = false;
+    bounding_box_ = gfx::RectF();
+    if (IsInLayoutNGInlineFormattingContext()) {
+      InlineCursor cursor;
+      cursor.MoveToIncludingCulledInline(*this);
+      ObjectBoundingBoxForCursor(cursor, bounding_box_);
+    }
   }
-  return bounds;
+  return bounding_box_;
 }
 
 gfx::RectF LayoutSVGInline::DecoratedBoundingBox() const {
