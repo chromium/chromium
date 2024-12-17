@@ -51,6 +51,8 @@
       id="suggestionSelector"
       selected="0"
       selected-item="{{ironSelectedSuggestion_}}"
+      aria-label="$i18n{seaPenFreeformAriaLabelSuggestions}"
+      aria-setsize$="[[selectableSuggestions_.length]]"
       role="radiogroup">
     <template is="dom-repeat" items="[[selectableSuggestions_]]" as="suggestion">
       <cr-button
