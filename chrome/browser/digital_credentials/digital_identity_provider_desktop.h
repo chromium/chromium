@@ -89,6 +89,10 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   // should follow the instruction on the phone.
   void ShowContinueStepsOnThePhoneDialog();
 
+  template <typename T>
+  void ShowStepWithIllustration(const std::u16string& title_text,
+                                std::unique_ptr<T> illustration);
+
   // Called when `cable_connecting_dialog_timer_` completes.
   void OnCableConnectingTimerComplete();
 

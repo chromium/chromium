@@ -53,6 +53,8 @@ class DigitalIdentityMultiStepDialog {
       const std::u16string& body_text,
       std::unique_ptr<views::View> custom_body_field);
 
+  SkColor GetBackgroundColor();
+
  private:
   // The wrapped views::BubbleDialogDelegate.
   class Delegate : public views::BubbleDialogDelegate {
