@@ -85,12 +85,6 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
 }
 
 scoped_refptr<ClientSharedImage>
-SharedImageInterface::CreateSharedImageForSoftwareCompositor(
-    const SharedImageInfo& si_info) {
-  NOTREACHED();
-}
-
-scoped_refptr<ClientSharedImage>
 SharedImageInterface::AddReferenceToSharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox,

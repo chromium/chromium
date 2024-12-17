@@ -203,7 +203,7 @@ class GPU_EXPORT SharedImageInterface
   // created internally and a shared image is created out of this buffer. This
   // method is used by the software compositor only.
   virtual scoped_refptr<ClientSharedImage>
-  CreateSharedImageForSoftwareCompositor(const SharedImageInfo& si_info);
+  CreateSharedImageForSoftwareCompositor(const SharedImageInfo& si_info) = 0;
 
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.

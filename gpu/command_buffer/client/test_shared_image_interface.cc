@@ -311,6 +311,12 @@ TestSharedImageInterface::CreateSharedImage(
   return shared_image_mapping;
 }
 
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateSharedImageForSoftwareCompositor(
+    const SharedImageInfo& si_info) {
+  NOTREACHED();
+}
+
 void TestSharedImageInterface::UpdateSharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
