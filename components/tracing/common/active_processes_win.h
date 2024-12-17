@@ -84,6 +84,11 @@ class TRACING_EXPORT ActiveProcesses {
   // instance.
   std::wstring_view GetThreadName(uint32_t tid) const;
 
+  // Returns a process's image file name, or an empty view if not found or
+  // unset. The returned view may become invalidated following any other
+  // operation on this instance.
+  std::string_view GetProcessImageFileName(uint32_t pid) const;
+
  private:
   struct Process {
     Process(uint32_t pid,

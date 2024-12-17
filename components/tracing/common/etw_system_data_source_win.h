@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -28,9 +29,13 @@ class TRACING_EXPORT EtwSystemDataSource
  public:
   static constexpr bool kSupportsMultipleInstances = false;
 
-  static void Register();
+  // Registers the data source. `client_pid` identifies the client process on
+  // behalf of which traces are collected. If specified, events are filtered to
+  // exclude certain details from non-Chrome processes. No filtering is
+  // performed when a client pid is not provided.
+  static void Register(base::ProcessId client_pid = base::kNullProcessId);
 
-  EtwSystemDataSource();
+  explicit EtwSystemDataSource(base::ProcessId client_pid);
   EtwSystemDataSource(const EtwSystemDataSource&) = delete;
   EtwSystemDataSource& operator=(const EtwSystemDataSource&) = delete;
   ~EtwSystemDataSource() override;
@@ -43,6 +48,8 @@ class TRACING_EXPORT EtwSystemDataSource
  private:
   std::unique_ptr<perfetto::TraceWriterBase> CreateTraceWriter();
 
+  // Identifier of the process on behalf of which traces are collected.
+  const base::ProcessId client_pid_;
   base::win::EtwTraceController etw_controller_
       GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> consume_task_runner_

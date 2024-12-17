@@ -28,10 +28,11 @@ namespace elevated_tracing_service {
 namespace {
 
 // Invoked on the main service thread.
-void OnTracedProcessReceiver(mojo::ScopedMessagePipeHandle pipe) {
+void OnTracedProcessReceiver(base::ProcessId client_pid,
+                             mojo::ScopedMessagePipeHandle pipe) {
   // Register the ETW data source the first time a handle is received.
-  [[maybe_unused]] static const bool etw_data_source_registered = [] {
-    tracing::EtwSystemDataSource::Register();
+  [[maybe_unused]] static const bool etw_data_source_registered = [client_pid] {
+    tracing::EtwSystemDataSource::Register(client_pid);
     return true;
   }();
 
@@ -75,8 +76,8 @@ HRESULT SystemTracingSession::AcceptInvitation(const wchar_t* server_name,
   }
 
   // Get a handle to the client process with appropriate rights.
-  if (const auto client_pid = client_process.Pid();
-      client_pid != base::kNullProcessId) {
+  const auto client_pid = client_process.Pid();
+  if (client_pid != base::kNullProcessId) {
     if (auto dup = base::Process::OpenWithAccess(client_pid, SYNCHRONIZE);
         dup.IsValid()) {
       std::swap(client_process, dup);
@@ -106,7 +107,7 @@ HRESULT SystemTracingSession::AcceptInvitation(const wchar_t* server_name,
   }
 
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&OnTracedProcessReceiver,
+      FROM_HERE, base::BindOnce(&OnTracedProcessReceiver, client_pid,
                                 invitation.ExtractMessagePipe(/*name=*/0)));
 
   session_ = std::move(session);

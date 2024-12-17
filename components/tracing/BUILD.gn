@@ -53,6 +53,8 @@ component("startup_tracing") {
       "common/etw_export_win.h",
       "common/etw_system_data_source_win.cc",
       "common/etw_system_data_source_win.h",
+      "common/inclusion_policy_win.cc",
+      "common/inclusion_policy_win.h",
       "common/system_log_event_utils_win.cc",
       "common/system_log_event_utils_win.h",
     ]

@@ -41,14 +41,15 @@ ULONG EtwSystemFlagsFromEnum(
 }  // namespace
 
 // static
-void EtwSystemDataSource::Register() {
+void EtwSystemDataSource::Register(base::ProcessId client_pid) {
   perfetto::DataSourceDescriptor desc;
   desc.set_name("org.chromium.etw_system");
-  perfetto::DataSource<EtwSystemDataSource>::Register(desc);
+  perfetto::DataSource<EtwSystemDataSource>::Register(desc, client_pid);
 }
 
-EtwSystemDataSource::EtwSystemDataSource()
-    : consume_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+EtwSystemDataSource::EtwSystemDataSource(base::ProcessId client_pid)
+    : client_pid_(client_pid),
+      consume_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(),
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       consumer_{nullptr, base::OnTaskRunnerDeleter(nullptr)} {
@@ -111,6 +112,8 @@ void EtwSystemDataSource::OnStart(const StartArgs&) {
   p.MinimumBuffers = 16;
   p.BufferSize = 16;
   p.FlushTimer = 1;  // flush every second.
+  // Enable process and thread events for categorization and filtering.
+  p.EnableFlags = EVENT_TRACE_FLAG_PROCESS | EVENT_TRACE_FLAG_THREAD;
 
   for (auto flag : etw_config.kernel_flags()) {
     p.EnableFlags |= EtwSystemFlagsFromEnum(flag);
@@ -122,7 +125,7 @@ void EtwSystemDataSource::OnStart(const StartArgs&) {
     return;
   }
 
-  consumer_ = {new EtwConsumer(CreateTraceWriter()),
+  consumer_ = {new EtwConsumer(client_pid_, CreateTraceWriter()),
                base::OnTaskRunnerDeleter(consume_task_runner_)};
   hr = consumer_->OpenRealtimeSession(kEtwSystemSessionName);
   if (FAILED(hr)) {

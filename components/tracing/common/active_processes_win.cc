@@ -230,6 +230,15 @@ std::wstring_view ActiveProcesses::GetThreadName(uint32_t tid) const {
   return {};
 }
 
+std::string_view ActiveProcesses::GetProcessImageFileName(uint32_t pid) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (auto iter = processes_.find(pid); iter != processes_.end()) {
+    return iter->second.image_file_name;
+  }
+  return {};
+}
+
 void ActiveProcesses::OnClientAdded(Process* client) {
   client_process_ = client;
   client_in_application_ =
