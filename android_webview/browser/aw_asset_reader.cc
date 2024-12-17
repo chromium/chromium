@@ -4,11 +4,13 @@
 
 #include "android_webview/browser/aw_asset_reader.h"
 
-#include "android_webview/browser_jni_headers/AwAssetReader_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwAssetReader_jni.h"
 
 namespace android_webview {
 
@@ -17,8 +19,8 @@ int AwAssetReader::OpenApkAsset(const std::string& file_path,
   // The AssetManager API of the NDK does not expose a method for accessing raw
   // resources :(
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jlongArray> jarr = Java_AwAssetReader_open(
-      env, base::android::ConvertUTF8ToJavaString(env, file_path));
+  base::android::ScopedJavaLocalRef<jlongArray> jarr =
+      Java_AwAssetReader_open(env, file_path);
   std::vector<jlong> results;
   base::android::JavaLongArrayToLongVector(env, jarr, &results);
   CHECK_EQ(3U, results.size());

@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.content_public.browser.MessagePayload;
@@ -31,8 +32,8 @@ public class WebMessageListenerHolder {
     @CalledByNative
     public void onPostMessage(
             MessagePayload payload,
-            String topLevelOrigin,
-            String sourceOrigin,
+            @JniType("std::string") String topLevelOrigin,
+            @JniType("std::string") String sourceOrigin,
             boolean isMainFrame,
             MessagePort[] ports,
             JsReplyProxy replyProxy) {

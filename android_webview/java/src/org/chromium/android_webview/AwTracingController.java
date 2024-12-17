@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -179,7 +180,7 @@ public class AwTracingController {
         boolean start(
                 long nativeAwTracingController,
                 AwTracingController caller,
-                String categories,
+                @JniType("std::string") String categories,
                 int traceMode);
 
         boolean stopAndFlush(long nativeAwTracingController, AwTracingController caller);

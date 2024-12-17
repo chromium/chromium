@@ -77,10 +77,8 @@ AwTracingController::~AwTracingController() {}
 
 bool AwTracingController::Start(JNIEnv* env,
                                 const JavaParamRef<jobject>& obj,
-                                const JavaParamRef<jstring>& jcategories,
+                                std::string& categories,
                                 jint jmode) {
-  std::string categories =
-      base::android::ConvertJavaStringToUTF8(env, jcategories);
   base::trace_event::TraceConfig trace_config(
       categories, static_cast<base::trace_event::TraceRecordMode>(jmode));
   return content::TracingController::GetInstance()->StartTracing(

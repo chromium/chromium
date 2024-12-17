@@ -71,8 +71,7 @@ net::SocketTag GetDefaultSocketTag() {
 }
 
 // static
-ScopedJavaLocalRef<jstring>
-JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl(JNIEnv* env) {
+std::string JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GURL privacy_policy_url(
       security_interstitials::kSafeBrowsingPrivacyPolicyUrl);
@@ -80,7 +79,7 @@ JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl(JNIEnv* env) {
       AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager()->app_locale();
   privacy_policy_url =
       google_util::AppendGoogleLocaleParam(privacy_policy_url, locale);
-  return base::android::ConvertUTF8ToJavaString(env, privacy_policy_url.spec());
+  return privacy_policy_url.spec();
 }
 
 // static
@@ -95,10 +94,8 @@ void JNI_AwContentsStatics_ClearClientCertPreferences(
 }
 
 // static
-ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetUnreachableWebDataUrl(
-    JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, content::kUnreachableWebDataURL);
+std::string JNI_AwContentsStatics_GetUnreachableWebDataUrl(JNIEnv* env) {
+  return content::kUnreachableWebDataURL;
 }
 
 // static
@@ -168,17 +165,14 @@ jboolean JNI_AwContentsStatics_IsMultiProcessEnabled(JNIEnv* env) {
 }
 
 // static
-ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetVariationsHeader(
-    JNIEnv* env) {
+std::string JNI_AwContentsStatics_GetVariationsHeader(JNIEnv* env) {
   const bool is_signed_in = false;
   auto headers =
       variations::VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
           is_signed_in);
   if (!headers)
-    return base::android::ConvertUTF8ToJavaString(env, "");
-  return base::android::ConvertUTF8ToJavaString(
-      env,
-      headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY));
+    return "";
+  return headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
 }
 
 }  // namespace android_webview

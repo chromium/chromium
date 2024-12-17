@@ -19,7 +19,7 @@ class AwTracingController {
 
   bool Start(JNIEnv* env,
              const base::android::JavaParamRef<jobject>& obj,
-             const base::android::JavaParamRef<jstring>& categories,
+             std::string& jcategories,
              jint mode);
   bool StopAndFlush(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj);

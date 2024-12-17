@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwBrowserProcess;
@@ -503,7 +504,7 @@ public class VariationsSeedLoader {
         // Parses the AwVariationsSeed proto stored in the file with the given path, saving it in
         // memory for later use by native code if the parsing succeeded. Returns true if the loading
         // and parsing were successful.
-        boolean parseAndSaveSeedProto(String path);
+        boolean parseAndSaveSeedProto(@JniType("std::string") String path);
 
         // Parses the AwVariationsSeed proto stored in the given byte array, saving it in
         // memory for later use by native code if the parsing succeeded. Returns true if the loading

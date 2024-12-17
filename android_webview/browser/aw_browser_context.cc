@@ -669,16 +669,12 @@ base::android::ScopedJavaLocalRef<jobject> JNI_AwBrowserContext_GetDefaultJava(
   return default_context->GetJavaBrowserContext();
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-JNI_AwBrowserContext_GetDefaultContextName(JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, AwBrowserContextStore::kDefaultContextName);
+std::string JNI_AwBrowserContext_GetDefaultContextName(JNIEnv* env) {
+  return AwBrowserContextStore::kDefaultContextName;
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-JNI_AwBrowserContext_GetDefaultContextRelativePath(JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, AwBrowserContextStore::kDefaultContextPath);
+std::string JNI_AwBrowserContext_GetDefaultContextRelativePath(JNIEnv* env) {
+  return AwBrowserContextStore::kDefaultContextPath;
 }
 
 void AwBrowserContext::ClearPersistentOriginTrialStorageForTesting(
@@ -702,9 +698,7 @@ AwBrowserContext::GetJavaBrowserContext() {
   if (!obj_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     obj_ = Java_AwBrowserContext_create(
-        env, reinterpret_cast<intptr_t>(this),
-        base::android::ConvertUTF8ToJavaString(env, name_),
-        base::android::ConvertUTF8ToJavaString(env, relative_path_.value()),
+        env, reinterpret_cast<intptr_t>(this), name_, relative_path_.value(),
         GetCookieManager()->GetJavaCookieManager(), IsDefaultBrowserContext());
   }
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
@@ -814,8 +808,7 @@ void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
   CHECK(cache_deleted);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AwBrowserContext_deleteSharedPreferences(
-      env, base::android::ConvertUTF8ToJavaString(env, relative_path.value()));
+  Java_AwBrowserContext_deleteSharedPreferences(env, relative_path.value());
 }
 blink::mojom::PermissionStatus AwBrowserContext::GetGeolocationPermission(
     const GURL& origin) const {
@@ -825,10 +818,8 @@ blink::mojom::PermissionStatus AwBrowserContext::GetGeolocationPermission(
     return blink::mojom::PermissionStatus::ASK;
   }
 
-  base::android::ScopedJavaLocalRef<jstring> j_origin(
-      base::android::ConvertUTF8ToJavaString(env, origin.spec()));
   return static_cast<blink::mojom::PermissionStatus>(
-      Java_AwBrowserContext_getGeolocationPermission(env, obj_, j_origin));
+      Java_AwBrowserContext_getGeolocationPermission(env, obj_, origin.spec()));
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>

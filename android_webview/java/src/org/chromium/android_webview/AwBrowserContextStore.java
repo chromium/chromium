@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -82,14 +83,16 @@ public class AwBrowserContextStore {
 
     @NativeMethods
     interface Natives {
-        AwBrowserContext getNamedContextJava(String name, boolean createIfNeeded);
+        AwBrowserContext getNamedContextJava(
+                @JniType("std::string") String name, boolean createIfNeeded);
 
-        String getNamedContextPathForTesting(String name); // IN-TEST
+        @JniType("std::string")
+        String getNamedContextPathForTesting(@JniType("std::string") String name); // IN-TEST
 
-        boolean deleteNamedContext(String name);
+        boolean deleteNamedContext(@JniType("std::string") String name);
 
         String[] listAllContexts();
 
-        boolean checkNamedContextExists(String name);
+        boolean checkNamedContextExists(@JniType("std::string") String name);
     }
 }

@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.net.Uri;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import java.util.List;
@@ -86,7 +87,8 @@ public class AwContentsOriginMatcher {
     interface Natives {
         long init(AwContentsOriginMatcher caller);
 
-        boolean matchesOrigin(long nativeAwContentsOriginMatcher, String origin);
+        boolean matchesOrigin(
+                long nativeAwContentsOriginMatcher, @JniType("std::string") String origin);
 
         // Returns the list of invalid rules.
         // If there are bad rules, no update is performed

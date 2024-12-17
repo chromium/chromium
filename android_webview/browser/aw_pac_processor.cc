@@ -438,8 +438,7 @@ bool AwPacProcessor::SetProxyScript(std::string script) {
 
 jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj,
-                                        const JavaParamRef<jstring>& jscript) {
-  std::string script = ConvertJavaStringToUTF8(env, jscript);
+                                        std::string& script) {
   return SetProxyScript(script);
 }
 

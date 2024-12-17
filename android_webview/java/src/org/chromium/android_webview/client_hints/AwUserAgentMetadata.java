@@ -9,6 +9,7 @@ import androidx.annotation.StringDef;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -142,27 +143,27 @@ public class AwUserAgentMetadata {
     }
 
     @CalledByNative
-    private String getFullVersion() {
+    private @JniType("std::string") String getFullVersion() {
         return mFullVersion;
     }
 
     @CalledByNative
-    private String getPlatform() {
+    private @JniType("std::string") String getPlatform() {
         return mPlatform;
     }
 
     @CalledByNative
-    private String getPlatformVersion() {
+    private @JniType("std::string") String getPlatformVersion() {
         return mPlatformVersion;
     }
 
     @CalledByNative
-    private String getArchitecture() {
+    private @JniType("std::string") String getArchitecture() {
         return mArchitecture;
     }
 
     @CalledByNative
-    private String getModel() {
+    private @JniType("std::string") String getModel() {
         return mModel;
     }
 
@@ -193,13 +194,13 @@ public class AwUserAgentMetadata {
     private static AwUserAgentMetadata create(
             @NonNull String[][] brandVersionList,
             String[][] brandFullVersionList,
-            String fullVersion,
-            @NonNull String platform,
-            String platformVersion,
-            String architecture,
-            String model,
+            @JniType("std::string") String fullVersion,
+            @NonNull @JniType("std::string") String platform,
+            @JniType("std::string") String platformVersion,
+            @JniType("std::string") String architecture,
+            @JniType("std::string") String model,
             boolean mobile,
-            String bitness,
+            @JniType("std::string") String bitness,
             boolean wow64,
             @FormFactors String[] formFactors) {
         AwUserAgentMetadata result = new AwUserAgentMetadata();

@@ -267,10 +267,10 @@ ApkType AwBrowserProcess::GetApkType() {
 
 static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& processName) {
+    std::string& processName) {
   static ::crash_reporter::CrashKeyString<64> crash_key(
       crash_keys::kAppProcessName);
-  crash_key.Set(base::android::ConvertJavaStringToUTF8(env, processName));
+  crash_key.Set(processName);
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>

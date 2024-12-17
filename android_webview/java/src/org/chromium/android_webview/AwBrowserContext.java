@@ -422,8 +422,8 @@ public class AwBrowserContext implements BrowserContextHandle {
     @CalledByNative
     public static AwBrowserContext create(
             long nativeAwBrowserContext,
-            String name,
-            String relativePath,
+            @JniType("std::string") String name,
+            @JniType("std::string") String relativePath,
             AwCookieManager cookieManager,
             boolean isDefault) {
         return new AwBrowserContext(
@@ -431,7 +431,7 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @CalledByNative
-    public static void deleteSharedPreferences(String relativePath) {
+    public static void deleteSharedPreferences(@JniType("std::string") String relativePath) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             final String sharedPrefsFilename = getSharedPrefsFilename(relativePath);
             SharedPreferences.Editor prefsEditor = createSharedPrefs(sharedPrefsFilename).edit();
@@ -440,7 +440,7 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @CalledByNative
-    private int getGeolocationPermission(String origin) {
+    private int getGeolocationPermission(@JniType("std::string") String origin) {
         AwGeolocationPermissions permissions = getGeolocationPermissions();
         if (!permissions.hasOrigin(origin)) {
             return PermissionStatus.ASK;
@@ -454,8 +454,10 @@ public class AwBrowserContext implements BrowserContextHandle {
     interface Natives {
         AwBrowserContext getDefaultJava();
 
+        @JniType("std::string")
         String getDefaultContextName();
 
+        @JniType("std::string")
         String getDefaultContextRelativePath();
 
         long getQuotaManagerBridge(long nativeAwBrowserContext);
