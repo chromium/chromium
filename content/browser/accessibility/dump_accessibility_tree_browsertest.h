@@ -13,6 +13,7 @@
 
 namespace content {
 
+constexpr const char kAccName[]{"accname"};
 constexpr const char kARIA[]{"aria"};
 constexpr const char kCSS[]{"css"};
 constexpr const char kFormControls[]{"form-controls"};
@@ -45,14 +46,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   std::vector<std::string> Dump(ui::AXMode mode) override;
 
   void RunAccNameTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "accname");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
-    RunTest(ui::kAXModeComplete, accname_file, "accessibility/accname",
-            FILE_PATH_LITERAL("tree"));
+    RunTypedTest<kAccName>(file_path);
   }
 
   void RunAriaTest(const base::FilePath::CharType* file_path) {
