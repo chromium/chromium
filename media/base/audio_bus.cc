@@ -15,6 +15,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -27,26 +28,25 @@
 
 namespace media {
 
+// Returns `frames` rounded up to the nearest number which allows full rows of
+// SIMD instructions.
+static int AlignFramesUp(int frames) {
+  // Since our internal sample format is float, we can guarantee the alignment
+  // by making the number of frames an integer multiple of
+  // AudioBus::kChannelAlignment / sizeof(float).
+  return base::bits::AlignUp(frames * sizeof(float),
+                             AudioBus::kChannelAlignment) /
+         sizeof(float);
+}
+
 // In order to guarantee that the memory block for each channel starts at an
 // aligned address when splitting a contiguous block of memory into one block
 // per channel, we may have to make these blocks larger than otherwise needed.
 // We do this by allocating space for potentially more frames than requested.
 // This method returns the required size for the contiguous memory block
 // in bytes and outputs the adjusted number of frames via |out_aligned_frames|.
-static int CalculateMemorySizeInternal(int channels,
-                                       int frames,
-                                       int* out_aligned_frames) {
-  // Since our internal sample format is float, we can guarantee the alignment
-  // by making the number of frames an integer multiple of
-  // AudioBus::kChannelAlignment / sizeof(float).
-  int aligned_frames =
-      ((frames * sizeof(float) + AudioBus::kChannelAlignment - 1) &
-       ~(AudioBus::kChannelAlignment - 1)) / sizeof(float);
-
-  if (out_aligned_frames)
-    *out_aligned_frames = aligned_frames;
-
-  return sizeof(float) * channels * aligned_frames;
+static int CalculateMemorySizeInternal(int channels, int frames) {
+  return sizeof(float) * channels * AlignFramesUp(frames);
 }
 
 static void ValidateConfig(int channels, int frames) {
@@ -68,13 +68,13 @@ AudioBus::AudioBus(int channels, int frames)
     : frames_(frames), is_wrapper_(false) {
   ValidateConfig(channels, frames_);
 
-  int aligned_frames = 0;
-  int size = CalculateMemorySizeInternal(channels, frames, &aligned_frames);
+  int aligned_frames = AlignFramesUp(frames);
+  int size = CalculateMemorySizeInternal(channels, aligned_frames);
 
-  data_.reset(static_cast<float*>(base::AlignedAlloc(
-      size, AudioBus::kChannelAlignment)));
+  data_ = base::AlignedUninit<float>(static_cast<size_t>(size),
+                                     AudioBus::kChannelAlignment);
 
-  BuildChannelData(channels, aligned_frames, data_.get());
+  BuildChannelData(channels, aligned_frames, data_.data());
 }
 
 AudioBus::AudioBus(int channels, int frames, float* data)
@@ -83,8 +83,8 @@ AudioBus::AudioBus(int channels, int frames, float* data)
   CHECK(data);
   ValidateConfig(channels, frames_);
 
-  int aligned_frames = 0;
-  CalculateMemorySizeInternal(channels, frames, &aligned_frames);
+  int aligned_frames = AlignFramesUp(frames);
+  CalculateMemorySizeInternal(channels, aligned_frames);
 
   BuildChannelData(channels, aligned_frames, data);
 }
@@ -261,13 +261,13 @@ bool AudioBus::AreFramesZero() const {
 
 // static
 int AudioBus::CalculateMemorySize(const AudioParameters& params) {
-  return CalculateMemorySizeInternal(
-      params.channels(), params.frames_per_buffer(), NULL);
+  return CalculateMemorySizeInternal(params.channels(),
+                                     params.frames_per_buffer());
 }
 
 // static
 int AudioBus::CalculateMemorySize(int channels, int frames) {
-  return CalculateMemorySizeInternal(channels, frames, NULL);
+  return CalculateMemorySizeInternal(channels, frames);
 }
 
 // static

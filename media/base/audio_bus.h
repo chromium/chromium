@@ -223,7 +223,7 @@ class MEDIA_SHMEM_EXPORT AudioBus {
       typename TargetSampleTypeTraits::ValueType* dest_buffer);
 
   // Contiguous block of channel memory.
-  std::unique_ptr<float, base::AlignedFreeDeleter> data_;
+  base::AlignedHeapArray<float> data_;
 
   // Whether the data is compressed bitstream or not.
   bool is_bitstream_format_ = false;
