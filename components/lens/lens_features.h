@@ -331,6 +331,12 @@ extern bool UsePdfInteractionType();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseWebpageInteractionType();
 
+// Returns the number of characters that should be present per page if the PDF
+// is not scanned. This value is compared to the average number of characters
+// per page to determine if the PDF is scanned.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetScannedPdfCharacterPerPageHeuristic();
+
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.
 COMPONENT_EXPORT(LENS_FEATURES)

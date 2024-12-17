@@ -1615,7 +1615,8 @@ void LensOverlayController::GetPartialPdfText(uint32_t page_count) {
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
   if (!pdf_helper ||
-      lens::features::GetLensOverlayPdfSuggestCharacterTarget() == 0) {
+      lens::features::GetLensOverlayPdfSuggestCharacterTarget() == 0 ||
+      page_count == 0) {
     return;
   }
 
@@ -1623,9 +1624,10 @@ void LensOverlayController::GetPartialPdfText(uint32_t page_count) {
   // pages.
   initialization_data_->pdf_pages_text_.clear();
   pdf_helper->GetPageText(
-      0, base::BindOnce(&LensOverlayController::GetPartialPdfTextCallback,
-                        weak_factory_.GetWeakPtr(), /*page_index=*/0,
-                        page_count, /*total_characters_retrieved=*/0));
+      /*page_index=*/0,
+      base::BindOnce(&LensOverlayController::GetPartialPdfTextCallback,
+                     weak_factory_.GetWeakPtr(), /*page_index=*/0, page_count,
+                     /*total_characters_retrieved=*/0));
 }
 
 void LensOverlayController::GetPartialPdfTextCallback(

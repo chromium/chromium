@@ -458,7 +458,7 @@ void LensOverlayQueryController::SendContextualTextQuery(
 
   // If there is a page content request in flight, wait for it to finish before
   // sending the contextual text query.
-  if (page_content_request_in_progress_) {
+  if (ShouldHoldContextualSearchQuery()) {
     pending_contextual_query_callback_ =
         base::BindOnce(&LensOverlayQueryController::SendContextualTextQuery,
                        weak_ptr_factory_.GetWeakPtr(), query_text,
@@ -1789,5 +1789,30 @@ void LensOverlayQueryController::OnInteractionEndpointFetcherCreated(
       LatencyType::kInvocationToInitialInteractionRequestSent,
       VitQueryParamValueForMimeType(underlying_content_type_));
   interaction_endpoint_fetcher_ = std::move(endpoint_fetcher);
+}
+
+bool LensOverlayQueryController::ShouldHoldContextualSearchQuery() {
+  // If the page content request has already finished, the query can be sent.
+  if (!page_content_request_in_progress_) {
+    return false;
+  }
+
+  // If the partial page content is empty, the query needs to be held until the
+  // page content upload is finished.
+  if (partial_content_.empty()) {
+    return true;
+  }
+
+  // Get the average number of characters per page.
+  int total_characters = 0;
+  for (const std::u16string& page_text : partial_content_) {
+    total_characters += page_text.size();
+  }
+  const int characters_per_page = total_characters / partial_content_.size();
+
+  // If the average is under the scanned pdf character per page heuristic, the
+  // query needs to wait for the page content upload.
+  return characters_per_page <
+         lens::features::GetScannedPdfCharacterPerPageHeuristic();
 }
 }  // namespace lens

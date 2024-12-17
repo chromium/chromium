@@ -117,6 +117,12 @@ constexpr char kGen204IdentifierQueryParameter[] = "plla";
 const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
 const std::vector<uint8_t> kNewFakeContentBytes({5, 6, 7, 8});
 
+const std::vector<std::u16string> kShortPartialContent({u"page 1", u"page 2",
+                                                        u"page 3"});
+const std::vector<std::u16string> kLongPartialContent(
+    {u"this is a page with over 100 characters to ensure that the average "
+     "characters per page is above the heuristic."});
+
 const base::test::FeatureRefAndParams
     kDefaultLensOverlayContextualSearchboxParams =
         base::test::FeatureRefAndParams(
@@ -129,7 +135,8 @@ const base::test::FeatureRefAndParams
              {"send-lens-inputs-for-contextual-suggest", "true"},
              {"send-page-url-for-contextualization", "true"},
              {"send-lens-inputs-for-lens-suggest", "true"},
-             {"send-lens-visual-interaction-data-for-lens-suggest", "true"}});
+             {"send-lens-visual-interaction-data-for-lens-suggest", "true"},
+             {"characters-per-page-heuristic", "50"}});
 
 MATCHER_P(EqualsProto, message, "") {
   std::string expected_serialized, actual_serialized;
@@ -1599,7 +1606,7 @@ TEST_F(LensOverlayQueryControllerTest,
 }
 
 TEST_F(LensOverlayQueryControllerTest,
-       FetchTextOnlyInteractionWithLargeUpload_HoldsRequest) {
+       SendContextualTextQuery_WithNoPartialUpload_HoldsRequest) {
   InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
@@ -1641,6 +1648,11 @@ TEST_F(LensOverlayQueryControllerTest,
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
       lens::MimeType::kPlainText, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Send an empty partial page content request.
+  query_controller.SendPartialPageContentRequest({});
+
+  // Send the contextual text query.
   query_controller.SendContextualTextQuery(
       kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
@@ -1651,6 +1663,131 @@ TEST_F(LensOverlayQueryControllerTest,
   // Simulate the upload progress callback completing the upload. Verify the
   // query controller issued the search request after the upload completed.
   query_controller.RunUploadProgressCallback();
+  ASSERT_TRUE(url_response_future.Wait());
+
+  query_controller.EndQuery();
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       SendContextualTextQuery_WithScannedPdfPartialUpload_HoldsRequest) {
+  InitFeaturesWithClusterInfoOptimization();
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  // Disable the upload progress callback so the test can control when it
+  // completes.
+  query_controller.set_disable_page_upload_response_callback(true);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
+      lens::MimeType::kPlainText, 0, base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Send a partial page content request that does not meet the per page
+  // character limit to be considered as a non-scanned pdf. This emulates the
+  // case where the users PDF is scanned and therefore the search query should
+  // be held until the page content upload is finished.
+  query_controller.SendPartialPageContentRequest(kShortPartialContent);
+
+  // Send the contextual text query.
+  query_controller.SendContextualTextQuery(
+      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
+
+  // Verify the query controller did not issue the search request yet.
+  EXPECT_FALSE(url_response_future.IsReady());
+
+  // Simulate the upload progress callback completing the upload. Verify the
+  // query controller issued the search request after the upload completed.
+  query_controller.RunUploadProgressCallback();
+  ASSERT_TRUE(url_response_future.Wait());
+
+  query_controller.EndQuery();
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       SendContextualTextQuery_WithFullTextPdfPartialUpload_SendsRequest) {
+  InitFeaturesWithClusterInfoOptimization();
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  // Disable the upload progress callback so the test can control when it
+  // completes.
+  query_controller.set_disable_page_upload_response_callback(true);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
+      lens::MimeType::kPlainText, 0, base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Send a partial page content request that does meet the per page
+  // character limit to be considered as a non-scanned pdf.
+  query_controller.SendPartialPageContentRequest(kLongPartialContent);
+
+  // Send the contextual text query.
+  query_controller.SendContextualTextQuery(
+      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
+
+  // Verify the query controller did issue the search request.
   ASSERT_TRUE(url_response_future.Wait());
 
   query_controller.EndQuery();

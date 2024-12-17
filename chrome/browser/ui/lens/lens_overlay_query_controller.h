@@ -503,6 +503,12 @@ class LensOverlayQueryController {
   void OnInteractionEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
+  // Returns whether or not the contextual search query should be held until
+  // the full page content upload is finished. This is only true if the page
+  // content upload is in progress and the partial page content upload will not
+  // yield detailed enough results.
+  bool ShouldHoldContextualSearchQuery();
+
   // The request id generator.
   std::unique_ptr<lens::LensOverlayRequestIdGenerator> request_id_generator_;
 
