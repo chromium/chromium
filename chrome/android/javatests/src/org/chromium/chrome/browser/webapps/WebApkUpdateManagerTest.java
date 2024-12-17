@@ -51,7 +51,6 @@ import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.webapk.proto.WebApkProto;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.components.webapps.WebApkUpdateReason;
-import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -469,15 +468,10 @@ public class WebApkUpdateManagerTest {
 
         // Icon changes should trigger the warning dialog, if the platform supports maskable icons.
         enableUpdateDialogForIcon(true);
-        Assert.assertEquals(
-                WebappsIconUtils.doesAndroidSupportMaskableIcons(),
-                checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ true));
-        boolean supportsMaskableIcons = WebappsIconUtils.doesAndroidSupportMaskableIcons();
-        if (supportsMaskableIcons) {
-            assertUpdateReasonsEqual(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
-        }
-        Assert.assertEquals(supportsMaskableIcons, mUpdateRequested);
-        Assert.assertEquals(supportsMaskableIcons, mIconOrNameUpdateDialogShown);
+        Assert.assertTrue(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ true));
+        assertUpdateReasonsEqual(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
+        Assert.assertTrue(mUpdateRequested);
+        Assert.assertTrue(mIconOrNameUpdateDialogShown);
     }
 
     @Test

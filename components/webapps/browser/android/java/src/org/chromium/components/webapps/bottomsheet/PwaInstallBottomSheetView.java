@@ -80,7 +80,7 @@ public class PwaInstallBottomSheetView {
 
     void setIcon(Bitmap icon, boolean isAdaptive) {
         ImageView imageView = mContentView.findViewById(R.id.app_icon);
-        if (isAdaptive && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+        if (isAdaptive) {
             imageView.setImageBitmap(WebappsIconUtils.generateAdaptiveIconBitmap(icon));
         } else {
             imageView.setImageBitmap(icon);

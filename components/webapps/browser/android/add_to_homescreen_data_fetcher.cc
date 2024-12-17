@@ -63,8 +63,7 @@ InstallableParams ParamsToFetchInstallableData() {
 InstallableParams ParamsToFetchPrimaryIcon() {
   InstallableParams params;
   params.valid_primary_icon = true;
-  params.prefer_maskable_icon =
-      WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  params.prefer_maskable_icon = true;
   params.fetch_favicon = true;
   return params;
 }

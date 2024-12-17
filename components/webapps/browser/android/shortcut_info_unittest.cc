@@ -340,13 +340,8 @@ TEST_F(ShortcutInfoTest, FindMaskableSplashIcon) {
 
   info_.UpdateBestSplashIcon(manifest_);
 
-  if (WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
     EXPECT_EQ(info_.splash_image_url.path(), "/icon_144.png");
     EXPECT_TRUE(info_.is_splash_image_maskable);
-  } else {
-    EXPECT_EQ(info_.splash_image_url.path(), "/icon_96.png");
-    EXPECT_FALSE(info_.is_splash_image_maskable);
-  }
 }
 
 TEST_F(ShortcutInfoTest, SplashIconFallbackToAny) {

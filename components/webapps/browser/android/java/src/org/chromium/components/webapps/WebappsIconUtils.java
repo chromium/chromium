@@ -216,11 +216,6 @@ public class WebappsIconUtils {
         return context.getResources().getDimensionPixelSize(R.dimen.webapk_prompt_ui_icon_radius);
     }
 
-    /** Check the running Android version supports adaptive icon (i.e. API level >= 26) */
-    public static boolean doesAndroidSupportMaskableIcons() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-    }
-
     /**
      * Returns whether the given icon matches the size requirements to be used on the home screen.
      *

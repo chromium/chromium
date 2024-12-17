@@ -68,8 +68,7 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
   message_->SetDescription(url_formatter::FormatUrlForSecurityDisplay(
       start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
   message_->DisableIconTint();
-  if (is_primary_icon_maskable &&
-      WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+  if (is_primary_icon_maskable) {
     message_->SetIcon(WebappsIconUtils::GenerateAdaptiveIconBitmap(icon));
   } else {
     message_->SetIcon(icon);

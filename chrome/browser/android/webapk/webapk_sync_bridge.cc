@@ -143,7 +143,6 @@ std::unique_ptr<webapps::ShortcutInfo> CreateShortcutInfoFromSpecifics(
     shortcut_info->best_primary_icon_url =
         GURL(webapk_specifics.icon_infos(0).url());
     shortcut_info->is_primary_icon_maskable =
-        webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons() &&
         webapk_specifics.icon_infos(0).purpose() ==
             sync_pb::WebApkIconInfo_Purpose_MASKABLE;
   } else {

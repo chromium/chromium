@@ -189,11 +189,7 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, MaskableIcon) {
   EXPECT_CALL(client_mock(), AddToHomescreenFromBadge);
   EXPECT_CALL(client_mock(), BadgeDismissed).Times(0);
   EXPECT_CALL(client_mock(), BadgeIgnored).Times(0);
-  if (WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
-    ExpectedIconChanged();
-  } else {
-    ExpectedIconUnchanged();
-  }
+  ExpectedIconChanged();
   TriggerActionClick();
 }
 

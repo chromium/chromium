@@ -60,7 +60,7 @@ public class WebApkInstallService {
                 PendingIntentProvider.getActivity(
                         context, /* requestCode= */ 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+        if (isIconMaskable) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
 
@@ -86,7 +86,7 @@ public class WebApkInstallService {
         String message =
                 ContextUtils.getApplicationContext()
                         .getString(R.string.notification_webapk_install_in_progress, shortName);
-        if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+        if (isIconMaskable) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
         showNotification(
@@ -121,7 +121,7 @@ public class WebApkInstallService {
                         notificationId,
                         url,
                         WebApkInstallBroadcastReceiver.ACTION_OPEN_IN_BROWSER);
-        if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+        if (isIconMaskable) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
         showNotification(

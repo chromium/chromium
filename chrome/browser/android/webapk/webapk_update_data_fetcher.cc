@@ -132,8 +132,7 @@ void WebApkUpdateDataFetcher::FetchInstallableData() {
   webapps::InstallableParams params;
   params.installable_criteria =
       webapps::InstallableCriteria::kValidManifestWithIcons;
-  params.prefer_maskable_icon =
-      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  params.prefer_maskable_icon = true;
   params.valid_primary_icon = true;
   webapps::InstallableManager* installable_manager =
       webapps::InstallableManager::FromWebContents(web_contents());

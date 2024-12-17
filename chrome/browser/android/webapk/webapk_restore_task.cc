@@ -99,8 +99,7 @@ void WebApkRestoreTask::OnIconDownloaded(base::OnceClosure fetch_icon_callback,
 void WebApkRestoreTask::OnIconCreated(base::OnceClosure fetch_icon_callback,
                                       const SkBitmap& bitmap,
                                       bool is_generated) {
-  if ((is_generated || fallback_info_->is_primary_icon_maskable) &&
-      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+  if ((is_generated || fallback_info_->is_primary_icon_maskable)) {
     app_icon_ = webapps::WebappsIconUtils::GenerateAdaptiveIconBitmap(bitmap);
   } else {
     app_icon_ = bitmap;

@@ -27,7 +27,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
-import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
 /** Tests the WebApkUpdateDataFetcher. */
@@ -168,8 +167,8 @@ public class WebApkUpdateDataFetcherTest {
     }
 
     /**
-     * Test that WebApkUpdateDataFetcher selects a maskable icon when 1. the manifest has a maskable
-     * icon, and 2. the Android version >= 26 (which supports adaptive icon).
+     * Test that WebApkUpdateDataFetcher selects a maskable icon when the manifest has a maskable
+     * icon.
      */
     @Test
     @MediumTest
@@ -183,8 +182,7 @@ public class WebApkUpdateDataFetcherTest {
                 getTestIntentDataProviderBuilder(WEB_MANIFEST_URL_MASKABLE), waiter);
         waiter.waitForCallback(0);
 
-        Assert.assertEquals(
-                WebappsIconUtils.doesAndroidSupportMaskableIcons(), waiter.isPrimaryIconMaskable());
+        Assert.assertTrue(waiter.isPrimaryIconMaskable());
     }
 
     /**

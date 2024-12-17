@@ -49,7 +49,6 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.webapps.WebApkInstallResult;
 import org.chromium.components.webapps.WebApkUpdateReason;
-import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -786,9 +785,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         if (!WebApkShareTarget.equals(oldInfo.shareTarget(), fetchedInfo.shareTarget())) {
             updateReasons.add(WebApkUpdateReason.WEB_SHARE_TARGET_DIFFERS);
         }
-        if (oldInfo.isIconAdaptive() != fetchedInfo.isIconAdaptive()
-                && (!fetchedInfo.isIconAdaptive()
-                        || WebappsIconUtils.doesAndroidSupportMaskableIcons())) {
+        if (oldInfo.isIconAdaptive() != fetchedInfo.isIconAdaptive()) {
             updateReasons.add(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
         }
         if (shortcutsDiffer(oldInfo.shortcutItems(), fetchedInfo.shortcutItems())) {
