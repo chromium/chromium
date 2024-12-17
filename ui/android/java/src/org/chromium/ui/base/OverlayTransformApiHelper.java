@@ -15,12 +15,16 @@ import android.view.Window;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.gfx.OverlayTransform;
 
 import java.lang.ref.WeakReference;
 
 /** Helper class to avoid fail of ART's class verification for S_V2 APIs in old device. */
 @RequiresApi(Build.VERSION_CODES.S_V2)
+@NullMarked
 final class OverlayTransformApiHelper
         implements AttachedSurfaceControl.OnBufferTransformHintChangedListener,
                 Window.OnFrameMetricsAvailableListener {
@@ -31,7 +35,7 @@ final class OverlayTransformApiHelper
     private boolean mBufferTransformListenerAdded;
     private boolean mFrameMetricsListenerAdded;
 
-    static OverlayTransformApiHelper create(WindowAndroid windowAndroid) {
+    static @Nullable OverlayTransformApiHelper create(WindowAndroid windowAndroid) {
         if (windowAndroid.getWindow() == null) return null;
         return new OverlayTransformApiHelper(windowAndroid);
     }
@@ -98,6 +102,7 @@ final class OverlayTransformApiHelper
         }
     }
 
+    @NullUnmarked
     private void addOnFrameMetricsAvailableListener() {
         if (mFrameMetricsListenerAdded) return;
         Window window = mWindow.get();

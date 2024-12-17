@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,7 @@ import java.util.List;
  * This class overrides {@link FrameLayout#onMeasure} so that it does not call onMeasure on its
  * children multiple times during the same {@link FrameLayout#onMeasure} call.
  */
+@NullMarked
 public class OptimizedFrameLayout extends FrameLayout {
     private static class MeasurementState {
         final View mView;

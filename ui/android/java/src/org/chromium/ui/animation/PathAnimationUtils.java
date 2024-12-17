@@ -6,7 +6,10 @@ package org.chromium.ui.animation;
 
 import android.graphics.RectF;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Utilities related to {@link android.graphics.Path} for animations */
+@NullMarked
 public class PathAnimationUtils {
     /**
      * Returns a RectF which represents the oval to perform Path#arcTo movements.

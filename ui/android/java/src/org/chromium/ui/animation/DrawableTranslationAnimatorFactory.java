@@ -10,7 +10,10 @@ import android.animation.Animator;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Factory class for creating translation animations for {@link Drawable} elements. */
+@NullMarked
 public class DrawableTranslationAnimatorFactory {
     /**
      * Creates an animation for translations. The animator will begin at the maximum displacement

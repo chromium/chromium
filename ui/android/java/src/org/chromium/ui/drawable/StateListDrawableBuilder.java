@@ -13,6 +13,8 @@ import android.graphics.drawable.StateListDrawable;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,7 @@ import java.util.List;
  * builder.addTransition(unchecked, checked, R.drawable.transition_unchecked_checked);
  * StateListDrawable drawable = builder.build();
  */
+@NullMarked
 public class StateListDrawableBuilder {
     /** Identifies single state of the drawable. Used by {@link #addTransition}. */
     public static class State {

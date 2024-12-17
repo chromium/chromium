@@ -10,6 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * ViewResourceInflater is a utility class that facilitates using an Android View as a dynamic
  * resource, which can be later used as a compositor layer. This class assumes that the View
@@ -32,6 +36,7 @@ import android.view.ViewTreeObserver;
  * It's possible to specify custom size constraints by overriding the methods
  * {@link #getWidthMeasureSpec()} and {@link #getHeightMeasureSpec()}.
  */
+@NullMarked
 public class ViewResourceInflater {
 
     /** The id of the XML Layout that describes the View. */
@@ -41,18 +46,19 @@ public class ViewResourceInflater {
     private int mViewId;
 
     /** The Context used to inflate the View. */
-    private Context mContext;
+    private @Nullable Context mContext;
 
     /** The ViewGroup container used to inflate the View. */
     private ViewGroup mContainer;
 
     /** The DynamicResourceLoader used to manage resources generated dynamically. */
-    private DynamicResourceLoader mResourceLoader;
+    private @Nullable DynamicResourceLoader mResourceLoader;
 
     /** The ViewResourceAdapter used to capture snapshots of the View. */
-    private ViewResourceAdapter mResourceAdapter;
+    private @Nullable ViewResourceAdapter mResourceAdapter;
 
     /** The inflated View. */
+    @SuppressWarnings("NullAway.Init")
     private View mView;
 
     /** Whether the View needs a layout update. */
@@ -65,7 +71,7 @@ public class ViewResourceInflater {
     private boolean mIsAttached;
 
     /** The ViewInflaterOnDrawListener used to track changes in the View when attached. */
-    private ViewInflaterOnDrawListener mOnDrawListener;
+    private @Nullable ViewInflaterOnDrawListener mOnDrawListener;
 
     /** The invalid ID. */
     private static final int INVALID_ID = -1;
@@ -152,6 +158,7 @@ public class ViewResourceInflater {
     }
 
     /** Destroy the instance. */
+    @NullUnmarked
     public void destroy() {
         if (mView == null) return;
 
@@ -257,7 +264,7 @@ public class ViewResourceInflater {
     /**
      * @return The Context used to inflate the View.
      */
-    protected Context getContext() {
+    protected @Nullable Context getContext() {
         return mContext;
     }
 

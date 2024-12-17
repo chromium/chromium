@@ -11,13 +11,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 
 // TODO(crbug.com/40250394): This class is a noop now, so we should remove it.
 /** The dropdown popup window that decides what widget should be used for the popup. */
+@NullMarked
 public class DropdownPopupWindow {
     private DropdownPopupWindowInterface mPopup;
 

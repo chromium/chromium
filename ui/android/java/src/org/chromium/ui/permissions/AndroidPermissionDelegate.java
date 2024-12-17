@@ -4,7 +4,10 @@
 
 package org.chromium.ui.permissions;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Contains the functionality for interacting with the android permissions system. */
+@NullMarked
 public interface AndroidPermissionDelegate {
     /**
      * Determine whether access to a particular permission is granted.

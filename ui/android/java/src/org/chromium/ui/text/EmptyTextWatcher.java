@@ -7,7 +7,10 @@ package org.chromium.ui.text;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Simple no-op default interface that allows subclasses to only implement methods as needed. */
+@NullMarked
 public interface EmptyTextWatcher extends TextWatcher {
     @Override
     default void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}

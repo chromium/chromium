@@ -18,10 +18,13 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 
 /** Helper class for retrieving resources related to selection handles. */
 @JNINamespace("ui")
+@NullMarked
 public class HandleViewResources {
     // Android handle drawables have a transparent horizontal padding,
     // which is one-fourth of the image. This variable is to take the
@@ -40,19 +43,19 @@ public class HandleViewResources {
         android.R.attr.textSelectHandleRight,
     };
 
-    public static Drawable getLeftHandleDrawable(Context context) {
+    public static @Nullable Drawable getLeftHandleDrawable(Context context) {
         return getHandleDrawable(context, LEFT_HANDLE_ATTRS);
     }
 
-    public static Drawable getCenterHandleDrawable(Context context) {
+    public static @Nullable Drawable getCenterHandleDrawable(Context context) {
         return getHandleDrawable(context, CENTER_HANDLE_ATTRS);
     }
 
-    public static Drawable getRightHandleDrawable(Context context) {
+    public static @Nullable Drawable getRightHandleDrawable(Context context) {
         return getHandleDrawable(context, RIGHT_HANDLE_ATTRS);
     }
 
-    private static Drawable getHandleDrawable(Context context, final int[] attrs) {
+    private static @Nullable Drawable getHandleDrawable(Context context, final int[] attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs);
         Drawable drawable = a.getDrawable(0);
         if (drawable == null) {

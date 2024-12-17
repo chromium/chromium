@@ -7,7 +7,10 @@ package org.chromium.ui.animation;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Factory class for creating animations for translations. */
+@NullMarked
 public class TranslationAnimatorFactory {
 
     @FunctionalInterface

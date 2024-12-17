@@ -11,7 +11,10 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper functions for working with attributes. */
+@NullMarked
 public final class AttrUtils {
     /** Private constructor to stop instantiation. */
     private AttrUtils() {}

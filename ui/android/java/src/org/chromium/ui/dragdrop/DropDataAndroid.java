@@ -11,10 +11,12 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** Bare minimal wrapper class of native content::DropData. */
 @JNINamespace("ui")
+@NullMarked
 public class DropDataAndroid {
     public final String text;
     public final GURL gurl;

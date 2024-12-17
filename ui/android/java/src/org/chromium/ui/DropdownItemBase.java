@@ -6,37 +6,38 @@ package org.chromium.ui;
 
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
  * Base implementation of DropdownItem which is used to get default settings to
  * show the item.
  */
+@NullMarked
 public class DropdownItemBase implements DropdownItem {
     @Override
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return null;
     }
 
     @Override
-    public String getSecondaryLabel() {
+    public @Nullable String getSecondaryLabel() {
         return null;
     }
 
     @Override
-    public String getSublabel() {
+    public @Nullable String getSublabel() {
         return null;
     }
 
     @Override
-    public String getSecondarySublabel() {
+    public @Nullable String getSecondarySublabel() {
         return null;
     }
 
     @Override
-    public String getItemTag() {
+    public @Nullable String getItemTag() {
         return null;
     }
 
@@ -101,13 +102,12 @@ public class DropdownItemBase implements DropdownItem {
     }
 
     @Override
-    public GURL getCustomIconUrl() {
+    public @Nullable GURL getCustomIconUrl() {
         return null;
     }
 
     @Override
-    @Nullable
-    public Drawable getIconDrawable() {
+    public @Nullable Drawable getIconDrawable() {
         return null;
     }
 }

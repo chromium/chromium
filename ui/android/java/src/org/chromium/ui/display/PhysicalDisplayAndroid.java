@@ -27,12 +27,16 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
 /** A DisplayAndroid implementation tied to a physical Display. */
+@NullMarked
 /* package */ class PhysicalDisplayAndroid extends DisplayAndroid {
     private static final String TAG = "DisplayAndroid";
 
@@ -42,9 +46,10 @@ import java.util.function.Consumer;
     // When this object exists, a positive value means that the forced DIP scale is set and
     // the zero means it is not. The non existing object (i.e. null reference) means that
     // the existence and value of the forced DIP scale has not yet been determined.
+    @SuppressWarnings("NullAway.Init")
     private static Float sForcedDIPScale;
 
-    private static Float getHdrSdrRatio(Display display) {
+    private static @Nullable Float getHdrSdrRatio(Display display) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return null;
         return display.getHdrSdrRatio();
     }
@@ -147,10 +152,10 @@ import java.util.function.Consumer;
         }
     }
 
-    private final Context mWindowContext;
-    private final ComponentCallbacks mComponentCallbacks;
+    private final @Nullable Context mWindowContext;
+    private final @Nullable ComponentCallbacks mComponentCallbacks;
     private final Display mDisplay;
-    private Consumer<Display> mHdrSdrRatioCallback;
+    private @Nullable Consumer<Display> mHdrSdrRatioCallback;
 
     /* package */ PhysicalDisplayAndroid(Display display, boolean disableHdrSdkRatioCallback) {
         super(display.getDisplayId());
@@ -197,10 +202,11 @@ import java.util.function.Consumer;
     }
 
     @Override
-    public Context getWindowContext() {
+    public @Nullable Context getWindowContext() {
         return mWindowContext;
     }
 
+    @NullUnmarked
     @RequiresApi(VERSION_CODES.R)
     private void updateFromConfiguration() {
         WindowManager windowManager = mWindowContext.getSystemService(WindowManager.class);
@@ -230,7 +236,8 @@ import java.util.function.Consumer;
                 mWindowContext.getDisplay());
     }
 
-    /* package */ void onDisplayRemoved() {
+    /* package */ @NullUnmarked
+    void onDisplayRemoved() {
         if (USE_CONFIGURATION) {
             mWindowContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
@@ -292,8 +299,14 @@ import java.util.function.Consumer;
                 /* isInternal= */ null);
     }
 
+    @NullUnmarked
     private void updateCommon(
-            Rect bounds, Insets insets, float density, float xdpi, float ydpi, Display display) {
+            Rect bounds,
+            @Nullable Insets insets,
+            float density,
+            float xdpi,
+            float ydpi,
+            Display display) {
         if (hasForcedDIPScale()) density = sForcedDIPScale.floatValue();
         boolean isWideColorGamut = false;
         // Although this API was added in Android O, it was buggy.

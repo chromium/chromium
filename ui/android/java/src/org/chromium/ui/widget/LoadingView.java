@@ -13,12 +13,14 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** A {@link ProgressBar} that understands the hiding/showing policy defined in Material Design. */
+@NullMarked
 public class LoadingView extends ProgressBar {
     private static final int LOADING_ANIMATION_DELAY_MS = 500;
     private static final int MINIMUM_ANIMATION_SHOW_TIME_MS = 500;

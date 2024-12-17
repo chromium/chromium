@@ -14,6 +14,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
@@ -28,11 +32,12 @@ import java.util.PriorityQueue;
  * </ul>
  */
 @JNINamespace("ui")
+@NullMarked
 public class ToastManager {
     private static final int DURATION_SHORT_MS = 2000;
     private static final int DURATION_LONG_MS = 3500;
     private static final long DURATION_BETWEEN_TOASTS_MS = 500;
-    private static ToastManager sInstance;
+    private static @Nullable ToastManager sInstance;
 
     // A queue for toasts waiting to be shown.
     private final PriorityQueue<Toast> mToastQueue =
@@ -50,7 +55,7 @@ public class ToastManager {
     private final ToastEvent mToastEvent;
 
     // Toast currently showing. {@code null} if none is showing.
-    private Toast mToast;
+    private @Nullable Toast mToast;
 
     static ToastManager getInstance() {
         if (sInstance == null) sInstance = new ToastManager();
@@ -99,6 +104,7 @@ public class ToastManager {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Nullable
     Toast getCurrentToast() {
         return mToast;
     }
@@ -148,6 +154,7 @@ public class ToastManager {
             mPostToastRunnable = finishRunnable;
         }
 
+        @NullUnmarked
         @Override
         public void onShow(Toast toast) {
             int durationMs =

@@ -13,6 +13,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.resources.ResourceLoader.ResourceLoaderCallback;
@@ -26,6 +28,7 @@ import org.chromium.ui.resources.system.SystemResourceLoader;
  * This class does not hold any resource state, but passes it directly to native as they are loaded.
  */
 @JNINamespace("ui")
+@NullMarked
 public class ResourceManager implements ResourceLoaderCallback {
     private final SparseArray<ResourceLoader> mResourceLoaders = new SparseArray<ResourceLoader>();
     private final SparseArray<SparseArray<LayoutResource>> mLoadedResources =
@@ -117,14 +120,15 @@ public class ResourceManager implements ResourceLoaderCallback {
      * @param resId   The id of the Android resource.
      * @return The corresponding {@link LayoutResource}.
      */
-    public LayoutResource getResource(@AndroidResourceType int resType, int resId) {
+    public @Nullable LayoutResource getResource(@AndroidResourceType int resType, int resId) {
         SparseArray<LayoutResource> bucket = mLoadedResources.get(resType);
         return bucket != null ? bucket.get(resId) : null;
     }
 
     @SuppressWarnings("cast")
     @Override
-    public void onResourceLoaded(@AndroidResourceType int resType, int resId, Resource resource) {
+    public void onResourceLoaded(
+            @AndroidResourceType int resType, int resId, @Nullable Resource resource) {
         if (resource == null) return;
         Bitmap bitmap = resource.getBitmap();
         if (bitmap == null) {

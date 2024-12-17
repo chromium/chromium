@@ -15,10 +15,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Utility methods used for Android's software keyboard. */
+@NullMarked
 public final class KeyboardUtils {
     private static final String TAG = "KeyboardVisibility";
 

@@ -21,9 +21,12 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** DisplayAndroidManager is a class that informs its observers Display changes. */
 @JNINamespace("ui")
+@NullMarked
 public class DisplayAndroidManager {
     /**
      * DisplayListenerBackend is used to handle the actual listening of display changes. It handles
@@ -72,7 +75,7 @@ public class DisplayAndroidManager {
         }
     }
 
-    private static DisplayAndroidManager sDisplayAndroidManager;
+    private static @Nullable DisplayAndroidManager sDisplayAndroidManager;
 
     private static boolean sDisableHdrSdkRatioCallback;
 
@@ -220,7 +223,7 @@ public class DisplayAndroidManager {
                 long nativeDisplayAndroidManager,
                 DisplayAndroidManager caller,
                 int sdkDisplayId,
-                String label,
+                @Nullable String label,
                 int[] bounds, // the order is: left, top, right, bottom
                 int[] insets, // the order is: left, top, right, bottom
                 float dipScale,

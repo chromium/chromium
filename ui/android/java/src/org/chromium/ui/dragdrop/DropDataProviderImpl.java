@@ -18,11 +18,11 @@ import android.os.SystemClock;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 
 import java.io.FileNotFoundException;
@@ -38,6 +38,7 @@ import java.io.OutputStream;
  *     provider to this java doc.
  */
 @UsedByReflection("Webview Support Lib")
+@NullMarked
 public class DropDataProviderImpl {
     public static final String CACHE_METHOD_NAME = "cache";
     public static final String SET_INTERVAL_METHOD_NAME = "setClearCachedDataIntervalMs";
@@ -70,8 +71,8 @@ public class DropDataProviderImpl {
                 ParcelFileDescriptor output,
                 Uri uri,
                 String mimeType,
-                Bundle opts,
-                byte[] imageBytes) {
+                @Nullable Bundle opts,
+                byte @Nullable [] imageBytes) {
             try (OutputStream out = new FileOutputStream(output.getFileDescriptor())) {
                 if (imageBytes != null) {
                     out.write(imageBytes);
@@ -91,21 +92,25 @@ public class DropDataProviderImpl {
     private static final Object LOCK = new Object();
 
     private int mClearCachedDataIntervalMs = DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS;
+
+    @SuppressWarnings("NullAway.Init")
     private byte[] mImageBytes;
-    private String mImageFilename;
-    private String mMimeType;
+
+    private @Nullable String mImageFilename;
+    private @Nullable String mMimeType;
 
     /** The URI handled by this content provider. */
-    private Uri mContentProviderUri;
+    private @Nullable Uri mContentProviderUri;
 
-    private Handler mHandler;
+    private @Nullable Handler mHandler;
     private long mDragEndTime;
     private long mOpenFileLastAccessTime;
-    private Uri mLastUri;
+    private @Nullable Uri mLastUri;
     private long mLastUriClearedTimestamp;
     private long mLastUriCreatedTimestamp;
     private boolean mLastUriRecorded;
 
+    @SuppressWarnings("NullAway.Init")
     private DropPipeDataWriter mDropPipeDataWriter;
 
     /** This constructor is being used to initialize the pipeWriter. */
@@ -134,7 +139,8 @@ public class DropDataProviderImpl {
     /**
      * Cache the passed-in image data of Drag and Drop. It is expected for filename to be non-empty.
      */
-    public Uri cache(byte[] imageBytes, String encodingFormat, String filename) {
+    public Uri cache(
+            byte[] imageBytes, @Nullable String encodingFormat, @Nullable String filename) {
         long elapsedRealtime = SystemClock.elapsedRealtime();
         long lastUriCreatedTimestamp = mLastUriCreatedTimestamp;
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(encodingFormat);
@@ -199,6 +205,7 @@ public class DropDataProviderImpl {
     }
 
     /** Clear the image data of Drag and Drop. */
+    @NullUnmarked
     private void clearCacheData() {
         mImageBytes = null;
         mImageFilename = null;
@@ -240,7 +247,7 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#getType(Uri)
      */
-    public String getType(Uri uri) {
+    public @Nullable String getType(Uri uri) {
         synchronized (LOCK) {
             if (uri == null || !uri.equals(mContentProviderUri)) {
                 return null;
@@ -252,7 +259,7 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#getStreamTypes(Uri, String)
      */
-    public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
+    public String @Nullable [] getStreamTypes(Uri uri, String mimeTypeFilter) {
         String mimeType;
         synchronized (LOCK) {
             if (uri == null || !uri.equals(mContentProviderUri)) {
@@ -263,7 +270,7 @@ public class DropDataProviderImpl {
         return matchMimeType(mimeType, mimeTypeFilter) ? new String[] {mimeType} : null;
     }
 
-    private boolean matchMimeType(String mimeType, String mimeTypeFilter) {
+    private boolean matchMimeType(@Nullable String mimeType, String mimeTypeFilter) {
         if (mimeType == null || mimeTypeFilter == null) {
             return false;
         }
@@ -283,7 +290,9 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#openAssetFile(Uri, String)
      */
-    public AssetFileDescriptor openAssetFile(ContentProvider providerWrapper, Uri uri, String mode)
+    @NullUnmarked
+    public @Nullable AssetFileDescriptor openAssetFile(
+            ContentProvider providerWrapper, Uri uri, String mode)
             throws FileNotFoundException, SecurityException {
         if (uri == null) {
             return null;
@@ -322,7 +331,7 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#openFile(Uri, String)
      */
-    public ParcelFileDescriptor openFile(ContentProvider providerWrapper, Uri uri)
+    public @Nullable ParcelFileDescriptor openFile(ContentProvider providerWrapper, Uri uri)
             throws FileNotFoundException {
         AssetFileDescriptor afd = openAssetFile(providerWrapper, uri, "r");
         return afd != null ? afd.getParcelFileDescriptor() : null;
@@ -331,7 +340,8 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#query(Uri, String[], String, String[], String)
      */
-    public Cursor query(Uri uri, String[] projection) {
+    @NullUnmarked
+    public Cursor query(Uri uri, String @Nullable [] projection) {
         byte[] imageBytes;
         String imageFilename;
         synchronized (LOCK) {
@@ -378,8 +388,8 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#call(String, String, Bundle)
      */
-    @Nullable
-    public Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras) {
+    @NullUnmarked
+    public @Nullable Bundle call(String method, @Nullable String arg, @Nullable Bundle extras) {
         switch (method) {
             case CACHE_METHOD_NAME:
                 Bundle bundleToReturn = new Bundle();
@@ -410,6 +420,7 @@ public class DropDataProviderImpl {
         }
     }
 
+    @Nullable
     Handler getHandlerForTesting() {
         synchronized (LOCK) {
             return mHandler;

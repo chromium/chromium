@@ -4,6 +4,8 @@
 
 package org.chromium.ui.display;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
@@ -12,6 +14,10 @@ import android.view.Display;
 import android.view.Surface;
 
 import androidx.annotation.RequiresApi;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 import java.util.WeakHashMap;
@@ -23,6 +29,7 @@ import java.util.WeakHashMap;
  * anywhere, as long as the corresponding WindowAndroids are destroyed. The observers are
  * held weakly so to not lead to leaks.
  */
+@NullMarked
 public class DisplayAndroid {
     /** DisplayAndroidObserver interface for changes to this Display. */
     public interface DisplayAndroidObserver {
@@ -52,14 +59,14 @@ public class DisplayAndroid {
          *
          * @param supportedModes the array of supported modes.
          */
-        default void onDisplayModesChanged(List<Display.Mode> supportedModes) {}
+        default void onDisplayModesChanged(@Nullable List<Display.Mode> supportedModes) {}
 
         /**
          * Called whenever the attached display's current mode is changed.
          *
          * @param currentMode the current display mode.
          */
-        default void onCurrentModeChanged(Display.Mode currentMode) {}
+        default void onCurrentModeChanged(Display.@Nullable Mode currentMode) {}
     }
 
     private static final DisplayAndroidObserver[] EMPTY_OBSERVER_ARRAY =
@@ -69,9 +76,9 @@ public class DisplayAndroid {
     // Do NOT add strong references to objects with potentially complex lifetime, like Context.
 
     private final int mDisplayId;
-    private String mName;
+    private @Nullable String mName;
     private Rect mBounds;
-    private Insets mInsets;
+    private @Nullable Insets mInsets;
     private float mDipScale;
     private float mXdpi;
     private float mYdpi;
@@ -79,8 +86,8 @@ public class DisplayAndroid {
     private int mBitsPerComponent;
     private int mRotation;
     private float mRefreshRate;
-    private Display.Mode mCurrentDisplayMode;
-    private List<Display.Mode> mDisplayModes;
+    private Display.@Nullable Mode mCurrentDisplayMode;
+    private @Nullable List<Display.Mode> mDisplayModes;
     private boolean mIsHdr;
     private float mHdrMaxLuminanceRatio = 1.0f;
     private boolean mIsInternal;
@@ -119,7 +126,7 @@ public class DisplayAndroid {
     }
 
     /** Returns the name of the display. */
-    public String getDisplayName() {
+    public @Nullable String getDisplayName() {
         return mName;
     }
 
@@ -146,13 +153,14 @@ public class DisplayAndroid {
     /** Returns the insets of the display. */
     @RequiresApi(Build.VERSION_CODES.R)
     public Insets getInsets() {
-        return mInsets;
+        return assumeNonNull(mInsets);
     }
 
     /** Returns the insets as an array. */
     @RequiresApi(Build.VERSION_CODES.R)
     public int[] getInsetsAsArray() {
-        return new int[] {mInsets.left, mInsets.top, mInsets.right, mInsets.bottom};
+        Insets insets = assumeNonNull(mInsets);
+        return new int[] {insets.left, insets.top, insets.right, insets.bottom};
     }
 
     /** Returns current orientation. One of Surface.ORIENTATION_* values. */
@@ -217,12 +225,12 @@ public class DisplayAndroid {
     }
 
     /** Returns Display.Modes supported by this Display. */
-    public List<Display.Mode> getSupportedModes() {
+    public @Nullable List<Display.Mode> getSupportedModes() {
         return mDisplayModes;
     }
 
     /** Returns current Display.Mode for the display. */
-    public Display.Mode getCurrentMode() {
+    public Display.@Nullable Mode getCurrentMode() {
         return mCurrentDisplayMode;
     }
 
@@ -255,7 +263,7 @@ public class DisplayAndroid {
     /**
      * Return window context for display android. Implemented by @{@link PhysicalDisplayAndroid}.
      */
-    public Context getWindowContext() {
+    public @Nullable Context getWindowContext() {
         return null;
     }
 
@@ -286,7 +294,8 @@ public class DisplayAndroid {
         return mObservers.keySet().toArray(EMPTY_OBSERVER_ARRAY);
     }
 
-    public void updateIsDisplayServerWideColorGamut(Boolean isDisplayServerWideColorGamut) {
+    public void updateIsDisplayServerWideColorGamut(
+            @Nullable Boolean isDisplayServerWideColorGamut) {
         update(
                 /* name= */ null,
                 /* bounds= */ null,
@@ -308,24 +317,25 @@ public class DisplayAndroid {
     }
 
     /** Update the display to the provided parameters. Null values leave the parameter unchanged. */
+    @NullUnmarked
     protected void update(
-            String name,
-            Rect bounds,
-            Insets insets,
-            Float dipScale,
-            Float xdpi,
-            Float ydpi,
-            Integer bitsPerPixel,
-            Integer bitsPerComponent,
-            Integer rotation,
-            Boolean isDisplayWideColorGamut,
-            Boolean isDisplayServerWideColorGamut,
-            Float refreshRate,
-            Display.Mode currentMode,
-            List<Display.Mode> supportedModes,
-            Boolean isHdr,
-            Float hdrMaxLuminanceRatio,
-            Boolean isInternal) {
+            @Nullable String name,
+            @Nullable Rect bounds,
+            @Nullable Insets insets,
+            @Nullable Float dipScale,
+            @Nullable Float xdpi,
+            @Nullable Float ydpi,
+            @Nullable Integer bitsPerPixel,
+            @Nullable Integer bitsPerComponent,
+            @Nullable Integer rotation,
+            @Nullable Boolean isDisplayWideColorGamut,
+            @Nullable Boolean isDisplayServerWideColorGamut,
+            @Nullable Float refreshRate,
+            Display.@Nullable Mode currentMode,
+            @Nullable List<Display.Mode> supportedModes,
+            @Nullable Boolean isHdr,
+            @Nullable Float hdrMaxLuminanceRatio,
+            @Nullable Boolean isInternal) {
         boolean nameChanged = name != null && !name.equals(mName);
         boolean boundsChanged = bounds != null && !bounds.equals(mBounds);
         boolean insetsChanged = insets != null && !insets.equals(mInsets);

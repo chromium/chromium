@@ -7,8 +7,11 @@ package org.chromium.ui.base;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Java mirror of ui/base/text/bytes_formatting.h. */
 @JNINamespace("ui")
+@NullMarked
 public class BytesFormatting {
 
     /**

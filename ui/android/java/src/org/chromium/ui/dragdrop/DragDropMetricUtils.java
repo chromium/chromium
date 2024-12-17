@@ -7,11 +7,13 @@ package org.chromium.ui.dragdrop;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Define enums for Drag and Drop metrics. This class is not supposed to be instantiated. */
+@NullMarked
 public class DragDropMetricUtils {
     public static String HISTOGRAM_DRAG_DROP_TAB_TYPE = "Android.DragDrop.Tab.Type";
 

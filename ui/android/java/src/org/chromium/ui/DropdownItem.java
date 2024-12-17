@@ -6,16 +6,18 @@ package org.chromium.ui;
 
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Dropdown item interface used to access all the information needed to show the item. */
+@NullMarked
 public interface DropdownItem {
     // A stand in for a resource ID which indicates no icon should be shown.
     public static final int NO_ICON = 0;
 
     /** Returns the first part of the first line that should be shown in the dropdown. */
+    @Nullable
     String getLabel();
 
     /** Returns the second part of the first line that should be shown in the dropdown. */
@@ -23,6 +25,7 @@ public interface DropdownItem {
     String getSecondaryLabel();
 
     /** Returns the first part of the second line that should be shown in the dropdown. */
+    @Nullable
     String getSublabel();
 
     /** Returns the second part of the second line that should be shown in the dropdown. */
@@ -30,6 +33,7 @@ public interface DropdownItem {
     String getSecondarySublabel();
 
     /** Returns the item tag that should be shown in the dropdown. */
+    @Nullable
     String getItemTag();
 
     /**
@@ -43,6 +47,7 @@ public interface DropdownItem {
      * Returns the url for the icon to be downloaded. If present, the downloaded icon should be
      * preferred over the resource id returned by getIconId().
      */
+    @Nullable
     GURL getCustomIconUrl();
 
     /**

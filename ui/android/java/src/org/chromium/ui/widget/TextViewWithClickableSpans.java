@@ -20,6 +20,9 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /**
@@ -28,9 +31,10 @@ import org.chromium.ui.accessibility.AccessibilityState;
  * do nothing if it's a touch event directly on a ClickableSpan. Otherwise if there's only one
  * ClickableSpan, we activate it. If there's more than one, we pop up a PopupMenu to disambiguate.
  */
+@NullMarked
 public class TextViewWithClickableSpans extends TextViewWithLeading
         implements View.OnLongClickListener {
-    private PopupMenu mDisambiguationMenu;
+    private @Nullable PopupMenu mDisambiguationMenu;
 
     public TextViewWithClickableSpans(Context context) {
         super(context);
@@ -63,14 +67,14 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
     }
 
     @Override
-    public final void setOnLongClickListener(View.OnLongClickListener listener) {
+    public final void setOnLongClickListener(View.@Nullable OnLongClickListener listener) {
         // Ensure that no one changes the long click listener to anything but this view.
         assert listener == this || listener == null;
         super.setOnLongClickListener(listener);
     }
 
     @Override
-    public boolean performAccessibilityAction(int action, Bundle arguments) {
+    public boolean performAccessibilityAction(int action, @Nullable Bundle arguments) {
         // BrailleBack will generate an accessibility click event directly
         // on this view, make sure we handle that correctly.
         if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -102,6 +106,7 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
      * @param event The motion event to compare the spans against.
      * @return Whether the motion event intersected any clickable spans.
      */
+    @NullUnmarked
     protected boolean touchIntersectsAnyClickableSpans(MotionEvent event) {
         // This logic is borrowed from android.text.method.LinkMovementMethod.
         //
@@ -132,7 +137,7 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
 
     /** Returns the ClickableSpans in this TextView's text. */
     @VisibleForTesting
-    public ClickableSpan[] getClickableSpans() {
+    public ClickableSpan @Nullable [] getClickableSpans() {
         CharSequence text = getText();
         if (!(text instanceof SpannableString)) return null;
 

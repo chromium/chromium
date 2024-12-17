@@ -7,10 +7,13 @@ package org.chromium.ui.resources.dynamics;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.statics.NinePatchData;
 
 /** The current state of a dynamic resource. */
+@NullMarked
 public class DynamicResourceSnapshot implements Resource {
     private final Bitmap mBitmap;
     private final boolean mShouldRemoveResourceOnNullBitmap;
@@ -44,7 +47,7 @@ public class DynamicResourceSnapshot implements Resource {
     }
 
     @Override
-    public NinePatchData getNinePatchData() {
+    public @Nullable NinePatchData getNinePatchData() {
         return null;
     }
 

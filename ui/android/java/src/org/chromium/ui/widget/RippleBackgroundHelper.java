@@ -17,17 +17,19 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 
 /**
  * A helper class to create and maintain a background drawable with customized background color,
  * ripple color, and corner radius.
  */
+@NullMarked
 public class RippleBackgroundHelper {
     private static final int[] STATE_SET_PRESSED = {android.R.attr.state_pressed};
     private static final int[] STATE_SET_SELECTED = {android.R.attr.state_selected};
@@ -40,9 +42,13 @@ public class RippleBackgroundHelper {
     private @Nullable ColorStateList mBackgroundColorList;
     private @Nullable ColorStateList mStateLayerColorList;
 
+    @SuppressWarnings("NullAway.Init")
     private GradientDrawable mBackgroundGradient;
+
+    @SuppressWarnings("NullAway.Init")
     private GradientDrawable mStateLayerGradient;
-    private LayerDrawable mBackgroundLayerDrawable;
+
+    private @Nullable LayerDrawable mBackgroundLayerDrawable;
 
     /**
      * @param view The {@link View} on which background will be applied.

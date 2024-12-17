@@ -6,12 +6,14 @@ package org.chromium.ui.listmenu;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Representation of a list menu. Contains and manages a content view by {@link #getContentView()}.
  * Handles click events of list items by {@link Delegate#onItemSelected(PropertyModel)}.
  */
+@NullMarked
 public interface ListMenu {
     /** Delegate handling list item click event of {@link ListMenu}. */
     @FunctionalInterface

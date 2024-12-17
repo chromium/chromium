@@ -4,14 +4,16 @@
 
 package org.chromium.ui.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.View;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.lang.ref.WeakReference;
@@ -22,14 +24,15 @@ import java.lang.ref.WeakReference;
  * the layout or keyboard inset change is suspected to be related to a software keyboard changing
  * visibility.
  */
+@NullMarked
 public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate
         implements View.OnLayoutChangeListener {
     private final Callback<Integer> mOnKeyboardInsetChanged = this::onKeyboardInsetChanged;
 
     private WeakReference<Activity> mActivity;
-    private LazyOneshotSupplier<ObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
+    private @Nullable LazyOneshotSupplier<ObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
     private boolean mIsKeyboardShowing;
-    private View mContentViewForTesting;
+    private @Nullable View mContentViewForTesting;
 
     /**
      * Creates a new delegate listening to the given activity. If the activity is destroyed, it will
@@ -48,7 +51,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
         assert mLazyKeyboardInsetSupplier == null;
         mLazyKeyboardInsetSupplier = lazyKeyboardInsetSupplier;
         if (hasKeyboardVisibilityListeners()) {
-            mLazyKeyboardInsetSupplier.get().addObserver(mOnKeyboardInsetChanged);
+            assumeNonNull(lazyKeyboardInsetSupplier.get()).addObserver(mOnKeyboardInsetChanged);
         }
     }
 
@@ -66,7 +69,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
 
         if (mLazyKeyboardInsetSupplier == null) return;
 
-        mLazyKeyboardInsetSupplier.get().addObserver(mOnKeyboardInsetChanged);
+        assumeNonNull(mLazyKeyboardInsetSupplier.get()).addObserver(mOnKeyboardInsetChanged);
     }
 
     @Override
@@ -77,7 +80,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
 
         if (mLazyKeyboardInsetSupplier == null) return;
 
-        mLazyKeyboardInsetSupplier.get().removeObserver(mOnKeyboardInsetChanged);
+        assumeNonNull(mLazyKeyboardInsetSupplier.get()).removeObserver(mOnKeyboardInsetChanged);
     }
 
     @Override

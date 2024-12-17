@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.modelutil.ModelListAdapter;
 
 /** Default adapter for use with {@link ListMenu}. */
+@NullMarked
 public class ListMenuItemAdapter extends ModelListAdapter {
     public ListMenuItemAdapter(ModelList data) {
         super(data);

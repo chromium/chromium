@@ -9,16 +9,18 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Encapsulates the logic to loop animated drawables from both Android Framework. The animation
  * should be started and stopped using {@link #start()} and {@link #stop()}.
  */
+@NullMarked
 public class AnimationLooper {
     private static @Nullable Boolean sAreAnimatorsEnabledForTests;
 

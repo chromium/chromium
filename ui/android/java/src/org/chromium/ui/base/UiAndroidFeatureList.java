@@ -5,8 +5,10 @@
 package org.chromium.ui.base;
 
 import org.chromium.base.MutableFlagWithSafeDefault;
+import org.chromium.build.annotations.NullMarked;
 
 /** Helpers and state for features from {@link UiAndroidFeatures}. */
+@NullMarked
 public class UiAndroidFeatureList {
     private static MutableFlagWithSafeDefault newMutableFlagWithSafeDefault(
             String featureName, boolean defaultValue) {

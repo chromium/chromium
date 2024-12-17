@@ -18,8 +18,10 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 
 /** A utility class that has helper methods for Android view. */
+@NullMarked
 public final class ViewUtils {
     private static final int[] sLocationTmp = new int[2];
 

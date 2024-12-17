@@ -7,8 +7,8 @@ package org.chromium.ui.animation;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -16,6 +16,7 @@ import java.util.Objects;
  * Keeps track of animations. Helps to ensure only one instance of this Animation is running at a
  * time.
  */
+@NullMarked
 public class AnimationHandler {
 
     private @Nullable Animator mCurrentAnimator;
@@ -32,7 +33,7 @@ public class AnimationHandler {
      * Starts the animation. Ensures that the previous instance of the animation is complete prior
      * to starting said animation.
      */
-    public void startAnimation(@NonNull Animator animation) {
+    public void startAnimation(Animator animation) {
         if (mCurrentAnimator != null) {
             forceFinishAnimation();
         }

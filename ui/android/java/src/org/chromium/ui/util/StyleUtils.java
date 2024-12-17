@@ -13,9 +13,11 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.StyleableRes;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
 
 /** Helper functions for working with styles. */
+@NullMarked
 public class StyleUtils {
     private static final String TAG = "StyleUtils";
     private static final int INVALID_RESOURCE_ID = -1;

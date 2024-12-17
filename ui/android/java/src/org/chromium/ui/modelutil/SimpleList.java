@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.AbstractList;
 import java.util.Iterator;
@@ -14,6 +14,7 @@ import java.util.List;
  * classes that already extend another class and therefore can't inherit from {@link AbstractList}.
  * @param <T> The type of list item.
  */
+@NullMarked
 public interface SimpleList<T> extends Iterable<T> {
     /**
      * @return The size of the list.
@@ -34,7 +35,6 @@ public interface SimpleList<T> extends Iterable<T> {
      * modifications and does not check whether the underlying list is being modified.
      */
     @Override
-    @NonNull
     default Iterator<T> iterator() {
         return new Iterator<T>() {
             private int mI;

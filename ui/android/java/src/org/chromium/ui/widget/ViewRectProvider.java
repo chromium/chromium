@@ -10,11 +10,15 @@ import android.view.ViewTreeObserver;
 
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Provides a {@link Rect} for the location of a {@link View} in its window, see {@link
  * View#getLocationOnScreen(int[])}. When view bound changes, {@link RectProvider.Observer} will be
  * notified.
  */
+@NullMarked
 public class ViewRectProvider extends RectProvider
         implements ViewTreeObserver.OnGlobalLayoutListener,
                 View.OnAttachStateChangeListener,
@@ -28,7 +32,7 @@ public class ViewRectProvider extends RectProvider
     private int mCachedViewHeight;
 
     /** If not {@code null}, the {@link ViewTreeObserver} that we are registered to. */
-    private ViewTreeObserver mViewTreeObserver;
+    private @Nullable ViewTreeObserver mViewTreeObserver;
 
     private boolean mIncludePadding;
 

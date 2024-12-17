@@ -10,12 +10,15 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.SystemUIResourceType;
 import org.chromium.ui.resources.async.AsyncPreloadResourceLoader;
 import org.chromium.ui.resources.statics.StaticResource;
 
 /** Handles loading system specific resources like overscroll and edge glows. */
+@NullMarked
 public class SystemResourceLoader extends AsyncPreloadResourceLoader {
     private static final float SIN_PI_OVER_6 = 0.5f;
     private static final float COS_PI_OVER_6 = 0.866f;
@@ -34,13 +37,13 @@ public class SystemResourceLoader extends AsyncPreloadResourceLoader {
                 callback,
                 new ResourceCreator() {
                     @Override
-                    public Resource create(int resId) {
+                    public @Nullable Resource create(int resId) {
                         return createResource(minScreenSideLengthPx, resId);
                     }
                 });
     }
 
-    private static Resource createResource(int minScreenSideLengthPx, int resId) {
+    private static @Nullable Resource createResource(int minScreenSideLengthPx, int resId) {
         switch (resId) {
             case SystemUIResourceType.OVERSCROLL_GLOW:
                 return createOverscrollGlowBitmap(minScreenSideLengthPx);

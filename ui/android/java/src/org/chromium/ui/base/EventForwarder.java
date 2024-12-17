@@ -25,6 +25,9 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.MotionEventUtils;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -33,6 +36,7 @@ import java.util.List;
 
 /** Class used to forward view, input events down to native. */
 @JNINamespace("ui")
+@NullMarked
 public class EventForwarder {
     private static final String TAG = "EventForwarder";
     private final boolean mIsDragDropEnabled;
@@ -65,7 +69,7 @@ public class EventForwarder {
     private float mLastTrackpadScrollStartRawY;
 
     // Delegate to call WebContents functionality.
-    private StylusWritingDelegate mStylusWritingDelegate;
+    private @Nullable StylusWritingDelegate mStylusWritingDelegate;
 
     /** Interface to provide stylus writing functionality. */
     public interface StylusWritingDelegate {
@@ -592,6 +596,7 @@ public class EventForwarder {
      * @param event {@link DragEvent} instance.
      * @param containerView A view on which the drag event is taking place.
      */
+    @NullUnmarked
     public boolean onDragEvent(DragEvent event, View containerView) {
         ClipDescription clipDescription = event.getClipDescription();
         // Do not forward chrome/tab events to native eventForwarder.
@@ -904,9 +909,9 @@ public class EventForwarder {
                 String[] mimeTypes,
                 String content,
                 String[][] filenames,
-                String text,
-                String html,
-                String url);
+                @Nullable String text,
+                @Nullable String html,
+                @Nullable String url);
 
         boolean onGestureEvent(
                 long nativeEventForwarder,

@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Class responsible for binding the list section divider. This is primarily needed to enable
  * customization of the list section divider.
  */
+@NullMarked
 public class ListSectionDividerViewBinder {
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {

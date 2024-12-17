@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -27,6 +30,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * parameter in the XML layout of the ListMenuButton. The default content description that
  * corresponds to context.getString(R.string.accessibility_list_menu_button, "") is used otherwise.
  */
+@NullMarked
 public class ListMenuButton extends ChromeImageButton
         implements AnchoredPopupWindow.LayoutObserver {
     /** A listener that is notified when the popup menu is shown or dismissed. */
@@ -41,8 +45,11 @@ public class ListMenuButton extends ChromeImageButton
     private final boolean mMenuHorizontalOverlapAnchor;
 
     private int mMenuMaxWidth;
+
+    @SuppressWarnings("NullAway.Init")
     private AnchoredPopupWindow mPopupMenu;
-    private ListMenuButtonDelegate mDelegate;
+
+    private @Nullable ListMenuButtonDelegate mDelegate;
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
     private boolean mPositionedAtEnd;
@@ -141,6 +148,7 @@ public class ListMenuButton extends ChromeImageButton
     }
 
     /** Init the popup window with provided attributes, called before {@link #showMenu()} */
+    @NullUnmarked
     private void initPopupWindow() {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
 

@@ -24,8 +24,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -34,6 +32,9 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -50,6 +51,7 @@ import java.lang.annotation.RetentionPolicy;
  * Drag and drop helper class in charge of building the clip data, wrapping calls to {@link
  * android.view.View#startDragAndDrop}. Also used for mocking out real function calls to Android.
  */
+@NullMarked
 public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTracker {
     /**
      * Java Enum of AndroidDragTargetType used for histogram recording for
@@ -107,12 +109,13 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
      * @param dragObjRectWidth The width of the drag object.
      * @param dragObjRectHeight The height of the drag object.
      */
+    @NullUnmarked
     @Override
     public boolean startDragAndDrop(
-            @NonNull View containerView,
-            @NonNull Bitmap shadowImage,
-            @NonNull DropDataAndroid dropData,
-            @NonNull Context context,
+            View containerView,
+            Bitmap shadowImage,
+            DropDataAndroid dropData,
+            @Nullable Context context,
             int cursorOffsetX,
             int cursorOffsetY,
             int dragObjRectWidth,
@@ -137,9 +140,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
     @Override
     public boolean startDragAndDrop(
-            @NonNull View containerView,
-            @NonNull DragShadowBuilder dragShadowBuilder,
-            @NonNull DropDataAndroid dropData) {
+            View containerView, DragShadowBuilder dragShadowBuilder, DropDataAndroid dropData) {
         if (isA11yStateEnabled()) return false;
         return startDragAndDropInternal(containerView, dragShadowBuilder, dropData);
     }
@@ -152,9 +153,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     }
 
     private boolean startDragAndDropInternal(
-            @NonNull View containerView,
-            @NonNull DragShadowBuilder dragShadowBuilder,
-            @NonNull DropDataAndroid dropData) {
+            View containerView, DragShadowBuilder dragShadowBuilder, DropDataAndroid dropData) {
         ClipData clipdata = buildClipData(dropData);
         if (clipdata == null
                 && !UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY)) {
@@ -240,8 +239,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
      * @param dropData The data to be dropped.
      * @return ClipData based on the dropData type.
      */
-    @Nullable
-    protected ClipData buildClipData(DropDataAndroid dropData) {
+    @NullUnmarked
+    protected @Nullable ClipData buildClipData(DropDataAndroid dropData) {
         @DragTargetType int type = getDragTargetType(dropData);
         switch (type) {
             case DragTargetType.TEXT:

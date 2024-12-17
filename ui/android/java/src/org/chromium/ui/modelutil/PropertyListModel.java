@@ -4,7 +4,8 @@
 
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -14,6 +15,7 @@ import java.util.Collection;
  * @param <T> The type of item in the list.
  * @param <P> The property key type for {@code T} to be used as payload for partial updates.
  */
+@NullMarked
 public class PropertyListModel<T extends PropertyObservable<P>, P> extends ListModelBase<T, P> {
     private final PropertyObservable.PropertyObserver<P> mPropertyObserver =
             this::onPropertyChanged;

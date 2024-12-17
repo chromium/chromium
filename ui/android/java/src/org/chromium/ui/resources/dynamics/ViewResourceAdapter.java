@@ -17,6 +17,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 
@@ -26,6 +28,7 @@ import org.chromium.ui.resources.ResourceFactory;
  * {@link View} are invalidated.  For {@link ViewGroup}s the easiest way to do this is to override
  * {@link ViewGroup#invalidateChildInParent(int[], Rect)}.
  */
+@NullMarked
 public class ViewResourceAdapter
         implements DynamicResource, OnLayoutChangeListener, CaptureObserver {
     /** Abstraction around the mechanism for actually capturing bitmaps.  */
@@ -183,7 +186,7 @@ public class ViewResourceAdapter
      * @param dirtyRect The region to invalidate, or {@code null} if the entire {@code Bitmap}
      *                  should be redrawn.
      */
-    public void invalidate(Rect dirtyRect) {
+    public void invalidate(@Nullable Rect dirtyRect) {
         if (dirtyRect == null) {
             mDirtyRect.set(0, 0, mView.getWidth(), mView.getHeight());
         } else {

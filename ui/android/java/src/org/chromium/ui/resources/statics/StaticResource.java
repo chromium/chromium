@@ -12,6 +12,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 
@@ -19,9 +22,10 @@ import org.chromium.ui.resources.ResourceFactory;
  * A representation of a static resource and all related information for drawing it.  In general
  * this means a {@link Bitmap} and a potential {@link NinePatchData}.
  */
+@NullMarked
 public class StaticResource implements Resource {
-    private Bitmap mBitmap;
-    private final NinePatchData mNinePatchData;
+    private @Nullable Bitmap mBitmap;
+    private final @Nullable NinePatchData mNinePatchData;
     private final Rect mBitmapSize;
 
     /**
@@ -36,7 +40,7 @@ public class StaticResource implements Resource {
     }
 
     @Override
-    public NinePatchData getNinePatchData() {
+    public @Nullable NinePatchData getNinePatchData() {
         return mNinePatchData;
     }
 
@@ -77,7 +81,7 @@ public class StaticResource implements Resource {
      * @return The loaded {@link StaticResource} or {@code null} if the resource could not be
      *     loaded.
      */
-    public static StaticResource create(
+    public static @Nullable StaticResource create(
             Resources resources, int resId, int fitWidth, int fitHeight) {
         if (resId <= 0) return null;
         Bitmap bitmap = decodeBitmap(resources, resId, fitWidth, fitHeight);
@@ -87,7 +91,7 @@ public class StaticResource implements Resource {
         return new StaticResource(bitmap);
     }
 
-    private static Bitmap decodeBitmap(
+    private static @Nullable Bitmap decodeBitmap(
             Resources resources, int resId, int fitWidth, int fitHeight) {
         BitmapFactory.Options options = createOptions(resources, resId, fitWidth, fitHeight);
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -105,7 +109,8 @@ public class StaticResource implements Resource {
         return convertedBitmap;
     }
 
-    private static Bitmap decodeDrawable(
+    @NullUnmarked
+    private static @Nullable Bitmap decodeDrawable(
             Resources resources, int resId, int fitWidth, int fitHeight) {
         try {
             Drawable drawable = ApiCompatibilityUtils.getDrawable(resources, resId);

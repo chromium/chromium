@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Helper class for implementing a {@link ListObserver} that just forwards to its own observers.
@@ -12,6 +13,7 @@ import androidx.annotation.Nullable;
  *     partial updates. TODO(bauerb): Remove this class if it turns out we can shortcut
  *     notifications
  */
+@NullMarked
 public class ForwardingListObservable<P> extends ListObservableImpl<P>
         implements ListObservable.ListObserver<P> {
     @Override

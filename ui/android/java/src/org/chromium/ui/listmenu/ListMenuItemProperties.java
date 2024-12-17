@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * The properties controlling the state of the list menu items. Any given list item can have either
  * one start icon or one end icon but not both.
  */
+@NullMarked
 public class ListMenuItemProperties {
     // TODO(crbug.com/40738791): Consider passing menu item title through TITLE property instead of
     // TITLE_ID.

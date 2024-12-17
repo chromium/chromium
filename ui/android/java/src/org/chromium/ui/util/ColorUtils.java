@@ -13,8 +13,10 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Helper functions for working with colors. */
+@NullMarked
 public class ColorUtils {
     // Value used by ui::OptionalSkColorToJavaColor() to represent invalid color.
     public static final long INVALID_COLOR = ((long) Integer.MAX_VALUE) + 1;

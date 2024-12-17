@@ -15,11 +15,14 @@ import org.chromium.build.BuildConfig;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
 /** UI utilities for accessing form factor information. */
+@NullMarked
 public class DeviceFormFactor {
     /**
      * Desktop form factor.
@@ -55,7 +58,7 @@ public class DeviceFormFactor {
     private static final int SCREEN_BUCKET_LARGET_TABLET = 3;
 
     /** See {@link #setIsTabletForTesting(boolean)}. */
-    private static Boolean sIsTabletForTesting;
+    private static @Nullable Boolean sIsTabletForTesting;
 
     /**
      * Only devices built with IS_DESKTOP_ANDROID will return true.

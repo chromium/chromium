@@ -9,12 +9,15 @@ import android.graphics.Rect;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.statics.NinePatchData;
 
 /** A utility class for creating native resources. */
 @JNINamespace("ui")
+@NullMarked
 public class ResourceFactory {
-    public static long createBitmapResource(NinePatchData ninePatchData) {
+    public static long createBitmapResource(@Nullable NinePatchData ninePatchData) {
         return ninePatchData == null
                 ? ResourceFactoryJni.get().createBitmapResource()
                 : createNinePatchBitmapResource(

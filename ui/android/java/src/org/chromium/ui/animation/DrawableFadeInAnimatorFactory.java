@@ -8,7 +8,10 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.graphics.drawable.Drawable;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Factory class for creating fade in animations for {@link Drawable} elements. */
+@NullMarked
 public class DrawableFadeInAnimatorFactory {
     /**
      * Creates an animation for fading a {@link Drawable} element in.

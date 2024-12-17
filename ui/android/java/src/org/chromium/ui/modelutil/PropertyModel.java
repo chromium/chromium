@@ -9,13 +9,14 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.ObjectsCompat;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,10 +28,11 @@ import java.util.function.Function;
 /**
  * Generic property model that aims to provide an extensible and efficient model for ease of use.
  */
+@NullMarked
 public class PropertyModel extends PropertyObservable<PropertyKey> {
     /** A PropertyKey implementation that associates a name with the property for easy debugging. */
     private static class NamedPropertyKey implements PropertyKey {
-        private final String mPropertyName;
+        private final @Nullable String mPropertyName;
 
         public NamedPropertyKey(@Nullable String propertyName) {
             mPropertyName = propertyName;
@@ -246,7 +248,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
      */
     public static class ReadableTransformingObjectPropertyKey<T, V> extends NamedPropertyKey {
         /** Constructor for a named {@link ReadableTransformingObjectPropertyKey}. */
-        public ReadableTransformingObjectPropertyKey(String name) {
+        public ReadableTransformingObjectPropertyKey(@Nullable String name) {
             super(name);
         }
 
@@ -266,7 +268,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     public static final class WritableTransformingObjectPropertyKey<T, V>
             extends ReadableTransformingObjectPropertyKey<T, V> {
         /** Constructor for a named {@link WritableTransformingObjectPropertyKey}. */
-        public WritableTransformingObjectPropertyKey(String name) {
+        public WritableTransformingObjectPropertyKey(@Nullable String name) {
             super(name);
         }
 
@@ -277,7 +279,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     }
 
     private final Map<PropertyKey, ValueContainer> mData;
-    private final Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>> mTransformers;
+    private final @Nullable Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>>
+            mTransformers;
 
     /**
      * Constructs a model for the given list of keys.
@@ -303,7 +306,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     private PropertyModel(
             Map<PropertyKey, ValueContainer> startingValues,
-            Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>> transformers) {
+            @Nullable
+                    Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>> transformers) {
         mData = startingValues;
         mTransformers = transformers;
     }
@@ -408,6 +412,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     }
 
     /** Get the current value from the object based key. */
+    @NullUnmarked
     @SuppressWarnings("unchecked")
     public <T> T get(ReadableObjectPropertyKey<T> key) {
         validateKey(key);
@@ -432,8 +437,9 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     }
 
     /** Get the transformed value from the current value of an object based key. */
+    @NullUnmarked
     @SuppressWarnings("unchecked")
-    public <T, V> V get(ReadableTransformingObjectPropertyKey<T, V> key) {
+    public <T, V> @Nullable V get(ReadableTransformingObjectPropertyKey<T, V> key) {
         validateKey(key);
         ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
         Function<T, V> transformer = (Function<T, V>) mTransformers.get(key);
@@ -505,9 +511,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
      * @return The value from the model or the default if the value is not found.
      */
     public static int getFromModelOrDefault(
-            @NonNull PropertyModel model,
-            @NonNull PropertyModel.ReadableIntPropertyKey key,
-            int defaultValue) {
+            PropertyModel model, PropertyModel.ReadableIntPropertyKey key, int defaultValue) {
         // We need to check first because PropertyModel#get throws an exception if a key
         // is not present in the Map.
         if (model.containsKey(key)) {
@@ -525,10 +529,9 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
      * @param defaultValue The default value if the the property is not found.
      * @return The value from the model or the default if the value is not found.
      */
-    @Nullable
-    public static <T> T getFromModelOrDefault(
-            @NonNull PropertyModel model,
-            @NonNull PropertyModel.ReadableObjectPropertyKey<T> key,
+    public static <T> @Nullable T getFromModelOrDefault(
+            PropertyModel model,
+            PropertyModel.ReadableObjectPropertyKey<T> key,
             @Nullable T defaultValue) {
         // We need to check first because PropertyModel#get throws an exception if a key
         // is not present in the Map.
@@ -541,7 +544,8 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     /** Allows constructing a new {@link PropertyModel} with read-only properties. */
     public static class Builder {
         private final Map<PropertyKey, ValueContainer> mData;
-        private Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>> mTransformers;
+        private @Nullable Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>>
+                mTransformers;
 
         public Builder(PropertyKey... keys) {
             this(buildData(keys));
@@ -589,7 +593,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
             return this;
         }
 
-        public <T> Builder with(ReadableObjectPropertyKey<T> key, T value) {
+        public <T> Builder with(ReadableObjectPropertyKey<T> key, @Nullable T value) {
             validateKey(key);
             ObjectContainer<T> container = new ObjectContainer<>();
             container.value = value;
@@ -763,7 +767,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     }
 
     private static class ObjectContainer<T> extends ValueContainer {
-        public T value;
+        public @Nullable T value;
 
         @Override
         public String toString() {

@@ -11,11 +11,13 @@ import android.animation.ValueAnimator;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.function.Consumer;
 
 /** Factory class for creating animations for blending two colors together. */
+@NullMarked
 public class ColorBlendAnimationFactory {
 
     /**

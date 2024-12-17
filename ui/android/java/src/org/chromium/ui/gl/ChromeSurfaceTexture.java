@@ -11,8 +11,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Exposes SurfaceTexture APIs to native. */
 @JNINamespace("gl")
+@NullMarked
 class ChromeSurfaceTexture extends SurfaceTexture
         implements SurfaceTexture.OnFrameAvailableListener {
     private static final String TAG = "SurfaceTexture";
