@@ -59,7 +59,7 @@ namespace {
 constexpr auto kGoogleCorpGotoHosts = base::MakeFixedFlatSet<std::string_view>(
     {"goto2.corp.google.com", "goto.corp.google.com", "goto.google.com", "go"});
 
-constexpr int kMaxGifsToSearch = 50;
+constexpr int kMaxGifsToSearch = 25;
 
 const char* SearchSourceToHistogram(QuickInsertSearchSource source) {
   switch (source) {
