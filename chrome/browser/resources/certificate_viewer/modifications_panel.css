@@ -9,6 +9,7 @@
  * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #import=//resources/cr_elements/md_select_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #include=cr-icons-lit cr-shared-style-lit cr-hidden-style-lit md-select-lit
  * #css_wrapper_metadata_end */
 
@@ -20,8 +21,8 @@
   width: 150px;
 }
 
-/* TODO(crbug.com/40928765): Try using shared colors from cr_shared_vars.css */
 .horizontal-row {
+  /* Match color in certificate_viewer.css */
   color: #616161;
   display: flex;
   flex-direction: row;
@@ -33,7 +34,7 @@
 
 .error {
   margin: 4px 10px;
-  color: rgb(179, 38, 30);
+  color: var(--cr-fallback-color-error)
 }
 
 .input-with-error {
@@ -44,7 +45,8 @@
 h3 {
   font-size: 100%;
   margin-bottom: 15px;
-  margin-top: 17px;
+  margin-top: 32px;
+  font-weight: normal;
 }
 
 .vertical-box {
