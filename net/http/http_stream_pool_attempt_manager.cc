@@ -243,8 +243,8 @@ std::string_view HttpStreamPool::AttemptManager::TcpBasedAttemptStateToString(
       return "Attempting";
     case TcpBasedAttemptState::kSucceededAtLeastOnce:
       return "SucceededAtLeastOnce";
-    case TcpBasedAttemptState::kAllAttemptsFailed:
-      return "AllAttemptsFailed";
+    case TcpBasedAttemptState::kAllEndpointsFailed:
+      return "AllEndpointsFailed";
   }
 }
 
@@ -575,10 +575,7 @@ size_t HttpStreamPool::AttemptManager::PendingJobCount() const {
 }
 
 size_t HttpStreamPool::AttemptManager::PendingPreconnectCount() const {
-  size_t num_streams = 0;
-  for (const auto& entry : preconnects_) {
-    num_streams = std::max(num_streams, entry->num_streams);
-  }
+  size_t num_streams = CalculateMaxPreconnectCount();
   // Pending preconnect count is treated as zero when the maximum preconnect
   // socket count is less than or equal to the active stream socket count.
   // This behavior is for compatibility with the non-HEv3 code path. See
@@ -750,7 +747,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   }
 
   if (rv != OK &&
-      (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllAttemptsFailed ||
+      (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllEndpointsFailed ||
        group_->force_quic() || !CanUseTcpBasedProtocols())) {
     final_error_to_notify_jobs_ = rv;
     NotifyFailure();
@@ -1064,11 +1061,6 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     return;
   }
 
-  if (PendingJobCount() == 0 && preconnects_.empty()) {
-    // There are no jobs waiting for streams.
-    return;
-  }
-
   if (group_->force_quic()) {
     return;
   }
@@ -1082,36 +1074,41 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     return;
   }
 
-  CHECK(!preconnects_.empty() || group_->IdleStreamSocketCount() == 0);
-
   // TODO(crbug.com/346835898): Ensure that we don't attempt connections when
   // creating HttpStream on top of a SPDY session.
   CHECK(!spdy_session_);
-
-  std::optional<IPEndPoint> ip_endpoint =
-      GetIPEndPointToAttempt(exclude_ip_endpoint);
-  if (!ip_endpoint.has_value()) {
-    if (service_endpoint_request_finished_ && in_flight_attempts_.empty()) {
-      tcp_based_attempt_state_ = TcpBasedAttemptState::kAllAttemptsFailed;
-    }
-    if (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllAttemptsFailed &&
-        !quic_task_) {
-      // Tried all endpoints.
-      MaybeMarkQuicBroken();
-      NotifyFailure();
-    }
-    return;
-  }
-
-  if (tcp_based_attempt_state_ == TcpBasedAttemptState::kNotStarted) {
-    tcp_based_attempt_state_ = TcpBasedAttemptState::kAttempting;
-  }
 
   // There might be multiple pending jobs. Make attempts as much as needed
   // and allowed.
   size_t num_attempts = 0;
   const bool using_tls = UsingTls();
   while (IsConnectionAttemptReady()) {
+    std::optional<IPEndPoint> ip_endpoint =
+        GetIPEndPointToAttempt(exclude_ip_endpoint);
+    if (!ip_endpoint.has_value()) {
+      if (service_endpoint_request_finished_ && in_flight_attempts_.empty()) {
+        tcp_based_attempt_state_ = TcpBasedAttemptState::kAllEndpointsFailed;
+      }
+      if (tcp_based_attempt_state_ ==
+              TcpBasedAttemptState::kAllEndpointsFailed &&
+          !quic_task_) {
+        // Tried all endpoints.
+        // TODO(crbug.com/346835898): The following MaybeMarkQuicBroken()
+        // doesn't seem to have any effect, as the method returns early when the
+        // attempt state is kAllEndpointsFailed. Check if we should remove it,
+        // or call the method in a different place.
+        MaybeMarkQuicBroken();
+        NotifyFailure();
+      }
+      return;
+    }
+
+    if (tcp_based_attempt_state_ == TcpBasedAttemptState::kNotStarted) {
+      tcp_based_attempt_state_ = TcpBasedAttemptState::kAttempting;
+    }
+
+    CHECK(!preconnects_.empty() || group_->IdleStreamSocketCount() == 0);
+
     auto in_flight_attempt = std::make_unique<InFlightAttempt>(this);
     InFlightAttempt* raw_attempt = in_flight_attempt.get();
     in_flight_attempts_.emplace(std::move(in_flight_attempt));
@@ -1266,6 +1263,14 @@ bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
   return true;
 }
 
+size_t HttpStreamPool::AttemptManager::CalculateMaxPreconnectCount() const {
+  size_t num_streams = 0;
+  for (const auto& entry : preconnects_) {
+    num_streams = std::max(num_streams, entry->num_streams);
+  }
+  return num_streams;
+}
+
 size_t HttpStreamPool::AttemptManager::PendingCountInternal(
     size_t pending_count) const {
   CHECK_GE(in_flight_attempts_.size(), slow_attempt_count_);
@@ -1284,63 +1289,51 @@ size_t HttpStreamPool::AttemptManager::PendingCountInternal(
   return pending_count - non_slow_count;
 }
 
-// TODO(crbug.com/346835898): The current logic relies on rather naive and not
-// very well-founded heuristics. Write a design document and implement more
-// appropriate algorithm to pick an IPEndPoint.
 std::optional<IPEndPoint>
 HttpStreamPool::AttemptManager::GetIPEndPointToAttempt(
     std::optional<IPEndPoint> exclude_ip_endpoint) {
+  // TODO(crbug.com/383824591): Add a trace event to see if this method is
+  // time consuming.
+
   if (!service_endpoint_request_ ||
       service_endpoint_request_->GetEndpointResults().empty()) {
     return std::nullopt;
   }
 
   const bool svcb_optional = IsSvcbOptional();
+  std::optional<IPEndPoint> current_endpoint;
+  std::optional<IPEndPointState> current_state;
 
-  // Look for an IPEndPoint from the preferred address family first.
-  for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
-    if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
-      continue;
-    }
-    std::optional<IPEndPoint> ip_endpoint =
-        prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv6_endpoints,
-                                               exclude_ip_endpoint)
-                     : FindPreferredIPEndpoint(endpoint.ipv4_endpoints,
-                                               exclude_ip_endpoint);
-    if (ip_endpoint.has_value()) {
-      return ip_endpoint;
+  for (bool ip_v6 : {prefer_ipv6_, !prefer_ipv6_}) {
+    for (const auto& service_endpoint :
+         service_endpoint_request_->GetEndpointResults()) {
+      if (!IsEndpointUsableForTcpBasedAttempt(service_endpoint,
+                                              svcb_optional)) {
+        continue;
+      }
+
+      const std::vector<IPEndPoint>& ip_endpoints =
+          ip_v6 ? service_endpoint.ipv6_endpoints
+                : service_endpoint.ipv4_endpoints;
+      FindBetterIPEndPoint(ip_endpoints, exclude_ip_endpoint, current_state,
+                           current_endpoint);
+      if (current_endpoint.has_value() && !current_state.has_value()) {
+        // This endpoint is fast or no connection attempt has been made to it
+        // yet.
+        return current_endpoint;
+      }
     }
   }
 
-  // If there is no IPEndPoint from the preferred address family, check the
-  // another address family.
-  for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
-    if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
-      continue;
-    }
-    std::optional<IPEndPoint> ip_endpoint =
-        prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv4_endpoints,
-                                               exclude_ip_endpoint)
-                     : FindPreferredIPEndpoint(endpoint.ipv6_endpoints,
-                                               exclude_ip_endpoint);
-    if (ip_endpoint.has_value()) {
-      return ip_endpoint;
-    }
-  }
-
-  return std::nullopt;
+  // No available IP endpoint, or `current_endpoint` is slow.
+  return current_endpoint;
 }
 
-std::optional<IPEndPoint>
-HttpStreamPool::AttemptManager::FindPreferredIPEndpoint(
+void HttpStreamPool::AttemptManager::FindBetterIPEndPoint(
     const std::vector<IPEndPoint>& ip_endpoints,
-    std::optional<IPEndPoint> exclude_ip_endpoint) {
-  // Prefer the first unattempted endpoint in `ip_endpoints`. Allow to use
-  // a slow endpoint when the SPDY throttle delay passed or there is an endpoint
-  // that was slow to establish the connection but succeeded previously.
-
-  bool has_slow_but_succeeded = false;
-  std::optional<IPEndPoint> slow_endpoint;
+    std::optional<IPEndPoint> exclude_ip_endpoint,
+    std::optional<IPEndPointState>& current_state,
+    std::optional<IPEndPoint>& current_endpoint) {
   for (const auto& ip_endpoint : ip_endpoints) {
     if (exclude_ip_endpoint.has_value() &&
         ip_endpoint == *exclude_ip_endpoint) {
@@ -1352,30 +1345,48 @@ HttpStreamPool::AttemptManager::FindPreferredIPEndpoint(
       // If there is no state for the IP endpoint it means that we haven't tried
       // the endpoint yet or previous attempt to the endpoint was fast. Just use
       // it.
-      return ip_endpoint;
+      current_endpoint = ip_endpoint;
+      current_state = std::nullopt;
+      return;
     }
 
     switch (it->second) {
       case IPEndPointState::kFailed:
         continue;
       case IPEndPointState::kSlowAttempting:
-        if (!slow_endpoint.has_value()) {
-          slow_endpoint = ip_endpoint;
+        if (!current_endpoint.has_value() &&
+            !HasEnoughAttemptsForSlowIPEndPoint(ip_endpoint)) {
+          current_endpoint = ip_endpoint;
+          current_state = it->second;
         }
-        break;
+        continue;
       case IPEndPointState::kSlowSucceeded:
-        if (!has_slow_but_succeeded) {
-          has_slow_but_succeeded = true;
-          slow_endpoint = ip_endpoint;
+        const bool prefer_slow_succeeded =
+            !current_state.has_value() ||
+            *current_state == IPEndPointState::kSlowAttempting;
+        if (prefer_slow_succeeded &&
+            !HasEnoughAttemptsForSlowIPEndPoint(ip_endpoint)) {
+          current_endpoint = ip_endpoint;
+          current_state = it->second;
         }
-        break;
+        continue;
+    }
+  }
+}
+
+bool HttpStreamPool::AttemptManager::HasEnoughAttemptsForSlowIPEndPoint(
+    const IPEndPoint& ip_endpoint) {
+  // TODO(crbug.com/383824591): Consider modifying the value of
+  // IPEndPointStateMap to track the number of in-flight attempts per
+  // IPEndPoint, if this loop is a bottlenek.
+  size_t num_attempts = 0;
+  for (const auto& entry : in_flight_attempts_) {
+    if (entry->attempt()->ip_endpoint() == ip_endpoint) {
+      ++num_attempts;
     }
   }
 
-  if (spdy_throttle_delay_passed_ || has_slow_but_succeeded) {
-    return slow_endpoint;
-  }
-  return std::nullopt;
+  return num_attempts >= std::max(jobs_.size(), CalculateMaxPreconnectCount());
 }
 
 HttpStreamPool::AttemptManager::FailureKind
@@ -1670,7 +1681,7 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
     return;
   }
 
-  CHECK_NE(tcp_based_attempt_state_, TcpBasedAttemptState::kAllAttemptsFailed);
+  CHECK_NE(tcp_based_attempt_state_, TcpBasedAttemptState::kAllEndpointsFailed);
   if (tcp_based_attempt_state_ == TcpBasedAttemptState::kAttempting) {
     tcp_based_attempt_state_ = TcpBasedAttemptState::kSucceededAtLeastOnce;
     MaybeMarkQuicBroken();
@@ -1926,7 +1937,7 @@ void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
   // No brokenness to report if we didn't attempt TCP-based connection or all
   // TCP-based attempts failed.
   if (tcp_based_attempt_state_ == TcpBasedAttemptState::kNotStarted ||
-      tcp_based_attempt_state_ == TcpBasedAttemptState::kAllAttemptsFailed) {
+      tcp_based_attempt_state_ == TcpBasedAttemptState::kAllEndpointsFailed) {
     return;
   }
 

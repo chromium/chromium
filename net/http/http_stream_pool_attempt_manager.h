@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
@@ -72,6 +73,8 @@ class HttpStreamPool::AttemptManager
     // completed successfully.
     kSlowSucceeded,
   };
+
+  using IPEndPointStateMap = std::map<IPEndPoint, IPEndPointState>;
 
   // Time to delay connection attempts more than one when the destination is
   // known to support HTTP/2, to avoid unnecessary socket connection
@@ -195,12 +198,17 @@ class HttpStreamPool::AttemptManager
 
   void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
 
-  const std::map<IPEndPoint, IPEndPointState>& ip_endpoint_states_for_testing()
-      const {
+  IPEndPointStateMap& ip_endpoint_states_for_testing() {
+    return ip_endpoint_states_;
+  }
+  const IPEndPointStateMap& ip_endpoint_states_for_testing() const {
     return ip_endpoint_states_;
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
+                           GetIPEndPointToAttempt);
+
   // Represents failure of connection attempts. Used to notify job of completion
   // for failure cases.
   enum class FailureKind {
@@ -224,7 +232,7 @@ class HttpStreamPool::AttemptManager
     kNotStarted,
     kAttempting,
     kSucceededAtLeastOnce,
-    kAllAttemptsFailed,
+    kAllEndpointsFailed,
   };
 
   using JobQueue = PriorityQueue<raw_ptr<Job>>;
@@ -321,16 +329,30 @@ class HttpStreamPool::AttemptManager
   // an in-flight attempt and the destination is known to support HTTP/2.
   bool ShouldThrottleAttemptForSpdy() const;
 
+  // Calculates the maximum streams counts requested by preconnects.
+  size_t CalculateMaxPreconnectCount() const;
+
   // Helper method to calculate pending jobs/preconnects.
   size_t PendingCountInternal(size_t pending_count) const;
 
   // Returns an IPEndPoint to attempt a connection. If `exclude_ip_endpoint` is
-  // given, exclude the endpoint.
+  // given, exclude the endpoint. Brief summary of the behavior are:
+  //  * Try preferred address family first.
+  //  * Prioritize unattempted or fast endpoints.
+  //  * Fall back to slow but succeeded endpoints.
+  //  * Use slow and attempting endpoints as the last option.
+  //  * For a slow endpoint, skip the endpoint if there are enough attempts for
+  //    the endpoint.
+  // TODO(crbug.com/383606724): The current logic relies on rather naive and not
+  // very well-founded heuristics. Write a design document and implement more
+  // appropriate algorithm to pick an IPEndPoint.
   std::optional<IPEndPoint> GetIPEndPointToAttempt(
       std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt);
-  std::optional<IPEndPoint> FindPreferredIPEndpoint(
-      const std::vector<IPEndPoint>& ip_endpoints,
-      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt);
+  void FindBetterIPEndPoint(const std::vector<IPEndPoint>& ip_endpoints,
+                            std::optional<IPEndPoint> exclude_ip_endpoint,
+                            std::optional<IPEndPointState>& current_state,
+                            std::optional<IPEndPoint>& current_endpoint);
+  bool HasEnoughAttemptsForSlowIPEndPoint(const IPEndPoint& ip_endpoint);
 
   // Calculate the failure kind to notify jobs of failure. Used to call one of
   // the job's methods.
@@ -509,7 +531,7 @@ class HttpStreamPool::AttemptManager
   bool prefer_ipv6_ = true;
   // Updated when a stream attempt is completed or considered slow. Used to
   // calculate next IPEndPoint to attempt.
-  std::map<IPEndPoint, IPEndPointState> ip_endpoint_states_;
+  IPEndPointStateMap ip_endpoint_states_;
 
   // The current state of TCP/TLS connection attempts.
   TcpBasedAttemptState tcp_based_attempt_state_ =
