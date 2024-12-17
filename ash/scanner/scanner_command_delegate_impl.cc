@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/check_deref.h"
@@ -43,10 +42,6 @@ void ScannerCommandDelegateImpl::SetClipboard(
     std::unique_ptr<ui::ClipboardData> data) {
   CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
       .WriteClipboardData(std::move(data));
-
-  // TODO: crbug.com/382182688 - Use a Scanner action toast instead of the
-  // capture mode copy text toast.
-  CaptureModeController::ShowTextCopiedToast();
 }
 
 base::WeakPtr<ScannerCommandDelegate> ScannerCommandDelegateImpl::GetWeakPtr() {

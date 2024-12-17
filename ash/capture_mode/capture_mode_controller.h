@@ -100,9 +100,6 @@ class ASH_EXPORT CaptureModeController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Shows a toast informing the user that text has been copied to clipboard.
-  static void ShowTextCopiedToast();
-
   CaptureModeCameraController* camera_controller() {
     return camera_controller_.get();
   }
