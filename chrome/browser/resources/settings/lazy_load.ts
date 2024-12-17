@@ -111,7 +111,7 @@ export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.j
 // </if>
 
 export {SettingsAiCompareSubpageElement} from './ai_page/ai_compare_subpage.js';
-export {SettingsAiPolicyIndicator} from './ai_page/ai_policy_indicator.js';
+export {isFeatureDisabledByPolicy, SettingsAiPolicyIndicator} from './ai_page/ai_policy_indicator.js';
 export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
 export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';

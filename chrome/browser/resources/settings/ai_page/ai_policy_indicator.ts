@@ -15,6 +15,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './ai_policy_indicator.html.js';
 import {ModelExecutionEnterprisePolicyValue} from './constants.js';
 
+export function isFeatureDisabledByPolicy(
+    enterprisePref: chrome.settingsPrivate.PrefObject|undefined): boolean {
+  return !!enterprisePref &&
+      enterprisePref!.value === ModelExecutionEnterprisePolicyValue.DISABLE;
+}
+
 const SettingsAiPolicyIndicatorBase = PrefControlMixin(PolymerElement);
 
 export class SettingsAiPolicyIndicator extends SettingsAiPolicyIndicatorBase {
@@ -27,8 +33,7 @@ export class SettingsAiPolicyIndicator extends SettingsAiPolicyIndicatorBase {
   }
 
   private isFeatureDisabledByPolicy_(): boolean {
-    return !!this.pref &&
-        this.pref!.value === ModelExecutionEnterprisePolicyValue.DISABLE;
+    return isFeatureDisabledByPolicy(this.pref);
   }
 }
 

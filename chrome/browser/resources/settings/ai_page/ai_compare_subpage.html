@@ -7,7 +7,8 @@
 <settings-ai-policy-indicator pref="[[enterprisePref_]]">
 </settings-ai-policy-indicator>
 <cr-link-row label="$i18n{aiCompareLabel}"
-    on-click="onCompareLinkoutClick_" external>
+    on-click="onCompareLinkoutClick_" external
+    disabled="[[isDisabled_(enterprisePref_)]]">
   <div slot="sub-label">
     $i18n{aiCompareSublabel}$i18n{sentenceEnd}
     <a href="[[getLearnMoreUrl_(enterprisePref_)]]"

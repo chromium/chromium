@@ -15,6 +15,7 @@ import {AiPageCompareInteractions, MetricsBrowserProxyImpl} from '../metrics_bro
 
 import {getTemplate} from './ai_compare_subpage.html.js';
 import {getAiLearnMoreUrl} from './ai_learn_more_url_util.js';
+import {isFeatureDisabledByPolicy} from './ai_policy_indicator.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions} from './constants.js';
 
 const SettingsAiCompareSubpageElementBase = PrefsMixin(PolymerElement);
@@ -49,6 +50,11 @@ export class SettingsAiCompareSubpageElement extends
   }
 
   private onCompareLinkoutClick_() {
+    // Ignore click action if the feature is disabled.
+    if (this.isDisabled_()) {
+      return;
+    }
+
     this.recordInteractionMetrics_(
         AiPageCompareInteractions.FEATURE_LINK_CLICKED,
         AiPageActions.COMPARE_FEATURE_LINK_CLICKED);
@@ -71,6 +77,10 @@ export class SettingsAiCompareSubpageElement extends
     return getAiLearnMoreUrl(
         this.enterprisePref_, loadTimeData.getString('compareLearnMoreUrl'),
         loadTimeData.getString('compareLearnMoreManagedUrl'));
+  }
+
+  private isDisabled_(): boolean {
+    return isFeatureDisabledByPolicy(this.enterprisePref_);
   }
 }
 
