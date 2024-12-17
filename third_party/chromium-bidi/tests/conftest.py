@@ -330,7 +330,8 @@ def read_messages(websocket, read_all_messages):
             messages.append(message)
 
         if check_no_other_messages:
-            messages = messages + await read_all_messages()
+            messages = messages + await read_all_messages(
+                filter_lambda=filter_lambda)
 
         if sort:
             messages.sort(key=lambda x: x["method"] if "method" in x else str(
@@ -352,7 +353,8 @@ def read_messages(websocket, read_all_messages):
 
 @pytest.fixture
 def read_all_messages(websocket):
-    async def read_all_messages():
+    async def read_all_messages(
+            filter_lambda: Callable[[dict], bool] = lambda _: True):
         messages = []
         """ Walk through all the browsing contexts and evaluate an async script"""
         command_id = await send_JSON_command(websocket, {
@@ -361,8 +363,9 @@ def read_all_messages(websocket):
         })
         message = await read_JSON_message(websocket)
         while message != AnyExtending({'id': command_id}):
-            # Unexpected message. Add to the result list.
-            messages.append(message)
+            if filter_lambda(message):
+                # Unexpected message. Add to the result list.
+                messages.append(message)
             message = await read_JSON_message(websocket)
         else:
             assert message == AnyExtending({
@@ -384,7 +387,9 @@ def read_all_messages(websocket):
                 message = await read_JSON_message(websocket)
                 while message != AnyExtending({'id': command_id}):
                     # Ignore both success and failure command result.
-                    messages.append(message)
+                    if filter_lambda(message):
+                        # Unexpected message. Add to the result list.
+                        messages.append(message)
                     message = await read_JSON_message(websocket)
         return messages
 

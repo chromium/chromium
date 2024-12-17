@@ -51,84 +51,25 @@ async def set_beforeunload_handler(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_navigate_scriptRedirect_checkEvents(websocket, context_id, html,
-                                                   url_example, url_base,
-                                                   read_messages, snapshot):
+async def test_navigate_checkEvents(websocket, context_id, url_base,
+                                    url_example, read_messages, snapshot):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(
         websocket,
         ["browsingContext", "script.message", "network.beforeRequestSent"])
 
-    initial_url = html(f"<script>window.location='{url_example}';</script>")
-
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": initial_url,
+                "url": url_example,
                 "wait": "complete",
                 "context": context_id
             }
         })
 
-    messages = await read_messages(9,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
-    assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
-
-
-@pytest.mark.asyncio
-async def test_navigate_scriptFragmentRedirect_checkEvents(
-        websocket, context_id, html, url_base, read_messages, snapshot):
-    await goto_url(websocket, context_id, url_base)
-    await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
-
-    initial_url = html("<script>window.location='#test';</script>")
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": initial_url,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
-
-    messages = await read_messages(7,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
-    assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
-
-
-@pytest.mark.asyncio
-async def test_navigate_nested_scriptFragmentRedirect_checkEvents(
-        websocket, iframe_id, html, url_base, read_messages, snapshot):
-    await goto_url(websocket, iframe_id, url_base)
-    await set_beforeunload_handler(websocket, iframe_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
-
-    initial_url = html("<script>window.location='#test';</script>")
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": initial_url,
-                "wait": "complete",
-                "context": iframe_id
-            }
-        })
-
-    messages = await read_messages(7,
+    messages = await read_messages(6,
                                    keys_to_stabilize=KEYS_TO_STABILIZE,
                                    check_no_other_messages=True,
                                    sort=False)
@@ -192,14 +133,9 @@ async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
 
 
 @pytest.mark.asyncio
-async def test_scriptNavigate_checkEvents(websocket, context_id, url_base,
-                                          url_example, html, read_messages,
-                                          snapshot):
-    await goto_url(websocket, context_id, url_base)
-    await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+async def test_scriptNavigate_checkEvents(websocket, context_id, url_example,
+                                          html, read_messages, snapshot):
+    await subscribe(websocket, ["browsingContext"])
 
     initial_url = html(f"<script>window.location='{url_example}';</script>")
 
@@ -213,10 +149,14 @@ async def test_scriptNavigate_checkEvents(websocket, context_id, url_base,
             }
         })
 
-    messages = await read_messages(9,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        5,
+        # Filter out command result, as it can be
+        # racy with other events.
+        filter_lambda=lambda x: 'id' not in x,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        check_no_other_messages=True,
+        sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
@@ -224,11 +164,11 @@ async def test_scriptNavigate_checkEvents(websocket, context_id, url_base,
 async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
                                                      url_base, html,
                                                      read_messages, snapshot):
-    await goto_url(websocket, context_id, url_base)
-    await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    # Other events can be racy.
+    await subscribe(websocket, [
+        "browsingContext.navigationStarted",
+        "browsingContext.navigationAborted"
+    ])
 
     about_blank_url = 'about:blank'
     initial_url = html(
@@ -244,10 +184,14 @@ async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
             }
         })
 
-    messages = await read_messages(8,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        3,
+        # Filter out command result, as it can be
+        # racy with other events.
+        filter_lambda=lambda x: 'id' not in x,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        check_no_other_messages=True,
+        sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
@@ -255,11 +199,7 @@ async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
 async def test_scriptNavigate_dataUrl_checkEvents(websocket, context_id,
                                                   url_base, html,
                                                   read_messages, snapshot):
-    await goto_url(websocket, context_id, url_base)
-    await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext"])
 
     data_url = "data:text/html;,<h2>header</h2>"
     initial_url = html(f"<script>window.location='{data_url}';</script>")
@@ -274,10 +214,71 @@ async def test_scriptNavigate_dataUrl_checkEvents(websocket, context_id,
             }
         })
 
-    messages = await read_messages(6,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        3,
+        # Filter out command result, as it can be
+        # racy with other events.
+        filter_lambda=lambda x: 'id' not in x,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        check_no_other_messages=True,
+        sort=False)
+    assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
+
+
+@pytest.mark.asyncio
+async def test_scriptNavigate_fragment_checkEvents(websocket, context_id,
+                                                   url_base, html,
+                                                   read_messages, snapshot):
+    await subscribe(websocket, ["browsingContext"])
+
+    initial_url = html("<script>window.location='#test';</script>")
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": initial_url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_messages(
+        4,
+        # Filter out command result, as it can be
+        # racy with other events.
+        filter_lambda=lambda x: 'id' not in x,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        check_no_other_messages=True,
+        sort=False)
+    assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
+
+
+@pytest.mark.asyncio
+async def test_scriptNavigate_fragment_nested_checkEvents(
+        websocket, iframe_id, html, url_base, read_messages, snapshot):
+    await subscribe(websocket, ["browsingContext"])
+
+    initial_url = html("<script>window.location='#test';</script>")
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": initial_url,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
+
+    messages = await read_messages(
+        4,
+        # Filter out command result, as it can be
+        # racy with other events.
+        filter_lambda=lambda x: 'id' not in x,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        check_no_other_messages=True,
+        sort=False)
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
