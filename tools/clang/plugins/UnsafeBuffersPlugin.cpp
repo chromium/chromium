@@ -24,6 +24,7 @@ struct CheckFilePrefixes {
   // `buffer` owns the memory for the strings in `prefix_map`.
   std::unique_ptr<llvm::MemoryBuffer> buffer;
   std::map<llvm::StringRef, char> prefix_map;
+  bool check_libc_calls = false;
 };
 
 class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
@@ -104,8 +105,10 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       return;
     }
 
-    if (!(diag_id == clang::diag::warn_unsafe_buffer_variable ||
+    if (!(diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
+          diag_id == clang::diag::warn_unsafe_buffer_variable ||
           diag_id == clang::diag::warn_unsafe_buffer_operation ||
+          diag_id == clang::diag::note_unsafe_buffer_printf_call ||
           diag_id == clang::diag::note_unsafe_buffer_operation ||
           diag_id == clang::diag::note_unsafe_buffer_variable_fixit_group ||
           diag_id == clang::diag::note_unsafe_buffer_variable_fixit_together ||
@@ -116,8 +119,10 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     // Note that we promote from Remark directly to Error, rather than to
     // Warning, as -Werror will not get applied to whatever we choose here.
     const auto elevated_level =
-        (diag_id == clang::diag::warn_unsafe_buffer_variable ||
-         diag_id == clang::diag::warn_unsafe_buffer_operation)
+        (diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
+         diag_id == clang::diag::warn_unsafe_buffer_variable ||
+         diag_id == clang::diag::warn_unsafe_buffer_operation ||
+         diag_id == clang::diag::note_unsafe_buffer_printf_call)
             ? (engine_->getWarningsAsErrors()
                    ? clang::DiagnosticsEngine::Level::Error
                    : clang::DiagnosticsEngine::Level::Warning)
@@ -258,6 +263,12 @@ class UnsafeBuffersASTConsumer : public clang::ASTConsumer {
   UnsafeBuffersASTConsumer(clang::CompilerInstance* instance,
                            CheckFilePrefixes check_file_prefixes)
       : instance_(instance) {
+    // Extract args before moving check_file_prefixes.
+    auto libc_severity = check_file_prefixes.check_libc_calls
+                             ? clang::diag::Severity::Remark
+                             : clang::diag::Severity::Ignored;
+
+    // Replace the DiagnosticConsumer with our own that sniffs diagnostics and
     // Replace the DiagnosticConsumer with our own that sniffs diagnostics and
     // can omit them.
     clang::DiagnosticsEngine& engine = instance_->getDiagnostics();
@@ -281,7 +292,7 @@ class UnsafeBuffersASTConsumer : public clang::ASTConsumer {
     // -Wunsafe-buffer-usage-in-libc-call.
     engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
                                "unsafe-buffer-usage-in-libc-call",
-                               clang::diag::Severity::Ignored);
+                               libc_severity);
   }
 
   ~UnsafeBuffersASTConsumer() {
@@ -318,21 +329,26 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
   bool ParseArgs(const clang::CompilerInstance& instance,
                  const std::vector<std::string>& args) override {
     bool found_file_arg = false;
-    for (size_t i = 0u; i < args.size(); ++i) {
-      // Look for any switches first (there are currently none).
-
+    for (const auto& arg : args) {
+      // Nothing should follow the unsafe buffers path positional argument.
       if (found_file_arg) {
         llvm::errs()
             << "[unsafe-buffers] Extra argument to unsafe-buffers plugin: '"
-            << args[i] << ". Usage: [SWITCHES] PATH_TO_CHECK_FILE'\n";
+            << arg << ". Usage: [SWITCHES] PATH_TO_CHECK_FILE'\n";
         return false;
       }
-      if (!LoadCheckFilePrefixes(args[i])) {
-        llvm::errs() << "[unsafe-buffers] Failed to load paths from file '"
-                     << args[i] << "'\n";
-        return false;
+      // Look for any switches next.
+      if (arg == "check-libc-calls") {
+        check_file_prefixes_.check_libc_calls = true;
+        continue;
       }
+      // Anything not recognized as a switch is the unsafe buffer paths file.
       found_file_arg = true;
+      if (!LoadCheckFilePrefixes(arg)) {
+        llvm::errs() << "[unsafe-buffers] Failed to load paths from file '"
+                     << arg << "'\n";
+        return false;
+      }
     }
     return true;
   }
