@@ -2480,6 +2480,8 @@ ci.thin_tester(
         short_name = "1660",
     ),
     cq_mirrors_console_view = "mirrors",
+    # Can hit the default build timeout if no tasks end up being deduped.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
@@ -2742,6 +2744,8 @@ ci.thin_tester(
         category = "ToT|Windows|x64|Nvidia",
         short_name = "1660",
     ),
+    # Can hit the default build timeout if no tasks end up being deduped.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.gpu.windows_builder(
