@@ -118,6 +118,12 @@ BASE_FEATURE(kWinSboxParallelProcessLaunch,
 BASE_FEATURE(kEnableCsrssLockdown,
              "EnableCsrssLockdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Filters most environment variables out for kService and kServiceWithJit
+// sandboxed processes.
+BASE_FEATURE(kWinSboxFilterServiceEnvironment,
+             "WinSboxFilterServiceEnvironment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

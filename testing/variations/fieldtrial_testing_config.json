@@ -25865,6 +25865,21 @@
             ]
         }
     ],
+    "WinSboxFilterServiceEnvironment": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinSboxFilterServiceEnvironment"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinSboxNoFakeGdiInit": [
         {
             "platforms": [
