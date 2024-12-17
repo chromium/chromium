@@ -10,7 +10,6 @@
 @protocol AppLauncherTabHelperBrowserPresentationProvider;
 @class CommandDispatcher;
 @protocol DownloadManagerTabHelperDelegate;
-@class NewTabPageCoordinator;
 @protocol PasswordControllerDelegate;
 class PrerenderService;
 @class PrintCoordinator;
@@ -36,7 +35,6 @@ class WebStateList;
 @property(nonatomic, assign) PrerenderService* prerenderService;
 @property(nonatomic, weak) UIViewController* baseViewController;
 @property(nonatomic, weak) CommandDispatcher* commandDispatcher;
-@property(nonatomic, weak) NewTabPageCoordinator* NTPCoordinator;
 @property(nonatomic, weak) id<NetExportTabHelperDelegate> tabHelperDelegate;
 @property(nonatomic, weak) id<NewTabPageTabHelperDelegate> NTPTabHelperDelegate;
 @property(nonatomic, weak) PrintCoordinator* printCoordinator;

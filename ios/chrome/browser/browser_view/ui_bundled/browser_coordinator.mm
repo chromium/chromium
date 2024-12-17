@@ -1115,7 +1115,6 @@ enum class ToolbarKind {
        initWithBrowser:self.browser
       componentFactory:[[NewTabPageComponentFactory alloc] init]];
   _NTPCoordinator.toolbarDelegate = _toolbarCoordinator;
-  self.tabLifecycleMediator.NTPCoordinator = _NTPCoordinator;
 
   if (IsLVFUnifiedExperienceEnabled()) {
     _lensViewFinderCoordinator =
