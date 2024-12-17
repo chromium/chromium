@@ -44,7 +44,8 @@ class TaskManagerView : public TableViewDelegate,
                         public views::TableGrouper,
                         public views::TableViewObserver,
                         public views::ContextMenuController,
-                        public ui::SimpleMenuModel::Delegate {
+                        public ui::SimpleMenuModel::Delegate,
+                        public TaskManagerSearchBarView::Delegate {
   METADATA_HEADER(TaskManagerView, views::DialogDelegateView)
 
  public:
@@ -108,6 +109,9 @@ class TaskManagerView : public TableViewDelegate,
   void ExecuteCommand(int id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
+  // TaskManagerSearchBarView::Delegate:
+  void SearchBarOnInputChanged(const std::u16string& text) override;
+
   views::TableView* tab_table_for_testing() { return tab_table_; }
 
   static TaskManagerView* GetInstanceForTests();
@@ -141,7 +145,7 @@ class TaskManagerView : public TableViewDelegate,
   void PerformFilter(DisplayCategory category);
 
   // Creates all corresponding subcomponents for the header.
-  std::unique_ptr<views::View> CreateTabbedPane();
+  std::unique_ptr<views::TabbedPaneTabStrip> CreateTabbedPane();
   std::unique_ptr<views::View> CreateSearchBar(
       const ChromeLayoutProvider* provider);
   std::unique_ptr<views::MdTextButton> CreateEndProcessButton(
@@ -186,6 +190,10 @@ class TaskManagerView : public TableViewDelegate,
 
   // all possible columns, not necessarily visible.
   std::vector<ui::TableColumn> columns_;
+
+  // The tabs which holds different task categories which is not null if task
+  // manager refresh is enabled.
+  raw_ptr<views::TabbedPaneTabStrip> tabs_ = nullptr;
 
   // This button is not the same as the dialog button. It is only non-null if
   // task manager refresh is enabled.

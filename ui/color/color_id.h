@@ -437,6 +437,7 @@
   E_CPONLY(kColorTabBackgroundHighlightedFocused) \
   E_CPONLY(kColorTabBorderSelected) \
   E_CPONLY(kColorTabContentSeparator) \
+  E_CPONLY(kColorTabForegroundDisabled) \
   E_CPONLY(kColorTabForeground) \
   E_CPONLY(kColorTabForegroundSelected) \
   E_CPONLY(kColorTableBackground) \

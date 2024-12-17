@@ -194,6 +194,8 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnThemeChanged() override;
 
+  void UpdateEnabledColor(bool enabled);
+
  private:
   static constexpr int kIconSize = 16;
   static constexpr int kIconRightMargin = kIconSize / 2;
@@ -267,6 +269,8 @@ class VIEWS_EXPORT TabbedPaneTabStrip : public View,
   // AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  void SetEnabled(bool enabled);
 
   // Called by TabbedPaneTabStrip when the selected tab changes. This function
   // is only called if |from_tab| is not null, i.e., there was a previously

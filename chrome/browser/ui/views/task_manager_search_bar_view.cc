@@ -25,13 +25,15 @@
 namespace task_manager {
 TaskManagerSearchBarView::TaskManagerSearchBarView(
     const std::u16string& placeholder,
-    const gfx::Insets& margins)
+    const gfx::Insets& margins,
+    Delegate& delegate)
+    : delegate_(delegate)
 #if BUILDFLAG(IS_LINUX)
-    : textfield_placeholder_color_id_(kColorTaskManagerSearchBarPlaceholderText)
+      ,
+      textfield_placeholder_color_id_(kColorTaskManagerSearchBarPlaceholderText)
 #endif
 {
   auto* layout_provider = ChromeLayoutProvider::Get();
-
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
   search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
   search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
@@ -78,6 +80,11 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
 
   AddChildView(std::move(search_icon));
   input_ = AddChildView(std::move(input));
+
+  input_changed_subscription_ =
+      input_->AddTextChangedCallback(base::BindRepeating(
+          &TaskManagerSearchBarView::OnInputChanged, base::Unretained(this)));
+
   if (views::InkDrop::Get(input_)) {
     views::InkDrop::Get(input_)->SetBaseColorCallback(base::BindRepeating(
         [](views::Textfield* host) {
@@ -113,9 +120,20 @@ bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* sender,
   }
   return false;
 }
+
 void TaskManagerSearchBarView::Focus() {
   input_->RequestFocus();
 }
+
+void TaskManagerSearchBarView::OnInputChanged() {
+  input_change_notification_timer_.Start(
+      FROM_HERE, kInputChangeCallbackDelay,
+      // `delegate_` is expected to outlive `this`, the timer will either be
+      // triggered when it is alive or canceled.
+      base::BindOnce(&Delegate::SearchBarOnInputChanged,
+                     base::Unretained(delegate_), input_->GetText()));
+}
+
 void TaskManagerSearchBarView::OnClearPressed() {
   input_->SetText(u"");
   clear_->SetVisible(false);

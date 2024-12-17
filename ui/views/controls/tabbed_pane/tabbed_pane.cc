@@ -169,6 +169,19 @@ void TabbedPaneTab::OnMouseExited(const ui::MouseEvent& event) {
   SetState(selected() ? State::kActive : State::kInactive);
 }
 
+void TabbedPaneTab::UpdateEnabledColor(bool enabled) {
+  if (enabled) {
+    UpdateTitleColor();
+    UpdateIconColor();
+  } else {
+    title_->SetEnabledColorId(ui::kColorTabForegroundDisabled);
+    if (icon_view_) {
+      icon_view_->SetImage(
+          GetImageModelForTab(ui::kColorTabForegroundDisabled));
+    }
+  }
+}
+
 void TabbedPaneTab::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::EventType::kGestureTapDown:
@@ -458,6 +471,16 @@ void TabbedPaneTabStrip::AnimationEnded(const gfx::Animation* animation) {
   }
 }
 
+void TabbedPaneTabStrip::SetEnabled(bool enabled) {
+  if (GetEnabled() == enabled) {
+    return;
+  }
+  View::SetEnabled(enabled);
+  for (size_t i = 0; i < GetTabCount(); ++i) {
+    GetTabAtIndex(i)->UpdateEnabledColor(enabled);
+  }
+}
+
 // Computes the starting and ending points of the selection slider for a given
 // tab from the origin.
 //
@@ -700,6 +723,11 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
   if (draw_tab_divider_) {
     canvas->FillRect(
         rect, GetColorProvider()->GetColor(ui::kColorTabContentSeparator));
+  }
+
+  // No need to draw the selection marker if the tab strip is disabled.
+  if (!GetEnabled()) {
+    return;
   }
 
   TabbedPaneTab* tab = GetSelectedTab();

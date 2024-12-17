@@ -226,6 +226,7 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
         SetAlpha(std::move(tab_background_base), 0x53);
   }
   mixer[kColorTabContentSeparator] = {kColorMidground};
+  mixer[kColorTabForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorTableGroupingIndicator] = {kColorItemHighlight};
   mixer[kColorTableHeaderBackground] = {kColorTableBackground};
   mixer[kColorTableHeaderForeground] = {kColorTableForeground};

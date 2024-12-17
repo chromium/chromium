@@ -406,7 +406,7 @@ void TaskManagerView::TabSelectedAt(int index) {
   PerformFilter(kTabDefinitions[index].associated_category);
 }
 
-std::unique_ptr<views::View> TaskManagerView::CreateTabbedPane() {
+std::unique_ptr<views::TabbedPaneTabStrip> TaskManagerView::CreateTabbedPane() {
   auto tabs = std::make_unique<views::TabbedPaneTabStrip>(
       views::TabbedPane::Orientation::kHorizontal,
       views::TabbedPane::TabStripStyle::kCompactWithIcon,
@@ -476,7 +476,7 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
       right_aligned_container->AddChildView(std::move(end_process_btn));
 
   // Compose all parts into header.
-  container->AddChildView(std::move(tabs));
+  tabs_ = container->AddChildView(std::move(tabs));
   container->AddChildView(std::move(empty_view));
   container->AddChildView(std::move(right_aligned_container));
 
@@ -511,7 +511,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
 
   auto search_bar = std::make_unique<TaskManagerSearchBarView>(
       l10n_util::GetStringUTF16(IDS_TASK_MANAGER_SEARCH_PLACEHOLDER),
-      gfx::Insets::VH(0, horizontal_spacing));
+      gfx::Insets::VH(0, horizontal_spacing), *this);
   search_bar_container->AddChildView(std::move(search_bar));
 
   return search_bar_container;
@@ -535,6 +535,10 @@ std::unique_ptr<views::Separator> TaskManagerView::CreateSeparator(
   auto separator = std::make_unique<views::Separator>();
   separator->SetProperty(views::kMarginsKey, margins);
   return separator;
+}
+
+void TaskManagerView::SearchBarOnInputChanged(const std::u16string& query) {
+  tabs_->SetEnabled(query.empty());
 }
 
 std::unique_ptr<views::ScrollView> TaskManagerView::CreateProcessView(

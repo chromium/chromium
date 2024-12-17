@@ -23,7 +23,17 @@ using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::MockFunction;
+using ::testing::NiceMock;
 
+class MockDelegate : public TaskManagerSearchBarView::Delegate {
+ public:
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
+  MOCK_METHOD(void,
+              SearchBarOnInputChanged,
+              (const std::u16string& text),
+              (override));
+};
 class TaskManagerSearchBarViewTest : public ChromeViewsTestBase {
  public:
   // views::ViewsTestBase:
@@ -44,16 +54,18 @@ class TaskManagerSearchBarViewTest : public ChromeViewsTestBase {
  protected:
   views::Widget& widget() { return *widget_; }
   ui::test::EventGenerator& generator() { return *generator_; }
+  MockDelegate& delegate() { return delegate_; }
 
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
+  NiceMock<MockDelegate> delegate_;
 };
 
 TEST_F(TaskManagerSearchBarViewTest, SetsFocusOnTextfield) {
   auto* view =
       widget().SetContentsView(std::make_unique<TaskManagerSearchBarView>(
-          u"placeholder", gfx::Insets::TLBR(0, 0, 0, 0)));
+          u"placeholder", gfx::Insets::TLBR(0, 0, 0, 0), delegate()));
   widget().Show();
   view->Focus();
 
@@ -66,7 +78,7 @@ TEST_F(TaskManagerSearchBarViewTest, SetsFocusOnTextfield) {
 TEST_F(TaskManagerSearchBarViewTest, KeyPressedFromTextfield) {
   auto* view =
       widget().SetContentsView(std::make_unique<TaskManagerSearchBarView>(
-          u"placeholder", gfx::Insets::TLBR(0, 0, 0, 0)));
+          u"placeholder", gfx::Insets::TLBR(0, 0, 0, 0), delegate()));
   EXPECT_FALSE(view->GetClearButtonVisibleStatusForTesting());
   widget().Show();
   view->Focus();
@@ -77,10 +89,49 @@ TEST_F(TaskManagerSearchBarViewTest, KeyPressedFromTextfield) {
   EXPECT_TRUE(view->GetClearButtonVisibleStatusForTesting());
 }
 
+TEST_F(TaskManagerSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
+  auto view = std::make_unique<TaskManagerSearchBarView>(
+      u"placeholder", gfx::Insets::TLBR(0, 0, 0, 0), delegate());
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"input text")));
+  }
+
+  view->SetInputTextForTesting(u"input text");
+  task_environment()->FastForwardBy(
+      TaskManagerSearchBarView::kInputChangeCallbackDelay / 2);
+  check.Call();
+  task_environment()->FastForwardBy(
+      TaskManagerSearchBarView::kInputChangeCallbackDelay / 2);
+}
+
+TEST_F(TaskManagerSearchBarViewTest, OnInputChangedCallbackIsThrottled) {
+  auto view = std::make_unique<TaskManagerSearchBarView>(
+      u"placeholder", gfx::Insets::TLBR(0, 0, 0, 0), delegate());
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"input text 2")));
+  }
+
+  view->SetInputTextForTesting(u"input text");
+  task_environment()->FastForwardBy(
+      TaskManagerSearchBarView::kInputChangeCallbackDelay / 2);
+  check.Call();
+  view->SetInputTextForTesting(u"input text 2");
+  task_environment()->FastForwardBy(
+      TaskManagerSearchBarView::kInputChangeCallbackDelay);
+}
+
 TEST_F(TaskManagerSearchBarViewTest, ClearButton) {
   auto* view =
       widget().SetContentsView(std::make_unique<TaskManagerSearchBarView>(
-          u"placeholder", gfx::Insets::TLBR(0, 0, 0, 0)));
+          u"placeholder", gfx::Insets::TLBR(0, 0, 0, 0), delegate()));
   widget().Show();
   view->Focus();
 

@@ -25,15 +25,34 @@ class TaskManagerSearchBarView : public views::View,
   METADATA_HEADER(TaskManagerSearchBarView, views::View)
 
  public:
+  using OnInputChangedCallback =
+      base::RepeatingCallback<void(const std::u16string&)>;
+
+  class Delegate {
+   public:
+    // Called when text in the textfield changes. Calls are throttled with
+    // a delay of kInputChangeCallbackDelay to avoid excessive triggering.
+    virtual void SearchBarOnInputChanged(const std::u16string& text) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInputField);
 
+  // The delay between the textfield text change and triggering
+  // the `OnInputChangedCallback`, used to throttle fast user input.
+  static constexpr base::TimeDelta kInputChangeCallbackDelay =
+      base::Milliseconds(50);
+
   TaskManagerSearchBarView(const std::u16string& placeholder,
-                           const gfx::Insets& margins);
+                           const gfx::Insets& margins,
+                           Delegate& delegate);
   TaskManagerSearchBarView(const TaskManagerSearchBarView&) = delete;
   TaskManagerSearchBarView& operator=(const TaskManagerSearchBarView&) = delete;
   ~TaskManagerSearchBarView() override;
 
-  // views::View
+  // views::View:
   void OnThemeChanged() override;
 
   // views::TextfieldController:
@@ -50,13 +69,19 @@ class TaskManagerSearchBarView : public views::View,
   void UpdateTextfield();
 
  private:
+  void OnInputChanged();
   void OnClearPressed();
+
+  const raw_ref<Delegate> delegate_;
 
   // Textfield placeholder color.
   std::optional<ui::ColorId> textfield_placeholder_color_id_;
 
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;
+
+  base::CallbackListSubscription input_changed_subscription_;
+  base::OneShotTimer input_change_notification_timer_;
 };
 }  // namespace task_manager
 
