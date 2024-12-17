@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -131,6 +132,8 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   Member<BlockingAttribute> blocking_attribute_;
   Member<ScriptLoader> loader_;
+
+  probe::AsyncTaskContext async_task_context_;
 };
 
 }  // namespace blink
