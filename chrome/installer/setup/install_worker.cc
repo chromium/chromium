@@ -321,7 +321,7 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
 }
 
 // Adds work items to register the Tracing Service with Windows if it is
-// already installed.
+// already installed or if dev channel is being installed/updated.
 void AddTracingServiceWorkItems(const base::FilePath& tracing_service_path,
                                 WorkItemList* list) {
   DCHECK(::IsUserAnAdmin());
@@ -331,10 +331,9 @@ void AddTracingServiceWorkItems(const base::FilePath& tracing_service_path,
     return;
   }
 
-  // TODO(grt): Change this condition so that the service is unconditionally
-  // installed for dev channel and otherwise updated if it is already installed.
   const CLSID clsid = install_static::GetTracingServiceClsid();
-  if (!InstallServiceWorkItem::IsComServiceInstalled(clsid)) {
+  if (!InstallServiceWorkItem::IsComServiceInstalled(clsid) &&
+      !install_static::InstallDetails::Get().mode().registers_tracing_service) {
     return;
   }
 

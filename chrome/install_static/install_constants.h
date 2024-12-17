@@ -151,6 +151,12 @@ struct InstallConstants {
   // in chrome://settings are hidden when this is false.
   bool supports_set_as_default_browser;
 
+  // True if this mode registers the Windows system tracing service for all
+  // system-level installs at install/update. The service may be manually
+  // registered for system-level modes that set this to false; see
+  // chrome/windows_services/elevated_tracing_service/README.md.
+  bool registers_tracing_service;
+
   // The index of this mode's main application icon in the main executable.
   int app_icon_resource_index;
 
