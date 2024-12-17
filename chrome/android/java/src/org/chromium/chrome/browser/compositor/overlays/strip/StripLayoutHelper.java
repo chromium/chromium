@@ -1851,7 +1851,8 @@ public class StripLayoutHelper
                 // Intentionally start the reorder at the initial long-press x. The difference from
                 // the current event (accumulatedDeltaX in step 3) will then "snap" the interacting
                 // view to its expected position.
-                startDragOrReorder(mDelayedReorderInitialX, y, mDelayedReorderView);
+                startReorderMode(
+                        mDelayedReorderInitialX, y, mDelayedReorderView, ReorderType.VIEW_DRAG);
             }
         }
 
@@ -1992,7 +1993,7 @@ public class StripLayoutHelper
             } else {
                 resetResizeTimeout(false);
 
-                startDragOrReorder(x, y, clickedTab);
+                startReorderMode(x, y, clickedTab, ReorderType.VIEW_DRAG);
             }
         } else {
             StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
@@ -2003,7 +2004,7 @@ public class StripLayoutHelper
             } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER)) {
                 // Should be obsolete, since context menu has launched. Code path will be
                 // unreachable, then removed once the context menu flag has been cleaned up.
-                startDragOrReorder(x, y, groupTitle);
+                startReorderMode(x, y, groupTitle, ReorderType.VIEW_IN_STRIP);
             }
         }
     }
@@ -2121,10 +2122,28 @@ public class StripLayoutHelper
         anchorRectProvider.getRect().offset(xOffset, toolbarCoordinates[1]);
     }
 
-    private void startDragOrReorder(float x, float y, StripLayoutView clickedView) {
-        if (clickedView != null) {
-            // Attempt to initiate drag-drop, fallback to reorder within strip.
-            startReorderMode(x, y, clickedView, ReorderType.VIEW_DRAG);
+    private void startReorderMode(
+            float x, float y, StripLayoutView interactingView, @ReorderType int reorderType) {
+        // Allow the user to drag the selected tab out of the tab strip.
+        if (interactingView != null) {
+            if (mReorderDelegate.getInReorderMode()) return;
+            // Attempt to start reordering. If the interacting view is a StripLayoutTab,
+            // only continue if it is valid (non-null, non-dying, non-placeholder) and
+            // the tab state is initialized.
+            if (interactingView instanceof StripLayoutTab interactingTab
+                    && (interactingTab.isDying()
+                            || interactingTab.getTabId() == Tab.INVALID_TAB_ID
+                            || !mTabStateInitialized)) {
+                return;
+            }
+
+            mReorderDelegate.startReorderMode(
+                    mStripTabs,
+                    mStripGroupTitles,
+                    interactingView,
+                    getEffectiveTabWidth(),
+                    new PointF(x, y),
+                    reorderType);
         } else {
             // Broadcast to start moving the window instance as the user has long pressed on the
             // open space of the tab strip.
@@ -3860,53 +3879,6 @@ public class StripLayoutHelper
         startReorderMode(x, 0, getTabAtPosition(x), ReorderType.VIEW_IN_STRIP);
     }
 
-    private void startReorderMode(
-            float x, float y, StripLayoutView interactingView, @ReorderType int reorderType) {
-        if (mReorderDelegate.getInReorderMode() || interactingView == null) return;
-
-        // Attempt to start reordering. If the interacting view is a StripLayoutTab, only continue
-        // if it is valid (non-null, non-dying, non-placeholder) and the tab state is initialized.
-        if (interactingView instanceof StripLayoutTab interactingTab
-                && (interactingTab.isDying()
-                        || interactingTab.getTabId() == Tab.INVALID_TAB_ID
-                        || !mTabStateInitialized)) {
-            return;
-        }
-        mReorderDelegate.startReorderMode(
-                mStripTabs,
-                mStripGroupTitles,
-                interactingView,
-                getEffectiveTabWidth(),
-                new PointF(x, y),
-                reorderType);
-    }
-
-    void updateStripForExternalTabDrop(float startX) {
-        // 1. StartX indicates the position where the tab drag entered the destination tab strip.
-        // Adjust by a half tab-width so that we target the nearest tab gap.
-        startX = adjustXForTabDrop(startX);
-
-        // 2. Mark the "interacting" tab. This is not the DnD dragged tab, but rather the tab in the
-        // strip that is currently being hovered by the DnD drag.
-        StripLayoutTab hoveredTab = getTabAtPosition(startX);
-        if (hoveredTab == null) hoveredTab = mStripTabs[mStripTabs.length - 1];
-        mReorderDelegate.setInteractingTab(hoveredTab);
-
-        // 3. Set initial state.
-        mReorderDelegate.setInReorderMode(true);
-        mReorderDelegate.setReorderingForTabDrop(true);
-        mReorderDelegate.prepareStripForReorder(getEffectiveTabWidth(), startX);
-        mReorderDelegate.setEdgeMarginsForReorder(mStripTabs[0], mStripTabs[mStripTabs.length - 1]);
-
-        // 4. Add a tab group margin to the "interacting" tab to indicate where the tab will be
-        // inserted should the drag be dropped.
-        ArrayList<Animator> animationList = new ArrayList<>();
-        setTrailingMarginForTab(hoveredTab, /* shouldHaveTrailingMargin= */ true, animationList);
-
-        // 5. Kick-off animations and request an update.
-        startAnimations(animationList);
-    }
-
     void stopReorderModeForTesting() {
         mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
     }
@@ -4521,15 +4493,25 @@ public class StripLayoutHelper
     }
 
     void prepareForTabDrop(
-            long time,
-            float currX,
-            float lastX,
-            boolean isSourceStrip,
-            boolean draggedTabIncognito) {
+            float currX, float lastX, boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
             dragActiveClickedTabOntoStrip(lastX, /* startReorder= */ true);
-        } else if (mIncognito == draggedTabIncognito) {
-            updateStripForExternalTabDrop(currX);
+        } else {
+            // Destination strip (ie: view dragged onto another strip)
+            // 1. If strip model does not match dragged view's, no-op.
+            if (mIncognito != draggedTabIncognito) return;
+
+            // 2. StartX indicates where the external drag enters the  tab strip.
+            // Adjust by a half tab-width so that we target the nearest tab gap.
+            float startX = adjustXForTabDrop(currX);
+
+            // 3. Mark the "interacting" view. This is not the DnD dragged tab, but rather the tab
+            // in the strip that is currently being hovered by the DnD drag.
+            StripLayoutTab hoveredTab = getTabAtPosition(startX);
+            if (hoveredTab == null) hoveredTab = mStripTabs[mStripTabs.length - 1];
+
+            // 4. Start reorder - prepare strip to indicate drop target.
+            startReorderMode(startX, /* y= */ 0.f, hoveredTab, ReorderType.EXTERNAL_VIEW_IN_STRIP);
         }
     }
 

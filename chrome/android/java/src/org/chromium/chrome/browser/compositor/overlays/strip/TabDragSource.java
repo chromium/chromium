@@ -362,12 +362,7 @@ public class TabDragSource implements View.OnDragListener {
         }
         mStripLayoutHelperSupplier
                 .get()
-                .prepareForTabDrop(
-                        LayoutManagerImpl.time(),
-                        xPx * mPxToDp,
-                        mLastXDp,
-                        isDragSource,
-                        isDraggedTabIncognito());
+                .prepareForTabDrop(xPx * mPxToDp, mLastXDp, isDragSource, isDraggedTabIncognito());
         return true;
     }
 
