@@ -27,6 +27,7 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
+#include "base/version_info/version_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -41,6 +42,12 @@
 namespace ash::graduation {
 
 namespace {
+
+// A string that indicates the webview is coming from CrOS. This user
+// agent allows the Takeout Transfer embedded site to be loaded by the
+// Graduation app. Ex. `ChromeWebView/133`.
+constexpr char kUserAgentStringPrefix[] = "ChromeWebView/%s";
+
 const std::string GetTransferUrl() {
   const std::string language_code = GraduationManager::Get()->GetLanguageCode();
 
@@ -63,6 +70,11 @@ const std::string GetTransferUrl() {
   CHECK(transfer_url.is_valid())
       << "Invalid URL for Takeout Transfer tool: \"" << transfer_url << "\"";
   return transfer_url.spec();
+}
+
+std::string GetUserAgentString() {
+  return base::StringPrintf(kUserAgentStringPrefix,
+                            version_info::GetMajorVersionNumber());
 }
 
 void AddResources(content::WebUIDataSource* source) {
@@ -90,6 +102,7 @@ void AddResources(content::WebUIDataSource* source) {
       features::IsGraduationUseEmbeddedTransferEndpointEnabled());
 
   source->AddString("startTransferUrl", GetTransferUrl());
+  source->AddString("userAgentString", GetUserAgentString());
 
   // Set up test resources used in browser tests.
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
