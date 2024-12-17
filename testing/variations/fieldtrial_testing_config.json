@@ -2958,7 +2958,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
+                    "name": "Holdback",
                     "disable_features": [
                         "BackForwardCacheNonStickyDoubleFix"
                     ]
