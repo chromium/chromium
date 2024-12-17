@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -78,6 +79,43 @@ size_t PermanentFolderOrderingTracker::GetIndexOf(
     }
   }
   NOTREACHED();
+}
+
+const bookmarks::BookmarkNode* PermanentFolderOrderingTracker::GetNodeAtIndex(
+    size_t index) const {
+  CHECK_LT(index, GetChildrenCount());
+  if (ShouldTrackOrdering()) {
+    return ordering_[index];
+  }
+
+  CHECK(ordering_.empty());
+  if (!account_node_) {
+    return local_or_syncable_node_->children()[index].get();
+  }
+
+  // Account nodes are first by default.
+  if (index < account_node_->children().size()) {
+    return account_node_->children()[index].get();
+  }
+
+  index -= account_node_->children().size();
+  CHECK_LT(index, local_or_syncable_node_->children().size());
+  return local_or_syncable_node_->children()[index].get();
+}
+
+size_t PermanentFolderOrderingTracker::GetChildrenCount() const {
+  size_t count = 0;
+  if (local_or_syncable_node_) {
+    count += local_or_syncable_node_->children().size();
+  }
+  if (account_node_) {
+    count += account_node_->children().size();
+  }
+
+  if (ShouldTrackOrdering()) {
+    CHECK_EQ(ordering_.size(), count);
+  }
+  return count;
 }
 
 void PermanentFolderOrderingTracker::SetTrackedPermanentNodes() {
@@ -192,19 +230,7 @@ bool PermanentFolderOrderingTracker::ShouldTrackOrdering() const {
 }
 
 size_t PermanentFolderOrderingTracker::GetExpectedOrderingSize() const {
-  size_t count = 0;
-  if (!ShouldTrackOrdering()) {
-    return count;
-  }
-
-  if (local_or_syncable_node_) {
-    count += local_or_syncable_node_->children().size();
-  }
-
-  if (account_node_) {
-    count += account_node_->children().size();
-  }
-  return count;
+  return ShouldTrackOrdering() ? GetChildrenCount() : 0u;
 }
 
 void PermanentFolderOrderingTracker::RemoveBookmarkNodeIfTracked(

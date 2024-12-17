@@ -50,6 +50,12 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
   // nodes in `this`.
   size_t GetIndexOf(const bookmarks::BookmarkNode* node) const;
 
+  // Returns node at `index`.
+  const bookmarks::BookmarkNode* GetNodeAtIndex(size_t index) const;
+
+  // Returns children count for nodes tracked in this tracker.
+  size_t GetChildrenCount() const;
+
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override;
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,

@@ -166,6 +166,8 @@ TEST_F(PermanentFolderOrderingTrackerTest, GetIndexOfNoAccountFolder) {
               ElementsAre(model().bookmark_bar_node()));
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ]");
+  EXPECT_EQ(tracker.GetChildrenCount(),
+            model().bookmark_bar_node()->children().size());
   for (size_t i = 0; i < model().bookmark_bar_node()->children().size(); i++) {
     const BookmarkNode* node = model().bookmark_bar_node()->children()[i].get();
     EXPECT_EQ(tracker.GetIndexOf(node), i);
@@ -182,11 +184,12 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingDefault) {
                           "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
   AddNodesFromModelString(&model(), model().account_other_node(),
                           "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
-
+  EXPECT_EQ(tracker.GetChildrenCount(), 8u);
   for (size_t i = 0; i < model().account_other_node()->children().size(); i++) {
     const BookmarkNode* node =
         model().account_other_node()->children()[i].get();
     EXPECT_EQ(tracker.GetIndexOf(node), i);
+    EXPECT_EQ(tracker.GetNodeAtIndex(i), node);
   }
 
   size_t account_nodes_size = model().account_other_node()->children().size();
@@ -194,6 +197,7 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingDefault) {
   for (size_t i = 0; i < model().other_node()->children().size(); i++) {
     const BookmarkNode* node = model().other_node()->children()[i].get();
     EXPECT_EQ(tracker.GetIndexOf(node), i + 4);
+    EXPECT_EQ(tracker.GetNodeAtIndex(i + 4), node);
   }
 }
 
@@ -208,6 +212,7 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingCustomOrder) {
                           "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
   AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
+  EXPECT_EQ(tracker.GetChildrenCount(), 8u);
 
   // {L0, A0, A1, A2, L1, L2, L3, A3}.
   std::vector<raw_ptr<const BookmarkNode>> custom_ordering{
@@ -223,6 +228,7 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingCustomOrder) {
 
   for (size_t i = 0; i < custom_ordering.size(); i++) {
     EXPECT_EQ(tracker.GetIndexOf(custom_ordering[i]), i);
+    EXPECT_EQ(tracker.GetNodeAtIndex(i), custom_ordering[i]);
   }
 
   // Insert local nodes.
@@ -230,22 +236,27 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingCustomOrder) {
       model().bookmark_bar_node(), 1, u"Title", GURL("https://example.com"));
   // {L0, L01, A0, A1, A2, L1, L2, L3, A3}.
   EXPECT_EQ(tracker.GetIndexOf(node), 1u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(1), node);
+
   node = model().AddURL(model().bookmark_bar_node(), 3, u"Title",
                         GURL("https://example.com"));
   // 2 local nodes, 3 account, 1 local then `node`.
   // {L0, L01, A0, A1, A2, L1, L11, L2, L3, A3}.
   EXPECT_EQ(tracker.GetIndexOf(node), 6u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(6), node);
 
   // Insert account nodes.
   node = model().AddURL(model().account_bookmark_bar_node(), 0, u"Title",
                         GURL("https://example.com"));
   // {L0, L01, A00, A0, A1, A2, L1, L11, L2, L3, A3}.
   EXPECT_EQ(tracker.GetIndexOf(node), 2u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(2), node);
 
   node = model().AddURL(model().account_bookmark_bar_node(), 4, u"Title",
                         GURL("https://example.com"));
   // {L0, L01, A00, A0, A1, A2, A21, L1, L11, L2, L3, A3}.
   EXPECT_EQ(tracker.GetIndexOf(node), 6u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(6), node);
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest, OrderingLocalOnly) {
@@ -256,9 +267,12 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingLocalOnly) {
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
 
+  EXPECT_EQ(tracker.GetChildrenCount(),
+            model().bookmark_bar_node()->children().size());
   for (size_t i = 0; i < model().bookmark_bar_node()->children().size(); i++) {
     const BookmarkNode* node = model().bookmark_bar_node()->children()[i].get();
     EXPECT_EQ(tracker.GetIndexOf(node), i);
+    EXPECT_EQ(tracker.GetNodeAtIndex(i), node);
   }
 
   // Remove node.
@@ -268,9 +282,12 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingLocalOnly) {
   // Add node.
   model().AddURL(model().bookmark_bar_node(), 1, u"Title",
                  GURL("https://example.com"));
+  EXPECT_EQ(tracker.GetChildrenCount(),
+            model().bookmark_bar_node()->children().size());
   for (size_t i = 0; i < model().bookmark_bar_node()->children().size(); i++) {
     const BookmarkNode* node = model().bookmark_bar_node()->children()[i].get();
     EXPECT_EQ(tracker.GetIndexOf(node), i);
+    EXPECT_EQ(tracker.GetNodeAtIndex(i), node);
   }
 }
 
@@ -284,11 +301,14 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingAccountOnly) {
   AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
 
+  EXPECT_EQ(tracker.GetChildrenCount(),
+            model().account_bookmark_bar_node()->children().size());
   for (size_t i = 0; i < model().account_bookmark_bar_node()->children().size();
        i++) {
     const BookmarkNode* node =
         model().account_bookmark_bar_node()->children()[i].get();
     EXPECT_EQ(tracker.GetIndexOf(node), i);
+    EXPECT_EQ(tracker.GetNodeAtIndex(i), node);
   }
 
   // Remove node.
@@ -298,11 +318,14 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingAccountOnly) {
   // Add node.
   model().AddURL(model().account_bookmark_bar_node(), 1, u"Title",
                  GURL("https://example.com"));
+  EXPECT_EQ(tracker.GetChildrenCount(),
+            model().account_bookmark_bar_node()->children().size());
   for (size_t i = 0; i < model().account_bookmark_bar_node()->children().size();
        i++) {
     const BookmarkNode* node =
         model().account_bookmark_bar_node()->children()[i].get();
     EXPECT_EQ(tracker.GetIndexOf(node), i);
+    EXPECT_EQ(tracker.GetNodeAtIndex(i), node);
   }
 }
 
@@ -315,16 +338,20 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingExistingLocal) {
                           model().bookmark_bar_node()));
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
+  EXPECT_EQ(tracker.GetChildrenCount(),
+            model().bookmark_bar_node()->children().size());
 
   // Add first account bookmark.
   const BookmarkNode* node =
       model().AddURL(model().account_bookmark_bar_node(), 0, u"Title x",
                      GURL("https://example.com"));
   EXPECT_EQ(tracker.GetIndexOf(node), 0u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(0), node);
 
   node = model().AddURL(model().account_bookmark_bar_node(), 1, u"Title y",
                         GURL("https://example.com"));
   EXPECT_EQ(tracker.GetIndexOf(node), 1u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(1), node);
 
   EXPECT_EQ(
       tracker.GetIndexOf(model().bookmark_bar_node()->children()[0].get()), 2u);
@@ -332,10 +359,15 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingExistingLocal) {
   node = model().AddURL(model().bookmark_bar_node(), 0, u"Title z",
                         GURL("https://example.com"));
   EXPECT_EQ(tracker.GetIndexOf(node), 2u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(2), node);
 
   node = model().AddURL(model().bookmark_bar_node(), 4, u"Title w",
                         GURL("https://example.com"));
   EXPECT_EQ(tracker.GetIndexOf(node), 6u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(6), node);
+  EXPECT_EQ(tracker.GetChildrenCount(),
+            model().bookmark_bar_node()->children().size() +
+                model().account_bookmark_bar_node()->children().size());
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest, OrderingAccountThenLocal) {
@@ -352,10 +384,12 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingAccountThenLocal) {
   const BookmarkNode* node = model().AddURL(
       model().bookmark_bar_node(), 0, u"Title x", GURL("https://example.com"));
   EXPECT_EQ(tracker.GetIndexOf(node), 4u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(4), node);
 
   node = model().AddURL(model().bookmark_bar_node(), 1, u"Title y",
                         GURL("https://example.com"));
   EXPECT_EQ(tracker.GetIndexOf(node), 5u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(5), node);
 
   EXPECT_EQ(tracker.GetIndexOf(
                 model().account_bookmark_bar_node()->children()[0].get()),
@@ -364,6 +398,7 @@ TEST_F(PermanentFolderOrderingTrackerTest, OrderingAccountThenLocal) {
   node = model().AddURL(model().account_bookmark_bar_node(), 0, u"Title z",
                         GURL("https://example.com"));
   EXPECT_EQ(tracker.GetIndexOf(node), 0u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(0), node);
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest, BookmarkAllUserNodesRemoved) {
@@ -381,6 +416,8 @@ TEST_F(PermanentFolderOrderingTrackerTest, BookmarkAllUserNodesRemoved) {
   const BookmarkNode* node = model().AddURL(model().other_node(), 0, u"Title x",
                                             GURL("https://example.com"));
   EXPECT_EQ(tracker.GetIndexOf(node), 0u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(0), node);
+  EXPECT_EQ(tracker.GetChildrenCount(), 1u);
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest, RemoveAccountPermanentFolders) {
@@ -397,11 +434,17 @@ TEST_F(PermanentFolderOrderingTrackerTest, RemoveAccountPermanentFolders) {
   const BookmarkNode* node = model().other_node()->children()[0].get();
   EXPECT_EQ(tracker.GetIndexOf(node),
             model().account_other_node()->children().size());
+  EXPECT_EQ(
+      tracker.GetNodeAtIndex(model().account_other_node()->children().size()),
+      node);
 
   model().RemoveAccountPermanentFolders();
   EXPECT_THAT(tracker.GetUnderlyingPermanentNodes(),
               ElementsAre(model().other_node()));
   EXPECT_EQ(tracker.GetIndexOf(node), 0u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(0), node);
+  EXPECT_EQ(tracker.GetChildrenCount(),
+            model().other_node()->children().size());
 }
 
 TEST_F(PermanentFolderOrderingTrackerTest,
