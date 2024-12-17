@@ -836,6 +836,10 @@ void MediaSessionImpl::UpdateVolumeMultiplier() {
                                              GetVolumeMultiplier());
   }
 
+  for (const auto& it : one_shot_players_) {
+    it.observer->OnSetVolumeMultiplier(it.player_id, GetVolumeMultiplier());
+  }
+
   for (const auto& it : pepper_players_)
     it.observer->OnSetVolumeMultiplier(it.player_id, GetVolumeMultiplier());
 }

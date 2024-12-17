@@ -1239,7 +1239,8 @@ void WebMediaPlayerMS::OnFrameHidden() {
 }
 
 void WebMediaPlayerMS::SetVolumeMultiplier(double multiplier) {
-  // TODO(perkj, magjed): See TODO in OnPlay().
+  volume_multiplier_ = multiplier;
+  SetVolume(volume_);
 }
 
 void WebMediaPlayerMS::ActivateSurfaceLayerForVideo(
