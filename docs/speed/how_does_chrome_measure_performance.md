@@ -54,9 +54,6 @@ There are several other performance labs for specialized use:
 
   * **[Lab Spotlight: AV Lab (Googlers only)](http://goto.google.com/av-analysis-service)**:
     Learn all about audio/video quality testing.
-  * **[Lab Spotlight: Cluster telemetry](https://docs.google.com/document/d/1GhqosQcwsy6F-eBAmFn_ITDF7_Iv_rY9FhCKwAnk9qQ/edit)**:
-    Need to run a performance test over thousands of pages? Check out cluster
-    telemetry!
 
 ## End-user metrics
 
