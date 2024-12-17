@@ -157,11 +157,10 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
         grid_area_text.Append(' ');
       }
     }
-    if (!grid_area_text.empty()) {
-      template_row_list->Append(*MakeGarbageCollected<CSSStringValue>(
-          grid_area_text.ReleaseString()));
-      ++row;
-    }
+    DCHECK(!grid_area_text.empty());
+    template_row_list->Append(
+        *MakeGarbageCollected<CSSStringValue>(grid_area_text.ReleaseString()));
+    ++row;
 
     // Omit `auto` values.
     if (!IsAutoValue(row_value.Get())) {
