@@ -172,13 +172,10 @@ class PrefetchContainerTest
 
 class PrefetchContainerXClientDataHeaderTest
     : public PrefetchContainerTestBase,
-      // In incognito or not, is X-Client-Header prefetch support enabled or
-      // not.
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      // In incognito or not.
+      public ::testing::WithParamInterface<bool> {
  private:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kPrefetchXClientDataHeader, get<1>(GetParam()));
     PrefetchContainerTestBase::SetUp();
   }
 
@@ -188,7 +185,7 @@ class PrefetchContainerXClientDataHeaderTest
  protected:
   std::unique_ptr<BrowserContext> CreateBrowserContext() override {
     auto browser_context = std::make_unique<TestBrowserContext>();
-    auto is_incognito = get<0>(GetParam());
+    auto is_incognito = GetParam();
     browser_context->set_is_off_the_record(is_incognito);
     return browser_context;
   }
@@ -205,12 +202,11 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
 
   prefetch_container->MakeResourceRequest({});
   auto* request = prefetch_container->GetResourceRequest();
-  bool is_incognito, is_x_client_data_header_enabled;
-  std::tie(is_incognito, is_x_client_data_header_enabled) = GetParam();
+  bool is_incognito = GetParam();
   // Don't add the header when in incognito mode.
   EXPECT_EQ(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader),
-      !is_incognito && is_x_client_data_header_enabled);
+      !is_incognito);
 }
 
 TEST_P(PrefetchContainerXClientDataHeaderTest,
@@ -246,11 +242,10 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader));
 
   AddRedirectHop(prefetch_container.get(), kTestEligibleUrl);
-  bool is_incognito, is_x_client_data_header_enabled;
-  std::tie(is_incognito, is_x_client_data_header_enabled) = GetParam();
+  bool is_incognito = GetParam();
   EXPECT_EQ(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader),
-      !is_incognito && is_x_client_data_header_enabled);
+      !is_incognito);
 }
 
 TEST_P(PrefetchContainerXClientDataHeaderTest,
@@ -276,8 +271,7 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
 
 INSTANTIATE_TEST_SUITE_P(PrefetchContainerXClientDataTests,
                          PrefetchContainerXClientDataHeaderTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
   blink::DocumentToken document_token;

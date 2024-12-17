@@ -54,9 +54,6 @@ CONTENT_EXPORT extern const base::FeatureParam<
     PrefetchClientHintsCrossSiteBehavior>
     kPrefetchClientHintsCrossSiteBehavior;
 
-// If enabled, prefetch requests may include X-Client-Data request header.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchXClientDataHeader);
-
 // If enabled, then prefetch serving will apply mitigations if it may have been
 // contaminated by cross-partition state.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchStateContaminationMitigation);

@@ -1061,10 +1061,6 @@ void PrefetchContainer::MarkCrossSiteContaminated() {
 
 void PrefetchContainer::AddXClientDataHeader(
     network::ResourceRequest& request) {
-  if (!base::FeatureList::IsEnabled(features::kPrefetchXClientDataHeader)) {
-    return;
-  }
-
   if (browser_context_) {
     // Add X-Client-Data header with experiment IDs from field trials.
     variations::AppendVariationsHeader(request.url,
