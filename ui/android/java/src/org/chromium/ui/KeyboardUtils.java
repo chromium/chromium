@@ -5,6 +5,7 @@
 package org.chromium.ui;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.Settings;
@@ -116,6 +117,21 @@ public final class KeyboardUtils {
     public static boolean isAndroidSoftKeyboardShowing(View view) {
         View rootView = view.getRootView();
         return rootView != null && calculateKeyboardHeightFromWindowInsets(rootView) > 0;
+    }
+
+    /**
+     * Detects whether the soft keyboard is expected to show when keyboard input is required.
+     *
+     * <p>When there is a physical keyboard and show_ime_with_hard_keyboard is off, the soft
+     * keyboard is not shown.
+     */
+    public static boolean isSoftKeyboardEnabled(Context context) {
+        return !isHardKeyboardConnected(context) || shouldShowImeWithHardwareKeyboard(context);
+    }
+
+    /** Detects whether there is a hardware keyboard connected. */
+    public static boolean isHardKeyboardConnected(Context context) {
+        return context.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY;
     }
 
     /**

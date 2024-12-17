@@ -86,8 +86,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
     /** Factory for the result of {@link #groupTabs()}. */
     private NewTabGroupDialogFacility doGroupTabs(
             ItemOnScreenFacility<NewTabGroupDialogFacility> itemOnScreen) {
-        SoftKeyboardFacility softKeyboard =
-                new SoftKeyboardFacility(mHostStation.getActivityElement());
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         NewTabGroupDialogFacility dialog =
                 new NewTabGroupDialogFacility(mListEditor.getAllTabIdsSelected(), softKeyboard);
         mHostStation.swapFacilitiesSync(

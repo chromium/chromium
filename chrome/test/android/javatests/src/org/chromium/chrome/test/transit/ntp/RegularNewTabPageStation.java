@@ -82,7 +82,7 @@ public class RegularNewTabPageStation extends PageStation {
             FakeOmniboxSuggestions fakeSuggestions) {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ false, fakeSuggestions);
-        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility(mActivityElement);
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), SEARCH_BOX::click);
         return Pair.create(omniboxFacility, softKeyboard);
     }
