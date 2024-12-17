@@ -11,7 +11,6 @@ fn main() {
     };
 
     if compiler >= 80 {
-        println!("cargo:rustc-check-cfg=cfg(doc_cfg)");
         println!("cargo:rustc-check-cfg=cfg(no_alloc_crate)");
         println!("cargo:rustc-check-cfg=cfg(no_const_vec_new)");
         println!("cargo:rustc-check-cfg=cfg(no_exhaustive_int_match)");

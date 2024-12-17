@@ -1,9 +1,9 @@
 Name: semver
 URL: https://crates.io/crates/semver
-Version: 1.0.23
-Revision: 69efd3cc770ead273a06ad1788477b3092996d29
+Version: 1.0.24
+Revision: 6f4069dd66f437361631d076b4226dc540a08d12
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/semver-1.0.23/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/semver-1.0.24/LICENSE-APACHE
 Shipped: no
 Security Critical: no
 
