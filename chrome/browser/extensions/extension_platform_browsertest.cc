@@ -217,7 +217,7 @@ void ExtensionPlatformBrowserTest::TearDown() {
 }
 
 void ExtensionPlatformBrowserTest::TearDownOnMainThread() {
-  SetExtensionProtocolTestHandler(nullptr);
+  TearDownTestProtocolHandler();
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   if (tab_model_) {
     TabModelList::RemoveTabModel(tab_model_.get());
@@ -336,6 +336,10 @@ void ExtensionPlatformBrowserTest::SetUpTestProtocolHandler() {
   test_protocol_handler_ = base::BindRepeating(
       &ExtensionProtocolTestResourcesHandler, GetTestResourcesParentDir());
   SetExtensionProtocolTestHandler(&test_protocol_handler_);
+}
+
+void ExtensionPlatformBrowserTest::TearDownTestProtocolHandler() {
+  SetExtensionProtocolTestHandler(nullptr);
 }
 
 Profile* ExtensionPlatformBrowserTest::profile() {

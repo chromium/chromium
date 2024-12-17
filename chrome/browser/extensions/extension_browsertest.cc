@@ -233,7 +233,7 @@ void ExtensionBrowserTest::SetUpOnMainThread() {
 }
 
 void ExtensionBrowserTest::TearDownOnMainThread() {
-  SetExtensionProtocolTestHandler(nullptr);
+  TearDownTestProtocolHandler();
   registry_observation_.Reset();
 }
 

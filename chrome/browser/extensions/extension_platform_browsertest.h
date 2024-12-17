@@ -75,6 +75,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   // chrome/test/data/extensions/foo.
   void SetUpTestProtocolHandler();
 
+  // Tears down test protocol handler.
+  void TearDownTestProtocolHandler();
+
   // Lower case to match the style of InProcessBrowserTest.
   Profile* profile();
 
