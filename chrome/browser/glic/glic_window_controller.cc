@@ -23,6 +23,7 @@ namespace {
 constexpr static int kSnapDistanceThreshold = 50;
 constexpr static int kWidgetWidth = 400;
 constexpr static int kWidgetHeight = 800;
+constexpr static int kWidgetTopBarHeight = 80;
 
 // Helper class for observing mouse and key events from native window.
 class WindowEventObserver : public ui::EventObserver {
@@ -33,7 +34,8 @@ class WindowEventObserver : public ui::EventObserver {
       : glic_window_controller_(glic_window_controller), glic_view_(glic_view) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, glic_view->GetWidget()->GetNativeWindow(),
-        {ui::EventType::kMouseDragged});
+        {ui::EventType::kMousePressed, ui::EventType::kMouseReleased,
+         ui::EventType::kMouseDragged});
   }
 
   WindowEventObserver(const WindowEventObserver&) = delete;
@@ -41,19 +43,37 @@ class WindowEventObserver : public ui::EventObserver {
   ~WindowEventObserver() override = default;
 
   void OnEvent(const ui::Event& event) override {
-    if (event.IsMouseEvent()) {
-      if (event.type() == ui::EventType::kMouseDragged) {
-        gfx::Point mouse_location = event_monitor_->GetLastMouseLocation();
-        views::View::ConvertPointFromScreen(glic_view_, &mouse_location);
-        glic_window_controller_->DragFromPoint(
-            mouse_location.OffsetFromOrigin());
-      }
+    if (!event.IsMouseEvent()) {
+      return;
+    }
+
+    gfx::Point mouse_location = event_monitor_->GetLastMouseLocation();
+    views::View::ConvertPointFromScreen(glic_view_, &mouse_location);
+    if (event.type() == ui::EventType::kMousePressed &&
+        glic_view_->IsPointWithinDraggableArea(mouse_location)) {
+      mouse_down_in_draggable_area_ = true;
+    }
+
+    if (event.type() == ui::EventType::kMouseReleased ||
+        event.type() == ui::EventType::kMouseExited) {
+      mouse_down_in_draggable_area_ = false;
+    }
+
+    // Window should only be dragged if a corresponding mouse drag event was
+    // initiated in the draggable area.
+    if (mouse_down_in_draggable_area_ &&
+        event.type() == ui::EventType::kMouseDragged) {
+      glic_window_controller_->DragFromPoint(mouse_location.OffsetFromOrigin());
     }
   }
 
   raw_ptr<glic::GlicWindowController> glic_window_controller_;
   raw_ptr<glic::GlicView> glic_view_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
+
+  // Tracks whether the mouse is pressed and was initially within a draggable
+  // area of the window.
+  bool mouse_down_in_draggable_area_;
 };
 
 }  // namespace
@@ -64,7 +84,8 @@ GlicWindowController::GlicWindowController(Profile* profile)
     : profile_(profile) {}
 
 void GlicWindowController::Show(views::View* glic_button_view) {
-  // TODO(crbug.com/379943498): possibly bring to front or activate in this case
+  // TODO(crbug.com/379943498): If a glic window already exists, handle showing
+  // by bringing to front or activating.
   if (widget_) {
     return;
   }
@@ -93,6 +114,8 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   widget_->Show();
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, glic_view_);
+  // Set the draggable area to the top bar of the window, by default.
+  glic_view_->SetDraggableAreas({{0, 0, kWidgetWidth, kWidgetTopBarHeight}});
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForAttachedWindow(
@@ -145,6 +168,15 @@ gfx::Size GlicWindowController::GetSize() {
   return widget_->GetSize();
 }
 
+void GlicWindowController::SetDraggableAreas(
+    const std::vector<gfx::Rect>& draggable_areas) {
+  if (!glic_view_) {
+    return;
+  }
+
+  glic_view_->SetDraggableAreas(draggable_areas);
+}
+
 void GlicWindowController::Close() {
   if (!widget_) {
     return;
@@ -177,11 +209,11 @@ void GlicWindowController::HandleBrowserPinning(gfx::Vector2d mouse_location) {
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     views::Widget* window_widget =
         browser->window()->AsBrowserView()->GetWidget();
-    // Skips if:
-    // - incognito
-    // - not visible
-    // - is the same widget as glic
-    // - is a different profile (uses browser context to check)
+    // Skips if the browser:
+    // - is incognito
+    // - is not visible
+    // - uses the same widget as glic
+    // - uses a different profile from glic
     if (browser->profile()->IsOffTheRecord() ||
         !browser->window()->IsVisible() || window_widget == widget_.get() ||
         browser->GetWebView()->GetBrowserContext() !=
@@ -222,7 +254,7 @@ void GlicWindowController::MoveToBrowserPinTarget(Browser* browser) {
     return;
   }
   gfx::Rect glic_rect = widget_->GetWindowBoundsInScreen();
-  // TODO fix exact snap location
+  // TODO(andreaxg): Fix exact snap location.
   gfx::Rect glic_button_rect = browser->window()
                                    ->AsBrowserView()
                                    ->tab_strip_region_view()
@@ -244,7 +276,7 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.accept_events = false;
-    // Name specified for debug purposes
+    // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
     params.bounds = gfx::Rect(0, 0, 0, 0);
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

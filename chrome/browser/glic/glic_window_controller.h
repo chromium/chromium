@@ -43,10 +43,13 @@ class GlicWindowController {
   // Returns the current size of the glic window.
   gfx::Size GetSize();
 
+  // Sets the areas of the view from which it should be draggable.
+  void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
+
   // Called to notify the controller that the window was requested to be closed.
   void Close();
 
-  // User drags glic window
+  // Drags the glic window following the current mouse location.
   void DragFromPoint(gfx::Vector2d mouse_location);
 
   // Returns a WeakPtr to this instance. It can be destroyed at any time if the
@@ -77,7 +80,6 @@ class GlicWindowController {
         delete;
     ~PinnedTargetWidgetObserver() override;
     void SetPinnedTargetWidget(views::Widget* widget);
-
     void OnWidgetBoundsChanged(views::Widget* widget,
                                const gfx::Rect& new_bounds) override;
     void OnWidgetDestroying(views::Widget* widget) override;
@@ -94,8 +96,8 @@ class GlicWindowController {
   // glic to the top right of the browser's glic button.
   void HandleBrowserPinning(gfx::Vector2d mouse_location);
 
-  // When glic is unpinned, reparent to empty holder widget. Initializes the
-  // empty holder widget if it hasn't been created yet.g
+  // When glic is unpinned, reparent it to an empty holder Widget. Initializes
+  // the empty holder widget if it hasn't been created yet.
   void MaybeCreateHolderWindowAndReparent();
 
   // Moves glic view to the pin target of the specified browser.

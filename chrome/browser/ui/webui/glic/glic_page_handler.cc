@@ -51,6 +51,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler {
     std::move(callback).Run(actual_size);
   }
 
+  void SetPanelDraggableAreas(
+      const std::vector<gfx::Rect>& draggable_areas) override {
+    if (!draggable_areas.empty()) {
+      glic_service_->SetPanelDraggableAreas(draggable_areas);
+
+    } else {
+      // Default to the top bar area of the panel.
+      // TODO(cuianthony): Define panel dimensions constants in shared location.
+      glic_service_->SetPanelDraggableAreas({{0, 0, 400, 80}});
+    }
+  }
+
   void GetContextFromFocusedTab(
       bool include_inner_text,
       bool include_viewport_screenshot,

@@ -18,7 +18,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import type {WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {Screenshot, WebPageData} from '../glic_api/glic_api.js';
+import type {DraggableArea, Screenshot, WebPageData} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 import type {PostMessageRequestHandler} from '../glic_api/post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from '../glic_api/post_message_transport.js';
@@ -193,6 +193,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       actualWidth: response.actualSize.width,
       actualHeight: response.actualSize.height,
     };
+  }
+
+  async glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {
+    this.handler.setPanelDraggableAreas(request.areas);
   }
 }
 

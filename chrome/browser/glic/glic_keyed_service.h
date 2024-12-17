@@ -43,6 +43,7 @@ class GlicKeyedService : public KeyedService {
                  glic::mojom::WebClientHandler::CreateTabCallback callback);
   virtual void ClosePanel();
   std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
+  void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 
   void GetContextFromFocusedTab(
       bool include_inner_text,

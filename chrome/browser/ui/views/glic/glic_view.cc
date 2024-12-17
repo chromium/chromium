@@ -56,4 +56,18 @@ std::pair<views::UniqueWidgetPtr, GlicView*> GlicView::CreateWidget(
 
   return {std::move(widget), raw_glic_view};
 }
+
+void GlicView::SetDraggableAreas(
+    const std::vector<gfx::Rect>& draggable_areas) {
+  draggable_areas_.assign(draggable_areas.begin(), draggable_areas.end());
+}
+
+bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
+  for (const gfx::Rect& rect : draggable_areas_) {
+    if (rect.Contains(point)) {
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace glic

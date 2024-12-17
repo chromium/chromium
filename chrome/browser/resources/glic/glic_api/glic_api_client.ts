@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, TabContextResult, TabData} from '../glic_api/glic_api.js';
+import type {DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, TabContextResult, TabData} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -140,6 +140,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   async resizeWindow(width: number, height: number) {
     return this.sender.requestWithResponse(
         'glicBrowserResizeWindow', {width, height});
+  }
+
+  async setWindowDraggableAreas(areas: DraggableArea[]) {
+    return this.sender.requestWithResponse(
+        'glicBrowserSetWindowDraggableAreas', {areas});
   }
 }
 

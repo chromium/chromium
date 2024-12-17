@@ -73,6 +73,9 @@ export declare interface GlicBrowserHost {
   resizeWindow(width: number, height: number):
       Promise<{actualWidth: number, actualHeight: number}>;
 
+  // Set the areas of the glic window from which it should be draggable.
+  setWindowDraggableAreas(areas: DraggableArea[]): Promise<void>;
+
   // Fetches page context for the currently focused tab, optionally including
   // more expensive-to-generate data. Undefined optional arguments indicate that
   // the respective data is not being requested.
@@ -192,3 +195,13 @@ export enum GetTabContextErrorReason {
 }
 
 export type GetTabContextError = ErrorWithReason<GetTabContextErrorReason>;
+
+/**
+ * A rectangular area based in the glic window's coordinate system.
+ */
+export declare interface DraggableArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}

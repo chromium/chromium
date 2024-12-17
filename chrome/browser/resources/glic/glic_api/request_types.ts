@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GetTabContextErrorReason, TabContextResult, TabData} from '../glic_api/glic_api.js';
+import type {DraggableArea, GetTabContextErrorReason, TabContextResult, TabData} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -81,6 +81,12 @@ export declare interface HostRequestTypes {
       actualWidth: number,
       actualHeight: number,
     },
+  };
+  glicBrowserSetWindowDraggableAreas: {
+    request: {
+      areas: DraggableArea[],
+    },
+    response: void,
   };
 }
 

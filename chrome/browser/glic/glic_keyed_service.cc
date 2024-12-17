@@ -76,6 +76,14 @@ std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
   return window_controller_->GetSize();
 }
 
+void GlicKeyedService::SetPanelDraggableAreas(
+    const std::vector<gfx::Rect>& draggable_areas) {
+  if (!window_controller_) {
+    return;
+  }
+  window_controller_->SetDraggableAreas(draggable_areas);
+}
+
 void GlicKeyedService::GetContextFromFocusedTab(
     bool include_inner_text,
     bool include_viewport_screenshot,

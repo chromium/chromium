@@ -62,6 +62,9 @@ interface WebClientHandler {
 
   // Set the bounds of the widget hosting the WebUI to the given size.
   ResizeWidget(gfx.mojom.Size size) => (gfx.mojom.Size? actual_size);
+  // Set the areas of the Glic panel from which it should be draggable. If
+  // `draggable_areas` is empty, the panel will use the top bar area by default.
+  SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas);
 };
 
 // Access from the browser to the Glic web client by proxy of the WebUI page.

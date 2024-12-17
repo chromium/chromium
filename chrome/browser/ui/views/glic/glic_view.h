@@ -36,10 +36,17 @@ class GlicView : public views::View {
       Profile* profile,
       const gfx::Rect& initial_bounds);
 
+  void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
+
+  bool IsPointWithinDraggableArea(const gfx::Point& point);
+
   views::WebView* web_view() { return web_view_; }
 
  private:
   raw_ptr<GlicWebView> web_view_;
+  // Defines the areas of the view from which it can be dragged. These areas can
+  // be updated by the glic web client.
+  std::vector<gfx::Rect> draggable_areas_;
 
   // Ensures that the profile associated with this view isn't destroyed while
   // it is visible.
