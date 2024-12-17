@@ -1519,6 +1519,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.IdentityProvidersCount" units="count"
+    expires_after="2025-04-13">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the count of identity providers right before fetching endpoints with
+    multi IDP flag enabled. It counts distint providers including the ones a
+    user is not signed in to. Recorded at most once per API call before the
+    browser starts fetching from the IdPs.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IdpSigninRequestInitiatedByUser"
     enum="BooleanYesNo" expires_after="2025-04-13">
   <owner>cbiesinger@chromium.org</owner>

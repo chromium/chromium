@@ -545,6 +545,9 @@ void RecordRawAccountsSize(int size);
 // filter. If no account left, nothing will be recorded.
 void RecordReadyToShowAccountsSize(int size);
 
+// Records the count of identity providers in the request
+void RecordIdentityProvidersCount(int count);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_

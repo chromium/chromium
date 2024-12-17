@@ -1026,6 +1026,10 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
+  if (IsFedCmMultipleIdentityProvidersEnabled()) {
+    RecordIdentityProvidersCount(idp_order_.size());
+  }
+
   CHECK(!unique_idps.empty());
   FetchEndpointsForIdps(std::move(unique_idps));
 }

@@ -4365,6 +4365,9 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectUkmValue("NumIdpsRequested", 2);
   ExpectUkmValue("NumIdpsMismatch", 0);
   CheckAllFedCmSessionIDs();
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.IdentityProvidersCount", 2,
+                                       1);
 }
 
 // Test successful multi IDP FedCM request.
@@ -4399,6 +4402,8 @@ TEST_F(FederatedAuthRequestImplTest,
                         /*other_values_allowed=*/true);
   ExpectUkmValue("NumIdpsRequested", 2);
   ExpectUkmValue("NumIdpsMismatch", 0);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.IdentityProvidersCount", 2,
+                                       1);
 }
 
 // Test fetching information for the 1st IdP failing, and succeeding for the
@@ -4428,6 +4433,8 @@ TEST_F(FederatedAuthRequestImplTest, FirstIdpWellKnownInvalid) {
   ExpectUKMCount("AccountsRequestSent", FedCmEntry::kEntryName, 1);
   ExpectUKMCount("AccountsRequestSent", FedCmIdpEntry::kEntryName, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.IdentityProvidersCount", 2,
+                                       1);
 }
 
 // Test fetching information for the 1st IdP succeeding, and failing for the
@@ -4457,6 +4464,8 @@ TEST_F(FederatedAuthRequestImplTest, SecondIdpWellKnownInvalid) {
   ExpectUKMCount("AccountsRequestSent", FedCmEntry::kEntryName, 1);
   ExpectUKMCount("AccountsRequestSent", FedCmIdpEntry::kEntryName, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.IdentityProvidersCount", 2,
+                                       1);
 }
 
 // Test fetching information for all of the IdPs failing.
@@ -4485,6 +4494,8 @@ TEST_F(FederatedAuthRequestImplTest, AllWellKnownsInvalid) {
 
   ExpectNoUKMPresence("Timing.ShowAccountsDialog");
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 0);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.IdentityProvidersCount", 2,
+                                       1);
 }
 
 // Test multi IDP FedCM request with duplicate IDPs should throw an error.
@@ -4506,6 +4517,8 @@ TEST_F(FederatedAuthRequestImplTest, DuplicateIdpMultiIdpRequest) {
   RunAuthTest(request_parameters, expectations, kConfigurationMultiIdpValid);
   EXPECT_FALSE(DidFetchAnyEndpoint());
   EXPECT_FALSE(did_show_accounts_dialog());
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.IdentityProvidersCount", 0);
 }
 
 // Test that API can succeed with multiple IdPs, if one IdP is signed out but

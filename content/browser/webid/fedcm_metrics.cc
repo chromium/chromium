@@ -846,4 +846,9 @@ void RecordReadyToShowAccountsSize(int size) {
                                  /*exclusive_max=*/10, /*buckets=*/10);
 }
 
+void RecordIdentityProvidersCount(int count) {
+  CHECK_GT(count, 0);
+  base::UmaHistogramCounts100("Blink.FedCm.IdentityProvidersCount", count);
+}
+
 }  // namespace content
