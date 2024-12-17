@@ -51,7 +51,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 

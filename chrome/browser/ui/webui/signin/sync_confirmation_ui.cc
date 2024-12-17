@@ -49,7 +49,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/resources/grit/webui_resources.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ash/webui/settings/public/constants/routes.mojom.h"

@@ -38,7 +38,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "url/url_util.h"
 
 using content::BrowserContext;

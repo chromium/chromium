@@ -12,7 +12,6 @@
 #include "chrome/grit/location_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/resources/grit/webui_resources.h"
 
 LocationInternalsUI::LocationInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
