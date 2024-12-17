@@ -729,11 +729,6 @@ BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill-switch to introduce a compatibility breaking restriction.
-BASE_FEATURE(kPepperCrossOriginRedirectRestriction,
-             "PepperCrossOriginRedirectRestriction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, browser-initiated prefetch is allowed.
 // Please see crbug.com/40946257 for more details.
 BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,

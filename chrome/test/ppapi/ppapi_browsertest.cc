@@ -1346,27 +1346,6 @@ IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, URLLoaderTrusted) {
   RUN_URLLOADER_TRUSTED_SUBTESTS;
 }
 
-class OutOfProcessWithoutPepperCrossOriginRestrictionPPAPITest
-    : public OutOfProcessPPAPITest {
- public:
-  OutOfProcessWithoutPepperCrossOriginRestrictionPPAPITest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kPepperCrossOriginRedirectRestriction);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OutOfProcessWithoutPepperCrossOriginRestrictionPPAPITest,
-                       URLLoaderRestrictURLRedirectDisabled) {
-  // This test verifies if the restriction in the pepper_url_loader_host.cc
-  // can be managed via base::FeatureList, and does not need to run with various
-  // NaCl sandbox modes.
-  RunTestViaHTTP(LIST_TEST(URLLoader_RestrictURLRedirectCommon)
-                 LIST_TEST(URLLoader_RestrictURLRedirectDisabled));
-}
-
 IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, MAYBE_PPAPI_NACL(URLLoader0)) {
   RUN_URLLOADER_SUBTESTS_0;
 }
