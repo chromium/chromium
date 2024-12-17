@@ -58,12 +58,11 @@ static HistogramBase* HistogramFromHint(jlong j_histogram_hint) {
 }
 
 void CheckHistogramArgs(JNIEnv* env,
-                        jstring j_histogram_name,
+                        std::string& histogram_name,
                         int32_t expected_min,
                         int32_t expected_max,
                         size_t expected_bucket_count,
                         HistogramBase* histogram) {
-  std::string histogram_name = ConvertJavaStringToUTF8(env, j_histogram_name);
   bool valid_arguments = Histogram::InspectConstructionArguments(
       histogram_name, &expected_min, &expected_max, &expected_bucket_count);
   DCHECK(valid_arguments);
@@ -75,50 +74,45 @@ void CheckHistogramArgs(JNIEnv* env,
 }
 
 HistogramBase* BooleanHistogram(JNIEnv* env,
-                                jstring j_histogram_name,
+                                std::string& histogram_name,
                                 jlong j_histogram_hint) {
-  DCHECK(j_histogram_name);
   HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
   if (histogram)
     return histogram;
 
-  std::string histogram_name = ConvertJavaStringToUTF8(env, j_histogram_name);
   histogram = BooleanHistogram::FactoryGet(
       histogram_name, HistogramBase::kUmaTargetedHistogramFlag);
   return histogram;
 }
 
 HistogramBase* ExponentialHistogram(JNIEnv* env,
-                                    jstring j_histogram_name,
+                                    std::string& histogram_name,
                                     jlong j_histogram_hint,
                                     jint j_min,
                                     jint j_max,
                                     jint j_num_buckets) {
-  DCHECK(j_histogram_name);
   int32_t min = static_cast<int32_t>(j_min);
   int32_t max = static_cast<int32_t>(j_max);
   size_t num_buckets = static_cast<size_t>(j_num_buckets);
   HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
   if (histogram) {
-    CheckHistogramArgs(env, j_histogram_name, min, max, num_buckets, histogram);
+    CheckHistogramArgs(env, histogram_name, min, max, num_buckets, histogram);
     return histogram;
   }
 
   DCHECK_GE(min, 1) << "The min expected sample must be >= 1";
 
-  std::string histogram_name = ConvertJavaStringToUTF8(env, j_histogram_name);
   histogram = Histogram::FactoryGet(histogram_name, min, max, num_buckets,
                                     HistogramBase::kUmaTargetedHistogramFlag);
   return histogram;
 }
 
 HistogramBase* LinearHistogram(JNIEnv* env,
-                               jstring j_histogram_name,
+                               std::string& j_histogram_name,
                                jlong j_histogram_hint,
                                jint j_min,
                                jint j_max,
                                jint j_num_buckets) {
-  DCHECK(j_histogram_name);
   int32_t min = static_cast<int32_t>(j_min);
   int32_t max = static_cast<int32_t>(j_max);
   size_t num_buckets = static_cast<size_t>(j_num_buckets);
@@ -128,7 +122,7 @@ HistogramBase* LinearHistogram(JNIEnv* env,
     return histogram;
   }
 
-  std::string histogram_name = ConvertJavaStringToUTF8(env, j_histogram_name);
+  std::string histogram_name = j_histogram_name;
   histogram =
       LinearHistogram::FactoryGet(histogram_name, min, max, num_buckets,
                                   HistogramBase::kUmaTargetedHistogramFlag);
@@ -136,14 +130,12 @@ HistogramBase* LinearHistogram(JNIEnv* env,
 }
 
 HistogramBase* SparseHistogram(JNIEnv* env,
-                               jstring j_histogram_name,
+                               std::string& histogram_name,
                                jlong j_histogram_hint) {
-  DCHECK(j_histogram_name);
   HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
   if (histogram)
     return histogram;
 
-  std::string histogram_name = ConvertJavaStringToUTF8(env, j_histogram_name);
   histogram = SparseHistogram::FactoryGet(
       histogram_name, HistogramBase::kUmaTargetedHistogramFlag);
   return histogram;
@@ -163,7 +155,7 @@ static void OnActionRecorded(const JavaRef<jobject>& callback,
 
 jlong JNI_NativeUmaRecorder_RecordBooleanHistogram(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_histogram_name,
+    std::string& j_histogram_name,
     jlong j_histogram_hint,
     jboolean j_sample) {
   bool sample = static_cast<bool>(j_sample);
@@ -175,7 +167,7 @@ jlong JNI_NativeUmaRecorder_RecordBooleanHistogram(
 
 jlong JNI_NativeUmaRecorder_RecordExponentialHistogram(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_histogram_name,
+    std::string& j_histogram_name,
     jlong j_histogram_hint,
     jint j_sample,
     jint j_min,
@@ -188,14 +180,13 @@ jlong JNI_NativeUmaRecorder_RecordExponentialHistogram(
   return reinterpret_cast<jlong>(histogram);
 }
 
-jlong JNI_NativeUmaRecorder_RecordLinearHistogram(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_histogram_name,
-    jlong j_histogram_hint,
-    jint j_sample,
-    jint j_min,
-    jint j_max,
-    jint j_num_buckets) {
+jlong JNI_NativeUmaRecorder_RecordLinearHistogram(JNIEnv* env,
+                                                  std::string& j_histogram_name,
+                                                  jlong j_histogram_hint,
+                                                  jint j_sample,
+                                                  jint j_min,
+                                                  jint j_max,
+                                                  jint j_num_buckets) {
   int sample = static_cast<int>(j_sample);
   HistogramBase* histogram = LinearHistogram(
       env, j_histogram_name, j_histogram_hint, j_min, j_max, j_num_buckets);
@@ -203,11 +194,10 @@ jlong JNI_NativeUmaRecorder_RecordLinearHistogram(
   return reinterpret_cast<jlong>(histogram);
 }
 
-jlong JNI_NativeUmaRecorder_RecordSparseHistogram(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_histogram_name,
-    jlong j_histogram_hint,
-    jint j_sample) {
+jlong JNI_NativeUmaRecorder_RecordSparseHistogram(JNIEnv* env,
+                                                  std::string& j_histogram_name,
+                                                  jlong j_histogram_hint,
+                                                  jint j_sample) {
   int sample = static_cast<int>(j_sample);
   HistogramBase* histogram =
       SparseHistogram(env, j_histogram_name, j_histogram_hint);

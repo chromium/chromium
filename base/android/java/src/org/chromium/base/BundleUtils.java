@@ -24,6 +24,7 @@ import dalvik.system.BaseDexClassLoader;
 import dalvik.system.PathClassLoader;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -189,7 +190,8 @@ public class BundleUtils {
 
     /* Returns absolute path to a native library in a feature module. */
     @CalledByNative
-    public static @Nullable String getNativeLibraryPath(String libraryName, String splitName) {
+    public static @Nullable @JniType("std::string") String getNativeLibraryPath(
+            @JniType("std::string") String libraryName, @JniType("std::string") String splitName) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             // Due to b/171269960 isolated split class loaders have an empty library path, so check
             // the base module class loader first which loaded BundleUtils. If the library is not

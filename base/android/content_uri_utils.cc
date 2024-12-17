@@ -22,15 +22,6 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace base {
-namespace {
-std::string SafeConvertJavaStringToUTF8(JNIEnv* env,
-                                        const JavaRef<jstring>& str) {
-  if (str.is_null()) {
-    return std::string();
-  }
-  return base::android::ConvertJavaStringToUTF8(env, str);
-}
-}  // namespace
 
 namespace internal {
 
@@ -114,27 +105,23 @@ bool IsDocumentUri(const FilePath& content_uri) {
 
 }  // namespace internal
 
-void JNI_ContentUriUtils_AddFileInfoToVector(
-    JNIEnv* env,
-    jlong vector_pointer,
-    const JavaParamRef<jstring>& uri,
-    const JavaParamRef<jstring>& display_name,
-    jboolean is_directory,
-    jlong size,
-    jlong last_modified) {
+void JNI_ContentUriUtils_AddFileInfoToVector(JNIEnv* env,
+                                             jlong vector_pointer,
+                                             std::string& uri,
+                                             std::string& display_name,
+                                             jboolean is_directory,
+                                             jlong size,
+                                             jlong last_modified) {
   auto* result =
       reinterpret_cast<std::vector<FileEnumerator::FileInfo>*>(vector_pointer);
-  result->emplace_back(FilePath(SafeConvertJavaStringToUTF8(env, uri)),
-                       FilePath(SafeConvertJavaStringToUTF8(env, display_name)),
-                       is_directory, size,
+  result->emplace_back(FilePath(uri), FilePath(display_name), is_directory,
+                       size,
                        Time::FromMillisecondsSinceUnixEpoch(last_modified));
 }
 
 std::string GetContentUriMimeType(const FilePath& content_uri) {
   JNIEnv* env = android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_mime =
-      Java_ContentUriUtils_getMimeType(env, content_uri.value());
-  return SafeConvertJavaStringToUTF8(env, j_mime);
+  return Java_ContentUriUtils_getMimeType(env, content_uri.value());
 }
 
 bool MaybeGetFileDisplayName(const FilePath& content_uri,
@@ -159,10 +146,9 @@ FilePath ContentUriBuildDocumentUriUsingTree(
     const FilePath& tree_uri,
     const std::string& encoded_document_id) {
   JNIEnv* env = android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_uri =
-      Java_ContentUriUtils_buildDocumentUriUsingTree(env, tree_uri.value(),
-                                                     encoded_document_id);
-  return FilePath(SafeConvertJavaStringToUTF8(env, j_uri));
+  std::string j_uri = Java_ContentUriUtils_buildDocumentUriUsingTree(
+      env, tree_uri.value(), encoded_document_id);
+  return FilePath(j_uri);
 }
 
 FilePath ContentUriGetChildDocumentOrQuery(const FilePath& parent,
@@ -171,10 +157,9 @@ FilePath ContentUriGetChildDocumentOrQuery(const FilePath& parent,
                                            bool is_directory,
                                            bool create) {
   JNIEnv* env = android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_uri =
-      Java_ContentUriUtils_getChildDocumentOrQuery(
-          env, parent.value(), display_name, mime_type, is_directory, create);
-  return FilePath(SafeConvertJavaStringToUTF8(env, j_uri));
+  std::string j_uri = Java_ContentUriUtils_getChildDocumentOrQuery(
+      env, parent.value(), display_name, mime_type, is_directory, create);
+  return FilePath(j_uri);
 }
 
 bool ContentUriIsCreateChildDocumentQuery(const FilePath& content_uri) {
@@ -186,9 +171,9 @@ bool ContentUriIsCreateChildDocumentQuery(const FilePath& content_uri) {
 FilePath ContentUriGetDocumentFromQuery(const FilePath& content_uri,
                                         bool create) {
   JNIEnv* env = android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_uri = Java_ContentUriUtils_getDocumentFromQuery(
+  std::string j_uri = Java_ContentUriUtils_getDocumentFromQuery(
       env, content_uri.value(), create);
-  return FilePath(SafeConvertJavaStringToUTF8(env, j_uri));
+  return FilePath(j_uri);
 }
 
 }  // namespace base

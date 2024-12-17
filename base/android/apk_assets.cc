@@ -26,8 +26,7 @@ int OpenApkAsset(const std::string& file_path,
   // resources :(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jlongArray> jarr =
-      Java_ApkAssets_open(env, ConvertUTF8ToJavaString(env, file_path),
-                          ConvertUTF8ToJavaString(env, split_name));
+      Java_ApkAssets_open(env, file_path, split_name);
   std::vector<jlong> results;
   base::android::JavaLongArrayToLongVector(env, jarr, &results);
   CHECK_EQ(3U, results.size());
@@ -57,13 +56,11 @@ bool RegisterApkAssetWithFileDescriptorStore(const std::string& key,
 
 void DumpLastOpenApkAssetFailure() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> error =
-      Java_ApkAssets_takeLastErrorString(env);
-  if (!error) {
+  std::string error = Java_ApkAssets_takeLastErrorString(env);
+  if (error.empty()) {
     return;
   }
-  SCOPED_CRASH_KEY_STRING256("base", "OpenApkAssetError",
-                             ConvertJavaStringToUTF8(env, error));
+  SCOPED_CRASH_KEY_STRING256("base", "OpenApkAssetError", error);
   base::debug::DumpWithoutCrashing();
 }
 

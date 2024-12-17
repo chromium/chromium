@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
@@ -34,7 +35,8 @@ public class ApkAssets {
     private static @Nullable String sLastError;
 
     @CalledByNative
-    public static long[] open(String apkSubpath, String splitName) {
+    public static long[] open(
+            @JniType("std::string") String apkSubpath, @JniType("std::string") String splitName) {
         apkSubpath = maybeAddSuffix(apkSubpath);
         sLastError = null;
         AssetFileDescriptor afd = null;
@@ -94,7 +96,7 @@ public class ApkAssets {
     }
 
     @CalledByNative
-    private static @Nullable String takeLastErrorString() {
+    private static @Nullable @JniType("std::string") String takeLastErrorString() {
         String rv = sLastError;
         sLastError = null;
         return rv;

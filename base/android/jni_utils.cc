@@ -33,8 +33,8 @@ jobject GetSplitClassLoader(JNIEnv* env, const char* split_name) {
     return it->second.obj();
   }
 
-  ScopedJavaGlobalRef<jobject> class_loader(Java_JNIUtils_getSplitClassLoader(
-      env, ConvertUTF8ToJavaString(env, split_name)));
+  ScopedJavaGlobalRef<jobject> class_loader(
+      Java_JNIUtils_getSplitClassLoader(env, split_name));
   jobject class_loader_obj = class_loader.obj();
   lock_and_map->map.insert({split_name, std::move(class_loader)});
   return class_loader_obj;

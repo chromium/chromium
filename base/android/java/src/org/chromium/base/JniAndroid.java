@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,7 +26,8 @@ public final class JniAndroid {
      * effort not to throw; instead, any failures will be surfaced through the returned string.
      */
     @CalledByNative
-    private static @Nullable String sanitizedStacktraceForUnhandledException(Throwable throwable) {
+    private static @Nullable @JniType("std::string") String
+            sanitizedStacktraceForUnhandledException(Throwable throwable) {
         if (sSimulateOomInSanitizedStacktraceForTesting) {
             return null;
         }
@@ -80,7 +82,7 @@ public final class JniAndroid {
      */
     @CalledByNative
     private static @Nullable Throwable handleException(
-            Throwable throwable, String nativeStackTrace) {
+            Throwable throwable, @JniType("std::string") String nativeStackTrace) {
         try {
             // Try to make sure the exception details at least make their way to the log even if the
             // rest of this method goes horribly wrong.

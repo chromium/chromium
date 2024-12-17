@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -28,5 +29,5 @@ public interface IntStringCallback {
      * @param string String part of the result.
      */
     @CalledByNative
-    void onResult(int number, String string);
+    void onResult(int number, @JniType("std::string") String string);
 }

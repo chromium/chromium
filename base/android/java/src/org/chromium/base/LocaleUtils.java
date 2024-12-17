@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -173,22 +174,20 @@ public class LocaleUtils {
     }
 
     /**
-     * @return a language tag string that represents the default locale.
-     *         The language tag is well-formed IETF BCP 47 language tag with language and country
-     *         code.
+     * @return a language tag string that represents the default locale. The language tag is
+     *     well-formed IETF BCP 47 language tag with language and country code.
      */
     @CalledByNative
-    public static String getDefaultLocaleString() {
+    public static @JniType("std::string") String getDefaultLocaleString() {
         return toLanguageTag(Locale.getDefault());
     }
 
     /**
      * @return a comma separated language tags string that represents a default locale or locales.
-     *         Each language tag is well-formed IETF BCP 47 language tag with language and country
-     *         code.
+     *     Each language tag is well-formed IETF BCP 47 language tag with language and country code.
      */
     @CalledByNative
-    public static String getDefaultLocaleListString() {
+    public static @JniType("std::string") String getDefaultLocaleListString() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return toLanguageTags(LocaleList.getDefault());
         }
@@ -199,7 +198,7 @@ public class LocaleUtils {
      * @return The default country code set during install.
      */
     @CalledByNative
-    public static @Nullable String getDefaultCountryCode() {
+    public static @Nullable @JniType("std::string") String getDefaultCountryCode() {
         CommandLine commandLine = CommandLine.getInstance();
         return commandLine.hasSwitch(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)
                 ? commandLine.getSwitchValue(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)

@@ -218,7 +218,8 @@ public abstract class ContentUriUtils {
      * @return MIME type or null if the input params are empty or invalid.
      */
     @CalledByNative
-    public static @Nullable String getMimeType(@JniType("std::string") String uriString) {
+    public static @Nullable @JniType("std::string") String getMimeType(
+            @JniType("std::string") String uriString) {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Uri uri = Uri.parse(uriString);
         if (isVirtualDocument(uri)) {
@@ -441,7 +442,7 @@ public abstract class ContentUriUtils {
      * @see DocumentsContract#buildDocumentUriUsingTree(Uri, String)
      */
     @CalledByNative
-    public static @Nullable String buildDocumentUriUsingTree(
+    public static @Nullable @JniType("std::string") String buildDocumentUriUsingTree(
             @JniType("std::string") String treeUri,
             @JniType("std::string") String encodedDocumentId) {
         try {
@@ -465,7 +466,7 @@ public abstract class ContentUriUtils {
      * @return Uri or null if no match is found and create is not set.
      */
     @CalledByNative
-    public static @Nullable String getChildDocumentOrQuery(
+    public static @Nullable @JniType("std::string") String getChildDocumentOrQuery(
             @JniType("std::string") String parentUri,
             @JniType("std::string") String displayName,
             @JniType("std::string") String mimeType,
@@ -579,7 +580,7 @@ public abstract class ContentUriUtils {
      */
     @SuppressWarnings("NullAway") // Using broad try/catch to catch NullPointerException
     @CalledByNative
-    private static @Nullable String getDocumentFromQuery(
+    private static @Nullable @JniType("std::string") String getDocumentFromQuery(
             @JniType("std::string") String queryUriString, boolean create) {
         if (!isCreateChildDocumentQuery(queryUriString)) {
             return null;
@@ -618,8 +619,8 @@ public abstract class ContentUriUtils {
     interface Natives {
         void addFileInfoToVector(
                 long vectorPointer,
-                @Nullable String uri,
-                @Nullable String displayName,
+                @Nullable @JniType("std::string") String uri,
+                @Nullable @JniType("std::string") String displayName,
                 boolean isDirectory,
                 long size,
                 long lastModified);

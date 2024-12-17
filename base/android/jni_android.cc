@@ -204,8 +204,7 @@ void CheckException(JNIEnv* env) {
   LOG(ERROR) << "Native stack trace:" << std::endl << native_stack_trace;
 
   ScopedJavaLocalRef<jthrowable> secondary_exception =
-      Java_JniAndroid_handleException(
-          env, throwable, ConvertUTF8ToJavaString(env, native_stack_trace));
+      Java_JniAndroid_handleException(env, throwable, native_stack_trace);
 
   // Ideally handleException() should have terminated the process and we should
   // not get here. This can happen in the case of OutOfMemoryError or if the
@@ -227,11 +226,11 @@ void CheckException(JNIEnv* env) {
 
 std::string GetJavaExceptionInfo(JNIEnv* env,
                                  const JavaRef<jthrowable>& throwable) {
-  ScopedJavaLocalRef<jstring> sanitized_exception_string =
+  std::string sanitized_exception_string =
       Java_JniAndroid_sanitizedStacktraceForUnhandledException(env, throwable);
   // Returns null when PiiElider results in an OutOfMemoryError.
-  return sanitized_exception_string
-             ? ConvertJavaStringToUTF8(sanitized_exception_string)
+  return !sanitized_exception_string.empty()
+             ? sanitized_exception_string
              : kOomInGetJavaExceptionInfoMessage;
 }
 

@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullUnmarked;
@@ -242,7 +243,7 @@ public abstract class PathUtils {
      * @return the private directory that is used to store application data.
      */
     @CalledByNative
-    public static String getDataDirectory() {
+    public static @JniType("std::string") String getDataDirectory() {
         return getDirectoryPath(DATA_DIRECTORY);
     }
 
@@ -250,14 +251,14 @@ public abstract class PathUtils {
      * @return the cache directory.
      */
     @CalledByNative
-    public static String getCacheDirectory() {
+    public static @JniType("std::string") String getCacheDirectory() {
         return getDirectoryPath(CACHE_DIRECTORY);
     }
 
     // Should not be called from WebView, since it does not support being used in a multiprocess
     // environment.
     @CalledByNative
-    public static String getThumbnailCacheDirectory() {
+    public static @JniType("std::string") String getThumbnailCacheDirectory() {
         return getDirectoryPath(THUMBNAIL_DIRECTORY);
     }
 
@@ -269,7 +270,7 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    public static String getDownloadsDirectory() {
+    public static @JniType("std::string") String getDownloadsDirectory() {
         // TODO(crbug.com/41187555): Move calls to getDownloadsDirectory() to background thread.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -359,7 +360,7 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    private static String getNativeLibraryDirectory() {
+    private static @JniType("std::string") String getNativeLibraryDirectory() {
         ApplicationInfo ai = ContextUtils.getApplicationContext().getApplicationInfo();
         if ((ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
                 || (ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
@@ -374,7 +375,7 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    public static String getExternalStorageDirectory() {
+    public static @JniType("std::string") String getExternalStorageDirectory() {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 }

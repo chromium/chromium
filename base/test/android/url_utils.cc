@@ -15,10 +15,8 @@ namespace android {
 
 FilePath GetIsolatedTestRoot() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jtest_data_dir =
-      Java_UrlUtils_getIsolatedTestRoot(env);
-  base::FilePath test_data_dir(
-      base::android::ConvertJavaStringToUTF8(env, jtest_data_dir));
+  std::string jtest_data_dir = Java_UrlUtils_getIsolatedTestRoot(env);
+  base::FilePath test_data_dir(jtest_data_dir);
   return test_data_dir;
 }
 

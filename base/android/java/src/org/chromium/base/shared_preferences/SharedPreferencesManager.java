@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
@@ -294,7 +295,7 @@ public class SharedPreferencesManager {
      * @return The value of the preference.
      */
     @CalledByNative
-    public int readInt(String key, int defaultValue) {
+    public int readInt(@JniType("std::string") String key, int defaultValue) {
         checkIsKeyInUse(key);
         return ContextUtils.getAppSharedPreferences().getInt(key, defaultValue);
     }
@@ -507,7 +508,7 @@ public class SharedPreferencesManager {
      * @return The value of the preference if stored; defaultValue otherwise.
      */
     @CalledByNative
-    public boolean readBoolean(String key, boolean defaultValue) {
+    public boolean readBoolean(@JniType("std::string") String key, boolean defaultValue) {
         checkIsKeyInUse(key);
         return ContextUtils.getAppSharedPreferences().getBoolean(key, defaultValue);
     }
@@ -529,7 +530,8 @@ public class SharedPreferencesManager {
      * @param value The new value for the preference.
      */
     @CalledByNative
-    public void writeString(String key, String value) {
+    public void writeString(
+            @JniType("std::string") String key, @JniType("std::string") String value) {
         SharedPreferences.Editor ed = getEditor();
         ed.putString(key, value);
         ed.apply();
@@ -557,7 +559,9 @@ public class SharedPreferencesManager {
      */
     @CalledByNative
     @Nullable
-    public String readString(String key, @Nullable String defaultValue) {
+    public @JniType("std::string") String readString(
+            @JniType("std::string") String key,
+            @Nullable @JniType("std::string") String defaultValue) {
         checkIsKeyInUse(key);
         return ContextUtils.getAppSharedPreferences().getString(key, defaultValue);
     }
@@ -578,7 +582,7 @@ public class SharedPreferencesManager {
      * @param key The key of the preference to remove.
      */
     @CalledByNative
-    public void removeKey(String key) {
+    public void removeKey(@JniType("std::string") String key) {
         SharedPreferences.Editor ed = getEditor();
         ed.remove(key);
         ed.apply();
@@ -615,7 +619,7 @@ public class SharedPreferencesManager {
      * @return Whether any value was written for that key.
      */
     @CalledByNative
-    public boolean contains(String key) {
+    public boolean contains(@JniType("std::string") String key) {
         checkIsKeyInUse(key);
         return ContextUtils.getAppSharedPreferences().contains(key);
     }

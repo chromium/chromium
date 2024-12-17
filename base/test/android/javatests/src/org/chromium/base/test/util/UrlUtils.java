@@ -5,6 +5,7 @@
 package org.chromium.base.test.util;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.junit.Assert;
 
 import org.chromium.base.PathUtils;
@@ -35,7 +36,7 @@ public class UrlUtils {
 
     /** Returns the root of the test data directory. */
     @CalledByNative
-    public static String getIsolatedTestRoot() {
+    public static @JniType("std::string") String getIsolatedTestRoot() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return PathUtils.getExternalStorageDirectory() + "/chromium_tests_root";
         }

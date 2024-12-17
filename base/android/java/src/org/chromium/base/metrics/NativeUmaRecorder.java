@@ -147,15 +147,27 @@ import java.util.Map;
     /** Natives API to record metrics. */
     @NativeMethods
     public interface Natives {
-        long recordBooleanHistogram(String name, long nativeHint, boolean sample);
+        long recordBooleanHistogram(
+                @JniType("std::string") String name, long nativeHint, boolean sample);
 
         long recordExponentialHistogram(
-                String name, long nativeHint, int sample, int min, int max, int numBuckets);
+                @JniType("std::string") String name,
+                long nativeHint,
+                int sample,
+                int min,
+                int max,
+                int numBuckets);
 
         long recordLinearHistogram(
-                String name, long nativeHint, int sample, int min, int max, int numBuckets);
+                @JniType("std::string") String name,
+                long nativeHint,
+                int sample,
+                int min,
+                int max,
+                int numBuckets);
 
-        long recordSparseHistogram(String name, long nativeHint, int sample);
+        long recordSparseHistogram(
+                @JniType("std::string") String name, long nativeHint, int sample);
 
         /**
          * Records that the user performed an action. See {@code base::RecordComputedActionAt}.

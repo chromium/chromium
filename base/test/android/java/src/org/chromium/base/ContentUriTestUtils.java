@@ -10,18 +10,20 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 /** Utilities for testing operations on content URI. */
 public class ContentUriTestUtils {
     /**
-     * Insert an image into the MediaStore, and return the content URI. If the
-     * image already exists in the MediaStore, just retrieve the URI.
+     * Insert an image into the MediaStore, and return the content URI. If the image already exists
+     * in the MediaStore, just retrieve the URI.
      *
      * @param path Path to the image file.
      * @return Content URI of the image.
      */
     @CalledByNative
-    private static String insertImageIntoMediaStore(String path) {
+    private static @JniType("std::string") String insertImageIntoMediaStore(
+            @JniType("std::string") String path) {
         // Check whether the content URI exists.
         Cursor c =
                 ContextUtils.getApplicationContext()

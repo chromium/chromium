@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -21,7 +22,7 @@ public class JNIUtils {
      * @param splitName Name of the split, or empty string for the base split.
      */
     @CalledByNative
-    private static ClassLoader getSplitClassLoader(String splitName) {
+    private static ClassLoader getSplitClassLoader(@JniType("std::string") String splitName) {
         if (!splitName.isEmpty()) {
             boolean isInstalled = BundleUtils.isIsolatedSplitInstalled(splitName);
             Log.i(TAG, "Init JNI Classloader for %s. isInstalled=%b", splitName, isInstalled);

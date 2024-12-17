@@ -137,7 +137,7 @@ public class BuildInfo {
     }
 
     @CalledByNative
-    private static String lazyGetHostSigningCertSha256() {
+    private static @JniType("std::string") String lazyGetHostSigningCertSha256() {
         return BuildInfo.getInstance().getHostSigningCertSha256();
     }
 

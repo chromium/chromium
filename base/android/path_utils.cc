@@ -18,33 +18,32 @@ namespace android {
 
 bool GetDataDirectory(FilePath* result) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> path = Java_PathUtils_getDataDirectory(env);
-  FilePath data_path(ConvertJavaStringToUTF8(path));
+  std::string path = Java_PathUtils_getDataDirectory(env);
+  FilePath data_path(path);
   *result = data_path;
   return true;
 }
 
 bool GetCacheDirectory(FilePath* result) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> path = Java_PathUtils_getCacheDirectory(env);
-  FilePath cache_path(ConvertJavaStringToUTF8(path));
+  std::string path = Java_PathUtils_getCacheDirectory(env);
+  FilePath cache_path(path);
   *result = cache_path;
   return true;
 }
 
 bool GetThumbnailCacheDirectory(FilePath* result) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> path =
-      Java_PathUtils_getThumbnailCacheDirectory(env);
-  FilePath thumbnail_cache_path(ConvertJavaStringToUTF8(path));
+  std::string path = Java_PathUtils_getThumbnailCacheDirectory(env);
+  FilePath thumbnail_cache_path(path);
   *result = thumbnail_cache_path;
   return true;
 }
 
 bool GetDownloadsDirectory(FilePath* result) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> path = Java_PathUtils_getDownloadsDirectory(env);
-  FilePath downloads_path(ConvertJavaStringToUTF8(path));
+  std::string path = Java_PathUtils_getDownloadsDirectory(env);
+  FilePath downloads_path(path);
   *result = downloads_path;
   return true;
 }
@@ -75,18 +74,16 @@ std::vector<FilePath> GetSecondaryStorageDownloadDirectories() {
 
 bool GetNativeLibraryDirectory(FilePath* result) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> path =
-      Java_PathUtils_getNativeLibraryDirectory(env);
-  FilePath library_path(ConvertJavaStringToUTF8(path));
+  std::string path = Java_PathUtils_getNativeLibraryDirectory(env);
+  FilePath library_path(path);
   *result = library_path;
   return true;
 }
 
 bool GetExternalStorageDirectory(FilePath* result) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> path =
-      Java_PathUtils_getExternalStorageDirectory(env);
-  FilePath storage_path(ConvertJavaStringToUTF8(path));
+  std::string path = Java_PathUtils_getExternalStorageDirectory(env);
+  FilePath storage_path(path);
   *result = storage_path;
   return true;
 }
