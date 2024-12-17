@@ -4,6 +4,7 @@
 
 #include <inttypes.h>
 
+#include "base/strings/stringprintf.h"
 #include "ui/display/screen_info.h"
 
 namespace display {
