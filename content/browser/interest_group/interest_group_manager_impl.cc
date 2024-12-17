@@ -531,6 +531,11 @@ bool InterestGroupManagerImpl::GetCachedOwnerAndSignalsOrigins(
                                                           signals_origin);
 }
 
+void InterestGroupManagerImpl::UpdateCachedOriginsIfEnabled(
+    const url::Origin& owner) {
+  caching_storage_.UpdateCachedOriginsIfEnabled(owner);
+}
+
 void InterestGroupManagerImpl::DeleteInterestGroupData(
     StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     base::OnceClosure completion_callback) {

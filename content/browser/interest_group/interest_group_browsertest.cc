@@ -23913,8 +23913,6 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   url::Origin joining_origin = url::Origin::Create(joining_url);
   ASSERT_TRUE(NavigateToURL(shell(), joining_url));
 
-  // Join an interest group. The owner, a.test, will be in the in-memory
-  // cache.
   GURL ad_url =
       embedded_https_test_server().GetURL("a.test", "/echo?render_winner");
   // Use a bidding script that does not bid to prevent the auction from having a
@@ -23934,8 +23932,6 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
                           interest_group.owner, "interest_group"}});
   std::optional<url::Origin> cached_signals_origin;
-  EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(interest_group.owner,
-                                                        cached_signals_origin));
 
   const char kConfigTemplate[] = R"({
         seller: $1,
@@ -23965,6 +23961,26 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
       component_seller_script, interest_group.owner,
       url::Origin::Create(embedded_https_test_server().GetURL("b.test", "/")));
 
+  // Run an auction so that a.test will be cached.
+  {
+    base::HistogramTester histogram_tester;
+    auto result = RunAuctionAndWait(auction_config);
+    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+                                        AuctionResult::kNoBids, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+        AuctionProcessManager::RequestWorkletServiceOutcome::
+            kCreatedNewDedicatedProcess,
+        2);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
+        AuctionProcessManager::RequestWorkletServiceOutcome::
+            kCreatedNewDedicatedProcess,
+        1);
+    EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(
+        interest_group.owner, cached_signals_origin));
+  }
+
   // Run the auction.
   //
   // 1. a.test, the first buyer, is cached. That means we should start an
@@ -23977,18 +23993,21 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   //
   // Overall there will be 1 anticipatory process started and 3 worklets
   // requested.
-  base::HistogramTester histogram_tester;
-  auto result = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
-                                      AuctionResult::kNoBids, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::
-          kCreatedNewDedicatedProcess,
-      2);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 1);
+  {
+    base::HistogramTester histogram_tester;
+    auto result = RunAuctionAndWait(auction_config);
+    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+                                        AuctionResult::kNoBids, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+        AuctionProcessManager::RequestWorkletServiceOutcome::
+            kCreatedNewDedicatedProcess,
+        2);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
+        AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess,
+        1);
+  }
 }
 
 class AuctionConfigReportingTimeoutEnabledTest
@@ -26603,13 +26622,16 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
 
   // Join the interest group with no ads so that when we run an auction, it will
   // get filtered after it's loaded -- but we'll still preconnect to the server.
-  // This join will cache the bidding signals and owner origins.
+  // Loading the interest group and running UpdateCachedOriginsIfEnabled will
+  // cache the bidding signals and owner origins.
   blink::InterestGroup interest_group_without_ads = interest_group;
   interest_group_without_ads.ads = std::nullopt;
   AttachInterestGroupObserver();
   manager_->JoinInterestGroup(interest_group_without_ads, joining_url);
   WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
                           interest_group_without_ads.owner, "interest_group"}});
+  GetInterestGroupsForOwner(interest_group.owner);
+  manager_->UpdateCachedOriginsIfEnabled(interest_group.owner);
   std::optional<url::Origin> cached_signals_origin;
   EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(
       interest_group_without_ads.owner, cached_signals_origin));
