@@ -56,16 +56,6 @@ chromium-metrics-reviews@google.com.
   <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
 </histogram>
 
-<histogram name="BackgroundMode.OnStartup.IsBackgroundModePrefEnabled"
-    enum="BooleanEnabled" expires_after="2022-04-17">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    Logged during BackgroundModeManager's initialization. Indicates the state of
-    the kBackgroundModeEnabled pref on startup.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundSync.Event.BatchSize" units="units"
     expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
