@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "content/public/browser/cookie_insight_list_data.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,14 +22,13 @@ TEST(CookieInsightListTest, GetInsight_Null_NoEntry) {
 }
 
 TEST(CookieInsightListTest, GetInsight_GitHubResource) {
-  base::flat_map<std::string, CookieInsightList::DomainInfo> domain_map = {
+  base::flat_map<std::string, DomainInfo> domain_map = {
       {"example.com", {"url"}}};
 
   EXPECT_THAT(
       CookieInsightList(domain_map).GetInsight("example.com", /*status=*/{}),
-      Optional(CookieInsightList::CookieIssueInsight{
-          CookieInsightList::InsightType::kGitHubResource,
-          CookieInsightList::DomainInfo{"url"}}));
+      Optional(
+          CookieIssueInsight{InsightType::kGitHubResource, DomainInfo{"url"}}));
 }
 
 TEST(CookieInsightListTest, GetInsight_Heuristics) {
@@ -37,8 +37,7 @@ TEST(CookieInsightListTest, GetInsight_Heuristics) {
       net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics);
 
   EXPECT_THAT(CookieInsightList().GetInsight("unknown", status),
-              Optional(CookieInsightList::CookieIssueInsight{
-                  CookieInsightList::InsightType::kHeuristics, {}}));
+              Optional(CookieIssueInsight{InsightType::kHeuristics, {}}));
 }
 
 TEST(CookieInsightListTest, GetInsight_GracePeriod) {
@@ -47,8 +46,7 @@ TEST(CookieInsightListTest, GetInsight_GracePeriod) {
       net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
 
   EXPECT_THAT(CookieInsightList().GetInsight("unknown", status),
-              Optional(CookieInsightList::CookieIssueInsight{
-                  CookieInsightList::InsightType::kGracePeriod, {}}));
+              Optional(CookieIssueInsight{InsightType::kGracePeriod, {}}));
 }
 
 }  // namespace content

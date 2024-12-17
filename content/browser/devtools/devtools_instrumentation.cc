@@ -12,8 +12,6 @@
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "content/browser/cookie_insight_list/cookie_insight_list.h"
-#include "content/browser/cookie_insight_list/cookie_insight_list_handler.h"
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_issue_storage.h"
@@ -48,6 +46,8 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/cookie_insight_list_data.h"
+#include "content/public/browser/cookie_insight_list_handler.h"
 #include "devtools_agent_host_impl.h"
 #include "devtools_instrumentation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -1923,23 +1923,23 @@ BuildCookieDeprecationMetadataIssue(
 std::unique_ptr<protocol::Audits::CookieIssueInsight> BuildCookieIssueInsight(
     std::string_view cookie_domain,
     const net::CookieInclusionStatus& status) {
-  std::optional<CookieInsightList::CookieIssueInsight> insight =
+  std::optional<CookieIssueInsight> insight =
       CookieInsightListHandler::GetInstance().GetInsight(cookie_domain, status);
   if (!insight.has_value()) {
     return nullptr;
   }
 
   switch (insight->type) {
-    case CookieInsightList::InsightType::kGitHubResource:
+    case InsightType::kGitHubResource:
       return protocol::Audits::CookieIssueInsight::Create()
           .SetType(protocol::Audits::InsightTypeEnum::GitHubResource)
           .SetTableEntryUrl(insight->domain_info.entry_url)
           .Build();
-    case CookieInsightList::InsightType::kGracePeriod:
+    case InsightType::kGracePeriod:
       return protocol::Audits::CookieIssueInsight::Create()
           .SetType(protocol::Audits::InsightTypeEnum::GracePeriod)
           .Build();
-    case CookieInsightList::InsightType::kHeuristics:
+    case InsightType::kHeuristics:
       return protocol::Audits::CookieIssueInsight::Create()
           .SetType(protocol::Audits::InsightTypeEnum::Heuristics)
           .Build();

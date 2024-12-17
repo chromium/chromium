@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/cookie_insight_list/cookie_insight_list_handler.h"
+#include "content/browser/cookie_insight_list/cookie_insight_list_handler_impl.h"
 
 #include <optional>
 #include <string>
 
-#include "content/browser/cookie_insight_list/cookie_insight_list.h"
-#include "net/cookies/cookie_inclusion_status.h"
+#include "content/public/browser/cookie_insight_list_data.h"
+#include "content/public/browser/cookie_insight_list_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,16 +16,16 @@ namespace content {
 
 using testing::Optional;
 
-class CookieInsightListHandlerTest : public ::testing::Test {
+class CookieInsightListHandlerImplTest : public ::testing::Test {
  public:
-  CookieInsightListHandlerTest() = default;
+  CookieInsightListHandlerImplTest() = default;
 
   void SetUp() override {
     CookieInsightListHandler::GetInstance().set_insight_list("");
   }
 };
 
-TEST_F(CookieInsightListHandlerTest, GetInsight_GitHubResource_ListUpdate) {
+TEST_F(CookieInsightListHandlerImplTest, GetInsight_GitHubResource_ListUpdate) {
   const std::string json_content = R"({"entries": [
     {
       "domains": [
@@ -38,9 +38,8 @@ TEST_F(CookieInsightListHandlerTest, GetInsight_GitHubResource_ListUpdate) {
 
   EXPECT_THAT(
       CookieInsightListHandler::GetInstance().GetInsight("example.com", {}),
-      Optional(CookieInsightList::CookieIssueInsight{
-          CookieInsightList::InsightType::kGitHubResource,
-          CookieInsightList::DomainInfo{"url"}}));
+      Optional(
+          CookieIssueInsight{InsightType::kGitHubResource, DomainInfo{"url"}}));
 
   const std::string new_json_content = R"({"entries": [
     {
@@ -54,9 +53,8 @@ TEST_F(CookieInsightListHandlerTest, GetInsight_GitHubResource_ListUpdate) {
 
   EXPECT_THAT(
       CookieInsightListHandler::GetInstance().GetInsight("example.com", {}),
-      Optional(CookieInsightList::CookieIssueInsight{
-          CookieInsightList::InsightType::kGitHubResource,
-          CookieInsightList::DomainInfo{"newUrl"}}));
+      Optional(CookieIssueInsight{InsightType::kGitHubResource,
+                                  DomainInfo{"newUrl"}}));
 }
 
 }  // namespace content
