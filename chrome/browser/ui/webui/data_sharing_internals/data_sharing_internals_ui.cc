@@ -15,8 +15,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 DataSharingInternalsUIConfig::DataSharingInternalsUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIDataSharingInternalsHost) {}
+    : DefaultInternalWebUIConfig(chrome::kChromeUIDataSharingInternalsHost) {}
 
 DataSharingInternalsUIConfig::~DataSharingInternalsUIConfig() = default;
 

@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_PROFILE_INTERNALS_PROFILE_INTERNALS_UI_H_
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -20,11 +20,10 @@
 class ProfileInternalsUI;
 
 class ProfileInternalsUIConfig
-    : public content::DefaultWebUIConfig<ProfileInternalsUI> {
+    : public webui::DefaultInternalWebUIConfig<ProfileInternalsUI> {
  public:
   ProfileInternalsUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIProfileInternalsHost) {}
+      : DefaultInternalWebUIConfig(chrome::kChromeUIProfileInternalsHost) {}
 };
 
 // Controller for chrome://profile-internals page.

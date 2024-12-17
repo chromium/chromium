@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
