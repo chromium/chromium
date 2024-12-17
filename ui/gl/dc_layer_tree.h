@@ -16,6 +16,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/moving_window.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_layer_overlay_params.h"
@@ -31,6 +32,27 @@ class DelegatedInkMetadata;
 }  // namespace gfx
 
 namespace gl {
+
+struct CommitError {
+  // The source of the commit error. This should correspond with exactly one
+  // place in code to make identifying the cause of errors easier.
+  enum class Reason {
+    kUnknown,
+    kIDCompositionDeviceCommit,
+    kPresentToSwapChain,
+    kSolidColorSurfacePoolCreateSurface,
+    kSolidColorSurfaceBeginDraw,
+    kSolidColorSurfaceEndDraw,
+    kSolidColorSurfaceCreateRenderTargetView,
+  };
+
+  Reason reason = Reason::kUnknown;
+
+  // If set, the error was caused by a Windows API and this is the HRESULT. If
+  // not set, the error was not caused by a Windows API or we did not explicitly
+  // copy out the failing HRESULT for the given `reason`.
+  std::optional<HRESULT> hr;
+};
 
 class SwapChainPresenter;
 
@@ -104,7 +126,8 @@ class SolidColorSurfacePool final {
   // to be scaled by |color.fA|. Its contents are only valid until the next
   // |TrimAfterCommit| call, since surfaces can be reused (and recolored) on
   // subsequent frames.
-  IDCompositionSurface* GetSolidColorSurface(const SkColor4f& color);
+  base::expected<IDCompositionSurface*, CommitError> GetSolidColorSurface(
+      const SkColor4f& color);
 
   // Clean up any unused resources in the pool after DComp commit.
   void TrimAfterCommit();
@@ -159,7 +182,7 @@ class GL_EXPORT DCLayerTree {
 
   // Present overlay layers, and perform a direct composition commit if
   // necessary. Returns true if presentation and commit succeeded.
-  bool CommitAndClearPendingOverlays(
+  base::expected<void, CommitError> CommitAndClearPendingOverlays(
       std::vector<std::unique_ptr<DCLayerOverlayParams>> overlays);
 
   // Called by SwapChainPresenter to initialize video processor that can handle
@@ -260,7 +283,7 @@ class GL_EXPORT DCLayerTree {
     ~VisualTree();
     // Given overlays, builds or updates this visual tree.
     // Returns true if commit succeeded.
-    bool BuildTree(
+    base::expected<void, CommitError> BuildTree(
         const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays);
 
     void GetSwapChainVisualInfoForTesting(size_t index,
