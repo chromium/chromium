@@ -16,10 +16,10 @@
 import pytest
 from syrupy.filters import props
 from test_helpers import (execute_command, goto_url, send_JSON_command,
-                          subscribe)
+                          subscribe, wait_for_event)
 
-SNAPSHOT_EXCLUDE = props("timestamp", "message", "timings", "headers",
-                         "stacktrace", "response", "initiator", "realm")
+SNAPSHOT_EXCLUDE = props("timestamp", "timings", "headers", "stacktrace",
+                         "response", "initiator", "realm")
 KEYS_TO_STABILIZE = ['context', 'navigation', 'id', 'url', 'request']
 
 
@@ -126,6 +126,48 @@ async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
         })
 
     messages = await read_messages(6,
+                                   keys_to_stabilize=KEYS_TO_STABILIZE,
+                                   check_no_other_messages=True,
+                                   sort=False)
+    assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
+
+
+@pytest.mark.asyncio
+async def test_navigate_hang_navigate_again_checkEvents(
+        websocket, context_id, url_base, url_hang_forever,
+        url_example_another_origin, read_messages, snapshot,
+        assert_no_more_messages):
+    # Use `url_example_another_origin`, as `url_example` will hang because of
+    # `url_hang_forever`.
+    await goto_url(websocket, context_id, url_base)
+    await set_beforeunload_handler(websocket, context_id)
+    await subscribe(
+        websocket,
+        ["browsingContext", "script.message", "network.beforeRequestSent"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_hang_forever,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    await wait_for_event(websocket, "browsingContext.navigationStarted")
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_example_another_origin,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_messages(9,
                                    keys_to_stabilize=KEYS_TO_STABILIZE,
                                    check_no_other_messages=True,
                                    sort=False)

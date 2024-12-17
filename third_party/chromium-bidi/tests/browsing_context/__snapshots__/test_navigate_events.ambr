@@ -180,6 +180,96 @@
     }),
   ])
 # ---
+# name: test_navigate_hang_navigate_again_checkEvents
+  list([
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_4',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationFailed',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_1',
+        'url': 'stable_3',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'error': 'unknown error',
+      'id': 'stable_5',
+      'message': 'navigation canceled by concurrent navigation',
+      'type': 'error',
+    }),
+    dict({
+      'method': 'script.message',
+      'params': dict({
+        'channel': 'beforeunload_channel',
+        'data': dict({
+          'type': 'string',
+          'value': 'beforeunload',
+        }),
+        'source': dict({
+          'context': 'stable_0',
+        }),
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_6',
+        'url': 'stable_7',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_0',
+        'isBlocked': False,
+        'navigation': 'stable_6',
+        'redirectCount': 0,
+        'request': 'stable_9',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_6',
+        'url': 'stable_7',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_0',
+        'navigation': 'stable_6',
+        'url': 'stable_7',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'id': 'stable_10',
+      'result': dict({
+        'navigation': 'stable_6',
+        'url': 'stable_7',
+      }),
+      'type': 'success',
+    }),
+  ])
+# ---
 # name: test_reload_aboutBlank_checkEvents
   list([
     dict({

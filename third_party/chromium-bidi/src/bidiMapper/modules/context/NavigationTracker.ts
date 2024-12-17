@@ -56,6 +56,7 @@ class NavigationState {
   loaderId?: string;
   #isInitial: boolean;
   #eventManager: EventManager;
+  #navigated = false;
 
   get finished(): Promise<NavigationResult> {
     return this.#finished;
@@ -97,7 +98,7 @@ class NavigationState {
     this.#started = true;
   }
 
-  finish(navigationResult: NavigationResult) {
+  #finish(navigationResult: NavigationResult) {
     this.#started = true;
 
     if (
@@ -115,6 +116,30 @@ class NavigationState {
       );
     }
     this.#finished.resolve(navigationResult);
+  }
+
+  frameNavigated() {
+    this.#navigated = true;
+  }
+
+  fragmentNavigated() {
+    this.#navigated = true;
+    this.#finish(new NavigationResult(NavigationEventName.FragmentNavigated));
+  }
+
+  load() {
+    this.#finish(new NavigationResult(NavigationEventName.Load));
+  }
+
+  fail(message: string) {
+    this.#finish(
+      new NavigationResult(
+        this.#navigated
+          ? NavigationEventName.NavigationAborted
+          : NavigationEventName.NavigationFailed,
+        message,
+      ),
+    );
   }
 }
 
@@ -201,11 +226,8 @@ export class NavigationTracker {
       this.#isInitialNavigation &&
       urlMatchesAboutBlank(url);
 
-    this.#pendingNavigation?.finish(
-      new NavigationResult(
-        NavigationEventName.NavigationAborted,
-        'navigation canceled by concurrent navigation',
-      ),
+    this.#pendingNavigation?.fail(
+      'navigation canceled by concurrent navigation',
     );
     const navigation = new NavigationState(
       url,
@@ -218,20 +240,8 @@ export class NavigationTracker {
   }
 
   dispose() {
-    // TODO: check if it should be aborted or failed.
-    this.#pendingNavigation?.finish(
-      new NavigationResult(
-        NavigationEventName.NavigationFailed,
-        'navigation canceled by context disposal',
-      ),
-    );
-    // TODO: check if it should be aborted or failed.
-    this.#currentNavigation.finish(
-      new NavigationResult(
-        NavigationEventName.NavigationFailed,
-        'navigation canceled by context disposal',
-      ),
-    );
+    this.#pendingNavigation?.fail('navigation canceled by context disposal');
+    this.#currentNavigation.fail('navigation canceled by context disposal');
   }
 
   // Update the current url.
@@ -277,23 +287,16 @@ export class NavigationTracker {
         this.createPendingNavigation(unreachableUrl, true);
       navigation.url = unreachableUrl;
       navigation.start();
-      navigation.finish(
-        new NavigationResult(
-          NavigationEventName.NavigationFailed,
-          'the requested url is unreachable',
-        ),
-      );
+      navigation.fail('the requested url is unreachable');
       return;
     }
 
     const navigation = this.#getNavigationForFrameNavigated(url, loaderId);
+    navigation.frameNavigated();
 
     if (navigation !== this.#currentNavigation) {
-      this.#currentNavigation.finish(
-        new NavigationResult(
-          NavigationEventName.NavigationAborted,
-          'navigation canceled by concurrent navigation',
-        ),
+      this.#currentNavigation.fail(
+        'navigation canceled by concurrent navigation',
       );
     }
 
@@ -340,9 +343,7 @@ export class NavigationTracker {
           );
 
     // Finish ongoing navigation.
-    fragmentNavigation.finish(
-      new NavigationResult(NavigationEventName.FragmentNavigated),
-    );
+    fragmentNavigation.fragmentNavigated();
 
     if (fragmentNavigation === this.#pendingNavigation) {
       this.#pendingNavigation = undefined;
@@ -365,9 +366,7 @@ export class NavigationTracker {
     // Even if it was an initial navigation, it is finished.
     this.#isInitialNavigation = false;
 
-    this.#loaderIdToNavigationsMap
-      .get(loaderId)
-      ?.finish(new NavigationResult(NavigationEventName.Load));
+    this.#loaderIdToNavigationsMap.get(loaderId)?.load();
   }
 
   /**
@@ -375,9 +374,7 @@ export class NavigationTracker {
    */
   failNavigation(navigation: NavigationState, errorText: string) {
     this.#logger?.(LogType.debug, 'failCommandNavigation');
-    navigation.finish(
-      new NavigationResult(NavigationEventName.NavigationFailed, errorText),
-    );
+    navigation.fail(errorText);
   }
 
   /**
@@ -401,11 +398,8 @@ export class NavigationTracker {
       return;
     }
 
-    this.#currentNavigation.finish(
-      new NavigationResult(
-        NavigationEventName.NavigationAborted,
-        'navigation canceled by concurrent navigation',
-      ),
+    this.#currentNavigation.fail(
+      'navigation canceled by concurrent navigation',
     );
 
     navigation.start();
@@ -462,11 +456,6 @@ export class NavigationTracker {
    * that the navigation failed.
    */
   networkLoadingFailed(loaderId: string, errorText: string) {
-    if (this.#loaderIdToNavigationsMap.has(loaderId)) {
-      const navigation = this.#loaderIdToNavigationsMap.get(loaderId)!;
-      navigation.finish(
-        new NavigationResult(NavigationEventName.NavigationFailed, errorText),
-      );
-    }
+    this.#loaderIdToNavigationsMap.get(loaderId)?.fail(errorText);
   }
 }
