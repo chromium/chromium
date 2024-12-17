@@ -61,7 +61,6 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sDrawKeyNativeEdgeToEdge,
                     ChromeFeatureList.sEdgeToEdgeBottomChin,
                     ChromeFeatureList.sEdgeToEdgeWebOptIn,
-                    ChromeFeatureList.sNewTabPageAndroidTriggerForPrerender2,
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
                     ChromeFeatureList.sSafetyHubMagicStack,

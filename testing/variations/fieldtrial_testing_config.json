@@ -17354,24 +17354,6 @@
             ]
         }
     ],
-    "Prerender2NewTabPageAndroidTrigger": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240821",
-                    "params": {
-                        "prerender_new_tab_page_on_touch_trigger": "47"
-                    },
-                    "enable_features": [
-                        "NewTabPageAndroidTriggerForPrerender2"
-                    ]
-                }
-            ]
-        }
-    ],
     "Prerender2NewTabPageTriggerV2": [
         {
             "platforms": [
