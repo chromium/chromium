@@ -195,6 +195,10 @@ constexpr char
 // Deprecated 11/2024
 constexpr char kEnableDoNotTrackIos[] = "enable_do_not_track";
 
+// Deprecated 12/2024.
+inline constexpr char kPageContentCollectionEnabled[] =
+    "page_content_collection.enabled";
+
 // Helper function migrating the preference `pref_name` of type "int" from
 // `defaults` to `pref_service`.
 void MigrateIntegerPreferenceFromUserDefaults(std::string_view pref_name,
@@ -1087,6 +1091,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kEnableDoNotTrackIos, false);
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
+
+  // Deprecated 12/2024.
+  registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1280,6 +1287,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 11/2024
   prefs->ClearPref(kEnableDoNotTrackIos);
+
+  // Added 12/2024.
+  prefs->ClearPref(kPageContentCollectionEnabled);
 }
 
 void MigrateObsoleteUserDefault() {

@@ -1171,6 +1171,10 @@ const char kCryptAuthEnrollmentUserPrivateKey[] =
 const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
 #endif
 
+// Deprecated 12/2024.
+inline constexpr char kPageContentCollectionEnabled[] =
+    "page_content_collection.enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1663,6 +1667,9 @@ void RegisterProfilePrefsForMigration(
                                std::string());
   registry->RegisterBooleanPref(kLacrosLaunchOnLogin, false);
 #endif
+
+  // Deprecated 12/2024.
+  registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
 }
 
 }  // namespace
@@ -2999,6 +3006,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPrivateKey);
   profile_prefs->ClearPref(kLacrosLaunchOnLogin);
 #endif
+
+  // Added 12/2024.
+  profile_prefs->ClearPref(kPageContentCollectionEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
