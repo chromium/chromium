@@ -297,8 +297,9 @@ message ClientPhishingRequest {
 
 // Verdict based on IntelligentScanInfo included in ClientPhishingRequest
 enum IntelligentScanVerdict {
-  INTELLIGENT_SCAN_VERDICT_SAFE = 0;
-  SCAM_EXPERIMENT_VERDICT_1 = 1;
+  INTELLIGENT_SCAN_VERDICT_UNSPECIFIED = 0;
+  INTELLIGENT_SCAN_VERDICT_SAFE = 1;
+  SCAM_EXPERIMENT_VERDICT_1 = 2;
 }
 
 message ClientPhishingResponse {

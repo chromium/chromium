@@ -1177,6 +1177,9 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
           ? (is_phishing ||
              (intelligent_scan_verdict.has_value() &&
               intelligent_scan_verdict !=
+                  IntelligentScanVerdict::
+                      INTELLIGENT_SCAN_VERDICT_UNSPECIFIED &&
+              intelligent_scan_verdict !=
                   IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE))
           : is_phishing;
 
