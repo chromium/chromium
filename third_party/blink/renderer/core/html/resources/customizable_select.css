@@ -11,7 +11,7 @@
 select:not(:-internal-list-box) {
   font: -internal-appearance-auto-base-select(-webkit-small-control, inherit);
   color: -internal-appearance-auto-base-select(FieldText, inherit);
-  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 10%, transparent));
+  background-color: -internal-appearance-auto-base-select(Field, transparent);
   border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), currentColor);
   padding-block: -internal-appearance-auto-base-select(0, 0.25em);
   padding-inline: -internal-appearance-auto-base-select(0, 0.5em);
@@ -29,7 +29,7 @@ select:not(:-internal-list-box) {
 
   display: -internal-appearance-auto-base-select(inline-block, inline-flex);
   gap: -internal-appearance-auto-base-select(initial, 0.5em);
-  border-radius: -internal-appearance-auto-base-select(0, 0.25em);
+  border-radius: -internal-appearance-auto-base-select(0, 0.5em);
 
   align-items: -internal-appearance-auto-base-select(center, unset);
 }
@@ -40,10 +40,10 @@ select:not(:-internal-list-box) > button:first-child {
 }
 
 select:not(:-internal-list-box):enabled:hover {
-  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 20%, transparent));
+  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 10%, transparent));
 }
 select:not(:-internal-list-box):enabled:active {
-  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 30%, transparent));
+  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 20%, transparent));
 }
 
 /* Without this rule, we would be changing the styles for disabled
@@ -117,10 +117,10 @@ select:not(:-internal-list-box) option {
 }
 
 select:not(:-internal-list-box) option:enabled:hover {
-  background-color: color-mix(in lab, currentColor 20%, transparent);
+  background-color: color-mix(in lab, currentColor 10%, transparent);
 }
 select:not(:-internal-list-box) option:enabled:active {
-  background-color: color-mix(in lab, currentColor 30%, transparent);
+  background-color: color-mix(in lab, currentColor 20%, transparent);
 }
 select:not(:-internal-list-box) option:disabled {
   color: -internal-appearance-auto-base-select(inherit, color-mix(in lab, currentColor 50%, transparent));
