@@ -7,14 +7,17 @@
 #import "base/check.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 namespace collaboration {
@@ -46,14 +49,22 @@ void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
 
 void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
     ResultCallback result) {
-  id<ApplicationCommands> aplication_handler = HandlerForProtocol(
-      collaboration_flow_->command_dispatcher(), ApplicationCommands);
+  Browser* browser = collaboration_flow_->browser();
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(browser->GetProfile());
+  AuthenticationOperation operation =
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
+          ? AuthenticationOperation::kHistorySync
+          : AuthenticationOperation::kSheetSigninAndHistorySync;
+
+  id<ApplicationCommands> application_handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   UIViewController* base_view_controller =
       collaboration_flow_->base_view_controller();
   auto completion_block = base::CallbackToBlock(std::move(result));
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
+      initWithOperation:operation
                identity:nil
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_COLLABORATION_TAB_GROUP
@@ -70,8 +81,8 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
                completion_block(outcome);
              }];
 
-  [aplication_handler showSignin:command
-              baseViewController:base_view_controller];
+  [application_handler showSignin:command
+               baseViewController:base_view_controller];
 }
 
 void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange() {
@@ -116,8 +127,8 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
       [[ShareKitShareGroupConfiguration alloc] init];
   config.tabGroup = share_flow.tab_group().get();
   config.baseViewController = share_flow.base_view_controller();
-  config.applicationHandler =
-      HandlerForProtocol(share_flow.command_dispatcher(), ApplicationCommands);
+  config.applicationHandler = HandlerForProtocol(
+      share_flow.browser()->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completionBlock = ^(BOOL completion_result) {
     CollaborationControllerDelegate::Outcome outcome =

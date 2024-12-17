@@ -1892,6 +1892,13 @@ using UserFeedbackDataCallback =
                                                              command
                                                                  .promoAction];
       break;
+    case AuthenticationOperation::kHistorySync:
+      self.signinCoordinator = [SigninCoordinator
+          historySyncCoordinatorWithBaseViewController:baseViewController
+                                               browser:mainBrowser
+                                           accessPoint:command.accessPoint
+                                           promoAction:command.promoAction];
+      break;
   }
   [self startSigninCoordinatorWithCompletion:command.completion];
 }

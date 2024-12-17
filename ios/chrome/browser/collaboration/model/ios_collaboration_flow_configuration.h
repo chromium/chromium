@@ -11,7 +11,7 @@
 #import "base/memory/weak_ptr.h"
 #import "url/gurl.h"
 
-@class CommandDispatcher;
+class Browser;
 class ShareKitService;
 class TabGroup;
 
@@ -40,13 +40,17 @@ class CollaborationFlowConfiguration {
   virtual Type type() const = 0;
 
   // Returns the ShareKitService associated with the flow configuration.
-  virtual raw_ptr<ShareKitService> share_kit_service() const = 0;
+  raw_ptr<ShareKitService> share_kit_service() const {
+    return share_kit_service_;
+  }
 
-  // Returns the command dispatcher associated with the flow configuration.
-  virtual CommandDispatcher* command_dispatcher() const = 0;
+  // Returns the browser associated with the flow configuration.
+  Browser* browser() const { return browser_; }
 
   // Returns the base view controller associated with the flow configuration.
-  virtual UIViewController* base_view_controller() const = 0;
+  UIViewController* base_view_controller() const {
+    return base_view_controller_;
+  }
 
   // Casts the dialog to the given type.
   template <typename T>
@@ -56,7 +60,14 @@ class CollaborationFlowConfiguration {
   }
 
  protected:
-  CollaborationFlowConfiguration() = default;
+  CollaborationFlowConfiguration(ShareKitService* share_kit_service,
+                                 Browser* browser,
+                                 UIViewController* base_view_controller);
+
+ private:
+  raw_ptr<ShareKitService> share_kit_service_;
+  raw_ptr<Browser> browser_;
+  __weak UIViewController* base_view_controller_;
 };
 
 // Represents the share flow configuration.
@@ -68,25 +79,19 @@ class CollaborationFlowConfigurationShare final
   // Constructs a new CollaborationFlowConfigurationShare object.
   explicit CollaborationFlowConfigurationShare(
       ShareKitService* share_kit_service,
-      base::WeakPtr<const TabGroup> tab_group,
-      CommandDispatcher* command_dispatcher,
-      UIViewController* base_view_controller);
+      Browser* browser,
+      UIViewController* base_view_controller,
+      base::WeakPtr<const TabGroup> tab_group);
   ~CollaborationFlowConfigurationShare() override;
 
   // CollaborationFlowConfiguration.
   Type type() const final;
-  raw_ptr<ShareKitService> share_kit_service() const override;
-  CommandDispatcher* command_dispatcher() const override;
-  UIViewController* base_view_controller() const override;
 
   // Returns the tab group associated with the flow configuration.
   base::WeakPtr<const TabGroup> tab_group() const { return tab_group_; }
 
  private:
-  raw_ptr<ShareKitService> share_kit_service_;
   base::WeakPtr<const TabGroup> tab_group_;
-  __weak CommandDispatcher* command_dispatcher_;
-  __weak UIViewController* base_view_controller_;
 };
 
 // Represents the join flow configuration.
@@ -98,25 +103,19 @@ class CollaborationFlowConfigurationJoin final
   // Constructs a new CollaborationFlowConfigurationShare object.
   explicit CollaborationFlowConfigurationJoin(
       ShareKitService* share_kit_service,
-      const GURL& url,
-      CommandDispatcher* command_dispatcher,
-      UIViewController* base_view_controller);
+      Browser* browser,
+      UIViewController* base_view_controller,
+      const GURL& url);
   ~CollaborationFlowConfigurationJoin() override;
 
   // CollaborationFlowConfiguration.
   Type type() const final;
-  raw_ptr<ShareKitService> share_kit_service() const override;
-  CommandDispatcher* command_dispatcher() const override;
-  UIViewController* base_view_controller() const override;
 
   // Returns URL containing the collab ID and the token.
   const GURL& url() const { return url_; }
 
  private:
-  raw_ptr<ShareKitService> share_kit_service_;
   const GURL url_;
-  __weak CommandDispatcher* command_dispatcher_;
-  __weak UIViewController* base_view_controller_;
 };
 
 }  // namespace collaboration

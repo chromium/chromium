@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/forced_signin/forced_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/history_sync/history_sync_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -204,6 +205,20 @@ using signin_metrics::PromoAction;
                                                          browser:browser];
 }
 
++ (instancetype)
+    historySyncCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                         browser:(Browser*)browser
+                                     accessPoint:(signin_metrics::AccessPoint)
+                                                     accessPoint
+                                     promoAction:(signin_metrics::PromoAction)
+                                                     promoAction {
+  return [[HistorySyncSigninCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:browser
+                     accessPoint:accessPoint];
+}
+
 - (void)dealloc {
   // -[SigninCoordinator
   // runCompletionWithSigninResult:completionIdentity:] has to be called
@@ -236,7 +251,7 @@ using signin_metrics::PromoAction;
   DCHECK(!self.signinCompletion);
 }
 
-#pragma mark - Private
+#pragma mark - Protected
 
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {

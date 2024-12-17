@@ -185,6 +185,16 @@ class PrefRegistrySyncable;
                     (UIViewController*)viewController
                                                      browser:(Browser*)browser;
 
+// Returns a coordinator to show the history sync.
++ (instancetype)
+    historySyncCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                         browser:(Browser*)browser
+                                     accessPoint:(signin_metrics::AccessPoint)
+                                                     accessPoint
+                                     promoAction:(signin_metrics::PromoAction)
+                                                     promoAction;
+
 // Interrupts the sign-in flow.
 // `signinCompletion(SigninCoordinatorResultInterrupted, nil)` is guaranteed to
 // be called before `completion()`.

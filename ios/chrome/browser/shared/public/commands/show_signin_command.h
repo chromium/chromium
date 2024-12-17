@@ -44,6 +44,9 @@ enum class AuthenticationOperation {
   // account dialog to sign-in.
   // Once signed in, the history sync opt-in is displayed.
   kSheetSigninAndHistorySync,
+  // Operation to trigger the history sync.
+  // The user must already be signed in but with the history sync turned off.
+  kHistorySync,
 };
 
 // A command to perform a sign in operation.
