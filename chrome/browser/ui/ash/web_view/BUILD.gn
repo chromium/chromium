@@ -21,7 +21,6 @@ static_library("web_view") {
     "//base",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash/new_window:new_window",
     "//content/public/browser",
     "//ui/aura",
     "//ui/base",
