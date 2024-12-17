@@ -487,11 +487,12 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
         // TODO(lanwei): Will check if we need to add
         // InputDeviceCapabilities here when select menu list gets
         // focus, see https://crbug.com/476530.
-        if (IsAppearanceBasePicker()) {
-          // Because we're activating the <select> on mousedown, not mouseup
-          // or click, this code will immediately show the popover, and the
-          // following mouseup will activate popover light dismiss, which will
-          // immediately close the popover unless we disable it by doing this.
+        if (IsAppearanceBasePicker() && !mouse_event->FromTouch()) {
+          // If the popover is shown before pointerup, then popover light
+          // dismiss will close the popover when the user releases/lifts the
+          // pointer unless we change the pointerdown target like this.
+          // pointerup is fired before mousedown on touch, so this is only
+          // needed when the event is not from touch.
           select_->GetDocument().SetPopoverPointerdownTarget(popover_);
         }
         ShowPopup(mouse_event->FromTouch() ? PopupMenu::kTouch
