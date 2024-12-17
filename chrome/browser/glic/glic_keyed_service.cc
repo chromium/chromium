@@ -32,6 +32,17 @@ GlicKeyedService::~GlicKeyedService() = default;
 void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
   profile_manager_->OnUILaunching(this);
   window_controller_.Show(glic_button_view);
+
+  auto* web_contents = focused_tab_manager_.GetWebContentsForFocusedTab();
+  if (web_contents) {
+    if (BorderView* border =
+            BorderView::FindBorderForWebContents(web_contents)) {
+      border->StartAnimation();
+    }
+  } else {
+    // TODO(crbug.com/384740189): Find out if/how to start the border animation
+    // when web_contents is not available yet.
+  }
 }
 
 void GlicKeyedService::CreateTab(
@@ -104,9 +115,6 @@ void GlicKeyedService::GetContextFromFocusedTab(
             std::move(callback).Run(std::move(result));
           },
           std::move(fetcher), std::move(callback)));
-  if (BorderView* border = BorderView::FindBorderForWebContents(web_contents)) {
-    border->StartAnimation();
-  }
 }
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {

@@ -76,7 +76,11 @@ void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
 void BorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {}
 
 void BorderView::StartAnimation() {
-  CHECK(!animation_ongoing_);
+  if (animation_ongoing_) {
+    LOG(ERROR) << "BorderView::StartAnimation was called while "
+                  "animation_ongoing_ is true.";
+    return;
+  }
   animation_ongoing_ = true;
   SetBoundsRect(GetVisibleBounds());
   SetPaintToLayer();
