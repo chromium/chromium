@@ -3636,37 +3636,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.Remoting.SessionStopTrigger"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler_MainThreadLoadSplit" separator=".">
-  <suffix name="Background"
-      label="Main thread load when the renderer is backgrounded. This does
-             not include extension renderers."/>
-  <suffix name="Background.AfterFifthMinute"
-      label="Main thread load when the renderer is backgrounded for longer
-             than five minutes. This does not include extension renderers."/>
-  <suffix name="Background.AfterFirstMinute"
-      label="Main thread load when the renderer is backgrounded for longer
-             than one minute. Most of loading tasks are expected to complete
-             by then. This does not include extension renderers."/>
-  <suffix name="Background.AfterTenthMinute"
-      label="Main thread load when the renderer is backgrounded for longer
-             than ten minutes. This does not include extension renderers."/>
-  <suffix name="Extension" label="This only includes extension renderers"/>
-  <suffix name="Extension.Background"
-      label="Main thread load when the renderer is backgrounded. This only
-             includes extension renderers."/>
-  <suffix name="Extension.Foreground"
-      label="Main thread load when the renderer is foregrounded. This only
-             includes extension renderers."/>
-  <suffix name="Foreground"
-      label="Main thread load when the renderer is foregrounded. This does
-             not include extension renderers."/>
-  <suffix name="Foreground.AfterFirstMinute"
-      label="Main thread load when the renderer is foregrounded for longer
-             than one minute. Most of loading tasks are expected to complete
-             by then. This does not include extension renderers."/>
-  <affected-histogram name="RendererScheduler.RendererMainThreadLoad5"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="RendererThreadType" separator=".">
   <suffix name="Compositor"
       label="Measurement taken on the compositor thread."/>
