@@ -21,8 +21,6 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_serializers_base.h"
-#include "media/base/media_switches.h"
-#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/video_accelerator_util.h"
 #include "media/parsers/h264_level_limits.h"
@@ -486,26 +484,7 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
 
   SupportedProfiles profiles;
   for (auto& info : GetEncoderInfoCache()) {
-    const auto codec = VideoCodecProfileToVideoCodec(info.profile.profile);
-    switch (codec) {
-      case VideoCodec::kHEVC:
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-        if (base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport) &&
-            // Currently only 8bit NV12 and I420 encoding is supported, so limit
-            // this to main profile only just like other platforms.
-            info.profile.profile == VideoCodecProfile::HEVCPROFILE_MAIN &&
-            // Some devices may report to have a software HEVC encoder,
-            // however based on tests, they are not always working well,
-            // so limit the support to HW only for now.
-            !info.profile.is_software_codec) {
-          profiles.push_back(info.profile);
-        }
-#endif
-        break;
-      default:
-        profiles.push_back(info.profile);
-        break;
-    }
+    profiles.push_back(info.profile);
   }
   return profiles;
 }
@@ -576,14 +555,6 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
 
   for (const auto& info : GetEncoderInfoCache()) {
     if (info.name == codec_name) {
-      // Skip software HEVC encoders, as it only supports the maximum 512x512
-      // resolution at 30fps, and it is also filtered out by
-      // GetSupportedProfiles().
-      if (info.profile.profile == VideoCodecProfile::HEVCPROFILE_MAIN &&
-          info.profile.is_software_codec) {
-        continue;
-      }
-
       // TODO(crbug.com/382015342): Set the bitrate limits when we can get them
       // through MediaCodec API.
       encoder_info_.resolution_rate_limits.emplace_back(

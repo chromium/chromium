@@ -189,11 +189,16 @@ class VideoAcceleratorUtil {
         return false;
     }
 
-    // Chromium doesn't bundle a software encoder or decoder for H.264 or H.265 so allow
-    // usage of software codecs through MediaCodec for those codecs.
-    private static boolean requiresHardware(String type) {
-        return !type.equalsIgnoreCase(MediaCodecUtil.MimeTypes.VIDEO_H264)
-                && !type.equalsIgnoreCase(MediaCodecUtil.MimeTypes.VIDEO_HEVC);
+    // Chromium doesn't bundle a software encoder for H.264. Since `c2.android.avc.encoder` can
+    // support up to `2048x2048 & 30fps`, we allow the usage of software codecs through
+    // MediaCodec for H.264.
+    //
+    // However, it should be noted that Chromium also doesn't bundle a software encoder for HEVC.
+    // And since `c2.android.hevc.encoder` only supports up to `512x512 & 30fps`, which normal
+    // users can't use as it is a pretty low resolution framerate combination, we explicitly
+    // choose not to report it as supported.
+    private static boolean requiresHardwareEncoder(String type) {
+        return !type.equalsIgnoreCase(MediaCodecUtil.MimeTypes.VIDEO_H264);
     }
 
     // H.264 high profile isn't required by Android platform, so we can only add support if
@@ -250,7 +255,7 @@ class VideoAcceleratorUtil {
             for (MediaCodecInfo info : codecList) {
                 if (info.isAlias()) continue; // Skip duplicates.
                 if (!info.isEncoder()) continue;
-                if (!info.isHardwareAccelerated() && requiresHardware(type)) continue;
+                if (!info.isHardwareAccelerated() && requiresHardwareEncoder(type)) continue;
 
                 MediaCodecInfo.CodecCapabilities capabilities = null;
                 try {
