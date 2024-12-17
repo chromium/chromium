@@ -1328,7 +1328,10 @@
     },
     {
       name: "CursorAnchorInfoMojoPipe",
-      // No status as this will be controlled by the matching Chromium feature.
+      status: {
+        "Android": "stable",
+        "default": "",
+      }
     },
     {
       // Adds the appearance:base-select CSS value which makes <select>

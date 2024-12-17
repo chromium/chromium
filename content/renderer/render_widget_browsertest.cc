@@ -189,6 +189,12 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPIWithImplicitRootScroller) {
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {
+  // Composition range isn't used on Android and this feature stops the path
+  // that sends composition range info. Disable the feature so that the tests
+  // pass until the Android and non Android code paths are decoupled at which
+  // point the feature can be removed.
+  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
+                                                     false);
   LoadHTML(
       "<div contenteditable>EDITABLE</div>"
       "<script> document.querySelector('div').focus(); </script>");
@@ -205,6 +211,9 @@ TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeForSelection) {
+  // See comment in GetCompositionRangeValidComposition for explanation.
+  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
+                                                     false);
   LoadHTML(
       "<div>NOT EDITABLE</div>"
       "<script> document.execCommand('selectAll'); </script>");
@@ -214,6 +223,9 @@ TEST_F(RenderWidgetTest, GetCompositionRangeForSelection) {
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeInvalid) {
+  // See comment in GetCompositionRangeValidComposition for explanation.
+  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
+                                                     false);
   LoadHTML("<div>NOT EDITABLE</div>");
   gfx::Range range = LastCompositionRange();
   // If this test ever starts failing, one likely outcome is that WebRange
