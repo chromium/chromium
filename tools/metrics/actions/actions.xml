@@ -7008,11 +7008,27 @@ should be able to be added at any place in this file.
   <description>Triggered when the user adds a product to cart.</description>
 </action>
 
+<action name="Commerce.Compare.BuyingOptionsClicked">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the buying option link in the compare table is clicked.
+  </description>
+</action>
+
 <action name="Commerce.Compare.CandidateClusterRejected">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>
     Records when we filter out a cluster because it was rejected by the backend.
+  </description>
+</action>
+
+<action name="Commerce.Compare.CitationClicked">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when any citation link in the compare table is clicked.
   </description>
 </action>
 
@@ -7091,6 +7107,15 @@ should be able to be added at any place in this file.
   <owner>chrome-shopping@google.com</owner>
   <description>
     Records when the compare proactive entry point has shown.
+  </description>
+</action>
+
+<action name="Commerce.Compare.ReopenedProductPage">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when user clicks on the OpenTab button to open or switch to the tab
+    of this item in the compare table.
   </description>
 </action>
 

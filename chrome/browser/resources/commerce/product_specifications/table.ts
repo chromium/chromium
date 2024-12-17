@@ -168,6 +168,8 @@ export class TableElement extends PolymerElement {
     }
     this.shoppingApi_.switchToOrOpenTab(
         {url: this.columns[e.model.columnIndex].selectedItem.url});
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.Compare.ReopenedProductPage');
   }
 
   private onSelectedUrlChange_(

@@ -10,6 +10,8 @@ import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -19,10 +21,12 @@ import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
 suite('ProductSpecificationsTableTest', () => {
   let tableElement: TableElement;
   let windowProxy: TestMock<WindowProxy>;
+  let metrics: MetricsTracker;
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
   setup(async () => {
+    metrics = fakeMetricsPrivate();
     shoppingServiceApi.reset();
     ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -337,6 +341,7 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
     assertEquals(
         testUrl, shoppingServiceApi.getArgs('switchToOrOpenTab')[0].url);
+    assertEquals(1, metrics.count('Commerce.Compare.ReopenedProductPage'));
   });
 
   test('shows open tab button when hovered', async () => {
