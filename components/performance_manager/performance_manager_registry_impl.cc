@@ -16,7 +16,6 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/performance_manager_main_thread_mechanism.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
-#include "components/performance_manager/public/performance_manager_owned.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/service_worker_context_adapter.h"
 #include "components/performance_manager/worker_watcher.h"
@@ -51,8 +50,6 @@ PerformanceManagerRegistryImpl::~PerformanceManagerRegistryImpl() {
   DCHECK(!g_instance);
   DCHECK(web_contents_.empty());
   DCHECK(render_process_hosts_.empty());
-  DCHECK(pm_owned_.empty());
-  DCHECK(pm_registered_.empty());
   // TODO(crbug.com/40131811): |observers_| and |mechanisms_| should also be
   // empty by now!
 }
@@ -90,36 +87,6 @@ bool PerformanceManagerRegistryImpl::HasMechanism(
     PerformanceManagerMainThreadMechanism* mechanism) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return mechanisms_.HasObserver(mechanism);
-}
-
-void PerformanceManagerRegistryImpl::PassToPM(
-    std::unique_ptr<PerformanceManagerOwned> pm_owned) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pm_owned_.PassObject(std::move(pm_owned));
-}
-
-std::unique_ptr<PerformanceManagerOwned>
-PerformanceManagerRegistryImpl::TakeFromPM(PerformanceManagerOwned* pm_owned) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pm_owned_.TakeObject(pm_owned);
-}
-
-void PerformanceManagerRegistryImpl::RegisterObject(
-    PerformanceManagerRegistered* pm_object) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pm_registered_.RegisterObject(pm_object);
-}
-
-void PerformanceManagerRegistryImpl::UnregisterObject(
-    PerformanceManagerRegistered* pm_object) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pm_registered_.UnregisterObject(pm_object);
-}
-
-PerformanceManagerRegistered*
-PerformanceManagerRegistryImpl::GetRegisteredObject(uintptr_t type_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pm_registered_.GetRegisteredObject(type_id);
 }
 
 Binders& PerformanceManagerRegistryImpl::GetBinders() {
@@ -276,12 +243,6 @@ void PerformanceManagerRegistryImpl::TearDown() {
   // Release the browser and utility process nodes.
   browser_child_process_watcher_.TearDown();
 
-  // Tear down PM owned objects. This lets them clear up object registrations,
-  // observers, mechanisms, etc.
-  pm_owned_.ReleaseObjects();
-
-  DCHECK(pm_owned_.empty());
-  DCHECK(pm_registered_.empty());
   // TODO(crbug.com/40131811): |observers_| and |mechanisms_| should also be
   // empty by now!
 }

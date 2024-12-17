@@ -178,8 +178,6 @@ static_library("performance_manager") {
     "public/performance_manager.h",
     "public/performance_manager_main_thread_mechanism.h",
     "public/performance_manager_main_thread_observer.h",
-    "public/performance_manager_owned.h",
-    "public/performance_manager_registered.h",
     "public/power/battery_level_provider_creator.h",
     "public/render_frame_host_proxy.h",
     "public/render_process_host_id.h",

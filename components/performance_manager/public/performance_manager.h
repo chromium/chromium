@@ -32,12 +32,7 @@ class PageNode;
 class ProcessNode;
 class PerformanceManagerMainThreadMechanism;
 class PerformanceManagerMainThreadObserver;
-class PerformanceManagerOwned;
-class PerformanceManagerRegistered;
 class WorkerNode;
-
-template <typename DerivedType>
-class PerformanceManagerRegisteredImpl;
 
 // The performance manager is a rendezvous point for communicating with the
 // performance manager graph on its dedicated sequence.
@@ -154,48 +149,6 @@ class PerformanceManager {
   static void RemoveMechanism(PerformanceManagerMainThreadMechanism* mechanism);
   static bool HasMechanism(PerformanceManagerMainThreadMechanism* mechanism);
 
-  // For convenience, allows you to pass ownership of an object that lives on
-  // the main thread to the performance manager. Useful for attaching observers
-  // or mechanisms that will live with the PM until it dies. If you can name the
-  // object you can also take it back via "TakeFromPM". The objects will be
-  // torn down gracefully (and their "OnTakenFromPM" functions invoked) as the
-  // PM itself is torn down.
-  static void PassToPM(std::unique_ptr<PerformanceManagerOwned> pm_owned);
-  static std::unique_ptr<PerformanceManagerOwned> TakeFromPM(
-      PerformanceManagerOwned* pm_owned);
-
-  // A TakeFromPM helper for taking back the ownership of a
-  // PerformanceManagerOwned object via its DerivedType.
-  template <typename DerivedType>
-  static std::unique_ptr<DerivedType> TakeFromPMAs(DerivedType* pm_owned) {
-    return base::WrapUnique(
-        static_cast<DerivedType*>(TakeFromPM(pm_owned).release()));
-  }
-
-  // Registers an object with the PM. It is expected that no more than one
-  // object of a given type is registered at a given moment, and that all
-  // registered objects are unregistered before PM tear-down. This allows the
-  // PM to act as a rendez-vous point for objects that live on the main thread.
-  // Combined with PerformanceManagerOwned this offers an alternative to
-  // using singletons, and brings clear ownerships and lifetime semantics.
-  static void RegisterObject(PerformanceManagerRegistered* pm_object);
-
-  // Unregisters the provided |object|, which must previously have been
-  // registered with "RegisterObject". It is expected that all registered
-  // objects are unregistered before graph tear-down.
-  static void UnregisterObject(PerformanceManagerRegistered* object);
-
-  // Returns the registered object of the given type, nullptr if none has been
-  // registered.
-  template <typename DerivedType>
-  static DerivedType* GetRegisteredObjectAs() {
-    // Be sure to access the TypeId provided by PerformanceManagerRegisteredImpl
-    // in case this class has other TypeId implementations.
-    PerformanceManagerRegistered* object = GetRegisteredObject(
-        PerformanceManagerRegisteredImpl<DerivedType>::TypeId());
-    return static_cast<DerivedType*>(object);
-  }
-
   // Returns the performance manager graph task runner. This is safe to call
   // from any thread at any time between the creation of the thread pool and its
   // destruction.
@@ -212,10 +165,6 @@ class PerformanceManager {
 
  protected:
   PerformanceManager();
-
-  // Retrieves the object with the given |type_id|, returning nullptr if none
-  // exists. Clients must use the GetRegisteredObjectAs wrapper instead.
-  static PerformanceManagerRegistered* GetRegisteredObject(uintptr_t type_id);
 };
 
 }  // namespace performance_manager

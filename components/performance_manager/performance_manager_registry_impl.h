@@ -15,13 +15,9 @@
 #include "components/performance_manager/browser_child_process_watcher.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
-#include "components/performance_manager/owned_objects.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/process_node_source.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
-#include "components/performance_manager/public/performance_manager_owned.h"
-#include "components/performance_manager/public/performance_manager_registered.h"
-#include "components/performance_manager/registered_objects.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/tab_helper_frame_node_source.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
@@ -69,18 +65,6 @@ class PerformanceManagerRegistryImpl
   void RemoveMechanism(PerformanceManagerMainThreadMechanism* mechanism);
   bool HasMechanism(PerformanceManagerMainThreadMechanism* mechanism);
 
-  // PM owned objects. Forwarded to from the public PerformanceManager
-  // interface. See performance_manager.h for details.
-  void PassToPM(std::unique_ptr<PerformanceManagerOwned> pm_owned);
-  std::unique_ptr<PerformanceManagerOwned> TakeFromPM(
-      PerformanceManagerOwned* pm_owned);
-
-  // PM registered objects. Forwarded to from the public PerformanceManager
-  // interface. See performance_manager.h for details.
-  void RegisterObject(PerformanceManagerRegistered* pm_object);
-  void UnregisterObject(PerformanceManagerRegistered* object);
-  PerformanceManagerRegistered* GetRegisteredObject(uintptr_t type_id);
-
   // PerformanceManagerRegistry:
   Binders& GetBinders() override;
   void CreatePageNodeForWebContents(
@@ -122,16 +106,6 @@ class PerformanceManagerRegistryImpl
   // Exposed so that accessors in performance_manager.h can look up WorkerNodes
   // on the UI thread.
   WorkerNodeImpl* FindWorkerNodeForToken(const blink::WorkerToken& token);
-
-  size_t GetOwnedCountForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return pm_owned_.size();
-  }
-
-  size_t GetRegisteredCountForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return pm_registered_.size();
-  }
 
   // Returns the WorkerWatcher for `browser_context`, or nullptr if there is
   // none. Tests can call methods on the WorkerWatcher to simulate workers.
@@ -183,17 +157,6 @@ class PerformanceManagerRegistryImpl
   base::ObserverList<PerformanceManagerMainThreadObserver> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<PerformanceManagerMainThreadMechanism> mechanisms_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Objects owned by the PM.
-  OwnedObjects<PerformanceManagerOwned,
-               /* CallbackArgType = */ void,
-               &PerformanceManagerOwned::OnPassedToPM,
-               &PerformanceManagerOwned::OnTakenFromPM>
-      pm_owned_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Storage for PerformanceManagerRegistered objects.
-  RegisteredObjects<PerformanceManagerRegistered> pm_registered_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

@@ -9,8 +9,6 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/performance_manager_main_thread_mechanism.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
-#include "components/performance_manager/public/performance_manager_owned.h"
-#include "components/performance_manager/public/performance_manager_registered.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_browser_child_process.h"
@@ -137,121 +135,6 @@ TEST_F(PerformanceManagerRegistryImplTest,
 
   registry->RemoveMechanism(&mechanism1);
   registry->RemoveMechanism(&mechanism2);
-}
-
-namespace {
-
-class LenientOwned : public PerformanceManagerOwned {
- public:
-  LenientOwned() = default;
-  ~LenientOwned() override { OnDestructor(); }
-
-  LenientOwned(const LenientOwned&) = delete;
-  LenientOwned& operator=(const LenientOwned) = delete;
-
-  // PerformanceManagerOwned implementation:
-  MOCK_METHOD(void, OnPassedToPM, (), (override));
-  MOCK_METHOD(void, OnTakenFromPM, (), (override));
-  MOCK_METHOD(void, OnDestructor, ());
-};
-
-using Owned = testing::StrictMock<LenientOwned>;
-
-}  // namespace
-
-TEST_F(PerformanceManagerRegistryImplTest, PerformanceManagerOwned) {
-  PerformanceManagerRegistryImpl* registry =
-      PerformanceManagerRegistryImpl::GetInstance();
-
-  std::unique_ptr<Owned> owned1 = std::make_unique<Owned>();
-  std::unique_ptr<Owned> owned2 = std::make_unique<Owned>();
-  auto* raw1 = owned1.get();
-  auto* raw2 = owned2.get();
-
-  // Pass both objects to the PM.
-  EXPECT_EQ(0u, registry->GetOwnedCountForTesting());
-  EXPECT_CALL(*raw1, OnPassedToPM());
-  PerformanceManager::PassToPM(std::move(owned1));
-  EXPECT_EQ(1u, registry->GetOwnedCountForTesting());
-  EXPECT_CALL(*raw2, OnPassedToPM());
-  PerformanceManager::PassToPM(std::move(owned2));
-  EXPECT_EQ(2u, registry->GetOwnedCountForTesting());
-
-  // Take one back.
-  EXPECT_CALL(*raw1, OnTakenFromPM());
-  owned1 = PerformanceManager::TakeFromPMAs<Owned>(raw1);
-  EXPECT_EQ(1u, registry->GetOwnedCountForTesting());
-
-  // Destroy that object and expect its destructor to have been invoked.
-  EXPECT_CALL(*raw1, OnDestructor());
-  owned1.reset();
-  raw1 = nullptr;
-
-  // Tear down the PM and expect the other object to die with it.
-  EXPECT_CALL(*raw2, OnTakenFromPM());
-  EXPECT_CALL(*raw2, OnDestructor());
-  TearDownNow();
-}
-
-namespace {
-
-class Foo : public PerformanceManagerRegisteredImpl<Foo> {
- public:
-  Foo() = default;
-  ~Foo() override = default;
-};
-
-class Bar : public PerformanceManagerRegisteredImpl<Bar> {
- public:
-  Bar() = default;
-  ~Bar() override = default;
-};
-
-}  // namespace
-
-TEST_F(PerformanceManagerRegistryImplTest, RegistrationWorks) {
-  // The bulk of the tests for the registry are done in the RegisteredObjects
-  // templated base class. This simply checks the additional functionality
-  // endowed by the PM wrapper.
-
-  PerformanceManagerRegistryImpl* registry =
-      PerformanceManagerRegistryImpl::GetInstance();
-
-  // This ensures that the templated distinct TypeId generation works.
-  ASSERT_NE(Foo::TypeId(), Bar::TypeId());
-
-  EXPECT_EQ(0u, registry->GetRegisteredCountForTesting());
-  EXPECT_FALSE(PerformanceManager::GetRegisteredObjectAs<Foo>());
-  EXPECT_FALSE(PerformanceManager::GetRegisteredObjectAs<Bar>());
-
-  // Insertion works.
-  Foo foo;
-  Bar bar;
-  PerformanceManager::RegisterObject(&foo);
-  EXPECT_EQ(1u, registry->GetRegisteredCountForTesting());
-  PerformanceManager::RegisterObject(&bar);
-  EXPECT_EQ(2u, registry->GetRegisteredCountForTesting());
-  EXPECT_EQ(&foo, PerformanceManager::GetRegisteredObjectAs<Foo>());
-  EXPECT_EQ(&bar, PerformanceManager::GetRegisteredObjectAs<Bar>());
-
-  // Check the various helper functions.
-  EXPECT_EQ(&foo, Foo::GetFromPM());
-  EXPECT_EQ(&bar, Bar::GetFromPM());
-  EXPECT_TRUE(foo.IsRegisteredInPM());
-  EXPECT_TRUE(bar.IsRegisteredInPM());
-  EXPECT_FALSE(Foo::NothingRegisteredInPM());
-  EXPECT_FALSE(Bar::NothingRegisteredInPM());
-  PerformanceManager::UnregisterObject(&bar);
-  EXPECT_EQ(1u, registry->GetRegisteredCountForTesting());
-  EXPECT_EQ(&foo, Foo::GetFromPM());
-  EXPECT_FALSE(Bar::GetFromPM());
-  EXPECT_TRUE(foo.IsRegisteredInPM());
-  EXPECT_FALSE(bar.IsRegisteredInPM());
-  EXPECT_FALSE(Foo::NothingRegisteredInPM());
-  EXPECT_TRUE(Bar::NothingRegisteredInPM());
-
-  PerformanceManager::UnregisterObject(&foo);
-  EXPECT_EQ(0u, registry->GetRegisteredCountForTesting());
 }
 
 // Tests that accessors for browser and utility ProcessNodes work. Renderer

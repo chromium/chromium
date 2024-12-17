@@ -16,7 +16,6 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/performance_manager_registry_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
-#include "components/performance_manager/public/performance_manager_owned.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
@@ -192,40 +191,6 @@ void PerformanceManager::RemoveMechanism(
 bool PerformanceManager::HasMechanism(
     PerformanceManagerMainThreadMechanism* mechanism) {
   return PerformanceManagerRegistryImpl::GetInstance()->HasMechanism(mechanism);
-}
-
-// static
-void PerformanceManager::PassToPM(
-    std::unique_ptr<PerformanceManagerOwned> pm_owned) {
-  return PerformanceManagerRegistryImpl::GetInstance()->PassToPM(
-      std::move(pm_owned));
-}
-
-// static
-std::unique_ptr<PerformanceManagerOwned> PerformanceManager::TakeFromPM(
-    PerformanceManagerOwned* pm_owned) {
-  return PerformanceManagerRegistryImpl::GetInstance()->TakeFromPM(pm_owned);
-}
-
-// static
-void PerformanceManager::RegisterObject(
-    PerformanceManagerRegistered* pm_object) {
-  return PerformanceManagerRegistryImpl::GetInstance()->RegisterObject(
-      pm_object);
-}
-
-// static
-void PerformanceManager::UnregisterObject(
-    PerformanceManagerRegistered* pm_object) {
-  return PerformanceManagerRegistryImpl::GetInstance()->UnregisterObject(
-      pm_object);
-}
-
-// static
-PerformanceManagerRegistered* PerformanceManager::GetRegisteredObject(
-    uintptr_t type_id) {
-  return PerformanceManagerRegistryImpl::GetInstance()->GetRegisteredObject(
-      type_id);
 }
 
 // static
