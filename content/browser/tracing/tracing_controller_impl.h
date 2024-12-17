@@ -16,7 +16,6 @@
 #include "base/task/task_traits.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_controller.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -99,7 +98,7 @@ class TracingControllerImpl : public TracingController,
 
   void InitStartupTracingForDuration();
   void EndStartupTracing();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnMachineStatisticsLoaded();
 #endif
 
@@ -115,7 +114,7 @@ class TracingControllerImpl : public TracingController,
   bool is_data_complete_ = false;
   bool read_buffers_complete_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool are_statistics_loaded_ = false;
   std::string hardware_class_;
   base::WeakPtrFactory<TracingControllerImpl> weak_ptr_factory_{this};

@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"

@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switches.h"
@@ -30,7 +29,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
 #include "ui/gl/gl_switches.h"
 #endif
 
@@ -76,7 +75,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line.AppendSwitchASCII(switches::kUseGL,
                                    gl::kGLImplementationANGLEName);
     command_line.AppendSwitchASCII(switches::kUseANGLE,

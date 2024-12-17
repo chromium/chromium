@@ -4,8 +4,6 @@
 
 import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
@@ -88,7 +86,6 @@ source_set("browser") {
     "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//build/config/compiler:compiler_buildflags",
     "//cc",
     "//cc/animation",
@@ -2551,7 +2548,7 @@ source_set("browser") {
   }
 
   # ChromeOS also defines linux but their memory-monitors conflict.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "gpu/chromeos/delegate_to_browser_gpu_service_accelerator_factory.cc",
       "gpu/chromeos/video_capture_dependencies.cc",
@@ -2856,7 +2853,7 @@ source_set("browser") {
       frameworks += [ "CoreMedia.framework" ]
       weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3
     }
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "media/capture/desktop_capturer_ash.cc",
         "media/capture/desktop_capturer_ash.h",

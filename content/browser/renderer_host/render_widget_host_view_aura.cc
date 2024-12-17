@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/layers/layer.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/input/cursor_manager.h"
@@ -129,7 +128,7 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/wm/core/ime_util_chromeos.h"
 #endif
 
@@ -736,10 +735,10 @@ bool RenderWidgetHostViewAura::ShouldSkipCursorUpdate() const {
   if (!window || window->GetRootWindow() != root_window) {
     return true;
   }
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !BUILDFLAG(IS_CHROMEOS)
   if (!screen->IsWindowUnderCursor(root_window))
     return true;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   return false;
 }
 
@@ -1817,7 +1816,7 @@ void RenderWidgetHostViewAura::EnsureCaretNotInRect(
   }
 
   aura::Window* top_level_window = window_->GetToplevelWindow();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   wm::EnsureWindowNotInRect(top_level_window, keyboard_occluded_bounds_);
 #endif
 
@@ -2029,7 +2028,7 @@ void RenderWidgetHostViewAura::SetActiveCompositionForAccessibility(
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 ui::TextInputClient::EditingContext
 RenderWidgetHostViewAura::GetTextEditingContext() {
   ui::TextInputClient::EditingContext editing_context;
@@ -2976,9 +2975,9 @@ void RenderWidgetHostViewAura::DetachFromInputMethod(bool is_removed) {
   ui::InputMethod* input_method = GetInputMethod();
   if (input_method) {
     input_method->DetachTextInputClient(this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     wm::RestoreWindowBoundsOnClientFocusLost(window_->GetToplevelWindow());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
 #if BUILDFLAG(IS_WIN)

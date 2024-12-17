@@ -22,7 +22,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -312,7 +311,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       bool is_composition_committed) override;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // Returns the editing context of the active web content.
   // This is currently used by TSF and ChromeOS to fetch the URL of the active
   // web content.

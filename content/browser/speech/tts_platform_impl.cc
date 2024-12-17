@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "build/chromeos_buildflags.h"
 
 namespace content {
 

@@ -27,7 +27,6 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -855,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 // TODO(crbug.com/40156819) Android Lollipop has a problem with capturing
 // screenshot.
 // TODO(crbug.com/40815512): Failing on MacOS.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown \
   DISABLED_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown
 #else
@@ -898,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // ChromeOS and Android don't support software compositing.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class NoGPUCaptureScreenshotTest : public CaptureScreenshotTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -957,7 +956,7 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, MAYBE_LargeScreenshot) {
   EXPECT_GT(static_cast<int>(SkColorGetB(bottom_left)), 128);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 // Setting frame size (through RWHV) is not supported on Android.
 // This test seems to be very flaky on all platforms: https://crbug.com/801173

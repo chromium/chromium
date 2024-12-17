@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <utility>
-#include "build/chromeos_buildflags.h"
 
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_browser_font_singleton_host.h"

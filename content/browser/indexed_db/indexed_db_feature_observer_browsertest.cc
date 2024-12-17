@@ -6,7 +6,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/feature_observer.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/content_browser_client.h"
@@ -193,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
 // IndexedDB connections (notifications only when the number of held connections
 // switches between zero and non-zero).
 // Disabled on ChromeOS release build for flakiness. See crbug.com/1030733.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
 #define MAYBE_ObserverTwoLocks DISABLED_ObserverTwoLocks
 #else
 #define MAYBE_ObserverTwoLocks ObserverTwoLocks

@@ -15,7 +15,6 @@
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 

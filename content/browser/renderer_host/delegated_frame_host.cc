@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -465,7 +464,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
 
 // TODO(crbug.com/1227661): Revert https://crrev.com/c/3222541 to re-enable this
 // CHECK on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   CHECK_NE(frame_eviction_state_, FrameEvictionState::kNotStarted);
 #endif
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
@@ -485,7 +484,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
 
 // TODO(crbug.com/40812011): This DCHECK occasionally gets hit on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   CHECK(!stale_content_layer_->has_external_content());
 #endif
   stale_content_layer_->SetVisible(true);

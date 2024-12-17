@@ -10,7 +10,6 @@
 #include "content/public/browser/stable_video_decoder_factory.h"
 
 #include "base/containers/queue.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/switches.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"

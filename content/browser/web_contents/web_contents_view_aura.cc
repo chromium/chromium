@@ -698,7 +698,7 @@ void WebContentsViewAura::SetDelegateForTesting(
 void WebContentsViewAura::PrepareDropData(
     DropData* drop_data,
     const ui::OSExchangeData& data) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/256022714): Using `IsRendererTainted()` breaks the Files app. Always
   // setting this to false is currently believed to be safe-ish because ChromeOS
   // separates URL and filename metadata and does not implement the DownloadURL

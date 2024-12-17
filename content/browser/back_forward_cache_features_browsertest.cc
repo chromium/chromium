@@ -6,7 +6,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/generic_sensor/frame_sensor_provider_proxy.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
@@ -3920,7 +3919,7 @@ class BluetoothForwardCacheBrowserTest : public BackForwardCacheBrowserTest {
     adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // In CHROMEOS build, even when |adapter_| object is released at TearDown()
     // it causes the test to fail on exit with an error indicating |adapter_| is
     // leaked.

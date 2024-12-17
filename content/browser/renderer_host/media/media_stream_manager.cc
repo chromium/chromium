@@ -30,7 +30,6 @@
 #include "base/threading/thread.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
@@ -91,7 +90,7 @@
 #include "base/win/scoped_com_initializer.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
@@ -138,7 +137,7 @@ void FilterAudioEffects(const StreamControls& controls, int* effects) {
 void EnableHotwordEffect(const StreamControls& controls, int* effects) {
   DCHECK(effects);
   if (controls.hotword_enabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Only enable if a hotword device exists.
     if (ash::CrasAudioHandler::Get()->HasHotwordDevice()) {
       *effects |= media::AudioParameters::HOTWORD;
@@ -1603,7 +1602,7 @@ MediaStreamManager::MediaStreamManager(
     device_task_runner = video_capture_thread_->task_runner();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (media::ShouldUseCrosCameraService()) {
       jpeg_accelerator_provider_ =
           std::make_unique<media::JpegAcceleratorProviderImpl>(

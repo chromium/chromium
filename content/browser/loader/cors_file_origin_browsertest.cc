@@ -14,7 +14,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"

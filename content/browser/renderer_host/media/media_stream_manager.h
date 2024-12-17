@@ -55,7 +55,7 @@
 
 namespace media {
 class AudioSystem;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class JpegAcceleratorProviderImpl;
 class SystemEventMonitorImpl;
 #endif
@@ -871,7 +871,7 @@ class CONTENT_EXPORT MediaStreamManager
 
   GenerateStreamTestCallback generate_stream_test_callback_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<media::JpegAcceleratorProviderImpl>
       jpeg_accelerator_provider_;
 

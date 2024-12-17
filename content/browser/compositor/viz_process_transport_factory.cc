@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
 #include "cc/tiles/image_decode_cache_utils.h"
@@ -127,11 +126,11 @@ class HostDisplayClient : public viz::HostDisplayClient {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetPreferredRefreshRate(float refresh_rate) override {
     compositor_->OnSetPreferredRefreshRate(refresh_rate);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   [[maybe_unused]] const raw_ptr<ui::Compositor> compositor_;
@@ -275,7 +274,7 @@ ui::ContextFactory* VizProcessTransportFactory::GetContextFactory() {
 
 void VizProcessTransportFactory::DisableGpuCompositing(
     ui::Compositor* guilty_compositor) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // A fatal error has occurred and we can't fall back to software compositing
   // on CrOS. These can be unrecoverable hardware errors, or bugs that should
   // not happen. Crash the browser process to reset everything.

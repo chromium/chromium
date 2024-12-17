@@ -13,7 +13,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
@@ -81,7 +80,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
     // macOS.
     scoped_feature_list_.InitAndDisableFeature(
         features::kRetryGetVideoCaptureDeviceInfos);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     provider_ = std::make_unique<ServiceVideoCaptureProvider>(
         base::BindRepeating([]() {
           return std::unique_ptr<video_capture::mojom::AcceleratorFactory>();
@@ -90,7 +89,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
 #else
     provider_ =
         std::make_unique<ServiceVideoCaptureProvider>(kIgnoreLogMessageCB);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     ON_CALL(mock_video_capture_service_, DoConnectToVideoSourceProvider(_))
         .WillByDefault(Invoke(

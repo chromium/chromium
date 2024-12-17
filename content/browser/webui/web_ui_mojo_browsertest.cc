@@ -50,7 +50,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "content/test/data/web_ui_test.test-mojom.h"
 #include "content/test/data/web_ui_test_types.test-mojom.h"
 #endif
@@ -62,7 +62,7 @@ const char kMojoWebUiHost[] = "mojo-web-ui";
 const char kMojoWebUiTsHost[] = "mojo-web-ui-ts";
 const char kDummyWebUiHost[] = "dummy-web-ui";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class WebUIMojoTestCacheImpl : public mojom::WebUIMojoTestCache {
  public:
   explicit WebUIMojoTestCacheImpl(
@@ -161,7 +161,7 @@ class TestWebUIController : public WebUIController {
                                    {BindingsPolicyValue::kMojoWebUi}))
       : WebUIController(web_ui) {
     web_ui->SetBindings(bindings);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {
       WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(), kMojoWebUiHost);
@@ -199,7 +199,7 @@ class TestWebUIController : public WebUIController {
   TestWebUIController& operator=(const TestWebUIController&) = delete;
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebUIMojoTestCacheImpl> cache_;
 #endif
   std::unique_ptr<WebUITsMojoTestCacheImpl> ts_cache_;
@@ -214,7 +214,7 @@ class CacheTestWebUIController : public TestWebUIController {
       : TestWebUIController(web_ui) {}
   ~CacheTestWebUIController() override = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void BindInterface(
       mojo::PendingReceiver<mojom::WebUIMojoTestCache> receiver) {
     cache_ = std::make_unique<WebUIMojoTestCacheImpl>(std::move(receiver));
@@ -225,7 +225,7 @@ class CacheTestWebUIController : public TestWebUIController {
   void BindInterface(
       mojo::PendingReceiver<mojom::WebUITsMojoTestCache> receiver) {
     ts_cache_ = std::make_unique<WebUITsMojoTestCacheImpl>(std::move(receiver));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ASSERT_FALSE(cache_);
 #endif
   }
@@ -317,7 +317,7 @@ class TestWebUIContentBrowserClient
   void RegisterBrowserInterfaceBindersForFrame(
       RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     RegisterWebUIControllerInterfaceBinder<mojom::WebUIMojoTestCache,
                                            CacheTestWebUIController>(map);
 #endif
@@ -369,7 +369,7 @@ class WebUIMojoTest : public ContentBrowserTest,
 
 // Test both JS and TS on Ash, since Ash widely uses both types of WebUI
 // bindings. Test TS only on other platforms.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(All, WebUIMojoTest, testing::Bool());
 #else
 INSTANTIATE_TEST_SUITE_P(All, WebUIMojoTest, testing::Values(true));

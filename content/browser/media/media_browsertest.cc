@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"

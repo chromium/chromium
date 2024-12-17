@@ -50,12 +50,11 @@
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::RunLoop;
 using CaptureCallback = media::AudioCapturerSource::CaptureCallback;
@@ -198,9 +197,9 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
         /*enabled_features=*/
         {
             media::kOnDeviceWebSpeech,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             ash::features::kOnDeviceSpeechRecognition,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{});
   }

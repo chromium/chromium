@@ -49,7 +49,6 @@
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "components/attribution_reporting/features.h"
 #include "components/download/public/common/download_stats.h"

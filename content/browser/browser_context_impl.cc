@@ -33,7 +33,7 @@
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "storage/browser/file_system/external_mount_points.h"
 #endif
 
@@ -296,7 +296,7 @@ storage::ExternalMountPoints* BrowserContextImpl::GetMountPoints() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
          !BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!external_mount_points_)
     external_mount_points_ = storage::ExternalMountPoints::CreateRefCounted();
   return external_mount_points_.get();

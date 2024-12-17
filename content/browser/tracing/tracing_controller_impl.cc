@@ -34,7 +34,6 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/variations/active_field_trials.h"
@@ -63,7 +62,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 #include "v8/include/v8-version-string.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "content/browser/tracing/cros_tracing_agent.h"
 #endif
@@ -191,7 +190,7 @@ TracingControllerImpl::TracingControllerImpl() {
   AddAgents();
   g_tracing_controller = this;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Bind hwclass once the statistics are available.
   ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(
@@ -209,7 +208,7 @@ void TracingControllerImpl::AddAgents() {
   tracing::TracedProcessImpl::GetInstance()->SetTaskRunner(
       base::SequencedTaskRunner::GetCurrentDefault());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   agents_.push_back(std::make_unique<CrOSTracingAgent>());
 #elif defined(CAST_TRACING_AGENT)
   agents_.push_back(std::make_unique<CastTracingAgent>());
@@ -302,13 +301,13 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
 #endif
 
   // OS
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   metadata_dict.Set("os-name", "CrOS");
   if (are_statistics_loaded_)
     metadata_dict.Set("hardware-class", hardware_class_);
 #else
   metadata_dict.Set("os-name", base::SysInfo::OperatingSystemName());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   metadata_dict.Set("os-version", base::SysInfo::OperatingSystemVersion());
 #if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetArchitecture() ==
@@ -587,7 +586,7 @@ void TracingControllerImpl::OnReadBuffersComplete() {
     CompleteFlush();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void TracingControllerImpl::OnMachineStatisticsLoaded() {
   if (const std::optional<std::string_view> hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(

@@ -11,7 +11,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
@@ -36,7 +35,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   explicit ServiceVideoCaptureProvider(
       base::RepeatingCallback<void(const std::string&)> emit_log_message_cb);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using CreateAcceleratorFactoryCallback = base::RepeatingCallback<
       std::unique_ptr<video_capture::mojom::AcceleratorFactory>()>;
   // Lets clients provide a custom factory method for creating instances of
@@ -44,7 +43,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   ServiceVideoCaptureProvider(
       CreateAcceleratorFactoryCallback create_accelerator_factory_cb,
       base::RepeatingCallback<void(const std::string&)> emit_log_message_cb);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   ~ServiceVideoCaptureProvider() override;
 
@@ -88,9 +87,9 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   void OnLostConnectionToSourceProvider();
   void OnServiceConnectionClosed(ReasonForDisconnect reason);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CreateAcceleratorFactoryCallback create_accelerator_factory_cb_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   base::RepeatingCallback<void(const std::string&)> emit_log_message_cb_;
 
   base::WeakPtr<RefCountedVideoSourceProvider> weak_service_connection_;

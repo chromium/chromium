@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,9 +27,9 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using sandbox::mojom::Sandbox;
 using sandbox::policy::SandboxLinux;
@@ -121,17 +120,17 @@ class UtilityProcessSandboxBrowserTest
       }
 
       case Sandbox::kAudio:
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       case Sandbox::kHardwareVideoDecoding:
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       case Sandbox::kIme:
       case Sandbox::kTts:
       case Sandbox::kNearby:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       case Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_LINUX)
       case Sandbox::kVideoEffects:
       case Sandbox::kOnDeviceTranslation:
@@ -168,9 +167,8 @@ class UtilityProcessSandboxBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(UtilityProcessSandboxBrowserTest, VerifySandboxType) {
-#if BUILDFLAG(IS_LINUX) ||                                  \
-    (BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(USE_VAAPI) && \
-     !BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI) && \
+                            !BUILDFLAG(USE_V4L2_CODEC))
   if (GetParam() == Sandbox::kHardwareVideoDecoding) {
     // TODO(b/195769334): On Linux, this test fails with
     // Sandbox::kHardwareVideoDecoding because the pre-sandbox hook needs Ozone

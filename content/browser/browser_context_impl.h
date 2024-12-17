@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
@@ -156,7 +155,7 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<ResourceContext> resource_context_ =
       std::make_unique<ResourceContext>();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;
 #endif
 };
