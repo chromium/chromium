@@ -1,6 +1,9 @@
+// META: variant=?include=validOrigin
+// META: variant=?include=invalidOrigin
 // META: timeout=long
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js
+// META: script=/common/subset-tests-by-key.js
 // META: script=../aggregation-service/support/aggregation-service.js
 // META: script=resources/utils.js
 // META: script=/private-aggregation/resources/protected-audience-helper-module.js
@@ -13,7 +16,7 @@ const reportPoller = new ReportPoller(
     /*fullTimeoutMs=*/ 5000,
 );
 
-private_aggregation_promise_test(async test => {
+subsetTestByKey('validOrigin', private_aggregation_promise_test, async test => {
   const uuid = generateUuid();
 
   const privateAggregationConfig = {
@@ -34,7 +37,7 @@ private_aggregation_promise_test(async test => {
       /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
 }, 'using Private Aggregation in generateBid with an aggregationCoordinatorOrigin that is a valid origin but not on the allowlist');
 
-private_aggregation_promise_test(async test => {
+subsetTestByKey('invalidOrigin', private_aggregation_promise_test, async test => {
   const uuid = generateUuid();
 
   const privateAggregationConfig = {
@@ -55,7 +58,7 @@ private_aggregation_promise_test(async test => {
       /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
 }, 'using Private Aggregation in generateBid with with an aggregationCoordinatorOrigin that is not a valid origin');
 
-private_aggregation_promise_test(async test => {
+subsetTestByKey('validOrigin', private_aggregation_promise_test, async test => {
   const uuid = generateUuid();
 
   const privateAggregationConfig = {
@@ -76,7 +79,7 @@ private_aggregation_promise_test(async test => {
       /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
 }, 'using Private Aggregation in scoreAd with an aggregationCoordinatorOrigin that is a valid origin but not on the allowlist');
 
-private_aggregation_promise_test(async test => {
+subsetTestByKey('invalidOrigin', private_aggregation_promise_test, async test => {
   const uuid = generateUuid();
 
   const privateAggregationConfig = {
