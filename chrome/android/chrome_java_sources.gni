@@ -166,7 +166,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/background_task_scheduler/ChromeBackgroundTaskFactory.java",
   "java/src/org/chromium/chrome/browser/background_task_scheduler/ChromeNativeBackgroundTaskDelegate.java",
   "java/src/org/chromium/chrome/browser/background_task_scheduler/ProxyNativeTask.java",
-  "java/src/org/chromium/chrome/browser/backup/BackupSigninProcessor.java",
   "java/src/org/chromium/chrome/browser/backup/BoolPrefBackupSerializer.java",
   "java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java",
   "java/src/org/chromium/chrome/browser/backup/ChromeBackupWatcher.java",
