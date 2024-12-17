@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -42,6 +43,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentTransaction;
@@ -272,9 +274,10 @@ public class ManageSyncSettingsTest {
     }
 
     @Test
-    @SmallTest
-    @Feature({"Sync"})
-    public void testSyncAccountDataTypes() {
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    @DisableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
+    public void testAccountSettingsView() {
         // The types that should be default-enabled in transport mode depend on various flags.
         Set<String> expectedEnabledTypes =
                 new HashSet<>(
@@ -296,6 +299,7 @@ public class ManageSyncSettingsTest {
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
+
         Collection<ChromeSwitchPreference> dataTypes = getAccountDataTypes(fragment).values();
         for (ChromeSwitchPreference dataType : dataTypes) {
             Assert.assertEquals(
@@ -304,6 +308,38 @@ public class ManageSyncSettingsTest {
                     dataType.isChecked());
             Assert.assertTrue(dataType.isEnabled());
         }
+
+        onView(withText(R.string.account_section_header)).check(matches(isDisplayed()));
+
+        scrollToAndVerifyPresence(R.string.account_section_history_toggle);
+
+        scrollToAndVerifyPresence(R.string.account_section_bookmarks_toggle);
+
+        scrollToAndVerifyPresence(R.string.account_section_reading_list_toggle);
+
+        scrollToAndVerifyPresence(R.string.account_section_addresses_toggle);
+
+        scrollToAndVerifyPresence(R.string.account_section_passwords_toggle);
+
+        scrollToAndVerifyPresence(R.string.account_section_payments_toggle);
+
+        scrollToAndVerifyPresence(R.string.account_section_settings_toggle);
+
+        scrollToAndVerifyPresence(R.string.account_section_footer);
+
+        scrollToAndVerifyPresence(R.string.sign_in_google_activity_controls_title);
+        onView(withText(R.string.account_advanced_header)).check(matches(isDisplayed()));
+        onView(withText(R.string.sign_in_google_activity_controls_summary))
+                .check(matches(isDisplayed()));
+
+        scrollToAndVerifyPresence(R.string.sync_encryption);
+
+        scrollToAndVerifyPresence(R.string.account_data_dashboard_title);
+        onView(withText(R.string.account_data_dashboard_subtitle)).check(matches(isDisplayed()));
+
+        scrollToAndVerifyPresence(R.string.manage_your_google_account);
+
+        scrollToAndVerifyPresence(R.string.account_android_device_accounts);
     }
 
     @Test
@@ -2183,5 +2219,11 @@ public class ManageSyncSettingsTest {
         // image diffs.
         ChromeRenderTestRule.sanitize(fragment.getView());
         mRenderTestRule.render(fragment.getView(), skiaGoldId);
+    }
+
+    private void scrollToAndVerifyPresence(@StringRes int textId) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(textId))));
+        onView(withText(textId)).check(matches(isDisplayed()));
     }
 }
