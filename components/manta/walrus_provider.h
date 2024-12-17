@@ -31,6 +31,13 @@ namespace manta {
 // `IdentityManager` destruction.
 class COMPONENT_EXPORT(MANTA) WalrusProvider : virtual public BaseProvider {
  public:
+  // Enum for different image types used in Walrus requests.
+  enum class ImageType {
+    kInputImage,
+    kOutputImage,
+    kGeneratedRegion,
+  };
+
   // Returns a `WalrusProvider` instance tied to the profile of the passed
   // arguments.
   WalrusProvider(
@@ -50,6 +57,14 @@ class COMPONENT_EXPORT(MANTA) WalrusProvider : virtual public BaseProvider {
   // Will give an empty response if `IdentityManager` is no longer valid.
   virtual void Filter(const std::optional<std::string>& text_prompt,
                       const std::vector<std::vector<uint8_t>>& images,
+                      MantaGenericCallback done_callback);
+
+  // Filters the given `text_prompt` and `images`. The `image_types` vector
+  // specifies the type of each image in the `images` vector.
+  // The sizes of `images` and `image_types` must match.
+  virtual void Filter(const std::optional<std::string>& text_prompt,
+                      const std::vector<std::vector<uint8_t>>& images,
+                      const std::vector<ImageType>& image_types,
                       MantaGenericCallback done_callback);
 
   // Filters the given `text_prompt`.
