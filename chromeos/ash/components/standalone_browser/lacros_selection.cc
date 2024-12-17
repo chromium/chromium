@@ -10,10 +10,10 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash::standalone_browser {
 
@@ -32,6 +32,18 @@ constexpr auto kLacrosSelectionPolicyMap =
         {"user_choice", LacrosSelectionPolicy::kUserChoice},
         {"rootfs", LacrosSelectionPolicy::kRootfs},
     });
+
+bool IsGoogleInternal(const user_manager::User* user) {
+  if (!user) {
+    return false;
+  }
+
+  const std::string_view email = user->GetAccountId().GetUserEmail();
+  return gaia::IsGoogleInternalAccountEmail(email) ||
+         gaia::IsGoogleRobotAccountEmail(email) ||
+         gaia::ExtractDomainName(gaia::SanitizeEmail(email)) ==
+             "managedchrome.com";
+}
 
 }  // namespace
 

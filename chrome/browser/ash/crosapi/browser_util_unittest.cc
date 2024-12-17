@@ -137,14 +137,4 @@ TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockBadJson) {
   EXPECT_FALSE(browser_util::GetRootfsLacrosVersionMayBlock(path).IsValid());
 }
 
-// Lacros availability has an effect on googlers
-TEST_F(BrowserUtilTest, LacrosAvailabilityIgnoreGoogleEnableToUserChoice) {
-  AddRegularUser("user@google.com");
-
-  base::test::ScopedCommandLine cmd_line;
-  cmd_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kLacrosAvailabilityIgnore);
-  EXPECT_FALSE(browser_util::IsLacrosEnabled());
-}
-
 }  // namespace crosapi

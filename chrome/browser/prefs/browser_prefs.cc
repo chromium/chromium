@@ -1169,6 +1169,7 @@ const char kCryptAuthEnrollmentUserPublicKey[] =
 const char kCryptAuthEnrollmentUserPrivateKey[] =
     "cryptauth.enrollment.user_private_key";
 const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
+const char kLacrosLaunchSwitch[] = "lacros_launch_switch";
 #endif
 
 // Deprecated 12/2024.
@@ -1284,6 +1285,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 11/2024.
   registry->RegisterIntegerPref(kOnDeviceModelTimeoutCount, 0);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 12/2024.
+  registry->RegisterIntegerPref(kLacrosLaunchSwitch, 0);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2588,6 +2594,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 11/2024
   optimization_guide::model_execution::prefs::MigrateLegacyUsagePrefs(
       local_state);
+
+  // Added 12/2024
+#if BUILDFLAG(IS_CHROMEOS)
+  local_state->ClearPref(kLacrosLaunchSwitch);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

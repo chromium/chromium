@@ -3952,14 +3952,6 @@ inline constexpr char kShowCaretBrowsingDialog[] =
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enum pref indicating how to launch the Lacros browser. It is managed by
-// LacrosAvailability policy and can have one of the following values:
-// 0: User choice (default value).
-// 1: Lacros is disallowed.
-// 4: Lacros is the only available browser.
-// Values 2 and 3 were removed and should not be reused.
-inline constexpr char kLacrosLaunchSwitch[] = "lacros_launch_switch";
-
 // Enum pref indicating which Lacros browser to launch: rootfs or stateful. It
 // is managed by LacrosSelection policy and can have one of the following
 // values:

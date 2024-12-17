@@ -4040,9 +4040,6 @@ extern const char kImeUsEnglishModelUpdateDescription[];
 extern const char kCrosComponentsName[];
 extern const char kCrosComponentsDescription[];
 
-extern const char kLacrosAvailabilityIgnoreName[];
-extern const char kLacrosAvailabilityIgnoreDescription[];
-
 extern const char kLacrosStabilityName[];
 extern const char kLacrosStabilityDescription[];
 

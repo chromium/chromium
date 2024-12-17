@@ -13,8 +13,6 @@ component("standalone_browser") {
   sources = [
     "channel_util.cc",
     "channel_util.h",
-    "lacros_availability.cc",
-    "lacros_availability.h",
     "lacros_selection.cc",
     "lacros_selection.h",
     "standalone_browser_features.cc",
@@ -41,7 +39,6 @@ source_set("unit_tests") {
 
   sources = [
     "channel_util_unittest.cc",
-    "lacros_availability_unittest.cc",
     "lacros_selection_unittest.cc",
   ]
 

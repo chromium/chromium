@@ -19,14 +19,10 @@
 #include "base/version.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
-
-using ash::standalone_browser::LacrosAvailability;
-using user_manager::User;
 
 namespace crosapi::browser_util {
 

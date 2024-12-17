@@ -543,26 +543,4 @@ TEST_F(ExtensionRegistrarTest, DisableNotAshKeeplistedExtension) {
   TryDisablingNotAshKeeplistedExtension(/* expect_extension_disabled= */ true);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Test that a controlled extension that is not on the ash keep-list cannot be
-// disabled if ash is still enabled.
-TEST_F(ExtensionRegistrarTest,
-       NotDisableNotAshKeeplistedForceInstalledExtensionIfAshEnabled) {
-  static_cast<TestingPrefServiceSimple*>(pref_service())
-      ->registry()
-      ->RegisterIntegerPref(
-          prefs::kLacrosLaunchSwitch,
-          static_cast<int>(
-              ash::standalone_browser::LacrosAvailability::kLacrosOnly));
-  EXPECT_TRUE(crosapi::browser_util::IsAshWebBrowserEnabled());
-
-  // Prevent the extension from being disabled (by the user).
-  ON_CALL(*delegate(), CanDisableExtension(extension().get()))
-      .WillByDefault(Return(false));
-  AddEnabledExtension();
-
-  TryDisablingNotAshKeeplistedExtension(/* expect_extension_disabled= */ false);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace extensions

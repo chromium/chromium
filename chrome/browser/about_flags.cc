@@ -307,7 +307,6 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
-#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -1021,8 +1020,6 @@ const FeatureEntry::FeatureVariation kBorealisZinkGlDriverVariations[] = {
      std::size(kZinkEnableRecommended), nullptr},
     {"for all apps", kZinkEnableAll, std::size(kZinkEnableAll), nullptr}};
 
-const char kLacrosAvailabilityIgnoreInternalName[] =
-    "lacros-availability-ignore";
 const char kLacrosWaylandLoggingInternalName[] = "lacros-wayland-logging";
 const char kArcEnableVirtioBlkForDataInternalName[] =
     "arc-enable-virtio-blk-for-data";
@@ -1043,19 +1040,6 @@ const FeatureEntry::Choice kLacrosSelectionChoices[] = {
 
 const char kLacrosSelectionPolicyIgnoreInternalName[] =
     "lacros-selection-ignore";
-
-const FeatureEntry::Choice kLacrosAvailabilityPolicyChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {ash::standalone_browser::kLacrosAvailabilityPolicyUserChoice,
-     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
-     ash::standalone_browser::kLacrosAvailabilityPolicyUserChoice},
-    {ash::standalone_browser::kLacrosAvailabilityPolicyLacrosDisabled,
-     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
-     ash::standalone_browser::kLacrosAvailabilityPolicyLacrosDisabled},
-    {ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly,
-     ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
-     ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly},
-};
 
 const char kArcEnableAttestationFlag[] = "arc-enable-attestation";
 
@@ -4793,9 +4777,6 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(ash::features::kEnableBrightnessControlInSettings),
     },
     // Used to carry the policy value crossing the Chrome process lifetime.
-    {ash::standalone_browser::kLacrosAvailabilityPolicyInternalName, "", "",
-     kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
-    // Used to carry the policy value crossing the Chrome process lifetime.
     {kLacrosWaylandLoggingInternalName,
      flag_descriptions::kLacrosWaylandLoggingName,
      flag_descriptions::kLacrosWaylandLoggingDescription, kOsCrOS,
@@ -4816,10 +4797,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosSelectionPolicyIgnoreName,
      flag_descriptions::kLacrosSelectionPolicyIgnoreDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(ash::switches::kLacrosSelectionPolicyIgnore)},
-    {kLacrosAvailabilityIgnoreInternalName,
-     flag_descriptions::kLacrosAvailabilityIgnoreName,
-     flag_descriptions::kLacrosAvailabilityIgnoreDescription, kOsCrOS,
-     SINGLE_VALUE_TYPE(ash::switches::kLacrosAvailabilityIgnore)},
     {"list-all-display-modes", flag_descriptions::kListAllDisplayModesName,
      flag_descriptions::kListAllDisplayModesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kListAllDisplayModes)},
@@ -11986,13 +11963,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // enable-ui-devtools is only available on for non Stable channels.
   if (!strcmp(ui_devtools::switches::kEnableUiDevTools, entry.internal_name) &&
       channel == version_info::Channel::STABLE) {
-    return true;
-  }
-
-  // Skip lacros-availability-policy always. This is a pseudo entry
-  // and used to carry the policy value crossing the Chrome's lifetime.
-  if (!strcmp(ash::standalone_browser::kLacrosAvailabilityPolicyInternalName,
-              entry.internal_name)) {
     return true;
   }
 

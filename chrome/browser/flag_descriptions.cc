@@ -6940,13 +6940,6 @@ const char kCrosComponentsName[] = "Cros Components";
 const char kCrosComponentsDescription[] =
     "Enable cros-component UI elements, replacing other elements.";
 
-const char kLacrosAvailabilityIgnoreName[] =
-    "Ignore lacros-availability policy";
-const char kLacrosAvailabilityIgnoreDescription[] =
-    "Makes the lacros-availability policy have no effect on Google-internal "
-    "accounts. Instead, Lacros availability will be controlled by experiment "
-    "and/or user flags for such accounts.";
-
 const char kLacrosStabilityName[] = "Lacros stability";
 const char kLacrosStabilityDescription[] = "Lacros update channel.";
 

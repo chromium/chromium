@@ -777,9 +777,6 @@ const char kInstallLogFastUploadForTests[] =
 const char kKioskSplashScreenMinTimeSeconds[] =
     "kiosk-splash-screen-min-time-seconds";
 
-// When this flag is set, the lacros-availability policy is ignored.
-const char kLacrosAvailabilityIgnore[] = "lacros-availability-ignore";
-
 // If this switch is set, then ash-chrome will exec the lacros-chrome binary
 // from the indicated path rather than from component updater. Note that the
 // path should be to a directory that contains a binary named 'chrome'.
