@@ -2436,7 +2436,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
 
         if dep_module.type == 'cc_library_shared':
           module_target.shared_libs.add(dep_module.name)
-        elif dep_module.type == 'cc_library_static':
+        elif dep_module.type in ['cc_library_static', "rust_ffi_static"]:
           if module.type in ['cc_library_shared', 'cc_binary']:
             module_target.whole_static_libs.add(dep_module.name)
           elif module.type == 'cc_library_static':
@@ -2461,14 +2461,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             # consume it. We don't know that until we add the `rust_bindgen` as a dep.
             dep_module.static_inline_library = module.name
         elif dep_module.type == "rust_library_rlib":
-          module_target.rustlibs.add(dep_module.name)
-        elif dep_module.type == "rust_ffi_static":
-          assert module.type in [
-              "cc_library_static", "cc_library_shared"
-          ], "Only CC libraries can depend on rust_ffi_static"
-          # CPP libraries must not depend on rust_library_rlib, they must depend
-          # on rust_ffi_rlib as per aosp/3094614 and go/android-made-to-order-rust-staticlibs.
-          module_target.static_libs.add(dep_module.name)
+          if module.type in [
+              "rust_library_rlib", "rust_binary", "rust_proc_macro",
+              "rust_ffi_static"
+          ]:
+            module_target.rustlibs.add(dep_module.name)
         elif dep_module.type == "rust_proc_macro":
           module_target.proc_macros.add(dep_module.name)
         elif dep_module.type == 'cc_genrule':

@@ -631,7 +631,7 @@ class GnParser(object):
           'rust_binary', "rust_library", "rust_proc_macro", "rust_bindgen"
       ]:
         target.arch[arch].deps.add(dep.name)
-      if dep.type in ['static_library', 'source_set']:
+      if dep.type in ['static_library', 'source_set', 'rust_library']:
         # Bubble up static_libs and source_set. Necessary, since soong does not propagate
         # static_libs up the build tree.
         # Source sets are later translated to static_libraries, so it makes sense
