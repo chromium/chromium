@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
-import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -27,7 +26,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
@@ -95,28 +93,7 @@ public class AwClipboardTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_AUTO_GRANT_SANITIZED_CLIPBOARD_WRITE
-    })
     public void testAutoGrantWithUserGesture() throws Exception {
-        testClipboardWriteWorks();
-    }
-
-    /**
-     * This test asserts that the legacy behavior still works as long as the kill-switch flag
-     * exists.
-     */
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({
-        "disable-features=" + AwFeatures.WEBVIEW_AUTO_GRANT_SANITIZED_CLIPBOARD_WRITE
-    })
-    public void testAutoGrantWithUserGesture_legacy() throws Exception {
-        testClipboardWriteWorks();
-    }
-
-    @SuppressLint("VisibleForTests")
-    private void testClipboardWriteWorks() throws Exception {
         String pageUrl = mServer.setResponse("/clip", CLIPBOARD_PAGE_HTML, Collections.emptyList());
         mActivityTestRule.loadUrlAsync(mAwContents, pageUrl);
         Data loadData = mWebMessageListener.waitForOnPostMessage();
