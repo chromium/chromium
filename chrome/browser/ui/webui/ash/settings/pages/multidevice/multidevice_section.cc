@@ -766,6 +766,9 @@ void MultiDeviceSection::AddLoadTimeData(
       "multidevicePhoneHubAppsItemTitle",
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
+
+  html_source->AddBoolean("isQuickShareV2Enabled",
+                          chromeos::features::IsQuickShareV2Enabled());
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {

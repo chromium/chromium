@@ -41,7 +41,8 @@ import {observeReceiveManager} from './nearby_share_receive_manager.js';
 import {getTemplate} from './nearby_share_subpage.html.js';
 import {dataUsageStringToEnum} from './types.js';
 
-const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 300;
+const DEFAULT_HIGH_VISIBILITY_TIMEOUT_LEGACY_S = 300;
+const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 600;
 
 const SettingsNearbyShareSubpageElementBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
@@ -107,6 +108,14 @@ export class SettingsNearbyShareSubpageElement extends
       inHighVisibility_: {
         type: Boolean,
         value: false,
+      },
+
+      /**
+       * Determines whether the QuickShareV2 flag is enabled.
+       */
+      isQuickShareV2Enabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
       },
 
       /**
@@ -179,6 +188,7 @@ export class SettingsNearbyShareSubpageElement extends
   private isDeviceVisible_: boolean;
   private isEveryoneModeOnlyForTenMinutes_: boolean;
   private inHighVisibility_: boolean;
+  private isQuickShareV2Enabled_: boolean;
   private manageContactsUrl_: string;
   private profileLabel_: string;
   private profileName_: string;
@@ -370,9 +380,12 @@ export class SettingsNearbyShareSubpageElement extends
     // TODO(crbug.com/40159645): Add logic to show how much time the user
     // actually has left.
     return inHighVisibility ?
-        this.i18n('nearbyShareHighVisibilityOn', 5) :
+        this.i18n(
+            'nearbyShareHighVisibilityOn',
+            this.isQuickShareV2Enabled_ ? 10 : 5) :
         this.i18nAdvanced(
-            'nearbyShareHighVisibilityOff', {substitutions: ['5']});
+            'nearbyShareHighVisibilityOff',
+            {substitutions: [this.isQuickShareV2Enabled_ ? '10' : '5']});
   }
 
   private getDataUsageLabel_(dataUsageValue: string): string {
@@ -444,7 +457,10 @@ export class SettingsNearbyShareSubpageElement extends
 
   private showHighVisibilityPage_(timeoutInSeconds?: number): void {
     const shutoffTimeoutInSeconds =
-        timeoutInSeconds || DEFAULT_HIGH_VISIBILITY_TIMEOUT_S;
+        timeoutInSeconds || this.isQuickShareV2Enabled_ ?
+        DEFAULT_HIGH_VISIBILITY_TIMEOUT_S :
+        DEFAULT_HIGH_VISIBILITY_TIMEOUT_LEGACY_S;
+
     this.showReceiveDialog_ = true;
     flush();
     this.shadowRoot!
