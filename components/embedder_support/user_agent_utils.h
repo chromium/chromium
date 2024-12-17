@@ -69,8 +69,6 @@ blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
     std::optional<std::string> brand,
     const std::string& version,
-    std::optional<std::string> maybe_greasey_brand,
-    std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type,
     std::optional<blink::UserAgentBrandVersion> additional_brand_version =
@@ -107,8 +105,6 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
 // https://wicg.github.io/ua-client-hints/#create-arbitrary-brands-section.
 blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     int seed,
-    std::optional<std::string> maybe_greasey_brand,
-    std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type);
 

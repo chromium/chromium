@@ -193,26 +193,16 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
 #if !BUILDFLAG(CHROMIUM_BRANDING)
   brand = version_info::GetProductName();
 #endif
-  std::optional<std::string> maybe_brand_override =
-      base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
-                                             "brand_override");
-  std::optional<std::string> maybe_version_override =
-      base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
-                                             "version_override");
-  if (maybe_brand_override->empty())
-    maybe_brand_override = std::nullopt;
-  if (maybe_version_override->empty())
-    maybe_version_override = std::nullopt;
 
   std::string brand_version =
       output_version_type == blink::UserAgentBrandVersionType::kFullVersion
           ? full_version
           : major_version;
 
-  return GenerateBrandVersionList(
-      major_version_number, brand, brand_version, maybe_brand_override,
-      maybe_version_override, enable_updated_grease_by_policy,
-      output_version_type, additional_brand_version);
+  return GenerateBrandVersionList(major_version_number, brand, brand_version,
+                                  enable_updated_grease_by_policy,
+                                  output_version_type,
+                                  additional_brand_version);
 }
 
 // Return UserAgentBrandList with the major version populated in the brand
@@ -383,16 +373,13 @@ blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
     std::optional<std::string> brand,
     const std::string& version,
-    std::optional<std::string> maybe_greasey_brand,
-    std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type,
     std::optional<blink::UserAgentBrandVersion> additional_brand_version) {
   DCHECK_GE(seed, 0);
 
   blink::UserAgentBrandVersion greasey_bv = GetGreasedUserAgentBrandVersion(
-      seed, maybe_greasey_brand, maybe_greasey_version,
-      enable_updated_grease_by_policy, output_version_type);
+      seed, enable_updated_grease_by_policy, output_version_type);
   blink::UserAgentBrandVersion chromium_bv = {"Chromium", version};
 
   blink::UserAgentBrandList brand_version_list = {std::move(greasey_bv),
@@ -443,8 +430,6 @@ blink::UserAgentBrandVersion GetProcessedGreasedBrandVersion(
 
 blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     int seed,
-    std::optional<std::string> maybe_greasey_brand,
-    std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type) {
   std::string greasey_brand;
@@ -452,9 +437,7 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
   // The updated algorithm is enabled by default, but we maintain the ability
   // to opt out of it either via Finch (setting updated_algorithm to false) or
   // via an enterprise policy escape hatch.
-  if (enable_updated_grease_by_policy &&
-      base::GetFieldTrialParamByFeatureAsBool(features::kGreaseUACH,
-                                              "updated_algorithm", true)) {
+  if (enable_updated_grease_by_policy) {
     const std::vector<std::string> greasey_chars = {
         " ", "(", ":", "-", ".", "/", ")", ";", "=", "?", "_"};
     const std::vector<std::string> greased_versions = {"8", "99", "24"};
@@ -465,9 +448,8 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
          greasey_chars[(seed + 1) % greasey_chars.size()], "Brand"});
     greasey_version = greased_versions[seed % greased_versions.size()];
 
-    return GetProcessedGreasedBrandVersion(
-        maybe_greasey_brand.value_or(greasey_brand),
-        maybe_greasey_version.value_or(greasey_version), output_version_type);
+    return GetProcessedGreasedBrandVersion(greasey_brand, greasey_version,
+                                           output_version_type);
   } else {
     const std::vector<std::string> greasey_chars = {" ", " ", ";"};
     const std::vector<size_t> permuted_order =
