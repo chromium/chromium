@@ -87,6 +87,11 @@ const base::FeatureParam<double> kSearchScoreThreshold(&kHistoryEmbeddings,
                                                        "SearchScoreThreshold",
                                                        -1);
 
+const base::FeatureParam<double> kSearchWordMatchScoreThreshold(
+    &kHistoryEmbeddings,
+    "SearchWordMatchScoreThreshold",
+    0.4);
+
 // This one defaults true because we generally want it whenever v2 is enabled
 // and it will only be used if applicable.
 const base::FeatureParam<bool> kEnableIntentClassifier(&kHistoryEmbeddings,
@@ -245,6 +250,7 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   at_keyword_acceleration = kAtKeywordAcceleration.Get();
   content_visibility_threshold = kContentVisibilityThreshold.Get();
   search_score_threshold = kSearchScoreThreshold.Get();
+  search_word_match_score_threshold = kSearchWordMatchScoreThreshold.Get();
   enable_intent_classifier = kEnableIntentClassifier.Get();
   use_ml_intent_classifier = kUseMlIntentClassifier.Get();
   enable_ml_intent_classifier_score = kEnableMlIntentClassifierScore.Get();

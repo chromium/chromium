@@ -139,11 +139,13 @@ float Embedding::ScoreWith(const Embedding& other_embedding) const {
 ScoredUrl::ScoredUrl(history::URLID url_id,
                      history::VisitID visit_id,
                      base::Time visit_time,
-                     float score)
+                     float score,
+                     float word_match_score)
     : url_id(url_id),
       visit_id(visit_id),
       visit_time(visit_time),
-      score(score) {}
+      score(score),
+      word_match_score(word_match_score) {}
 ScoredUrl::~ScoredUrl() = default;
 ScoredUrl::ScoredUrl(ScoredUrl&&) = default;
 ScoredUrl& ScoredUrl::operator=(ScoredUrl&&) = default;
@@ -188,10 +190,10 @@ bool UrlData::operator==(const UrlData& other) const {
   return false;
 }
 
-float UrlData::BestScoreWith(SearchInfo& search_info,
-                             const SearchParams& search_params,
-                             const Embedding& query_embedding,
-                             size_t min_passage_word_count) const {
+UrlScore UrlData::BestScoreWith(SearchInfo& search_info,
+                                const SearchParams& search_params,
+                                const Embedding& query_embedding,
+                                size_t min_passage_word_count) const {
   constexpr float kMaxFloat = std::numeric_limits<float>::max();
   float word_match_required_score =
       search_params.word_match_minimum_embedding_score;
@@ -278,7 +280,10 @@ float UrlData::BestScoreWith(SearchInfo& search_info,
     }
   }
 
-  return best + word_match_boost;
+  return UrlScore{
+      .score = best + word_match_boost,
+      .word_match_score = word_match_boost,
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -311,12 +316,20 @@ SearchInfo VectorDatabase::FindNearest(
   size_t min_passage_word_count =
       GetFeatureParameters().search_passage_minimum_word_count;
 
-  struct Compare {
+  struct CompareScore {
     bool operator()(const ScoredUrl& a, const ScoredUrl& b) {
       return a.score > b.score;
     }
   };
-  std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, Compare> q;
+  struct CompareWordMatchScore {
+    bool operator()(const ScoredUrl& a, const ScoredUrl& b) {
+      return a.word_match_score > b.word_match_score;
+    }
+  };
+  std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, CompareScore>
+      top_by_score;
+  std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, CompareWordMatchScore>
+      top_by_word_match_score;
 
   SearchInfo search_info;
   search_info.completed = true;
@@ -330,12 +343,21 @@ SearchInfo VectorDatabase::FindNearest(
     search_info.searched_embedding_count += url_data->embeddings.size();
 
     base::ElapsedTimer scoring_timer;
-    const float score = url_data->BestScoreWith(
+    UrlScore url_score = url_data->BestScoreWith(
         search_info, search_params, query_embedding, min_passage_word_count);
-    q.emplace(url_data->url_id, url_data->visit_id, url_data->visit_time,
-              score);
-    while (q.size() > count) {
-      q.pop();
+
+    top_by_score.emplace(url_data->url_id, url_data->visit_id,
+                         url_data->visit_time, url_score.score,
+                         url_score.word_match_score);
+    while (top_by_score.size() > count) {
+      top_by_score.pop();
+    }
+
+    top_by_word_match_score.emplace(url_data->url_id, url_data->visit_id,
+                                    url_data->visit_time, url_score.score,
+                                    url_score.word_match_score);
+    while (top_by_word_match_score.size() > count) {
+      top_by_word_match_score.pop();
     }
 
     search_info.scoring_time += scoring_timer.Elapsed();
@@ -359,12 +381,17 @@ SearchInfo VectorDatabase::FindNearest(
                    search_info.total_search_time;
   }
 
-  // Empty queue into vector and return result sorted with descending scores.
-  while (!q.empty()) {
-    search_info.scored_urls.push_back(q.top());
-    q.pop();
+  // Empty queues into vectors and return results sorted with descending scores.
+  while (!top_by_score.empty()) {
+    search_info.scored_urls.push_back(top_by_score.top());
+    top_by_score.pop();
+  }
+  while (!top_by_word_match_score.empty()) {
+    search_info.word_match_scored_urls.push_back(top_by_word_match_score.top());
+    top_by_word_match_score.pop();
   }
   base::ranges::reverse(search_info.scored_urls);
+  base::ranges::reverse(search_info.word_match_scored_urls);
   return search_info;
 }
 

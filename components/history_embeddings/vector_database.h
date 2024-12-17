@@ -23,7 +23,8 @@ struct ScoredUrl {
   ScoredUrl(history::URLID url_id,
             history::VisitID visit_id,
             base::Time visit_time,
-            float score);
+            float score,
+            float word_match_score);
   ~ScoredUrl();
   ScoredUrl(ScoredUrl&&);
   ScoredUrl& operator=(ScoredUrl&&);
@@ -39,6 +40,11 @@ struct ScoredUrl {
   // the single best embedding score plus a word match boost from text search
   // across all passages.
   float score;
+
+  // This is the score computed by word match text search. It's included in
+  // the total `score`, but is also kept separate for second-chance word
+  // match result filling.
+  float word_match_score;
 };
 
 struct SearchParams {
@@ -90,8 +96,12 @@ struct SearchInfo {
   SearchInfo(SearchInfo&&);
   ~SearchInfo();
 
-  // Result of the search, the best scored URLs.
+  // Result of the search, the best scored URLs considering total score.
   std::vector<ScoredUrl> scored_urls;
+
+  // Secondary results of the search, the best scored URLs considering
+  // word match text search score.
+  std::vector<ScoredUrl> word_match_scored_urls;
 
   // The number of URLs searched to find this result.
   size_t searched_url_count = 0u;
@@ -155,6 +165,11 @@ class Embedding {
   size_t passage_word_count_ = 0;
 };
 
+struct UrlScore {
+  float score;
+  float word_match_score;
+};
+
 struct UrlData {
   UrlData(history::URLID url_id,
           history::VisitID visit_id,
@@ -170,10 +185,10 @@ struct UrlData {
   // Finds score of embedding nearest to query, also taking passages
   // into consideration since some should be skipped. The passages
   // correspond to the embeddings 1:1 by index.
-  float BestScoreWith(SearchInfo& search_info,
-                      const SearchParams& search_params,
-                      const Embedding& query_embedding,
-                      size_t search_minimum_word_count) const;
+  UrlScore BestScoreWith(SearchInfo& search_info,
+                         const SearchParams& search_params,
+                         const Embedding& query_embedding,
+                         size_t search_minimum_word_count) const;
 
   history::URLID url_id;
   history::VisitID visit_id;

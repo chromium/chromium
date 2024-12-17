@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, LogDataIsPrepared) {
   base::HistogramTester histogram_tester;
   SearchResult result;
   result.scored_url_rows = {
-      ScoredUrlRow(ScoredUrl(0, 0, base::Time::Now(), 0.5f)),
+      ScoredUrlRow(ScoredUrl(0, 0, base::Time::Now(), 0.5f, 0.2f)),
   };
   service()->SendQualityLog(
       result, {1}, 3,

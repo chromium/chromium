@@ -741,10 +741,12 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
           << " ; .Completed: " << search_info.completed;
 
   // Populate source passages and embeddings to fill out more complete
-  // ScoredUrlRow results.
+  // ScoredUrlRow results. Total score top results are first, followed by
+  // word match score top results.
   std::vector<ScoredUrlRow> scored_url_rows;
-  scored_url_rows.reserve(search_info.scored_urls.size());
-  for (ScoredUrl& scored_url : search_info.scored_urls) {
+  scored_url_rows.reserve(search_info.scored_urls.size() +
+                          search_info.word_match_scored_urls.size());
+  auto expand = [&](ScoredUrl& scored_url) {
     ScoredUrlRow& scored_url_row =
         scored_url_rows.emplace_back(std::move(scored_url));
     // Since this data was just found, it must exist in the database, so the
@@ -759,15 +761,26 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
       scored_url_row.scores.push_back(query_embedding.ScoreWith(
           scored_url_row.passages_embeddings.embeddings[i]));
     }
+  };
+  for (ScoredUrl& scored_url : search_info.scored_urls) {
+    expand(scored_url);
+  }
+  for (ScoredUrl& scored_url : search_info.word_match_scored_urls) {
+    if (!std::ranges::any_of(scored_url_rows, [&](const ScoredUrlRow& row) {
+          return row.scored_url.url_id == scored_url.url_id;
+        })) {
+      expand(scored_url);
+    }
   }
 
   for (const auto& sr : scored_url_rows) {
     VLOG(3) << "URL: " << sr.row.url().spec()
-            << " Score: " << sr.scored_url.score;
+            << " score: " << sr.scored_url.score
+            << " ; word_match_score: " << sr.scored_url.word_match_score;
     VLOG(3) << "# passages: " << sr.passages_embeddings.passages.passages_size()
             << " # scores: " << sr.scores.size();
     for (size_t i = 0; i < sr.scores.size(); i++) {
-      VLOG(3) << "score: " << sr.scores[i];
+      VLOG(3) << "embedding similarity score: " << sr.scores[i];
       VLOG(3) << "passage: " << sr.passages_embeddings.passages.passages(i);
     }
   }
@@ -872,30 +885,58 @@ void HistoryEmbeddingsService::OnSearchCompleted(
     std::vector<ScoredUrlRow> scored_url_rows) {
   std::vector<ScoredUrlRow> filtered;
   filtered.reserve(scored_url_rows.size());
-  float threshold = GetScoreThreshold(*embedder_metadata_);
+  float score_threshold = GetScoreThreshold(*embedder_metadata_);
+  float word_match_score_threshold =
+      GetFeatureParameters().search_word_match_score_threshold;
   std::copy_if(std::make_move_iterator(scored_url_rows.begin()),
                std::make_move_iterator(scored_url_rows.end()),
                std::back_inserter(filtered),
                [=](const ScoredUrlRow& scored_url_row) {
-                 // This score is the total for the URL, including the
+                 // The `score` is the total for the URL, including the
                  // best embedding score plus a holistic word match boost.
-                 return scored_url_row.scored_url.score > threshold;
+                 // The `word_match_score` is just the boost part, and a
+                 // result item could be included after primary results
+                 // if it exceeds a different threshold for word match.
+                 return scored_url_row.scored_url.score > score_threshold ||
+                        scored_url_row.scored_url.word_match_score >
+                            word_match_score_threshold;
                });
-  VLOG(3) << "Search found " << scored_url_rows.size() << " results and kept "
-          << filtered.size() << " after score filtering";
 
   base::UmaHistogramCounts100("History.Embeddings.NumUrlsDiscardedForLowScore",
                               scored_url_rows.size() - filtered.size());
+
+  auto is_kept_by_word_match = [=](const ScoredUrlRow& scored_url_row) {
+    return !(scored_url_row.scored_url.score > score_threshold);
+  };
+  size_t num_added_by_word_match =
+      std::ranges::count_if(filtered, is_kept_by_word_match);
+  base::UmaHistogramCounts100("History.Embeddings.NumUrlsAddedByWordMatch",
+                              num_added_by_word_match);
+
+  // Trim final result set to not exceed requested `count`.
+  while (filtered.size() > result.count) {
+    filtered.pop_back();
+  }
+
+  size_t num_kept_by_word_match =
+      std::ranges::count_if(filtered, is_kept_by_word_match);
+  base::UmaHistogramCounts100("History.Embeddings.NumUrlsKeptByWordMatch",
+                              num_kept_by_word_match);
 
   // The score used for filtering is the scored_url.score but this can exceed
   // the maximum embedding score due to word match boosting across all passages.
   // Detect and log cases that would have been filtered if not for text search.
   for (const ScoredUrlRow& row : filtered) {
     float best_embedding_score = std::ranges::max(row.scores);
-    bool sufficient = best_embedding_score > threshold;
+    bool sufficient = best_embedding_score > score_threshold;
     base::UmaHistogramBoolean("History.Embeddings.EmbeddingScoreSufficient",
                               sufficient);
   }
+
+  VLOG(3) << "Search found " << scored_url_rows.size() << " results, leaving "
+          << filtered.size() << " after all filtering, with "
+          << num_added_by_word_match << " added by word match and "
+          << num_kept_by_word_match << " kept by word match after capping";
 
   DeterminePassageVisibility(std::move(callback), std::move(result),
                              std::move(filtered));

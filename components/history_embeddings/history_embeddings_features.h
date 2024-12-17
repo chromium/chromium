@@ -68,6 +68,10 @@ struct FeatureParameters {
   // scoring and result inclusion.
   double search_score_threshold = -1;
 
+  // Minimum word match score required to include an extra search result when
+  // the total score does not meet the `search_score_threshold`.
+  double search_word_match_score_threshold = 0.2;
+
   // Specifies whether to use the intent classifier to gate answer generation.
   bool enable_intent_classifier = true;
 

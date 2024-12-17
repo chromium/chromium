@@ -2182,6 +2182,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.NumUrlsAddedByWordMatch" units="counts"
+    expires_after="2025-05-04">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Number of URLs that were added to a result set due to having a sufficient
+    word match score and an insufficient total score. Logged each time a query
+    leveraging history embeddings is performed.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.NumUrlsDiscardedForLowScore" units="counts"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
@@ -2190,6 +2201,22 @@ chromium-metrics-reviews@google.com.
     Number of URLs that were found but discarded for insufficient score (i.e.
     not reaching the configured search score threshold). Logged each time a
     query leveraging history embeddings is performed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.NumUrlsKeptByWordMatch" units="counts"
+    expires_after="2025-05-04">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Number of URLs that were kept in a result set due to having a sufficient
+    word match score and an insufficient total score, after capping to the
+    maximum count for presentation to the user. Logged each time a query
+    leveraging history embeddings is performed.
+
+    Note, this differs from History.Embeddings.NumUrlsAddedByWordMatch in that
+    it measures after capping. Comparing these two metrics can reveal how much
+    word matches are pushed off the list by first total score results.
   </summary>
 </histogram>
 

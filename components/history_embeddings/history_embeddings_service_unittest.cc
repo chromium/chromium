@@ -283,9 +283,11 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
       {"A passage with five words.", 1},
   });
 
-  auto create_scored_url_row = [&](history::VisitID visit_id, float score) {
+  auto create_scored_url_row = [&](history::VisitID visit_id, float score,
+                                   float word_match_score) {
     AddTestHistoryPage("http://answertest.com");
-    ScoredUrlRow scored_url_row(ScoredUrl(1, visit_id, {}, score));
+    ScoredUrlRow scored_url_row(
+        ScoredUrl(1, visit_id, {}, score, word_match_score));
     scored_url_row.passages_embeddings.passages.add_passages(
         "A passage with five words.");
     scored_url_row.passages_embeddings.embeddings.emplace_back(
@@ -294,11 +296,12 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
     return scored_url_row;
   };
   std::vector<ScoredUrlRow> scored_url_rows = {
-      create_scored_url_row(1, 1),
+      create_scored_url_row(1, 1, 0),
   };
 
   base::test::TestFuture<SearchResult> future;
   SearchResult initial_result;
+  initial_result.count = 3;
   initial_result.query = "this is a question!?";
   service_->OnSearchCompleted(future.GetRepeatingCallback(),
                               std::move(initial_result), scored_url_rows);
@@ -415,9 +418,11 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
       {"passage", 1},
   });
 
-  auto create_scored_url_row = [&](history::VisitID visit_id, float score) {
+  auto create_scored_url_row = [&](history::VisitID visit_id, float score,
+                                   float word_match_score) {
     AddTestHistoryPage("http://test.com");
-    ScoredUrlRow scored_url_row(ScoredUrl(1, visit_id, {}, score));
+    ScoredUrlRow scored_url_row(
+        ScoredUrl(1, visit_id, {}, score, word_match_score));
     scored_url_row.passages_embeddings.passages.add_passages("passage");
     scored_url_row.passages_embeddings.embeddings.emplace_back(
         std::vector<float>(768, 1.0f));
@@ -425,11 +430,13 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     return scored_url_row;
   };
   std::vector<ScoredUrlRow> scored_url_rows = {
-      create_scored_url_row(1, 1),
-      create_scored_url_row(2, .8),
-      create_scored_url_row(3, .6),
-      create_scored_url_row(4, .4),
+      create_scored_url_row(1, 1, 0),
+      create_scored_url_row(2, .8, 0),
+      create_scored_url_row(3, .6, 0),
+      create_scored_url_row(4, .4, 0),
   };
+  SearchResult input_result;
+  input_result.count = 3;
 
   // Note, the block scopes are to cleanly separate searches since answers
   // come in late with repeated callbacks.
@@ -437,8 +444,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     // Should default to .9 when neither the feature param nor metadata
     // thresholds are set.
     base::test::TestFuture<SearchResult> future;
-    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                                scored_url_rows);
+    service_->OnSearchCompleted(future.GetRepeatingCallback(),
+                                input_result.Clone(), scored_url_rows);
     SearchResult result = future.Take();
     ASSERT_EQ(result.scored_url_rows.size(), 1u);
     EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -448,8 +455,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     // Should use the metadata threshold when it's set.
     base::test::TestFuture<SearchResult> future;
     SetMetadataScoreThreshold(0.7);
-    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                                scored_url_rows);
+    service_->OnSearchCompleted(future.GetRepeatingCallback(),
+                                input_result.Clone(), scored_url_rows);
     SearchResult result = future.Take();
     ASSERT_EQ(result.scored_url_rows.size(), 2u);
     EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -465,8 +472,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     feature_parameters.search_score_threshold = 0.5;
     SetFeatureParametersForTesting(feature_parameters);
     base::test::TestFuture<SearchResult> future;
-    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                                scored_url_rows);
+    service_->OnSearchCompleted(future.GetRepeatingCallback(),
+                                input_result.Clone(), scored_url_rows);
     SearchResult result = future.Take();
     ASSERT_EQ(result.scored_url_rows.size(), 3u);
     EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -815,6 +822,59 @@ TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
     // is done across all passages.
     EXPECT_LT(std::ranges::max(row.scores), row.scored_url.score);
   }
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, WordMatchBoostAddsLowScoredResultItems) {
+  // These parameter override values make it easy to have one embedding
+  // exceed the threshold and another to fall below the threshold. Due
+  // to how the mock embedder works, all 1's will score the square root of
+  // the output size, sqrt(768) ~= 27.7128, so setting the threshold
+  // just below this value and using a shorter embedding will differentiate.
+  ScopedFeatureParametersForTesting params;
+  params.Get().search_score_threshold = 27.7;
+  params.Get().search_word_match_score_threshold = 0.01f;
+
+  base::HistogramTester histogram_tester;
+  AddTestHistoryPage("http://test1.com");
+  AddTestHistoryPage("http://test2.com");
+  AddTestHistoryPage("http://test3.com");
+  OverrideVisibilityScoresForTesting({
+      {"boosted test query", 0.99},
+      {"test passage 1", 0.99},
+      {"test passage 2", 0.99},
+  });
+  OnPassagesEmbeddingsComputed(UrlData(1, 1, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+  OnPassagesEmbeddingsComputed(UrlData(2, 2, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 0.9f)),
+                                Embedding(std::vector<float>(768, 0.9f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+  OnPassagesEmbeddingsComputed(UrlData(3, 3, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 0.9f)),
+                                Embedding(std::vector<float>(768, 0.9f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+
+  base::test::TestFuture<SearchResult> future;
+  service_->Search(/*previous_search_result=*/nullptr, "boosted test query", {},
+                   2, /*skip_answering=*/false, future.GetRepeatingCallback());
+  SearchResult result = future.Take();
+  EXPECT_EQ(result.scored_url_rows.size(), 2u);
+  EXPECT_GT(result.scored_url_rows[0].scored_url.score,
+            GetFeatureParameters().search_score_threshold);
+  EXPECT_LT(result.scored_url_rows[1].scored_url.score,
+            GetFeatureParameters().search_score_threshold);
+  EXPECT_GT(result.scored_url_rows[1].scored_url.word_match_score,
+            GetFeatureParameters().search_word_match_score_threshold);
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumUrlsAddedByWordMatch", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumUrlsKeptByWordMatch", 1, 1);
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, GetUrlData) {

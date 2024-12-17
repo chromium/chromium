@@ -119,10 +119,11 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
   url_data.embeddings.push_back(DeterministicEmbedding(2));
 
   Embedding query_embedding = DeterministicEmbedding(0);
-  float score =
+  UrlScore url_score =
       url_data.BestScoreWith(search_info, search_params, query_embedding, 0);
   EXPECT_EQ(search_info.skipped_nonascii_passage_count, 1u);
-  EXPECT_FLOAT_EQ(score, 1.0f);
+  EXPECT_FLOAT_EQ(url_score.score, 1.0f);
+  EXPECT_FLOAT_EQ(url_score.word_match_score, 0.0f);
 
   // This test checks basic properties of score boosting, for example that
   // query terms can be spread across multiple separate passages.
@@ -132,17 +133,19 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
       "passage",
       "absent",
   };
-  float boosted_score =
+  UrlScore boosted_score =
       url_data.BestScoreWith(search_info, search_params, query_embedding, 0);
-  EXPECT_LT(score, boosted_score);
+  EXPECT_LT(url_score.score, boosted_score.score);
+  EXPECT_FLOAT_EQ(url_score.score,
+                  boosted_score.score - boosted_score.word_match_score);
 
   search_params.word_match_max_term_count = 5;
   search_params.query_terms = {
       "some", "passage", "more", "another", "absent",
   };
-  float across_score =
+  UrlScore across_score =
       url_data.BestScoreWith(search_info, search_params, query_embedding, 0);
-  EXPECT_LT(boosted_score, across_score);
+  EXPECT_LT(boosted_score.score, across_score.score);
 }
 
 TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearest) {

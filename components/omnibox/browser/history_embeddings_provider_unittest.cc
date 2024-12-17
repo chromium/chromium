@@ -59,7 +59,7 @@ history_embeddings::ScoredUrlRow CreateScoredUrlRow(
     const std::string& url,
     const std::u16string& title) {
   history_embeddings::ScoredUrlRow scored_url_row(
-      history_embeddings::ScoredUrl(0, 0, {}, score));
+      history_embeddings::ScoredUrl(0, 0, {}, score, 0));
   scored_url_row.row = history::URLRow{GURL{url}};
   scored_url_row.row.set_title(title);
   scored_url_row.passages_embeddings.passages.add_passages("passage");
