@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Scanner is ash-chrome only")
 
 static_library("scanner_feedback_ui") {
   sources = [
+    "scanner_feedback_browser_context_data.cc",
+    "scanner_feedback_browser_context_data.h",
     "scanner_feedback_page_handler.cc",
     "scanner_feedback_page_handler.h",
     "scanner_feedback_untrusted_ui.cc",

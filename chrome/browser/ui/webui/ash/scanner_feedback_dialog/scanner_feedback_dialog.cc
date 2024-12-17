@@ -5,14 +5,19 @@
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
 
 #include <utility>
+#include <variant>
 
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
+#include "ash/webui/scanner_feedback_ui/scanner_feedback_browser_context_data.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_page_handler.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 #include "ash/webui/scanner_feedback_ui/url_constants.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -41,16 +46,25 @@ void ScannerFeedbackDialog::OnDialogShown(content::WebUI* webui) {
 
   CHECK(controller);
 
+  auto* feedback_info = std::get_if<ScannerFeedbackInfo>(&feedback_info_);
   // `OnDialogShown` should never be called multiple times. If it was previously
   // called, a UAF may occur after the previous dialog is closed - as that would
   // destroy `this` while the new `SystemWebDialogView` is still storing a (now
   // invalid) pointer to `this`.
-  CHECK(feedback_info_.has_value());
+  CHECK(feedback_info);
 
-  controller->page_handler().SetFeedbackInfo(std::move(*feedback_info_));
-  // `feedback_info_` is currently a non-empty moved-from value. Explicitly
-  // reset it to ensure the above `CHECK` works.
-  feedback_info_.reset();
+  CHECK(webui);
+  content::WebContents* web_contents = webui->GetWebContents();
+  CHECK(web_contents);
+  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
+  CHECK(browser_context);
+
+  base::ScopedClosureRunner feedback_info_cleanup =
+      SetScannerFeedbackInfoForBrowserContext(*browser_context,
+                                              controller->page_handler().id(),
+                                              std::move(*feedback_info));
+
+  feedback_info_ = std::move(feedback_info_cleanup);
 }
 
 }  // namespace ash

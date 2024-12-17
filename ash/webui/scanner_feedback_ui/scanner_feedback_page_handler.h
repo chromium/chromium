@@ -5,23 +5,28 @@
 #ifndef ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_PAGE_HANDLER_H_
 #define ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_PAGE_HANDLER_H_
 
-#include <optional>
-#include <utility>
-
-#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom.h"
+#include "base/memory/raw_ref.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace ash {
 
 // Stores and handles all data related to a Scanner feedback prompt.
 //
-// Used for serving Mojo calls for a given `ScannerFeedbackUntrustedUI`.
+// Used for serving Mojo calls for a given `ScannerFeedbackUntrustedUI`. Serves
+// data from feedback info stored on the browser context - see
+// scanner_feedback_browser_context_data.h for more details. Use `id()` to get
+// the ID used for this page.
 class ScannerFeedbackPageHandler
     : public mojom::scanner_feedback_ui::PageHandler {
  public:
-  explicit ScannerFeedbackPageHandler();
+  explicit ScannerFeedbackPageHandler(content::BrowserContext& browser_context);
 
   ScannerFeedbackPageHandler(const ScannerFeedbackPageHandler&) = delete;
   ScannerFeedbackPageHandler& operator=(const ScannerFeedbackPageHandler&) =
@@ -33,16 +38,15 @@ class ScannerFeedbackPageHandler
   void Bind(
       mojo::PendingReceiver<mojom::scanner_feedback_ui::PageHandler> receiver);
 
-  void SetFeedbackInfo(ScannerFeedbackInfo feedback_info) {
-    feedback_info_ = std::move(feedback_info);
-  }
+  base::UnguessableToken id() const { return id_; }
 
   // mojom::scanner_feedback_ui::PageHandler:
   void GetFeedbackInfo(GetFeedbackInfoCallback callback) override;
 
  private:
-  // Unset on construction. Set in `SetFeedbackInfo`.
-  std::optional<ScannerFeedbackInfo> feedback_info_;
+  const base::UnguessableToken id_;
+
+  const raw_ref<content::BrowserContext> browser_context_;
 
   mojo::Receiver<mojom::scanner_feedback_ui::PageHandler> receiver_{this};
 };

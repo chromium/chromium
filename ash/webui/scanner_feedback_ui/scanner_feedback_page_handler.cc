@@ -4,16 +4,21 @@
 
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_page_handler.h"
 
-#include <optional>
 #include <utility>
 
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom.h"
+#include "ash/webui/scanner_feedback_ui/scanner_feedback_browser_context_data.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {
 
-ScannerFeedbackPageHandler::ScannerFeedbackPageHandler() = default;
+ScannerFeedbackPageHandler::ScannerFeedbackPageHandler(
+    content::BrowserContext& browser_context)
+    : id_(base::UnguessableToken::Create()),
+      browser_context_(browser_context) {}
 
 ScannerFeedbackPageHandler::~ScannerFeedbackPageHandler() = default;
 
@@ -28,16 +33,17 @@ void ScannerFeedbackPageHandler::Bind(
 void ScannerFeedbackPageHandler::GetFeedbackInfo(
     GetFeedbackInfoCallback callback) {
   auto feedback_info_ptr = mojom::scanner_feedback_ui::FeedbackInfo::New();
-  if (!feedback_info_.has_value()) {
-    mojo::ReportBadMessage(
-        "No feedback info was attached to the page handler.");
+  ScannerFeedbackInfo* feedback_info =
+      GetScannerFeedbackInfoForBrowserContext(*browser_context_, id_);
+  if (feedback_info == nullptr) {
+    mojo::ReportBadMessage("No feedback info was set.");
     // The callback still needs to be called with a valid `FeedbackInfoPtr`
     // before the renderer can be killed.
     std::move(callback).Run(std::move(feedback_info_ptr));
     return;
   }
 
-  feedback_info_ptr->action_details = feedback_info_->action_details;
+  feedback_info_ptr->action_details = feedback_info->action_details;
 
   std::move(callback).Run(std::move(feedback_info_ptr));
 }

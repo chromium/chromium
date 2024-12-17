@@ -16,6 +16,7 @@
 #include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_page_handler.h"
 #include "ash/webui/scanner_feedback_ui/url_constants.h"
+#include "base/check_deref.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -42,7 +43,10 @@ bool ScannerFeedbackUntrustedUIConfig::IsWebUIEnabled(
 }
 
 ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
-    : ui::WebDialogUI(web_ui) {
+    : ui::WebDialogUI(web_ui),
+      page_handler_(
+          CHECK_DEREF(CHECK_DEREF(CHECK_DEREF(web_ui).GetWebContents())
+                          .GetBrowserContext())) {
   // Emulate `ui::UntrustedWebUIController`. This should never enable bindings.
   web_ui->SetBindings(content::BindingsPolicySet());
 
