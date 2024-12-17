@@ -1535,12 +1535,6 @@
       name: "DocumentDomain",
     },
     {
-      // This is a performance fix for <select> popups which was enabled by
-      // default in M128.
-      name: "DocumentInstallChunking",
-      status: "stable",
-    },
-    {
       // Enables DocumentIsolationPolicy.
       // See https://https://github.com/WICG/document-isolation-policy.
       name: "DocumentIsolationPolicy",

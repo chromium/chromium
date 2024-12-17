@@ -2558,27 +2558,21 @@ void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
   DocumentParser* parser = document->OpenForNavigation(
       kForceSynchronousParsing, mime_type, AtomicString("UTF-8"));
 
-  if (RuntimeEnabledFeatures::DocumentInstallChunkingEnabled()) {
-    // Some code creates a very large number of tiny chunks that show up in
-    // |data|, such as InternalPopupMenu. Calling parser->AppendBytes() with
-    // each tiny piece dramatically slows down document loading. By combining
-    // these chunks in a Vector before passing it to parser->AppendBytes() gets
-    // around this problem.
-    Vector<char> current_chunk;
-    for (const auto& segment : data) {
-      current_chunk.AppendSpan(base::span(segment));
-      if (current_chunk.size() > kMaxDocumentChunkSize) {
-        parser->AppendBytes(base::as_byte_span(current_chunk));
-        current_chunk.clear();
-      }
-    }
-    parser->AppendBytes(base::as_byte_span(current_chunk));
-    current_chunk.clear();
-  } else {
-    for (const auto& segment : data) {
-      parser->AppendBytes(base::as_bytes(segment));
+  // Some code creates a very large number of tiny chunks that show up in
+  // |data|, such as InternalPopupMenu. Calling parser->AppendBytes() with
+  // each tiny piece dramatically slows down document loading. By combining
+  // these chunks in a Vector before passing it to parser->AppendBytes() gets
+  // around this problem.
+  Vector<char> current_chunk;
+  for (const auto& segment : data) {
+    current_chunk.AppendSpan(base::span(segment));
+    if (current_chunk.size() > kMaxDocumentChunkSize) {
+      parser->AppendBytes(base::as_byte_span(current_chunk));
+      current_chunk.clear();
     }
   }
+  parser->AppendBytes(base::as_byte_span(current_chunk));
+  current_chunk.clear();
 
   parser->Finish();
 
