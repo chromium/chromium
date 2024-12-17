@@ -413,6 +413,41 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, VirtualCardUnmaskFailure) {
       requester_->risk_based_authentication_response().card.has_value());
 }
 
+// Test a failed risk based card info retrieval unmask request.
+TEST_F(CreditCardRiskBasedAuthenticatorTest, CardInfoRetrievalUnmaskFailure) {
+  // Name on Card: Lorem Ipsum;
+  // Card Number: 5555555555554444, Mastercard;
+  // Expiration Year: The next year of current time;
+  // Expiration Month: 10;
+  // CVC: 123;
+  CreditCard card = test::GetMaskedServerCardEnrolledIntoRuntimeRetrieval();
+  card.set_cvc(u"123");
+  card.SetExpirationYearFromString(base::UTF8ToUTF16(test::NextYear()));
+  authenticator_->Authenticate(card, requester_->GetWeakPtr());
+  EXPECT_TRUE(
+      payments_network_interface()->unmask_request()->context_token.empty());
+  EXPECT_FALSE(
+      payments_network_interface()->unmask_request()->risk_data.empty());
+  EXPECT_TRUE(payments_network_interface()
+                  ->unmask_request()
+                  ->last_committed_primary_main_frame_origin.has_value());
+  // Payment server response when unmask request fails is empty.
+  payments::UnmaskResponseDetails mocked_response;
+  authenticator_->OnUnmaskResponseReceivedForTesting(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
+      mocked_response);
+
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_FALSE(requester_->did_succeed().value());
+  EXPECT_FALSE(
+      requester_->risk_based_authentication_response().card.has_value());
+
+  // Verify RiskBasedAuthenticationResponse.
+  EXPECT_EQ(requester_->risk_based_authentication_response()
+                .error_dialog_context.type,
+            AutofillErrorDialogType::kCardInfoRetrievalTemporaryError);
+}
+
 // Params of the CreditCardRiskBasedAuthenticatorCardMetadataTest:
 // -- bool card_name_available;
 // -- bool card_art_available;

@@ -337,6 +337,18 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error">
     This card is not eligible for virtual card number.
   </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for runtime card info retrieval temporary error.">
+    Something went wrong
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for runtime card info retrieval permanent error.">
+    Card not available
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for runtime card info retrieval temporary error.">
+    This card is not available right now. Please try again later.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for runtime card info retrieval permanent error.">
+    This card is not available. Please contact your card provider.
+  </message>
   <message name="IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Label for the negative button for the error dialog.">
     Close
   </message>

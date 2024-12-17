@@ -175,12 +175,20 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     // We received an error when attempting to unmask the card.
     response.result = RiskBasedAuthenticationResponse::Result::kError;
     if (record_type == CreditCard::RecordType::kMaskedServerCard) {
-      response.error_dialog_context.type =
-          result == PaymentsRpcResult::kNetworkError
-              ? AutofillErrorDialogType::
-                    kMaskedServerCardRiskBasedUnmaskingNetworkError
-              : AutofillErrorDialogType::
-                    kMaskedServerCardRiskBasedUnmaskingPermanentError;
+      if (result == PaymentsRpcResult::kNetworkError) {
+        response.error_dialog_context.type = AutofillErrorDialogType::
+            kMaskedServerCardRiskBasedUnmaskingNetworkError;
+      } else if (card_.card_info_retrieval_enrollment_state() ==
+                 CreditCard::CardInfoRetrievalEnrollmentState::
+                     kRetrievalEnrolled) {
+        response.error_dialog_context = AutofillErrorDialogContext::
+            WithCardInfoRetrievalPermanentOrTemporaryError(
+                /*is_permanent_error=*/result ==
+                PaymentsRpcResult::kPermanentFailure);
+      } else {
+        response.error_dialog_context.type = AutofillErrorDialogType::
+            kMaskedServerCardRiskBasedUnmaskingPermanentError;
+      }
     } else if (record_type == CreditCard::RecordType::kVirtualCard) {
       if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
           result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
