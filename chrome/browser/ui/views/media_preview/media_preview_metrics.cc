@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/strings/strcat.h"
 
 using base::StrCat;

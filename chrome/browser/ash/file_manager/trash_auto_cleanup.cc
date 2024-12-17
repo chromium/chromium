@@ -7,7 +7,7 @@
 #include "base/barrier_callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"

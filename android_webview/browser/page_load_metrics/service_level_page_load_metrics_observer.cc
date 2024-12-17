@@ -4,7 +4,6 @@
 
 #include "android_webview/browser/page_load_metrics/service_level_page_load_metrics_observer.h"
 
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"

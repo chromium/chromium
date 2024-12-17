@@ -4,7 +4,6 @@
 
 #include "components/permissions/permission_indicators_tab_data.h"
 
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
 

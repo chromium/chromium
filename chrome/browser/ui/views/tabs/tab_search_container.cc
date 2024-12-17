@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"

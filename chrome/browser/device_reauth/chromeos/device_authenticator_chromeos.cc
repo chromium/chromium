@@ -5,7 +5,7 @@
 #include "chrome/browser/device_reauth/chromeos/device_authenticator_chromeos.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
