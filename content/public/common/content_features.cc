@@ -256,12 +256,6 @@ BASE_FEATURE(kCooperativeScheduling,
              "CooperativeScheduling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables crash reporting via Reporting API.
-// https://www.w3.org/TR/reporting/#crash-report
-BASE_FEATURE(kCrashReporting,
-             "CrashReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
 // the network request. With this feature the creation will be deferred until
