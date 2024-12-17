@@ -24,7 +24,7 @@ const CROS_SETTING_PREF_NAME = 'cros.device.peripheral_data_access_enabled';
 const LOCAL_STATE_PREF_NAME =
     'settings.local_state_device_pci_data_access_enabled';
 
-suite('with isRevampWayfindingEnabled set to true', () => {
+suite('Deep linking in old sync page', () => {
   let privacyPage: OsSettingsPrivacyPageElement;
   let browserProxy: TestPeripheralDataAccessBrowserProxy;
   let syncBrowserProxy: SyncBrowserProxy&TestSyncBrowserProxy;
@@ -38,9 +38,6 @@ suite('with isRevampWayfindingEnabled set to true', () => {
   }
 
   setup(() => {
-    loadTimeData.overrideValues({
-      isRevampWayfindingEnabled: true,
-    });
     const testRouter = createRouterForTesting();
     Router.resetInstanceForTesting(testRouter);
 
