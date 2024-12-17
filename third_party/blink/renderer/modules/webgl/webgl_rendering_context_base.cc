@@ -5621,11 +5621,7 @@ gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
 
 SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
     const {
-  SkColorType color_type = kN32_SkColorType;
-  if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
-    color_type = kRGBA_F16_SkColorType;
-  }
-  return SkColorInfo(color_type, GetAlphaType(), GetSkColorSpace());
+  return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
 }
 
 SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
@@ -5636,7 +5632,10 @@ SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
 }
 
 SkColorType WebGLRenderingContextBase::GetSkColorType() const {
-  return CanvasRenderingContextSkColorInfo().colorType();
+  if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
+    return kRGBA_F16_SkColorType;
+  }
+  return kN32_SkColorType;
 }
 
 sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
