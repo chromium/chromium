@@ -4707,7 +4707,7 @@
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/FileAPI/blob/Blob-constructor.any.js",
-      "external/wpt/IndexedDB/idb-binary-key-roundtrip.htm",
+      "external/wpt/IndexedDB/idb-binary-key-roundtrip.any.js",
       "external/wpt/IndexedDB/structured-clone.any.js",
       "external/wpt/WebCryptoAPI/getRandomValues.any.js",
       "external/wpt/compression/decompression-buffersource.tentative.any.js",

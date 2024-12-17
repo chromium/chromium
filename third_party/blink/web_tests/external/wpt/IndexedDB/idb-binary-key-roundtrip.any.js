@@ -1,11 +1,9 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>IndexedDB: Binary keys written to a database and read back</title>
-<meta name=timeout content=long>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/support.js"></script>
-<script>
+// META: title=IndexedDB: Binary keys written to a database and read back
+// META: global=window,worker
+// META: timeout=long
+// META: script=resources/support.js
+
+'use strict';
 
 const sample = [0x44, 0x33, 0x22, 0x11, 0xFF, 0xEE, 0xDD, 0xCC];
 const buffer = new Uint8Array(sample).buffer;
@@ -52,7 +50,7 @@ function check_key_roundtrip_and_done(t, db, key, key_buffer) {
       assert_buffer_equals(
           retrieved_key, key_buffer,
           'The ArrayBuffer returned by IndexedDB should equal the buffer ' +
-          'backing the key given to put()');
+              'backing the key given to put()');
 
       t.done();
     });
@@ -62,56 +60,53 @@ function check_key_roundtrip_and_done(t, db, key, key_buffer) {
 // Checks that IndexedDB handles the given view type for binary keys correctly.
 function view_type_test(type) {
   indexeddb_test(
-    (t, db) => { db.createObjectStore('store'); },
-    (t, db) => {
-      const key = new self[type](buffer);
-      assert_key_valid(key, `${type} should be usable as an IndexedDB key`);
-      assert_key_equals(key, buffer,
-          'Binary keys with the same data but different view types should be ' +
-          ' equal');
-      check_key_roundtrip_and_done(t, db, key, buffer);
-    },
-    `Binary keys can be supplied using the view type ${type}`,
+      (t, db) => {
+        db.createObjectStore('store');
+      },
+      (t, db) => {
+        const key = new self[type](buffer);
+        assert_key_valid(key, `${type} should be usable as an IndexedDB key`);
+        assert_key_equals(
+            key, buffer,
+            'Binary keys with the same data but different view types should be ' +
+                ' equal');
+        check_key_roundtrip_and_done(t, db, key, buffer);
+      },
+      `Binary keys can be supplied using the view type ${type}`,
   );
 }
 
-[
-  'Uint8Array',
-  'Uint8ClampedArray',
-  'Int8Array',
-  'Uint16Array',
-  'Int16Array',
-  'Uint32Array',
-  'Int32Array',
-  'Float16Array',
-  'Float32Array',
-  'Float64Array'
-].forEach((type) => { view_type_test(type); });
+['Uint8Array', 'Uint8ClampedArray', 'Int8Array', 'Uint16Array', 'Int16Array',
+ 'Uint32Array', 'Int32Array', 'Float16Array', 'Float32Array', 'Float64Array']
+    .forEach((type) => {
+      view_type_test(type);
+    });
 
 // Checks that IndexedDB
 function value_test(value_description, value, value_buffer) {
   indexeddb_test(
-    (t, db) => { db.createObjectStore('store'); },
-    (t, db) => {
-      assert_key_valid(
-          value, value_description + ' should be usable as an valid key');
-      check_key_roundtrip_and_done(t, db, value, value_buffer);
-    },
-    `${value_description} can be used to supply a binary key`
-  );
+      (t, db) => {
+        db.createObjectStore('store');
+      },
+      (t, db) => {
+        assert_key_valid(
+            value, value_description + ' should be usable as an valid key');
+        check_key_roundtrip_and_done(t, db, value, value_buffer);
+      },
+      `${value_description} can be used to supply a binary key`);
 }
 
 value_test('ArrayBuffer', buffer, buffer);
 value_test('DataView', new DataView(buffer), buffer);
-value_test('DataView with explicit offset', new DataView(buffer, 3),
-           new Uint8Array([0x11, 0xFF, 0xEE, 0xDD, 0xCC]).buffer);
-value_test('DataView with explicit offset and length',
-           new DataView(buffer, 3, 4),
-           new Uint8Array([0x11, 0xFF, 0xEE, 0xDD]).buffer);
-value_test('Uint8Array with explicit offset', new Uint8Array(buffer, 3),
-           new Uint8Array([0x11, 0xFF, 0xEE, 0xDD, 0xCC]).buffer);
-value_test('Uint8Array with explicit offset and length',
-           new Uint8Array(buffer, 3, 4),
-           new Uint8Array([0x11, 0xFF, 0xEE, 0xDD]).buffer);
-
-</script>
+value_test(
+    'DataView with explicit offset', new DataView(buffer, 3),
+    new Uint8Array([0x11, 0xFF, 0xEE, 0xDD, 0xCC]).buffer);
+value_test(
+    'DataView with explicit offset and length', new DataView(buffer, 3, 4),
+    new Uint8Array([0x11, 0xFF, 0xEE, 0xDD]).buffer);
+value_test(
+    'Uint8Array with explicit offset', new Uint8Array(buffer, 3),
+    new Uint8Array([0x11, 0xFF, 0xEE, 0xDD, 0xCC]).buffer);
+value_test(
+    'Uint8Array with explicit offset and length', new Uint8Array(buffer, 3, 4),
+    new Uint8Array([0x11, 0xFF, 0xEE, 0xDD]).buffer);
