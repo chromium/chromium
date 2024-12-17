@@ -40,14 +40,13 @@ static void JNI_VariationsSession_StartVariationsSession(
 static std::string JNI_VariationsSession_GetLatestCountry(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
+  std::string latest_country;
+
   variations::VariationsService* variations_service =
       g_browser_process->variations_service();
-  if (!variations_service)
-    return nullptr;
-
-  std::string latest_country = variations_service->GetLatestCountry();
-  if (latest_country.empty())
-    return nullptr;
+  if (variations_service) {
+    latest_country = variations_service->GetLatestCountry();
+  }
 
   return latest_country;
 }
