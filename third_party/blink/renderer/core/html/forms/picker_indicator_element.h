@@ -62,6 +62,7 @@ class PickerIndicatorElement final : public HTMLDivElement,
   void OpenPopup();
   void ClosePopup();
   bool HasOpenedPopup() const;
+  bool IsPickerVisible() const;
   bool WillRespondToMouseClickEvents() override;
   void RemovePickerIndicatorOwner() { picker_indicator_owner_ = nullptr; }
   AXObject* PopupRootAXObject() const;

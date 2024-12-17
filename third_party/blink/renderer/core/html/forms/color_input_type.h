@@ -73,6 +73,7 @@ class ColorInputType final : public InputType,
   void OpenPopupView() override;
   void ClosePopupView() override;
   bool HasOpenedPopup() const override;
+  bool IsPickerVisible() const override;
   bool ShouldRespectListAttribute() override;
   void WarnIfValueIsInvalid(const String&) const override;
   void UpdateView() override;

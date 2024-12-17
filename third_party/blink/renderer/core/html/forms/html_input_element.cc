@@ -2358,6 +2358,10 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   input_type_view_->OpenPopupView();
 }
 
+bool HTMLInputElement::IsPickerVisible() const {
+  return input_type_view_->IsPickerVisible();
+}
+
 bool HTMLInputElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                              CommandEventType command) {
   bool parent_is_valid = HTMLElement::IsValidBuiltinCommand(invoker, command);

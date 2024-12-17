@@ -86,6 +86,10 @@ AXObject* DateTimeChooserImpl::RootAXObject(Element* popup_owner) {
   return popup_ ? popup_->RootAXObject(popup_owner) : nullptr;
 }
 
+bool DateTimeChooserImpl::IsPickerVisible() const {
+  return popup_;
+}
+
 static String ValueToDateTimeString(double value, InputType::Type type) {
   DateComponents components;
   switch (type) {

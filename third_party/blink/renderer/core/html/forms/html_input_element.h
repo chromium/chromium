@@ -373,6 +373,7 @@ class CORE_EXPORT HTMLInputElement
 
   bool isMutable();
   void showPicker(ExceptionState&);
+  bool IsPickerVisible() const;
 
   ShadowRoot* EnsureShadowSubtree();
 

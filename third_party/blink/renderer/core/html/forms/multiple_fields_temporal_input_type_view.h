@@ -100,6 +100,7 @@ class MultipleFieldsTemporalInputTypeView final
   void OpenPopupView() override;
   void ClosePopupView() override;
   bool HasOpenedPopup() const override;
+  bool IsPickerVisible() const override;
   void AdjustStyle(ComputedStyleBuilder&) override;
   void CreateShadowSubtree() final;
   void DestroyShadowSubtree() final;

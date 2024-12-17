@@ -2131,6 +2131,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return details->FastHasAttribute(html_names::kOpenAttr);
       } else if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
         return select->PopupIsVisible();
+      } else if (auto* input = DynamicTo<HTMLInputElement>(element)) {
+        return input->IsPickerVisible();
       }
       return false;
     case CSSSelector::kPseudoFullscreen:

@@ -125,6 +125,7 @@ void PickerIndicatorElement::OpenPopup() {
     // Invalidate paint to ensure that the focus ring is removed.
     OwnerElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
   }
+  OwnerElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
 }
 
 Element& PickerIndicatorElement::OwnerElement() const {
@@ -140,6 +141,10 @@ void PickerIndicatorElement::ClosePopup() {
 
 bool PickerIndicatorElement::HasOpenedPopup() const {
   return chooser_ != nullptr;
+}
+
+bool PickerIndicatorElement::IsPickerVisible() const {
+  return chooser_ && chooser_->IsPickerVisible();
 }
 
 void PickerIndicatorElement::DetachLayoutTree(bool performing_reattach) {
