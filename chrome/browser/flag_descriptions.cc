@@ -3090,6 +3090,12 @@ const char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =
     "Settings UI and Page Info Bubble, "
     "default is hidden";
 
+const char kShowWarningsForSuspiciousNotificationsName[] =
+    "Show Warnings for Suspicious Notifications";
+const char kShowWarningsForSuspiciousNotificationsDescription[] =
+    "Enables replacing notification contents with a warning when the on-device "
+    "notification content detection model returns a suspicious verdict.";
+
 const char kPowerBookmarkBackendName[] = "Power bookmark backend";
 const char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";

@@ -8136,6 +8136,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "show-warnings-for-suspicious-notifications",
+    "owners": ["skrakowi@chromium.org", "chrome-counter-abuse-alerts@google.com"],
+    "expiry_milestone": 139
+  },
+  {
     "name" : "side-panel-improved-clobbering",
     "owners": [ "chrome-cros@google.com", "tluk@chromium.org" ],
     "expiry_milestone" : 110

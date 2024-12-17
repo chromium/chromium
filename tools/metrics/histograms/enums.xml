@@ -16046,6 +16046,8 @@ from previous Chrome versions.
   <int value="-1741468321" label="NtpMostRelevantTabResumptionModule:enabled"/>
   <int value="-1740519217" label="disable-software-rasterizer"/>
   <int value="-1740093155" label="UnifiedMediaView:disabled"/>
+  <int value="-1739547247"
+      label="ShowWarningsForSuspiciousNotifications:enabled"/>
   <int value="-1739475391" label="AppCollectionFolderRefresh:disabled"/>
   <int value="-1738416948" label="OptimizationHints:enabled"/>
   <int value="-1738273185"
@@ -25696,6 +25698,8 @@ from previous Chrome versions.
   <int value="2092605092" label="ChromeHomeShowGoogleGWhenUrlCleared:disabled"/>
   <int value="2092968851" label="SharingSendViaSync:enabled"/>
   <int value="2093235103" label="default-tile-width"/>
+  <int value="2093392187"
+      label="ShowWarningsForSuspiciousNotifications:disabled"/>
   <int value="2093949489" label="ArrayPrototypeValues:enabled"/>
   <int value="2094335682" label="StreamlinedUsbPrinterSetup:enabled"/>
   <int value="2095250358"

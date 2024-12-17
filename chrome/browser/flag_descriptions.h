@@ -1771,6 +1771,9 @@ extern const char kPermissionSiteSettingsRadioButtonDescription[];
 extern const char kShowRelatedWebsiteSetsPermissionGrantsName[];
 extern const char kShowRelatedWebsiteSetsPermissionGrantsDescription[];
 
+extern const char kShowWarningsForSuspiciousNotificationsName[];
+extern const char kShowWarningsForSuspiciousNotificationsDescription[];
+
 extern const char kPowerBookmarkBackendName[];
 extern const char kPowerBookmarkBackendDescription[];
 
