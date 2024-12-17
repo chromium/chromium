@@ -189,13 +189,6 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                         resetTabStrip();
                     }
 
-                    // TODO(crbug/41496693): Delete this logic once tab groups with one tab are
-                    // launched.
-                    @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        resetTabStrip();
-                    }
-
                     @Override
                     public void didAddTab(
                             Tab tab,
