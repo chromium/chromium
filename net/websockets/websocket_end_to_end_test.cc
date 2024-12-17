@@ -732,14 +732,7 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
 
 // Tests that when kHstsTopLevelNavigationsOnly is enabled websocket isn't
 // upgraded.
-// TODO(crbug.com/40725781): Constantly failing on one of the chromeos bots.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HstsHttpsToWebSocketNotApplied \
-  DISABLED_HstsHttpsToWebSocketNotApplied
-#else
-#define MAYBE_HstsHttpsToWebSocketNotApplied HstsHttpsToWebSocketNotApplied
-#endif
-TEST_F(WebSocketEndToEndTest, MAYBE_HstsHttpsToWebSocketNotApplied) {
+TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocketNotApplied) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kHstsTopLevelNavigationsOnly);
 
@@ -748,10 +741,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HstsHttpsToWebSocketNotApplied) {
       net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
   https_server.ServeFilesFromSourceDirectory("net/data/url_request_unittest");
 
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_COMMON_NAME_IS_DOMAIN);
-  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
-                              GetWebSocketTestDataDirectory());
+  EmbeddedTestServer ws_server(net::EmbeddedTestServer::TYPE_HTTP);
+  net::test_server::InstallDefaultWebSocketHandlers(&ws_server);
 
   ASSERT_TRUE(https_server.Start());
   ASSERT_TRUE(ws_server.Start());
@@ -766,7 +757,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HstsHttpsToWebSocketNotApplied) {
   EXPECT_EQ(OK, delegate.request_status());
 
   // Check that the ws connection was not upgraded.
-  GURL ws_url = ws_server.GetURL(kEchoServer);
+  std::string relative_url = base::StrCat({"/", kEchoServer});
+  GURL ws_url = net::test_server::GetWebSocketURL(ws_server, relative_url);
   EXPECT_TRUE(ConnectAndWait(ws_url));
 }
 
