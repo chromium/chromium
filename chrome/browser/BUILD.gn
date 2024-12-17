@@ -2572,6 +2572,8 @@ static_library("browser") {
       "android/compositor/layer/content_layer.h",
       "android/compositor/layer/contextual_search_layer.cc",
       "android/compositor/layer/contextual_search_layer.h",
+      "android/compositor/layer/group_indicator_layer.cc",
+      "android/compositor/layer/group_indicator_layer.h",
       "android/compositor/layer/layer.h",
       "android/compositor/layer/overlay_panel_layer.cc",
       "android/compositor/layer/overlay_panel_layer.h",

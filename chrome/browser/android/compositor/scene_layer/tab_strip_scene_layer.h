@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/input/android/offset_tag_android.h"
@@ -24,6 +23,7 @@ class UIResourceLayer;
 
 namespace android {
 
+class GroupIndicatorLayer;
 class LayerTitleCache;
 class TabHandleLayer;
 
@@ -154,6 +154,7 @@ class TabStripSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
       jboolean incognito,
+      jboolean foreground,
       jint id,
       jint tint,
       jfloat x,
@@ -174,11 +175,11 @@ class TabStripSceneLayer : public SceneLayer {
   SkColor GetBackgroundColor() override;
 
  private:
-  scoped_refptr<TabHandleLayer> GetNextLayer(
+  scoped_refptr<TabHandleLayer> GetNextTabLayer(
       LayerTitleCache* layer_title_cache);
 
-  scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupTitleLayer();
-  scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupBottomLayer();
+  scoped_refptr<GroupIndicatorLayer> GetNextGroupIndicatorLayer(
+      LayerTitleCache* layer_title_cache);
 
   void UpdateCompositorButton(
       scoped_refptr<cc::slim::UIResourceLayer> button,
@@ -191,13 +192,10 @@ class TabStripSceneLayer : public SceneLayer {
       bool should_apply_hover_highlight,
       float button_alpha);
 
-  void CreateGroupTitleBubble(int bubble_size, int bubble_tint, int x, int y);
-
   typedef std::vector<scoped_refptr<TabHandleLayer>> TabHandleLayerList;
 
   scoped_refptr<cc::slim::SolidColorLayer> tab_strip_layer_;
-  scoped_refptr<cc::slim::SolidColorLayer> group_indicator_bubble_layer_;
-  scoped_refptr<cc::slim::Layer> group_indicator_layer_;
+  scoped_refptr<cc::slim::Layer> group_ui_parent_layer_;
   scoped_refptr<cc::slim::Layer> scrollable_strip_layer_;
   scoped_refptr<cc::slim::Layer> foreground_layer_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_;
@@ -217,8 +215,7 @@ class TabStripSceneLayer : public SceneLayer {
   unsigned write_index_ = 0;
   TabHandleLayerList tab_handle_layers_;
   unsigned group_write_index_ = 0;
-  std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_title_layers_;
-  std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_bottom_layers_;
+  std::vector<scoped_refptr<GroupIndicatorLayer>> group_title_layers_;
   raw_ptr<SceneLayer> content_tree_;
 };
 

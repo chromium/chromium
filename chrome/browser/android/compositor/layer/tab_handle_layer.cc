@@ -8,19 +8,11 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/i18n/rtl.h"
-#include "base/metrics/field_trial_params.h"
-#include "cc/resources/scoped_ui_resource.h"
-#include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/nine_patch_layer.h"
-#include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/decoration_tab_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/nine_patch_resource.h"
-#include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
 
 namespace android {

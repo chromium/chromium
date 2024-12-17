@@ -453,13 +453,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
-     * @return The padding between the title text and the notification bubble.
-     */
-    public float getBubblePadding() {
-        return NOTIFICATION_BUBBLE_PADDING_DP;
-    }
-
-    /**
      * @return The size of the notification bubble circle.
      */
     public float getBubbleSize() {
