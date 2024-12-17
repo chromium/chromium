@@ -109,6 +109,14 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  // When no primary action is defined, the "show instructions" button acts as
+  // the primary button. In this case, the primary action handler should invoke
+  // the "show instructions" action handler.
+  if (self.item.primaryAction == WhatsNewPrimaryAction::kNoAction) {
+    [self showInstructions];
+    return;
+  }
+
   [self.actionHandler didTapActionButton:self.item.type
                            primaryAction:self.item.primaryAction
                       baseViewController:self.whatsNewScreenshotViewController];
@@ -116,15 +124,7 @@
 
 - (void)confirmationAlertSecondaryAction {
   [self.actionHandler didTapInstructions:self.item.type];
-  self.whatsNewInstructionsCoordinator =
-      [[WhatsNewInstructionsCoordinator alloc]
-          initWithBaseViewController:self.whatsNewScreenshotViewController
-                             browser:self.browser
-                                item:self.item
-                       actionHandler:self.actionHandler
-                     whatsNewHandler:self.whatsNewHandler];
-  self.whatsNewInstructionsCoordinator.delegate = self;
-  [self.whatsNewInstructionsCoordinator start];
+  [self showInstructions];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -145,6 +145,18 @@
   std::string metric = base::StrCat({"IOS.WhatsNew.", type, ".TimeSpent"});
   UmaHistogramMediumTimes(metric.c_str(),
                           base::TimeTicks::Now() - self.startTime);
+}
+
+- (void)showInstructions {
+  self.whatsNewInstructionsCoordinator =
+      [[WhatsNewInstructionsCoordinator alloc]
+          initWithBaseViewController:self.whatsNewScreenshotViewController
+                             browser:self.browser
+                                item:self.item
+                       actionHandler:self.actionHandler
+                     whatsNewHandler:self.whatsNewHandler];
+  self.whatsNewInstructionsCoordinator.delegate = self;
+  [self.whatsNewInstructionsCoordinator start];
 }
 
 @end

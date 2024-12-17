@@ -82,10 +82,15 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
   [self createConfirmationAlertScreen:self.item.title
                        subtitleString:self.item.subtitle
-                  primaryActionString:self.item.primaryActionTitle
+                  primaryActionString:
+                      self.item.primaryActionTitle
+                          ?: l10n_util::GetNSString(
+                                 IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE)
                 secondaryActionString:
-                    l10n_util::GetNSString(
-                        IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE)];
+                    self.item.primaryActionTitle
+                        ? l10n_util::GetNSString(
+                              IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE)
+                        : nil];
 
   [self configureAnimationView];
   [self configureAlertScreen];
