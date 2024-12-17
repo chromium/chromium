@@ -32,6 +32,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
+// U+FFFD, REPLACEMENT CHARACTER, encoded in UTF-8.
+#define U_FFFD "\xEF\xBF\xBD"
+
 namespace {
 
 // MSan will do a better job detecting over-read errors if the input is not
@@ -597,8 +600,9 @@ TEST_P(JSONReaderTest, StackOverflow) {
   // A few thousand adjacent lists is fine.
   std::string not_evil("[");
   not_evil.reserve(15010);
-  for (int i = 0; i < 5000; ++i)
+  for (int i = 0; i < 5000; ++i) {
     not_evil.append("[],");
+  }
   not_evil.append("[]]");
   std::optional<Value> value = JSONReader::Read(not_evil);
   ASSERT_TRUE(value);
@@ -954,7 +958,7 @@ TEST_P(JSONReaderTest, ReplaceInvalidCharacters) {
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_string());
   // Expect three U+FFFD (one for each UTF-8 byte in the invalid code point).
-  EXPECT_EQ("\xEF\xBF\xBD\xEF\xBF\xBD\xEF\xBF\xBD", value->GetString());
+  EXPECT_EQ(U_FFFD U_FFFD U_FFFD, value->GetString());
 
   // U+DFFF is a lone low surrogate.
   const std::string invalid_low = "\"\xED\xBF\xBF\"";
@@ -962,7 +966,7 @@ TEST_P(JSONReaderTest, ReplaceInvalidCharacters) {
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_string());
   // Expect three U+FFFD (one for each UTF-8 byte in the invalid code point).
-  EXPECT_EQ("\xEF\xBF\xBD\xEF\xBF\xBD\xEF\xBF\xBD", value->GetString());
+  EXPECT_EQ(U_FFFD U_FFFD U_FFFD, value->GetString());
 }
 
 TEST_P(JSONReaderTest, ReplaceInvalidUTF16EscapeSequence) {
@@ -972,14 +976,14 @@ TEST_P(JSONReaderTest, ReplaceInvalidUTF16EscapeSequence) {
       JSONReader::Read(invalid_high, JSON_REPLACE_INVALID_CHARACTERS);
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_string());
-  EXPECT_EQ("_\xEF\xBF\xBD_", value->GetString());
+  EXPECT_EQ("_" U_FFFD "_", value->GetString());
 
   // U+DFFF is a lone low surrogate.
   const std::string invalid_low = "\"_\\uDFFF_\"";
   value = JSONReader::Read(invalid_low, JSON_REPLACE_INVALID_CHARACTERS);
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_string());
-  EXPECT_EQ("_\xEF\xBF\xBD_", value->GetString());
+  EXPECT_EQ("_" U_FFFD "_", value->GetString());
 }
 
 TEST_P(JSONReaderTest, InvalidUTF16HighSurrogates) {
@@ -1008,7 +1012,7 @@ TEST_P(JSONReaderTest, InvalidUTF16HighSurrogatesAndEscapes) {
       JSONReader::Read(surrogate_and_dquote, JSON_REPLACE_INVALID_CHARACTERS);
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_string());
-  EXPECT_EQ("\xEF\xBF\xBD\"abc", value->GetString());
+  EXPECT_EQ(U_FFFD "\"abc", value->GetString());
 
   // However, when not replacing invalid characters, the entire parse is
   // invalid.
@@ -1047,8 +1051,9 @@ TEST_P(JSONReaderTest, ParseNumberErrors) {
     std::optional<Value> result = JSONReader::Read(input);
     EXPECT_EQ(test_case.parse_success, result.has_value());
 
-    if (!result)
+    if (!result) {
       continue;
+    }
 
     ASSERT_TRUE(result->is_double() || result->is_int());
     EXPECT_EQ(test_case.value, result->GetDouble());
