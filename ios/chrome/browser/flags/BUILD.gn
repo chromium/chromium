@@ -20,6 +20,7 @@ source_set("flags") {
     "//components/autofill/ios/common",
     "//components/bookmarks/common",
     "//components/browser_sync:switches",
+    "//components/collaboration/public:features",
     "//components/commerce/core:feature_list",
     "//components/data_sharing/public",
     "//components/dom_distiller/core",

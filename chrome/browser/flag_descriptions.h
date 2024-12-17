@@ -587,6 +587,9 @@ extern const char kDoubleBufferCompositingDescription[];
 extern const char kCodeBasedRBDName[];
 extern const char kCodeBasedRBDDescription[];
 
+extern const char kCollaborationMessagingName[];
+extern const char kCollaborationMessagingDescription[];
+
 extern const char kCompressionDictionaryTransportName[];
 extern const char kCompressionDictionaryTransportDescription[];
 

@@ -186,6 +186,11 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kClearUndecryptablePasswordsName[];
 extern const char kClearUndecryptablePasswordsDescription[];
 
+// Title and description for the flag that enables the collaboration messaging
+// framework. Requires the shared tab group feature to be enabled.
+extern const char kCollaborationMessagingName[];
+extern const char kCollaborationMessagingDescription[];
+
 // Title and description for the flag to enable the content notification
 // experiments. This is a kill switcher that guarded the
 // ContentPushNotifications feature.

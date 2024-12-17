@@ -236,6 +236,12 @@ const char kClearUndecryptablePasswordsDescription[] =
     "If enabled local passwords that current encyrption key cannot decrypt, "
     "will be deleted to restore the full functionality of password manager.";
 
+const char kCollaborationMessagingName[] = "Collaboration Messaging";
+const char kCollaborationMessagingDescription[] =
+    "Enables the messaging framework within the collaboration feature, "
+    "including features such as recent activity, dirty dots, and description "
+    "action chips.";
+
 const char kContentNotificationExperimentName[] =
     "Content Notification Experiment";
 const char kContentNotificationExperimentDescription[] =

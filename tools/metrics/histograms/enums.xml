@@ -20515,6 +20515,7 @@ from previous Chrome versions.
   <int value="52186948"
       label="AllowDefaultWebAppMigrationForChromeOsManagedUsers:enabled"/>
   <int value="52368742" label="enable-pixel-canvas-recording:disabled"/>
+  <int value="53693789" label="CollaborationMessaging:disabled"/>
   <int value="54258707" label="NewTabstripAnimation:enabled"/>
   <int value="54571864" label="EnableDisplayZoomSetting:enabled"/>
   <int value="54837460" label="EnableCertManagementUIV2Write:disabled"/>
@@ -21450,6 +21451,7 @@ from previous Chrome versions.
   <int value="413081240" label="enable-new-md-input-view"/>
   <int value="413528228" label="AutofillFixFillableFieldTypes:disabled"/>
   <int value="413695227" label="NTPSuggestionsStandaloneUI:enabled"/>
+  <int value="413701020" label="CollaborationMessaging:enabled"/>
   <int value="414048579"
       label="SyncEnableContactInfoDataTypeInTransportMode:disabled"/>
   <int value="414114078" label="LitePageServerPreviews:disabled"/>

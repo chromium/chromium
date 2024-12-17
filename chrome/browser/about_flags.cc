@@ -82,6 +82,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/collaboration/public/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/flag_descriptions.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
@@ -9485,6 +9486,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     "DiscountConsentV2")},
 
 #endif
+
+    {"collaboration-messaging", flag_descriptions::kCollaborationMessagingName,
+     flag_descriptions::kCollaborationMessagingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(collaboration::messaging::kCollaborationMessaging)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-fake-keyboard-heuristic",

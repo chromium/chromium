@@ -1485,6 +1485,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "collaboration-messaging",
+    "owners": [ "//components/collaboration/OWNERS", "nyquist@chromium.org", "shaktisahu@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "compact-mode",
     "owners": [ "dljames@chromium.org", "dpenning@chromium.org" ],
     "expiry_milestone": 135

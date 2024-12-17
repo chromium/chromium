@@ -1015,6 +1015,12 @@ const char kMediaSessionEnterPictureInPictureDescription[] =
 const char kCodeBasedRBDName[] = "Code-based RBD";
 const char kCodeBasedRBDDescription[] = "Enables the Code-based RBD.";
 
+const char kCollaborationMessagingName[] = "Collaboration Messaging";
+const char kCollaborationMessagingDescription[] =
+    "Enables the messaging framework within the collaboration feature, "
+    "including features such as recent activity, dirty dots, and description "
+    "action chips.";
+
 const char kCompressionDictionaryTransportName[] =
     "Compression dictionary transport";
 const char kCompressionDictionaryTransportDescription[] =

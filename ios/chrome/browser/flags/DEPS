@@ -1,6 +1,7 @@
 specific_include_rules = {
   # Flag list can depends on everything.
   "^about_flags.mm": [
+    "+components/collaboration/public/features.h",
     "+components/data_sharing/public/features.h",
     "+components/page_content_annotations/core",
     "+components/page_image_service/features.h",

@@ -27,6 +27,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/browser_sync/browser_sync_switches.h"
+#import "components/collaboration/public/features.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/flag_descriptions.h"
 #import "components/content_settings/core/common/features.h"
@@ -2278,6 +2279,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayPriceInsightsCounterfactualDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensOverlayPriceInsightsCounterfactual)},
+    {"collaboration-messaging", flag_descriptions::kCollaborationMessagingName,
+     flag_descriptions::kCollaborationMessagingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(collaboration::messaging::kCollaborationMessaging)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
