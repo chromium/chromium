@@ -1,4 +1,5 @@
 chrome_junit_test_java_sources = [
+  "java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewTabAnimationLayoutUnitTest.java",
   "java/src/org/chromium/chrome/browser/hub/HubLayoutUnitTest.java",
   "java/src/org/chromium/chrome/browser/hub/HubProviderUnitTest.java",
   "java/src/org/chromium/chrome/browser/hub/HubTabSwitcherMetricsRecorderUnitTest.java",
