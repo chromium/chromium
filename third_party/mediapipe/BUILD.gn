@@ -4,17 +4,10 @@
 
 import("//build/buildflag_header.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/mediapipe/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tflite_target.gni")
-
-declare_args() {
-  mediapipe_build_with_gpu_support = false
-  if (is_win || is_linux || is_mac) {
-    # To be set to true after integration with VideoEffectsService.
-    mediapipe_build_with_gpu_support = false
-  }
-}
 
 # Generate a buildflag header for compile-time checking of MediaPipe GPU support.
 buildflag_header("buildflags") {
