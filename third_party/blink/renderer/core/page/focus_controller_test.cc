@@ -22,6 +22,19 @@
 namespace blink {
 
 class FocusControllerTest : public PageTestBase {
+ public:
+  Element* FindFocusableElementAfter(Element& element,
+                                     mojom::blink::FocusType type) {
+    if (type != mojom::blink::FocusType::kForward &&
+        type != mojom::blink::FocusType::kBackward) {
+      return nullptr;
+    }
+    element.GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
+    FocusController::OwnerMap owner_map;
+    return GetFocusController().FindFocusableElementForImeAutofillAndTesting(
+        type, element, owner_map);
+  }
+
  private:
   void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 };
@@ -121,26 +134,26 @@ TEST_F(FocusControllerTest, FindFocusableAfterElement) {
   Element* second = GetElementById("second");
   Element* third = GetElementById("third");
   Element* fourth = GetElementById("fourth");
-  EXPECT_EQ(third, GetFocusController().FindFocusableElementAfter(
+  EXPECT_EQ(third, FindFocusableElementAfter(
                        *first, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(third, GetFocusController().FindFocusableElementAfter(
+  EXPECT_EQ(third, FindFocusableElementAfter(
                        *second, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(fourth, GetFocusController().FindFocusableElementAfter(
+  EXPECT_EQ(fourth, FindFocusableElementAfter(
                         *third, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(nullptr, GetFocusController().FindFocusableElementAfter(
+  EXPECT_EQ(nullptr, FindFocusableElementAfter(
                          *fourth, mojom::blink::FocusType::kForward));
 
-  EXPECT_EQ(nullptr, GetFocusController().FindFocusableElementAfter(
+  EXPECT_EQ(nullptr, FindFocusableElementAfter(
                          *first, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(first, GetFocusController().FindFocusableElementAfter(
+  EXPECT_EQ(first, FindFocusableElementAfter(
                        *second, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(first, GetFocusController().FindFocusableElementAfter(
+  EXPECT_EQ(first, FindFocusableElementAfter(
                        *third, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(third, GetFocusController().FindFocusableElementAfter(
+  EXPECT_EQ(third, FindFocusableElementAfter(
                        *fourth, mojom::blink::FocusType::kBackward));
 
-  EXPECT_EQ(nullptr, GetFocusController().FindFocusableElementAfter(
-                         *first, mojom::blink::FocusType::kNone));
+  EXPECT_EQ(nullptr,
+            FindFocusableElementAfter(*first, mojom::blink::FocusType::kNone));
 }
 
 TEST_F(FocusControllerTest, NextFocusableElementForImeAndAutofill) {
@@ -486,11 +499,11 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
                                     post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i], FindFocusableElementAfter(
                             *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 
@@ -502,14 +515,12 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   const auto* style = before_second_scroll_marker->GetComputedStyle();
   EXPECT_TRUE(before_second_scroll_marker->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
-  EXPECT_EQ(
-      before_second_scroll_marker,
-      GetFocusController().FindFocusableElementAfter(
-          *before_scroll_marker_group, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(
-      before_block_start_button,
-      GetFocusController().FindFocusableElementAfter(
-          *before_second_scroll_marker, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(before_second_scroll_marker,
+            FindFocusableElementAfter(*before_scroll_marker_group,
+                                      mojom::blink::FocusType::kForward));
+  EXPECT_EQ(before_block_start_button,
+            FindFocusableElementAfter(*before_second_scroll_marker,
+                                      mojom::blink::FocusType::kForward));
 }
 
 TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
@@ -590,11 +601,11 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
                                     post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i], FindFocusableElementAfter(
                             *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 
@@ -670,11 +681,11 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
                                     post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i], FindFocusableElementAfter(
                             *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 }
@@ -730,11 +741,11 @@ TEST_F(FocusControllerTest,
       post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i], FindFocusableElementAfter(
                             *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 }
@@ -771,11 +782,11 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkerGroupFocusOrder) {
       after_scroller, after_scroll_marker_group,  post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i], FindFocusableElementAfter(
                             *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 }
@@ -880,11 +891,11 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
                                     post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+    EXPECT_EQ(order[i], FindFocusableElementAfter(
                             *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 }
