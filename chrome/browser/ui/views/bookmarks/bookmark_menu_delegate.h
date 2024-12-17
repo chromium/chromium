@@ -199,11 +199,24 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   void BuildMenuForFolder(const bookmarks::BookmarkNode* node,
                           const ui::ImageModel& icon,
                           views::MenuItemView* parent_menu);
+  void BuildMenuForFolderAt(const bookmarks::BookmarkNode* node,
+                            const ui::ImageModel& icon,
+                            views::MenuItemView* parent_menu,
+                            size_t index);
 
   // Builds a menu item for the provided bookmark url, adding it to
   // `parent_menu`.
-  void BuildMenuForURL(const bookmarks::BookmarkNode* node,
-                       views::MenuItemView* parent_menu);
+  void BuildMenuForURLAt(const bookmarks::BookmarkNode* node,
+                         views::MenuItemView* parent_menu,
+                         size_t index);
+
+  // Build a menu item for the providied bookmark folder or url, adding it to
+  // `parent_menu`.
+  void BuildNodeMenuItem(const bookmarks::BookmarkNode* node,
+                         views::MenuItemView* parent_menu);
+  void BuildNodeMenuItemAt(const bookmarks::BookmarkNode* node,
+                           views::MenuItemView* parent_menu,
+                           size_t index);
 
   // Creates an entry in menu for each child node of |parent| starting at
   // |start_child_index|.
@@ -240,7 +253,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // Returns the updated menu if there were changes; otherwise, returns null.
   views::MenuItemView* UpdateBookmarksTitle();
   bool ShouldHaveBookmarksTitle();
-  void BuildBookmarksTitle();
+  void BuildBookmarksTitle(size_t index);
   void RemoveBookmarksTitle();
 
   // Adds or removes the separator of the "other" bookmarks folder as necessary.

@@ -216,6 +216,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
                                const ui::ImageModel& icon = ui::ImageModel());
 
   MenuItemView* AppendTitle(const std::u16string& label);
+  MenuItemView* AddTitleAt(const std::u16string& label, size_t index);
 
   // Append a submenu to this menu.
   // The returned pointer is owned by this menu.

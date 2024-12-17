@@ -50,6 +50,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -62,6 +63,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -79,6 +81,10 @@ namespace {
 // Max width of a menu. There does not appear to be an OS value for this, yet
 // both IE and FF restrict the max width of a menu.
 const int kMaxMenuWidth = 400;
+
+size_t GetSubmenuChildCount(const MenuItemView* menu) {
+  return menu->HasSubmenu() ? menu->GetSubmenu()->children().size() : 0;
+}
 
 ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                                  const BookmarkNode* node) {
@@ -240,9 +246,9 @@ void BookmarkMenuDelegate::BuildFullMenu(MenuItemView* parent) {
   // Assume that the menu will only use mnemonics if there's already a parent
   // menu that uses them.
   menu_uses_mnemonics_ = parent_menu_item_->GetRootMenuItem()->has_mnemonics();
-
   if (ShouldHaveBookmarksTitle()) {
-    BuildBookmarksTitle();
+    const size_t title_index = GetSubmenuChildCount(parent_menu_item_);
+    BuildBookmarksTitle(title_index);
   }
 
   const BookmarkNode* managed_node =
@@ -787,22 +793,53 @@ void BookmarkMenuDelegate::BuildMenusForPermanentNodes() {
 void BookmarkMenuDelegate::BuildMenuForFolder(const BookmarkNode* node,
                                               const ui::ImageModel& icon,
                                               MenuItemView* parent_menu) {
-  AddMenuToMaps(
-      parent_menu->AppendSubMenu(GetAndIncrementNextMenuID(),
-                                 MaybeEscapeLabel(node->GetTitle()), icon),
-      node);
+  BuildMenuForFolderAt(node, icon, parent_menu,
+                       GetSubmenuChildCount(parent_menu));
 }
 
-void BookmarkMenuDelegate::BuildMenuForURL(const BookmarkNode* node,
-                                           MenuItemView* parent_menu) {
-  MenuItemView* child_menu_item = parent_menu->AppendMenuItem(
-      GetAndIncrementNextMenuID(), MaybeEscapeLabel(node->GetTitle()),
-      GetFaviconForNode(GetBookmarkModel(), node));
+void BookmarkMenuDelegate::BuildMenuForFolderAt(const BookmarkNode* node,
+                                                const ui::ImageModel& icon,
+                                                MenuItemView* parent_menu,
+                                                size_t index) {
+  AddMenuToMaps(parent_menu->AddMenuItemAt(
+                    index, GetAndIncrementNextMenuID(),
+                    MaybeEscapeLabel(node->GetTitle()), std::u16string(),
+                    std::u16string(), ui::ImageModel(), icon,
+                    MenuItemView::Type::kSubMenu, ui::NORMAL_SEPARATOR),
+                node);
+}
+
+void BookmarkMenuDelegate::BuildMenuForURLAt(const BookmarkNode* node,
+                                             MenuItemView* parent_menu,
+                                             size_t index) {
+  MenuItemView* child_menu_item = parent_menu->AddMenuItemAt(
+      index, GetAndIncrementNextMenuID(), MaybeEscapeLabel(node->GetTitle()),
+      std::u16string(), std::u16string(), ui::ImageModel(),
+      GetFaviconForNode(GetBookmarkModel(), node), MenuItemView::Type::kNormal,
+      ui::NORMAL_SEPARATOR);
   child_menu_item->GetViewAccessibility().SetDescription(
       url_formatter::FormatUrl(
           node->url(), url_formatter::kFormatUrlOmitDefaults,
           base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
   AddMenuToMaps(child_menu_item, node);
+}
+
+void BookmarkMenuDelegate::BuildNodeMenuItem(const BookmarkNode* node,
+                                             MenuItemView* parent_menu) {
+  BuildNodeMenuItemAt(node, parent_menu, GetSubmenuChildCount(parent_menu));
+}
+
+void BookmarkMenuDelegate::BuildNodeMenuItemAt(const BookmarkNode* node,
+                                               MenuItemView* parent_menu,
+                                               size_t index) {
+  if (node->is_url()) {
+    BuildMenuForURLAt(node, parent_menu, index);
+  } else {
+    CHECK(node->is_folder());
+    const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
+        chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
+    BuildMenuForFolderAt(node, folder_icon, parent_menu, index);
+  }
 }
 
 void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
@@ -816,13 +853,7 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
       chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
   for (auto i = parent->children().cbegin() + start_child_index;
        i != parent->children().cend(); ++i) {
-    const BookmarkNode* node = i->get();
-    if (node->is_url()) {
-      BuildMenuForURL(node, menu);
-    } else {
-      DCHECK(node->is_folder());
-      BuildMenuForFolder(node, folder_icon, menu);
-    }
+    BuildNodeMenuItem(i->get(), menu);
   }
 }
 
@@ -868,15 +899,14 @@ bool BookmarkMenuDelegate::ShouldHaveBookmarksTitle() {
          !parent_menu_item_->GetSubmenu()->children().empty();
 }
 
-void BookmarkMenuDelegate::BuildBookmarksTitle() {
-  CHECK(parent_menu_item_);
+void BookmarkMenuDelegate::BuildBookmarksTitle(size_t index) {
   CHECK(!bookmarks_title_);
   CHECK(!bookmarks_title_separator_);
-  parent_menu_item_->AppendSeparator();
+  parent_menu_item_->AddSeparatorAt(index);
   bookmarks_title_separator_ =
-      parent_menu_item_->GetSubmenu()->children().back().get();
-  bookmarks_title_ = parent_menu_item_->AppendTitle(
-      l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
+      parent_menu_item_->GetSubmenu()->children()[index].get();
+  bookmarks_title_ = parent_menu_item_->AddTitleAt(
+      l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE), index + 1);
 }
 
 void BookmarkMenuDelegate::RemoveBookmarksTitle() {

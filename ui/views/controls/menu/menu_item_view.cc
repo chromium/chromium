@@ -398,6 +398,13 @@ MenuItemView* MenuItemView::AppendTitle(const std::u16string& label) {
                             Type::kTitle);
 }
 
+MenuItemView* MenuItemView::AddTitleAt(const std::u16string& label,
+                                       size_t index) {
+  return AddMenuItemAt(index, ui::MenuModel::kTitleId, label, std::u16string(),
+                       std::u16string(), ui::ImageModel(), ui::ImageModel(),
+                       Type::kTitle, ui::NORMAL_SEPARATOR);
+}
+
 MenuItemView* MenuItemView::AppendSubMenu(int item_id,
                                           const std::u16string& label,
                                           const ui::ImageModel& icon) {
