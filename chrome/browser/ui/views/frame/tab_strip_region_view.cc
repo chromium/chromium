@@ -473,7 +473,8 @@ void TabStripRegionView::Layout(PassKey) {
     // padding and button height are removed.
     int x = tab_strip_container_->bounds().right() -
             TabStyle::Get()->GetBottomCornerRadius() +
-            GetLayoutConstant(TAB_STRIP_PADDING);
+            GetLayoutConstant(TAB_STRIP_PADDING) +
+            GetLayoutConstant(NEW_TAB_BUTTON_LEADING_MARGIN);
 
     if (base::FeatureList::IsEnabled(features::kCompactMode)) {
       if (profile_->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled)) {

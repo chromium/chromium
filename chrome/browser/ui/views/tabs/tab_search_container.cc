@@ -230,11 +230,15 @@ TabSearchContainer::TabSearchContainer(
 
   std::unique_ptr<TabSearchButton> tab_search_button;
   if (features::IsTabstripComboButtonEnabled()) {
-    // With combo button, edge adjacent to new tab button should be flat and
-    // opposite edge should be rounded with no change on chip animation.
+    // With backgrounded combo button, edge adjacent to new tab button should
+    // be flat and opposite edge should be rounded with no change on chip
+    // animation.
+    Edge flat_edge = Edge::kNone;
+    if (features::HasTabstripComboButtonWithBackground()) {
+      flat_edge = base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft;
+    }
     tab_search_button = std::make_unique<TabSearchButton>(
-        tab_strip_controller, browser_window_interface,
-        base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft, Edge::kNone,
+        tab_strip_controller, browser_window_interface, flat_edge, Edge::kNone,
         anchor_view ? anchor_view : this, tab_strip);
     tab_search_button->SetFlatEdgeFactor(1);
   } else {
