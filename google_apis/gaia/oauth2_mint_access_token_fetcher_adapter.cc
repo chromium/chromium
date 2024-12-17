@@ -122,9 +122,14 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
           GoogleServiceAuthError::FromUnexpectedServiceResponse(
               "Failed to decrypt token"));
       return;
+    } else {
+      RecordEncryptionError(
+          TokenBindingResponseEncryptionError::kSuccessfullyDecrypted);
     }
     decrypted_token = std::move(decryption_result);
   } else {
+    RecordEncryptionError(
+        TokenBindingResponseEncryptionError::kSuccessNoEncryption);
     decrypted_token = std::move(result.access_token);
   }
   // The token will expire in `time_to_live` seconds. Take a 10% error margin to

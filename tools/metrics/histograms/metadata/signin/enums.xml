@@ -1130,6 +1130,8 @@ chromium-metrics-reviews@google.com.
 <enum name="TokenBindingResponseEncryptionError">
   <int value="0" label="Response is unexpectedly encrypted"/>
   <int value="1" label="Decryption failed"/>
+  <int value="2" label="No error. Response was successfully decrypted"/>
+  <int value="3" label="No error. Response wasn't encrypted"/>
 </enum>
 
 <!-- LINT.ThenChange(//google_apis/gaia/token_binding_response_encryption_error.h:TokenBindingResponseEncryptionError) -->

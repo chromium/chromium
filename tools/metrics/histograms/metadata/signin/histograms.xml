@@ -1924,9 +1924,9 @@ the browser and content area. -->
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records an encryption failure that occured during OAuth2MintToken API fetch
-    with a bound refresh token. Recorded after the response is processed and
-    only if the fetch failed due to such an error. Desktop only.
+    Records an encryption failure (or lack of any) that occured during
+    OAuth2MintToken API fetch with a bound refresh token. Recorded after the
+    response is processed. Desktop only.
   </summary>
 </histogram>
 
@@ -1960,9 +1960,9 @@ tokens and is needed for as long as Chrome is fetching access tokens. -->
   <owner>alexilin@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records an encryption failure that occured during OAuthMultilogin API fetch
-    with a bound refresh token. Recorded while the response is being processed.
-    Desktop only.
+    Records an encryption failure (or lack of any) that occured during
+    OAuthMultilogin API fetch. Recorded once per cookie while the response is
+    being processed.
   </summary>
 </histogram>
 
