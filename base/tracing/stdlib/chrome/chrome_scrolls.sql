@@ -15,6 +15,8 @@ CREATE PERFETTO TABLE _chrome_scroll_update_refs(
   scroll_update_latency_id LONG,
   -- Id of the touch move input corresponding to this scroll update.
   touch_move_latency_id LONG,
+  -- Id of the `EventLatency` of the frame that the input was presented in.
+  presentation_latency_id LONG,
   -- Id of the frame pipeline (`Graphics.Pipeline`), pre-surface aggregation.
   surface_frame_id LONG,
   -- Id of the frame pipeline (`Graphics.Pipeline`), post-surface aggregation.
@@ -23,6 +25,10 @@ AS
 SELECT
   scroll_update.latency_id AS scroll_update_latency_id,
   chrome_touch_move_to_scroll_update.touch_move_latency_id,
+  COALESCE(
+    chrome_coalesced_inputs.presented_latency_id,
+    scroll_update.latency_id
+  ) AS presentation_latency_id,
   chrome_graphics_pipeline_inputs_to_surface_frames.surface_frame_trace_id
     AS surface_frame_id,
   chrome_graphics_pipeline_aggregated_frames.display_trace_id
@@ -38,6 +44,8 @@ LEFT JOIN chrome_touch_move_to_scroll_update
   ON
     chrome_touch_move_to_scroll_update.scroll_update_latency_id
     = scroll_update.latency_id
+LEFT JOIN chrome_coalesced_inputs
+  ON chrome_coalesced_inputs.coalesced_latency_id = scroll_update.latency_id
 WHERE scroll_update.input_type = 'GESTURE_SCROLL_UPDATE_EVENT';
 
 -- Timestamps and other related information for events during the
@@ -47,14 +55,14 @@ CREATE PERFETTO TABLE _scroll_update_input_timestamps_and_metadata
 AS
 SELECT
   refs.scroll_update_latency_id AS id,
-  chrome_coalesced_input.presented_latency_id AS coalesced_into,
+  refs.presentation_latency_id AS presented_in_frame_id,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   chrome_event_latency.is_presented AS is_presented,
   chrome_event_latency.is_janky_scrolled_frame AS is_janky,
   chrome_event_latency.event_type
     = 'INERTIAL_GESTURE_SCROLL_UPDATE' AS is_inertial,
   chrome_event_latency.event_type
-    = 'FIRST_GESTURE_SCROLL_UPDATE' AS is_first,
+    = 'FIRST_GESTURE_SCROLL_UPDATE' AS is_first_scroll_update_in_scroll,
   chrome_event_latency.ts AS generation_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   touch_move_received_step.slice_id AS touch_move_received_slice_id,
@@ -85,8 +93,6 @@ SELECT
     + compositor_coalesced_input_handled_step.dur
     AS compositor_coalesced_input_handled_end_ts
 FROM _chrome_scroll_update_refs refs
-LEFT JOIN chrome_coalesced_inputs chrome_coalesced_input
-  ON chrome_coalesced_input.coalesced_latency_id = refs.scroll_update_latency_id
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 LEFT JOIN chrome_event_latencies chrome_event_latency
   ON chrome_event_latency.scroll_update_id = refs.scroll_update_latency_id
@@ -131,8 +137,9 @@ LEFT JOIN chrome_input_pipeline_steps compositor_coalesced_input_handled_step
 CREATE PERFETTO TABLE chrome_scroll_update_input_info(
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
-  -- Id of the frame that this input was presented in.
-  coalesced_into LONG,
+  -- Id of the frame that this input was presented in. Can be joined with
+  -- `chrome_scroll_update_frame_info.id`.
+  presented_in_frame_id LONG,
   -- Whether this input event was presented.
   is_presented BOOL,
   -- Whether the corresponding frame is janky. This comes directly from
@@ -144,7 +151,10 @@ CREATE PERFETTO TABLE chrome_scroll_update_input_info(
   is_inertial BOOL,
   -- Whether this is the first update in a scroll.
   -- First scroll update can never be janky.
-  is_first BOOL,
+  is_first_scroll_update_in_scroll BOOL,
+  -- Whether this is the first input that was presented in frame
+  -- `presented_in_frame_id`.
+  is_first_scroll_update_in_frame BOOL,
   -- Whether the corresponding input event was coalesced into another.
   generation_ts TIMESTAMP,
   -- Duration from input generation to when the browser received the input.
@@ -193,11 +203,14 @@ WITH
 processed_timestamps_and_metadata AS (
   SELECT
     id,
-    coalesced_into,
+    presented_in_frame_id,
     is_presented,
     is_janky,
     is_inertial,
-    is_first,
+    is_first_scroll_update_in_scroll,
+    ROW_NUMBER()
+      OVER (PARTITION BY presented_in_frame_id ORDER BY generation_ts ASC) = 1
+      AS is_first_scroll_update_in_frame,
     -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     -- Ids
     browser_utid,
@@ -229,11 +242,12 @@ processed_timestamps_and_metadata AS (
 )
 SELECT
   id,
-  coalesced_into,
+  presented_in_frame_id,
   is_presented,
   is_janky,
   is_inertial,
-  is_first,
+  is_first_scroll_update_in_scroll,
+  is_first_scroll_update_in_frame,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
@@ -344,14 +358,12 @@ SELECT
   chrome_event_latency.swap_end_timestamp,
   chrome_event_latency.presentation_timestamp
 FROM _chrome_scroll_update_refs refs
-LEFT JOIN chrome_coalesced_inputs chrome_coalesced_input
-  ON chrome_coalesced_input.coalesced_latency_id = refs.scroll_update_latency_id
 LEFT JOIN chrome_event_latencies chrome_event_latency
-  ON chrome_event_latency.scroll_update_id = refs.scroll_update_latency_id
+  ON chrome_event_latency.scroll_update_id = refs.presentation_latency_id
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 LEFT JOIN chrome_input_pipeline_steps compositor_resample_step
   ON
-    compositor_resample_step.latency_id = refs.scroll_update_latency_id
+    compositor_resample_step.latency_id = refs.presentation_latency_id
     AND compositor_resample_step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
     AND compositor_resample_step.input_type
       = 'GESTURE_SCROLL_UPDATE_EVENT'
@@ -398,7 +410,10 @@ LEFT JOIN
 LEFT JOIN chrome_graphics_pipeline_display_frame_steps viz_swap_buffers_step
   ON
     viz_swap_buffers_step.display_trace_id = refs.display_trace_id
-    AND viz_swap_buffers_step.step = 'STEP_BUFFER_SWAP_POST_SUBMIT';
+    AND viz_swap_buffers_step.step = 'STEP_BUFFER_SWAP_POST_SUBMIT'
+-- Filter out inputs which were coalesced into a different frame (so that rows
+-- of this table correspond to frames).
+WHERE refs.scroll_update_latency_id = refs.presentation_latency_id;
 
 -- Timestamps and durations for the frame-associated (after coalescing inputs
 -- into a frame) stages of a scroll.
@@ -541,7 +556,7 @@ processed_timestamps_and_metadata AS (
 )
 SELECT
   id,
-  -- TODO(b:380868337): This is sometimes unexpectedly 0; check/fix this.
+  -- TODO(b:381062412): This is sometimes unexpectedly 0; check/fix this.
   vsync_interval_ms,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `compositor_utid`.
@@ -718,9 +733,9 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
   is_inertial BOOL,
   -- Whether this is the first update in a scroll.
   -- First scroll update can never be janky.
-  is_first BOOL,
-  -- Whether the corresponding input event was coalesced into another.
-  is_coalesced BOOL,
+  is_first_scroll_update_in_scroll BOOL,
+  -- Whether this is the first input that was presented in the frame.
+  is_first_scroll_update_in_frame BOOL,
   -- Input generation timestamp (from the Android system).
   generation_ts TIMESTAMP,
   -- Duration from input generation to when the browser received the input.
@@ -836,14 +851,14 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
   presentation_timestamp TIMESTAMP)
 AS
 SELECT
-  id,
-  -- TODO(b:380868337): This is sometimes unexpectedly 0; check/fix this.
-  IFNULL(frame.vsync_interval_ms, 0) AS vsync_interval_ms,
+  input.id,
+  -- TODO(b:381062412): This is sometimes unexpectedly 0; check/fix this.
+  frame.vsync_interval_ms,
   input.is_presented,
   input.is_janky,
   input.is_inertial,
-  input.is_first,
-  input.coalesced_into IS NOT NULL AS is_coalesced,
+  input.is_first_scroll_update_in_scroll,
+  input.is_first_scroll_update_in_frame,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
@@ -953,4 +968,5 @@ SELECT
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   frame.presentation_timestamp
 FROM chrome_scroll_update_input_info AS input
-LEFT JOIN chrome_scroll_update_frame_info AS frame USING (id);
+LEFT JOIN chrome_scroll_update_frame_info AS frame
+ON input.presented_in_frame_id = frame.id;
