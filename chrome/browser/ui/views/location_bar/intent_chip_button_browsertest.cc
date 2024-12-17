@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -309,26 +310,21 @@ class IntentChipButtonBrowserUiTest
 
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
+    // Verify against the Skia gold result baseline from crrev.com/c/6092068.
+    // TODO(crbug.com/384567062): Support set_baseline() in UiBrowserTest.
+    const std::string screenshot_name = base::StrCat(
+        {test_info->test_suite_name(), "_", test_info->name(), "_6092068"});
     return VerifyPixelUi(location_bar, test_info->test_suite_name(),
-                         test_info->name()) != ui::test::ActionResult::kFailed;
+                         screenshot_name) != ui::test::ActionResult::kFailed;
   }
 
-  void WaitForUserDismissal() override {
-    // Consider closing the browser to be dismissal.
-    ui_test_utils::WaitForBrowserToClose();
-  }
+  void WaitForUserDismissal() override {}
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/340814277): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserUiTest, MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserUiTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
