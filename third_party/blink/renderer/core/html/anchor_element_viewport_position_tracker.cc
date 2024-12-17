@@ -271,7 +271,9 @@ void AnchorElementViewportPositionTracker::OnFirstContentfulPaint() {
     return;
   }
 
-  post_fcp_delay_timer_.StartOneShot(PostFCPObservationDelay(), FROM_HERE);
+  if (!intersection_observer_) {
+    post_fcp_delay_timer_.StartOneShot(PostFCPObservationDelay(), FROM_HERE);
+  }
 }
 
 IntersectionObserver*

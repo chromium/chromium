@@ -1958,4 +1958,36 @@ TEST_F(AnchorElementMetricsSenderTest,
   EXPECT_EQ(hosts_[0]->left_viewport_.size(), 0u);
 }
 
+// TODO(crbug.com/372053392): Remove this test if we enable-by-default and
+// remove kPreloadingViewportHeuristics.
+// Simulates a scenario where AnchorElementViewportPositionTracker is created
+// when we mark FCP, resulting in AEVPT::OnFirstContenfulPaint() being called
+// immediately after the object is created.
+TEST_F(AnchorElementMetricsSenderTest, RegressionTestForCrbug384610894) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kNavigationPredictor,
+        {{"random_anchor_sampling_period", "1"},
+         {"intersection_observation_after_fcp_only", "true"},
+         {"post_fcp_observation_delay", "200ms"}}}},
+      {features::kPreloadingViewportHeuristics});
+
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(R"html(
+    <body>
+      <h1>Foo</h1>
+    </body>
+  )html"));
+  platform_->RunForPeriod(base::Milliseconds(10));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(PaintTiming::From(GetDocument())
+                   .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+                   .is_null());
+
+  // Wait for delay configured with "post_fcp_observation_delay".
+  platform_->RunForPeriod(base::Milliseconds(200));
+}
+
 }  // namespace blink
