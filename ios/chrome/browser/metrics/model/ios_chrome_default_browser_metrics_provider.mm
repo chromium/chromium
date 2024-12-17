@@ -10,9 +10,7 @@
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "components/metrics/metrics_log_uploader.h"
-#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "services/metrics/public/cpp/ukm_builders.h"
 
 namespace {
 
@@ -75,10 +73,8 @@ void IOSChromeDefaultBrowserMetricsProvider::ProvideCurrentSessionData(
       }
       return;
     case metrics::MetricsLogUploader::MetricServiceType::UKM:
-      ukm::builders::IOS_IsDefaultBrowser(ukm::NoURLSourceId())
-          .SetIsDefaultBrowser(IsChromeLikelyDefaultBrowser())
-          .Record(ukm::UkmRecorder::Get());
-      return;
+      // `this` should never be instantiated with this service type.
+      NOTREACHED();
     case metrics::MetricsLogUploader::MetricServiceType::STRUCTURED_METRICS:
       // `this` should never be instantiated with this service type.
       NOTREACHED();
