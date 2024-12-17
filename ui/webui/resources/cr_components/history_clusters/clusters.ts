@@ -284,8 +284,8 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    */
   protected onRemoveCluster_(event: CustomEvent<number>) {
     const index = event.detail;
-    this.clusters_.splice(index, 1);
-    this.requestUpdate();
+    this.clusters_ =
+        [...this.clusters_.slice(0, index), ...this.clusters_.slice(index + 1)];
   }
 
   /**
