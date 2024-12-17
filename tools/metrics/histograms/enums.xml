@@ -18222,6 +18222,7 @@ from previous Chrome versions.
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-870118210" label="AutofillEnableCardBenefitsSync:enabled"/>
   <int value="-869690461" label="ShoppingListTrackByDefault:enabled"/>
+  <int value="-869149210" label="ProjectorUseDVSPlaybackEndpoint:enabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
   <int value="-868041476" label="OmniboxFocusTriggersSRPZeroSuggest:enabled"/>
   <int value="-867571486" label="PrivateStateTokens:disabled"/>
@@ -20760,6 +20761,7 @@ from previous Chrome versions.
   <int value="147342055" label="ChromeHomeClearUrlOnOpen:disabled"/>
   <int value="147373243" label="enable-deferred-image-decoding"/>
   <int value="147645817" label="DnsHttpssvc:enabled"/>
+  <int value="147845068" label="ProjectorUseDVSPlaybackEndpoint:disabled"/>
   <int value="147982046" label="OfflineAutoFetch:enabled"/>
   <int value="148094867" label="IwaKeyDistributionComponent:enabled"/>
   <int value="148142535" label="ShortcutCustomization:disabled"/>

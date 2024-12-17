@@ -7233,6 +7233,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "projector-use-dvs-playback-endpoint",
+    "owners": ["bzielinski@google.com", "cros-projector@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "promise-icons",
     "owners": ["vpao@chromium.org", "chromeos-apps-foundation-team@google.com"],
     "expiry_milestone": 130

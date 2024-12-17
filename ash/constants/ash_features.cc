@@ -2462,6 +2462,12 @@ BASE_FEATURE(kProjectorDynamicColors,
 // controls whether the projector app uses updated styles and ui components.
 BASE_FEATURE(kProjectorGm3, "ProjectorGm3", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the projector app uses the latest endpoint for retrieving
+// playback urls.
+BASE_FEATURE(kProjectorUseDVSPlaybackEndpoint,
+             "ProjectorUseDVSPlaybackEndpoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to show promise icons during app installations.
 BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4363,6 +4369,10 @@ bool IsProjectorDynamicColorsEnabled() {
 
 bool IsProjectorGm3Enabled() {
   return base::FeatureList::IsEnabled(kProjectorGm3);
+}
+
+bool IsProjectorUseDVSPlaybackEndpointEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorUseDVSPlaybackEndpoint);
 }
 
 bool IsQuickDimEnabled() {

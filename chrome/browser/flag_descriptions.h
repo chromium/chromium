@@ -4172,6 +4172,9 @@ extern const char kProjectorServerSideSpeechRecognitionDescription[];
 extern const char kProjectorServerSideUsmName[];
 extern const char kProjectorServerSideUsmDescription[];
 
+extern const char kProjectorUseDVSPlaybackEndpointName[];
+extern const char kProjectorUseDVSPlaybackEndpointDescription[];
+
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
