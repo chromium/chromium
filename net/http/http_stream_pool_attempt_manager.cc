@@ -1093,11 +1093,6 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
               TcpBasedAttemptState::kAllEndpointsFailed &&
           !quic_task_) {
         // Tried all endpoints.
-        // TODO(crbug.com/346835898): The following MaybeMarkQuicBroken()
-        // doesn't seem to have any effect, as the method returns early when the
-        // attempt state is kAllEndpointsFailed. Check if we should remove it,
-        // or call the method in a different place.
-        MaybeMarkQuicBroken();
         NotifyFailure();
       }
       return;
