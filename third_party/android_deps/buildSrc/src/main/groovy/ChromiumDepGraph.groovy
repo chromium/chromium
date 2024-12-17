@@ -387,6 +387,17 @@ class ChromiumDepGraph {
             dep.isShipped = true
         }
 
+        // We only add testOnly after constructing the dependencies map, so now go through and see
+        // if we need to add testOnly to anything which depends on testOnly. In theory, this may
+        // need some recursion or looping to deal with multiple levels of unmarked targets, but I
+        // think in practice the only things getting annotated here will be a single level of
+        // synthetic groups which depend on testOnly targets.
+        dependencies.each { _, dep ->
+            dep.testOnly = dep.children.any { id ->
+                dependencies.get(id).testOnly
+            }
+        }
+
         PROPERTY_OVERRIDES.each { id, overrides ->
             DependencyDescription dep = dependencies.get(id)
             if (dep) {
