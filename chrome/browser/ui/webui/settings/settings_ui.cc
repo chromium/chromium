@@ -380,8 +380,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   const bool compose_enabled = ComposeEnabling::IsEnabledForProfile(profile);
+  const bool compose_visible = ComposeEnabling::IsSettingVisible(profile);
 #else
   const bool compose_enabled = false;
+  const bool compose_visible = false;
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
   html_source->AddBoolean(
       "enableComposeProactiveNudge",
@@ -580,7 +582,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
          use_is_setting_visible
              ? TabOrganizationUtils::GetInstance()->IsSettingVisible(profile)
              : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
-        {"showComposeControl", compose_enabled},
+        {"showComposeControl",
+         use_is_setting_visible ? compose_visible : compose_enabled},
         {"showWallpaperSearchControl",
          use_is_setting_visible
              ? customize_chrome::IsWallpaperSearchSettingVisibleForProfile(
