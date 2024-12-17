@@ -14,7 +14,8 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace glic {
-class GlicWebClientHandler : public glic::mojom::WebClientHandler {
+class GlicWebClientHandler : public glic::mojom::WebClientHandler,
+                             public GlicWindowController::StateObserver {
  public:
   explicit GlicWebClientHandler(
       GlicKeyedService* glic_service,
@@ -25,6 +26,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler {
   void WebClientInitialized(
       ::mojo::PendingRemote<glic::mojom::WebClient> web_client) override {
     web_client_.Bind(std::move(web_client));
+    web_client_.set_disconnect_handler(base::BindOnce(
+        &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
+    glic_service_->window_controller().AddStateObserver(this);
+    web_client_->NotifyPanelStateChange(
+        glic_service_->window_controller().GetPanelState().Clone());
   }
 
   void GetChromeVersion(GetChromeVersionCallback callback) override {
@@ -71,7 +77,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler {
         include_inner_text, include_viewport_screenshot, std::move(callback));
   }
 
+  void PanelStateChanged(const mojom::PanelState& panel_state) override {
+    web_client_->NotifyPanelStateChange(panel_state.Clone());
+  }
+
  private:
+  void WebClientDisconnected() {
+    glic_service_->window_controller().RemoveStateObserver(this);
+  }
   raw_ptr<GlicKeyedService> glic_service_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;

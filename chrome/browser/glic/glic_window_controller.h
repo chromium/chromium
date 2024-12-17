@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 class Browser;
@@ -25,13 +28,19 @@ class GlicView;
 // Class for Glic window controller. Owned by the Glic profile keyed-service.
 // This gets created when the Glic window needs to be shown and it owns the Glic
 // widget.
-class GlicWindowController {
+class GlicWindowController : public views::WidgetObserver {
  public:
+  // Observes the state of the glic window.
+  class StateObserver : public base::CheckedObserver {
+   public:
+    virtual void PanelStateChanged(const mojom::PanelState& panel_state) = 0;
+  };
+
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
 
   explicit GlicWindowController(Profile* profile);
-  ~GlicWindowController();
+  ~GlicWindowController() override;
 
   // Shows the glic window.
   void Show(views::View* glic_button_view);
@@ -52,9 +61,16 @@ class GlicWindowController {
   // Drags the glic window following the current mouse location.
   void DragFromPoint(gfx::Vector2d mouse_location);
 
+  const mojom::PanelState& GetPanelState() const { return panel_state_; }
+  void AddStateObserver(StateObserver* observer);
+  void RemoveStateObserver(StateObserver* observer);
+
   // Returns a WeakPtr to this instance. It can be destroyed at any time if the
   // profile is deleted or if the browser shuts down.
   base::WeakPtr<GlicWindowController> GetWeakPtr();
+
+  // views::WidgetObserver implementation, monitoring the GlicView.
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
  private:
   // Determines the correct position for the glic window when attached to a
@@ -68,7 +84,7 @@ class GlicWindowController {
 
   // Reparents the glic widget under the given widget. Helper method for
   // GetTopRightPositionForAttachedWindow.
-  void AttachToBrowser(views::Widget* widget);
+  void AttachToBrowser(Browser* browser, views::Widget* widget);
 
   // observes the pinned target
   class PinnedTargetWidgetObserver : public views::WidgetObserver {
@@ -90,8 +106,6 @@ class GlicWindowController {
     raw_ptr<views::Widget> pinned_target_widget_;
   };
 
-  PinnedTargetWidgetObserver pinned_target_widget_observer_{this};
-
   // If the mouse is in snapping distance of a browser's glic button, it snaps
   // glic to the top right of the browser's glic button.
   void HandleBrowserPinning(gfx::Vector2d mouse_location);
@@ -103,11 +117,19 @@ class GlicWindowController {
   // Moves glic view to the pin target of the specified browser.
   void MoveToBrowserPinTarget(Browser* browser);
 
+  void NotifyIfPanelStateChanged();
+  mojom::PanelState ComputePanelState() const;
+
+  PinnedTargetWidgetObserver pinned_target_widget_observer_{this};
+  base::WeakPtr<Browser> pinned_browser_;
+
   // Empty holder widget to reparent to when unpinned.
   std::unique_ptr<views::Widget> holder_widget_;
 
   const raw_ptr<Profile> profile_;
   views::UniqueWidgetPtr widget_;
+  bool widget_visible_ = false;
+
   // Owned by widget_.
   raw_ptr<glic::GlicView> glic_view_ = nullptr;
 
@@ -116,6 +138,12 @@ class GlicWindowController {
 
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;
+
+  // This is the last panel state sent to observers. It should only be updated
+  // in `NotifyIfPanelStateChanged`.
+  mojom::PanelState panel_state_;
+
+  base::ObserverList<StateObserver> state_observers_;
 
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };

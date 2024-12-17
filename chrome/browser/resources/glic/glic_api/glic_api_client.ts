@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, TabContextResult, TabData} from '../glic_api/glic_api.js';
-import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
+import type {DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, Subscriber, TabContextResult, TabData} from '../glic_api/glic_api.js';
+import {GetTabContextErrorReason, PanelStateKind} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
@@ -39,7 +39,9 @@ type WebClientMessageHandlerInterface = {
 };
 
 class WebClientMessageHandler implements WebClientMessageHandlerInterface {
-  constructor(private webClient: GlicWebClient) {}
+  constructor(
+      private webClient: GlicWebClient, private host: GlicBrowserHostImpl) {}
+
 
   glicWebClientNotifyPanelOpened(payload: {dockedToWindowId: string|undefined}):
       void {
@@ -53,6 +55,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       this.webClient.notifyPanelClosed();
     }
   }
+
+  glicWebClientPanelStateChanged(payload: {panelState: PanelState}): void {
+    this.host.panelState.assignAndSignal(payload.panelState);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -60,12 +66,14 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private receiver: PostMessageRequestReceiver;
   private handlerFunctionNames: Set<string> = new Set();
   private webClientMessageHandler: WebClientMessageHandler;
+  panelState = new ObservableValue<PanelState>({kind: PanelStateKind.HIDDEN});
 
   constructor(private webClient: GlicWebClient, windowProxy: WindowProxy) {
     this.sender = new PostMessageRequestSender(windowProxy, 'chrome://glic');
     this.receiver =
         new PostMessageRequestReceiver('chrome://glic', windowProxy, this);
-    this.webClientMessageHandler = new WebClientMessageHandler(this.webClient);
+    this.webClientMessageHandler =
+        new WebClientMessageHandler(this.webClient, this);
 
     for (const name of Object.getOwnPropertyNames(
              WebClientMessageHandler.prototype)) {
@@ -145,6 +153,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   async setWindowDraggableAreas(areas: DraggableArea[]) {
     return this.sender.requestWithResponse(
         'glicBrowserSetWindowDraggableAreas', {areas});
+  }
+
+  getPanelState(): Observable<PanelState> {
+    return this.panelState;
   }
 }
 
@@ -239,4 +251,40 @@ function convertTabContextResultFromPrivate(data: TabContextResultPrivate):
     result.tabData = convertTabDataFromPrivate(data.tabData);
   }
   return result;
+}
+
+class ObservableSubscription<T> implements Subscriber {
+  constructor(
+      public onChange: (newValue: T) => void,
+      private onUnsubscribe: (self: ObservableSubscription<T>) => void) {}
+
+  unsubscribe(): void {
+    this.onUnsubscribe(this);
+  }
+}
+
+class ObservableValue<T> implements Observable<T> {
+  private subscribers: Set<ObservableSubscription<T>> = new Set();
+  constructor(private value: T) {}
+
+  assignAndSignal(v: T) {
+    this.value = v;
+    this.subscribers.forEach((sub) => {
+      // Ignore if removed since forEach was called.
+      if (this.subscribers.has(sub)) {
+        sub.onChange(v);
+      }
+    });
+  }
+
+  // Observable impl.
+  getValue(): T {
+    return this.value;
+  }
+  subscribe(change: (newValue: T) => void): Subscriber {
+    const newSub = new ObservableSubscription(
+        change, (sub) => this.subscribers.delete(sub));
+    this.subscribers.add(newSub);
+    return newSub;
+  }
 }

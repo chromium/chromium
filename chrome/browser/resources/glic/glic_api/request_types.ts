@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DraggableArea, GetTabContextErrorReason, TabContextResult, TabData} from '../glic_api/glic_api.js';
+import type {DraggableArea, GetTabContextErrorReason, PanelState, TabContextResult, TabData} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -102,6 +102,16 @@ export declare interface WebClientRequestTypes {
     request: {},
     response: void,
   };
+  glicWebClientPanelStateChanged: {
+    request: {
+      panelState: PanelState,
+    },
+    response: void,
+  };
+}
+
+export declare interface WebClientInitialState {
+  panelState?: PanelState;
 }
 
 //

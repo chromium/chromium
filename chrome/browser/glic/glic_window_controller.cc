@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/glic/glic_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
@@ -111,6 +112,7 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   std::tie(widget_, glic_view_) = glic::GlicView::CreateWidget(
       profile_, {top_right_point.x() - kWidgetWidth - padding,
                  top_right_point.y() + padding, kWidgetWidth, kWidgetHeight});
+  widget_->AddObserver(this);
   widget_->Show();
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, glic_view_);
@@ -125,7 +127,9 @@ gfx::Point GlicWindowController::GetTopRightPositionForAttachedWindow(
   gfx::Point top_right_bounds =
       glic_button_view->GetBoundsInScreen().top_right();
   views::Widget* glic_button_widget = glic_button_view->GetWidget();
-  AttachToBrowser(glic_button_widget);
+  Browser* browser =
+      chrome::FindBrowserWithWindow(glic_button_widget->GetNativeWindow());
+  AttachToBrowser(browser, glic_button_widget);
 
   return top_right_bounds;
 }
@@ -140,13 +144,16 @@ gfx::Point GlicWindowController::GetTopRightPositionForDetachedWindow() {
   return top_right_bounds;
 }
 
-void GlicWindowController::AttachToBrowser(views::Widget* widget) {
+void GlicWindowController::AttachToBrowser(Browser* browser,
+                                           views::Widget* widget) {
   // Makes the glic widget a child view of the given widget's browser.
-  if (widget && widget_) {
+  if (widget && widget_ && browser) {
     // Add observer to new parent.
     pinned_target_widget_observer_.SetPinnedTargetWidget(widget);
+    pinned_browser_ = browser->AsWeakPtr();
     views::Widget::ReparentNativeView(widget_->GetNativeView(),
                                       widget->GetNativeView());
+    NotifyIfPanelStateChanged();
   }
 }
 
@@ -185,6 +192,7 @@ void GlicWindowController::Close() {
   widget_->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
   widget_.reset();
   glic_view_ = nullptr;
+  NotifyIfPanelStateChanged();
 }
 
 void GlicWindowController::DragFromPoint(gfx::Vector2d mouse_location) {
@@ -240,7 +248,7 @@ void GlicWindowController::HandleBrowserPinning(gfx::Vector2d mouse_location) {
             views::Widget::ClosedReason::kLostFocus);
         holder_widget_.reset();
       }
-      AttachToBrowser(window_widget);
+      AttachToBrowser(browser, window_widget);
     } else if (widget_->parent() == window_widget) {
       // If farther than the snapping threshold from the current parent
       // widget, open a blank holder window to reparent to
@@ -253,6 +261,7 @@ void GlicWindowController::MoveToBrowserPinTarget(Browser* browser) {
   if (!widget_) {
     return;
   }
+  pinned_browser_ = browser->AsWeakPtr();
   gfx::Rect glic_rect = widget_->GetWindowBoundsInScreen();
   // TODO(andreaxg): Fix exact snap location.
   gfx::Rect glic_button_rect = browser->window()
@@ -265,10 +274,12 @@ void GlicWindowController::MoveToBrowserPinTarget(Browser* browser) {
   glic_rect.set_x(top_right.x() - glic_rect.width() - tab_strip_padding);
   glic_rect.set_y(top_right.y() + tab_strip_padding);
   widget_->SetBounds(glic_rect);
+  NotifyIfPanelStateChanged();
 }
 
 void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   pinned_target_widget_observer_.SetPinnedTargetWidget(nullptr);
+  pinned_browser_ = nullptr;
   if (!holder_widget_) {
     holder_widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
@@ -284,6 +295,44 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   }
   views::Widget::ReparentNativeView(widget_->GetNativeView(),
                                     holder_widget_->GetNativeView());
+  NotifyIfPanelStateChanged();
+}
+
+void GlicWindowController::AddStateObserver(StateObserver* observer) {
+  state_observers_.AddObserver(observer);
+}
+
+void GlicWindowController::RemoveStateObserver(StateObserver* observer) {
+  state_observers_.RemoveObserver(observer);
+}
+
+void GlicWindowController::NotifyIfPanelStateChanged() {
+  auto new_state = ComputePanelState();
+  if (new_state != panel_state_) {
+    panel_state_ = new_state;
+    state_observers_.Notify(&StateObserver::PanelStateChanged, panel_state_);
+  }
+}
+
+mojom::PanelState GlicWindowController::ComputePanelState() const {
+  mojom::PanelState panel_state;
+  if (!widget_visible_) {
+    panel_state.kind = mojom::PanelState_Kind::kHidden;
+  } else if (pinned_browser_) {
+    panel_state.kind = mojom::PanelState_Kind::kDocked;
+    panel_state.window_id = pinned_browser_->session_id().id();
+  } else {
+    panel_state.kind = mojom::PanelState_Kind::kFloating;
+  }
+  return panel_state;
+}
+
+void GlicWindowController::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                     bool visible) {
+  // Store visibility locally because calling widget_->IsVisible() at this point
+  // returns the old value.
+  widget_visible_ = visible;
+  NotifyIfPanelStateChanged();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -103,6 +103,25 @@ export declare interface GlicBrowserHost {
 
   // Requests the closing of the panel containing the web client.
   closePanel?(): Promise<void>;
+
+  // Returns the state of the panel.
+  getPanelState?(): Observable<PanelState>;
+}
+
+// A panel can be in one of these three states.
+export enum PanelStateKind {
+  // Not shown. This is the initial state.
+  HIDDEN = 0,
+  // A floating window.
+  FLOATING = 1,
+  // Docked to a Chrome window.
+  DOCKED = 2,
+}
+
+export declare interface PanelState {
+  kind: PanelStateKind;
+  // Present when docked, indicates to which window the panel is docked.
+  windowId?: string;
 }
 
 /**
@@ -204,4 +223,16 @@ export declare interface DraggableArea {
   y: number;
   width: number;
   height: number;
+}
+
+// A value that can be observed.
+export declare interface Observable<T> {
+  // Get the current value.
+  getValue(): T;
+  // Listen for changes.
+  subscribe(change: (newValue: T) => void): Subscriber;
+}
+
+export declare interface Subscriber {
+  unsubscribe(): void;
 }

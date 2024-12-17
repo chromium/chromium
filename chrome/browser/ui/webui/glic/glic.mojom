@@ -67,6 +67,25 @@ interface WebClientHandler {
   SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas);
 };
 
+// State of the glic panel.
+struct PanelState {
+  // The panel can be in one of these three states.
+  // WARNING: These enum values should match
+  // chrome/browser/resources/glic/glic_api/glic_api.ts.
+  enum Kind {
+    // The panel is hidden.
+    kHidden = 0,
+    // The panel is floating free.
+    kFloating = 1,
+    // The panel is docked to a browser window.
+    kDocked = 2,
+  };
+
+  Kind kind;
+  // Present when docked, indicates to which window the panel is docked.
+  int32? window_id;
+};
+
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
   // The user has requested activation of the web client.
@@ -77,6 +96,8 @@ interface WebClient {
   // again later. Returns when the web client has stored any needed
   // information and stopped accepting the user's input.
   NotifyPanelClosed() => ();
+  // Informs the client that the state of the glic panel has changed.
+  NotifyPanelStateChange(PanelState panel_state);
 };
 
 // Information extracted from a tab.

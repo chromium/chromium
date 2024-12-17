@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/views/view.h"
@@ -34,7 +35,7 @@ class GlicKeyedService : public KeyedService {
   // the launcher, no anchor view is provided.
   void LaunchUI(views::View* glic_button_view);
 
-  GlicWindowController* window_controller() { return window_controller_.get(); }
+  GlicWindowController& window_controller() { return window_controller_; }
 
   // Private API for the glic WebUI.
   void CreateTab(const ::GURL& url,
@@ -55,7 +56,7 @@ class GlicKeyedService : public KeyedService {
  private:
   raw_ptr<content::BrowserContext> browser_context_;
 
-  std::unique_ptr<GlicWindowController> window_controller_;
+  GlicWindowController window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;

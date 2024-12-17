@@ -7,7 +7,6 @@
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -24,6 +23,7 @@ namespace glic {
 GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
                                    GlicProfileManager* profile_manager)
     : browser_context_(browser_context),
+      window_controller_(Profile::FromBrowserContext(browser_context)),
       focused_tab_manager_(Profile::FromBrowserContext(browser_context)),
       profile_manager_(profile_manager) {}
 
@@ -31,12 +31,7 @@ GlicKeyedService::~GlicKeyedService() = default;
 
 void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
   profile_manager_->OnUILaunching(this);
-
-  if (!window_controller_) {
-    window_controller_ = std::make_unique<GlicWindowController>(
-        Profile::FromBrowserContext(browser_context_));
-  }
-  window_controller_->Show(glic_button_view);
+  window_controller_.Show(glic_button_view);
 }
 
 void GlicKeyedService::CreateTab(
@@ -62,26 +57,21 @@ void GlicKeyedService::CreateTab(
 }
 
 void GlicKeyedService::ClosePanel() {
-  if (window_controller_) {
-    window_controller_->Close();
-  }
+  window_controller_.Close();
   BorderView::CancelAllAnimationsForProfile(
       Profile::FromBrowserContext(browser_context_));
 }
 
 std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
-  if (!window_controller_ || !window_controller_->Resize(size)) {
+  if (!window_controller_.Resize(size)) {
     return std::nullopt;
   }
-  return window_controller_->GetSize();
+  return window_controller_.GetSize();
 }
 
 void GlicKeyedService::SetPanelDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
-  if (!window_controller_) {
-    return;
-  }
-  window_controller_->SetDraggableAreas(draggable_areas);
+  window_controller_.SetDraggableAreas(draggable_areas);
 }
 
 void GlicKeyedService::GetContextFromFocusedTab(

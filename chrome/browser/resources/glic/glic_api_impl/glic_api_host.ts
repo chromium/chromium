@@ -16,9 +16,9 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
-import type {WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import type {PanelState as PanelStateMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {DraggableArea, Screenshot, WebPageData} from '../glic_api/glic_api.js';
+import type {DraggableArea, PanelState, Screenshot, WebPageData} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 import type {PostMessageRequestHandler} from '../glic_api/post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from '../glic_api/post_message_transport.js';
@@ -52,6 +52,12 @@ class WebClientImpl implements WebClientInterface {
 
   async notifyPanelClosed(): Promise<void> {
     await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
+  }
+
+  notifyPanelStateChange(panelState: PanelStateMojo) {
+    this.sender.requestNoResponse('glicWebClientPanelStateChanged', {
+      panelState: panelStateToClient(panelState),
+    });
   }
 }
 
@@ -374,5 +380,12 @@ function bitmapN32ToRGBAImage(bitmap: BitmapN32): RgbaImage|undefined {
         ImageAlphaType.PREMUL :
         ImageAlphaType.UNPREMUL,
     colorType,
+  };
+}
+
+function panelStateToClient(panelState: PanelStateMojo): PanelState {
+  return {
+    kind: panelState.kind as number,
+    windowId: optionalWindowIdToClient(panelState.windowId),
   };
 }
