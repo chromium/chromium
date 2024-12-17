@@ -480,14 +480,7 @@ class BrowsingDataModelBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   BrowsingDataModelBrowserTest() {
-    auto& field_trial_param =
-        network::features::kTrustTokenOperationsRequiringOriginTrial;
     std::vector<FeatureRefAndParams> enabled_features = {
-        {network::features::kPrivateStateTokens,
-         {{field_trial_param.name,
-           field_trial_param.GetName(
-               network::features::TrustTokenOriginTrialSpec::
-                   kOriginTrialNotRequired)}}},
         {features::kPrivacySandboxAdsAPIsOverride, {}},
         {features::kIsolatedWebApps, {}},
         {features::kIsolatedWebAppDevMode, {}},

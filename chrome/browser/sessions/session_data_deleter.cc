@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -30,15 +29,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_util.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
@@ -153,11 +149,9 @@ void SessionDataDeleterInternal::Run(
   cookie_manager_->DeleteSessionOnlyCookies(
       base::BindOnce(&SessionDataDeleterInternal::OnCookieDeletionDone, this));
 
-  if (base::FeatureList::IsEnabled(network::features::kPrivateStateTokens)) {
-    storage_partition->GetNetworkContext()->ClearTrustTokenSessionOnlyData(
-        base::BindOnce(&SessionDataDeleterInternal::OnTrustTokenDeletionDone,
-                       this));
-  }
+  storage_partition->GetNetworkContext()->ClearTrustTokenSessionOnlyData(
+      base::BindOnce(&SessionDataDeleterInternal::OnTrustTokenDeletionDone,
+                     this));
 
   // Note that from this point on |*this| is kept alive by scoped_refptr<>
   // references automatically taken by |Bind()|, so when the last callback

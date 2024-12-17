@@ -65,7 +65,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy20:person-check',
       enabledLabel: 'siteSettingsAntiAbuseEnabledSubLabel',
       disabledLabel: 'siteSettingsAntiAbuseDisabledSubLabel',
-      shouldShow: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
     },
     {
       route: routes.SITE_SETTINGS_AR,

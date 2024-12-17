@@ -13561,17 +13561,6 @@ void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
     return;
   }
 
-  // Both flags are enforced in benign renderers by the
-  // RuntimeEnabled=PrivateStateTokens IDL attribute (the base::Feature's value
-  // is tied to the RuntimeEnabledFeature's).
-  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) &&
-      !base::FeatureList::IsEnabled(network::features::kFledgePst)) {
-    mojo::ReportBadMessage(
-        "Attempted to get a TrustTokenQueryAnswerer with Private State Tokens "
-        "disabled.");
-    return;
-  }
-
   // TODO(crbug.com/40729410): Document.hasPrivateToken is restricted to
   // secure contexts, so we could additionally add a check verifying that the
   // bind request "is coming from a secure context"---but there's currently no

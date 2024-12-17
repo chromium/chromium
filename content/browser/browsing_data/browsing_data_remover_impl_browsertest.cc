@@ -697,19 +697,6 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
 }
 
 namespace {
-// Provide BrowsingDataRemoverImplTrustTokenTest the Trust Tokens
-// feature as a mixin so that it gets set before the superclass initializes
-// the test's NetworkContext, as the NetworkContext's initialization must
-// occur with the feature enabled.
-class WithTrustTokensEnabled {
- public:
-  WithTrustTokensEnabled() {
-    feature_list_.InitAndEnableFeature(network::features::kPrivateStateTokens);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 // Tests Trust Tokens clearing by calling
 // TrustTokenQueryAnswerer::HasTrustTokens with a TrustTokenQueryAnswerer
@@ -813,9 +800,8 @@ class TrustTokensTester {
 
 }  // namespace
 
-class BrowsingDataRemoverImplTrustTokenTest
-    : public WithTrustTokensEnabled,
-      public BrowsingDataRemoverImplBrowserTest {};
+using BrowsingDataRemoverImplTrustTokenTest =
+    BrowsingDataRemoverImplBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplTrustTokenTest, Remove) {
   TrustTokensTester tester(network_context());

@@ -2648,8 +2648,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.SetCookieStore(std::move(cookie_store));
   }
 
-  if (base::FeatureList::IsEnabled(features::kPrivateStateTokens) ||
-      base::FeatureList::IsEnabled(features::kFledgePst)) {
     trust_token_store_ = std::make_unique<PendingTrustTokenStore>();
 
     base::FilePath trust_token_path;
@@ -2670,7 +2668,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
           std::make_unique<ExpiryInspectingRecordExpiryDelegate>(
               network_service()->trust_token_key_commitments())));
     }
-  }
 
   std::unique_ptr<net::StaticHttpUserAgentSettings> user_agent_settings =
       std::make_unique<net::StaticHttpUserAgentSettings>(

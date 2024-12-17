@@ -544,37 +544,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
 
   WebRuntimeFeatures::EnableBackForwardCache(
       content::IsBackForwardCacheEnabled());
-
-  if (base::FeatureList::IsEnabled(network::features::kPrivateStateTokens)) {
-    WebRuntimeFeatures::EnablePrivateStateTokens(true);
-    WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(true);
-  } else if (base::FeatureList::IsEnabled(network::features::kFledgePst)) {
-    // See https://bit.ly/configuring-trust-tokens.
-    using network::features::TrustTokenOriginTrialSpec;
-    switch (
-        network::features::kTrustTokenOperationsRequiringOriginTrial.Get()) {
-      case TrustTokenOriginTrialSpec::kOriginTrialNotRequired:
-        // Setting PrivateStateTokens=true enables the Trust Tokens interface;
-        // PrivateStateTokensAlwaysAllowIssuance disables a runtime check
-        // during issuance that the origin trial is active (see
-        // blink/.../trust_token_issuance_authorization.h).
-        WebRuntimeFeatures::EnablePrivateStateTokens(true);
-        WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(true);
-        break;
-      case TrustTokenOriginTrialSpec::kAllOperationsRequireOriginTrial:
-        // The origin trial itself will be responsible for enabling the
-        // PrivateStateTokens RuntimeEnabledFeature.
-        WebRuntimeFeatures::EnablePrivateStateTokens(false);
-        WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(false);
-        break;
-      case TrustTokenOriginTrialSpec::kOnlyIssuanceRequiresOriginTrial:
-        // At issuance, a runtime check will be responsible for checking that
-        // the origin trial is present.
-        WebRuntimeFeatures::EnablePrivateStateTokens(true);
-        WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(false);
-        break;
-    }
-  }
 }
 
 // Ensures that the various ways of enabling/disabling features do not produce

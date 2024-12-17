@@ -92,9 +92,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
         r.SITE_SETTINGS.createChild('smartCardReaders');
   }
   // </if>
-  if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
-    r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
-  }
+  r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
   if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
       loadTimeData.getBoolean('enableComposeProactiveNudge')) {
     r.OFFER_WRITING_HELP = r.SITE_SETTINGS.createChild('offerWritingHelp');

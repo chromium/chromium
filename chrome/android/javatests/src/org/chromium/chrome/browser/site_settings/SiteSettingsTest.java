@@ -1235,24 +1235,11 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    /** Test that showing the Site Settings menu does not contain the "Anti-abuse" row. */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
-    public void testSiteSettingsMenuWithPrivateStateTokensDisabled() {
-        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
-        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
-        assertNull(websitePreferences.findPreference("anti_abuse"));
-        settingsActivity.finish();
-    }
-
     /** Test that showing the Site Settings menu contains the "Anti-abuse" row. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
-    public void testSiteSettingsMenuWithPrivateStateTokensEnabled() {
+    public void testSiteSettingsMenuForAntiAbuse() {
         final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
         SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
         assertNotNull(websitePreferences.findPreference("anti_abuse"));
@@ -1296,7 +1283,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
     public void testOnlyExpectedPreferencesAntiAbuse() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.ANTI_ABUSE,

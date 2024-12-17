@@ -332,9 +332,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
         Flag.baseFeature(
-                NetworkServiceFeatures.PRIVATE_STATE_TOKENS,
-                "Enables the prototype Private State Tokens API."),
-        Flag.baseFeature(
                 NetworkServiceFeatures.MASKED_DOMAIN_LIST,
                 "When enabled, the masked domain list required for IP Protection is loaded."),
         Flag.commandLine(

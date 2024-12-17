@@ -49,7 +49,7 @@ class KAnonymityServiceClientTest : public testing::Test {
  protected:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::kPrivateStateTokens},
+        {},
         /*disabled_features=*/{features::kKAnonymityServiceOHTTPRequests});
     TestingProfile::Builder builder;
     builder.SetSharedURLLoaderFactory(
@@ -521,8 +521,7 @@ class KAnonymityServiceClientJoinQueryTest
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{network::features::kPrivateStateTokens, {}},
-         {features::kKAnonymityService,
+        {{features::kKAnonymityService,
           {
               {"KAnonymityServiceJoinRelayServer", kJoinRelayURL},
               {"KAnonymityServiceQueryRelayServer", kQueryRelayURL},

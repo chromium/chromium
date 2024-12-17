@@ -410,7 +410,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kUseAlternateHistorySyncIllustration,
     &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kWebApkInstallFailureNotification,
-    &network::features::kPrivateStateTokens,
     &base::features::kPostGetMyMemoryStateToBackground,
 };
 

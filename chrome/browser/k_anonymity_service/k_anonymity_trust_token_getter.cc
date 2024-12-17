@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -120,14 +119,11 @@ KAnonymityTrustTokenGetter::~KAnonymityTrustTokenGetter() = default;
 
 void KAnonymityTrustTokenGetter::TryGetTrustTokenAndKey(
     TryGetTrustTokenAndKeyCallback callback) {
-  if ((!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) &&
-       !base::FeatureList::IsEnabled(network::features::kFledgePst)) ||
-      !identity_manager_ ||
+  if (!identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-
   RecordTrustTokenGetterAction(
       KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey);
   bool currently_fetching = pending_callbacks_.size() > 0;

@@ -13,12 +13,10 @@
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_switches.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,9 +40,6 @@ class TrustTokenKeyCommitmentsComponentInstallerTest : public ::testing::Test {
 
 TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest,
        LoadsCommitmentsFromOverriddenPath) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(network::features::kPrivateStateTokens);
-
   base::SequenceCheckerImpl checker;
 
   std::string expectation = "some trust token keys";
@@ -79,9 +74,6 @@ TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest,
 }
 
 TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest, LoadsCommitments) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(network::features::kPrivateStateTokens);
-
   base::SequenceCheckerImpl checker;
 
   std::string expectation = "some trust token keys";
