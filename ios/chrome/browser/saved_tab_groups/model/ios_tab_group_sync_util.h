@@ -85,9 +85,9 @@ bool IsTabGroupShared(const TabGroup* tab_group,
                       TabGroupSyncService* sync_service);
 
 // Returns the collabID of the given `tab_group` if it's shared.
-// Otherwise returns nil.
-NSString* GetTabGroupCollabID(const TabGroup* tab_group,
-                              TabGroupSyncService* sync_service);
+// Otherwise returns an empty collabID.
+CollaborationId GetTabGroupCollabID(const TabGroup* tab_group,
+                                    TabGroupSyncService* sync_service);
 
 }  // namespace utils
 }  // namespace tab_groups

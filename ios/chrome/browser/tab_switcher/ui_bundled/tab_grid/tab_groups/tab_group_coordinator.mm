@@ -365,9 +365,9 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           self.browser->GetProfile());
 
-  NSString* savedCollabID =
+  tab_groups::CollaborationId savedCollabID =
       tab_groups::utils::GetTabGroupCollabID(_tabGroup, syncService);
-  if (savedCollabID) {
+  if (!savedCollabID.value().empty()) {
     [self manageGroup:savedCollabID];
   }
   [self shareGroup];
@@ -400,16 +400,19 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 }
 
 // Manage the group with `collabID`.
-- (void)manageGroup:(NSString*)collabID {
+- (void)manageGroup:(tab_groups::CollaborationId)collabID {
   ShareKitService* shareKitService =
       ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (!collabID || !shareKitService) {
+  if (collabID.value().empty() || !shareKitService) {
     return;
   }
+
+  NSString* collabIDString = base::SysUTF8ToNSString(collabID.value());
+
   ShareKitManageConfiguration* config =
       [[ShareKitManageConfiguration alloc] init];
   config.baseViewController = self.baseViewController;
-  config.collabID = collabID;
+  config.collabID = collabIDString;
   config.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   shareKitService->ManageTabGroup(config);

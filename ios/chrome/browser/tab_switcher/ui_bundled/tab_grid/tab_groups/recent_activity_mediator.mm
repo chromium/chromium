@@ -93,10 +93,9 @@ ActivityLogType ConvertCollaborationEvent(
 // Creates recent activity logs and passes them to the consumer.
 - (void)populateItemsFromService {
   collaboration::messaging::ActivityLogQueryParams params;
-  NSString* collabID =
+  tab_groups::CollaborationId collabID =
       tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(), _syncService);
-  params.collaboration_id =
-      data_sharing::GroupId(base::SysNSStringToUTF8(collabID));
+  params.collaboration_id = data_sharing::GroupId(collabID.value());
 
   NSMutableArray<RecentActivityLogItem*>* items = [[NSMutableArray alloc] init];
 

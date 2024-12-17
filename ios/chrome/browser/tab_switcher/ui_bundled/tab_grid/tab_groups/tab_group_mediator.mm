@@ -588,9 +588,10 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     return;
   }
 
-  NSString* savedCollabID = tab_groups::utils::GetTabGroupCollabID(
-      _tabGroup.get(), _tabGroupSyncService);
-  BOOL isShared = savedCollabID != nil;
+  tab_groups::CollaborationId savedCollabID =
+      tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(),
+                                             _tabGroupSyncService);
+  BOOL isShared = !savedCollabID.value().empty();
   [_groupConsumer setGroupShared:isShared];
 
   // Prevent the face pile from being set up for tab groups that are not shared
@@ -603,7 +604,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   // Configure the face pile.
   ShareKitFacePileConfiguration* config =
       [[ShareKitFacePileConfiguration alloc] init];
-  config.collabID = savedCollabID;
+  config.collabID = base::SysUTF8ToNSString(savedCollabID.value());
   config.showsEmptyState = YES;
   config.avatarSize = kFacePileAvatarSize;
   [_groupConsumer setFacePileViewController:_shareKitService->FacePile(config)];

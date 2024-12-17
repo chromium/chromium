@@ -546,9 +546,9 @@ TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDwithShared) {
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillOnce(testing::Return(saved_group));
 
-  EXPECT_NSEQ(GetTabGroupCollabID(local_group, mock_service_),
-              @"collaboration");
-  EXPECT_NSEQ(GetTabGroupCollabID(local_group, nullptr), nil);
+  EXPECT_EQ(GetTabGroupCollabID(local_group, mock_service_).value(),
+            "collaboration");
+  EXPECT_EQ(GetTabGroupCollabID(local_group, nullptr).value(), "");
 }
 
 // Tests the `GetTabGroupCollabID` method with a non shared group.
@@ -564,9 +564,9 @@ TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDwithNonShared) {
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillOnce(testing::Return(saved_group));
 
-  EXPECT_NSNE(GetTabGroupCollabID(local_group, mock_service_),
-              @"collaboration");
-  EXPECT_NSEQ(GetTabGroupCollabID(local_group, nullptr), nil);
+  EXPECT_NE(GetTabGroupCollabID(local_group, mock_service_).value(),
+            "collaboration");
+  EXPECT_EQ(GetTabGroupCollabID(local_group, nullptr).value(), "");
 }
 
 }  // namespace utils

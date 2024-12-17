@@ -1572,15 +1572,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   ShareKitService* shareKitService =
       ShareKitServiceFactory::GetForProfile(profile);
-  NSString* collabID =
+  tab_groups::CollaborationId collabID =
       tab_groups::utils::GetTabGroupCollabID(group.get(), syncService);
-  if (!shareKitService || !collabID) {
+  if (!shareKitService || collabID.value().empty()) {
     return;
   }
   ShareKitManageConfiguration* config =
       [[ShareKitManageConfiguration alloc] init];
   config.baseViewController = self.baseViewController;
-  config.collabID = collabID;
+  config.collabID = base::SysUTF8ToNSString(collabID.value());
   config.applicationHandler = HandlerForProtocol(
       self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
   shareKitService->ManageTabGroup(config);
