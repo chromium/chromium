@@ -15,7 +15,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -37,6 +39,9 @@ const char kNonUtf8ResponseBody[] = "\xc3";
 
 const char kAsciiCharset[] = "us-ascii";
 const char kUtf8Charset[] = "utf-8";
+
+const char kCachedTrustedBiddingSignalsAge[] =
+    "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge";
 
 class AuctionDownloaderTest
     : public testing::TestWithParam<AuctionDownloader::DownloadMode> {
@@ -116,7 +121,7 @@ class AuctionDownloaderTest
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
         std::move(post_body), std::move(content_type),
-        response_started_callback_,
+        is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                        base::Unretained(this)),
         std::move(test_network_events_delegate));
@@ -179,6 +184,8 @@ class AuctionDownloaderTest
 
   base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
       response_started_callback_;
+
+  bool is_trusted_bidding_signals_kvv1_download_ = false;
 };
 
 TEST_P(AuctionDownloaderTest, NetworkError) {
@@ -823,6 +830,66 @@ TEST_P(AuctionDownloaderTest, Charset) {
         "charset.",
         last_error_msg());
   }
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge_Cached) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = true;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->was_fetched_via_cache = true;
+  response_head->request_time = base::Time::Now();
+  response_head->original_response_time = base::Time::Now() - base::Minutes(2);
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectUniqueSample(kCachedTrustedBiddingSignalsAge,
+                                      base::Minutes(2).InMilliseconds(), 1);
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge_Stale) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = true;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->was_fetched_via_cache = false;
+  response_head->request_time = base::Time::Now();
+  response_head->response_time = base::Time::Now() + base::Minutes(2);
+  response_head->original_response_time = base::Time::Now() - base::Minutes(2);
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectUniqueSample(kCachedTrustedBiddingSignalsAge,
+                                      base::Minutes(2).InMilliseconds(), 1);
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge_NotCached) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = true;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = network::mojom::URLResponseHead::New();
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge_NotKVV1) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = false;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->was_fetched_via_cache = true;
+  response_head->request_time = base::Time::Now();
+  response_head->original_response_time = base::Time::Now() - base::Minutes(2);
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(

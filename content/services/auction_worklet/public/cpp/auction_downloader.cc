@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_request_headers.h"
@@ -181,6 +182,18 @@ void WriteTraceTiming(const net::LoadTimingInfo& timing,
   dict.Add("pushEnd", timing.push_end.since_origin().InSecondsF());
 }
 
+bool IsCachedResponse(const network::mojom::URLResponseHead& response_head) {
+  if (response_head.was_fetched_via_cache) {
+    return true;
+  }
+
+  // was_fetched_via_cache only includes the cases where the entry was fresh
+  // or was validated. Include `response_head.original_response_time
+  // < response_head.response_time` so that we include the cases the entry
+  // was updated as well.
+  return response_head.original_response_time < response_head.response_time;
+}
+
 }  // namespace
 
 AuctionDownloader::AuctionDownloader(
@@ -190,11 +203,14 @@ AuctionDownloader::AuctionDownloader(
     MimeType mime_type,
     std::optional<std::string> post_body,
     std::optional<std::string> content_type,
+    bool is_trusted_bidding_signals_kvv1_download,
     ResponseStartedCallback response_started_callback,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
     : source_url_(source_url),
       mime_type_(mime_type),
+      is_trusted_bidding_signals_kvv1_download_(
+          is_trusted_bidding_signals_kvv1_download),
       request_id_(base::UnguessableToken::Create().ToString()),
       response_started_callback_(std::move(response_started_callback)),
       auction_downloader_callback_(std::move(auction_downloader_callback)),
@@ -427,6 +443,15 @@ void AuctionDownloader::OnResponseStarted(
                            source_url_.spec().c_str(), status,
                            response_head.headers->GetStatusText().c_str()));
     return;
+  }
+
+  // Record the cached response's age if there was an entry in the cache.
+  if (is_trusted_bidding_signals_kvv1_download_ &&
+      IsCachedResponse(response_head) &&
+      response_head.original_response_time < response_head.request_time) {
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge",
+        response_head.request_time - response_head.original_response_time);
   }
 
   std::optional<std::string> allow_fledge;

@@ -830,6 +830,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge"
+    units="ms" expires_after="2025-06-01">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The age of the cached response for a trusted bidding signals request in the
+    HTTP cache, even if the cached entry is too stale to use. Recorded on each
+    trusted bidding signals request if there is a cached response in the HTTP
+    cache.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.IdleProcessExpired" enum="Boolean"
     expires_after="2025-05-13">
   <owner>abigailkatcoff@chromium.org</owner>
