@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_window_controller.h"
@@ -45,6 +46,24 @@ class GlicKeyedService : public KeyedService {
   virtual void ClosePanel();
   std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
+
+  // Callback for changes to focused tab. When there is no focused tab,
+  // |WebContents| will be nullptr.
+  using FocusedTabChangedCallback =
+      base::RepeatingCallback<void(const content::WebContents*)>;
+
+  // Registers |callback| to be called whenever the focused tab changes. This
+  // includes when the active/selected tab for the profile changes (including
+  // those resulting from browser/window changes) as well as when the primary
+  // page of the focused tab has changed internally. Subscribers can filter for
+  // specific subsets of changes they care about by holding on to their own
+  // internal state. When the focused tab changes to nothing, this will be
+  // called with nullptr as the supplied WebContents argument.
+  base::CallbackListSubscription AddFocusedTabChangedCallback(
+      FocusedTabChangedCallback callback);
+
+  // Returns the currently focused tab or nullptr if there is none.
+  content::WebContents* GetFocusedTab();
 
   void GetContextFromFocusedTab(
       bool include_inner_text,

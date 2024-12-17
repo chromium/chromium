@@ -24,8 +24,11 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
                                    GlicProfileManager* profile_manager)
     : browser_context_(browser_context),
       window_controller_(Profile::FromBrowserContext(browser_context)),
-      focused_tab_manager_(Profile::FromBrowserContext(browser_context)),
+      focused_tab_manager_(Profile::FromBrowserContext(browser_context),
+                           window_controller_),
       profile_manager_(profile_manager) {}
+
+// TODO(wry): Setup focused tab changed forwarding to external subscribers.
 
 GlicKeyedService::~GlicKeyedService() = default;
 
@@ -89,8 +92,7 @@ void GlicKeyedService::GetContextFromFocusedTab(
     bool include_inner_text,
     bool include_viewport_screenshot,
     mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
-  content::WebContents* web_contents =
-      focused_tab_manager_.GetWebContentsForFocusedTab();
+  content::WebContents* web_contents = GetFocusedTab();
   if (!web_contents) {
     // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
     LOG(ERROR) << "GetContextFromFocusedTab: No web contents";
@@ -115,6 +117,10 @@ void GlicKeyedService::GetContextFromFocusedTab(
             std::move(callback).Run(std::move(result));
           },
           std::move(fetcher), std::move(callback)));
+}
+
+content::WebContents* GlicKeyedService::GetFocusedTab() {
+  return focused_tab_manager_.GetWebContentsForFocusedTab();
 }
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {

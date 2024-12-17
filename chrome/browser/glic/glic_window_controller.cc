@@ -17,6 +17,7 @@
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace {
 // Default value for how close the corner of glic has to be from a browser's
@@ -84,6 +85,8 @@ namespace glic {
 GlicWindowController::GlicWindowController(Profile* profile)
     : profile_(profile) {}
 
+GlicWindowController::~GlicWindowController() = default;
+
 void GlicWindowController::Show(views::View* glic_button_view) {
   // TODO(crbug.com/379943498): If a glic window already exists, handle showing
   // by bringing to front or activating.
@@ -113,6 +116,8 @@ void GlicWindowController::Show(views::View* glic_button_view) {
       profile_, {top_right_point.x() - kWidgetWidth - padding,
                  top_right_point.y() + padding, kWidgetWidth, kWidgetHeight});
   widget_->AddObserver(this);
+  glic_widget_observer_ =
+      std::make_unique<GlicWidgetObserver>(this, widget_.get());
   widget_->Show();
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, glic_view_);
@@ -190,6 +195,7 @@ void GlicWindowController::Close() {
   }
 
   widget_->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  glic_widget_observer_.reset();
   widget_.reset();
   glic_view_ = nullptr;
   NotifyIfPanelStateChanged();
@@ -335,6 +341,24 @@ void GlicWindowController::OnWidgetVisibilityChanged(views::Widget* widget,
   NotifyIfPanelStateChanged();
 }
 
+bool GlicWindowController::IsActive() {
+  return widget_ && widget_->IsActive();
+}
+
+base::CallbackListSubscription
+GlicWindowController::AddWindowActivationChangedCallback(
+    WindowActivationChangedCallback callback) {
+  return window_activation_callback_list_.Add(std::move(callback));
+}
+
+void GlicWindowController::NotifyWindowActivationChanged(bool active) {
+  window_activation_callback_list_.Notify(active);
+}
+
+base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // PinnedTargetWidgetObserver implementations:
 GlicWindowController::PinnedTargetWidgetObserver::PinnedTargetWidgetObserver(
@@ -373,10 +397,27 @@ void GlicWindowController::PinnedTargetWidgetObserver::OnWidgetDestroying(
   SetPinnedTargetWidget(nullptr);
 }
 
-base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+///////////////////////////////////////////////////////////////////////////////
+// GlicWidgetObserver implementations:
+GlicWindowController::GlicWidgetObserver::GlicWidgetObserver(
+    glic::GlicWindowController* glic_window_controller,
+    views::Widget* widget)
+    : glic_window_controller_(glic_window_controller), widget_(widget) {
+  if (widget) {
+    widget->AddObserver(this);
+  }
 }
 
-GlicWindowController::~GlicWindowController() = default;
+GlicWindowController::GlicWidgetObserver::~GlicWidgetObserver() {
+  if (widget_ && widget_->HasObserver(this)) {
+    widget_->RemoveObserver(this);
+  }
+}
+
+void GlicWindowController::GlicWidgetObserver::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  glic_window_controller_->NotifyWindowActivationChanged(active);
+}
 
 }  // namespace glic

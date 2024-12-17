@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -19,6 +20,7 @@ class Point;
 }  // namespace gfx
 
 namespace {
+class GlicWidgetObserver;
 class WindowEventObserver;
 }  // namespace
 
@@ -65,6 +67,16 @@ class GlicWindowController : public views::WidgetObserver {
   void AddStateObserver(StateObserver* observer);
   void RemoveStateObserver(StateObserver* observer);
 
+  // Returns whether or not the glic window is currently active.
+  bool IsActive();
+
+  using WindowActivationChangedCallback =
+      base::RepeatingCallback<void(bool active)>;
+
+  // Registers |callback| to be called whenever the window activation changes.
+  base::CallbackListSubscription AddWindowActivationChangedCallback(
+      WindowActivationChangedCallback callback);
+
   // Returns a WeakPtr to this instance. It can be destroyed at any time if the
   // profile is deleted or if the browser shuts down.
   base::WeakPtr<GlicWindowController> GetWeakPtr();
@@ -106,6 +118,23 @@ class GlicWindowController : public views::WidgetObserver {
     raw_ptr<views::Widget> pinned_target_widget_;
   };
 
+  // Helper class for observing activation events from the widget.
+  class GlicWidgetObserver : public views::WidgetObserver {
+   public:
+    explicit GlicWidgetObserver(
+        glic::GlicWindowController* glic_window_controller,
+        views::Widget* widget);
+    GlicWidgetObserver(const GlicWidgetObserver&) = delete;
+    GlicWidgetObserver& operator=(const GlicWidgetObserver&) = delete;
+    ~GlicWidgetObserver() override;
+
+    void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+   private:
+    raw_ptr<glic::GlicWindowController> glic_window_controller_;
+    raw_ptr<views::Widget> widget_;
+  };
+
   // If the mouse is in snapping distance of a browser's glic button, it snaps
   // glic to the top right of the browser's glic button.
   void HandleBrowserPinning(gfx::Vector2d mouse_location);
@@ -123,6 +152,12 @@ class GlicWindowController : public views::WidgetObserver {
   PinnedTargetWidgetObserver pinned_target_widget_observer_{this};
   base::WeakPtr<Browser> pinned_browser_;
 
+  // Notifies subscribers of a change to the window activation.
+  void NotifyWindowActivationChanged(bool active);
+
+  // List of callbacks to be notified when window activation has changed.
+  base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
+
   // Empty holder widget to reparent to when unpinned.
   std::unique_ptr<views::Widget> holder_widget_;
 
@@ -135,6 +170,9 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
+
+  // Used to monitor window activation changes from widget.
+  std::unique_ptr<GlicWidgetObserver> glic_widget_observer_;
 
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;
