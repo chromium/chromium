@@ -777,12 +777,10 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   // wrapping the <option>s.
   // We also need to update style before calling OpenPopupMenu in order to avoid
   // an expensive call to popup_->UpdateFromElement in DidRecalcStyle.
-  if (RuntimeEnabledFeatures::SelectPopupLessUpdatesEnabled()) {
-    SetNativePopupIsVisible(true);
-    if (RuntimeEnabledFeatures::CSSPseudoOpenEnabled()) {
-      select_->GetDocument().UpdateStyleAndLayoutForNode(
-          select_, DocumentUpdateReason::kPagePopup);
-    }
+  SetNativePopupIsVisible(true);
+  if (RuntimeEnabledFeatures::CSSPseudoOpenEnabled()) {
+    select_->GetDocument().UpdateStyleAndLayoutForNode(
+        select_, DocumentUpdateReason::kPagePopup);
   }
 
   if (!popup_) {
@@ -790,18 +788,8 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
         *document.GetFrame(), *select_);
   }
   if (!popup_) {
-    if (RuntimeEnabledFeatures::SelectPopupLessUpdatesEnabled()) {
-      SetNativePopupIsVisible(false);
-    }
+    SetNativePopupIsVisible(false);
     return;
-  }
-
-  if (!RuntimeEnabledFeatures::SelectPopupLessUpdatesEnabled()) {
-    SetNativePopupIsVisible(true);
-    if (RuntimeEnabledFeatures::CSSPseudoOpenEnabled()) {
-      select_->GetDocument().UpdateStyleAndLayoutForNode(
-          select_, DocumentUpdateReason::kPagePopup);
-    }
   }
 
   ObserveTreeMutation();

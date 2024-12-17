@@ -3830,14 +3830,6 @@
       public: true,
     },
     {
-      // This flag is a performance optimization which reorganizes some code
-      // for handling <select>'s popup in order to avoid expensive calls to
-      // InternalPopupMenu::UpdateFromElement. Added in M130, should be safe to
-      // remove in M133.
-      name: "SelectPopupLessUpdates",
-      status: "stable",
-    },
-    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
       status: "stable",
