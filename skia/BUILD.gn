@@ -642,7 +642,7 @@ if (enable_rust_png) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       ":skia_config",
-      ":skia_library_config",
+      "//build/config/compiler:no_chromium_code",
     ]
   }
 
@@ -652,7 +652,7 @@ if (enable_rust_png) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       ":skia_config",
-      ":skia_library_config",
+      "//build/config/compiler:no_chromium_code",
     ]
   }
 }
