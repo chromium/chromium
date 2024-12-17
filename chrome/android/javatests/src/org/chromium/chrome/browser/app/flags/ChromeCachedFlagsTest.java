@@ -53,7 +53,6 @@ public class ChromeCachedFlagsTest {
     private static final Set<CachedFlag> BASELINE =
             Set.of(
                     ChromeFeatureList.sAndroidAppIntegration,
-                    ChromeFeatureList.sAsyncNotificationManager,
                     ChromeFeatureList.sCctFeatureUsage,
                     ChromeFeatureList.sCctGoogleBottomBar,
                     ChromeFeatureList.sCollectAndroidFrameTimelineMetrics,
