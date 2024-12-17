@@ -30,8 +30,11 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -148,8 +151,8 @@ NSString* const kAuthenticationSnackbarCategory =
           ->FindProfileNameForGaiaID(base::SysNSStringToUTF8(identity.gaiaID));
   if (!profileName.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(_onProfileSwitchCompletion), false));
+        FROM_HERE, base::BindOnce(std::move(_onProfileSwitchCompletion), false,
+                                  nullptr, nil));
     return;
   }
   [_changeProfileHandler changeProfile:base::SysUTF8ToNSString(*profileName)
@@ -397,7 +400,7 @@ NSString* const kAuthenticationSnackbarCategory =
 #pragma mark - ChangeProfileObserving
 
 - (void)operationFailed:(ChangeProfileFailure)failure {
-  std::move(_onProfileSwitchCompletion).Run(false);
+  std::move(_onProfileSwitchCompletion).Run(false, nullptr, nil);
 }
 
 - (void)willStartOperation:(UIViewController*)viewController {
@@ -406,7 +409,13 @@ NSString* const kAuthenticationSnackbarCategory =
 
 - (void)operationDidComplete:(UIViewController*)viewController
               withSceneState:(SceneState*)sceneState {
-  std::move(_onProfileSwitchCompletion).Run(true);
+  Browser* newProfileBrowser =
+      sceneState.browserProviderInterface.currentBrowserProvider.browser;
+  // TODO(crbug.com/375605482): `viewController` is nil. This is not expected.
+  // `sceneState.rootViewController` is used until the bug is fixed.
+  viewController = sceneState.rootViewController;
+  std::move(_onProfileSwitchCompletion)
+      .Run(true, newProfileBrowser, viewController);
 }
 
 #pragma mark - Private

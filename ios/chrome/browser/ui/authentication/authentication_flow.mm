@@ -389,11 +389,13 @@ BOOL IsIdentityInCoreAccountInfos(
     }
 
     case SIGN_OUT_IF_NEEDED:
+      // TODO(crbug.com/375605482): skip sign out if there is a profile
+      // switching.
       [_performer signOutProfile:profile];
       return;
 
     case SIGN_IN:
-      [self signInIdentity:_identityToSignIn];
+      [self multiProfileSignIn];
       return;
 
     case REGISTER_FOR_USER_POLICY:
@@ -461,7 +463,7 @@ BOOL IsIdentityInCoreAccountInfos(
       [currentIdentity isEqual:_identityToSignIn];
 }
 
-- (void)signInIdentity:(id<SystemIdentity>)identity {
+- (void)multiProfileSignIn {
   if (self.userDecisionCompletion) {
     self.userDecisionCompletion();
   }
@@ -475,30 +477,29 @@ BOOL IsIdentityInCoreAccountInfos(
   BOOL isValidIdentityOnDevice = NO;
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     isValidIdentityOnDevice = IsIdentityInAccountInfos(
-        identity, identityManager->GetAccountsOnDevice());
+        _identityToSignIn, identityManager->GetAccountsOnDevice());
     isValidIdentityInProfile = IsIdentityInCoreAccountInfos(
-        identity, identityManager->GetAccountsWithRefreshTokens());
+        _identityToSignIn, identityManager->GetAccountsWithRefreshTokens());
   } else {
     isValidIdentityOnDevice = isValidIdentityInProfile =
-        accountManagerService->IsValidIdentity(identity);
+        accountManagerService->IsValidIdentity(_identityToSignIn);
   }
 
   if (isValidIdentityInProfile) {
-    [_performer signInIdentity:identity
-                 atAccessPoint:self.accessPoint
-                currentProfile:profile];
-    _didSignIn = YES;
-    [self continueSignin];
+    [self signInInCurrentProfile];
   } else if (isValidIdentityOnDevice) {
     CHECK(AreSeparateProfilesForManagedAccountsEnabled());
     NSString* sceneIdentifier = _browser->GetSceneState().sceneSessionID;
     __weak __typeof(self) weakSelf = self;
     OnProfileSwitchCompletion completion = base::BindOnce(
-        [](__typeof(self) strongSelf, bool success) {
-          [strongSelf onSwitchToProfileWithSuccess:success];
+        [](__typeof(self) strong_self, bool success,
+           Browser* new_profile_browser, UIViewController* view_controller) {
+          [strong_self onSwitchToProfileWithSuccess:success
+                                  newProfileBrowser:new_profile_browser
+                                     viewController:view_controller];
         },
         weakSelf);
-    [_performer switchToProfileWithIdentity:identity
+    [_performer switchToProfileWithIdentity:_identityToSignIn
                             sceneIdentifier:sceneIdentifier
                                  completion:std::move(completion)];
   } else {
@@ -708,25 +709,37 @@ BOOL IsIdentityInCoreAccountInfos(
 
 // Called when the profile switching succeeded or failed (according to
 // `success`).
-- (void)onSwitchToProfileWithSuccess:(BOOL)success {
+- (void)onSwitchToProfileWithSuccess:(BOOL)success
+                   newProfileBrowser:(Browser*)newProfileBrowser
+                      viewController:(UIViewController*)viewController {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   if (success) {
-    // TODO(crbug.com/375604649): Need to define how to finish the
-    // authentication flow after the profile switching.
-    // * What happens for the steps after SIGN_IN?
-    //    REGISTER_FOR_USER_POLICY
-    //    FETCH_USER_POLICY
-    //    FETCH_CAPABILITIES
-    //    COMPLETE_WITH_SUCCESS
-    // * Is there metrics to record before to the flow is finished?
-    // It is important to reach the last step otherwise AuthenticationFlow is
-    // leaked since `_selfRetainer` returns itself.
-
-    // The _browser doesn't exist anymore, since the profile has been switched.
-    _browser = nil;
+    _browser = newProfileBrowser;
+    _presentingViewController = viewController;
+    // TODO(crbug.com/375605482): Need to sign-out if the new profile is not
+    // signed in with the right identity (useful for the personal profile).
+    // TODO(crbug.com/375605482): Need to block user until AuthenticationFlow
+    // is done? Probably with a blur animation.
+    [self signInInCurrentProfile];
   } else {
-    // TODO(crbug.com/375604649): Generate an error and call:
+    // TODO(crbug.com/375605482): Generate an error and call:
     // `[self handleAuthenticationError:error];`.
   }
+}
+
+// Signs in the user using `_identityToSignIn`. The identity must be assigned
+// to the current profile.
+- (void)signInInCurrentProfile {
+  ProfileIOS* profile = [self originalProfile];
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(IsIdentityInCoreAccountInfos(
+      _identityToSignIn, identityManager->GetAccountsWithRefreshTokens()));
+  [_performer signInIdentity:_identityToSignIn
+               atAccessPoint:self.accessPoint
+              currentProfile:profile];
+  _didSignIn = YES;
+  [self continueSignin];
 }
 
 #pragma mark - Used for testing
