@@ -13,22 +13,22 @@ AXWebArea
 ++AXButton AXTitle='Test label'
 ++AXComboBox AXDescription='aria label'
 ++AXList
-++++AXMenuItem AXValue='Option 1'
-++++AXMenuItem AXValue='Option 2'
+++++AXStaticText AXValue='Option 1'
+++++AXStaticText AXValue='Option 2'
 ++AXComboBox AXTitle='Test label'
 ++AXList
-++++AXMenuItem AXValue='Option 3'
-++++AXMenuItem AXValue='Option 4'
+++++AXStaticText AXValue='Option 3'
+++++AXStaticText AXValue='Option 4'
 ++AXComboBox AXDescription='aria label' AXValue='Combobox'
 ++++AXStaticText AXValue='Combobox'
 ++AXList
-++++AXMenuItem AXValue='Option 5'
-++++AXMenuItem AXValue='Option 6'
+++++AXStaticText AXValue='Option 5'
+++++AXStaticText AXValue='Option 6'
 ++AXComboBox AXTitle='Test label' AXValue='Combobox with aria-labelledby'
 ++++AXStaticText AXValue='Combobox with aria-labelledby'
 ++AXList
-++++AXMenuItem AXValue='Option 7'
-++++AXMenuItem AXValue='Option 8'
+++++AXStaticText AXValue='Option 7'
+++++AXStaticText AXValue='Option 8'
 ++AXTimeField AXDescription='aria label' AXValue='12:05'
 ++++AXGroup
 ++++++AXGroup

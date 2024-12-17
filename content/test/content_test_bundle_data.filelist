@@ -1875,9 +1875,6 @@ data/accessibility/aria/label-with-selected-option-expected-blink.txt
 data/accessibility/aria/label-with-selected-option.html
 data/accessibility/aria/missing-relation-targets-added-later-expected-blink.txt
 data/accessibility/aria/missing-relation-targets-added-later.html
-data/accessibility/aria/option-label-expected-blink.txt
-data/accessibility/aria/option-label-expected-mac.txt
-data/accessibility/aria/option-label.html
 data/accessibility/aria/presentational-expected-android-assist-data.txt
 data/accessibility/aria/presentational-expected-android-external.txt
 data/accessibility/aria/presentational-expected-android.txt

@@ -1497,8 +1497,12 @@ bool ui::IsNSRange(id value) {
   DCHECK(_owner->node()->IsDataValid());
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
-    std::u16string name =
-        _owner->GetString16Attribute(ax::mojom::StringAttribute::kName);
+    std::u16string name = _owner->GetTextContentUTF16();
+    // Leaf node with aria-label will have empty text content.
+    // e.g. <div role="option" aria-label="label">content</div>
+    // So we use its computed name for AXValue.
+    if (name.empty())
+      name = _owner->GetNameAsString16();
     if (!IsSelectedStateRelevant(_owner)) {
       return base::SysUTF16ToNSString(name);
     }
@@ -1511,6 +1515,7 @@ bool ui::IsNSRange(id value) {
         is_selected ? IDS_AX_OBJECT_SELECTED : IDS_AX_OBJECT_NOT_SELECTED;
     std::u16string name_with_selection = base::ReplaceStringPlaceholders(
         _owner->GetLocalizedString(msg_id), {name}, nullptr);
+
     return base::SysUTF16ToNSString(name_with_selection);
   }
 
