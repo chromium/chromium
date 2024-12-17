@@ -59,6 +59,7 @@ export class ScannerFeedbackAppElement extends PolymerElement {
       stringSource: Object,
       openUrl: Object,
       extraInfoCallback: Object,
+      screenshotUrl: String,
     };
   }
 
@@ -70,6 +71,19 @@ export class ScannerFeedbackAppElement extends PolymerElement {
   };
   private readonly extraInfoCallback = () =>
       FEEDBACK_INFO_PROMISE.then(feedbackInfo => feedbackInfo.actionDetails);
+  private screenshotUrl = '';
+
+  constructor() {
+    super();
+    FEEDBACK_INFO_PROMISE.then(feedbackInfo => {
+      this.screenshotUrl = feedbackInfo.screenshotUrl.url;
+    });
+  }
+
+  // Used in computed bindings:
+  private isEmpty(string: string): boolean {
+    return string === '';
+  }
 }
 
 declare global {

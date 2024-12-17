@@ -13,6 +13,10 @@ struct FeedbackInfo {
   // Will realistically be <50kB.
   // The contents are derived from a Google-owned server response.
   string action_details;
+  // A `chrome-untrusted://scanner-feedback/screenshots/UNGUESSABLETOKEN.png`
+  // URL which, when accessed, will display the screenshot.
+  // The contents are a (possibly resized) screen capture from Ash.
+  url.mojom.Url screenshot_url;
 };
 
 // Handles communication from `chrome-untrusted://scanner-feedback` to the

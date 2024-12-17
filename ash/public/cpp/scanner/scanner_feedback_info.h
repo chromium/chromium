@@ -8,13 +8,17 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 
 struct ASH_PUBLIC_EXPORT ScannerFeedbackInfo {
   std::string action_details;
+  scoped_refptr<base::RefCountedMemory> screenshot;
 
-  explicit ScannerFeedbackInfo(std::string action_details);
+  ScannerFeedbackInfo(std::string action_details,
+                      scoped_refptr<base::RefCountedMemory> screenshot);
 
   ScannerFeedbackInfo(const ScannerFeedbackInfo&);
   ScannerFeedbackInfo& operator=(const ScannerFeedbackInfo&);

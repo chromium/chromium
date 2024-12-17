@@ -4,19 +4,29 @@
 
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_untrusted_ui.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_scanner_feedback_ui_resources.h"
 #include "ash/webui/grit/ash_scanner_feedback_ui_resources_map.h"
 #include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom.h"
+#include "ash/webui/scanner_feedback_ui/scanner_feedback_browser_context_data.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_page_handler.h"
 #include "ash/webui/scanner_feedback_ui/url_constants.h"
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -30,6 +40,88 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ash {
+
+namespace {
+
+constexpr bool HasOverlap(std::string_view prefix, std::string_view suffix) {
+  for (size_t i = 0; i < suffix.size(); ++i) {
+    std::string_view truncated_suffix = suffix;
+    truncated_suffix.remove_suffix(i);
+    if (prefix.ends_with(truncated_suffix)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// `kScannerFeedbackScreenshotPrefix` and `kScannerFeedbackScreenshotSuffix`
+// must not have any "overlap", or else
+//     (path.starts_with(kScannerFeedbackScreenshotPrefix) &&
+//      path.ends_with(kScannerFeedbackScreenshotSuffix))
+// may not necessarily imply that
+//     (path.size() >=
+//      kScannerFeedbackScreenshotSuffix.size() +
+//          kScannerFeedbackScreenshotSuffix.size())
+static_assert(!HasOverlap(kScannerFeedbackScreenshotPrefix,
+                          kScannerFeedbackScreenshotSuffix));
+
+// Returns the `base::UnguessableToken` ID for a given screenshot URL path.
+std::optional<base::UnguessableToken> GetScreenshotId(std::string_view path) {
+  if (!path.starts_with(kScannerFeedbackScreenshotPrefix)) {
+    return std::nullopt;
+  }
+
+  if (!path.ends_with(kScannerFeedbackScreenshotSuffix)) {
+    return std::nullopt;
+  }
+
+  path.remove_prefix(kScannerFeedbackScreenshotPrefix.size());
+  path.remove_suffix(kScannerFeedbackScreenshotSuffix.size());
+
+  return base::UnguessableToken::DeserializeFromString(path);
+}
+
+// Returns whether we should handle a given request, given the path.
+bool ShouldHandleRequest(base::WeakPtr<content::BrowserContext> browser_context,
+                         const std::string& path) {
+  std::optional<base::UnguessableToken> id = GetScreenshotId(path);
+  if (!id.has_value()) {
+    return false;
+  }
+
+  CHECK(browser_context);
+  ScannerFeedbackInfo* feedback_info =
+      GetScannerFeedbackInfoForBrowserContext(*browser_context, *id);
+
+  return feedback_info != nullptr;
+}
+
+// Handles the given request and returns the screenshot to the
+// `GotDataCallback`.
+void HandleRequest(base::WeakPtr<content::BrowserContext> browser_context,
+                   const std::string& path,
+                   content::WebUIDataSource::GotDataCallback callback) {
+  std::optional<base::UnguessableToken> id = GetScreenshotId(path);
+  // `GetScreenshotId` is deterministic, so this should always be true as we
+  // checked it in `ShouldHandleRequest`.
+  CHECK(id.has_value());
+
+  CHECK(browser_context);
+  ScannerFeedbackInfo* feedback_info =
+      GetScannerFeedbackInfoForBrowserContext(*browser_context, *id);
+
+  // `GetScannerFeedbackInfoForBrowserContext` is _not_ deterministic, but is
+  // run synchronously after `ShouldHandleRequest` in
+  // `WebUIDataSourceImpl::StartDataRequest`.
+  // If this ever changes - for example, it is `PostTask`ed instead, this
+  // `CHECK` could fail if the `WebUI` is destroyed between
+  // `ShouldHandleRequest` and `HandleRequest`.
+  CHECK(feedback_info);
+
+  std::move(callback).Run(feedback_info->screenshot);
+}
+
+}  // namespace
 
 ScannerFeedbackUntrustedUIConfig::ScannerFeedbackUntrustedUIConfig()
     : ChromeOSWebUIConfig(content::kChromeUIUntrustedScheme,
@@ -49,6 +141,10 @@ ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
                           .GetBrowserContext())) {
   // Emulate `ui::UntrustedWebUIController`. This should never enable bindings.
   web_ui->SetBindings(content::BindingsPolicySet());
+
+  // This should be non-null as it was checked above.
+  content::BrowserContext* browser_context =
+      web_ui->GetWebContents()->GetBrowserContext();
 
   // `content::WebUIDataSource`s are stored on the browser context. If an
   // existing `content::WebUIDataSource` exists in the browser context for the
@@ -71,8 +167,7 @@ ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
   // sources, so this may change in the future.
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::CreateAndAdd(
-          web_ui->GetWebContents()->GetBrowserContext(),
-          std::string(kScannerFeedbackUntrustedUrl));
+          browser_context, std::string(kScannerFeedbackUntrustedUrl));
 
   untrusted_source->AddResourcePaths(kAshScannerFeedbackUiResources);
   // We intentionally do not use `SetDefaultResource` here as we do not want to
@@ -83,6 +178,10 @@ ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src-elem 'self' theme;");
+
+  untrusted_source->SetRequestFilter(
+      base::BindRepeating(&ShouldHandleRequest, browser_context->GetWeakPtr()),
+      base::BindRepeating(&HandleRequest, browser_context->GetWeakPtr()));
 }
 
 ScannerFeedbackUntrustedUI::~ScannerFeedbackUntrustedUI() = default;

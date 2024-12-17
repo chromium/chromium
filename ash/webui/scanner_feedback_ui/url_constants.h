@@ -13,6 +13,9 @@ inline constexpr std::string_view kScannerFeedbackUntrustedUrl =
     "chrome-untrusted://scanner-feedback/";
 inline constexpr std::string_view kScannerFeedbackUntrustedHost =
     "scanner-feedback";
+inline constexpr std::string_view kScannerFeedbackScreenshotPrefix =
+    "screenshots/";
+inline constexpr std::string_view kScannerFeedbackScreenshotSuffix = ".jpg";
 
 }  // namespace ash
 

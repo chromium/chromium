@@ -9,7 +9,10 @@
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_browser_context_data.h"
+#include "ash/webui/scanner_feedback_ui/url_constants.h"
+#include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
+#include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -44,6 +47,12 @@ void ScannerFeedbackPageHandler::GetFeedbackInfo(
   }
 
   feedback_info_ptr->action_details = feedback_info->action_details;
+  feedback_info_ptr->screenshot_url = GURL(base::StrCat({
+      kScannerFeedbackUntrustedUrl,
+      kScannerFeedbackScreenshotPrefix,
+      id_.ToString(),
+      kScannerFeedbackScreenshotSuffix,
+  }));
 
   std::move(callback).Run(std::move(feedback_info_ptr));
 }

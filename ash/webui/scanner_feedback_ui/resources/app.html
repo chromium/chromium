@@ -1,6 +1,8 @@
-<mako-orca-feedback
-  string-source="[[stringSource]]"
-  open-url="[[openUrl]]"
-  extra-info-callback="[[extraInfoCallback]]"
-  extra-image="[[screenshotUrl]]"
-  ></mako-orca-feedback>
+<template is="dom-if" if="[[!isEmpty(screenshotUrl)]]">
+  <mako-orca-feedback
+    string-source="[[stringSource]]"
+    open-url="[[openUrl]]"
+    extra-info-callback="[[extraInfoCallback]]"
+    extra-image="[[screenshotUrl]]"
+    ></mako-orca-feedback>
+</template>
