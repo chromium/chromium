@@ -28,4 +28,11 @@ interface PageHandler {
   // browser) calling this will kill the renderer process by reporting a bad
   // message.
   GetFeedbackInfo() => (FeedbackInfo feedback_info);
+
+  // Requests for the dialog displaying this page to be closed.
+  // May not immediately close the dialog or the page handler.
+  //
+  // If no "close dialog" callback was attached to this page handler, calling
+  // this will kill the renderer process by reporting a bad message.
+  CloseDialog();
 };

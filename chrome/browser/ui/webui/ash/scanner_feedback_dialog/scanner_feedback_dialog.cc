@@ -14,6 +14,7 @@
 #include "ash/webui/scanner_feedback_ui/url_constants.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -65,6 +66,13 @@ void ScannerFeedbackDialog::OnDialogShown(content::WebUI* webui) {
                                               std::move(*feedback_info));
 
   feedback_info_ = std::move(feedback_info_cleanup);
+
+  ScannerFeedbackPageHandler& page_handler = controller->page_handler();
+
+  // This is safe to run twice, as `Widget::Close()` explicitly handles the case
+  // where a widget is attempted to be closed while it is already closed.
+  page_handler.SetCloseDialogCallback(base::BindRepeating(
+      &ScannerFeedbackDialog::Close, weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace ash

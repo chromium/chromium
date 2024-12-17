@@ -60,6 +60,7 @@ export class ScannerFeedbackAppElement extends PolymerElement {
       openUrl: Object,
       extraInfoCallback: Object,
       screenshotUrl: String,
+      revertToPeviousScreen: Object,
     };
   }
 
@@ -67,11 +68,13 @@ export class ScannerFeedbackAppElement extends PolymerElement {
   private readonly stringSource = STRING_SOURCE;
   private readonly openUrl = (url: string) => {
     window.open(url, '_blank');
-    // TODO: b/382562555 - Close the dialog after opening the URL.
+    this.revertToPreviousScreen();
   };
   private readonly extraInfoCallback = () =>
       FEEDBACK_INFO_PROMISE.then(feedbackInfo => feedbackInfo.actionDetails);
   private screenshotUrl = '';
+  private readonly revertToPreviousScreen = () =>
+      PAGE_HANDLER_REMOTE.closeDialog();
 
   constructor() {
     super();

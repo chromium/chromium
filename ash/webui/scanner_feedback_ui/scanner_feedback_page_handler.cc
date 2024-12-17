@@ -57,4 +57,13 @@ void ScannerFeedbackPageHandler::GetFeedbackInfo(
   std::move(callback).Run(std::move(feedback_info_ptr));
 }
 
+void ScannerFeedbackPageHandler::CloseDialog() {
+  if (close_dialog_callback_.is_null()) {
+    mojo::ReportBadMessage(
+        "No close dialog callback was attached to the page handler.");
+    return;
+  }
+  close_dialog_callback_.Run();
+}
+
 }  // namespace ash

@@ -6,6 +6,7 @@
 #define ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_PAGE_HANDLER_H_
 
 #include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,6 +27,14 @@ namespace ash {
 class ScannerFeedbackPageHandler
     : public mojom::scanner_feedback_ui::PageHandler {
  public:
+  // Callback called from `CloseDialog`.
+  // Not guaranteed to be called if, for example, if the user closes the UI
+  // through other means such as the Escape key.
+  // May be called multiple times if, for example, this callback is a no-op and
+  // the button is clicked multiple times, or a user's click races the closing
+  // of the dialog.
+  using CloseDialogCallback = base::RepeatingClosure;
+
   explicit ScannerFeedbackPageHandler(content::BrowserContext& browser_context);
 
   ScannerFeedbackPageHandler(const ScannerFeedbackPageHandler&) = delete;
@@ -38,13 +47,21 @@ class ScannerFeedbackPageHandler
   void Bind(
       mojo::PendingReceiver<mojom::scanner_feedback_ui::PageHandler> receiver);
 
+  void SetCloseDialogCallback(CloseDialogCallback close_dialog_callback) {
+    close_dialog_callback_ = std::move(close_dialog_callback);
+  }
+
   base::UnguessableToken id() const { return id_; }
 
   // mojom::scanner_feedback_ui::PageHandler:
   void GetFeedbackInfo(GetFeedbackInfoCallback callback) override;
+  void CloseDialog() override;
 
  private:
   const base::UnguessableToken id_;
+
+  // Null on construction. Set in `SetCloseDialogCallback`.
+  CloseDialogCallback close_dialog_callback_;
 
   const raw_ref<content::BrowserContext> browser_context_;
 

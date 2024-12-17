@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 
 namespace content {
@@ -40,6 +41,8 @@ class ScannerFeedbackDialog : public SystemWebDialogDelegate {
   // browser context, and set this to `base::ScopedClosureRunner` to clean it
   // up once the dialog is closed.
   std::variant<ScannerFeedbackInfo, base::ScopedClosureRunner> feedback_info_;
+
+  base::WeakPtrFactory<ScannerFeedbackDialog> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
