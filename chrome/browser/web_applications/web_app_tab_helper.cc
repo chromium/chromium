@@ -39,6 +39,7 @@ void WebAppTabHelper::Create(tabs::TabInterface* tab,
   // window, or vise versa, we want to keep the state on WebAppTabHelper.
   auto* tab_helper = WebAppTabHelper::FromWebContents(contents);
   if (tab->GetContents() == contents && tab_helper) {
+    tab_helper->SubscribeToTabState(tab);
     return;
   }
 
@@ -154,10 +155,6 @@ void WebAppTabHelper::OnTabBackgrounded(tabs::TabInterface*) {
 void WebAppTabHelper::OnTabDetached(tabs::TabInterface* tab_interface,
                                     tabs::TabInterface::DetachReason) {
   MaybeNotifyTabChanged();
-
-  // The subscriptions need to be updaed if the tab gets detached, in case it
-  // gets attached to a new window.
-  SubscribeToTabState(tab_interface);
 }
 
 void WebAppTabHelper::ReadyToCommitNavigation(
