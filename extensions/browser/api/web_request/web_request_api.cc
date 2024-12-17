@@ -431,8 +431,6 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     if (extensions::kExtensionScheme == request_scheme &&
         ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
             browser_context) &&
-        base::FeatureList::IsEnabled(
-            safe_browsing::kExtensionTelemetryReportContactedHosts) &&
         !base::FeatureList::IsEnabled(
             safe_browsing::
                 kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
@@ -591,8 +589,6 @@ bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
   // launched.
   return ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
              browser_context_) &&
-         base::FeatureList::IsEnabled(
-             safe_browsing::kExtensionTelemetryReportContactedHosts) &&
          !base::FeatureList::IsEnabled(
              safe_browsing::
                  kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);

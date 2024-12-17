@@ -178,10 +178,6 @@ constexpr base::FeatureParam<int>
         &kExtensionTelemetryForEnterprise, "EnterpriseReportingIntervalSeconds",
         /*default_value=*/300};
 
-BASE_FEATURE(kExtensionTelemetryReportContactedHosts,
-             "SafeBrowsingExtensionTelemetryReportContactedHosts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(
     kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
     "SafeBrowsingExtensionTelmetryInterceptRemoteHostsContactedInRenderer",
@@ -363,7 +359,6 @@ base::Value::List GetFeatureStatusList() {
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExtensionTelemetryForEnterprise,
       &kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
-      &kExtensionTelemetryReportContactedHosts,
       &kExtensionTelemetryTabsExecuteScriptSignal,
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,

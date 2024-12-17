@@ -172,9 +172,6 @@ extern const base::FeatureParam<int>
 // tabs.executeScript API call.
 BASE_DECLARE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal);
 
-// Enables reporting of remote hosts contacted by extensions in telemetry.
-BASE_DECLARE_FEATURE(kExtensionTelemetryReportContactedHosts);
-
 // Enables intercepting remote hosts contacted by extensions in renderer
 // throttles.
 BASE_DECLARE_FEATURE(
