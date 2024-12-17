@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ntp;
 
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -32,6 +34,8 @@ import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.signin_promo.RecentTabsSigninPromoDelegate;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -63,6 +67,7 @@ public class RecentTabsManager
     private final Tab mActiveTab;
     private final TabModelSelector mTabModelSelector;
     private final Runnable mShowHistoryManager;
+    private final SigninPromoCoordinator mSigninPromoCoordinator;
 
     private TabModel mTabModel;
     private @SyncPromoState int mPromoState = SyncPromoState.NO_PROMO;
@@ -74,6 +79,7 @@ public class RecentTabsManager
     private RecentlyClosedTabManager mRecentlyClosedTabManager;
     private SigninManager mSignInManager;
     private UpdatedCallback mUpdatedCallback;
+    private View mSigninPromoView;
     private boolean mIsDestroyed;
 
     private final ProfileDataCache mProfileDataCache;
@@ -130,6 +136,19 @@ public class RecentTabsManager
                         SigninAccessPoint.RECENT_TABS,
                         SyncConsentActivityLauncherImpl.get(),
                         SigninAndHistorySyncActivityLauncherImpl.get());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            mSigninPromoCoordinator =
+                    new SigninPromoCoordinator(
+                            context,
+                            profile,
+                            new RecentTabsSigninPromoDelegate(
+                                    context,
+                                    profile,
+                                    SigninAndHistorySyncActivityLauncherImpl.get(),
+                                    this::updatePromoState));
+        } else {
+            mSigninPromoCoordinator = null;
+        }
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
 
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
@@ -143,7 +162,11 @@ public class RecentTabsManager
         mSignInManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
         AccountManagerFacadeProvider.getInstance().addObserver(this);
-        updatePromoState();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            updatePromoState();
+        } else {
+            updatePromoStateLegacy();
+        }
 
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageOpened();
     }
@@ -184,6 +207,9 @@ public class RecentTabsManager
         recordEntries("Bulk", mBulkSessionIdsRestored);
 
         mSyncService.removeSyncStateChangedListener(this);
+        if (mSigninPromoCoordinator != null) {
+            mSigninPromoCoordinator.destroy();
+        }
 
         mSignInManager.removeSignInStateObserver(this);
         mSignInManager = null;
@@ -432,6 +458,11 @@ public class RecentTabsManager
     }
 
     private @SyncPromoState int calculatePromoState() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            return mSigninPromoCoordinator.canShowPromo()
+                    ? SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
+                    : SyncPromoState.NO_PROMO;
+        }
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             // If ReplaceSyncPromosWithSignInPromos is enabled, there's only one promo type.
@@ -469,7 +500,10 @@ public class RecentTabsManager
         return SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE;
     }
 
-    private void updatePromoState() {
+    private void updatePromoStateLegacy() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            return;
+        }
         final @SyncPromoState int newState = calculatePromoState();
         if (newState == mPromoState) return;
 
@@ -487,6 +521,14 @@ public class RecentTabsManager
     /** Sets up the sync promo view. */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
         mSyncPromoController.setUpSyncPromoView(mProfileDataCache, view, null);
+    }
+
+    View getSigninPromoView(ViewGroup parent) {
+        if (mSigninPromoView == null) {
+            mSigninPromoView = mSigninPromoCoordinator.buildPromoView(parent);
+            mSigninPromoCoordinator.setView(mSigninPromoView);
+        }
+        return mSigninPromoView;
     }
 
     // SignInStateObserver implementation.
@@ -525,9 +567,18 @@ public class RecentTabsManager
     }
 
     private void update() {
-        updatePromoState();
+        updatePromoStateLegacy();
         if (mIsDestroyed) return;
         updateForeignSessions();
+        onUpdateDone();
+    }
+
+    private void updatePromoState() {
+        final @SyncPromoState int newState = calculatePromoState();
+        if (newState == mPromoState) return;
+        mPromoState = newState;
+
+        if (mIsDestroyed) return;
         onUpdateDone();
     }
 

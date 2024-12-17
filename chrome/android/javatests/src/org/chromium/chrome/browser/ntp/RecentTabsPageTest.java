@@ -81,7 +81,10 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for {@link RecentTabsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+@EnableFeatures({
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
+})
 public class RecentTabsPageTest {
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
     private static final int COLOR_ID_2 = TabGroupColorId.RED;
@@ -482,6 +485,16 @@ public class RecentTabsPageTest {
                                 withId(R.id.empty_state_container),
                                 withParent(withId(R.id.legacy_sync_promo_view_frame_layout))))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage", "RenderTest"})
+    public void testSigninPromoView() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mPage = loadRecentTabsPage();
+
+        mRenderTestRule.render(mPage.getView(), "signin_promo");
     }
 
     @Test

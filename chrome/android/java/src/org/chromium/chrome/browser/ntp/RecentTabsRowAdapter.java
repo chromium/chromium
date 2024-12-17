@@ -487,6 +487,20 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    /** A group containing the personalized sync promo. */
+    class SigninPromoGroup extends PromoGroup {
+        @Override
+        public @ChildType int getChildType() {
+            return ChildType.PERSONALIZED_SIGNIN_PROMO;
+        }
+
+        @Override
+        View getChildView(
+                int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+            return mRecentTabsManager.getSigninPromoView(parent);
+        }
+    }
+
     /** A group containing the sync promo. */
     class SyncPromoGroup extends PromoGroup {
         @Override
@@ -1066,7 +1080,11 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 }
                 break;
             case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
-                addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SIGNIN_PROMO));
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+                    addGroup(new SigninPromoGroup());
+                } else {
+                    addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SIGNIN_PROMO));
+                }
                 break;
             case SyncPromoState.PROMO_FOR_SIGNED_IN_STATE:
                 addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SYNC_PROMO));
