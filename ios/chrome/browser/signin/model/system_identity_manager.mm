@@ -106,6 +106,15 @@ SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
       std::move(configuration));
 }
 
+void SystemIdentityManager::FetchTokenAuthURL(
+    id<SystemIdentity> identity,
+    NSURL* target_url,
+    AuthenticatedURLCallback callback) {
+  // TODO(crbug.com/383997082): Remove once `FetchTokenAuthURL` is supported in
+  // internal system identity management.
+  NOTREACHED();
+}
+
 void SystemIdentityManager::FireIdentityListChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
