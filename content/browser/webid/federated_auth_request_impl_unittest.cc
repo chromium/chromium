@@ -5212,6 +5212,7 @@ class IdpNetworkRequestMetricsRecorder : public TestIdpNetworkRequestManager {
 
   void SendSuccessfulTokenRequestMetrics(
       const GURL& metrics_endpoint_url,
+      bool did_show_ui,
       base::TimeDelta api_call_to_show_dialog_time,
       base::TimeDelta show_dialog_to_continue_clicked_time,
       base::TimeDelta account_selected_to_token_response_time,
@@ -5221,6 +5222,7 @@ class IdpNetworkRequestMetricsRecorder : public TestIdpNetworkRequestManager {
 
   void SendFailedTokenRequestMetrics(
       const GURL& metrics_endpoint_url,
+      bool did_show_ui,
       MetricsEndpointErrorCode error_code) override {
     metrics_endpoints_notified_failure_.push_back(metrics_endpoint_url);
   }

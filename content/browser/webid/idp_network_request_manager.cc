@@ -1109,6 +1109,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
 
 void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
+    bool did_show_ui,
     base::TimeDelta api_call_to_show_dialog_time,
     base::TimeDelta show_dialog_to_continue_clicked_time,
     base::TimeDelta account_selected_to_token_response_time,
@@ -1117,12 +1118,14 @@ void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
       "time_to_show_ui=%d"
       "&time_to_continue=%d"
       "&time_to_receive_token=%d"
-      "&turnaround_time=%d",
+      "&turnaround_time=%d"
+      "&did_show_ui=%s",
       static_cast<int>(api_call_to_show_dialog_time.InMilliseconds()),
       static_cast<int>(show_dialog_to_continue_clicked_time.InMilliseconds()),
       static_cast<int>(
           account_selected_to_token_response_time.InMilliseconds()),
-      static_cast<int>(api_call_to_token_response_time.InMilliseconds()));
+      static_cast<int>(api_call_to_token_response_time.InMilliseconds()),
+      did_show_ui ? "true" : "false");
 
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
@@ -1139,9 +1142,11 @@ void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
 
 void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
+    bool did_show_ui,
     MetricsEndpointErrorCode error_code) {
-  std::string url_encoded_post_data =
-      base::StringPrintf("error_code=%d", static_cast<int>(error_code));
+  std::string url_encoded_post_data = base::StringPrintf(
+      "error_code=%d&did_show_ui=%s", static_cast<int>(error_code),
+      did_show_ui ? "true" : "false");
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateUncredentialedResourceRequest(metrics_endpoint_url,
                                           /*send_origin=*/false);

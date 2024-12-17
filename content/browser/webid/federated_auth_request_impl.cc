@@ -1024,6 +1024,9 @@ void FederatedAuthRequestImpl::RequestToken(
                            weak_ptr_factory_.GetWeakPtr()))) {
       return;
     }
+    // Because the loading dialog is not interactable, we do not count it for
+    // did_show_ui_, as it is not useful for IDPs in calculating a click-through
+    // rate.
   }
 
   if (IsFedCmMultipleIdentityProvidersEnabled()) {
@@ -1791,6 +1794,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                          weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
+  did_show_ui_ = true;
 
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 
@@ -1943,6 +1947,7 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
                               /*can_append_hints=*/true))) {
     return;
   }
+  did_show_ui_ = true;
 
   CHECK_EQ(idp_data_for_display_.size(), 1u);
   fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
@@ -2489,6 +2494,7 @@ void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
       url_to_show, rp_mode_,
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
+  did_show_ui_ = true;
   // This may be null on Android, as the method cannot return the WebContents of
   // the CCT that will be created.
   if (web_contents) {
@@ -2583,6 +2589,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
               : base::NullCallback())) {
     return;
   }
+  did_show_ui_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
@@ -2960,7 +2967,7 @@ void FederatedAuthRequestImpl::SendFailedTokenRequestMetrics(
   }
 
   network_manager_->SendFailedTokenRequestMetrics(
-      metrics_endpoint,
+      metrics_endpoint, did_show_ui_,
       FederatedAuthRequestResultToMetricsEndpointErrorCode(result));
 }
 
@@ -2976,7 +2983,7 @@ void FederatedAuthRequestImpl::SendSuccessfulTokenRequestMetrics(
 
     if (metrics_endpoint_kv.first == idp_config_url) {
       network_manager_->SendSuccessfulTokenRequestMetrics(
-          metrics_endpoint,
+          metrics_endpoint, did_show_ui_,
           ready_to_display_accounts_dialog_time_ - start_time_,
           select_account_time_ - accounts_dialog_display_time_,
           id_assertion_response_time_ - select_account_time_,
@@ -2988,7 +2995,7 @@ void FederatedAuthRequestImpl::SendSuccessfulTokenRequestMetrics(
       // selecting a different IDP and user dismissing dialog without
       // selecting any IDP.
       network_manager_->SendFailedTokenRequestMetrics(
-          metrics_endpoint,
+          metrics_endpoint, did_show_ui_,
           IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure);
     }
   }
@@ -3034,6 +3041,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   dialog_type_ = kNone;
   identity_selection_type_ = kExplicit;
   had_transient_user_activation_ = false;
+  did_show_ui_ = false;
   rp_mode_ = RpMode::kPassive;
   private_key_.reset();
   disclosures_.clear();

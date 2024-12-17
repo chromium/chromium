@@ -633,6 +633,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // information to use it during the entire the active flow.
   bool had_transient_user_activation_{false};
 
+  // Whether we have shown any UI during this flow.
+  bool did_show_ui_{false};
+
   // Keeps track of the state of the use other account flow. Is std::nullopt
   // when the flow is not active.
   std::optional<FedCmUseOtherAccountResult> use_other_account_account_result_;

@@ -316,10 +316,12 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
   net::EmbeddedTestServer& https_server() { return https_server_; }
 
-  std::string BaseIdpUrl() {
+  std::string IdpRootUrl() {
     return std::string(kIdpOrigin) + ":" +
-           base::NumberToString(https_server().port()) + "/fedcm.json";
+           base::NumberToString(https_server().port());
   }
+
+  std::string BaseIdpUrl() { return IdpRootUrl() + "/fedcm.json"; }
 
   std::string BaseRpUrl() {
     return https_server().GetOrigin(kRpHostName).Serialize();
@@ -1966,15 +1968,23 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, IssueVCs) {
 class WebIdMetricsBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFedCmMetricsEndpoint, features::kFedCmButtonMode,
+         features::kFedCmAuthz},
+        {});
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
  protected:
-  void SetMetricsConfigDetails(base::RunLoop* run_loop, bool success) {
+  enum TestType { kSuccess, kAccountsFailure, kLoginFailure };
+  void SetMetricsConfigDetails(base::RunLoop* run_loop, TestType type) {
     IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
-    if (!success) {
+    if (type == kAccountsFailure) {
       config_details.accounts_endpoint_url = "/404";
+    }
+    if (type == kLoginFailure) {
+      // Just load a file that does not call IdentityProvider.close.
+      config_details.login_url = "/blue.html";
     }
     config_details.metrics_endpoint_url = "/metrics";
     config_details.servlets["/metrics"] = base::BindRepeating(
@@ -2017,7 +2027,7 @@ class WebIdMetricsBrowserTest : public WebIdBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Success) {
   base::RunLoop run_loop;
-  SetMetricsConfigDetails(&run_loop, /*success=*/true);
+  SetMetricsConfigDetails(&run_loop, kSuccess);
 
   std::string script = R"(
         (async () => {
@@ -2044,11 +2054,12 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Success) {
   EXPECT_EQ(1ul, metrics_parameters_.count("time_to_receive_token"));
   EXPECT_EQ(1ul, metrics_parameters_.count("turnaround_time"));
   EXPECT_EQ(0ul, metrics_parameters_.count("error_code"));
+  EXPECT_EQ("true", metrics_parameters_["did_show_ui"]);
 }
 
 IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
   base::RunLoop run_loop;
-  SetMetricsConfigDetails(&run_loop, /*success=*/false);
+  SetMetricsConfigDetails(&run_loop, kAccountsFailure);
 
   std::string script = R"(
         (async () => {
@@ -2075,6 +2086,7 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
   EXPECT_EQ(0ul, metrics_parameters_.count("time_to_receive_token"));
   EXPECT_EQ(0ul, metrics_parameters_.count("turnaround_time"));
   EXPECT_EQ("301", metrics_parameters_["error_code"]);
+  EXPECT_EQ("false", metrics_parameters_["did_show_ui"]);
 }
 
 }  // namespace content

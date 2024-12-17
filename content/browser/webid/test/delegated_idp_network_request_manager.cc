@@ -65,20 +65,23 @@ void DelegatedIdpNetworkRequestManager::SendTokenRequest(
 
 void DelegatedIdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
+    bool did_show_ui,
     base::TimeDelta api_call_to_show_dialog_time,
     base::TimeDelta show_dialog_to_continue_clicked_time,
     base::TimeDelta account_selected_to_token_response_time,
     base::TimeDelta api_call_to_token_response_time) {
   delegate_->SendSuccessfulTokenRequestMetrics(
-      metrics_endpoint_url, api_call_to_show_dialog_time,
+      metrics_endpoint_url, did_show_ui, api_call_to_show_dialog_time,
       show_dialog_to_continue_clicked_time,
       account_selected_to_token_response_time, api_call_to_token_response_time);
 }
 
 void DelegatedIdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
+    bool did_show_ui,
     MetricsEndpointErrorCode error_code) {
-  delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, error_code);
+  delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, did_show_ui,
+                                           error_code);
 }
 
 void DelegatedIdpNetworkRequestManager::SendLogout(const GURL& logout_url,
