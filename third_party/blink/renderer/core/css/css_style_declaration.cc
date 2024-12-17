@@ -192,26 +192,23 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   if (!IsValidCSSPropertyID(unresolved_property)) {
     return NamedPropertySetterResult::kDidNotIntercept;
   }
-  // We create the ExceptionState manually due to performance issues: adding
-  // [RaisesException] to the IDL causes the bindings layer to expensively
-  // create a std::string to set the ExceptionState's |property_name| argument,
-  // while we can use CSSProperty::GetPropertyName() here (see bug 829408).
-  ExceptionState exception_state(script_state->GetIsolate());
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
   // impact is understood.
   SyncScrollAttemptHeuristic::DidSetStyle();
   if (value->IsNumber()) {
-    double double_value = NativeValueTraits<IDLUnrestrictedDouble>::NativeValue(
-        script_state->GetIsolate(), value, exception_state);
-    if (exception_state.HadException()) [[unlikely]] {
-      return NamedPropertySetterResult::kIntercepted;
-    }
+    double double_value = value.As<v8::Number>()->Value();
     if (FastPathSetProperty(unresolved_property, double_value)) {
       return NamedPropertySetterResult::kIntercepted;
     }
     // The fast path failed, e.g. because the property was a longhand,
     // so let the normal string handling deal with it.
   }
+  // We create the ExceptionState manually due to performance issues: adding
+  // [RaisesException] to the IDL causes the bindings layer to expensively
+  // create a std::string to set the ExceptionState's |property_name|
+  // argument, while we can use CSSProperty::GetPropertyName() here (see bug
+  // 829408).
+  ExceptionState exception_state(script_state->GetIsolate());
   if (value->IsString()) {
     // NativeValueTraits::ToBlinkStringView() (called implicitly on conversion)
     // tries fairly hard to make an AtomicString out of the string,
