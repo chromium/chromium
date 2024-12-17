@@ -215,6 +215,9 @@ class FrameNode : public TypedNode<FrameNode> {
   // Returns true if the frame is capturing a media stream (audio or video).
   virtual bool IsCapturingMediaStream() const = 0;
 
+  // Returns true if the frame is opted-out from freezing via origin trial.
+  virtual bool HasFreezingOriginTrialOptOut() const = 0;
+
   // Returns the ViewportIntersection of this frame. For the outermost main
   // frame, this always returns a valid value indicating that the frame fully
   // intersects with the viewport. For child frames, this is initially null on
@@ -382,6 +385,10 @@ class FrameNodeObserver : public base::CheckedObserver {
 
   // Invoked when the IsCapturingMediaStream property changes.
   virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) {}
+
+  // Invoked when the HasFreezingOriginTrialOptOut property changes.
+  virtual void OnFrameHasFreezingOriginTrialOptOutChanged(
+      const FrameNode* frame_node) {}
 
   // Invoked when a frame's intersection with the viewport changes. Will only be
   // invoked for a child frame, as the outermost main frame is always considered

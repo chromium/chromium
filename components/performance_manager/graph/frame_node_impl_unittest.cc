@@ -133,12 +133,14 @@ TEST_F(FrameNodeImplTest,
   frame_node->SetHadFormInteraction();
   frame_node->SetHadUserEdits();
   frame_node->OnStartedUsingWebRTC();
+  frame_node->OnFreezingOriginTrialOptOut();
 
   EXPECT_TRUE(frame_node->HasNonemptyBeforeUnload());
   EXPECT_TRUE(frame_node->GetNetworkAlmostIdle());
   EXPECT_TRUE(frame_node->HadFormInteraction());
   EXPECT_TRUE(frame_node->HadUserEdits());
   EXPECT_TRUE(frame_node->UsesWebRTC());
+  EXPECT_TRUE(frame_node->HasFreezingOriginTrialOptOut());
 
   const GURL kUrl("http://www.foo.com/");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
@@ -153,6 +155,7 @@ TEST_F(FrameNodeImplTest,
   EXPECT_FALSE(frame_node->HadFormInteraction());
   EXPECT_FALSE(frame_node->HadUserEdits());
   EXPECT_FALSE(frame_node->UsesWebRTC());
+  EXPECT_FALSE(frame_node->HasFreezingOriginTrialOptOut());
 }
 
 TEST_F(FrameNodeImplTest, RemoveChildFrame) {
@@ -753,6 +756,23 @@ TEST_F(FrameNodeImplTest, IsCapturingMediaStream) {
   EXPECT_CALL(obs, OnIsCapturingMediaStreamChanged(frame_node.get()));
   frame_node->SetIsCapturingMediaStream(true);
   EXPECT_TRUE(frame_node->IsCapturingMediaStream());
+
+  graph()->RemoveFrameNodeObserver(&obs);
+}
+
+TEST_F(FrameNodeImplTest, HasFreezingOriginTrialOptOut) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+  EXPECT_FALSE(frame_node->HasFreezingOriginTrialOptOut());
+
+  MockObserver obs;
+  graph()->AddFrameNodeObserver(&obs);
+
+  EXPECT_CALL(obs,
+              OnFrameHasFreezingOriginTrialOptOutChanged(frame_node.get()));
+  frame_node->OnFreezingOriginTrialOptOut();
+  EXPECT_TRUE(frame_node->HasFreezingOriginTrialOptOut());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }

@@ -143,6 +143,10 @@ class PageNode : public TypedNode<PageNode> {
   // window, false otherwise.
   virtual bool HasPictureInPicture() const = 0;
 
+  // Returns true if this page is opted-out from freezing via origin trial, i.e.
+  // if any of its current frames sets the origin trial.
+  virtual bool HasFreezingOriginTrialOptOut() const = 0;
+
   // Returns true if this page is off the record, false otherwise.
   // A tab is off the record when it is open in incognito or guest mode.
   virtual bool IsOffTheRecord() const = 0;
@@ -318,6 +322,10 @@ class PageNodeObserver : public base::CheckedObserver {
 
   // Invoked when the HasPictureInPicture property changes.
   virtual void OnHasPictureInPictureChanged(const PageNode* page_node) {}
+
+  // Invoked when the HasFreezingOriginTrialOptOut() property changes.
+  virtual void OnPageHasFreezingOriginTrialOptOutChanged(
+      const PageNode* page_node) {}
 
   // Invoked when the GetLoadingState property changes.
   virtual void OnLoadingStateChanged(const PageNode* page_node,

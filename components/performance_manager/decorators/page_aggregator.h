@@ -45,6 +45,8 @@ class PageAggregator : public FrameNodeObserver,
   void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override;
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
   void OnHadUserEditsChanged(const FrameNode* frame_node) override;
+  void OnFrameHasFreezingOriginTrialOptOutChanged(
+      const FrameNode* frame_node) override;
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;

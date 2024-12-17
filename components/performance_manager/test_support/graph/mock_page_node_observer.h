@@ -32,6 +32,10 @@ class LenientMockPageNodeObserver : public PageNodeObserver {
   MOCK_METHOD(void, OnIsVisibleChanged, (const PageNode*), (override));
   MOCK_METHOD(void, OnIsAudibleChanged, (const PageNode*), (override));
   MOCK_METHOD(void,
+              OnPageHasFreezingOriginTrialOptOutChanged,
+              (const PageNode*),
+              (override));
+  MOCK_METHOD(void,
               OnHasPictureInPictureChanged,
               (const PageNode*),
               (override));

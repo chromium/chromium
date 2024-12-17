@@ -73,6 +73,10 @@ class LenientMockFrameNodeObserver : public FrameNodeObserver {
               (const FrameNode*),
               (override));
   MOCK_METHOD(void,
+              OnFrameHasFreezingOriginTrialOptOutChanged,
+              (const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
               OnViewportIntersectionChanged,
               (const FrameNode*),
               (override));

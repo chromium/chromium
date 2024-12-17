@@ -327,6 +327,16 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->SetIsAudible(true);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
+  EXPECT_CALL(obs, OnHasPictureInPictureChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page_node->SetHasPictureInPicture(true);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
+  EXPECT_CALL(obs, OnPageHasFreezingOriginTrialOptOutChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page_node->SetHasFreezingOriginTrialOptOutForTesting(true);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
   EXPECT_CALL(obs, OnLoadingStateChanged(_, _))
       .WillOnce(testing::WithArg<0>(
           Invoke(&obs, &MockObserver::SetNotifiedPageNode)));

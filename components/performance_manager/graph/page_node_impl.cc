@@ -117,6 +117,11 @@ bool PageNodeImpl::HasPictureInPicture() const {
   return has_picture_in_picture_.value();
 }
 
+bool PageNodeImpl::HasFreezingOriginTrialOptOut() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return has_freezing_origin_trial_opt_out_.value();
+}
+
 bool PageNodeImpl::IsOffTheRecord() const {
   return is_off_the_record_;
 }
@@ -580,6 +585,13 @@ void PageNodeImpl::SetHadFormInteraction(bool had_form_interaction) {
 void PageNodeImpl::SetHadUserEdits(bool had_user_edits) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   had_user_edits_.SetAndMaybeNotify(this, had_user_edits);
+}
+
+void PageNodeImpl::SetHasFreezingOriginTrialOptOut(
+    bool has_freezing_origin_trial_opt_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  has_freezing_origin_trial_opt_out_.SetAndMaybeNotify(
+      this, has_freezing_origin_trial_opt_out);
 }
 
 }  // namespace performance_manager

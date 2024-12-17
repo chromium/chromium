@@ -163,6 +163,11 @@ void FrameNodeImpl::OnWebMemoryMeasurementRequested(
       std::move(callback), mojo::GetBadMessageCallback());
 }
 
+void FrameNodeImpl::OnFreezingOriginTrialOptOut() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  document_.has_freezing_origin_trial_opt_out.SetAndMaybeNotify(this, true);
+}
+
 const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return frame_token_;
@@ -265,6 +270,11 @@ bool FrameNodeImpl::IsAudible() const {
 bool FrameNodeImpl::IsCapturingMediaStream() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_capturing_media_stream_.value();
+}
+
+bool FrameNodeImpl::HasFreezingOriginTrialOptOut() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return document_.has_freezing_origin_trial_opt_out.value();
 }
 
 std::optional<ViewportIntersection> FrameNodeImpl::GetViewportIntersection()
@@ -987,6 +997,7 @@ void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
   had_form_interaction.SetAndMaybeNotify(frame_node, false);
   had_user_edits.SetAndMaybeNotify(frame_node, false);
   uses_web_rtc.SetAndMaybeNotify(frame_node, false);
+  has_freezing_origin_trial_opt_out.SetAndMaybeNotify(frame_node, false);
 }
 // LINT.ThenChange()
 

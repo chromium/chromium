@@ -92,6 +92,7 @@ class PageNodeImpl
   bool IsAudible() const override;
   std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange() const override;
   bool HasPictureInPicture() const override;
+  bool HasFreezingOriginTrialOptOut() const override;
   bool IsOffTheRecord() const override;
   LoadingState GetLoadingState() const override;
   ukm::SourceId GetUkmSourceID() const override;
@@ -167,6 +168,11 @@ class PageNodeImpl
     SetLifecycleState(lifecycle_state);
   }
 
+  void SetHasFreezingOriginTrialOptOutForTesting(
+      bool has_freezing_origin_trial_opt_out) {
+    SetHasFreezingOriginTrialOptOut(has_freezing_origin_trial_opt_out);
+  }
+
   void SetIsHoldingWebLockForTesting(bool is_holding_weblock) {
     SetIsHoldingWebLock(is_holding_weblock);
   }
@@ -219,6 +225,11 @@ class PageNodeImpl
     SetHadUserEdits(had_user_edits);
   }
 
+  void SetHasFreezingOriginTrialOptOut(base::PassKey<PageAggregatorData>,
+                                       bool has_freezing_origin_trial_opt_out) {
+    SetHasFreezingOriginTrialOptOut(has_freezing_origin_trial_opt_out);
+  }
+
  private:
   friend class PageNodeImplDescriber;
 
@@ -239,6 +250,7 @@ class PageNodeImpl
   void SetUsesWebRTC(bool uses_web_rtc);
   void SetHadFormInteraction(bool had_form_interaction);
   void SetHadUserEdits(bool had_user_edits);
+  void SetHasFreezingOriginTrialOptOut(bool has_freezing_origin_trial_opt_out);
 
   // The WebContents associated with this page.
   const base::WeakPtr<content::WebContents> web_contents_;
@@ -335,6 +347,13 @@ class PageNodeImpl
       bool,
       &PageNodeObserver::OnHasPictureInPictureChanged>
       has_picture_in_picture_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+  // Whether the page is opted-out from freezing via origin trial, i.e. if any
+  // of its current frames sets the origin trial.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &PageNodeObserver::OnPageHasFreezingOriginTrialOptOutChanged>
+      has_freezing_origin_trial_opt_out_ GUARDED_BY_CONTEXT(sequence_checker_){
+          false};
 
   const bool is_off_the_record_;
 

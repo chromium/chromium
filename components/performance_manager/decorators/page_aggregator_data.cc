@@ -83,6 +83,19 @@ void PageAggregatorData::UpdateCurrentFrameCountForUserEdits(
                               num_current_frames_with_user_edits_ > 0);
 }
 
+void PageAggregatorData::UpdateCurrentFrameCountForFreezingOriginTrialOptOut(
+    bool frame_has_freezing_origin_trial_opt_out) {
+  if (frame_has_freezing_origin_trial_opt_out) {
+    ++num_current_frames_with_freezing_origin_trial_opt_out_;
+  } else {
+    DCHECK_GT(num_current_frames_with_freezing_origin_trial_opt_out_, 0);
+    --num_current_frames_with_freezing_origin_trial_opt_out_;
+  }
+
+  page_node_->SetHasFreezingOriginTrialOptOut(
+      PassKey(), num_current_frames_with_freezing_origin_trial_opt_out_ > 0);
+}
+
 base::Value::Dict PageAggregatorData::Describe() {
   base::Value::Dict ret;
   ret.Set("num_frames_holding_web_lock",

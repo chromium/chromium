@@ -5,6 +5,7 @@
 #include "components/performance_manager/decorators/page_aggregator.h"
 
 #include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -118,6 +119,43 @@ TEST_F(PageAggregatorTest, WebRTCAggregation) {
   // WebRTC should update the corresponding page property.
   frame_1.reset();
   EXPECT_FALSE(page->UsesWebRTC());
+}
+
+TEST_F(PageAggregatorTest, FreezingOriginTrialAggregation) {
+  // Creates a page containing 2 frames.
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  TestNodeWrapper<FrameNodeImpl> frame_0 =
+      graph()->CreateFrameNodeAutoId(process.get(), page.get());
+  TestNodeWrapper<FrameNodeImpl> frame_1 =
+      graph()->CreateFrameNodeAutoId(process.get(), page.get());
+
+  // By default the page doesn't have a freezing origin trial opt-out.
+  EXPECT_FALSE(page->HasFreezingOriginTrialOptOut());
+
+  // |frame_0| is opted-out -> the page is opted-out.
+  frame_0->OnFreezingOriginTrialOptOut();
+  EXPECT_TRUE(page->HasFreezingOriginTrialOptOut());
+
+  // |frame_1| is also opted-out -> the page is still opted-out.
+  frame_1->OnFreezingOriginTrialOptOut();
+  EXPECT_TRUE(page->HasFreezingOriginTrialOptOut());
+
+  // |frame_1| becomes non-current -> the page is still opted-out.
+  FrameNodeImpl::UpdateCurrentFrame(frame_1.get(), nullptr, graph());
+  EXPECT_TRUE(page->HasFreezingOriginTrialOptOut());
+
+  // |frame_0| becomes non-current -> the page is no longer opted-out.
+  FrameNodeImpl::UpdateCurrentFrame(frame_0.get(), nullptr, graph());
+  EXPECT_FALSE(page->HasFreezingOriginTrialOptOut());
+
+  // |frame_0| becomes current -> the page is opted-out.
+  FrameNodeImpl::UpdateCurrentFrame(nullptr, frame_0.get(), graph());
+  EXPECT_TRUE(page->HasFreezingOriginTrialOptOut());
+
+  // |frame_0| is destroyed -> the page is no longer opted-out.
+  frame_0.reset();
+  EXPECT_FALSE(page->HasFreezingOriginTrialOptOut());
 }
 
 }  // namespace performance_manager

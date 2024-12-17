@@ -87,6 +87,11 @@ class FrameNodeImpl
       mojom::WebMemoryMeasurement::Mode mode,
       OnWebMemoryMeasurementRequestedCallback callback) override;
 
+  // TODO(crbug.com/325954772): Make this a method of
+  // mojom::DocumentCoordinationUnit and invoke it the when the
+  // "PageFreezeOptOut" origin trial is set in the renderer.
+  void OnFreezingOriginTrialOptOut();
+
   // Partial FrameNode implementation:
   const blink::LocalFrameToken& GetFrameToken() const override;
   content::BrowsingInstanceId GetBrowsingInstanceId() const override;
@@ -109,6 +114,7 @@ class FrameNodeImpl
   bool HadUserEdits() const override;
   bool IsAudible() const override;
   bool IsCapturingMediaStream() const override;
+  bool HasFreezingOriginTrialOptOut() const override;
   std::optional<ViewportIntersection> GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
   bool IsImportant() const override;
@@ -250,6 +256,12 @@ class FrameNodeImpl
         bool,
         &FrameNodeObserver::OnFrameUsesWebRTCChanged>
         uses_web_rtc{false};
+
+    // Whether the document is opted-out from freezing via origin trial.
+    ObservedProperty::NotifiesOnlyOnChanges<
+        bool,
+        &FrameNodeObserver::OnFrameHasFreezingOriginTrialOptOutChanged>
+        has_freezing_origin_trial_opt_out{false};
   };
   // LINT.ThenChange(//components/performance_manager/graph/frame_node_impl.cc:document_prop_reset)
 

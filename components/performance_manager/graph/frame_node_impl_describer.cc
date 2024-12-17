@@ -79,6 +79,8 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   doc.Set("had_form_interaction", impl->document_.had_form_interaction.value());
   doc.Set("had_user_edits", impl->document_.had_user_edits.value());
   doc.Set("uses_webrtc", impl->document_.uses_web_rtc.value());
+  ret.Set("has_freezing_origin_trial_opt_out",
+          impl->document_.has_freezing_origin_trial_opt_out.value());
   ret.Set("document", std::move(doc));
 
   // Frame node properties.
