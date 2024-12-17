@@ -471,6 +471,14 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Address bar
       </message>
 
+      <message name="IDS_ADDRESS_BAR_SETTINGS_DESCRIPTION" desc="TODO">
+        You can also touch and hold the address bar to change the position.
+      </message>
+
+      <message name="IDS_ADDRESS_BAR_SETTINGS_DESCRIPTION_FOLDABLE" desc="TODO">
+        When your device is folded, you can choose an option or touch and hold the address bar to change the position.
+      </message>
+
       <message name="IDS_ADDRESS_BAR_SETTINGS_TOP" desc="Title for the toggle that will show the address bar on the top. [CHAR_LIMIT=32]">
         Top
       </message>

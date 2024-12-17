@@ -30,7 +30,6 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -306,13 +305,8 @@ public class ToolbarPositionControllerTest {
     public void testIsToolbarPositionCustomizationEnabled_foldable() {
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(mContext.getPackageManager());
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, true);
-        // Foldable check is disabled on debug builds to work around emulators reporting as
-        // foldable.
-        if (!BuildInfo.isDebugApp()) {
-            assertFalse(
-                    ToolbarPositionController.isToolbarPositionCustomizationEnabled(
-                            mContext, false));
-        }
+        assertTrue(
+                ToolbarPositionController.isToolbarPositionCustomizationEnabled(mContext, false));
     }
 
     @Test

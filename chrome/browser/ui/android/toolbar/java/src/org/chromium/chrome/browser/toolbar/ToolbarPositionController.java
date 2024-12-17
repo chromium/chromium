@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
@@ -193,11 +192,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             Context context, boolean isCustomTab) {
         return !isCustomTab
                 && ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                // Some emulators erroneously report that they have a hinge sensor (and thus are
-                // foldables). To make the feature testable on these "devices", skip the foldable
-                // check for debug builds.
-                && (!BuildInfo.getInstance().isFoldable || BuildInfo.isDebugApp());
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**
