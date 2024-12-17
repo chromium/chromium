@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_lex"
-version = "0.7.3"
+version = "0.7.4"
 build = false
 include = [
     "build.rs",
@@ -24,6 +24,7 @@ include = [
     "benches/**/*",
     "examples/**/*",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false

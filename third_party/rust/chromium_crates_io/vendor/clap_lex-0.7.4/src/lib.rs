@@ -505,9 +505,9 @@ fn is_number(arg: &str) -> bool {
             // optional exponent, and only if it's not the first character.
             b'.' if !seen_dot && position_of_e.is_none() && i > 0 => seen_dot = true,
 
-            // Allow an exponent `e` but only at most one after the first
+            // Allow an exponent `e`/`E` but only at most one after the first
             // character.
-            b'e' if position_of_e.is_none() && i > 0 => position_of_e = Some(i),
+            b'e' | b'E' if position_of_e.is_none() && i > 0 => position_of_e = Some(i),
 
             _ => return false,
         }

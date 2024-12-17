@@ -249,7 +249,7 @@ pub struct Split<'s, 'n> {
     needle: &'n str,
 }
 
-impl<'s, 'n> Iterator for Split<'s, 'n> {
+impl<'s> Iterator for Split<'s, '_> {
     type Item = &'s OsStr;
 
     fn next(&mut self) -> Option<Self::Item> {

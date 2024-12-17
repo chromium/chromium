@@ -89,7 +89,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."clap_builder:4.5.21"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_lex:0.7.3"]
+[policy."clap_lex:0.7.4"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."codespan-reporting:0.11.1"]
