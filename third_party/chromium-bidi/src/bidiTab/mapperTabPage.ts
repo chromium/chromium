@@ -62,6 +62,7 @@ export function log(logPrefix: LogPrefix, ...messages: unknown[]) {
   // <div class="pre">...log message...</div>
   const lineElement = document.createElement('div');
   lineElement.className = 'pre';
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
   debugContainer.appendChild(lineElement);
   if (debugContainer.childNodes.length > 400) {
