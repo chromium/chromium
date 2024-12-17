@@ -129,10 +129,6 @@
 
 namespace {
 
-// Deprecated 12/2023.
-const char kSigninLastAccounts[] = "ios.signin.last_accounts";
-const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
-
 // Deprecated 01/2024.
 const char kAppStoreRatingTotalDaysOnChromeKey[] =
     "AppStoreRatingTotalDaysOnChrome";
@@ -971,8 +967,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kDetectUnitsEnabled, true);
 
   registry->RegisterTimePref(prefs::kLastSigninTimestamp, base::Time());
-  registry->RegisterListPref(kSigninLastAccounts);
-  registry->RegisterBooleanPref(kSigninLastAccountsMigrated, false);
 
   // Preferences related to Content Notifications.
   registry->RegisterTimePref(prefs::kNotificationsPromoLastDismissed,
@@ -1156,10 +1150,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 12/2023.
-  prefs->ClearPref(kSigninLastAccounts);
-  prefs->ClearPref(kSigninLastAccountsMigrated);
 
   // Added 12/2023.
   MigrateIntegerToTimePreferenceFromUserDefaults(kLastCookieDeletionDate, prefs,
