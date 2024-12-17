@@ -5446,6 +5446,11 @@ const char kTabstripDeclutterDescription[] =
     "Enables the Tab Declutter feature, which can be found within the Tab "
     "Search bubble.";
 
+const char kTabstripDedupeName[] = "Tab Deduplication";
+const char kTabstripDedupeDescription[] =
+    "Enables the Tab Deduplication feature, which can be found within the Tab "
+    "Search bubble.";
+
 const char kIOSPromoRefreshedPasswordBubbleName[] =
     "Chrome for iOS promo : passwords";
 const char kIOSPromoRefreshedPasswordBubbleDescription[] =

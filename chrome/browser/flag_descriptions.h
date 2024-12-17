@@ -3153,6 +3153,9 @@ extern const char kTabReorganizationDividerDescription[];
 extern const char kTabstripDeclutterName[];
 extern const char kTabstripDeclutterDescription[];
 
+extern const char kTabstripDedupeName[];
+extern const char kTabstripDedupeDescription[];
+
 extern const char kIOSPromoRefreshedPasswordBubbleName[];
 extern const char kIOSPromoRefreshedPasswordBubbleDescription[];
 

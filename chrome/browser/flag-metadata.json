@@ -8663,6 +8663,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tabstrip-dedupe",
+    "owners": [ "emshack@chromium.org", "shibalik@chromium.org", "chrome-desktop-ui-sea@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "tear-off-web-app-tab-opens-web-app-window",
     "owners": [ "davidbienvenu@chromium.org", "dmurph@chromium.org" ],
     "expiry_milestone": 135

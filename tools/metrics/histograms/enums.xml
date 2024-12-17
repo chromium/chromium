@@ -21240,6 +21240,7 @@ from previous Chrome versions.
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="337637199" label="HttpsFirstModeIncognito:disabled"/>
+  <int value="337894107" label="TabstripDedupe:enabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
@@ -23253,6 +23254,7 @@ from previous Chrome versions.
       label="SignedExchangePrefetchCacheForNavigations:disabled"/>
   <int value="1146944555" label="CrosExpandSodaLanguages:enabled"/>
   <int value="1147703885" label="SecondaryGoogleAccountUsage:enabled"/>
+  <int value="1147801492" label="TabstripDedupe:disabled"/>
   <int value="1147924185" label="enable-navigation-predictor-renderer-warmup"/>
   <int value="1148284632" label="NewTabPageUIMd:disabled"/>
   <int value="1148637402"

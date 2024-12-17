@@ -11222,6 +11222,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabstripDeclutter,
                                     kTabstripDeclutterVariations,
                                     "TabstripDeclutter")},
+    {"tabstrip-dedupe", flag_descriptions::kTabstripDedupeName,
+     flag_descriptions::kTabstripDedupeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabstripDedupe)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
