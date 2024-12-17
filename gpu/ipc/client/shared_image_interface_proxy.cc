@@ -48,7 +48,7 @@ size_t GetRemainingSize(const base::MappedReadOnlyRegion& region,
   return region.mapping.size() - offset;
 }
 
-void* GetDataAddress(const base::MappedReadOnlyRegion& region,
+void* GetDataAddress(base::MappedReadOnlyRegion& region,
                      size_t offset,
                      size_t size) {
   base::CheckedNumeric<size_t> safe_end = offset;

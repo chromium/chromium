@@ -5,6 +5,9 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_MEMORY_REGION_WRAPPER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_MEMORY_REGION_WRAPPER_H_
 
+#include <utility>
+#include <vector>
+
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/unguessable_token.h"
@@ -36,7 +39,10 @@ class GPU_GLES2_EXPORT SharedMemoryRegionWrapper {
                   gfx::BufferFormat format);
 
   bool IsValid() const;
-  uint8_t* GetMemory(int plane_index) const;
+  uint8_t* GetMemory(int plane_index) {
+    return const_cast<uint8_t*>(std::as_const(*this).GetMemory(plane_index));
+  }
+  const uint8_t* GetMemory(int plane_index) const;
   size_t GetStride(int plane_index) const;
 
   // Returns SkPixmap pointing to memory for offset.

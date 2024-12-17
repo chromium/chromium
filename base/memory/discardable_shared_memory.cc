@@ -112,8 +112,13 @@ struct SharedState {
 };
 
 // Shared state is stored at offset 0 in shared memory segments.
-SharedState* SharedStateFromSharedMemory(
+const SharedState* SharedStateFromSharedMemory(
     const WritableSharedMemoryMapping& shared_memory) {
+  DCHECK(shared_memory.IsValid());
+  return shared_memory.GetMemoryAs<const SharedState>();
+}
+SharedState* SharedStateFromSharedMemory(
+    WritableSharedMemoryMapping& shared_memory) {
   DCHECK(shared_memory.IsValid());
   return shared_memory.GetMemoryAs<SharedState>();
 }
@@ -354,12 +359,22 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
   last_known_usage_ = current_time;
 }
 
-span<uint8_t> DiscardableSharedMemory::memory() const {
+span<uint8_t> DiscardableSharedMemory::memory() {
   return shared_memory_mapping_.GetMemoryAsSpan<uint8_t>().subspan(
       AlignToPageSize(sizeof(SharedState)));
 }
 
-span<uint8_t> DiscardableSharedMemory::mapped_memory() const {
+span<const uint8_t> DiscardableSharedMemory::memory() const {
+  return shared_memory_mapping_.GetMemoryAsSpan<const uint8_t>().subspan(
+      AlignToPageSize(sizeof(SharedState)));
+}
+
+span<uint8_t> DiscardableSharedMemory::mapped_memory() {
+  return shared_memory_mapping_.mapped_memory().subspan(
+      AlignToPageSize(sizeof(SharedState)));
+}
+
+span<const uint8_t> DiscardableSharedMemory::mapped_memory() const {
   return shared_memory_mapping_.mapped_memory().subspan(
       AlignToPageSize(sizeof(SharedState)));
 }

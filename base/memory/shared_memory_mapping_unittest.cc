@@ -8,6 +8,8 @@
 
 #include <atomic>
 #include <limits>
+#include <memory>
+#include <type_traits>
 
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -18,6 +20,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
+
+namespace {
+template <typename T>
+using ElementType = std::pointer_traits<T>::element_type;
+}
 
 class SharedMemoryMappingTest : public ::testing::Test {
  protected:
@@ -115,6 +122,86 @@ TEST_F(SharedMemoryMappingTest, SpanWithZeroElementCount) {
   EXPECT_TRUE(write_mapping_.GetMemoryAsSpan<uint8_t>(0).empty());
 
   EXPECT_TRUE(read_mapping_.GetMemoryAsSpan<uint8_t>(0).empty());
+}
+
+TEST_F(SharedMemoryMappingTest, ConstCorrectness) {
+  // All memory accessors for read-only mappings should return const T.
+  ReadOnlySharedMemoryMapping ro;
+
+  static_assert(std::is_const_v<ElementType<decltype(ro.data())>>);
+  static_assert(std::is_const_v<ElementType<decltype(ro.begin())>>);
+  static_assert(std::is_const_v<ElementType<decltype(ro.end())>>);
+  static_assert(std::is_const_v<ElementType<decltype(ro.memory())>>);
+  static_assert(
+      std::is_const_v<ElementType<decltype(ro.GetMemoryAs<uint8_t>())>>);
+  static_assert(
+      std::is_const_v<ElementType<decltype(ro.GetMemoryAs<const uint8_t>())>>);
+  static_assert(
+      std::is_const_v<decltype(ro.GetMemoryAsSpan<uint8_t>())::element_type>);
+  static_assert(std::is_const_v<
+                decltype(ro.GetMemoryAsSpan<const uint8_t>())::element_type>);
+  static_assert(
+      std::is_const_v<decltype(ro.GetMemoryAsSpan<uint8_t>(1))::element_type>);
+  static_assert(std::is_const_v<decltype(ro.GetMemoryAsSpan<const uint8_t>(
+                    1))::element_type>);
+
+  // Making the mapping const should still allow all accessors to be called.
+  const ReadOnlySharedMemoryMapping cro;
+  static_assert(std::is_const_v<ElementType<decltype(cro.data())>>);
+  static_assert(std::is_const_v<ElementType<decltype(cro.begin())>>);
+  static_assert(std::is_const_v<ElementType<decltype(cro.end())>>);
+  static_assert(std::is_const_v<ElementType<decltype(cro.memory())>>);
+  static_assert(
+      std::is_const_v<ElementType<decltype(cro.GetMemoryAs<uint8_t>())>>);
+  static_assert(
+      std::is_const_v<ElementType<decltype(cro.GetMemoryAs<const uint8_t>())>>);
+  static_assert(
+      std::is_const_v<decltype(cro.GetMemoryAsSpan<uint8_t>())::element_type>);
+  static_assert(std::is_const_v<
+                decltype(cro.GetMemoryAsSpan<const uint8_t>())::element_type>);
+  static_assert(
+      std::is_const_v<decltype(cro.GetMemoryAsSpan<uint8_t>(1))::element_type>);
+  static_assert(std::is_const_v<decltype(cro.GetMemoryAsSpan<const uint8_t>(
+                    1))::element_type>);
+
+  // Accessors for writable mappings should be non-const unless requested.
+  WritableSharedMemoryMapping rw;
+  static_assert(!std::is_const_v<ElementType<decltype(rw.data())>>);
+  static_assert(!std::is_const_v<ElementType<decltype(rw.begin())>>);
+  static_assert(!std::is_const_v<ElementType<decltype(rw.end())>>);
+  static_assert(!std::is_const_v<ElementType<decltype(rw.memory())>>);
+  static_assert(
+      !std::is_const_v<ElementType<decltype(rw.GetMemoryAs<uint8_t>())>>);
+  static_assert(
+      std::is_const_v<ElementType<decltype(rw.GetMemoryAs<const uint8_t>())>>);
+  static_assert(
+      !std::is_const_v<decltype(rw.GetMemoryAsSpan<uint8_t>())::element_type>);
+  static_assert(std::is_const_v<
+                decltype(rw.GetMemoryAsSpan<const uint8_t>())::element_type>);
+  static_assert(
+      !std::is_const_v<decltype(rw.GetMemoryAsSpan<uint8_t>(1))::element_type>);
+  static_assert(std::is_const_v<decltype(rw.GetMemoryAsSpan<const uint8_t>(
+                    1))::element_type>);
+
+  // Making the mapping const should still allow all accessors to be called, but
+  // they should now return const T.
+  const WritableSharedMemoryMapping crw;
+  static_assert(std::is_const_v<ElementType<decltype(crw.data())>>);
+  static_assert(std::is_const_v<ElementType<decltype(crw.begin())>>);
+  static_assert(std::is_const_v<ElementType<decltype(crw.end())>>);
+  static_assert(std::is_const_v<ElementType<decltype(crw.memory())>>);
+  static_assert(
+      std::is_const_v<ElementType<decltype(crw.GetMemoryAs<uint8_t>())>>);
+  static_assert(
+      std::is_const_v<ElementType<decltype(crw.GetMemoryAs<const uint8_t>())>>);
+  static_assert(
+      std::is_const_v<decltype(crw.GetMemoryAsSpan<uint8_t>())::element_type>);
+  static_assert(std::is_const_v<
+                decltype(crw.GetMemoryAsSpan<const uint8_t>())::element_type>);
+  static_assert(
+      std::is_const_v<decltype(crw.GetMemoryAsSpan<uint8_t>(1))::element_type>);
+  static_assert(std::is_const_v<decltype(crw.GetMemoryAsSpan<const uint8_t>(
+                    1))::element_type>);
 }
 
 TEST_F(SharedMemoryMappingTest, TooBigScalar) {

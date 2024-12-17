@@ -45,7 +45,7 @@ VersionType SharedMemoryVersionController::GetSharedVersion() const {
 
   // Relaxed memory order because no other memory operation depends on the
   // version.
-  return mapped_region_->WritableRef().load(std::memory_order_relaxed);
+  return mapped_region_->ReadOnlyRef().load(std::memory_order_relaxed);
 }
 
 void SharedMemoryVersionController::Increment() {
