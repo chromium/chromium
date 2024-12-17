@@ -805,6 +805,4 @@ void CSSPropertyValueSet::ShowStyle() {
 }
 #endif
 
-void CSSLazyPropertyParser::Trace(Visitor* visitor) const {}
-
 }  // namespace blink

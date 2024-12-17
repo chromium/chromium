@@ -196,17 +196,6 @@ class CORE_EXPORT CSSPropertyValueSet
   friend class PropertySetCSSStyleDeclaration;
 };
 
-// Used for lazily parsing properties.
-class CSSLazyPropertyParser : public GarbageCollected<CSSLazyPropertyParser> {
- public:
-  CSSLazyPropertyParser() = default;
-  CSSLazyPropertyParser(const CSSLazyPropertyParser&) = delete;
-  CSSLazyPropertyParser& operator=(const CSSLazyPropertyParser&) = delete;
-  virtual ~CSSLazyPropertyParser() = default;
-  virtual CSSPropertyValueSet* ParseProperties() = 0;
-  virtual void Trace(Visitor*) const;
-};
-
 class CORE_EXPORT alignas(CSSPropertyName) ImmutableCSSPropertyValueSet
     : public CSSPropertyValueSet {
  public:

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
+#include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -409,6 +410,7 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
   void TraceAfterDispatch(blink::Visitor*) const;
 
   const StyleScope& GetStyleScope() const { return *style_scope_; }
+
  private:
   Member<const StyleScope> style_scope_;
 };

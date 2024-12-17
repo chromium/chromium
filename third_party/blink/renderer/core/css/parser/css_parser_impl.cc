@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
 #include "third_party/blink/renderer/core/css/parser/css_lazy_parsing_state.h"
-#include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser_impl.h"
+#include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -2671,9 +2671,9 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
       if (len != 0) {
         wtf_size_t block_start_offset = stream.Offset();
         stream.SkipToEndOfBlock(len + 2);  // +2 for { and }.
-        return StyleRule::Create(
-            selector_vector, MakeGarbageCollected<CSSLazyPropertyParserImpl>(
-                                 block_start_offset, lazy_state_));
+        return StyleRule::Create(selector_vector,
+                                 MakeGarbageCollected<CSSLazyPropertyParser>(
+                                     block_start_offset, lazy_state_));
       }
     }
     CSSParserTokenStream::BlockGuard guard(stream);
@@ -2706,7 +2706,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
       }
 
       return StyleRule::Create(selector_vector,
-                               MakeGarbageCollected<CSSLazyPropertyParserImpl>(
+                               MakeGarbageCollected<CSSLazyPropertyParser>(
                                    block_start_offset, lazy_state_));
     }
     return ConsumeStyleRuleContents(selector_vector, stream,
