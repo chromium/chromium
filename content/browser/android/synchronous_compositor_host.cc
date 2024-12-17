@@ -716,8 +716,7 @@ void SynchronousCompositorHost::OnBeginFrame(const viz::BeginFrameArgs& args) {
   if (on_compute_scroll_called_ ||
       !rwhva_->GetViewRenderInputRouter()->is_currently_scrolling_viewport()) {
     rwhva_->host()->ProgressFlingIfNeeded(args.frame_time);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kWebViewSuppressTapDuringFling)) {
+  } else {
     // Normally, `OnComputeScroll` is called after `OnBeginFrame`, but before
     // `DemandDrawHwAsync`. So `OnBeginFrame` calls before the first draw will
     // end up here regardless of whether `OnComputeScroll` will be called. If

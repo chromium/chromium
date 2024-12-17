@@ -1370,12 +1370,6 @@ BASE_FEATURE(kUserMediaScreenCapturing,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// Kill switch for allowing webview to suppress tap immediately after fling,
-// matching chrome behavior.
-BASE_FEATURE(kWebViewSuppressTapDuringFling,
-             "WebViewSuppressTapDuringFling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

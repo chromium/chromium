@@ -757,8 +757,6 @@ public final class ProductionSupportedFlagList {
                         + " to enable BFCache through AwSettings as well. If either of"
                         + " the flag / setting is enabled, BFCache will be enabled"),
         Flag.baseFeature(
-                ContentFeatures.WEBVIEW_SUPPRESS_TAP_DURING_FLING, "Supress tap during fling."),
-        Flag.baseFeature(
                 ContentFeatures.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND,
                 "Register, un-register Accessibility broadcast receiver on a background thread."),
         Flag.baseFeature(
