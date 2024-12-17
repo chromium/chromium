@@ -5563,7 +5563,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImportantFile.FileReplaceResult{ImportantFileClients}"
     enum="ImportantFileReplaceResult" expires_after="2025-06-08">
   <owner>etienneb@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <summary>
     The result when ImportantFileWriter moves the temporary file to its final
     location. Recorded on every write with ImportantFileWriter. If retries were
@@ -5588,7 +5588,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ImportantFile.FileReplaceRetryCount2{ImportantFileClients}"
     units="attempt count" expires_after="2025-06-08">
   <owner>etienneb@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <summary>
     The number of retries needed for ImportantFileWriter to move the temporary
     file to its final location, succeed or fail. The success or failure of the
@@ -6187,7 +6187,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Mojo.SharedMemoryVersion.SharedMemoryAllocationSucceeded"
     enum="Boolean" expires_after="2025-09-10">
   <owner>olivierli@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <summary>
     Logs whether mojo managed to allocate shared memory for the
     SharedMemoryVersionController..
