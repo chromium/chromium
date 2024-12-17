@@ -62,8 +62,7 @@ WebVector<WebFormControlElement> WebFormElement::GetFormControlElements()
     const {
   const HTMLFormElement* form = ConstUnwrap<HTMLFormElement>();
   Vector<WebFormControlElement> form_control_elements;
-  for (const auto& element :
-       form->ListedElements(/*include_shadow_trees=*/true)) {
+  for (const auto& element : form->AllContainedFormElementsForAutofill()) {
     if (auto* form_control =
             blink::DynamicTo<HTMLFormControlElement>(element.Get())) {
       form_control_elements.push_back(form_control);
