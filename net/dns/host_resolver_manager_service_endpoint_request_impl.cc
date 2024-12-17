@@ -203,7 +203,6 @@ void HostResolverManager::ServiceEndpointRequestImpl::
   }
 
   CHECK(job_);
-  CHECK(job_.value()->dns_task_results_manager());
   CHECK(delegate_);
   delegate_->OnServiceEndpointsUpdated();
   // Do not add code below. `this` may be deleted at this point.
