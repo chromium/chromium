@@ -62,7 +62,7 @@ enum Subpage {
   kNearbyShare = 202,
 
   // People section.
-  kMyAccounts = 300,
+  // Note: Value 300 was used for kMyAccounts. Do not reuse.
   kSync = 301,
   kSyncSetup = 302,
   kSyncDeprecatedAdvanced = 303,  // Used if split-sync flag is off.
@@ -224,7 +224,6 @@ const string kNearbyShareSubpagePath = "multidevice/nearbyshare";
 
 // People section.
 const string kPeopleSectionPath = "osPeople";
-const string kMyAccountsSubpagePath = "accountManager";
 const string kSyncSubpagePath = "osSync";
 const string kSyncSetupSubpagePath = "osSyncSetup";
 const string kSyncDeprecatedAdvancedSubpagePath = "osSyncSetup/advanced";

@@ -1372,9 +1372,9 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleRemoveAccountRequest) {
   SetAccountAndProfile(user_manager::UserType::kRegular);
   auth_service().HandleRemoveAccountRequest("dummyemail@google.com");
 
-  EXPECT_EQ(chrome::GetOSSettingsUrl(
-                chromeos::settings::mojom::kMyAccountsSubpagePath),
-            settings_window_manager().last_url());
+  EXPECT_EQ(
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath),
+      settings_window_manager().last_url());
 }
 
 }  // namespace arc

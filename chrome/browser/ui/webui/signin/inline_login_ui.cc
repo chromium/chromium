@@ -229,10 +229,9 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       "accountManagerDialogArcAccountPickerBody",
       l10n_util::GetStringFUTF16(
           IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY,
-          base::UTF8ToUTF16(
-              chrome::GetOSSettingsUrl(
-                  chromeos::settings::mojom::kMyAccountsSubpagePath)
-                  .spec())));
+          base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
+                                chromeos::settings::mojom::kPeopleSectionPath)
+                                .spec())));
   source->AddBoolean(
       "shouldSkipWelcomePage",
       ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()
@@ -258,10 +257,9 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
             // Device type:
             ui::GetChromeOSDeviceName(),
             // Settings > Accounts link:
-            base::UTF8ToUTF16(
-                chrome::GetOSSettingsUrl(
-                    chromeos::settings::mojom::kMyAccountsSubpagePath)
-                    .spec())));
+            base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
+                                  chromeos::settings::mojom::kPeopleSectionPath)
+                                  .spec())));
 
     source->AddString(
         "accountManagerDialogWelcomeBodyArc",
@@ -288,10 +286,9 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
         "accountManagerDialogWelcomeBody",
         l10n_util::GetStringFUTF16(
             message_id,
-            base::UTF8ToUTF16(
-                chrome::GetOSSettingsUrl(
-                    chromeos::settings::mojom::kMyAccountsSubpagePath)
-                    .spec()),
+            base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
+                                  chromeos::settings::mojom::kPeopleSectionPath)
+                                  .spec()),
             ui::GetChromeOSDeviceName()));
   }
 
@@ -302,10 +299,10 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
   source->AddString("userName", user->GetGivenName());
-  source->AddString("accountManagerOsSettingsUrl",
-                    chrome::GetOSSettingsUrl(
-                        chromeos::settings::mojom::kMyAccountsSubpagePath)
-                        .spec());
+  source->AddString(
+      "accountManagerOsSettingsUrl",
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath)
+          .spec());
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,

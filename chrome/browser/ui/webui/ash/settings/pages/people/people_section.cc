@@ -68,7 +68,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kMyAccountsSubpagePath;
 using ::chromeos::settings::mojom::kPeopleSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
@@ -79,18 +78,14 @@ namespace {
 
 base::span<const SearchConcept> GetPeopleSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS,
-       mojom::kPeopleSectionPath,
-       mojom::SearchResultIcon::kAvatar,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kMyAccounts}},
       {IDS_OS_SETTINGS_TAG_PEOPLE_V2,
        mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
-       {.section = mojom::Section::kPeople}},
+       {.section = mojom::Section::kPeople},
+       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS, IDS_OS_SETTINGS_TAG_PEOPLE,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD_V2,
        mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
@@ -657,13 +652,6 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kRemoveAccount);
   generator->RegisterTopLevelSetting(mojom::Setting::kSetUpParentalControls);
   generator->RegisterTopLevelSetting(mojom::Setting::kGraduation);
-
-  // TODO(crbug.com/370837151) Remove this obsolete subpage Mojom constant and
-  // the respective route redirect.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE, mojom::Subpage::kMyAccounts,
-      mojom::SearchResultIcon::kAvatar, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kMyAccountsSubpagePath);
 
   // Smart Lock -- main setting is on multidevice page, but is mirrored here
   generator->RegisterNestedAltSetting(mojom::Setting::kSmartLockOnOff,

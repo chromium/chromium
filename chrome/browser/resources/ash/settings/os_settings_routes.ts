@@ -683,10 +683,6 @@ export function createRoutes(): OsSettingsRoutes {
 }
 
 const PATH_REDIRECT_PAIRS: Array<[string, string]> = [
-  [
-    routesMojom.MY_ACCOUNTS_SUBPAGE_PATH,
-    routesMojom.PEOPLE_SECTION_PATH,
-  ],
   // TODO(b/309808834) Remove this pair once the Bluetooth L1 page is revamped
   // with up-leveled content.
   [

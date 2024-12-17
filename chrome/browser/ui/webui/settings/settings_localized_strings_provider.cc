@@ -1784,10 +1784,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
                           ash::IsAccountManagerAvailable(profile));
   html_source->AddString(
       "osSettingsAccountsPageUrl",
-      chrome::GetOSSettingsUrl(
-          ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? chromeos::settings::mojom::kPeopleSectionPath
-              : chromeos::settings::mojom::kMyAccountsSubpagePath)
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath)
           .spec());
 #endif
 
