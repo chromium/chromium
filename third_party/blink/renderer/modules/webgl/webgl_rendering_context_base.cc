@@ -5635,6 +5635,10 @@ SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
   return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
 }
 
+SkColorType WebGLRenderingContextBase::GetSkColorType() const {
+  return CanvasRenderingContextSkColorInfo().colorType();
+}
+
 sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
   return PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_);
 }

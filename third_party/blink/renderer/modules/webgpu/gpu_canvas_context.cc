@@ -118,6 +118,10 @@ SkAlphaType GPUCanvasContext::GetAlphaType() const {
              : kPremul_SkAlphaType;
 }
 
+SkColorType GPUCanvasContext::GetSkColorType() const {
+  return CanvasRenderingContextSkColorInfo().colorType();
+}
+
 sk_sp<SkColorSpace> GPUCanvasContext::GetSkColorSpace() const {
   if (!swap_buffers_) {
     return SkColorSpace::MakeSRGB();

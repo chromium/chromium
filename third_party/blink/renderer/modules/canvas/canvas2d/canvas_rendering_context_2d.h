@@ -197,6 +197,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   SkAlphaType GetAlphaType() const override {
     return color_params_.GetAlphaType();
   }
+  SkColorType GetSkColorType() const override {
+    return CanvasRenderingContextSkColorInfo().colorType();
+  }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
     return color_params_.GetSkColorSpace();
   }

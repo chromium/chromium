@@ -180,9 +180,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const = 0;
   virtual SkAlphaType GetAlphaType() const = 0;
-  SkColorType GetSkColorType() const {
-    return CanvasRenderingContextSkColorInfo().colorType();
-  }
+  virtual SkColorType GetSkColorType() const = 0;
   virtual sk_sp<SkColorSpace> GetSkColorSpace() const = 0;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;

@@ -47,6 +47,7 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
                        SkColorSpace::MakeSRGB());
   }
   SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
+  SkColorType GetSkColorType() const override { return kN32_SkColorType; }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
     return SkColorSpace::MakeSRGB();
   }
