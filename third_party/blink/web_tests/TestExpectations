@@ -3979,9 +3979,6 @@ crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/iframe-blank-inheri
 crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/srcdoc-inherit.meta/unset/iframe-tag.https.html [ Skip Timeout ]
 crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/top.meta/unset/iframe-tag.https.html [ Skip Timeout ]
 
-# Temporarily disabled to unblock https://crrev.com/c/6097890
-crbug.com/40791742 http/tests/devtools/copy-network-request.js [ Failure Pass ]
-
 crbug.com/1289222 external/wpt/css/cssom-view/scroll-behavior-smooth-navigation.html [ Skip Timeout ]
 
 # Crashes with DCHECK enabled, but not on normal Release builds.
