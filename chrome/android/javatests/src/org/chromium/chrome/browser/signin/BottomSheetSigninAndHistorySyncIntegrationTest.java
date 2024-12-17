@@ -240,10 +240,10 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         verifyCollapsedBottomSheetAndSignin(TestAccounts.AADC_ADULT_ACCOUNT);
 
         // Verify that the history opt-in dialog is shown and decline.
-        onViewWaiting(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
         // The user has just signed in, so the footer shouldn't show the email.
-        onViewWaiting(withId(R.id.history_sync_footer))
-                .inRoot(isDialog())
+        onViewWaiting(withId(R.id.history_sync_footer), /* checkRootDialog= */ true)
                 .check(
                         matches(
                                 allOf(
