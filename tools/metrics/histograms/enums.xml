@@ -20437,7 +20437,6 @@ from previous Chrome versions.
   <int value="15872227"
       label="OmniboxDiscardTemporaryInputOnTabSwitch:disabled"/>
   <int value="16804822" label="SpeakOnMuteEnabled:disabled"/>
-  <int value="19629326" label="OmniboxExperimentalKeywordMode:enabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>
   <int value="20023271" label="AllowApnModificationPolicy:disabled"/>
   <int value="20238651" label="DeprecatedExternalPickerFunction:enabled"/>
@@ -24647,7 +24646,6 @@ from previous Chrome versions.
   <int value="1687768359" label="ServiceWorkerBypassFetchHandler:disabled"/>
   <int value="1687958931" label="QuickDeleteAndroidSurvey:disabled"/>
   <int value="1687987218" label="OmniboxGroupingFramework:enabled"/>
-  <int value="1688075820" label="OmniboxExperimentalKeywordMode:disabled"/>
   <int value="1689001971" label="ProjectorLocalPlayback:enabled"/>
   <int value="1689123607" label="enable-app-link"/>
   <int value="1689183477" label="enable-merge-key-char-events"/>
