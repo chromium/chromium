@@ -210,10 +210,14 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
       if (!on_current_line) {
         // We are moving to a new line that is not nested in the previous line.
         current_outermost_line_index = lines_.size() - 1;
-        // There are no previous items on this new line, since it just started.
-        previous_on_line = std::nullopt;
         on_current_line = true;
       }
+
+      // There are no previous items on this new line, since it just started.
+      // Note that here it may be a outermost line or a nested one, it does not
+      // matter. A new line has just started and we don't want to make
+      // connections between the two.
+      previous_on_line = std::nullopt;
     }
 
     FragmentProperties& properties = fragment_properties_[fragment_index];
@@ -224,22 +228,9 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
     if (it->Type() == FragmentItem::kText ||
         it->Type() == FragmentItem::kGeneratedText) {
       if (previous_on_line) {
-        if (properties.line_index ==
-            fragment_properties_[previous_on_line.value()].line_index) {
-          // TODO(crbug.com/383384904): Make AbstractInlineTextBox next /
-          // previous symmetrical.
-          // The computation of "previous" is not symmetrical to "next"
-          // because InlineCursor in the AITB algorithm restricts navigation to
-          // the same line, and ruby content can have lines nested within other
-          // lines. This means that when going forward (from the top-level line
-          // to the nested line), we point to the "next", but when inside the
-          // nested line we can't point back to the "previous" because the
-          // inline cursor can't see the top-level line. Once the TODO above is
-          // fixed for the AITB algorithm and we can compare them fairly, we can
-          // resume computing it symmetrical here.
-          properties.previous_on_line = previous_on_line;
-        }
-
+        CHECK(properties.line_index ==
+              fragment_properties_[previous_on_line.value()].line_index);
+        properties.previous_on_line = previous_on_line;
         fragment_properties_[previous_on_line.value()].next_on_line =
             fragment_index;
       }

@@ -622,14 +622,8 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Ruby) {
   ASSERT_TRUE(it.Next());
   ASSERT_EQ("Ruby base", it.GetText());
 
-  // Ruby annotation is next on line despite being rendered above the base text.
-  // Note: Inline text boxes for the annotation do not get serialized due to the
-  // static text being marked as ignored. Nonetheless, the next on line ID
-  // points to the annotation.
   std::optional<AXBlockFlowIterator::MapKey> next_on_line = it.NextOnLine();
-  ASSERT_TRUE(next_on_line.has_value());
-  ASSERT_EQ("ruby text",
-            AXBlockFlowIterator::GetTextForTesting(next_on_line.value()));
+  ASSERT_FALSE(next_on_line.has_value());
 
   ASSERT_FALSE(it.Next());
 }
@@ -661,17 +655,12 @@ TEST_F(AccessibilityTest, AXBlockFlowIteratorAPI_Ruby2) {
   ASSERT_TRUE(it.Next());
   ASSERT_EQ("ruby ", it.GetText());
 
-  // Ruby annotation is next on line despite being rendered above the base text.
   std::optional<AXBlockFlowIterator::MapKey> next_on_line = it.NextOnLine();
-  ASSERT_TRUE(next_on_line.has_value());
-  ASSERT_EQ("ruby",
-            AXBlockFlowIterator::GetTextForTesting(next_on_line.value()));
+  ASSERT_FALSE(next_on_line.has_value());
   ASSERT_TRUE(it.Next());
   ASSERT_EQ("base", it.GetText());
   next_on_line = it.NextOnLine();
-  ASSERT_TRUE(next_on_line.has_value());
-  ASSERT_EQ("text",
-            AXBlockFlowIterator::GetTextForTesting(next_on_line.value()));
+  ASSERT_FALSE(next_on_line.has_value());
   ASSERT_FALSE(it.Next());
 }
 
