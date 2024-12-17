@@ -9,9 +9,10 @@ import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {ComparisonTableListItemElement} from 'chrome://compare/comparison_table_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestProductSpecificationsBrowserProxy} from './test_product_specifications_browser_proxy.js';
 
 class ListItemTestPluralStringProxy extends TestPluralStringProxy {
   override getPluralString(_messageName: string, itemCount: number) {
@@ -36,10 +37,7 @@ suite('ComparisonTableListItemTest', () => {
     const pluralStringProxy = new ListItemTestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralStringProxy);
 
-    const productSpecsProxy =
-        TestMock.fromClass(ProductSpecificationsBrowserProxyImpl);
-    productSpecsProxy.setResultFor(
-        'getComparisonTableUrlForUuid', Promise.resolve({url: TABLE_URL}));
+    const productSpecsProxy = new TestProductSpecificationsBrowserProxy();
     ProductSpecificationsBrowserProxyImpl.setInstance(productSpecsProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

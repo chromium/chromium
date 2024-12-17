@@ -682,6 +682,9 @@
       =1 {{ITEMS} item}
       other {{ITEMS} items}}
   </message>
+  <message name="IDS_COMPARE_YOUR_COMPARISON_TABLES" desc="The header above the list of a user's existing comparison tables in the compare UI">
+    Your comparison tables
+  </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
     Compare similar products side-by-side

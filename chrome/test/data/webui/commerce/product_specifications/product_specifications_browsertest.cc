@@ -78,6 +78,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, BuyingOptionsSection) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ComparisonTableList) {
+  RunTest("commerce/product_specifications/comparison_table_list_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ComparisonTableListItem) {
   RunTest("commerce/product_specifications/comparison_table_list_item_test.js",
           "mocha.run()");

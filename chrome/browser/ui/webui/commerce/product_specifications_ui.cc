@@ -117,6 +117,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
+      {"yourComparisonTables", IDS_COMPARE_YOUR_COMPARISON_TABLES},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

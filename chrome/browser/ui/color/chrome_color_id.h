@@ -425,6 +425,7 @@
   /* Product Specifications colors */ \
   E_CPONLY(kColorProductSpecificationsButtonBackground) \
   E_CPONLY(kColorProductSpecificationsCitationBackground) \
+  E_CPONLY(kColorProductSpecificationsComparisonTableListBackground) \
   E_CPONLY(kColorProductSpecificationsDetailChipBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureForeground) \
