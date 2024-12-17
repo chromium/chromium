@@ -20,7 +20,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/text_input_client.h"
@@ -43,17 +42,12 @@ namespace {
 // |enabled| indicates whether the tray button is enabled, i.e. clickable.
 // A secondary color is used to indicate the icon is not enabled.
 ui::ImageModel GetIconImage(bool active, bool enabled) {
-  ui::ColorId color_id;
-  if (chromeos::features::IsJellyEnabled()) {
-    // For Jelly: the color will change based on whether this tray is active or
-    // not.
-    color_id = enabled ? (active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                                 : cros_tokens::kCrosSysOnSurface)
-                       : cros_tokens::kCrosSysSecondary;
-  } else {
-    color_id =
-        enabled ? kColorAshIconColorPrimary : kColorAshIconColorSecondary;
-  }
+  // The color will change based on whether this tray is active or not.
+  ui::ColorId color_id =
+      enabled ? (active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                        : cros_tokens::kCrosSysOnSurface)
+              : cros_tokens::kCrosSysSecondary;
+
   return active
              ? ui::ImageModel::FromVectorIcon(kDictationOnNewuiIcon, color_id)
              : ui::ImageModel::FromVectorIcon(kDictationOffNewuiIcon, color_id);

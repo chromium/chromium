@@ -17,8 +17,6 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -71,13 +69,9 @@ class SelectToSpeakTrayTest : public AshTestBase {
   // Gets the corresponding image given the |select_to_speak_state|.
   gfx::ImageSkia GetIconImage(SelectToSpeakState select_to_speak_state) {
     const auto color_id =
-        chromeos::features::IsJellyEnabled()
-            ? (select_to_speak_state ==
-                       SelectToSpeakState::kSelectToSpeakStateInactive
-                   ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                   : static_cast<ui::ColorId>(
-                         cros_tokens::kCrosSysSystemOnPrimaryContainer))
-            : kColorAshIconColorPrimary;
+        select_to_speak_state == SelectToSpeakState::kSelectToSpeakStateInactive
+            ? cros_tokens::kCrosSysOnSurface
+            : cros_tokens::kCrosSysSystemOnPrimaryContainer;
     const auto icon_color = GetTray()->GetColorProvider()->GetColor(color_id);
     switch (select_to_speak_state) {
       case SelectToSpeakState::kSelectToSpeakStateInactive:

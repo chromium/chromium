@@ -21,7 +21,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -313,15 +312,10 @@ void AnnotationTray::UpdateIcon() {
     SetIsActive(IsAnnotatorEnabled());
     annotator_toggled = true;
   }
-  // Only sets the image if Jelly is not enabled or if the annotator was not
-  // toggled, since `UpdateTrayItemColor()` will be called in `SetIsActive()` to
-  // set the image for Jelly only when active state changes.
-  if (!chromeos::features::IsJellyEnabled()) {
-    image_view_->SetImage(gfx::CreateVectorIcon(
-        GetIconForTool(GetCurrentTool(), current_pen_color_),
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  } else if (!annotator_toggled) {
+  // Only sets the image if the annotator was not toggled, since
+  // `UpdateTrayItemColor()` will be called in `SetIsActive()` to set the image
+  // only when active state changes.
+  if (!annotator_toggled) {
     SetIconImage(is_active());
   }
   image_view_->SetTooltipText(GetTooltip());
@@ -363,7 +357,6 @@ std::u16string AnnotationTray::GetTooltip() {
 }
 
 void AnnotationTray::SetIconImage(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   image_view_->SetImage(ui::ImageModel::FromVectorIcon(
       GetIconForTool(GetCurrentTool(), current_pen_color_),
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
