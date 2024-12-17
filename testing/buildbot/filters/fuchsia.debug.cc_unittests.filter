@@ -34,6 +34,7 @@
 -OopPixelTest.DrawTextBlobPersistentShaderCache
 -OopPixelTest.DrawTextMultipleRasterCHROMIUM
 -OopPixelTest.RecordShaderExceedsMaxTextureSize
+-OopPixelTest.SkSLCommandShader
 -P/OopClearPixelTest.ClearingOpaqueBottomEdge/0
 -P/OopClearPixelTest.ClearingOpaqueBottomEdge/1
 -P/OopClearPixelTest.ClearingOpaqueCorner/0
