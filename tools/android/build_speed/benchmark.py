@@ -458,6 +458,9 @@ def main():
     parser.add_argument('--no-component-build',
                         action='store_true',
                         help='Turn off component build.')
+    parser.add_argument('--build-64bit',
+                        action='store_true',
+                        help='Build 64-bit by default, even with no emulator.')
     parser.add_argument('-r',
                         '--repeat',
                         type=int,
@@ -506,10 +509,12 @@ def main():
         devil_chromium.Initialize()
         logging.info('Using emulator %s', args.emulator)
         gn_args.append(f'target_cpu="{_SUPPORTED_EMULATORS[args.emulator]}"')
-    else:
+    elif args.build_64bit:
         # Default to an emulator target_cpu when just building to be comparable
         # to building and installing on an emulator. It is likely that devs are
         # mostly using emulator builds so this is more valuable to track.
+        gn_args.append('target_cpu="x64"')
+    else:
         gn_args.append('target_cpu="x86"')
 
     if args.target:
