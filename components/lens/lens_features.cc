@@ -18,10 +18,6 @@ BASE_FEATURE(kLensStandalone,
              "LensStandalone",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableLatencyLogging,
-             "LensImageLatencyLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableRegionSearchKeyboardShortcut,
              "LensEnableRegionSearchKeyboardShortcut",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -363,11 +359,6 @@ constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
 
 constexpr base::FeatureParam<bool> kShouldIssueProcessPrewarmingForLens{
     &kLensStandalone, "lens-issue-process-prewarming", true};
-
-bool GetEnableLatencyLogging() {
-  return base::FeatureList::IsEnabled(kEnableLatencyLogging) &&
-         base::FeatureList::IsEnabled(kLensStandalone);
-}
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();

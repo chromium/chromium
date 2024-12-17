@@ -301,7 +301,7 @@ void CoreTabHelper::SearchByImageImpl(
       image_format, base::Time::Now(), encoded_size_bytes));
 
   std::string additional_query_params_modified = additional_query_params;
-  if (lens::features::GetEnableLatencyLogging() &&
+  if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
       search::DefaultSearchProviderIsGoogle(template_url_service)) {
     lens::AppendLogsQueryParam(&additional_query_params_modified,
                                std::move(log_data));
@@ -500,7 +500,7 @@ void CoreTabHelper::DoSearchByImage(
   DCHECK(default_provider);
 
   std::string additional_query_params_modified = additional_query_params;
-  if (lens::features::GetEnableLatencyLogging() &&
+  if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
       search::DefaultSearchProviderIsGoogle(template_url_service)) {
     lens::AppendLogsQueryParam(&additional_query_params_modified,
                                std::move(log_data));

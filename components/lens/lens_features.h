@@ -22,10 +22,6 @@ BASE_DECLARE_FEATURE(kLensStandalone);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchOptimizations);
 
-// Enables Latency logging for the LensStandalone feature.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kEnableLatencyLogging);
-
 // Enable keyboard shortcut for the Lens Region Search feature.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableRegionSearchKeyboardShortcut);
@@ -103,10 +99,6 @@ extern const base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged;
 // Enables Lens fullscreen search on Desktop platforms.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
-
-// Enables Latency logging for the LensStandalone feature.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetEnableLatencyLogging();
 
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
