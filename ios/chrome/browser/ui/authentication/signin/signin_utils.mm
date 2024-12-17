@@ -15,10 +15,18 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -29,6 +37,8 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/change_profile/change_profile_observer.h"
+#import "ios/chrome/browser/ui/authentication/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -352,6 +362,60 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile) {
   return GetDefaultIdentityOnDevice(
       IdentityManagerFactory::GetForProfile(profile),
       ChromeAccountManagerServiceFactory::GetForProfile(profile));
+}
+
+void MultiProfileSignOut(Browser* browser,
+                         signin_metrics::ProfileSignout signout_source,
+                         bool force_clear_data,
+                         bool force_snackbar_over_toolbar,
+                         MDCSnackbarMessage* snackbar_message,
+                         ProceduralBlock signout_completion) {
+  // TODO(crbug.com/375605174): Remove this check, and allow using this helper
+  // for the currents flows as well.
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+
+  ChangeProfileSignoutContinuation* signout_continuation =
+      [[ChangeProfileSignoutContinuation alloc]
+          initWithSignoutSourceMetric:(signin_metrics::ProfileSignout)
+                                          signout_source
+                       forceClearData:force_clear_data
+             forceSnackbarOverToolbar:force_snackbar_over_toolbar
+                      snackbarMessage:snackbar_message];
+
+  BOOL should_switch_profile_at_signout =
+      AreSeparateProfilesForManagedAccountsEnabled() &&
+      authentication_service->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin);
+
+  SceneState* scene_state = browser->GetSceneState();
+
+  if (!should_switch_profile_at_signout) {
+    // TODO(crbug.com/375605174): Pass signout_completion to the continuation.
+    [signout_continuation executeWithSceneState:scene_state completion:nil];
+    return;
+  }
+
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+  std::string default_profile_name =
+      profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
+
+  CHECK(profile_manager->HasProfileWithName(default_profile_name) ||
+        profile_manager->CanCreateProfileWithName(default_profile_name));
+
+  id<ChangeProfileCommands> change_profile_handler =
+      HandlerForProtocol(scene_state.profileState.appState.appCommandDispatcher,
+                         ChangeProfileCommands);
+
+  ChangeProfileObserver* observer = [[ChangeProfileObserver alloc]
+      initWithContinuations:@[ signout_continuation ]];
+
+  [change_profile_handler
+      changeProfile:base::SysUTF8ToNSString(default_profile_name)
+           forScene:scene_state.sceneSessionID
+           observer:observer];
 }
 
 }  // namespace signin

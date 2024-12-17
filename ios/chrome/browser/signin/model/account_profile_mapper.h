@@ -90,6 +90,10 @@ class AccountProfileMapper {
   // assigned to other profiles. Using this should be rare!
   void IterateOverAllIdentitiesOnDevice(IdentityIteratorCallback callback);
 
+  // Returns the name of the personal profile, queried from the
+  // ProfileAttributesStorageIOS.
+  std::string GetPersonalProfileName();
+
   // Marks the personal profile as managed, attaches the given `gaia_id`, and
   // moves all personal accounts to a new empty personal profile. Deletes the
   // managed profile to which `gaia_id` was attached. That profile must still be

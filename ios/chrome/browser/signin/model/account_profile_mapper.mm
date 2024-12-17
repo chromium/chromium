@@ -145,6 +145,8 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   std::optional<std::string> FindProfileNameForGaiaID(
       std::string_view gaia_id) const;
 
+  std::string GetPersonalProfileName();
+
   void MakePersonalProfileManagedWithGaiaID(std::string_view gaia_id);
 
   // SystemIdentityManagerObserver implementation.
@@ -159,10 +161,6 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   // Returns the ProfileAttributesStorageIOS if available - it can be null in
   // tests where no ProfileManager exists.
   ProfileAttributesStorageIOS* GetProfileAttributesStorage();
-
-  // Returns the name of the personal profile, queried from the
-  // ProfileAttributesStorageIOS.
-  std::string GetPersonalProfileName();
 
   // Callback for SystemIdentityManager::IterateOverIdentities(). Checks the
   // mapping of `identity` to a profile, and attaches (or re-attaches) it as
@@ -580,6 +578,10 @@ void AccountProfileMapper::IterateOverAllIdentitiesOnDevice(
         }
       },
       callback));
+}
+
+std::string AccountProfileMapper::GetPersonalProfileName() {
+  return assigner_->GetPersonalProfileName();
 }
 
 void AccountProfileMapper::MakePersonalProfileManagedWithGaiaID(

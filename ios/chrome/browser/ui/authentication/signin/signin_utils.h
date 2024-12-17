@@ -7,13 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
+class Browser;
 class ChromeAccountManagerService;
+@class MDCSnackbarMessage;
 class ProfileIOS;
+
+namespace signin_metrics {
+enum class ProfileSignout;
+}  // namespace signin_metrics
 
 namespace base {
 class TimeDelta;
@@ -69,6 +76,14 @@ id<SystemIdentity> GetDefaultIdentityOnDevice(
     ChromeAccountManagerService* accountManagerService);
 // Convenience version that grabs the required services from the `profile`.
 id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile);
+
+// Switch profile if needed then sign out from the current profile.
+void MultiProfileSignOut(Browser* browser,
+                         signin_metrics::ProfileSignout signout_source,
+                         bool force_clear_data,
+                         bool force_snackbar_over_toolbar,
+                         MDCSnackbarMessage* snackbar_message,
+                         ProceduralBlock signout_completion);
 
 }  // namespace signin
 
