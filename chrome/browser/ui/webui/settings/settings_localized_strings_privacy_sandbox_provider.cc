@@ -295,7 +295,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_LINK_ARIA_DESCRIPTION)));
 
-  bool is_china_user = GetPrivacySandboxCountries().IsChina();
+  bool is_china_user = GetPrivacySandboxCountries().IsLatestCountryChina();
   const char* privacy_policy_url = is_china_user
                                        ? chrome::kPrivacyPolicyURLChina
                                        : chrome::kPrivacyPolicyURL;

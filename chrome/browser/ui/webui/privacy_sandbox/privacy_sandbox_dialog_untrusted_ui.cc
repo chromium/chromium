@@ -44,7 +44,7 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIUntrustedPrivacySandboxDialogURL);
 
-  bool is_china_user = GetPrivacySandboxCountries().IsChina();
+  bool is_china_user = GetPrivacySandboxCountries().IsLatestCountryChina();
 
   std::string privacy_policy_domain = is_china_user
                                           ? "https://policies.google.cn;"
