@@ -74,6 +74,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="prepareGetCredential request failed."/>
 </enum>
 
+<enum name="GPMGetAssertionEvents">
+  <int value="0" label="Started - GPM passkey selected"/>
+  <int value="1" label="Success - Authentication complete"/>
+  <int value="2" label="Failure - Error dialog shown"/>
+</enum>
+
+<enum name="GPMMakeCredentialEvents">
+  <int value="0" label="Started - Create GPM passkey dialog shown"/>
+  <int value="1" label="Success - Passkey saved"/>
+  <int value="2" label="Failure - Error dialog shown"/>
+</enum>
+
 <enum name="OnboardingEvents">
   <int value="0" label="Started (Create GPM passkey dialog shown)"/>
   <int value="1" label="Succeeded (GPM passkey created)"/>

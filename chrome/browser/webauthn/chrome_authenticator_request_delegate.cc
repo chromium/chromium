@@ -509,6 +509,16 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
     if (dialog_model_->in_onboarding_flow) {
       RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::kSucceeded);
     }
+    switch (request_type) {
+      case device::FidoRequestType::kGetAssertion:
+        RecordGPMGetAssertionEvent(
+            webauthn::metrics::GPMGetAssertionEvents::kSuccess);
+        break;
+      case device::FidoRequestType::kMakeCredential:
+        RecordGPMMakeCredentialEvent(
+            webauthn::metrics::GPMMakeCredentialEvents::kSuccess);
+        break;
+    }
     webauthn::user_actions::RecordGpmSuccess();
   }
 }

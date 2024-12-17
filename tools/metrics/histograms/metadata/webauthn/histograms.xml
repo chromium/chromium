@@ -307,6 +307,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.GPM.GetAssertion"
+    enum="GPMGetAssertionEvents" expires_after="2025-09-17">
+  <owner>natiahlyi@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records start, success, and failure events for Google Password Manager (GPM)
+    passkey authentication attempts (GetAssertion calls). Each event is emitted
+    immediately after it occurs. See GPMGetAssertionEvents enum for details.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.GPM.MakeCredential"
+    enum="GPMMakeCredentialEvents" expires_after="2025-09-17">
+  <owner>natiahlyi@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records start, success, and failure events for Google Password Manager (GPM)
+    passkey creation attempts (MakeCredential calls). Each event is emitted
+    immediately after it occurs. See GPMMakeCredentialEvents enum for details.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
     enum="Boolean" expires_after="2025-06-08">
   <owner>kenrb@chromium.org</owner>

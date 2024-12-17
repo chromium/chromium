@@ -902,6 +902,14 @@ void GPMEnclaveController::OnGPMSelected() {
     return;
   }
 
+  if (account_state_ != AccountState::kLoading &&
+      account_state_ != AccountState::kChecking) {
+    // `kLoading` and `kChecking` will call `OnGPMSelected` again,
+    // therefore we don't emit in these states.
+    RecordGPMMakeCredentialEvent(
+        webauthn::metrics::GPMMakeCredentialEvents::kStarted);
+  }
+
   switch (account_state_) {
     case AccountState::kEmpty:
       // Set to true to indicate that the user has entered the GPM onboarding
@@ -963,6 +971,15 @@ void GPMEnclaveController::OnGPMSelected() {
 void GPMEnclaveController::OnGPMPasskeySelected(
     std::vector<uint8_t> credential_id) {
   selected_cred_id_ = std::move(credential_id);
+
+  if (account_state_ != AccountState::kLoading &&
+      account_state_ != AccountState::kChecking) {
+    // `kLoading` and `kChecking` will call `OnGPMPasskeySelected` again,
+    // therefore we don't emit in these states.
+    RecordGPMGetAssertionEvent(
+        webauthn::metrics::GPMGetAssertionEvents::kStarted);
+  }
+
   switch (account_state_) {
     case AccountState::kReady:
       uv_method_ = PickEnclaveUserVerificationMethod(

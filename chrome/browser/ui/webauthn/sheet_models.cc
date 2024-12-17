@@ -1381,6 +1381,16 @@ AuthenticatorGPMErrorSheetModel::AuthenticatorGPMErrorSheetModel(
     RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::kFailure);
   }
   webauthn::user_actions::RecordGpmFailureShown();
+  switch (dialog_model->request_type) {
+    case device::FidoRequestType::kGetAssertion:
+      RecordGPMGetAssertionEvent(
+          webauthn::metrics::GPMGetAssertionEvents::kFailure);
+      break;
+    case device::FidoRequestType::kMakeCredential:
+      RecordGPMMakeCredentialEvent(
+          webauthn::metrics::GPMMakeCredentialEvents::kFailure);
+      break;
+  }
 }
 
 AuthenticatorGPMErrorSheetModel::~AuthenticatorGPMErrorSheetModel() = default;
