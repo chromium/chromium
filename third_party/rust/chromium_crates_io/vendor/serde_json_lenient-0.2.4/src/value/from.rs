@@ -183,6 +183,12 @@ impl<T: Into<Value>> From<Vec<T>> for Value {
     }
 }
 
+impl<T: Into<Value>, const N: usize> From<[T; N]> for Value {
+    fn from(array: [T; N]) -> Self {
+        Value::Array(array.into_iter().map(Into::into).collect())
+    }
+}
+
 impl<T: Clone + Into<Value>> From<&[T]> for Value {
     /// Convert a slice to `Value::Array`.
     ///
