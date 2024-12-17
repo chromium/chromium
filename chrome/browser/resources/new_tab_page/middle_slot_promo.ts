@@ -228,6 +228,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
   }
 
   private updatePromoVisibility_() {
+    // `renderPromo()` must be called first to initialize promo data.
     if (this.hasDefaultPromo_ === null) {
       return;
     }
@@ -246,8 +247,8 @@ export class MiddleSlotPromoElement extends CrLitElement {
     }
 
     // Don't fire a load event until we've verified that one or neither of the
-    // promo types (default or mobile) can show. this.mobilePromoEnabled_
-    // becomes false in renderPromo() whenever a default promo is about to
+    // promo types (default or mobile) can show. `this.mobilePromoEnabled_`
+    // becomes false in `renderPromo()` whenever a default promo is about to
     // render.
     if (!this.mobilePromoEnabled_ || this.hasMobilePromoContent_ !== null) {
       this.fire('ntp-middle-slot-promo-loaded');
@@ -261,10 +262,10 @@ export class MiddleSlotPromoElement extends CrLitElement {
   private onPromoChange_() {
     if (this.mobilePromoEnabled_) {
       if (this.hasMobilePromoContent_ && this.hasDefaultPromo_ !== null) {
-        // Skip calling renderPromo() if we already attempted to render a promo
-        // before AND there is mobile promo content to display. This prevents
-        // the default promo from showing if the mobile promo has already been
-        // displayed, and vice versa.
+        // Skip calling `renderPromo()` if we already attempted to render a
+        // promo before AND there is mobile promo content to display. This
+        // prevents the default promo from showing if the mobile promo has
+        // already been displayed, and vice versa.
         return;
       }
     }
@@ -291,7 +292,12 @@ export class MiddleSlotPromoElement extends CrLitElement {
     });
   }
 
+  // Allow users to undo the dismissal of the default promo using Ctrl+Z (or
+  // Cmd+Z on macOS). Mobile promo dismissal is handled by `mobile_promo.ts`.
   private onWindowKeydown_(e: KeyboardEvent) {
+    if (!this.blocklistedMiddleSlotPromoId_) {
+      return;
+    }
     let ctrlKeyPressed = e.ctrlKey;
     // <if expr="is_macosx">
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;

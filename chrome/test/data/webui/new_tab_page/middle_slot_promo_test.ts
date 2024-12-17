@@ -12,7 +12,9 @@ import type {PageRemote, Promo} from 'chrome://new-tab-page/new_tab_page.mojom-w
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -233,21 +235,24 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     });
 
     test('clicking undo button restores promo', async () => {
+      // Dismiss middle slot promo.
       const canShowPromo = true;
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-      assertHasContent(canShowPromo, middleSlotPromo);
       const parts = middleSlotPromo.$.promoAndDismissContainer.children;
       assertEquals(2, parts.length);
-
       const dismissPromoButton = parts[1] as HTMLElement;
       dismissPromoButton.click();
+      assertEquals(0, newTabPageHandler.getCallCount('undoBlocklistPromo'));
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertEquals(
-          1,
+          0,
           metrics.count(
-              'NewTabPage.Promos.DismissAction', PromoDismissAction.DISMISS));
+              'NewTabPage.Promos.DismissAction', PromoDismissAction.RESTORE));
 
+      // Undo dismissal via toast.
       middleSlotPromo.$.undoDismissPromoButton.click();
+
+      assertEquals(1, newTabPageHandler.getCallCount('undoBlocklistPromo'));
       assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertEquals(
           1,
@@ -255,12 +260,49 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
               'NewTabPage.Promos.DismissAction', PromoDismissAction.RESTORE));
     });
 
+    test('restores promo if undo command is fired via keyboard', async () => {
+      // Dismiss middle slot promo.
+      const canShowPromo = true;
+      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
+      assertEquals(2, parts.length);
+      const dismissPromoButton = parts[1] as HTMLElement;
+      dismissPromoButton.click();
+      assertEquals(0, newTabPageHandler.getCallCount('undoBlocklistPromo'));
+      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+      assertEquals(
+          0,
+          metrics.count(
+              'NewTabPage.Promos.DismissAction', PromoDismissAction.RESTORE));
+
+      // Simulate 'ctrl+z' key combo (or meta+z for Mac).
+      keyDownOn(document.documentElement, 0, isMac ? 'meta' : 'ctrl', 'z');
+
+      assertEquals(1, newTabPageHandler.getCallCount('undoBlocklistPromo'));
+      assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.Promos.DismissAction', PromoDismissAction.RESTORE));
+    });
+
+    test('ignores undo command if no promo was blocklisted', async () => {
+      const canShowPromo = true;
+      await createMiddleSlotPromo(canShowPromo);
+
+      // Simulate 'ctrl+z' key combo (or meta+z for Mac).
+      keyDownOn(document.documentElement, 0, isMac ? 'meta' : 'ctrl', 'z');
+
+      assertEquals(0, newTabPageHandler.getCallCount('undoBlocklistPromo'));
+      assertEquals(
+          0,
+          metrics.count(
+              'NewTabPage.Promos.DismissAction', PromoDismissAction.RESTORE));
+    });
+
     test('setting promo data resurfaces promo after dismissal', async () => {
       const canShowPromo = true;
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-      assertHasContent(canShowPromo, middleSlotPromo);
-      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
-      assertEquals(2, parts.length);
 
       callbackRouterRemote.setPromo(null);
       await callbackRouterRemote.$.flushForTesting();
