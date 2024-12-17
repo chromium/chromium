@@ -78,6 +78,7 @@ BASE_DECLARE_FEATURE(kDefaultBrowserPromoAndroid);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoAndroid2);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);
 BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);
+BASE_DECLARE_FEATURE(kChangeUnfocusedPriority);
 BASE_DECLARE_FEATURE(kChromeSharePageInfo);
 BASE_DECLARE_FEATURE(kChromeShareScreenshot);
 BASE_DECLARE_FEATURE(kChromeSharingHubLaunchAdjacent);

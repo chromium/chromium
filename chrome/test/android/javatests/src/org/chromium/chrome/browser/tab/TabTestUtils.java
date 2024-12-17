@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.ThreadUtils;
+import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -224,5 +225,13 @@ public class TabTestUtils {
     public static void mockTabJni() {
         TabImpl.Natives tabImplJni = Mockito.mock(TabImpl.Natives.class);
         TabImplJni.setInstanceForTesting(tabImplJni);
+    }
+
+    /**
+     * @param tab {@link Tab} object.
+     * @return {@link @ChildProcessImportance int} object for a given tab.
+     */
+    public static @ChildProcessImportance int getImportance(Tab tab) {
+        return ((TabImpl) tab).getImportance();
     }
 }

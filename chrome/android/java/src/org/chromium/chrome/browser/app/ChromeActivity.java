@@ -152,6 +152,7 @@ import org.chromium.chrome.browser.stylus_handwriting.StylusWritingCoordinator;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabImportanceManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -214,6 +215,8 @@ import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerProvider;
 import org.chromium.components.webapps.pwa_universal_install.PwaUniversalInstallBottomSheetCoordinator;
 import org.chromium.components.webxr.XrDelegateProvider;
+import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -1425,6 +1428,17 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 && getActivityType() != UmaActivityObserver.getCurrentActivityType()) {
             endUmaSession();
             startUmaSession();
+        }
+        if (mNativeInitialized
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY)) {
+            ChildProcessLauncherHelper.setIgnoreMainFrameVisibilityForImportance();
+            if (isTopResumedActivity) {
+                TabImportanceManager.setImportance(
+                        getTabModelSelector().getCurrentTab(), ChildProcessImportance.IMPORTANT);
+            } else {
+                TabImportanceManager.setImportance(
+                        getTabModelSelector().getCurrentTab(), ChildProcessImportance.MODERATE);
+            }
         }
         super.onTopResumedActivityChanged(isTopResumedActivity);
     }

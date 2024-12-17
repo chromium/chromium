@@ -33,4 +33,9 @@ public final class ChildProcessLauncherHelper {
     public static void startBindingManagement(Context context) {
         ChildProcessLauncherHelperImpl.startBindingManagement(context);
     }
+
+    /** Changes priority setting to ignore main frame visibility to determine process importance. */
+    public static void setIgnoreMainFrameVisibilityForImportance() {
+        ChildProcessLauncherHelperImpl.setIgnoreMainFrameVisibilityForImportance();
+    }
 }

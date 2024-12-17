@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/no_destructor.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
@@ -139,7 +140,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBoardingPassDetector,
     &features::kHttpsFirstBalancedMode,
     &features::kNetworkServiceInProcess,
-    &features::kChangeUnfocusedPriority,
     &features::kElasticOverscroll,
     &features::kLinkedServicesSetting,
     &features::kLoadingPredictorLimitPreconnectSocketCount,
@@ -237,6 +237,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
+    &kChangeUnfocusedPriority,
     &kDefaultBrowserPromoAndroid,
     &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
@@ -661,6 +662,19 @@ BASE_FEATURE(kCCTRevampedBranding,
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, render processes associated only with tabs in unfocused windows
+// will be downgraded to "vis" priority, rather than remaining at "fg". This
+// will allow tabs in unfocused windows to be prioritized for OOM kill in
+// low-memory scenarios.
+BASE_FEATURE(kChangeUnfocusedPriority,
+             "ChangeUnfocusedPriority",
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kDisableInstanceLimit,
              "DisableInstanceLimit",

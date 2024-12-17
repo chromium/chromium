@@ -2586,4 +2586,10 @@ class TabImpl implements Tab {
 
         void onShow(long nativeTabAndroid);
     }
+
+    @VisibleForTesting
+    @ChildProcessImportance
+    int getImportance() {
+        return mImportance;
+    }
 }

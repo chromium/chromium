@@ -265,7 +265,6 @@ source_set("common_sources") {
   ]
   deps = [
     ":content_descriptor_keys",
-    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
 

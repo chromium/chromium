@@ -6383,7 +6383,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"change-unfocused-priority",
      flag_descriptions::kChangeUnfocusedPriorityName,
      flag_descriptions::kChangeUnfocusedPriorityDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kChangeUnfocusedPriority)},
+     FEATURE_VALUE_TYPE(chrome::android::kChangeUnfocusedPriority)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"most-visited-tiles-new-scoring",

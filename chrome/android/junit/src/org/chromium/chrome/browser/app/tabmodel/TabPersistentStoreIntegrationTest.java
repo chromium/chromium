@@ -79,7 +79,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @LooperMode(Mode.PAUSED)
 @DisableFeatures({
     ChromeFeatureList.ANDROID_TAB_DECLUTTER,
-    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,
+    ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY
 })
 public class TabPersistentStoreIntegrationTest {
 

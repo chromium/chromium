@@ -148,6 +148,8 @@ public final class ChildProcessLauncherHelperImpl {
     // from different threads.
     private static volatile Bundle sZygoteBundle;
 
+    private static boolean sIgnoreMainFrameVisibilityForImportance;
+
     private final ChildProcessLauncher.Delegate mLauncherDelegate =
             new ChildProcessLauncher.Delegate() {
                 @Override
@@ -544,6 +546,10 @@ public final class ChildProcessLauncherHelperImpl {
         sSkipDelayForReducePriorityOnBackgroundForTesting = true;
     }
 
+    public static void setIgnoreMainFrameVisibilityForImportance() {
+        sIgnoreMainFrameVisibilityForImportance = true;
+    }
+
     @VisibleForTesting
     static ChildConnectionAllocator getConnectionAllocator(Context context, boolean sandboxed) {
         assert LauncherThread.runningOnLauncherThread();
@@ -778,8 +784,11 @@ public final class ChildProcessLauncherHelperImpl {
             boostForPendingViews = false;
         }
 
+        boolean shouldUseMainFrameVisibility = !sIgnoreMainFrameVisibilityForImportance;
+        boolean isVisibleMainFrame = visible && frameDepth == 0;
         @ChildProcessImportance int newEffectiveImportance;
-        if ((visible && frameDepth == 0)
+
+        if ((shouldUseMainFrameVisibility && isVisibleMainFrame)
                 || importance == ChildProcessImportance.IMPORTANT
                 || hasMediaStream) {
             newEffectiveImportance = ChildProcessImportance.IMPORTANT;

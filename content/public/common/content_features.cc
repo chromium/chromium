@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "content/common/buildflags.h"
@@ -194,19 +193,6 @@ BASE_FEATURE(kCapturedSurfaceControlKillswitch,
 BASE_FEATURE(kCapturedSurfaceControlStickyPermissions,
              "CapturedSurfaceControlStickyPermissions",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, render processes associated only with tabs in unfocused windows
-// will be downgraded to "vis" priority, rather than remaining at "fg". This
-// will allow tabs in unfocused windows to be prioritized for OOM kill in
-// low-memory scenarios.
-BASE_FEATURE(kChangeUnfocusedPriority,
-             "ChangeUnfocusedPriority",
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
-);
 
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
