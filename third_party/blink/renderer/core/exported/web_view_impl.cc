@@ -1596,11 +1596,16 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.target_blank_implies_no_opener_enabled_will_be_removed);
   settings->SetAllowNonEmptyNavigatorPlugins(
       prefs.allow_non_empty_navigator_plugins);
-  RuntimeEnabledFeatures::SetDatabaseEnabled(prefs.databases_enabled);
   settings->SetShouldProtectAgainstIpcFlooding(
       !prefs.disable_ipc_flooding_protection);
   settings->SetHyperlinkAuditingEnabled(prefs.hyperlink_auditing_enabled);
   settings->SetCookieEnabled(prefs.cookie_enabled);
+
+  // By default, allow Android WebView to enable WebSQL. Rollout for disabling
+  // will happen via Finch.
+  if (base::FeatureList::IsEnabled(blink::features::kWebSQLWebViewAccess)) {
+    RuntimeEnabledFeatures::SetDatabaseEnabled(prefs.databases_enabled);
+  }
 
   // By default, allow_universal_access_from_file_urls is set to false and thus
   // we mitigate attacks from local HTML files by not granting file:// URLs
