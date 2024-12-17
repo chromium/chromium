@@ -117,31 +117,27 @@ StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
   } else {
     position =
         style.ResolvedJustifyContentPosition(ContentAlignmentNormalBehavior());
-  }
-  if (position == ContentPosition::kLeft ||
-      position == ContentPosition::kRight) {
-    if (IsColumnFlow(style)) {
-      if (style.IsHorizontalWritingMode()) {
-        // Main axis is perpendicular to both the physical left<->right and
-        // inline start<->end axes, so kLeft and kRight behave as kStart.
-        position = ContentPosition::kStart;
-      } else if ((position == ContentPosition::kLeft &&
-                  style.IsFlippedBlocksWritingMode()) ||
-                 (position == ContentPosition::kRight &&
-                  style.GetWritingDirection().BlockEnd() ==
-                      PhysicalDirection::kRight)) {
-        position = ContentPosition::kEnd;
+
+    const auto writing_direction = style.GetWritingDirection();
+    if (position == ContentPosition::kLeft ||
+        position == ContentPosition::kRight) {
+      if (IsColumnFlow(style)) {
+        if (writing_direction.IsHorizontal()) {
+          // The main-axis is in the top-down direction, fallback to start.
+          position = ContentPosition::kStart;
+        } else {
+          LogicalToPhysical physical(
+              writing_direction, ContentPosition::kStart, ContentPosition::kEnd,
+              ContentPosition::kStart, ContentPosition::kEnd);
+          position = position == ContentPosition::kLeft ? physical.Left()
+                                                        : physical.Right();
+        }
       } else {
-        position = ContentPosition::kStart;
+        position =
+            ((position == ContentPosition::kLeft) == writing_direction.IsLtr())
+                ? ContentPosition::kStart
+                : ContentPosition::kEnd;
       }
-    } else if ((position == ContentPosition::kLeft &&
-                !style.IsLeftToRightDirection()) ||
-               (position == ContentPosition::kRight &&
-                style.IsLeftToRightDirection())) {
-      DCHECK(!FlexibleBoxAlgorithm::IsColumnFlow(style));
-      position = ContentPosition::kEnd;
-    } else {
-      position = ContentPosition::kStart;
     }
   }
   DCHECK_NE(position, ContentPosition::kLeft);
@@ -197,14 +193,10 @@ ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
     return ItemPosition::kFlexEnd;
 
   if (align == ItemPosition::kSelfStart || align == ItemPosition::kSelfEnd) {
-    LogicalToPhysical<ItemPosition> physical(
-        child_style.GetWritingDirection(), ItemPosition::kFlexStart,
-        ItemPosition::kFlexEnd, ItemPosition::kFlexStart,
-        ItemPosition::kFlexEnd);
-
-    PhysicalToLogical<ItemPosition> logical(flexbox_style.GetWritingDirection(),
-                                            physical.Top(), physical.Right(),
-                                            physical.Bottom(), physical.Left());
+    LogicalToLogical<ItemPosition> logical(
+        child_style.GetWritingDirection(), flexbox_style.GetWritingDirection(),
+        ItemPosition::kFlexStart, ItemPosition::kFlexEnd,
+        ItemPosition::kFlexStart, ItemPosition::kFlexEnd);
 
     if (flexbox_style.ResolvedIsColumnFlexDirection()) {
       return align == ItemPosition::kSelfStart ? logical.InlineStart()
