@@ -5,6 +5,7 @@
 #include "components/collaboration/internal/collaboration_service_impl.h"
 
 #include "components/collaboration/internal/collaboration_controller.h"
+#include "components/collaboration/internal/metrics.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
@@ -72,6 +73,8 @@ void CollaborationServiceImpl::StartJoinFlow(
     it->second->PromoteCurrentSession();
     return;
   }
+
+  metrics::RecordJoinEvent(metrics::CollaborationServiceJoinEvent::kStarted);
 
   // Invalid url parsing will start a new join flow with empty GroupToken. This
   // is needed in order to show the url parsing error message to the user.

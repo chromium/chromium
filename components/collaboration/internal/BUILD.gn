@@ -31,6 +31,8 @@ static_library("core_internal") {
     "collaboration_service_impl.h",
     "empty_collaboration_service.cc",
     "empty_collaboration_service.h",
+    "metrics.cc",
+    "metrics.h",
   ]
 
   deps = [ "//components/sync/service:service" ]
