@@ -528,6 +528,11 @@ inline constexpr char kLanguagePreviousInputMethod[] =
 inline constexpr char kLanguageAllowedInputMethods[] =
     "settings.language.allowed_input_methods";
 
+// A boolean pref that enforces allowed input methods to be enabled (see policy
+// "AllowedInputMethodsForceEnabled").
+inline constexpr char kLanguageAllowedInputMethodsForceEnabled[] =
+    "settings.language.allowed_input_methods_force_enabled";
+
 // A string pref (comma-separated list) set to the preloaded (active) input
 // method IDs (ex. "pinyin,mozc").
 // TODO: b/308389509 - Remove this constant to complete migration.

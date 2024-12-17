@@ -550,6 +550,11 @@ export function getFakeLanguagePrefs() {
       value: [],
     },
     {
+      key: 'settings.language.allowed_input_methods_force_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
       key: 'ash.shortcut_reminders.last_used_ime_dismissed',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,

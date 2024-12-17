@@ -1321,6 +1321,7 @@ policies:
   1320: SmartCardConnectAllowedForUrls
   1321: SmartCardConnectBlockedForUrls
   1322: DeviceFlexArcPreloadEnabled
+  1323: AllowedInputMethodsForceEnabled
 
 atomic_groups:
   1: Homepage

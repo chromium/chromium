@@ -39,6 +39,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -714,6 +715,50 @@ TEST_F(InputMethodPreferencesTest, MergeAfterSyncing) {
             ToInputMethodIds("xkb:jp::jpn"),
         std::string(kIdentityIMEID) + "," + kUnknownIMEID);
   }
+}
+
+TEST_F(InputMethodPreferencesTest, ConfiguredByPolicyPrefs) {
+  const auto input_methods =
+      base::Value::List().Append("xkb:us::eng").Append("xkb:jp::jpn");
+
+  InitPreferences();
+  // No restriction on allowed input methods, one default is enabled.
+  EXPECT_EQ(
+      0U,
+      mock_manager_->GetActiveIMEState()->GetAllowedInputMethodIds().size());
+  EXPECT_EQ(
+      1U,
+      mock_manager_->GetActiveIMEState()->GetEnabledInputMethodIds().size());
+
+  // Setting only AllowedInputMethodsForceEnabled does nothing.
+  pref_service_->SetManagedPref(prefs::kLanguageAllowedInputMethodsForceEnabled,
+                                base::Value(true));
+  EXPECT_EQ(
+      0U,
+      mock_manager_->GetActiveIMEState()->GetAllowedInputMethodIds().size());
+  EXPECT_EQ(
+      1U,
+      mock_manager_->GetActiveIMEState()->GetEnabledInputMethodIds().size());
+
+  // Setting only AllowedInputMethods enforces allowed, but doesn't enable them.
+  pref_service_->SetManagedPref(prefs::kLanguageAllowedInputMethodsForceEnabled,
+                                base::Value(false));
+  pref_service_->SetManagedPref(prefs::kLanguageAllowedInputMethods,
+                                input_methods.Clone());
+  EXPECT_THAT(mock_manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
+              testing::ElementsAre("xkb:us::eng", "xkb:jp::jpn"));
+  EXPECT_EQ(
+      1U,
+      mock_manager_->GetActiveIMEState()->GetEnabledInputMethodIds().size());
+
+  // Setting AllowedInputMethodsForceEnabled enforces all currently allowed
+  // input methods.
+  pref_service_->SetManagedPref(prefs::kLanguageAllowedInputMethodsForceEnabled,
+                                base::Value(true));
+  EXPECT_THAT(mock_manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
+              testing::ElementsAre("xkb:us::eng", "xkb:jp::jpn"));
+  EXPECT_THAT(mock_manager_->GetActiveIMEState()->GetEnabledInputMethodIds(),
+              testing::ElementsAre("xkb:us::eng", "xkb:jp::jpn"));
 }
 
 }  // namespace ash

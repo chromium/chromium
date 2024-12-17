@@ -2194,6 +2194,7 @@ chromium-metrics-reviews@google.com.
   <int value="1320" label="SmartCardConnectAllowedForUrls"/>
   <int value="1321" label="SmartCardConnectBlockedForUrls"/>
   <int value="1322" label="DeviceFlexArcPreloadEnabled"/>
+  <int value="1323" label="AllowedInputMethodsForceEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

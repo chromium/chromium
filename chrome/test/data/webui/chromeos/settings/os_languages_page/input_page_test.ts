@@ -303,6 +303,23 @@ suite('<os-settings-input-page>', () => {
           subpageTrigger, inputPage.shadowRoot!.activeElement,
           `${triggerSelector} should be focused.`);
     });
+
+    test('add input removed when input methods are enabled by policy', () => {
+      const addInputMethodButton =
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#addInputMethod');
+      assertTrue(!!addInputMethodButton);
+      assertFalse(addInputMethodButton.disabled);
+
+
+      inputPage.setPrefValue(
+          'settings.language.allowed_input_methods', ['xkb:us::eng']);
+      inputPage.setPrefValue(
+          'settings.language.allowed_input_methods_force_enabled', true);
+      flush();
+
+      assertTrue(addInputMethodButton.disabled);
+    });
   });
 
   suite('add input methods dialog', () => {

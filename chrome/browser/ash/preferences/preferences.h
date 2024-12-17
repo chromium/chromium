@@ -178,6 +178,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   StringPrefMember previous_input_method_;
 
   StringListPrefMember allowed_input_methods_;
+  BooleanPrefMember allowed_input_methods_force_enabled_;
   StringPrefMember enabled_imes_;
   BooleanPrefMember ime_menu_activated_;
 

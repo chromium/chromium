@@ -996,6 +996,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kString;
   (*s_allowlist)[::prefs::kLanguageAllowedInputMethods] =
       settings_api::PrefType::kList;
+  (*s_allowlist)[::prefs::kLanguageAllowedInputMethodsForceEnabled] =
+      settings_api::PrefType::kBoolean;
 
   // Device settings.
   (*s_allowlist)[ash::prefs::kTapToClickEnabled] =

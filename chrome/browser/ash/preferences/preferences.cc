@@ -15,6 +15,7 @@
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/ime_controller.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -275,6 +276,8 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
   registry->RegisterStringPref(::prefs::kLanguagePreviousInputMethod, "");
   registry->RegisterListPref(::prefs::kLanguageAllowedInputMethods);
+  registry->RegisterBooleanPref(
+      ::prefs::kLanguageAllowedInputMethodsForceEnabled, false);
   registry->RegisterListPref(::prefs::kAllowedLanguages);
   registry->RegisterStringPref(::prefs::kLanguagePreloadEngines,
                                hardware_keyboard_id);
@@ -723,6 +726,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                               callback);
   allowed_input_methods_.Init(::prefs::kLanguageAllowedInputMethods, prefs,
                               callback);
+  allowed_input_methods_force_enabled_.Init(
+      ::prefs::kLanguageAllowedInputMethodsForceEnabled, prefs, callback);
   allowed_languages_.Init(::prefs::kAllowedLanguages, prefs, callback);
   preferred_languages_.Init(language::prefs::kPreferredLanguages, prefs,
                             callback);
@@ -1183,23 +1188,35 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
 
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kLanguageAllowedInputMethods) {
+      pref_name == ::prefs::kLanguageAllowedInputMethods ||
+      pref_name == ::prefs::kLanguageAllowedInputMethodsForceEnabled) {
     const std::vector<std::string> allowed_input_methods =
         allowed_input_methods_.GetValue();
+    const bool allowed_input_methods_force_enabled =
+        allowed_input_methods_force_enabled_.GetValue();
 
-    bool managed_by_policy =
+    const bool allowed_by_policy =
         ime_state_->SetAllowedInputMethods(allowed_input_methods);
-    bool success = ime_state_->ReplaceEnabledInputMethods(
-        ime_state_->GetEnabledInputMethodIds());
+    const std::vector<std::string>& method_ids =
+        (allowed_by_policy && allowed_input_methods_force_enabled)
+            ? ime_state_->GetAllowedInputMethodIds()
+            : ime_state_->GetEnabledInputMethodIds();
+    const bool success = ime_state_->ReplaceEnabledInputMethods(method_ids);
     if (!success) {
       const std::vector<std::string> fallback = {
           ime_state_->GetAllowedFallBackKeyboardLayout()};
       ime_state_->ReplaceEnabledInputMethods(fallback);
     }
 
-    if (managed_by_policy) {
+    if (allowed_by_policy) {
       preload_engines_.SetValue(
           base::JoinString(ime_state_->GetEnabledInputMethodIds(), ","));
+    }
+    if (ImeController::Get()) {  // Can be null in tests.
+      ImeController::Get()->SetImesManagedByPolicy(
+          success && allowed_input_methods_force_enabled);
+    } else {
+      CHECK_IS_TEST();
     }
   }
   if (reason != REASON_PREF_CHANGED ||
