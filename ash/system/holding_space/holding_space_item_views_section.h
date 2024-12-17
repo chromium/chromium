@@ -118,11 +118,6 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
   HoldingSpaceViewDelegate* delegate() { return delegate_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(HoldingSpaceItemViewsSectionTest,
-                           HoldingSpaceItemChipViewTooltipText);
-  FRIEND_TEST_ALL_PREFIXES(HoldingSpaceItemViewsSectionTest,
-                           HoldingSpaceItemChipViewTooltipTextAccessibility);
-
   enum AnimationState : uint32_t {
     kNotAnimating = 0,
     kAnimatingIn = 1 << 1,

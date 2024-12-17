@@ -12,7 +12,6 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/session/test_session_controller_client.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_ash_test_base.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
@@ -22,13 +21,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
+
+// Helpers ---------------------------------------------------------------------
 
 std::vector<std::pair<HoldingSpaceSectionId, HoldingSpaceItem::Type>>
 GetSectionIdItemTypePairs() {
@@ -49,6 +48,8 @@ GetSectionIdItemTypePairs() {
 
 }  // namespace
 
+// HoldingSpaceItemViewsSectionTest --------------------------------------------
+
 class HoldingSpaceItemViewsSectionTest
     : public HoldingSpaceAshTestBase,
       public testing::WithParamInterface<
@@ -66,7 +67,7 @@ class HoldingSpaceItemViewsSectionTest
   }
 
  private:
-  // HoldingSpaceAshTestBase
+  // HoldingSpaceAshTestBase:
   void SetUp() override {
     HoldingSpaceAshTestBase::SetUp();
     widget_ = std::make_unique<views::Widget>();
@@ -122,6 +123,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceItemViewsSectionTest,
                          testing::ValuesIn(GetSectionIdItemTypePairs()));
 
+// Tests -----------------------------------------------------------------------
+
 // Verifies the items are ordered as expected.
 TEST_P(HoldingSpaceItemViewsSectionTest, ItemOrder) {
   const std::optional<size_t> section_max_views =
@@ -155,80 +158,6 @@ TEST_P(HoldingSpaceItemViewsSectionTest, ItemOrder) {
     auto* item = items[i];
     EXPECT_EQ(item_view->item(), item);
   }
-}
-
-TEST_P(HoldingSpaceItemViewsSectionTest, HoldingSpaceItemChipViewTooltipText) {
-  const std::optional<size_t> section_max_views =
-      GetHoldingSpaceSection(section_id())->max_visible_item_count;
-
-  // Add a number of items.
-  std::vector<HoldingSpaceItem*> items;
-  for (size_t i = 0; i <= section_max_views.value_or(10); ++i) {
-    base::FilePath file_path("/tmp/fake_" + base::NumberToString(i));
-    items.emplace_back(AddItem(item_type(), file_path));
-  }
-
-  auto holding_space_item_chip_view =
-      item_views_section()->CreateView(items[0]);
-  EXPECT_EQ(holding_space_item_chip_view->GetTooltipText(gfx::Point()),
-            items[0]->GetText());
-
-  items[0]->SetText(u"Primary text");
-  holding_space_item_chip_view->OnThemeChanged();
-  EXPECT_EQ(u"Primary text", items[0]->GetText());
-  EXPECT_EQ(u"", items[0]->secondary_text().value_or(std::u16string()));
-  EXPECT_EQ(holding_space_item_chip_view->GetTooltipText(gfx::Point()),
-            items[0]->GetText());
-
-  items[0]->SetSecondaryText(u"Secondary text");
-  holding_space_item_chip_view->OnThemeChanged();
-  EXPECT_EQ(u"Primary text", items[0]->GetText());
-  EXPECT_EQ(u"Secondary text",
-            items[0]->secondary_text().value_or(std::u16string()));
-  EXPECT_EQ(holding_space_item_chip_view->GetTooltipText(gfx::Point()),
-            l10n_util::GetStringFUTF16(
-                IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP,
-                u"Primary text", u"Secondary text"));
-}
-
-TEST_P(HoldingSpaceItemViewsSectionTest,
-       HoldingSpaceItemChipViewTooltipTextAccessibility) {
-  const std::optional<size_t> section_max_views =
-      GetHoldingSpaceSection(section_id())->max_visible_item_count;
-
-  // Add a number of items.
-  std::vector<HoldingSpaceItem*> items;
-  for (size_t i = 0; i <= section_max_views.value_or(10); ++i) {
-    base::FilePath file_path("/tmp/fake_" + base::NumberToString(i));
-    items.emplace_back(AddItem(item_type(), file_path));
-  }
-
-  auto holding_space_item_chip_view =
-      item_views_section()->CreateView(items[0]);
-  EXPECT_EQ(holding_space_item_chip_view->GetTooltipText(gfx::Point()),
-            items[0]->GetText());
-
-  items[0]->SetText(u"Primary text");
-  holding_space_item_chip_view->OnThemeChanged();
-
-  ui::AXNodeData data;
-  holding_space_item_chip_view->GetViewAccessibility().GetAccessibleNodeData(
-      &data);
-  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            holding_space_item_chip_view->GetTooltipText(gfx::Point()));
-  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            holding_space_item_chip_view->GetTooltipText(gfx::Point()));
-
-  items[0]->SetSecondaryText(u"Secondary text");
-  holding_space_item_chip_view->OnThemeChanged();
-
-  data = ui::AXNodeData();
-  holding_space_item_chip_view->GetViewAccessibility().GetAccessibleNodeData(
-      &data);
-  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            holding_space_item_chip_view->GetTooltipText(gfx::Point()));
-  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
-            holding_space_item_chip_view->GetTooltipText(gfx::Point()));
 }
 
 // Verifies that partially initialized items will not show until they are fully

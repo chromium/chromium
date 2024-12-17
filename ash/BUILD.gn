@@ -4199,6 +4199,7 @@ test("ash_unittests") {
     "system/holding_space/holding_space_animation_registry_unittest.cc",
     "system/holding_space/holding_space_ash_test_base.cc",
     "system/holding_space/holding_space_ash_test_base.h",
+    "system/holding_space/holding_space_item_chip_view_unittest.cc",
     "system/holding_space/holding_space_item_screen_capture_view_unittest.cc",
     "system/holding_space/holding_space_item_views_section_unittest.cc",
     "system/holding_space/holding_space_tray_child_bubble_unittest.cc",
