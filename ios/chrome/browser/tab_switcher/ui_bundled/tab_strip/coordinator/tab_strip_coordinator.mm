@@ -9,8 +9,12 @@
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -329,19 +333,23 @@
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
+  Browser* browser = self.browser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
   ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
+      ShareKitServiceFactory::GetForProfile(browser->GetProfile());
   const TabGroup* tabGroup = group.get();
-  if (!tabGroup || !shareKitService) {
+  if (!tabGroup || !collaborationService || !shareKitService) {
     return;
   }
-  ShareKitShareGroupConfiguration* config =
-      [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = tabGroup;
-  config.baseViewController = self.baseViewController;
-  config.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareTabGroup(config);
+  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          std::make_unique<collaboration::CollaborationFlowConfigurationShare>(
+              shareKitService, browser, self.baseViewController,
+              tabGroup->GetWeakPtr()));
+  collaborationService->StartShareOrManageFlow(std::move(delegate),
+                                               tabGroup->tab_group_id());
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {

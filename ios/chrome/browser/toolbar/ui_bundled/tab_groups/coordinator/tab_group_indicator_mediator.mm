@@ -151,17 +151,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 #pragma mark - TabGroupIndicatorMutator
 
 - (void)shareGroup {
-  const TabGroup* tabGroup = [self currentTabGroup];
-  if (!tabGroup || !_shareKitService) {
-    return;
-  }
-
-  ShareKitShareGroupConfiguration* config =
-      [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = tabGroup;
-  config.baseViewController = self.baseViewController;
-  config.applicationHandler = self.applicationHandler;
-  _shareKitService->ShareTabGroup(config);
+  [self.delegate shareTabGroup:[self currentTabGroup]];
 }
 
 - (void)showRecentActivity {

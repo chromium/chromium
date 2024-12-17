@@ -7,17 +7,21 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -209,6 +213,26 @@
 
   [presenter presentInViewController:self.baseViewController
                          anchorPoint:anchorPoint];
+}
+
+- (void)shareTabGroup:(const TabGroup*)tabGroup {
+  Browser* browser = self.browser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(browser->GetProfile());
+  if (!tabGroup || !collaborationService || !shareKitService) {
+    return;
+  }
+
+  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          std::make_unique<collaboration::CollaborationFlowConfigurationShare>(
+              shareKitService, browser, self.baseViewController,
+              tabGroup->GetWeakPtr()));
+  collaborationService->StartShareOrManageFlow(std::move(delegate),
+                                               tabGroup->tab_group_id());
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

@@ -34,6 +34,9 @@ enum class TabGroupActionType;
 // active.
 - (void)showIPHForSharedTabGroupForegrounded;
 
+// Shares the `tabGroup`.
+- (void)shareTabGroup:(const TabGroup*)tabGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_MEDIATOR_DELEGATE_H_

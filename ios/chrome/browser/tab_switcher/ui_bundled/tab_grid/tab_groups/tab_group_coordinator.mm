@@ -11,6 +11,8 @@
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -385,18 +387,24 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 // Share the current group.
 - (void)shareGroup {
+  Browser* browser = self.browser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
   ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (!_tabGroup || !shareKitService) {
+      ShareKitServiceFactory::GetForProfile(browser->GetProfile());
+
+  if (!_tabGroup || !collaborationService || !shareKitService) {
     return;
   }
-  ShareKitShareGroupConfiguration* config =
-      [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = _tabGroup;
-  config.baseViewController = self.baseViewController;
-  config.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareTabGroup(config);
+
+  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          std::make_unique<collaboration::CollaborationFlowConfigurationShare>(
+              shareKitService, browser, self.baseViewController,
+              _tabGroup->GetWeakPtr()));
+  collaborationService->StartShareOrManageFlow(std::move(delegate),
+                                               _tabGroup->tab_group_id());
 }
 
 // Manage the group with `collabID`.

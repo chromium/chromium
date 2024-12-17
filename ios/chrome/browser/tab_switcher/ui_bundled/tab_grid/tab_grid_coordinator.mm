@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -28,6 +29,9 @@
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_mediator.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -1587,19 +1591,24 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
+  Browser* browser = self.regularBrowser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
   ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.regularBrowser->GetProfile());
+      ShareKitServiceFactory::GetForProfile(browser->GetProfile());
   const TabGroup* tabGroup = group.get();
-  if (!tabGroup || !shareKitService) {
+  if (!tabGroup || !collaborationService || !shareKitService) {
     return;
   }
-  ShareKitShareGroupConfiguration* config =
-      [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = tabGroup;
-  config.baseViewController = self.baseViewController;
-  config.applicationHandler = HandlerForProtocol(
-      self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareTabGroup(config);
+
+  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          std::make_unique<collaboration::CollaborationFlowConfigurationShare>(
+              shareKitService, browser, self.baseViewController,
+              tabGroup->GetWeakPtr()));
+  collaborationService->StartShareOrManageFlow(std::move(delegate),
+                                               tabGroup->tab_group_id());
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {

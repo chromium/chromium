@@ -12,11 +12,13 @@ source_set("coordinator") {
   deps = [
     ":tab_strip_mediator_utils",
     "//base",
+    "//components/collaboration/public",
     "//components/favicon/ios",
     "//components/saved_tab_groups/public",
     "//components/strings",
     "//components/tab_groups",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model:util",
