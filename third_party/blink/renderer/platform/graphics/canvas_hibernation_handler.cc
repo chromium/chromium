@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
+#include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
