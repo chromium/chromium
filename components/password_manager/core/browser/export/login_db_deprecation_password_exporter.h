@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/passwords_provider.h"
+#include "components/prefs/pref_service.h"
 
 namespace password_manager {
 
@@ -20,7 +21,8 @@ namespace password_manager {
 class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
                                            public PasswordsProvider {
  public:
-  explicit LoginDbDeprecationPasswordExporter(base::FilePath export_dir_path);
+  explicit LoginDbDeprecationPasswordExporter(PrefService* pref_service,
+                                              base::FilePath export_dir_path);
   LoginDbDeprecationPasswordExporter(
       const LoginDbDeprecationPasswordExporter&) = delete;
   LoginDbDeprecationPasswordExporter& operator=(
@@ -36,10 +38,16 @@ class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
   // used in UI applications where another class holds the credentials.
   std::vector<CredentialUIEntry> GetSavedCredentials() const override;
 
+  PasswordManagerExporter* GetInternalExporterForTesting(
+      base::PassKey<class LoginDbDeprecationPasswordExporterTest>);
+
  private:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
       LoginsResultOrError results_or_error) override;
+
+  // Reports on the progress of the export flow.
+  void OnExportProgress(const PasswordExportInfo& export_info);
 
   // Called when the `exporter_` completes all the export operations,
   // irrespective of whether the export succeeded.
@@ -55,9 +63,15 @@ class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
   // Stores the saved credentials.
   std::vector<CredentialUIEntry> passwords_;
 
+  // Used to store the export completion status in a pref.
+  raw_ptr<PrefService> pref_service_;
+
   // Path where the exported CSV will be written. It should be the same as the
   // login db path.
   base::FilePath export_dir_path_;
+
+  // The last reported status of the export flow.
+  ExportProgressStatus export_status_{ExportProgressStatus::kNotStarted};
 
   base::WeakPtrFactory<LoginDbDeprecationPasswordExporter> weak_factory_{this};
 };

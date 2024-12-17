@@ -17,7 +17,8 @@ namespace password_manager {
 // be migrated to GMS Core.
 class LoginDbDeprecationRunner : public KeyedService {
  public:
-  explicit LoginDbDeprecationRunner(base::FilePath export_dir);
+  explicit LoginDbDeprecationRunner(PrefService* pref_service,
+                                    base::FilePath export_dir);
   LoginDbDeprecationRunner(const LoginDbDeprecationRunner&) = delete;
   LoginDbDeprecationRunner& operator=(const LoginDbDeprecationRunner&) = delete;
   ~LoginDbDeprecationRunner() override;

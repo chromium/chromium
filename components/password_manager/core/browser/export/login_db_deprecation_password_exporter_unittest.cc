@@ -15,18 +15,42 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 
 namespace {
+using ::testing::Return;
+using ::testing::StrictMock;
 
 const std::string kLineEnding = "\n";
+const std::string kExportFilename = "ChromePasswords.csv";
+
+std::pair<PasswordForm, std::string> GetTestFormWithExpectedExportData() {
+  const std::u16string kNoteValue =
+      base::UTF8ToUTF16("Note Line 1" + kLineEnding + "Note Line 2");
+  PasswordForm form;
+  form.signon_realm = "https://example.com/";
+  form.url = GURL("https://example.com");
+  form.username_value = u"Someone";
+  form.password_value = u"Secret";
+  form.notes = {PasswordNote(kNoteValue, base::Time::Now())};
+
+  std::string expected_export_data =
+      "name,url,username,password,note" + kLineEnding +
+      "example.com,https://example.com/,Someone,Secret,\"Note Line "
+      "1" +
+      kLineEnding + "Note Line 2\"" + kLineEnding;
+  return {form, expected_export_data};
+}
 
 }  // namespace
 
@@ -36,11 +60,13 @@ class LoginDbDeprecationPasswordExporterTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kUpmUnmigratedPasswordsExported, false);
 
     password_store_ = base::MakeRefCounted<TestPasswordStore>();
-    password_store_->Init(&pref_service_, /*affiliated_match_helper_*/ nullptr);
+    password_store_->Init(&pref_service_, /*affiliated_match_helper=*/nullptr);
     exporter_ = std::make_unique<LoginDbDeprecationPasswordExporter>(
-        temp_dir_.GetPath());
+        &pref_service_, temp_dir_.GetPath());
   }
 
   void TearDown() override {
@@ -51,10 +77,15 @@ class LoginDbDeprecationPasswordExporterTest : public testing::Test {
   const base::FilePath& export_dir() { return temp_dir_.GetPath(); }
 
   LoginDbDeprecationPasswordExporter* exporter() { return exporter_.get(); }
-  scoped_refptr<TestPasswordStore> password_store() { return password_store_; }
+
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+
+  PasswordStoreInterface* password_store() { return password_store_.get(); }
 
  protected:
   base::test::TaskEnvironment task_env_;
+  base::PassKey<class LoginDbDeprecationPasswordExporterTest> passkey =
+      base::PassKey<class LoginDbDeprecationPasswordExporterTest>();
 
  private:
   std::unique_ptr<LoginDbDeprecationPasswordExporter> exporter_;
@@ -74,14 +105,11 @@ TEST_F(LoginDbDeprecationPasswordExporterTest, DoesntExportIfNoPasswords) {
 }
 
 TEST_F(LoginDbDeprecationPasswordExporterTest, ExportsBackendPasswords) {
-  const std::u16string kNoteValue =
-      base::UTF8ToUTF16("Note Line 1" + kLineEnding + "Note Line 2");
-  PasswordForm form;
-  form.signon_realm = "https://example.com/";
-  form.url = GURL("https://example.com");
-  form.username_value = u"Someone";
-  form.password_value = u"Secret";
-  form.notes = {PasswordNote(kNoteValue, base::Time::Now())};
+  std::pair<PasswordForm, std::string> form_expected_data_pair =
+      GetTestFormWithExpectedExportData();
+  PasswordForm form = std::move(form_expected_data_pair.first);
+  std::string expected_exported_data =
+      std::move(form_expected_data_pair.second);
 
   password_store()->AddLogin(form, task_env_.QuitClosure());
   task_env_.RunUntilQuit();
@@ -90,17 +118,38 @@ TEST_F(LoginDbDeprecationPasswordExporterTest, ExportsBackendPasswords) {
   task_env_.RunUntilQuit();
 
   base::FilePath expected_file_path =
-      export_dir().Append(FILE_PATH_LITERAL("ChromePasswords.csv"));
+      export_dir().Append(FILE_PATH_LITERAL(kExportFilename));
+
   EXPECT_TRUE(base::PathExists(expected_file_path));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(prefs::kUpmUnmigratedPasswordsExported));
+
   std::string contents;
-  const std::string kExpectedContents =
-      "name,url,username,password,note" + kLineEnding +
-      "example.com,https://example.com/,Someone,Secret,\"Note Line "
-      "1" +
-      kLineEnding + "Note Line 2\"" + kLineEnding;
+
   ASSERT_TRUE(base::ReadFileToString(expected_file_path, &contents));
   EXPECT_TRUE(!contents.empty());
-  EXPECT_EQ(kExpectedContents, contents);
+  EXPECT_EQ(expected_exported_data, contents);
+}
+
+TEST_F(LoginDbDeprecationPasswordExporterTest, ExportFailure) {
+  PasswordForm form = GetTestFormWithExpectedExportData().first;
+  password_store()->AddLogin(form, task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+
+  PasswordManagerExporter* internal_exporter =
+      exporter()->GetInternalExporterForTesting(passkey);
+  StrictMock<base::MockCallback<PasswordManagerExporter::WriteCallback>>
+      mock_write_callback;
+
+  // Fake a failed write.
+  internal_exporter->SetWriteForTesting(mock_write_callback.Get());
+  EXPECT_CALL(mock_write_callback, Run).WillOnce(Return(false));
+
+  exporter()->Start(password_store(), task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+
+  EXPECT_FALSE(
+      pref_service()->GetBoolean(prefs::kUpmUnmigratedPasswordsExported));
 }
 
 }  // namespace password_manager

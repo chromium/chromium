@@ -212,6 +212,12 @@ inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
 // Whether the post password migration sheet ahould be shown at startup.
 inline constexpr char kShouldShowPostPasswordMigrationSheetAtStartup[] =
     "should_show_post_password_migration_sheet_at_startup";
+
+// Whether the passwords who couldn't be migrated to UPM have been
+// saved as a CSV. The user can then choose to export the CSV out of Chrome
+// via a separate flow.
+inline constexpr char kUpmUnmigratedPasswordsExported[] =
+    "profile.upm_unmigrated_passwords_exported";
 #endif
 
 #if BUILDFLAG(IS_WIN)

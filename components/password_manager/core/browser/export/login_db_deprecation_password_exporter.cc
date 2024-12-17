@@ -9,6 +9,9 @@
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
+
 namespace password_manager {
 
 namespace {
@@ -16,8 +19,18 @@ constexpr std::string_view kExportedPasswordsFileName = "ChromePasswords.csv";
 }  // namespace
 
 LoginDbDeprecationPasswordExporter::LoginDbDeprecationPasswordExporter(
+    PrefService* pref_service,
     base::FilePath export_dir_path)
-    : export_dir_path_(std::move(export_dir_path)) {}
+    : pref_service_(pref_service),
+      export_dir_path_(std::move(export_dir_path)) {
+  exporter_ = std::make_unique<PasswordManagerExporter>(
+      this,
+      base::BindRepeating(&LoginDbDeprecationPasswordExporter::OnExportProgress,
+                          weak_factory_.GetWeakPtr()),
+      base::BindOnce(&LoginDbDeprecationPasswordExporter::OnExportComplete,
+                     weak_factory_.GetWeakPtr()));
+}
+
 LoginDbDeprecationPasswordExporter::~LoginDbDeprecationPasswordExporter() =
     default;
 
@@ -31,6 +44,12 @@ void LoginDbDeprecationPasswordExporter::Start(
 std::vector<CredentialUIEntry>
 LoginDbDeprecationPasswordExporter::GetSavedCredentials() const {
   return passwords_;
+}
+
+PasswordManagerExporter*
+LoginDbDeprecationPasswordExporter::GetInternalExporterForTesting(
+    base::PassKey<LoginDbDeprecationPasswordExporterTest>) {
+  return exporter_.get();
 }
 
 void LoginDbDeprecationPasswordExporter::OnGetPasswordStoreResultsOrErrorFrom(
@@ -53,18 +72,22 @@ void LoginDbDeprecationPasswordExporter::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
 
-  // TODO(crbug.com/378650395): Pass the all the callbacks in the constructor.
-  exporter_ = std::make_unique<PasswordManagerExporter>(
-      this, base::DoNothing(),
-      base::BindOnce(&LoginDbDeprecationPasswordExporter::OnExportComplete,
-                     weak_factory_.GetWeakPtr()));
   exporter_->PreparePasswordsForExport();
   exporter_->SetDestination(
       export_dir_path_.Append(FILE_PATH_LITERAL(kExportedPasswordsFileName)));
 }
 
+void LoginDbDeprecationPasswordExporter::OnExportProgress(
+    const PasswordExportInfo& export_info) {
+  export_status_ = export_info.status;
+}
+
 void LoginDbDeprecationPasswordExporter::OnExportComplete() {
-  // TODO(crbug.com/378650395): Handle success/failure.
+  // If the export wasn't successful and there are passwords to export,
+  // it will be re-attempted on the next startup.
+  if (export_status_ == ExportProgressStatus::kSucceeded) {
+    pref_service_->SetBoolean(prefs::kUpmUnmigratedPasswordsExported, true);
+  }
   std::move(export_cleanup_callback_).Run();
   // The callback above destroys `this`.
 }

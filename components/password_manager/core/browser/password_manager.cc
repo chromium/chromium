@@ -410,6 +410,7 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kPasswordAccessLossWarningShownAtStartupTimestamp, base::Time());
   registry->RegisterTimePref(prefs::kPasswordAccessLossWarningShownTimestamp,
                              base::Time());
+  registry->RegisterBooleanPref(prefs::kUpmUnmigratedPasswordsExported, false);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

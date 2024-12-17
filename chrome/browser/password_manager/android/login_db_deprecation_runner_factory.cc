@@ -61,5 +61,5 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<password_manager::LoginDbDeprecationRunner>(
-      profile->GetPath());
+      profile->GetPrefs(), profile->GetPath());
 }

@@ -8,9 +8,11 @@
 
 namespace password_manager {
 
-LoginDbDeprecationRunner::LoginDbDeprecationRunner(base::FilePath export_dir)
+LoginDbDeprecationRunner::LoginDbDeprecationRunner(PrefService* pref_service,
+                                                   base::FilePath export_dir)
     : exporter_(
-          std::make_unique<LoginDbDeprecationPasswordExporter>(export_dir)) {}
+          std::make_unique<LoginDbDeprecationPasswordExporter>(pref_service,
+                                                               export_dir)) {}
 
 LoginDbDeprecationRunner::~LoginDbDeprecationRunner() = default;
 
