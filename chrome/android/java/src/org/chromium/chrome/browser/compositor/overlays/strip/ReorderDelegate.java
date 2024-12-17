@@ -432,6 +432,7 @@ public class ReorderDelegate {
                 @ReorderType int reorderType) {
             RecordUserAction.record("MobileToolbarStartReorderTab");
             setInteractingTab((StripLayoutTab) interactingTab);
+            interactingTab.setIsForegrounded(/* isForegrounded= */ true);
 
             // 1. Set reorder mode to true before selecting this tab to prevent unnecessarily
             // triggering #bringSelectedTabToVisibleArea for edge tabs when the tab strip is full.
@@ -530,7 +531,7 @@ public class ReorderDelegate {
         mReorderScrollState = REORDER_SCROLL_NONE;
         setInReorderMode(false);
 
-        // 2. Reset the interacting view (clear any offset and reattach the container).
+        // 2. Animate offsets back to 0, reattach the container, and clear the margins.
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         // mInteractingTab may be null if reordering for external view drag drop.
         if (mInteractingTab != null) {
@@ -540,22 +541,26 @@ public class ReorderDelegate {
                             mInteractingTab,
                             StripLayoutView.X_OFFSET,
                             mInteractingTab.getOffsetX(),
-                            0f,
+                            /* endValue= */ 0f,
                             ANIM_TAB_MOVE_MS));
 
             if (!mInteractingTab.getFolioAttached()) {
                 updateTabAttachState(mInteractingTab, /* attached= */ true, animationList);
             }
         }
-
-        // 3. Clear any tab group margins.
         resetTabGroupMargins(groupTitles, stripTabs, animationList);
 
-        // 4. Clear the interacting view.
-        setInteractingTab(null);
-
-        // 5. Start animations.
-        mAnimationHost.startAnimations(animationList, /* listener= */ null);
+        // 3. Start animations. Reset foregrounded state after the tabs have slid back to their
+        // ideal positions, so the z-indexing is retained during the animation.
+        mAnimationHost.startAnimations(
+                animationList,
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mInteractingTab.setIsForegrounded(/* isForegrounded= */ false);
+                        setInteractingTab(null);
+                    }
+                });
     }
 
     void prepareStripForReorder(float startX) {
@@ -809,6 +814,11 @@ public class ReorderDelegate {
                     StripLayoutUtils.getGroupedTabs(
                             mModel, stripTabs, mInteractingGroupTitle.getRootId()));
 
+            // Foreground the interacting views as they will be dragged over top other views.
+            for (StripLayoutView view : mInteractingViews) {
+                view.setIsForegrounded(/* isForegrounded= */ true);
+            }
+
             setInReorderMode(true);
             prepareStripForReorder(startPoint.x);
             StripLayoutUtils.performHapticFeedback(mContainerView);
@@ -862,11 +872,22 @@ public class ReorderDelegate {
             if (mSelectedTab != null) {
                 updateTabAttachState(mSelectedTab, /* attached= */ true, animationList);
             }
-            mAnimationHost.startAnimations(animationList, /* listener= */ null);
+            mAnimationHost.startAnimations(
+                    animationList,
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            // Clear after the tabs have slid back to their ideal positions, so the
+                            // z-indexing is retained during the animation.
+                            for (StripLayoutView view : mInteractingViews) {
+                                view.setIsForegrounded(/* isForegrounded= */ false);
+                            }
+                            mInteractingViews.clear();
+                        }
+                    });
 
             // 3. Clear the interacting views now that the animations have been kicked off.
             mInteractingGroupTitle = null;
-            mInteractingViews.clear();
             mSelectedTab = null;
         }
 

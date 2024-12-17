@@ -225,75 +225,51 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         // TODO(crbug.com/40270147): Cleanup params, as some don't change and others are now
         //  unused.
-        StripLayoutTab selectedTab = null;
         for (int i = 0; i < tabsCount; i++) {
-            final StripLayoutTab stripTab = stripTabs[i];
-            // Skip pushing selected tab here, will be pushed last to make this the top layer.
-            if (stripTab.getTabId() == selectedTabId) {
-                selectedTab = stripTab;
-                continue;
-            }
-            pushTab(stripTab, layoutHelper, layerTitleCache, resourceManager, hoveredTabId, false);
-        }
-        // Push selected tab.
-        if (selectedTab != null) {
-            pushTab(
-                    selectedTab,
-                    layoutHelper,
-                    layerTitleCache,
-                    resourceManager,
-                    hoveredTabId,
-                    true);
-        }
-    }
+            final StripLayoutTab st = stripTabs[i];
+            boolean isSelected = st.getTabId() == selectedTabId;
+            boolean isHovered = st.getTabId() == hoveredTabId;
+            boolean shouldShowOutline = layoutHelper.shouldShowTabOutline(st);
 
-    private void pushTab(
-            StripLayoutTab st,
-            StripLayoutHelperManager layoutHelper,
-            LayerTitleCache layerTitleCache,
-            ResourceManager resourceManager,
-            int hoveredTabId,
-            boolean isSelected) {
-        boolean isHovered = st.getTabId() == hoveredTabId;
-        boolean shouldShowOutline = layoutHelper.shouldShowTabOutline(st);
-
-        // TODO(crbug.com/326301060): Update tab outline placeholder color with color picker.
-        TabStripSceneLayerJni.get()
-                .putStripTabLayer(
-                        mNativePtr,
-                        TabStripSceneLayer.this,
-                        st.getTabId(),
-                        st.getCloseButton().getResourceId(),
-                        st.getCloseButton().getBackgroundResourceId(),
-                        st.getDividerResourceId(),
-                        st.getResourceId(),
-                        st.getOutlineResourceId(),
-                        st.getCloseButton().getTint(),
-                        st.getCloseButton().getBackgroundTint(),
-                        st.getDividerTint(),
-                        st.getTint(isSelected, isHovered),
-                        layoutHelper.getSelectedOutlineGroupTint(st.getTabId(), shouldShowOutline),
-                        isSelected,
-                        shouldShowOutline,
-                        st.getClosePressed(),
-                        layoutHelper.getWidth() * mDpToPx,
-                        st.getDrawX() * mDpToPx,
-                        st.getDrawY() * mDpToPx,
-                        st.getWidth() * mDpToPx,
-                        st.getHeight() * mDpToPx,
-                        st.getContentOffsetY() * mDpToPx,
-                        st.getDividerOffsetX() * mDpToPx,
-                        st.getBottomMargin() * mDpToPx,
-                        st.getTopMargin() * mDpToPx,
-                        st.getCloseButtonPadding() * mDpToPx,
-                        st.getCloseButton().getOpacity(),
-                        st.isStartDividerVisible(),
-                        st.isEndDividerVisible(),
-                        st.isLoading(),
-                        st.getLoadingSpinnerRotation(),
-                        st.getContainerOpacity(),
-                        layerTitleCache,
-                        resourceManager);
+            // TODO(crbug.com/326301060): Update tab outline placeholder color with color picker.
+            TabStripSceneLayerJni.get()
+                    .putStripTabLayer(
+                            mNativePtr,
+                            TabStripSceneLayer.this,
+                            st.getTabId(),
+                            st.getCloseButton().getResourceId(),
+                            st.getCloseButton().getBackgroundResourceId(),
+                            st.getDividerResourceId(),
+                            st.getResourceId(),
+                            st.getOutlineResourceId(),
+                            st.getCloseButton().getTint(),
+                            st.getCloseButton().getBackgroundTint(),
+                            st.getDividerTint(),
+                            st.getTint(isSelected, isHovered),
+                            layoutHelper.getSelectedOutlineGroupTint(
+                                    st.getTabId(), shouldShowOutline),
+                            st.isForegrounded(),
+                            shouldShowOutline,
+                            st.getClosePressed(),
+                            layoutHelper.getWidth() * mDpToPx,
+                            st.getDrawX() * mDpToPx,
+                            st.getDrawY() * mDpToPx,
+                            st.getWidth() * mDpToPx,
+                            st.getHeight() * mDpToPx,
+                            st.getContentOffsetY() * mDpToPx,
+                            st.getDividerOffsetX() * mDpToPx,
+                            st.getBottomMargin() * mDpToPx,
+                            st.getTopMargin() * mDpToPx,
+                            st.getCloseButtonPadding() * mDpToPx,
+                            st.getCloseButton().getOpacity(),
+                            st.isStartDividerVisible(),
+                            st.isEndDividerVisible(),
+                            st.isLoading(),
+                            st.getLoadingSpinnerRotation(),
+                            st.getContainerOpacity(),
+                            layerTitleCache,
+                            resourceManager);
+        }
     }
 
     private void pushGroupIndicators(

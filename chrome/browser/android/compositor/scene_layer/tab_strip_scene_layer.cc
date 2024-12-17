@@ -34,8 +34,9 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
                                        const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
       tab_strip_layer_(cc::slim::SolidColorLayer::Create()),
-      scrollable_strip_layer_(cc::slim::Layer::Create()),
       group_indicator_layer_(cc::slim::Layer::Create()),
+      scrollable_strip_layer_(cc::slim::Layer::Create()),
+      foreground_layer_(cc::slim::Layer::Create()),
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
       left_fade_(cc::slim::UIResourceLayer::Create()),
@@ -63,9 +64,11 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   // tab group indicators in a separate layer placed visually below the tabs.
   group_indicator_layer_->SetIsDrawable(true);
   scrollable_strip_layer_->SetIsDrawable(true);
+  foreground_layer_->SetIsDrawable(true);
   tab_strip_layer_->SetIsDrawable(true);
   tab_strip_layer_->AddChild(group_indicator_layer_);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
+  tab_strip_layer_->AddChild(foreground_layer_);
 
   tab_strip_layer_->AddChild(left_fade_);
   tab_strip_layer_->AddChild(right_fade_);
@@ -414,9 +417,18 @@ void TabStripSceneLayer::PutStripTabLayer(
     const JavaParamRef<jobject>& jresource_manager) {
   LayerTitleCache* layer_title_cache =
       LayerTitleCache::FromJavaObject(jlayer_title_cache);
+  scoped_refptr<TabHandleLayer> layer = GetNextLayer(layer_title_cache);
+
+  if (foreground != layer->foreground()) {
+    if (foreground) {
+      foreground_layer_->AddChild(layer->layer());
+    } else {
+      scrollable_strip_layer_->AddChild(layer->layer());
+    }
+  }
+
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
-  scoped_refptr<TabHandleLayer> layer = GetNextLayer(layer_title_cache);
   ui::NinePatchResource* tab_handle_resource =
       ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
           handle_resource_id, handle_tint, true));
@@ -426,13 +438,12 @@ void TabStripSceneLayer::PutStripTabLayer(
   ui::Resource* close_button_resource =
       resource_manager->GetStaticResourceWithTint(close_resource_id,
                                                   close_tint);
-
   ui::Resource* close_button_hover_resource =
       resource_manager->GetStaticResourceWithTint(close_hover_bg_resource_id,
                                                   close_hover_bg_tint, true);
-
   ui::Resource* divider_resource = resource_manager->GetStaticResourceWithTint(
       divider_resource_id, divider_tint, true);
+
   layer->SetProperties(
       id, close_button_resource, close_button_hover_resource, divider_resource,
       tab_handle_resource, tab_handle_outline_resource, foreground,

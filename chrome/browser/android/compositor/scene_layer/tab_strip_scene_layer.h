@@ -197,8 +197,9 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::slim::SolidColorLayer> tab_strip_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> group_indicator_bubble_layer_;
-  scoped_refptr<cc::slim::Layer> scrollable_strip_layer_;
   scoped_refptr<cc::slim::Layer> group_indicator_layer_;
+  scoped_refptr<cc::slim::Layer> scrollable_strip_layer_;
+  scoped_refptr<cc::slim::Layer> foreground_layer_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer> left_fade_;

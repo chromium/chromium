@@ -268,6 +268,10 @@ void TabHandleLayer::SetProperties(
   }
 }
 
+bool TabHandleLayer::foreground() {
+  return foreground_;
+}
+
 scoped_refptr<cc::slim::Layer> TabHandleLayer::layer() {
   return layer_;
 }

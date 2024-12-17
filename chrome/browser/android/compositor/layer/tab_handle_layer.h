@@ -56,6 +56,7 @@ class TabHandleLayer : public Layer {
                      bool is_loading,
                      float spinner_rotation,
                      float opacity);
+  bool foreground();
   scoped_refptr<cc::slim::Layer> layer() override;
 
  protected:
