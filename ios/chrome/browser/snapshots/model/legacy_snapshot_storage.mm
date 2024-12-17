@@ -27,12 +27,12 @@
 
 namespace {
 
-// Maximum size in number of elements that the LRU cache can hold before
+// Base size in number of elements that the LRU cache can hold before
 // starting to evict elements.
-const NSUInteger kLRUCacheMaxCapacity = 6;
+const NSUInteger kLRUCacheBaseCapacity = 6;
 
-// Maximum size in number of elements that the LRU cache can hold before
-// starting to evict elements when PinnedTabs feature is enabled.
+// Additional capacity of elements that the LRU cache can hold before starting
+// to evict elements when PinnedTabs feature is enabled.
 //
 // To calculate the cache size number we'll start with the assumption that
 // currently snapshot preloading feature "works fine". In the reality it might
@@ -41,7 +41,13 @@ const NSUInteger kLRUCacheMaxCapacity = 6;
 // used. Based on that kLRUCacheMaxCapacityForPinnedTabsEnabled is
 // kLRUCacheMaxCapacity which "works fine" + on average 4 more snapshots needed
 // for pinned tabs feature.
-const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
+const NSUInteger kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4;
+
+// Additional capacity of elements that the LRU cache can hold before starting
+// to evict elements when the Tab Group feature is enabled.
+//
+// A tab group cell requests up to 7 snapshots from the first item.
+const NSUInteger kLRUCacheAdditionalCapacityForTabGroupEnabled = 7;
 
 }  // namespace
 
@@ -75,9 +81,13 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
                          legacyPath:(const base::FilePath&)legacyPath {
   if ((self = [super init])) {
-    NSUInteger cacheSize = IsPinnedTabsEnabled()
-                               ? kLRUCacheMaxCapacityForPinnedTabsEnabled
-                               : kLRUCacheMaxCapacity;
+    NSUInteger cacheSize = kLRUCacheBaseCapacity;
+    if (IsPinnedTabsEnabled()) {
+      cacheSize += kLRUCacheAdditionalCapacityForPinnedTabsEnabled;
+    }
+    if (IsLargeCapacityInSnapshotLRUCacheEnabled()) {
+      cacheSize += kLRUCacheAdditionalCapacityForTabGroupEnabled;
+    }
     _lruCache = [[LegacySnapshotLRUCache alloc] initWithCacheSize:cacheSize];
 
     _fileManager =
