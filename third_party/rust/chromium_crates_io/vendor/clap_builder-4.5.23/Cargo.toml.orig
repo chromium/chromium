@@ -1,6 +1,6 @@
 [package]
 name = "clap_builder"
-version = "4.5.21"
+version = "4.5.23"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -59,7 +59,7 @@ unstable-styles = ["color"]  # deprecated
 bench = false
 
 [dependencies]
-clap_lex = { path = "../clap_lex", version = "0.7.0" }
+clap_lex = { path = "../clap_lex", version = "0.7.4" }
 unicase = { version = "2.6.0", optional = true }
 strsim = { version = "0.11.0",  optional = true }
 anstream = { version = "0.6.7", optional = true }

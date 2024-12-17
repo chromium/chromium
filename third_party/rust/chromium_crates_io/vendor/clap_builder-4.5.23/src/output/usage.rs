@@ -97,7 +97,7 @@ impl<'cmd> Usage<'cmd> {
 }
 
 #[cfg(feature = "usage")]
-impl<'cmd> Usage<'cmd> {
+impl Usage<'_> {
     // Creates a usage string for display in help messages (i.e. not for errors)
     fn write_help_usage(&self, styled: &mut StyledStr) {
         debug!("Usage::write_help_usage");

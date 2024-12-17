@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_builder"
-version = "4.5.21"
+version = "4.5.23"
 build = false
 include = [
     "build.rs",
@@ -24,6 +24,7 @@ include = [
     "benches/**/*",
     "examples/**/*",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -77,7 +78,7 @@ version = "0.3.73"
 optional = true
 
 [dependencies.clap_lex]
-version = "0.7.0"
+version = "0.7.4"
 
 [dependencies.strsim]
 version = "0.11.0"

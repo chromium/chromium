@@ -1541,7 +1541,7 @@ impl<'cmd> Parser<'cmd> {
 }
 
 // Error, Help, and Version Methods
-impl<'cmd> Parser<'cmd> {
+impl Parser<'_> {
     /// Is only used for the long flag(which is the only one needs fuzzy searching)
     fn did_you_mean_error(
         &mut self,

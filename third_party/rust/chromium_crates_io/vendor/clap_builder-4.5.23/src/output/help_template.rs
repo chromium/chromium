@@ -250,7 +250,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
 }
 
 /// Basic template methods
-impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
+impl HelpTemplate<'_, '_> {
     /// Writes binary name of a Parser Object to the wrapped stream.
     fn write_display_name(&mut self) {
         debug!("HelpTemplate::write_display_name");
@@ -364,7 +364,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
 }
 
 /// Arg handling
-impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
+impl HelpTemplate<'_, '_> {
     /// Writes help for all arguments (options, flags, args, subcommands)
     /// including titles of a Parser Object to the wrapped stream.
     pub(crate) fn write_all_args(&mut self) {
@@ -847,7 +847,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
 }
 
 /// Subcommand handling
-impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
+impl HelpTemplate<'_, '_> {
     /// Writes help for subcommands of a Parser Object to the wrapped stream.
     fn write_flat_subcommands(&mut self, cmd: &Command, first: &mut bool) {
         debug!(

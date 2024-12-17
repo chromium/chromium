@@ -4848,7 +4848,7 @@ impl Command {
 /// A workaround:
 /// <https://github.com/rust-lang/rust/issues/34511#issuecomment-373423999>
 pub(crate) trait Captures<'a> {}
-impl<'a, T> Captures<'a> for T {}
+impl<T> Captures<'_> for T {}
 
 // Internal Query Methods
 impl Command {

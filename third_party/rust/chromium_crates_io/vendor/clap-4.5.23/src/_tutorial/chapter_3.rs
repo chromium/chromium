@@ -14,7 +14,7 @@
 //! [`PossibleValuesParser`][crate::builder::PossibleValuesParser] or [`Arg::value_parser(["val1",
 //! ...])`][crate::Arg::value_parser] for short.
 //!
-//! This allows you specify the valid values for that argument. If the user does not use one of
+//! This allows you to specify the valid values for that argument. If the user does not use one of
 //! those specific values, they will receive a graceful exit with error message informing them
 //! of the mistake, and what the possible valid values are
 //!

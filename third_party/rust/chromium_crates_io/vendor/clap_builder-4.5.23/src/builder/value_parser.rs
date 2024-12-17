@@ -1828,7 +1828,7 @@ impl Default for FalseyValueParser {
     }
 }
 
-/// Parse bool-like string values, everything else is `true`
+/// Parse bool-like string values
 ///
 /// See also:
 /// - [`ValueParser::bool`] for different human readable bool representations
@@ -1877,7 +1877,7 @@ impl Default for FalseyValueParser {
 pub struct BoolishValueParser {}
 
 impl BoolishValueParser {
-    /// Parse bool-like string values, everything else is an error.
+    /// Parse bool-like string values
     pub fn new() -> Self {
         Self {}
     }
