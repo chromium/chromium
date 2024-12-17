@@ -137,6 +137,19 @@ const char TabStatsTracker::UmaStatsReportingDelegate::
     kTabDuplicatePercentageAllProfileWindowsHistogramName[] =
         "Tabs.Duplicates.Percentage.AllProfileWindows";
 
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabDuplicateExcludingFragmentsCountSingleWindowHistogramName[] =
+        "Tabs.DuplicatesExcludingFragments.Count.SingleWindow";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabDuplicateExcludingFragmentsCountAllProfileWindowsHistogramName[] =
+        "Tabs.DuplicatesExcludingFragments.Count.AllProfileWindows";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabDuplicateExcludingFragmentsPercentageSingleWindowHistogramName[] =
+        "Tabs.DuplicatesExcludingFragments.Percentage.SingleWindow";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabDuplicateExcludingFragmentsPercentageAllProfileWindowsHistogramName[] =
+        "Tabs.DuplicatesExcludingFragments.Percentage.AllProfileWindows";
+
 const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
   return tab_stats_data_store_->tab_stats();
 }
@@ -576,7 +589,8 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
   UmaHistogramCounts10000WithBatteryStateVariant(kWindowCountHistogramName,
                                                  tab_stats.window_count);
   if (base::FeatureList::IsEnabled(features::kTabDuplicateMetrics)) {
-    ReportTabDuplicateMetrics();
+    ReportTabDuplicateMetrics(true);
+    ReportTabDuplicateMetrics(false);
   }
   // Record the width of all open browser windows with tabs.
   for (Browser* browser : *BrowserList::GetInstance()) {
@@ -606,7 +620,8 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
   }
 }
 
-void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics() {
+void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics(
+    bool exclude_fragments) {
   std::map<Profile*, DuplicateData> duplicate_data_per_profile;
   for (Browser* const browser : *BrowserList::GetInstance()) {
     if (browser->type() != Browser::TYPE_NORMAL) {
@@ -625,7 +640,8 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics() {
     for (int index = 0; index < tab_count; index++) {
       content::WebContents* const web_contents =
           browser->tab_strip_model()->GetWebContentsAt(index);
-      const GURL url = web_contents->GetURL();
+      const GURL full_url = web_contents->GetURL();
+      const GURL url = exclude_fragments ? full_url.GetWithoutRef() : full_url;
       auto seen_urls_single_window_result =
           duplicate_data_single_window.seen_urls.insert(url);
       if (!seen_urls_single_window_result.second) {
@@ -643,11 +659,16 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics() {
     }
     duplicate_data_per_profile[profile] = duplicate_data_multi_window;
 
-    base::UmaHistogramCounts100(kTabDuplicateCountSingleWindowHistogramName,
-                                duplicate_data_single_window.duplicate_count);
+    base::UmaHistogramCounts100(
+        exclude_fragments
+            ? kTabDuplicateExcludingFragmentsCountSingleWindowHistogramName
+            : kTabDuplicateCountSingleWindowHistogramName,
+        duplicate_data_single_window.duplicate_count);
     if (duplicate_data_single_window.tab_count > 0) {
       base::UmaHistogramPercentage(
-          kTabDuplicatePercentageSingleWindowHistogramName,
+          exclude_fragments
+              ? kTabDuplicateExcludingFragmentsPercentageSingleWindowHistogramName
+              : kTabDuplicatePercentageSingleWindowHistogramName,
           duplicate_data_single_window.duplicate_count * 100 /
               duplicate_data_single_window.tab_count);
     }
@@ -660,11 +681,15 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics() {
     }
 
     base::UmaHistogramCounts100(
-        kTabDuplicateCountAllProfileWindowsHistogramName,
+        exclude_fragments
+            ? kTabDuplicateExcludingFragmentsCountAllProfileWindowsHistogramName
+            : kTabDuplicateCountAllProfileWindowsHistogramName,
         duplicate_data.second.duplicate_count);
     if (duplicate_data.second.tab_count > 0) {
       base::UmaHistogramPercentage(
-          kTabDuplicatePercentageAllProfileWindowsHistogramName,
+          exclude_fragments
+              ? kTabDuplicateExcludingFragmentsPercentageAllProfileWindowsHistogramName
+              : kTabDuplicatePercentageAllProfileWindowsHistogramName,
           duplicate_data.second.duplicate_count * 100 /
               duplicate_data.second.tab_count);
     }
