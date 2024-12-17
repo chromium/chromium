@@ -249,6 +249,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   std::optional<base::TimeTicks> fetch_handler_end_time_;
   std::optional<bool> is_fetch_handler_fallback_;
   bool is_main_resource_;
+  bool clone_response_for_fetch_handler_completed_ = false;
 
   base::TimeTicks request_start_;
   base::Time request_start_time_;

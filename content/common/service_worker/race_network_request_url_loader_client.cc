@@ -370,6 +370,17 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
         read_buffer_manager_->IsWatching()) {
       read_buffer_manager_->CancelWatching();
     }
+  } else if (clone_response_for_fetch_handler_completed_) {
+    // In some scenario, there is a case that data clonings for both network and
+    // fetch handler were finished, but still waiting for `OnComplete()` from
+    // the original resource loading. We need to call `OnComplete()` to complete
+    // the fetch handler if it's not called yet. crbug.com/384414080 for more
+    // contexts.
+    //
+    // Note: This is needed only when the
+    // ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement feature
+    // is enabled.
+    forwarding_client_->OnComplete(completion_status_.value());
   }
 }
 
@@ -691,9 +702,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnCloneCompleted() {
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::
     OnCloneCompletedForFetchHandler() {
-  CHECK(completion_status_.has_value());
-  forwarding_client_->OnComplete(completion_status_.value());
-  write_buffer_manager_for_fetch_handler_.ResetProducer();
+  clone_response_for_fetch_handler_completed_ = true;
+  if (completion_status_.has_value()) {
+    // If `completion_status_` already exists, which means the resource load was
+    // already completed. Then the resource load for fetch handler should be
+    // completed as well.
+    forwarding_client_->OnComplete(completion_status_.value());
+    write_buffer_manager_for_fetch_handler_.ResetProducer();
+  }
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
