@@ -168,10 +168,10 @@
   }];
 }
 
-- (void)openAllPlusAddressList {
+- (void)openAllPlusAddressList:(BOOL)isAddressManualFallback {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openAllPlusAddressesPicker];
+    [weakSelf.delegate openAllPlusAddressesPicker:isAddressManualFallback];
   }];
 }
 

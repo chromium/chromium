@@ -30,6 +30,10 @@
 // The delegate for this coordinator.
 @property(nonatomic, weak) id<ManualFillAllPlusAddressCoordinatorDelegate>
     manualFillAllPlusAddressCoordinatorDelegate;
+
+// Whether the coordinator belongs to address or password manual fallback.
+@property(nonatomic, assign) BOOL isAddressManualFallback;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_ALL_PLUS_ADDRESS_COORDINATOR_H_

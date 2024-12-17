@@ -684,7 +684,7 @@ bool CanReloadInputViews() {
   tabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
 }
 
-- (void)openAllPlusAddressesPicker {
+- (void)openAllPlusAddressesPicker:(BOOL)isAddressManualFallback {
   [self reset];
 
   [self stopManualFillAllPlusAddressCoordinator];
@@ -694,6 +694,7 @@ bool CanReloadInputViews() {
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
   _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = self;
+  _allPlusAddressCoordinator.isAddressManualFallback = isAddressManualFallback;
   [_allPlusAddressCoordinator start];
 }
 

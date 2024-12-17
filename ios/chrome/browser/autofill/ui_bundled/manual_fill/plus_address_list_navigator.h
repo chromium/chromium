@@ -12,7 +12,7 @@
 - (void)openCreatePlusAddressSheet;
 
 // Requests to open the list of all plus addresses.
-- (void)openAllPlusAddressList;
+- (void)openAllPlusAddressList:(BOOL)isAddressManualFallback;
 
 // Requests to open the manage plus address page.
 - (void)openManagePlusAddress;
