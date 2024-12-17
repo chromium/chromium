@@ -16,6 +16,8 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "audible";
     case CannotFreezeReason::kRecentlyAudible:
       return "recently audible";
+    case CannotFreezeReason::kFreezingOriginTrialOptOut:
+      return "freezing origin trial opt-out";
     case CannotFreezeReason::kHoldingWebLock:
       return "holding Web Lock";
     case CannotFreezeReason::kHoldingIndexedDBLock:

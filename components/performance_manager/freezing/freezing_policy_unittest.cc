@@ -504,6 +504,28 @@ TEST_F(FreezingPolicyTest, BecomesRecentlyAudibleWhenFrozen) {
   VerifyFreezerExpectations();
 }
 
+TEST_F(FreezingPolicyTest, FreezeVoteWithOriginTrialOptOut) {
+  page_node()->SetHasFreezingOriginTrialOptOutForTesting(true);
+
+  // Don't expect freezing.
+  policy()->AddFreezeVote(page_node());
+
+  // Expect freezing after removing the origin trial opt-out.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  page_node()->SetHasFreezingOriginTrialOptOutForTesting(false);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyTest, OriginTrialOptOutWhenFrozen) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  policy()->AddFreezeVote(page_node());
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  page_node()->SetHasFreezingOriginTrialOptOutForTesting(true);
+  VerifyFreezerExpectations();
+}
+
 TEST_F(FreezingPolicyTest, FreezeVoteWhenHoldingWebLock) {
   page_node()->SetIsHoldingWebLockForTesting(true);
 

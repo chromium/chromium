@@ -147,6 +147,8 @@ class FreezingPolicy : public PageNodeObserver,
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnPageLifecycleStateChanged(const PageNode* page_node) override;
+  void OnPageHasFreezingOriginTrialOptOutChanged(
+      const PageNode* page_node) override;
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override;
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
   void OnPageUsesWebRTCChanged(const PageNode* page_node) override;

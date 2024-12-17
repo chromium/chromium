@@ -20,6 +20,7 @@ enum class CannotFreezeReason {
   kRecentlyVisible,
   kAudible,
   kRecentlyAudible,
+  kFreezingOriginTrialOptOut,
   kHoldingWebLock,
   kHoldingIndexedDBLock,
   kConnectedToUsbDevice,

@@ -476,6 +476,13 @@ void FreezingPolicy::OnPageLifecycleStateChanged(const PageNode* page_node) {
   }
 }
 
+void FreezingPolicy::OnPageHasFreezingOriginTrialOptOutChanged(
+    const PageNode* page_node) {
+  OnCannotFreezeReasonChange(page_node,
+                             /*add=*/page_node->HasFreezingOriginTrialOptOut(),
+                             CannotFreezeReason::kFreezingOriginTrialOptOut);
+}
+
 void FreezingPolicy::OnPageIsHoldingWebLockChanged(const PageNode* page_node) {
   OnCannotFreezeReasonChange(page_node, /*add=*/page_node->IsHoldingWebLock(),
                              CannotFreezeReason::kHoldingWebLock);
