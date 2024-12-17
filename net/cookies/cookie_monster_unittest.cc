@@ -1433,6 +1433,44 @@ TEST_F(DeferredCookieTaskTest, DeferredTaskOrder) {
               MatchesCookieLine("A=B; X=1"));
 }
 
+class CheckAncestorChainBitEnabledTest
+    : public CookieMonsterTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kAncestorChainBitEnabledInPartitionedCookies,
+        AncestorChainBitEnabled());
+  }
+
+  bool AncestorChainBitEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         CheckAncestorChainBitEnabledTest,
+                         ::testing::Bool());
+
+TEST_P(CheckAncestorChainBitEnabledTest,
+       CheckExpectedMetricValueTriggeredOnLoad) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<CookieMonster> cookie_monster =
+      std::make_unique<CookieMonster>(
+          base::MakeRefCounted<FlushablePersistentStore>().get(),
+          net::NetLog::Get());
+  cookie_monster->SetPersistSessionCookies(true);
+
+  EXPECT_TRUE(
+      SetCookie(cookie_monster.get(), http_www_foo_.url(), "X=Y; path=/"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Cookie.Partitioned.AncestorChainBitFeatureEnabled",
+      AncestorChainBitEnabled(), 1u);
+}
+
 TEST_F(CookieMonsterTest, TestCookieDeleteAll) {
   auto store = base::MakeRefCounted<MockPersistentCookieStore>();
   auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());

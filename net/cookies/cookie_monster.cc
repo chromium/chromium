@@ -963,6 +963,11 @@ void CookieMonster::OnLoaded(
                                 blocked_due_to_global_op, base::Milliseconds(1),
                                 base::Minutes(1), 50);
 
+  base::UmaHistogramBoolean(
+      "Cookie.Partitioned.AncestorChainBitFeatureEnabled",
+      base::FeatureList::IsEnabled(
+          features::kAncestorChainBitEnabledInPartitionedCookies));
+
   // Invoke the task queue of cookie request.
   InvokeQueue();
 }
