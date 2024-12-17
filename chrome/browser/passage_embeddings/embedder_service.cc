@@ -13,11 +13,20 @@ EmbedderService::EmbedderService(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     PassageEmbeddingsServiceController* service_controller)
     : model_provider_(model_provider), service_controller_(service_controller) {
-  // TODO(383380610): Observe Optimization Target Model if `model_provider_` is
-  //  provided.
+  if (model_provider_) {
+    model_provider_->AddObserverForOptimizationTargetModel(
+        optimization_guide::proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER,
+        /*model_metadata=*/std::nullopt, this);
+  }
 }
 
-EmbedderService::~EmbedderService() = default;
+EmbedderService::~EmbedderService() {
+  if (model_provider_) {
+    model_provider_->RemoveObserverForOptimizationTargetModel(
+        optimization_guide::proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER,
+        this);
+  }
+}
 
 void EmbedderService::ComputePassagesEmbeddings(
     mojom::PassagePriority priority,
@@ -44,7 +53,12 @@ void EmbedderService::ComputePassagesEmbeddings(
 void EmbedderService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
-  // TODO(383380610): Update `service_controller_` with the model info.
+  if (optimization_target !=
+      optimization_guide::proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER) {
+    return;
+  }
+
+  service_controller_->MaybeUpdateModelInfo(model_info);
 }
 
 }  // namespace passage_embeddings
