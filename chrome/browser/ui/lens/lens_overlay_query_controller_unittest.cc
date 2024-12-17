@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -33,9 +36,11 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/lens_overlay_document.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
@@ -107,6 +112,11 @@ constexpr char kTimeZone[] = "America/Los_Angeles";
 // The parameter key for gen204 request.
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 
+// kFakeContentBytes and kNewFakeContentBytes needs to outlive the query
+// controller, so initialize it here.
+const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
+const std::vector<uint8_t> kNewFakeContentBytes({5, 6, 7, 8});
+
 const base::test::FeatureRefAndParams
     kDefaultLensOverlayContextualSearchboxParams =
         base::test::FeatureRefAndParams(
@@ -155,7 +165,20 @@ class FakeLensOverlayGen204Controller : public LensOverlayGen204Controller {
 
 class LensOverlayQueryControllerTest : public testing::Test {
  public:
-  LensOverlayQueryControllerTest() {
+  // Constructs a LensOverlayQueryControllerTest with |traits| being forwarded
+  // to its TaskEnvironment. MainThreadType always defaults to UI and must not
+  // be specified.
+  template <typename... TaskEnvironmentTraits>
+  NOINLINE explicit LensOverlayQueryControllerTest(
+      TaskEnvironmentTraits&&... traits)
+      : LensOverlayQueryControllerTest(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                content::BrowserTaskEnvironment::MainThreadType::UI,
+                std::forward<TaskEnvironmentTraits>(traits)...)) {}
+
+  explicit LensOverlayQueryControllerTest(
+      std::unique_ptr<content::BrowserTaskEnvironment> task_environment)
+      : task_environment_(std::move(task_environment)) {
     fake_variations_client_ = std::make_unique<FakeVariationsClient>();
   }
 
@@ -169,13 +192,9 @@ class LensOverlayQueryControllerTest : public testing::Test {
         weak_factory_.GetWeakPtr());
   }
 
-  // Waiting for the final call of the suggest inputs callback cannot be done
-  // with base::test::RunUntil() because the suggest callback won't wake up the
-  // RunUntil() loop. Instead, we use a RunLoop to wait for the suggest inputs
-  // callback to be called, and manually exit the RunLoop when the suggest
-  // inputs are ready with encoded image signals.
   void WaitForSuggestInputsWithEncodedImageSignals() {
-    suggest_inputs_run_loop.Run();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return latest_suggest_inputs_.has_encoded_image_signals(); }));
   }
 
   lens::LensOverlayGen204Controller* GetGen204Controller() {
@@ -308,13 +327,11 @@ class LensOverlayQueryControllerTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<lens::FakeLensOverlayGen204Controller> gen204_controller_;
   std::unique_ptr<FakeVariationsClient> fake_variations_client_;
   lens::proto::LensOverlaySuggestInputs latest_suggest_inputs_;
-  base::RunLoop suggest_inputs_run_loop;
   base::WeakPtrFactory<LensOverlayQueryControllerTest> weak_factory_{this};
 
   TestingProfile* profile() { return profile_.get(); }
@@ -344,14 +361,6 @@ class LensOverlayQueryControllerTest : public testing::Test {
   void HandleSuggestInputsResponse(
       lens::proto::LensOverlaySuggestInputs suggest_inputs) {
     latest_suggest_inputs_ = suggest_inputs;
-    // This callback does not wake up the RunLoop used in RunUntil(). Instead,
-    // we use a RunLoop to wait for the suggest inputs callback to be called.
-    // If the caller is waiting for the suggest inputs callback, exit the
-    // RunLoop if the suggest inputs are ready with encoded image signals.
-    if (suggest_inputs_run_loop.running() &&
-        latest_suggest_inputs_.has_encoded_image_signals()) {
-      suggest_inputs_run_loop.Quit();
-    }
   }
 };
 
@@ -1198,9 +1207,6 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
-  // kFakeContentBytes needs to outlive the query controller, so initialize it
-  // here.
-  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1335,9 +1341,6 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
-  // kFakeContentBytes needs to outlive the query controller, so initialize it
-  // here.
-  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1471,9 +1474,6 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
-  // kFakeContentBytes needs to outlive the query controller, so initialize it
-  // here.
-  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1607,9 +1607,6 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
-  // kFakeContentBytes needs to outlive the query controller, so initialize it
-  // here.
-  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1668,10 +1665,6 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
-  // kFakeContentBytes and kNewFakeContentBytes needs to outlive the query
-  // controller, so initialize it here.
-  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
-  const std::vector<uint8_t> kNewFakeContentBytes({5, 6, 7, 8});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1730,65 +1723,97 @@ TEST_F(LensOverlayQueryControllerTest,
 }
 
 TEST_F(LensOverlayQueryControllerTest,
-       FetchInteraction_StartsNewQueryFlowAfterTimeout) {
-  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr, bool>
-      full_image_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
-      url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
+       SendPartialPageContentRequest_SendsRequest) {
+  InitFeaturesWithClusterInfoOptimization();
   TestLensOverlayQueryController query_controller(
-      full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
-      thumbnail_created_future.GetRepeatingCallback(),
+      /**full_image_callback=*/base::DoNothing(),
+      /**url_callback=*/base::DoNothing(),
+      /**suggest_inputs_callback=*/base::DoNothing(),
+      /**thumbnail_created_callback=*/base::DoNothing(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
 
-  // Set up the query controller responses.
+  // Set up the server responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
   lens::LensOverlayObjectsResponse fake_objects_response;
   fake_objects_response.mutable_cluster_info()->set_server_session_id(
       kTestServerSessionId);
   query_controller.set_fake_objects_response(fake_objects_response);
-  lens::LensOverlayInteractionResponse fake_interaction_response;
-  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
-  query_controller.set_fake_interaction_response(fake_interaction_response);
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  auto region = lens::mojom::CenterRotatedBox::New();
-  region->box = gfx::RectF(30, 40, 50, 60);
-  region->coordinate_type =
-      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
-
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown,
-      /**/ 0, base::TimeTicks::Now());
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
+      lens::MimeType::kPdf, 0, base::TimeTicks::Now());
 
-  // Wait for the full image response to be received, then clear the future.
-  ASSERT_TRUE(full_image_response_future.Wait());
-  full_image_response_future.Clear();
+  const std::vector<std::u16string> kFakePartialContent(
+      {u"page1", u"page2", u"page3"});
+  query_controller.SendPartialPageContentRequest(kFakePartialContent);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller.num_partial_page_content_requests_sent() == 1;
+  }));
 
-  task_environment_.FastForwardBy(base::TimeDelta(base::Minutes(60)));
-  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
-                                    additional_search_query_params,
-                                    std::nullopt);
-  ASSERT_TRUE(url_response_future.Wait());
+  // Check the request is correct.
+  auto sent_request =
+      query_controller.sent_partial_page_content_objects_request();
+  ASSERT_EQ(1, sent_request.request_context().request_id().sequence_id());
+  ASSERT_EQ(lens::Payload::REQUEST_TYPE_EARLY_PARTIAL_PDF,
+            sent_request.payload().request_type());
+  ASSERT_EQ(3, sent_request.payload().partial_pdf_document().pages_size());
+  ASSERT_EQ(
+      1, sent_request.payload().partial_pdf_document().pages(0).page_number());
+  ASSERT_EQ(
+      "page1",
+      sent_request.payload().partial_pdf_document().pages(0).text_segments(0));
+  ASSERT_EQ(
+      2, sent_request.payload().partial_pdf_document().pages(1).page_number());
+  ASSERT_EQ(
+      "page2",
+      sent_request.payload().partial_pdf_document().pages(1).text_segments(0));
+  ASSERT_EQ(
+      3, sent_request.payload().partial_pdf_document().pages(2).page_number());
+  ASSERT_EQ(
+      "page3",
+      sent_request.payload().partial_pdf_document().pages(2).text_segments(0));
+
+  // Send a new page content request to incremement the sequence id.
+  query_controller.SendPageContentUpdateRequest(
+      kFakeContentBytes, lens::MimeType::kPdf, GURL(kTestPageUrl));
+
+  // Send a new request.
+  const std::vector<std::u16string> kNewFakePartialContent({u"new page1"});
+  query_controller.SendPartialPageContentRequest(kNewFakePartialContent);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller.num_partial_page_content_requests_sent() == 2;
+  }));
+
+  // Check the request is correct.
+  sent_request = query_controller.sent_partial_page_content_objects_request();
+  ASSERT_EQ(2, sent_request.request_context().request_id().sequence_id());
+  ASSERT_EQ(lens::Payload::REQUEST_TYPE_EARLY_PARTIAL_PDF,
+            sent_request.payload().request_type());
+  ASSERT_EQ(1, sent_request.payload().partial_pdf_document().pages_size());
+  ASSERT_EQ(
+      1, sent_request.payload().partial_pdf_document().pages(0).page_number());
+  ASSERT_EQ(
+      "new page1",
+      sent_request.payload().partial_pdf_document().pages(0).text_segments(0));
+
+  // Send an empty request.
+  const std::vector<std::u16string> kEmptyPartialContent({});
+  query_controller.ResetPageContentData();
+  query_controller.SendPartialPageContentRequest(kEmptyPartialContent);
+
+  // Check that no request is not sent.
   query_controller.EndQuery();
-
-  // The full image response having another value, after it was already
-  // cleared, indicates that the query controller successfully started a
-  // new query flow due to the timeout occurring.
-  ASSERT_TRUE(full_image_response_future.IsReady());
-  ASSERT_EQ(query_controller.latency_gen_204_counter(
-                LatencyType::kFullPageObjectsRequestFetchLatency),
-            2);
-  CheckGen204IdsMatch(query_controller.sent_client_logs(),
-                      url_response_future.Get());
+  ASSERT_EQ(query_controller.num_partial_page_content_requests_sent(), 2);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -2145,6 +2170,80 @@ TEST_F(LensOverlayQueryControllerTest,
   lens::LensOverlayRoutingInfo url_routing_info =
       GetRoutingInfoFromUrl(url_response_future.Get().url());
   ASSERT_EQ(kTestServerAddress, url_routing_info.server_address());
+}
+
+class LensOverlayQueryControllerMockTimeTest
+    : public LensOverlayQueryControllerTest {
+ public:
+  // Pass a MOCK_TIME task environment to the base class.
+  explicit LensOverlayQueryControllerMockTimeTest()
+      : LensOverlayQueryControllerTest(
+            std::unique_ptr<content::BrowserTaskEnvironment>(
+                std::make_unique<content::BrowserTaskEnvironment>(
+                    content::BrowserTaskEnvironment::MainThreadType::UI,
+                    content::BrowserTaskEnvironment::TimeSource::MOCK_TIME))) {}
+};
+
+TEST_F(LensOverlayQueryControllerMockTimeTest,
+       FetchInteraction_StartsNewQueryFlowAfterTimeout) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown,
+      /**/ 0, base::TimeTicks::Now());
+
+  // Wait for the full image response to be received, then clear the future.
+  ASSERT_TRUE(full_image_response_future.Wait());
+  full_image_response_future.Clear();
+
+  task_environment_->FastForwardBy(base::TimeDelta(base::Minutes(60)));
+  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
+                                    additional_search_query_params,
+                                    std::nullopt);
+  ASSERT_TRUE(url_response_future.Wait());
+  query_controller.EndQuery();
+
+  // The full image response having another value, after it was already
+  // cleared, indicates that the query controller successfully started a
+  // new query flow due to the timeout occurring.
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  ASSERT_EQ(query_controller.latency_gen_204_counter(
+                LatencyType::kFullPageObjectsRequestFetchLatency),
+            2);
+  CheckGen204IdsMatch(query_controller.sent_client_logs(),
+                      url_response_future.Get());
 }
 
 }  // namespace lens

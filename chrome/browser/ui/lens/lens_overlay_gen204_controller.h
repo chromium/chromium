@@ -38,6 +38,10 @@ class LensOverlayGen204Controller {
     // request was sent.
     kInvocationToInitialPageContentRequestSent = 3,
 
+    // From when the overlay was invoked to when the initial partial page
+    // content request was sent.
+    kInvocationToInitialPartialPageContentRequestSent = 9,
+
     // From when the full image request began processing to when the response
     // was received.
     kFullPageObjectsRequestFetchLatency = 4,
@@ -53,6 +57,10 @@ class LensOverlayGen204Controller {
     // From when the page content upload request began processing to when the
     // response was received.
     kPageContentUploadLatency = 7,
+
+    // From the partial page content upload request began processing to when the
+    // response was received.
+    kPartialPageContentUploadLatency = 8,
   };
 
   // Sets the state of the controller. Should be called once

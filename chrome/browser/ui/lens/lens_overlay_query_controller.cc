@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -50,10 +51,12 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/lens_server_proto/lens_overlay_client_platform.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_document.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_filters.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_polygon.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "ui/gfx/geometry/rect.h"
@@ -351,6 +354,7 @@ void LensOverlayQueryController::StartQueryFlow(
 }
 
 void LensOverlayQueryController::EndQuery() {
+  ResetPageContentData();
   gen204_controller_->OnQueryFlowEnd(
       request_id_generator_->GetBase32EncodedAnalyticsId());
   full_image_endpoint_fetcher_.reset();
@@ -429,7 +433,7 @@ void LensOverlayQueryController::SendPartialPageContentRequest(
     base::span<const std::u16string> partial_content) {
   partial_content_ = partial_content;
 
-  // TODO(379344946): Attach partial content to a new request and send.
+  PrepareAndFetchPartialPageContentRequest();
 }
 
 void LensOverlayQueryController::SendRegionSearch(
@@ -716,6 +720,7 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   // cluster info we just received.
   PrepareAndFetchFullImageRequest();
   PrepareAndFetchPageContentRequest();
+  PrepareAndFetchPartialPageContentRequest();
 }
 
 void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
@@ -1064,6 +1069,85 @@ void LensOverlayQueryController::PageContentUploadProgressHandler(
           FROM_HERE, std::move(pending_contextual_query_callback_));
     }
   }
+}
+
+void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
+  if (!cluster_info_ || partial_content_.empty()) {
+    // Cannot send this request without cluster info. No need to send the
+    // request without content bytes.
+    return;
+  }
+
+  partial_page_contents_request_start_time_ = base::TimeTicks::Now();
+
+  // Create the request.
+  lens::LensOverlayServerRequest request;
+  lens::LensOverlayRequestContext request_context;
+
+  // Use the same request ID as the full image request. It is guaranteed to
+  // exist since the full image request was started first.
+  CHECK(latest_full_image_request_data_->request_id_);
+  request_context.mutable_request_id()->CopyFrom(
+      *latest_full_image_request_data_->request_id_);
+
+  request_context.mutable_client_context()->CopyFrom(CreateClientContext());
+  request.mutable_objects_request()->mutable_request_context()->CopyFrom(
+      request_context);
+
+  // Create the partial page content payload.
+  lens::Payload payload;
+  payload.set_request_type(lens::Payload::REQUEST_TYPE_EARLY_PARTIAL_PDF);
+
+  // Add the partial page content to the payload.
+  lens::LensOverlayDocument* partial_pdf_document =
+      payload.mutable_partial_pdf_document();
+  for (size_t i = 0; i < partial_content_.size(); ++i) {
+    const auto& page_text = partial_content_[i];
+    auto* page = partial_pdf_document->add_pages();
+    page->set_page_number(i + 1);
+    page->add_text_segments(base::UTF16ToUTF8(page_text));
+  }
+
+  // Add the page url to the payload if it is available.
+  if (!page_url_.is_empty() &&
+      lens::features::SendPageUrlForContextualization()) {
+    payload.set_page_url(page_url_.spec());
+  }
+  request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
+
+  partial_page_content_access_token_fetcher_ =
+      CreateOAuthHeadersAndContinue(base::BindOnce(
+          &LensOverlayQueryController::PerformPartialPageContentRequest,
+          weak_ptr_factory_.GetWeakPtr(), std::move(request)));
+}
+
+void LensOverlayQueryController::PerformPartialPageContentRequest(
+    lens::LensOverlayServerRequest request,
+    std::vector<std::string> headers) {
+  partial_page_content_access_token_fetcher_.reset();
+
+  PerformFetchRequest(
+      &request, &headers,
+      base::Milliseconds(
+          lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
+      base::BindOnce(&LensOverlayQueryController::
+                         OnPartialPageContentEndpointFetcherCreated,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &LensOverlayQueryController::PartialPageContentResponseHandler,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LensOverlayQueryController::PartialPageContentResponseHandler(
+    std::unique_ptr<EndpointResponse> response) {
+  partial_page_content_endpoint_fetcher_.reset();
+
+  SendLatencyGen204IfEnabled(
+      LatencyType::kPartialPageContentUploadLatency,
+      partial_page_contents_request_start_time_,
+      VitQueryParamValueForMimeType(underlying_content_type_),
+      /*cluster_info_latency=*/std::nullopt,
+      /*encoded_analytics_id=*/std::nullopt);
 }
 
 void LensOverlayQueryController::SendInteraction(
@@ -1689,6 +1773,14 @@ void LensOverlayQueryController::OnPageContentEndpointFetcherCreated(
       LatencyType::kInvocationToInitialPageContentRequestSent,
       VitQueryParamValueForMimeType(underlying_content_type_));
   page_content_endpoint_fetcher_ = std::move(endpoint_fetcher);
+}
+
+void LensOverlayQueryController::OnPartialPageContentEndpointFetcherCreated(
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher) {
+  SendInitialLatencyGen204IfNotAlreadySent(
+      LatencyType::kInvocationToInitialPartialPageContentRequestSent,
+      VitQueryParamValueForMimeType(underlying_content_type_));
+  partial_page_content_endpoint_fetcher_ = std::move(endpoint_fetcher);
 }
 
 void LensOverlayQueryController::OnInteractionEndpointFetcherCreated(

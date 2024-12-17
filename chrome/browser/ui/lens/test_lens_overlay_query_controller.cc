@@ -179,6 +179,17 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
         fake_cluster_info_response_.SerializeAsString();
   } else if (request->has_objects_request() &&
              !request->objects_request().has_image_data() &&
+             request->objects_request().has_payload() &&
+            request->objects_request().payload().has_partial_pdf_document()) {
+    // Partial page content upload request.
+    num_partial_page_content_requests_sent_++;
+    LOG(ERROR) << num_partial_page_content_requests_sent_;
+    sent_partial_page_content_objects_request_.CopyFrom(request->objects_request());
+    // The server doesn't send a response to this request, so no need to set
+    // the response string to something meaningful.
+    fake_server_response_string = "";
+  } else if (request->has_objects_request() &&
+             !request->objects_request().has_image_data() &&
              request->objects_request().has_payload()) {
     // Page content upload request.
     num_page_content_update_requests_sent_++;

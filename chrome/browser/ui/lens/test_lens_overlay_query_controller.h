@@ -97,6 +97,11 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return sent_page_content_objects_request_;
   }
 
+  const lens::LensOverlayObjectsRequest& sent_partial_page_content_objects_request()
+      const {
+    return sent_partial_page_content_objects_request_;
+  }
+
   const lens::LensOverlayInteractionRequest& sent_interaction_request() const {
     return sent_interaction_request_;
   }
@@ -143,6 +148,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   const int& num_full_page_objects_gen204_pings_sent() const {
     return num_full_page_objects_gen204_pings_sent_;
+  }
+
+  const int& num_partial_page_content_requests_sent() const {
+    return num_partial_page_content_requests_sent_;
   }
 
   int latency_gen_204_counter(
@@ -253,6 +262,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last page content objects request sent by the query controller.
   lens::LensOverlayObjectsRequest sent_page_content_objects_request_;
 
+  // The last partial page content objects request sent by the query controller.
+  lens::LensOverlayObjectsRequest sent_partial_page_content_objects_request_;
+
   // The last interaction request sent by the query controller.
   lens::LensOverlayInteractionRequest sent_interaction_request_;
 
@@ -298,6 +310,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The number of page content update requests sent by the query controller.
   int num_page_content_update_requests_sent_ = 0;
+
+  // The number of partial page content requests sent by the query controller.
+  int num_partial_page_content_requests_sent_ = 0;
 
   // Tracker for the number of latency request events sent by the query
   // controller.

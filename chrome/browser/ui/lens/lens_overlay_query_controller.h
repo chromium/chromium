@@ -345,6 +345,19 @@ class LensOverlayQueryController {
   // Handles the prgress of the page content upload request.
   void PageContentUploadProgressHandler(uint64_t position, uint64_t total);
 
+  // Creates a full image request with the partial page content bytes and sends
+  // it to the server.
+  void PrepareAndFetchPartialPageContentRequest();
+
+  // Performs the partial page content request. This is a send and forget
+  // request, so we are not expecting to use the response.
+  void PerformPartialPageContentRequest(lens::LensOverlayServerRequest request,
+                                        std::vector<std::string> headers);
+
+  // Handles the endpoint fetch response for the partial page content request.
+  void PartialPageContentResponseHandler(
+      std::unique_ptr<EndpointResponse> response);
+
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
   void SendInteraction(
@@ -482,6 +495,10 @@ class LensOverlayQueryController {
   void OnPageContentEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
+  // Callback for when the partial page content endpoint fetcher is created.
+  void OnPartialPageContentEndpointFetcherCreated(
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+
   // Callback for when the interaction endpoint fetcher is created.
   void OnInteractionEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
@@ -526,6 +543,9 @@ class LensOverlayQueryController {
   // The time the page contents request was started.
   base::TimeTicks page_contents_request_start_time_;
 
+  // The time the partial page contents request was started.
+  base::TimeTicks partial_page_contents_request_start_time_;
+
   // The current state.
   QueryControllerState query_controller_state_ = QueryControllerState::kOff;
 
@@ -557,6 +577,11 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       page_content_access_token_fetcher_;
 
+  // The access token fetcher used for getting OAuth for partial page content
+  // requests.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      partial_page_content_access_token_fetcher_;
+
   // The access token fetcher used for getting OAuth for interaction requests.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       interaction_access_token_fetcher_;
@@ -577,6 +602,9 @@ class LensOverlayQueryController {
 
   // The endpoint fetcher used for the page content request.
   std::unique_ptr<EndpointFetcher> page_content_endpoint_fetcher_;
+
+  // The endpoint fetcher used for the partial page content request.
+  std::unique_ptr<EndpointFetcher> partial_page_content_endpoint_fetcher_;
 
   // The endpoint fetcher used for the interaction request. Only the last
   // endpoint fetcher is kept; additional fetch requests will discard
