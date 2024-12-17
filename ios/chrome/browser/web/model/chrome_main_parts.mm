@@ -21,6 +21,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
+#import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_tick_clock.h"
 #import "build/blink_buildflags.h"
@@ -38,6 +39,7 @@
 #import "components/metrics/metrics_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "components/os_crypt/sync/os_crypt.h"
 #import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -102,6 +104,14 @@ void SetProtectionLevel(const base::FilePath& file_path, id level) {
                                                  forKey:NSURLFileProtectionKey
                                                   error:&error];
   DCHECK(protection_set) << base::SysNSStringToUTF8(error.localizedDescription);
+}
+
+// Initializes OSCrypt.
+void EnsureOSCryptInitialized() {
+  // There is no public API to initialize OSCrypt. It is performed one the
+  // first call to the library, so call `OSCrypt::IsEncryptionAvailable()`
+  // and discard the result to perform the initialisation.
+  std::ignore = OSCrypt::IsEncryptionAvailable();
 }
 
 }  // namespace
@@ -290,6 +300,12 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&FirstRun::LoadSentinelInfo));
+
+  // Force the initialisation of the OSCrypt library early in the application
+  // startup sequence. See https://crbug.com/383661630 for why this is needed.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&EnsureOSCryptInitialized));
 
   // ContentSettingsPattern need to be initialized before creating the
   // ProfileIOS.

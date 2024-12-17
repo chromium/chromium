@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/os_crypt/sync",
   "+ios/chrome/browser/application_context/model",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/browser_container/model",

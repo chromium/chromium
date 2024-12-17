@@ -249,6 +249,7 @@ source_set("web_internal") {
     "//components/metrics/public/mojom:call_stack_mojo_bindings",
     "//components/metrics_services_manager",
     "//components/open_from_clipboard",
+    "//components/os_crypt/sync:os_crypt",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios:password_manager_feature_header",
     "//components/payments/core",
