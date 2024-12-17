@@ -310,7 +310,12 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
     const PhysicalOffset& offset_to_padding_box,
     bool is_y_axis,
     bool is_right_or_bottom) const {
-  const PhysicalRect anchor = container_converter.ToPhysical(reference.rect);
+  PhysicalRect anchor_rect = container_converter.ToPhysical(reference.rect);
+  // Make the offset relative to the padding box, because the containing block
+  // is formed by the padding edge.
+  // https://www.w3.org/TR/CSS21/visudet.html#containing-block-details
+  anchor_rect.offset -= offset_to_padding_box;
+
   anchor_value = PhysicalAnchorValueFromLogicalOrAuto(
       anchor_value, container_converter.GetWritingDirection(),
       self_writing_direction, is_y_axis);
@@ -319,54 +324,45 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
   LayoutUnit value;
   switch (anchor_value) {
     case CSSAnchorValue::kCenter: {
-      const LayoutUnit start = is_y_axis
-                                   ? anchor.Y() - offset_to_padding_box.top
-                                   : anchor.X() - offset_to_padding_box.left;
-      const LayoutUnit end = is_y_axis
-                                 ? anchor.Bottom() - offset_to_padding_box.top
-                                 : anchor.Right() - offset_to_padding_box.left;
+      const LayoutUnit start = is_y_axis ? anchor_rect.Y() : anchor_rect.X();
+      const LayoutUnit end =
+          is_y_axis ? anchor_rect.Bottom() : anchor_rect.Right();
       value = start + LayoutUnit::FromFloatRound((end - start) * 0.5);
       break;
     }
     case CSSAnchorValue::kLeft:
       if (is_y_axis)
         return std::nullopt;  // Wrong axis.
-      // Make the offset relative to the padding box, because the containing
-      // block is formed by the padding edge.
-      // https://www.w3.org/TR/CSS21/visudet.html#containing-block-details
-      value = anchor.X() - offset_to_padding_box.left;
+      value = anchor_rect.X();
       break;
     case CSSAnchorValue::kRight:
       if (is_y_axis)
         return std::nullopt;  // Wrong axis.
-      // See |CSSAnchorValue::kLeft|.
-      value = anchor.Right() - offset_to_padding_box.left;
+      value = anchor_rect.Right();
       break;
     case CSSAnchorValue::kTop:
       if (!is_y_axis)
         return std::nullopt;  // Wrong axis.
-      // See |CSSAnchorValue::kLeft|.
-      value = anchor.Y() - offset_to_padding_box.top;
+      value = anchor_rect.Y();
       break;
     case CSSAnchorValue::kBottom:
       if (!is_y_axis)
         return std::nullopt;  // Wrong axis.
-      // See |CSSAnchorValue::kLeft|.
-      value = anchor.Bottom() - offset_to_padding_box.top;
+      value = anchor_rect.Bottom();
       break;
     case CSSAnchorValue::kPercentage: {
       LayoutUnit size;
       if (is_y_axis) {
-        value = anchor.Y() - offset_to_padding_box.top;
-        size = anchor.Height();
+        value = anchor_rect.Y();
+        size = anchor_rect.Height();
         // The percentage is logical, between the `start` and `end` sides.
         // Convert to the physical percentage.
         // https://drafts.csswg.org/css-anchor-1/#anchor-pos
         if (container_converter.GetWritingDirection().IsFlippedY())
           percentage = 100 - percentage;
       } else {
-        value = anchor.X() - offset_to_padding_box.left;
-        size = anchor.Width();
+        value = anchor_rect.X();
+        size = anchor_rect.Width();
         // Convert the logical percentage to physical. See above.
         if (container_converter.GetWritingDirection().IsFlippedX())
           percentage = 100 - percentage;
