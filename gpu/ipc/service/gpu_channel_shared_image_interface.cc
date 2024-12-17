@@ -407,6 +407,28 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   return shared_image_mapping;
 }
 
+scoped_refptr<ClientSharedImage>
+GpuChannelSharedImageInterface::CreateSharedImageForSoftwareCompositor(
+    const SharedImageInfo& si_info) {
+  base::WritableSharedMemoryMapping mapping;
+  gfx::GpuMemoryBufferHandle handle;
+  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
+
+  auto mailbox = Mailbox::Generate();
+  {
+    base::AutoLock lock(lock_);
+    ScheduleGpuTask(base::BindOnce(&GpuChannelSharedImageInterface::
+                                       CreateSharedImageWithBufferOnGpuThread,
+                                   this, mailbox, si_info, std::move(handle)),
+                    /*sync_token_fences=*/{},
+                    MakeSyncToken(next_fence_sync_release_++));
+  }
+
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
+                                                 GenVerifiedSyncToken(),
+                                                 holder_, std::move(mapping));
+}
+
 void GpuChannelSharedImageInterface::CreateSharedImageWithBufferOnGpuThread(
     const Mailbox& mailbox,
     SharedImageInfo si_info,
