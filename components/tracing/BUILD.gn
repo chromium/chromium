@@ -53,6 +53,8 @@ component("startup_tracing") {
       "common/etw_export_win.h",
       "common/etw_system_data_source_win.cc",
       "common/etw_system_data_source_win.h",
+      "common/system_log_event_utils_win.cc",
+      "common/system_log_event_utils_win.h",
     ]
   }
 
@@ -126,6 +128,7 @@ source_set("unit_tests") {
     sources += [
       "common/active_processes_win_unittest.cc",
       "common/etw_consumer_win_unittest.cc",
+      "common/system_log_event_utils_win_unittest.cc",
     ]
     deps += [
       "//base/version_info:generate_version_info",
