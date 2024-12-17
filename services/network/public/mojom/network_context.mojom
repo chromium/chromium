@@ -916,6 +916,19 @@ struct URLLoaderFactoryParams {
 // interface that must not be sent to an untrusted process like a renderer
 // process. Only the browser process or privileged utilities should have access
 // to it.
+//
+// WARNING: When adding a new entry point function in the NetworkContext to
+// send a network request, if it is passed the IsolationInfo, either directly
+// or via one of its resultant keys like NetworkIsolationKey,
+// NetworkAnonymizationKey etc., or via its container like
+// `URLRequest.trusted_params`, make sure to check that the nonce in the key is
+// not revoked via NetworkContext::IsNetworkForNonceAndUrlAllowed() (See
+// example check in NetworkContext::ResolveHost). If it is, the request should
+// most likely be abandoned unless it is considered privacy safe, since the
+// initiating context has revoked access to the network. If the request is
+// allowed to access the network, please add a comment in the function as to
+// why network revocation doesn’t apply to that request. More context on
+// network revocation is in the comment for `RevokeNetworkForNonces()` below.
 [RequireContext=sandbox.mojom.Context.kPrivilegedUtility]
 interface NetworkContext {
   // Sets a client for this network context.
@@ -1436,6 +1449,8 @@ interface NetworkContext {
   // `credentials_mode` and `network_anonymization_key`.
   // `traffic_annotation` will be used to distinguish where the preconnect was
   // initiated from.
+  // The preconnect is aborted if network access is disabled for
+  // `network_anonymization_key->GetNonce()`.
   PreconnectSockets(uint32 num_streams,
                     url.mojom.Url url,
                     network.mojom.CredentialsMode credentials_mode,
@@ -1461,6 +1476,9 @@ interface NetworkContext {
   //
   // All outstanding requests are cancelled if the NetworkContext is destroyed.
   // Such requests will receive ERR_FAILED via `response_client`.
+  //
+  // The request is aborted if network access is disabled for
+  // `network_anonymization_key->GetNonce()`.
   //
   // When `host` is a SchemeHostPort, behaves under the assumption that the
   // resolution is being done for the purpose of making a connection with the
