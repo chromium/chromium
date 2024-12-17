@@ -12,7 +12,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.RemoteException;
@@ -140,7 +139,7 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
     public void notifyNotificationWithChannel(
             String platformTag, int platformID, Notification notification, String channelName) {
         NotificationManager notificationManager = getNotificationManager();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notification.getChannelId() != null) {
+        if (notification.getChannelId() != null) {
             NotificationChannel channel =
                     new NotificationChannel(
                             notification.getChannelId(),
