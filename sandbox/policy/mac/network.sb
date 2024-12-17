@@ -103,6 +103,10 @@
   ; Read network configuration.
   (global-name "com.apple.SystemConfiguration.DNSConfiguration")
   (global-name "com.apple.SystemConfiguration.configd")
+
+  ; If the system has a relay configured, system frameworks may call out
+  ; to nehelper to access its configuration (https://crbug.com/383306185)
+  (global-name "com.apple.nehelper")
 )
 
 (allow sysctl-read
