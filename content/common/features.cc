@@ -261,14 +261,6 @@ BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// During compositor frame eviction, collect not only the surfaces that are
-// reachable from the main frame tree, but also recurse into inner
-// frames. Otherwise only toplevel frames and OOPIF are handled, and other
-// cases, e.g. PDF tiles are ignored. See https://crbug.com/1360351 for details.
-BASE_FEATURE(kInnerFrameCompositorSurfaceEviction,
-             "InnerFrameCompositorSurfaceEviction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the ability to use the updateIfOlderThanMs field in the trusted
 // bidding response to trigger a post-auction update if the group has been
 // updated more recently than updateIfOlderThanMs milliseconds, bypassing the

@@ -954,11 +954,7 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
     // <webview>, and PDF. These may have a compositor surface as well,
     // in which case we need to explore not the outer node only, but the inner
     // ones as well.
-    FrameTree::NodeRange node_range =
-        base::FeatureList::IsEnabled(
-            features::kInnerFrameCompositorSurfaceEviction)
-            ? tree.NodesIncludingInnerTreeNodes()
-            : tree.SubtreeNodes(root);
+    FrameTree::NodeRange node_range = tree.NodesIncludingInnerTreeNodes();
     CollectSurfaceIdsForEvictionForFrameTreeNodeRange(node_range, ids);
   } else if (is_in_back_forward_cache_) {
     // `FrameTree::SubtreeAndInnerTreeNodes` starts with the children of `rfh`
