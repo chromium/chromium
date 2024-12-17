@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_ANDROID_MEDIA_CODEC_BRIDGE_H_
 #define MEDIA_BASE_ANDROID_MEDIA_CODEC_BRIDGE_H_
 
+#include <jni.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -220,6 +221,14 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual void OnBuffersAvailable(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) = 0;
+
+  // Called when an unrecognized CodecException occurs. Used temporarily for
+  // logging.
+  virtual void OnUnrecognizedMediaCodecException(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint j_error_code,
+      const base::android::JavaParamRef<jstring>& j_error_message) = 0;
 
   // Returns the CodecType this codec was created with.
   virtual CodecType GetCodecType() const = 0;

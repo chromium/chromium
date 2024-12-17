@@ -20,6 +20,8 @@
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/containers/heap_array.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -853,6 +855,18 @@ void MediaCodecBridgeImpl::OnBuffersAvailable(
     JNIEnv* /* env */,
     const base::android::JavaParamRef<jobject>& /* obj */) {
   on_buffers_available_cb_.Run();
+}
+
+void MediaCodecBridgeImpl::OnUnrecognizedMediaCodecException(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jint j_error_code,
+    const base::android::JavaParamRef<jstring>& j_error_message) {
+  auto message = ConvertJavaStringToUTF8(env, j_error_message);
+  SCOPED_CRASH_KEY_NUMBER("CR_MEDIA", "MediaCodecErrorCode", j_error_code);
+  SCOPED_CRASH_KEY_STRING1024("CR_MEDIA", "MediaCodecErrorMessage", message);
+  base::debug::DumpWithoutCrashing();
+  LOG(ERROR) << message;
 }
 
 std::string MediaCodecBridgeImpl::GetName() {

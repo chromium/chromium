@@ -193,6 +193,12 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
       JNIEnv* /* env */,
       const base::android::JavaParamRef<jobject>& /* obj */) override;
 
+  void OnUnrecognizedMediaCodecException(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint j_error_code,
+      const base::android::JavaParamRef<jstring>& j_error_message) override;
+
   void ReportAnyErrorToUMA(MediaCodecStatus status);
 
   const bool use_block_model_;

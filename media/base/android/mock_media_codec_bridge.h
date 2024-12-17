@@ -79,6 +79,12 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   MOCK_METHOD0(IsAdaptivePlaybackSupported, bool());
   MOCK_METHOD2(OnBuffersAvailable,
                void(JNIEnv*, const base::android::JavaParamRef<jobject>&));
+  MOCK_METHOD4(OnUnrecognizedMediaCodecException,
+               void(JNIEnv*,
+                    const base::android::JavaParamRef<jobject>&,
+                    jint,
+                    const base::android::JavaParamRef<jstring>&));
+
   MOCK_METHOD0(GetMaxInputSize, size_t());
   CodecType GetCodecType() const override;
 
