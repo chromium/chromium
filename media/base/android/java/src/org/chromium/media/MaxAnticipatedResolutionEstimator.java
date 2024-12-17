@@ -50,8 +50,10 @@ public class MaxAnticipatedResolutionEstimator {
     public static Resolution getScreenResolution(MediaFormat format) {
         Resolution resolution = getNativeResolution();
         if (resolution == null) {
-            resolution.mWidth = format.getInteger(MediaFormat.KEY_WIDTH);
-            resolution.mHeight = format.getInteger(MediaFormat.KEY_HEIGHT);
+            resolution =
+                    new Resolution(
+                            format.getInteger(MediaFormat.KEY_WIDTH),
+                            format.getInteger(MediaFormat.KEY_HEIGHT));
         }
 
         // Cap screen size at 1080p for non-4K codecs
