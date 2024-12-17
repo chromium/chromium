@@ -8,11 +8,12 @@
 #include <limits>
 
 #include "base/containers/contains.h"
+#include "base/synchronization/lock.h"
 
 namespace base {
 
-LockFreeAddressHashSet::LockFreeAddressHashSet(size_t buckets_count)
-    : buckets_(buckets_count), bucket_mask_(buckets_count - 1) {
+LockFreeAddressHashSet::LockFreeAddressHashSet(size_t buckets_count, Lock& lock)
+    : lock_(lock), buckets_(buckets_count), bucket_mask_(buckets_count - 1) {
   DCHECK(std::has_single_bit(buckets_count));
   DCHECK_LE(bucket_mask_, std::numeric_limits<uint32_t>::max());
 }
@@ -29,6 +30,7 @@ LockFreeAddressHashSet::~LockFreeAddressHashSet() {
 }
 
 void LockFreeAddressHashSet::Insert(void* key) {
+  lock_->AssertAcquired();
   DCHECK_NE(key, nullptr);
   CHECK(!Contains(key));
   ++size_;
@@ -51,6 +53,7 @@ void LockFreeAddressHashSet::Insert(void* key) {
 }
 
 void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
+  lock_->AssertAcquired();
   DCHECK_EQ(0u, size());
   for (const std::atomic<Node*>& bucket : other.buckets_) {
     for (Node* node = bucket.load(std::memory_order_relaxed); node;
@@ -63,6 +66,7 @@ void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
 }
 
 std::vector<size_t> LockFreeAddressHashSet::GetBucketLengths() const {
+  lock_->AssertAcquired();
   std::vector<size_t> lengths;
   lengths.reserve(buckets_.size());
   for (const std::atomic<Node*>& bucket : buckets_) {

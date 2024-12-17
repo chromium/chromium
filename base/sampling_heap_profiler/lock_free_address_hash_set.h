@@ -13,6 +13,9 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 namespace base {
 
@@ -44,7 +47,11 @@ namespace base {
 // N-1: {*}--> {keyM,*}--> NULL
 class BASE_EXPORT LockFreeAddressHashSet {
  public:
-  explicit LockFreeAddressHashSet(size_t buckets_count);
+  // Creates a hash set with `buckets_count` buckets. `lock` is a lock that
+  // must be held by callers of |Insert|, |Remove| and |Copy|. |Contains| is
+  // lock-free.
+  LockFreeAddressHashSet(size_t buckets_count, Lock& lock);
+
   ~LockFreeAddressHashSet();
 
   // Checks if the |key| is in the set. Can be executed concurrently with
@@ -66,11 +73,22 @@ class BASE_EXPORT LockFreeAddressHashSet {
   // Concurrent execution of |Insert|, |Remove|, or |Copy| is not supported.
   void Copy(const LockFreeAddressHashSet& other);
 
-  size_t buckets_count() const { return buckets_.size(); }
-  size_t size() const { return size_; }
+  size_t buckets_count() const {
+    // `buckets_` should never be resized.
+    DCHECK_EQ(buckets_.size(), bucket_mask_ + 1);
+    return buckets_.size();
+  }
+
+  size_t size() const {
+    lock_->AssertAcquired();
+    return size_;
+  }
 
   // Returns the average bucket utilization.
-  float load_factor() const { return 1.f * size() / buckets_.size(); }
+  float load_factor() const {
+    lock_->AssertAcquired();
+    return 1.f * size() / buckets_.size();
+  }
 
   // Returns the lengths of all buckets. Must not be called concurrently with
   // |Insert|, |Remove| or |Copy|.
@@ -89,8 +107,10 @@ class BASE_EXPORT LockFreeAddressHashSet {
   ALWAYS_INLINE static uint32_t Hash(void* key);
   ALWAYS_INLINE Node* FindNode(void* key) const;
 
+  raw_ref<Lock> lock_;
+
   std::vector<std::atomic<Node*>> buckets_;
-  size_t size_ = 0;
+  size_t size_ GUARDED_BY(lock_) = 0;
   const size_t bucket_mask_;
 };
 
@@ -104,6 +124,7 @@ ALWAYS_INLINE bool LockFreeAddressHashSet::Contains(void* key) const {
 }
 
 ALWAYS_INLINE void LockFreeAddressHashSet::Remove(void* key) {
+  lock_->AssertAcquired();
   Node* node = FindNode(key);
   DCHECK_NE(node, nullptr);
   // We can never delete the node, nor detach it from the current bucket
@@ -118,10 +139,18 @@ ALWAYS_INLINE LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
   DCHECK_NE(key, nullptr);
   const std::atomic<Node*>& bucket = buckets_[Hash(key) & bucket_mask_];
   // It's enough to use std::memory_order_consume ordering here, as the
-  // node->next->...->next loads form dependency chain.
-  // However std::memory_order_consume is temporary deprecated in C++17.
+  // node->next->...->next loads form a dependency chain.
+  // However std::memory_order_consume is temporarily deprecated in C++17.
   // See https://isocpp.org/files/papers/p0636r0.html#removed
   // Make use of more strong std::memory_order_acquire for now.
+  //
+  // Update 2024-12-13: According to
+  // https://en.cppreference.com/w/cpp/atomic/memory_order, C++20 changed the
+  // semantics of a "consume operation" - see the definitions of
+  // "Dependency-ordered before", "Simply happens-before" and "Strongly
+  // happens-before" - but "Release-Consume ordering" still carries the note
+  // that it's "temporarily discouraged" so it's unclear if it's now safe to use
+  // here.
   for (Node* node = bucket.load(std::memory_order_acquire); node != nullptr;
        node = node->next) {
     if (node->key.load(std::memory_order_relaxed) == key)

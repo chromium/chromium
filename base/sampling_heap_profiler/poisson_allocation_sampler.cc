@@ -203,7 +203,7 @@ constinit std::atomic<PoissonAllocationSampler::ProfilingStateFlagMask>
 
 PoissonAllocationSampler::PoissonAllocationSampler() {
   Init();
-  auto* sampled_addresses = new LockFreeAddressHashSet(64);
+  auto* sampled_addresses = new LockFreeAddressHashSet(64, mutex_);
   g_sampled_addresses_set.store(sampled_addresses, std::memory_order_release);
 }
 
@@ -389,8 +389,8 @@ void PoissonAllocationSampler::BalanceAddressesHashSet() {
   if (current_set.load_factor() < 1) {
     return;
   }
-  auto new_set =
-      std::make_unique<LockFreeAddressHashSet>(current_set.buckets_count() * 2);
+  auto new_set = std::make_unique<LockFreeAddressHashSet>(
+      current_set.buckets_count() * 2, mutex_);
   new_set->Copy(current_set);
   // Atomically switch all the new readers to the new set.
   g_sampled_addresses_set.store(new_set.release(), std::memory_order_release);

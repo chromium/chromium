@@ -5,12 +5,15 @@
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 
 #include <stdlib.h>
+
 #include <atomic>
 #include <cinttypes>
 #include <memory>
 
 #include "base/debug/alias.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/synchronization/lock.h"
+#include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,8 +54,13 @@ class LockFreeAddressHashSetTest : public ::testing::Test {
 
 namespace {
 
+using LockFreeAddressHashSetDeathTest = LockFreeAddressHashSetTest;
+
 TEST_F(LockFreeAddressHashSetTest, EmptySet) {
-  LockFreeAddressHashSet set(8);
+  Lock lock;
+  LockFreeAddressHashSet set(8, lock);
+
+  AutoLock auto_lock(lock);
   EXPECT_EQ(size_t(0), set.size());
   EXPECT_EQ(size_t(8), set.buckets_count());
   EXPECT_EQ(0., set.load_factor());
@@ -60,8 +68,10 @@ TEST_F(LockFreeAddressHashSetTest, EmptySet) {
 }
 
 TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
-  LockFreeAddressHashSet set(8);
+  Lock lock;
+  LockFreeAddressHashSet set(8, lock);
 
+  AutoLock auto_lock(lock);
   for (size_t i = 1; i <= 100; ++i) {
     void* ptr = reinterpret_cast<void*>(i);
     set.Insert(ptr);
@@ -90,15 +100,17 @@ TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
 }
 
 TEST_F(LockFreeAddressHashSetTest, Copy) {
-  LockFreeAddressHashSet set(16);
+  Lock lock;
+  LockFreeAddressHashSet set(16, lock);
 
+  AutoLock auto_lock(lock);
   for (size_t i = 1000; i <= 16000; i += 1000) {
     void* ptr = reinterpret_cast<void*>(i);
     set.Insert(ptr);
   }
 
-  LockFreeAddressHashSet set2(4);
-  LockFreeAddressHashSet set3(64);
+  LockFreeAddressHashSet set2(4, lock);
+  LockFreeAddressHashSet set3(64, lock);
   set2.Copy(set);
   set3.Copy(set);
 
@@ -118,39 +130,56 @@ TEST_F(LockFreeAddressHashSetTest, Copy) {
 
 class WriterThread : public SimpleThread {
  public:
-  WriterThread(LockFreeAddressHashSet* set, std::atomic_bool* cancel)
-      : SimpleThread("ReaderThread"), set_(set), cancel_(cancel) {}
+  WriterThread(LockFreeAddressHashSet& set,
+               Lock& lock,
+               std::atomic_bool& cancel)
+      : SimpleThread("ReaderThread"), set_(set), lock_(lock), cancel_(cancel) {}
 
   void Run() override {
     for (size_t value = 42; !cancel_->load(std::memory_order_acquire);
          ++value) {
       void* ptr = reinterpret_cast<void*>(value);
-      set_->Insert(ptr);
+      {
+        AutoLock auto_lock(*lock_);
+        set_->Insert(ptr);
+      }
       EXPECT_TRUE(set_->Contains(ptr));
-      set_->Remove(ptr);
+      {
+        AutoLock auto_lock(*lock_);
+        set_->Remove(ptr);
+      }
       EXPECT_FALSE(set_->Contains(ptr));
     }
     // Leave a key for reader to test.
+    AutoLock auto_lock(*lock_);
     set_->Insert(reinterpret_cast<void*>(0x1337));
   }
 
  private:
-  raw_ptr<LockFreeAddressHashSet> set_;
-  raw_ptr<std::atomic_bool> cancel_;
+  raw_ref<LockFreeAddressHashSet> set_;
+  raw_ref<Lock> lock_;
+  raw_ref<std::atomic_bool> cancel_;
 };
 
 TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {
   // The purpose of this test is to make sure adding/removing keys concurrently
   // does not disrupt the state of other keys.
-  LockFreeAddressHashSet set(16);
-  for (size_t i = 1; i <= 20; ++i)
-    set.Insert(reinterpret_cast<void*>(i));
-  // Remove some items to test empty nodes.
-  for (size_t i = 16; i <= 20; ++i)
-    set.Remove(reinterpret_cast<void*>(i));
+  Lock lock;
+  LockFreeAddressHashSet set(16, lock);
+
+  {
+    AutoLock auto_lock(lock);
+    for (size_t i = 1; i <= 20; ++i) {
+      set.Insert(reinterpret_cast<void*>(i));
+    }
+    // Remove some items to test empty nodes.
+    for (size_t i = 16; i <= 20; ++i) {
+      set.Remove(reinterpret_cast<void*>(i));
+    }
+  }
 
   std::atomic_bool cancel(false);
-  auto thread = std::make_unique<WriterThread>(&set, &cancel);
+  auto thread = std::make_unique<WriterThread>(set, lock, cancel);
   thread->Start();
 
   for (size_t k = 0; k < 100000; ++k) {
@@ -168,7 +197,9 @@ TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {
 TEST_F(LockFreeAddressHashSetTest, BucketsUsage) {
   // Test the uniformity of buckets usage.
   size_t count = 10000;
-  LockFreeAddressHashSet set(16);
+  Lock lock;
+  LockFreeAddressHashSet set(16, lock);
+  AutoLock auto_lock(lock);
   for (size_t i = 0; i < count; ++i)
     set.Insert(reinterpret_cast<void*>(0x10000 + 0x10 * i));
   size_t average_per_bucket = count / set.buckets_count();
@@ -177,6 +208,33 @@ TEST_F(LockFreeAddressHashSetTest, BucketsUsage) {
     EXPECT_LT(average_per_bucket * 95 / 100, usage);
     EXPECT_GT(average_per_bucket * 105 / 100, usage);
   }
+}
+
+TEST_F(LockFreeAddressHashSetDeathTest, LockAsserts) {
+  Lock lock;
+  LockFreeAddressHashSet set(8, lock);
+  LockFreeAddressHashSet set2(8, lock);
+
+  // Should not require lock.
+  EXPECT_FALSE(set.Contains(&lock));
+  EXPECT_EQ(set.buckets_count(), 8);
+
+  // Should require lock.
+  {
+    AutoLock auto_lock(lock);
+    set.Insert(&lock);
+    set.Remove(&lock);
+    set.Copy(set2);
+    EXPECT_EQ(set.size(), 0u);
+    EXPECT_EQ(set.load_factor(), 0.0);
+    EXPECT_EQ(set.GetBucketLengths().size(), 8u);
+  }
+  EXPECT_DCHECK_DEATH(set.Insert(&lock));
+  EXPECT_DCHECK_DEATH(set.Remove(&lock));
+  EXPECT_DCHECK_DEATH(set.Copy(set2));
+  EXPECT_DCHECK_DEATH(set.size());
+  EXPECT_DCHECK_DEATH(set.load_factor());
+  EXPECT_DCHECK_DEATH(set.GetBucketLengths());
 }
 
 }  // namespace
