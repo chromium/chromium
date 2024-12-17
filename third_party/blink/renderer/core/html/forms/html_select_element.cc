@@ -1769,8 +1769,8 @@ void HTMLSelectElement::ShowPopup() {
   select_type_->ShowPopup(PopupMenu::kOther);
 }
 
-void HTMLSelectElement::HidePopup() {
-  select_type_->HidePopup();
+void HTMLSelectElement::HidePopup(SelectPopupHideBehavior behavior) {
+  select_type_->HidePopup(behavior);
 }
 
 PopupMenu* HTMLSelectElement::PopupForTesting() const {

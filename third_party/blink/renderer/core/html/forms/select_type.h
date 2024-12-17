@@ -71,7 +71,7 @@ class SelectType : public GarbageCollected<SelectType> {
   GetAutofillPreviewElement() const = 0;
   virtual Element& InnerElement() const;
   virtual void ShowPopup(PopupMenu::ShowEventType type);
-  virtual void HidePopup();
+  virtual void HidePopup(SelectPopupHideBehavior);
   virtual void PopupDidHide();
   virtual bool PopupIsVisible() const;
   virtual PopupMenu* PopupForTesting() const;
