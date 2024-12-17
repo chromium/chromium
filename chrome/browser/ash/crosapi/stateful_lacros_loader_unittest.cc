@@ -65,7 +65,6 @@ class StatefulLacrosLoaderTest : public testing::Test {
     stateful_lacros_loader_ = std::make_unique<StatefulLacrosLoader>(
         component_manager_, &mock_component_update_service_,
         kLacrosComponentName);
-    EXPECT_TRUE(BrowserLoader::WillLoadStatefulComponentBuilds());
   }
 
   ~StatefulLacrosLoaderTest() override {

@@ -604,7 +604,6 @@ source_set("unit_tests") {
 
   sources = [
     "audio_service_ash_unittest.cc",
-    "browser_loader_unittest.cc",
     "browser_util_unittest.cc",
     "cec_private_ash_unittest.cc",
     "cert_provisioning_ash_unittest.cc",
