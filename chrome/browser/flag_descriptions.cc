@@ -5733,6 +5733,16 @@ const char kUseSCContentSharingPickerDescription[] =
     "This feature opens a native picker in macOS 15+ to allow the selection "
     "of a window or screen that will be captured.";
 
+const char kBlockRootWindowAccessibleNameChangeEventName[] =
+    "Block Root Window Accessible Name Change Event";
+const char kBlockRootWindowAccessibleNameChangeEventDescription[] =
+    "This feature prevents the firing of accessible name change events on the "
+    "Root Window of MacOS applications. By blocking these events, it ensures "
+    "that changes to the accessible name of Root Window do not trigger "
+    "notifications to assistive technologies. This can be useful in scenarios "
+    "where frequent or unnecessary name change events could lead to "
+    "performance issues or unwanted behavior in assistive applications.";
+
 #endif
 
 // Windows and Mac -------------------------------------------------------------

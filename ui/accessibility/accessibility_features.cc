@@ -401,6 +401,14 @@ BASE_FEATURE(kAccessibilityRemoteUIApp,
 bool IsAccessibilityRemoteUIAppEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityRemoteUIApp);
 }
+
+BASE_FEATURE(kBlockRootWindowAccessibleNameChangeEvent,
+             "BlockRootWindowAccessibleNameChangeEvent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+bool IsBlockRootWindowAccessibleNameChangeEventEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kBlockRootWindowAccessibleNameChangeEvent);
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace features

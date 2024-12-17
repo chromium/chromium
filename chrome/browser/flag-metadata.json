@@ -950,8 +950,18 @@
   },
   {
     "name": "block-insecure-private-network-requests",
-    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
+    "owners": [
+      "estark@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
     "expiry_milestone": 136
+  },
+  {
+    "name": "block-root-window-accessible-name-change-event",
+    "owners": [
+      "dmangal@microsoft.com"
+    ],
+    "expiry_milestone": -1
   },
   {
     "name": "block-telephony-device-phone-mute",

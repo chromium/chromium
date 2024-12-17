@@ -3311,6 +3311,9 @@ extern const char kUseAdHocSigningForWebAppShimsDescription[];
 extern const char kUseSCContentSharingPickerName[];
 extern const char kUseSCContentSharingPickerDescription[];
 
+extern const char kBlockRootWindowAccessibleNameChangeEventName[];
+extern const char kBlockRootWindowAccessibleNameChangeEventDescription[];
+
 #endif  // BUILDFLAG(IS_MAC)
 
 // Windows and Mac ------------------------------------------------------------

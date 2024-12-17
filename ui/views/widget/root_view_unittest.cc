@@ -23,6 +23,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
@@ -32,6 +33,8 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/accessibility/accessibility_features.h"
 #endif
 
 namespace views::test {
@@ -1103,6 +1106,47 @@ TEST_F(RootViewTest, AccessibleName) {
   root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             state.widget()->widget_delegate()->GetAccessibleWindowTitle());
+}
+
+TEST_F(RootViewTest, AccessibleNameChangeEvent) {
+  RootViewTestState state(this);
+  internal::RootView* root_view = state.GetRootView();
+
+  // TODO (crbug.com/380927771). Once VoiceOver has incorporated the name
+  // change event, remove all Mac specific code.
+
+#if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList feature_list{
+      ::features::kBlockRootWindowAccessibleNameChangeEvent};
+#endif
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+
+  state.widget()->widget_delegate()->SetTitle(u"Sample Title");
+#if BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(::features::IsBlockRootWindowAccessibleNameChangeEventEnabled());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, root_view));
+#endif
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, root_view));
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList disable_feature_list;
+  disable_feature_list.InitWithFeatures(
+      {}, {::features::kBlockRootWindowAccessibleNameChangeEvent});
+#endif
+
+  state.widget()->widget_delegate()->SetAccessibleTitle(
+      u"Sample Accessible Title");
+
+#if BUILDFLAG(IS_MAC)
+  EXPECT_FALSE(::features::IsBlockRootWindowAccessibleNameChangeEventEnabled());
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, root_view));
+#endif
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged, root_view));
+#endif
 }
 
 }  // namespace views::test

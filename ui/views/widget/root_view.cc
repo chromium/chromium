@@ -38,6 +38,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/accessibility/accessibility_features.h"
+#endif
+
 using DispatchDetails = ui::EventDispatchDetails;
 
 namespace views::internal {
@@ -724,7 +728,22 @@ void RootView::UpdateAccessibleName() {
       GetViewAccessibility().SetName(
           std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     } else {
+      // TODO (crbug.com/380927771). Once VoiceOver has incorporated the name
+      // change event, remove below Mac specific code.
+#if BUILDFLAG(IS_MAC)
+      if (::features::IsBlockRootWindowAccessibleNameChangeEventEnabled()) {
+        ScopedAccessibilityEventBlocker scoped_event_blocker(
+            GetViewAccessibility());
+
+        GetViewAccessibility().SetName(name);
+      } else {
+        GetViewAccessibility().SetName(name);
+      }
+#endif
+
+#if !BUILDFLAG(IS_MAC)
       GetViewAccessibility().SetName(name);
+#endif
     }
   }
 }

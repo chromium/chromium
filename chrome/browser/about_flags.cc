@@ -11864,6 +11864,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillThirdPartyModeContentProvider)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+    {"block-root-window-accessible-name-change-event",
+     flag_descriptions::kBlockRootWindowAccessibleNameChangeEventName,
+     flag_descriptions::kBlockRootWindowAccessibleNameChangeEventDescription,
+     kOsMac,
+     FEATURE_VALUE_TYPE(::features::kBlockRootWindowAccessibleNameChangeEvent)},
+#endif  // BUILDFLAG(IS_MAC)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
