@@ -6426,8 +6426,8 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     # This test can be removed entirely when support for MV2 extensions is
     # removed.
     driver = self.CreateDriver(
-        # Chrome Extension inspection requires enable_extension_targets = True.
-        enable_extension_targets = True,
+        # Chrome Extension inspection requires enableExtensionTargets = True.
+        experimental_options={'enableExtensionTargets': True},
         chrome_extensions=[self._PackExtension(crx)],
         chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
     handles = driver.GetWindowHandles()
@@ -6441,9 +6441,9 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testCanInspectExtensionTargetsWithMigratedSwitch(self):
     crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
-    # Chrome Extension inspection requires enable_extension_targets = True.
+    # Chrome Extension inspection requires enableExtensionTargets = True.
     # We migrate experimental_options={'windowTypes': ['background_page']} to
-    # the new switch.
+    # the new chrome option.
     # This test exercises inspection of an extension background page, which
     # is only valid for manifest V2 extensions. Explicitly disable the
     # experiment that disallows MV2 extensions.
