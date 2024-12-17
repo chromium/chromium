@@ -243,7 +243,7 @@
 <translation id="2096239473850415494">تعذَّر التنزيل</translation>
 <translation id="2103075008456228677">‏فتح history.google.com</translation>
 <translation id="2104436223719117661">طلبات البحث الرائجة</translation>
-<translation id="2119636449201577317">فتح في…</translation>
+<translation id="2119636449201577317">الفتح في…</translation>
 <translation id="2122754583996902531">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="2147127444698817042">‏متوفّرة فقط على iPhone</translation>
 <translation id="2148716181193084225">اليوم</translation>
@@ -369,7 +369,7 @@
 <translation id="2708051474374549906">‏يوفّر هذا الوضع حمايةً استباقية في الوقت الفعلي من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات التصفّح التي يتم إرسالها إلى Google.</translation>
 <translation id="2709516037105925701">الملء التلقائي</translation>
 <translation id="271033894570825754">جديد</translation>
-<translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
+<translation id="2718352093833049315">‏على Wi-Fi فقط</translation>
 <translation id="2721190673959776287">اطّلِع على عيّنة من المعلومات عدة مرات في اليوم لتقديم مساعدة مفيدة لك ضِمن "لوحة السياق".</translation>
 <translation id="2723020285498840769">إخفاء الإجراء "تصغير أو تكبير النص"</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
@@ -1108,7 +1108,7 @@
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="6337234675334993532">التشفير</translation>
 <translation id="633809752005859102">حدث خطأ ما، وسنحاول حل المشكلة.</translation>
-<translation id="6339793034470834130">‏لاستخدام Web Inspector (أداة فحص الويب)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPhone من القائمة Develop (تطوير). يمكنك تفعيل القائمة Develop (تطوير) من خلال قسم Advanced (إعدادات متقدّمة) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
+<translation id="6339793034470834130">‏لاستخدام "أداة فحص الويب" (Web Inspector)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPhone من القائمة "تطوير" (Develop). يمكنك تفعيل هذه القائمة من خلال القسم "إعدادات متقدّمة" (Advanced) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6340285871011301182">خيار الترجمة الجزئية غير متاح.</translation>
 <translation id="6340526405444716530">التخصيص</translation>
 <translation id="6342069812937806050">الآن</translation>
