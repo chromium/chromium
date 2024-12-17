@@ -5379,8 +5379,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTestNoDomAutomationController,
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, LoadWebViewAccessibility) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
@@ -5389,8 +5387,6 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, LoadWebViewAccessibility) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
@@ -5426,8 +5422,6 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
 // The test was disabled. See crbug.com/1141313.
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest,
                        DISABLED_FocusAccessibilityNestedFrame) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
@@ -5510,8 +5504,6 @@ class WebContentsAccessibilityEventWatcher
 };
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, DISABLED_TouchAccessibility) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/touch_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
