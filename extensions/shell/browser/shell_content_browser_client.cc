@@ -261,6 +261,11 @@ ShellContentBrowserClient::CreateThrottlesForNavigation(
     throttles.push_back(
         std::make_unique<ExtensionNavigationThrottle>(navigation_handle));
   }
+
+  if (auto throttle =
+          WebViewGuest::MaybeCreateNavigationThrottle(navigation_handle)) {
+    throttles.push_back(std::move(throttle));
+  }
   return throttles;
 }
 

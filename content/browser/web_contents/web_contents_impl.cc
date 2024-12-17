@@ -3231,6 +3231,16 @@ void WebContentsImpl::AttachGuestPage(
       inner_main_frame->GetSiteInstance()->group(), inner_render_view_host,
       /*proxy=*/nullptr);
 
+  // If we are reusing the RenderViewHost and it doesn't already have a
+  // RenderWidgetHostView, we need to create one if this is the main frame.
+  if (!inner_render_view_host->GetWidget()->GetView()) {
+    // TODO(crbug.com/40162510): The RenderWidgetHostView should be created
+    // *before* we create the renderer-side objects through InitRenderView().
+    // Then we should remove the null-check for the RenderWidgetHostView in
+    // RenderWidgetHostImpl::RendererWidgetCreated().
+    CreateRenderWidgetHostViewForRenderManager(inner_render_view_host);
+  }
+
   RenderFrameProxyHost* proxy =
       inner_main_frame->browsing_context_state()->CreateOuterDelegateProxy(
           outer_render_frame_host_impl->GetSiteInstance()->group(),
@@ -4816,6 +4826,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     CHECK(session_storage_namespace_impl->IsFromContext(dom_storage_context));
   }
 
+  // TODO(crbug.com/40202416): Support a way for MPArch guests to support this.
   if (delegate_ && delegate_->IsWebContentsCreationOverridden(
                        source_site_instance, params.window_container_type,
                        opener->GetLastCommittedURL(), params.frame_name,
@@ -4838,10 +4849,13 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   bool renderer_started_hidden =
       params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
 
+  bool is_guest =
+      base::FeatureList::IsEnabled(features::kGuestViewMPArch)
+          ? opener->GetOutermostMainFrame()->frame_tree()->is_guest()
+          : IsGuest();
   // While some guest types do not have a guest SiteInstance, the ones that
   // don't all override WebContents creation above.
-  CHECK_EQ(source_site_instance->IsGuest(), IsGuest());
-  bool is_guest = IsGuest();
+  CHECK_EQ(source_site_instance->IsGuest(), is_guest);
 
   // We usually create the new window in the same BrowsingInstance (group of
   // script-related windows), by passing in the current SiteInstance.  However,
@@ -4859,6 +4873,16 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     }
   } else {
     site_instance = source_site_instance;
+  }
+
+  if (is_guest && base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(*opener)) {
+      return guest->CreateNewWindow(
+          params.disposition, params.target_url, params.frame_name,
+          std::move(site_instance),
+          !params.opener_suppressed ? opener : nullptr);
+    }
+    return nullptr;
   }
 
   // Create the new web contents. This will automatically create the new
@@ -5136,6 +5160,12 @@ void WebContentsImpl::ShowCreatedWindow(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShowCreatedWindow",
                         "opener", opener, "main_frame_widget_route_id",
                         main_frame_widget_route_id);
+
+  if (GuestPageHolderImpl::FromRenderFrameHost(*opener)) {
+    // opened from a guest with MPArch, we don't need to do anything.
+    return;
+  }
+
   // This method is the renderer requesting an existing top level window to
   // show a new top level window that the renderer created. Each top level
   // window is associated with a WebContents. In this case it was created
@@ -5801,8 +5831,9 @@ WebContents* WebContentsImpl::OpenURL(
     return nullptr;
   }
 
-  RenderFrameHost* source_render_frame_host = RenderFrameHost::FromID(
-      params.source_render_process_id, params.source_render_frame_id);
+  RenderFrameHostImpl* source_render_frame_host =
+      RenderFrameHostImpl::FromID(GlobalRenderFrameHostId(
+          params.source_render_process_id, params.source_render_frame_id));
 
   // Prevent frames that are not active (e.g. a prerendering page) from opening
   // new windows, tabs, popups, etc.
@@ -5841,6 +5872,17 @@ WebContents* WebContentsImpl::OpenURL(
     } else {
       // If the node doesn't exist it was probably removed from its frame tree.
       // In that case, abort since continuing would navigate the root frame.
+      return nullptr;
+    }
+  }
+
+  if (source_render_frame_host &&
+      base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+            *source_render_frame_host)) {
+      if (auto* delegate = guest->delegate()) {
+        delegate->GuestOpenURL(params, std::move(navigation_handle_callback));
+      }
       return nullptr;
     }
   }

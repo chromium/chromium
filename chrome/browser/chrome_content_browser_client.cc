@@ -5351,6 +5351,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   }
 #endif
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  MaybeAddThrottle(
+      extensions::WebViewGuest::MaybeCreateNavigationThrottle(handle),
+      &throttles);
+#endif
+
   MaybeAddThrottle(
       SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(handle),
       &throttles);

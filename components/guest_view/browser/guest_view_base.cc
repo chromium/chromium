@@ -182,6 +182,7 @@ GuestViewBase::~GuestViewBase() {
 }
 
 void GuestViewBase::Init(std::unique_ptr<GuestViewBase> owned_this,
+                         scoped_refptr<content::SiteInstance> site_instance,
                          const base::Value::Dict& create_params,
                          GuestCreatedCallback callback) {
   if (!GetGuestViewManager()->IsGuestAvailableToContext(this)) {
@@ -192,7 +193,7 @@ void GuestViewBase::Init(std::unique_ptr<GuestViewBase> owned_this,
     return;
   }
 
-  CreateInnerPage(std::move(owned_this), create_params,
+  CreateInnerPage(std::move(owned_this), site_instance, create_params,
                   base::BindOnce(&GuestViewBase::CompleteInit,
                                  weak_ptr_factory_.GetWeakPtr(),
                                  create_params.Clone(), std::move(callback)));
@@ -693,6 +694,20 @@ void GuestViewBase::GuestMainFrameProcessGone(base::TerminationStatus status) {
 void GuestViewBase::GuestResizeDueToAutoResize(const gfx::Size& new_size) {
   UpdateGuestSize(new_size, auto_size_enabled_);
 }
+
+content::GuestPageHolder* GuestViewBase::GuestCreateNewWindow(
+    WindowOpenDisposition disposition,
+    const GURL& url,
+    const std::string& main_frame_name,
+    content::RenderFrameHost* opener,
+    scoped_refptr<content::SiteInstance> site_instance) {
+  NOTREACHED();
+}
+
+void GuestViewBase::GuestOpenURL(
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {}
 
 void GuestViewBase::LoadProgressChanged(double progress) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {

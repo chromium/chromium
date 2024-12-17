@@ -33,6 +33,7 @@ class ExtensionOptionsGuest
 
   // GuestViewBase implementation.
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
                        const base::Value::Dict& create_params,
                        GuestPageCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;

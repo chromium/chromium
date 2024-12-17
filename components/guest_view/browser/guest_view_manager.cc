@@ -192,23 +192,27 @@ void GuestViewManager::CreateGuest(const std::string& view_type,
         std::move(callback).Run(raw_guest);
       },
       std::move(callback));
-  CreateGuestAndTransferOwnership(view_type, owner_rfh, create_params,
+  CreateGuestAndTransferOwnership(view_type, owner_rfh, nullptr, create_params,
                                   std::move(ownership_transferring_callback));
 }
 
-void GuestViewManager::CreateGuestAndTransferOwnership(
+int GuestViewManager::CreateGuestAndTransferOwnership(
     const std::string& view_type,
     content::RenderFrameHost* owner_rfh,
+    scoped_refptr<content::SiteInstance> site_instance,
     const base::Value::Dict& create_params,
     OwnedGuestCreatedCallback callback) {
   std::unique_ptr<GuestViewBase> guest =
       CreateGuestInternal(owner_rfh, view_type);
   if (!guest) {
     std::move(callback).Run(nullptr);
-    return;
+    return -1;
   }
   auto* raw_guest = guest.get();
-  raw_guest->Init(std::move(guest), create_params, std::move(callback));
+  int guest_instance_id = guest->guest_instance_id();
+  raw_guest->Init(std::move(guest), site_instance, create_params,
+                  std::move(callback));
+  return guest_instance_id;
 }
 
 std::unique_ptr<GuestViewBase> GuestViewManager::TransferOwnership(

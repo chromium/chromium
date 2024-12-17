@@ -214,9 +214,11 @@ bool AppViewGuest::CheckMediaAccessPermission(
       render_frame_host, security_origin, type, guest_extension);
 }
 
-void AppViewGuest::CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
-                                   const base::Value::Dict& create_params,
-                                   GuestPageCreatedCallback callback) {
+void AppViewGuest::CreateInnerPage(
+    std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
+    const base::Value::Dict& create_params,
+    GuestPageCreatedCallback callback) {
   const std::string* app_id = create_params.FindString(appview::kAppID);
   if (!app_id) {
     RejectGuestCreation(std::move(owned_this), std::move(callback));

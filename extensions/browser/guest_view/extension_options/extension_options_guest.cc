@@ -60,6 +60,7 @@ std::unique_ptr<GuestViewBase> ExtensionOptionsGuest::Create(
 
 void ExtensionOptionsGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
     const base::Value::Dict& create_params,
     GuestPageCreatedCallback callback) {
   // Get the extension's base URL.

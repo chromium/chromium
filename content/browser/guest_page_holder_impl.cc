@@ -24,13 +24,35 @@ std::unique_ptr<GuestPageHolder> GuestPageHolder::Create(
 
   std::unique_ptr<GuestPageHolderImpl> guest_page =
       std::make_unique<GuestPageHolderImpl>(
-          static_cast<WebContentsImpl&>(*owner_web_contents),
-          std::move(site_instance), delegate);
+          static_cast<WebContentsImpl&>(*owner_web_contents), std::string(),
+          /*opener=*/nullptr, std::move(site_instance), delegate);
+  return guest_page;
+}
+
+std::unique_ptr<GuestPageHolder> GuestPageHolder::CreateWithOpener(
+    WebContents* owner_web_contents,
+    const std::string& frame_name,
+    RenderFrameHost* opener,
+    scoped_refptr<SiteInstance> site_instance,
+    base::WeakPtr<GuestPageHolder::Delegate> delegate) {
+  CHECK(owner_web_contents);
+  // Note that `site_instance->IsGuest()` would only be true for <webview>, not
+  // other guest types.
+  CHECK(site_instance);
+  CHECK(delegate);
+
+  std::unique_ptr<GuestPageHolderImpl> guest_page =
+      std::make_unique<GuestPageHolderImpl>(
+          static_cast<WebContentsImpl&>(*owner_web_contents), frame_name,
+          static_cast<RenderFrameHostImpl*>(opener), std::move(site_instance),
+          delegate);
   return guest_page;
 }
 
 GuestPageHolderImpl::GuestPageHolderImpl(
     WebContentsImpl& owner_web_contents,
+    const std::string& frame_name,
+    RenderFrameHostImpl* opener,
     scoped_refptr<SiteInstance> site_instance,
     base::WeakPtr<GuestPageHolder::Delegate> delegate)
     : owner_web_contents_(owner_web_contents),
@@ -47,8 +69,8 @@ GuestPageHolderImpl::GuestPageHolderImpl(
                   FrameTree::Type::kGuest) {
   frame_tree_.Init(static_cast<SiteInstanceImpl*>(site_instance.get()),
                    /*renderer_initiated_creation=*/false,
-                   /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
-                   blink::FramePolicy{},
+                   /*main_frame_name=*/frame_name,
+                   /*opener_for_origin=*/opener, blink::FramePolicy{},
                    /*devtools_frame_token=*/base::UnguessableToken::Create());
   // Notify WebContentsObservers of the new guest frame via
   // RenderFrameHostChanged.
@@ -60,6 +82,18 @@ GuestPageHolderImpl::GuestPageHolderImpl(
   // Ensure our muted state is correct on creation.
   if (owner_web_contents.IsAudioMuted()) {
     GetAudioStreamFactory()->SetMuted(true);
+  }
+
+  if (opener) {
+    FrameTreeNode* new_root = frame_tree_.root();
+
+    // For the "original opener", track the opener's main frame instead, because
+    // if the opener is a subframe, the opener tracking could be easily bypassed
+    // by spawning from a subframe and deleting the subframe.
+    // https://crbug.com/705316
+    new_root->SetOriginalOpener(opener->frame_tree()->root());
+    new_root->SetOpenerDevtoolsFrameToken(opener->devtools_frame_token());
+    new_root->SetOpener(opener->frame_tree_node());
   }
 }
 
@@ -92,6 +126,13 @@ void GuestPageHolderImpl::SetAudioMuted(bool mute) {
   // owning WebContents state.
   GetAudioStreamFactory()->SetMuted(mute ||
                                     owner_web_contents_->IsAudioMuted());
+}
+
+RenderFrameHost* GuestPageHolderImpl::GetOpener() {
+  if (auto* opener = frame_tree_.root()->GetOpener()) {
+    return opener->current_frame_host();
+  }
+  return nullptr;
 }
 
 void GuestPageHolderImpl::SetAudioMutedFromWebContents(
@@ -234,6 +275,21 @@ base::CallbackListSubscription
 GuestPageHolderImpl::RegisterLoadStopCallbackForTesting(
     base::RepeatingClosure callback) {
   return load_stop_callbacks_for_testing_.Add(callback);
+}
+
+FrameTree* GuestPageHolderImpl::CreateNewWindow(
+    WindowOpenDisposition disposition,
+    const GURL& url,
+    const std::string& main_frame_name,
+    scoped_refptr<SiteInstance> site_instance,
+    RenderFrameHostImpl* opener) {
+  auto* guest_page =
+      static_cast<GuestPageHolderImpl*>(delegate_->GuestCreateNewWindow(
+          disposition, url, main_frame_name, opener, std::move(site_instance)));
+  if (!guest_page) {
+    return nullptr;
+  }
+  return &guest_page->frame_tree();
 }
 
 }  // namespace content

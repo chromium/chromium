@@ -138,6 +138,7 @@ class MimeHandlerViewGuest
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
                        const base::Value::Dict& create_params,
                        GuestPageCreatedCallback callback) override;
   void DidAttachToEmbedder() override;

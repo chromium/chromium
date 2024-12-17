@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/child_process_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/guest_page_holder.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -127,10 +128,12 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                    const base::Value::Dict& create_params,
                    UnownedGuestCreatedCallback callback);
   // Creates a guest which the caller will own.
-  void CreateGuestAndTransferOwnership(const std::string& view_type,
-                                       content::RenderFrameHost* owner_rfh,
-                                       const base::Value::Dict& create_params,
-                                       OwnedGuestCreatedCallback callback);
+  int CreateGuestAndTransferOwnership(
+      const std::string& view_type,
+      content::RenderFrameHost* owner_rfh,
+      scoped_refptr<content::SiteInstance> site_instance,
+      const base::Value::Dict& create_params,
+      OwnedGuestCreatedCallback callback);
 
   // Transfers ownership of `guest` to the caller.
   std::unique_ptr<GuestViewBase> TransferOwnership(GuestViewBase* guest);
