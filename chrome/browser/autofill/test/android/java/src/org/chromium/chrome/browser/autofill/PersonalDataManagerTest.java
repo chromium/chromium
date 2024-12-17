@@ -165,6 +165,117 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
+    public void testRecordSeparatorMetricForAddAndEditProfiles() throws TimeoutException {
+        AutofillProfile profile =
+                AutofillProfile.builder()
+                        .setFullName("John Smith")
+                        .setAlternativeFullName("James Bond")
+                        .setCompanyName("Acme Inc.")
+                        .setStreetAddress("1 Main\nApt A")
+                        .setRegion("CA")
+                        .setLocality("San Francisco")
+                        .setPostalCode("94102")
+                        .setCountryCode("US")
+                        .setPhoneNumber("4158889999")
+                        .setEmailAddress("john@acme.inc")
+                        .build();
+
+        // Expect histogram to record separator existence in alternative name.
+        HistogramWatcher recordSeparatorCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Autofill.Settings.EditedAlternativeNameContainsASeparator", true)
+                        .build();
+
+        String profileOneGUID = mHelper.setProfile(profile);
+        recordSeparatorCountHistogram.assertExpected();
+        Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
+
+        // Expect histogram to record no separator existence in alternative name.
+        recordSeparatorCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Autofill.Settings.EditedAlternativeNameContainsASeparator", false)
+                        .build();
+
+        profile.setGUID(profileOneGUID);
+        profile.setAlternativeFullName("JamesBond");
+        profileOneGUID = mHelper.setProfile(profile);
+
+        recordSeparatorCountHistogram.assertExpected();
+
+        // Expect histogram to record separator existence in alternative name again.
+        recordSeparatorCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Autofill.Settings.EditedAlternativeNameContainsASeparator", true)
+                        .build();
+
+        profile.setAlternativeFullName("James NonBond");
+        profileOneGUID = mHelper.setProfile(profile);
+
+        recordSeparatorCountHistogram.assertExpected();
+
+        // Expect histogram to not record anything.
+        recordSeparatorCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Autofill.Settings.EditedAlternativeNameContainsASeparator")
+                        .build();
+
+        profile.setAlternativeFullName("");
+        profileOneGUID = mHelper.setProfile(profile);
+
+        recordSeparatorCountHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testRecordSeparatorMetricForAddAndEditProfilesForHiragana()
+            throws TimeoutException {
+        AutofillProfile profile =
+                AutofillProfile.builder()
+                        .setFullName("山本 葵")
+                        .setAlternativeFullName("やまもと·あおい")
+                        .setCompanyName("Acme Inc.")
+                        .setStreetAddress("1 Main\nApt A")
+                        .setRegion("CA")
+                        .setLocality("San Francisco")
+                        .setPostalCode("94102")
+                        .setCountryCode("US")
+                        .setPhoneNumber("4158889999")
+                        .setEmailAddress("aoi_yamamoto@acme.inc")
+                        .build();
+
+        // Expect histogram to record separator existence in alternative name.
+        HistogramWatcher recordSeparatorCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Autofill.Settings.EditedAlternativeNameContainsASeparator", true)
+                        .build();
+
+        String profileOneGUID = mHelper.setProfile(profile);
+        recordSeparatorCountHistogram.assertExpected();
+        Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
+
+        // Expect histogram to record no separator existence in alternative name.
+        recordSeparatorCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Autofill.Settings.EditedAlternativeNameContainsASeparator", false)
+                        .build();
+
+        profile.setGUID(profileOneGUID);
+        profile.setAlternativeFullName("やまもとあおい");
+        profileOneGUID = mHelper.setProfile(profile);
+
+        recordSeparatorCountHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
     public void testUpdateLanguageCodeInProfile() throws TimeoutException {
         AutofillProfile profile =
                 AutofillProfile.builder()

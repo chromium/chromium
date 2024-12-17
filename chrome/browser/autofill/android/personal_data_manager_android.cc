@@ -16,6 +16,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -29,6 +30,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
@@ -48,6 +50,7 @@
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -68,6 +71,31 @@ using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
 using ::base::android::ToJavaIntArray;
+
+// Logs whether the alternative name in a new profile contains a separator.
+void RecordAlternativeNameSeparatorUsage(
+    const autofill::AutofillProfile& profile,
+    const autofill::AutofillProfile* existing_profile) {
+  const std::u16string existing_alternative_name =
+      existing_profile
+          ? existing_profile->GetInfo(autofill::ALTERNATIVE_FULL_NAME,
+                                      g_browser_process->GetApplicationLocale())
+          : std::u16string();
+
+  const std::u16string saved_alternative_name =
+      profile.GetInfo(autofill::ALTERNATIVE_FULL_NAME,
+                      g_browser_process->GetApplicationLocale());
+
+  if (!saved_alternative_name.empty() &&
+      saved_alternative_name != existing_alternative_name) {
+    const bool has_name_separator =
+        re2::RE2::PartialMatch(base::UTF16ToUTF8(saved_alternative_name),
+                               autofill::kCjkNameSeperatorsRe);
+    base::UmaHistogramBoolean(
+        "Autofill.Settings.EditedAlternativeNameContainsASeparator",
+        has_name_separator);
+  }
+}
 
 }  // namespace
 
@@ -265,7 +293,16 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
       personal_data_manager_->address_data_manager().GetProfileByGUID(guid),
       g_browser_process->GetApplicationLocale());
 
-  if (guid.empty()) {
+  const bool use_existing_profile = !guid.empty();
+  const autofill::AutofillProfile* existing_profile = nullptr;
+  if (use_existing_profile) {
+    existing_profile =
+        personal_data_manager_->address_data_manager().GetProfileByGUID(guid);
+  }
+
+  RecordAlternativeNameSeparatorUsage(profile, existing_profile);
+
+  if (!use_existing_profile) {
     personal_data_manager_->address_data_manager().AddProfile(profile);
   } else {
     personal_data_manager_->address_data_manager().UpdateProfile(profile);
@@ -345,8 +382,8 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetCreditCardGUIDsForSettings(JNIEnv* env) {
-  return GetCreditCardGUIDs(env, personal_data_manager_->payments_data_manager()
-                                     .GetCreditCards());
+  return GetCreditCardGUIDs(
+      env, personal_data_manager_->payments_data_manager().GetCreditCards());
 }
 
 ScopedJavaLocalRef<jobjectArray>
