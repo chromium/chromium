@@ -104,11 +104,17 @@ class TtsExtension {
           }
           break;
         case 'onCanPlayThrough':
+          chrome.metricsPrivate.recordEnumerationValue(
+              'TextToSpeech.ExtensionNetworkSpeechSynthesis.Playback',
+              /*can play through*/ 0, /*enum size*/ 2);
           if (this.currentUtterance_) {
             this.currentUtterance_.callback({'type': 'start', 'charIndex': 0});
           }
           break;
         case 'onEnded':
+          chrome.metricsPrivate.recordEnumerationValue(
+              'TextToSpeech.ExtensionNetworkSpeechSynthesis.Playback',
+              /*ended*/ 1, /*enum size */ 2);
           this.onStop_(/* onEnded = */ true);
           break;
       }

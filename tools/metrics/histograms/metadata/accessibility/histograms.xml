@@ -3330,6 +3330,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="TextToSpeech.ExtensionNetworkSpeechSynthesis.Playback"
+    enum="AudioPlayback" expires_after="2025-02-28">
+  <owner>dtseng@chromium.org</owner>
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Counts when playback starts and stops on the audio element via the
+    canplaythrough and ended events.
+  </summary>
+</histogram>
+
 <histogram name="TextToSpeech.Settings.GetVoiceBytes"
     enum="TextToSpeechGetVoiceBytes" expires_after="2025-02-28">
   <owner>akihiroota@chromium.org</owner>

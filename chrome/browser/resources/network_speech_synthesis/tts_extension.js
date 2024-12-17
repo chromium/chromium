@@ -90,7 +90,7 @@ TtsExtension.prototype = {
     this.audioElement_ = document.createElement('audio');
     document.body.appendChild(this.audioElement_);
     this.audioElement_.addEventListener(
-        'ended', this.onStop_.bind(this), false);
+        'ended', this.onEnded_.bind(this), false);
     this.audioElement_.addEventListener(
         'canplaythrough', this.onStart_.bind(this), false);
 
@@ -221,6 +221,9 @@ TtsExtension.prototype = {
    * @private
    */
   onStart_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'TextToSpeech.ExtensionNetworkSpeechSynthesis.Playback',
+        /*can play through*/ 0, /*enum size*/ 2);
     if (this.currentUtterance_) {
       if (this.currentUtterance_.options.volume !== undefined) {
         // Both APIs use the same range for volume, between 0.0 and 1.0.
@@ -229,6 +232,13 @@ TtsExtension.prototype = {
       this.audioElement_.play();
       this.currentUtterance_.callback({'type': 'start', 'charIndex': 0});
     }
+  },
+
+  onEnded_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'TextToSpeech.ExtensionNetworkSpeechSynthesis.Playback', /*ended*/ 1,
+        /*enum size*/ 2);
+    this.onStop_();
   },
 
   /**

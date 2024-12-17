@@ -902,6 +902,11 @@ Unknown properties are collapsed to zero. -->
   <int value="30174" label="IsDialog"/>
 </enum>
 
+<enum name="AudioPlayback">
+  <int value="0" label="Can play through"/>
+  <int value="1" label="Ended"/>
+</enum>
+
 <!-- LINT.IfChange(AutoclickActionType) -->
 
 <enum name="AutoclickActionType">

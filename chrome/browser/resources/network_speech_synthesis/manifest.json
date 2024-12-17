@@ -8,6 +8,7 @@
   "manifest_version": 2,
   "name": "Google Network Speech",
   "permissions": [
+    "metricsPrivate",
     "systemPrivate",
     "ttsEngine",
     "https://www.google.com/"
