@@ -53,7 +53,7 @@ import java.util.concurrent.TimeoutException;
 /** Class for testing MultiWindowUtils. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
+@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/1297370
 public class MultiWindowUtilsTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

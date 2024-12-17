@@ -1198,6 +1198,10 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
+            supported_abis_includes = "x86_64",
+            message = "crbug.com/40122331")
     public void testSwipeToDismiss_Dialog() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create 2 tabs and merge them into one group.

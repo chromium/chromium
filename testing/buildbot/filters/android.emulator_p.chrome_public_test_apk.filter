@@ -1,6 +1,3 @@
-# vr tests do not apply to emulator
--org.chromium.chrome.browser.hardware_acceleration.ManifestHWATest.testAccelerationDisabled
-
 # crbug.com/1032118
 -org.chromium.chrome.browser.notifications.StandardNotificationBuilderTest.testSetAll
 
@@ -18,9 +15,6 @@
 
 # crbug.com/1041822
 -org.chromium.chrome.browser.offlinepages.OfflinePageAutoFetchTest.testAutoFetchTriggersOnDNSErrorWhenOffline
-
-# crbug.com/1061178
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
 
 # crbug.com/1061201
 -org.chromium.chrome.browser.history.HistoryActivityTest.testOpenSelectedItems
@@ -55,9 +49,6 @@
 
 # crbug.com/1067673
 -org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerViewTest.testDismissArticleWithContextMenu
-
-# crbug.com/1187536
--org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest.testIntentPickerNotShownForNormalUrl
 
 # crbug.com/1392774
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover*

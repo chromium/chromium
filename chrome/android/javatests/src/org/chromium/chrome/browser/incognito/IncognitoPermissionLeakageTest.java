@@ -16,6 +16,8 @@ import static org.hamcrest.core.StringContains.containsString;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.os.Build;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
@@ -38,6 +40,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
@@ -145,6 +148,7 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(RegularAndIncognito.class)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40704641")
     public void testAllowPermissionDoNotLeakBetweenRegularAndIncognito(
             String activityType1, String activityType2) throws Exception {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
@@ -172,6 +176,7 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToIncognito.class)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40704641")
     public void testAllowPermissionDoNotLeakFromIncognitoToIncognito(
             String incognitoActivityType1, String incognitoActivityType2) throws Exception {
         // At least one of the incognitoActivity is an incognito CCT.

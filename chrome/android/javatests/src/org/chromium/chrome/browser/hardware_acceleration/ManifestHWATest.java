@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hardware_acceleration;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -17,11 +18,17 @@ import org.junit.runner.RunWith;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.app.ChromeActivity;
 
 /** Hardware acceleration-related manifest tests. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisableIf.Build(
+        sdk_is_greater_than = Build.VERSION_CODES.P,
+        sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
+        supported_abis_includes = "x86_64",
+        message = "vr tests do not apply to emulator")
 public class ManifestHWATest {
     @Test
     @SmallTest
