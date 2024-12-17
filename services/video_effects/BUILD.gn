@@ -42,7 +42,7 @@ source_set("service") {
     "//third_party/dawn/src/dawn/wire",
   ]
 
-  if (build_with_mediapipe_lib) {
+  if (mediapipe_build_with_gpu_support) {
     deps += [
       "//services/video_effects/calculators:inference",
       "//third_party/mediapipe",

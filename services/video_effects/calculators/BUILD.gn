@@ -5,6 +5,7 @@
 import("//third_party/mediapipe/features.gni")
 
 assert(build_with_mediapipe_lib)
+assert(mediapipe_build_with_gpu_support)
 
 source_set("graph_config") {
   sources = [
