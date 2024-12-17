@@ -241,7 +241,8 @@ using RasterFunction = void (*)(const PaintOp* op,
     Rasterizer<T, T::kHasPaintFlags>::Raster(static_cast<const T*>(op),   \
                                              canvas, params);             \
   },
-static const RasterFunction g_raster_functions[kNumOpTypes] = {TYPES(M)};
+constexpr std::array<RasterFunction, kNumOpTypes> g_raster_functions = {
+    TYPES(M)};
 #undef M
 
 using RasterWithFlagsFunction = void (*)(const PaintOp* op,
@@ -254,8 +255,8 @@ using RasterWithFlagsFunction = void (*)(const PaintOp* op,
     Rasterizer<T, T::kHasPaintFlags>::RasterWithFlags(             \
         static_cast<const T*>(op), flags, canvas, params);         \
   },
-static const RasterWithFlagsFunction
-    g_raster_with_flags_functions[kNumOpTypes] = {TYPES(M)};
+constexpr std::array<RasterWithFlagsFunction, kNumOpTypes>
+    g_raster_with_flags_functions = {TYPES(M)};
 #undef M
 
 using SerializeFunction = void (*)(const PaintOp& op,
@@ -278,7 +279,8 @@ ALWAYS_INLINE void Serialize(const PaintOp& op,
   op_t.Serialize(writer, flags_to_serialize, current_ctm, original_ctm);
 }
 #define M(T) &Serialize<T>,
-static const SerializeFunction g_serialize_functions[kNumOpTypes] = {TYPES(M)};
+constexpr std::array<SerializeFunction, kNumOpTypes> g_serialize_functions = {
+    TYPES(M)};
 #undef M
 
 using DeserializeFunction = PaintOp* (*)(PaintOpReader& reader,
@@ -298,8 +300,8 @@ PaintOp* Deserialize(PaintOpReader& reader, void* output, size_t output_size) {
   return op;
 }
 #define M(T) &Deserialize<T>,
-static const DeserializeFunction g_deserialize_functions[kNumOpTypes] = {
-    TYPES(M)};
+constexpr std::array<DeserializeFunction, kNumOpTypes> g_deserialize_functions =
+    {TYPES(M)};
 #undef M
 
 using AreEqualForTestingFunction = bool (*)(const PaintOp&, const PaintOp&);
@@ -309,8 +311,8 @@ bool AreEqualForTesting(const PaintOp& a, const PaintOp& b) {
       static_cast<const T&>(b));
 }
 #define M(T) &AreEqualForTesting<T>,
-static const AreEqualForTestingFunction
-    g_equal_for_testing_functions[kNumOpTypes] = {TYPES(M)};
+constexpr std::array<AreEqualForTestingFunction, kNumOpTypes>
+    g_equal_for_testing_functions = {TYPES(M)};
 #undef M
 
 // Most state ops (matrix, clip, save, restore) have a trivial destructor.
@@ -321,7 +323,8 @@ using VoidFunction = void (*)(PaintOp* op);
   !std::is_trivially_destructible<T>::value            \
       ? [](PaintOp* op) { static_cast<T*>(op)->~T(); } \
       : static_cast<VoidFunction>(nullptr),
-static const VoidFunction g_destructor_functions[kNumOpTypes] = {TYPES(M)};
+constexpr std::array<VoidFunction, kNumOpTypes> g_destructor_functions = {
+    TYPES(M)};
 #undef M
 
 #define M(T)                                         \
@@ -341,21 +344,23 @@ using AnalyzeOpFunc = void (*)(PaintOpBuffer*, const PaintOp*);
   [](PaintOpBuffer* buffer, const PaintOp* op) {       \
     buffer->AnalyzeAddedOp(static_cast<const T*>(op)); \
   },
-static const AnalyzeOpFunc g_analyze_op_functions[kNumOpTypes] = {TYPES(M)};
+constexpr std::array<AnalyzeOpFunc, kNumOpTypes> g_analyze_op_functions = {
+    TYPES(M)};
 #undef M
 
 }  // namespace
 
 #define M(T) PaintOpBuffer::ComputeOpAlignedSize<T>(),
-uint16_t PaintOp::g_type_to_aligned_size[kNumOpTypes] = {TYPES(M)};
+const std::array<uint16_t, kNumOpTypes> PaintOp::g_type_to_aligned_size = {
+    TYPES(M)};
 #undef M
 
 #define M(T) T::kIsDrawOp,
-bool PaintOp::g_is_draw_op[kNumOpTypes] = {TYPES(M)};
+const std::array<bool, kNumOpTypes> PaintOp::g_is_draw_op = {TYPES(M)};
 #undef M
 
 #define M(T) T::kHasPaintFlags,
-bool PaintOp::g_has_paint_flags[kNumOpTypes] = {TYPES(M)};
+const std::array<bool, kNumOpTypes> PaintOp::g_has_paint_flags = {TYPES(M)};
 #undef M
 
 const SkRect PaintOp::kUnsetRect = {SK_ScalarInfinity, 0, 0, 0};
@@ -396,6 +401,28 @@ bool OpHasDiscardableImagesImpl(const PaintOp& op) {
   case T::kType:                                           \
     return static_cast<const T&>(op).HasDiscardableImages( \
         unused_content_color_usage);
+
+    TYPES(M)
+#undef M
+  }
+}
+
+bool OpHasDrawTextOpsImpl(const PaintOp& op) {
+  switch (op.GetType()) {
+#define M(T)     \
+  case T::kType: \
+    return static_cast<const T&>(op).HasDrawTextOps();
+
+    TYPES(M)
+#undef M
+  }
+}
+
+size_t OpAdditionalOpCountImpl(const PaintOp& op) {
+  switch (op.GetType()) {
+#define M(T)     \
+  case T::kType: \
+    return static_cast<const T&>(op).AdditionalOpCount();
 
     TYPES(M)
 #undef M
@@ -2320,6 +2347,16 @@ bool PaintOp::OpHasDiscardableImages(const PaintOp& op) {
   return OpHasDiscardableImagesImpl(op);
 }
 
+// static
+bool PaintOp::OpHasDrawTextOps(const PaintOp& op) {
+  return OpHasDrawTextOpsImpl(op);
+}
+
+// static
+size_t PaintOp::OpAdditionalOpCount(const PaintOp& op) {
+  return OpAdditionalOpCountImpl(op);
+}
+
 void PaintOp::DestroyThis() {
   auto func = g_destructor_functions[type];
   if (func)
@@ -2444,22 +2481,22 @@ bool DrawScrollingContentsOp::HasDiscardableImages(
   return has_discardable_images;
 }
 
-AnnotateOp::AnnotateOp() : PaintOp(kType) {}
+AnnotateOp::AnnotateOp() : PaintOpBaseInternal(kType) {}
 
 AnnotateOp::AnnotateOp(PaintCanvas::AnnotationType annotation_type,
                        const SkRect& rect,
                        sk_sp<SkData> data)
-    : PaintOp(kType),
+    : PaintOpBaseInternal(kType),
       annotation_type(annotation_type),
       rect(rect),
       data(std::move(data)) {}
 
 AnnotateOp::~AnnotateOp() = default;
 
-DrawImageOp::DrawImageOp() : PaintOpWithFlags(kType) {}
+DrawImageOp::DrawImageOp() : PaintOpWithFlagsBaseInternal(kType) {}
 
 DrawImageOp::DrawImageOp(const PaintImage& image, SkScalar left, SkScalar top)
-    : PaintOpWithFlags(kType, PaintFlags()),
+    : PaintOpWithFlagsBaseInternal(kType, PaintFlags()),
       image(image),
       left(left),
       top(top) {}
@@ -2469,7 +2506,7 @@ DrawImageOp::DrawImageOp(const PaintImage& image,
                          SkScalar top,
                          const SkSamplingOptions& sampling,
                          const PaintFlags* flags)
-    : PaintOpWithFlags(kType, flags ? *flags : PaintFlags()),
+    : PaintOpWithFlagsBaseInternal(kType, flags ? *flags : PaintFlags()),
       image(image),
       left(left),
       top(top),
@@ -2486,13 +2523,13 @@ PaintFlags::FilterQuality DrawImageOp::GetImageQuality() const {
 
 DrawImageOp::~DrawImageOp() = default;
 
-DrawImageRectOp::DrawImageRectOp() : PaintOpWithFlags(kType) {}
+DrawImageRectOp::DrawImageRectOp() : PaintOpWithFlagsBaseInternal(kType) {}
 
 DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
                                  const SkRect& src,
                                  const SkRect& dst,
                                  SkCanvas::SrcRectConstraint constraint)
-    : PaintOpWithFlags(kType, PaintFlags()),
+    : PaintOpWithFlagsBaseInternal(kType, PaintFlags()),
       image(image),
       src(src),
       dst(dst),
@@ -2504,7 +2541,7 @@ DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
                                  const SkSamplingOptions& sampling,
                                  const PaintFlags* flags,
                                  SkCanvas::SrcRectConstraint constraint)
-    : PaintOpWithFlags(kType, flags ? *flags : PaintFlags()),
+    : PaintOpWithFlagsBaseInternal(kType, flags ? *flags : PaintFlags()),
       image(image),
       src(src),
       dst(dst),
@@ -2523,7 +2560,9 @@ PaintFlags::FilterQuality DrawImageRectOp::GetImageQuality() const {
 DrawImageRectOp::~DrawImageRectOp() = default;
 
 DrawRecordOp::DrawRecordOp(PaintRecord record, bool local_ctm)
-    : PaintOp(kType), record(std::move(record)), local_ctm(local_ctm) {}
+    : PaintOpBaseInternal(kType),
+      record(std::move(record)),
+      local_ctm(local_ctm) {}
 
 DrawRecordOp::~DrawRecordOp() = default;
 
@@ -2538,7 +2577,7 @@ size_t DrawRecordOp::AdditionalOpCount() const {
 DrawScrollingContentsOp::DrawScrollingContentsOp(
     ElementId scroll_element_id,
     scoped_refptr<DisplayItemList> display_item_list)
-    : PaintOp(kType),
+    : PaintOpBaseInternal(kType),
       scroll_element_id(scroll_element_id),
       display_item_list(std::move(display_item_list)) {}
 
@@ -2552,14 +2591,14 @@ size_t DrawScrollingContentsOp::AdditionalOpCount() const {
   return display_item_list->TotalOpCount();
 }
 
-DrawVerticesOp::DrawVerticesOp() : PaintOpWithFlags(kType) {}
+DrawVerticesOp::DrawVerticesOp() : PaintOpWithFlagsBaseInternal(kType) {}
 
 DrawVerticesOp::DrawVerticesOp(
     scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
     scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
     scoped_refptr<RefCountedBuffer<uint16_t>> indices,
     const PaintFlags& flags)
-    : PaintOpWithFlags(kType, flags),
+    : PaintOpWithFlagsBaseInternal(kType, flags),
       vertices(std::move(vertices)),
       uvs(std::move(uvs)),
       indices(std::move(indices)) {}
@@ -2572,7 +2611,7 @@ DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
                              SkottieFrameDataMap images,
                              const SkottieColorMap& color_map,
                              SkottieTextPropertyValueMap text_map)
-    : PaintOp(kType),
+    : PaintOpBaseInternal(kType),
       skottie(std::move(skottie)),
       dst(dst),
       t(t),
@@ -2580,7 +2619,7 @@ DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
       color_map(color_map),
       text_map(std::move(text_map)) {}
 
-DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
+DrawSkottieOp::DrawSkottieOp() : PaintOpBaseInternal(kType) {}
 
 DrawSkottieOp::~DrawSkottieOp() = default;
 
@@ -2598,20 +2637,23 @@ bool DrawSkottieOp::HasDiscardableImages(
   return true;
 }
 
-DrawTextBlobOp::DrawTextBlobOp() : PaintOpWithFlags(kType) {}
+DrawTextBlobOp::DrawTextBlobOp() : PaintOpWithFlagsBaseInternal(kType) {}
 
 DrawTextBlobOp::DrawTextBlobOp(sk_sp<SkTextBlob> blob,
                                SkScalar x,
                                SkScalar y,
                                const PaintFlags& flags)
-    : PaintOpWithFlags(kType, flags), blob(std::move(blob)), x(x), y(y) {}
+    : PaintOpWithFlagsBaseInternal(kType, flags),
+      blob(std::move(blob)),
+      x(x),
+      y(y) {}
 
 DrawTextBlobOp::DrawTextBlobOp(sk_sp<SkTextBlob> blob,
                                SkScalar x,
                                SkScalar y,
                                NodeId node_id,
                                const PaintFlags& flags)
-    : PaintOpWithFlags(kType, flags),
+    : PaintOpWithFlagsBaseInternal(kType, flags),
       blob(std::move(blob)),
       x(x),
       y(y),
@@ -2619,19 +2661,21 @@ DrawTextBlobOp::DrawTextBlobOp(sk_sp<SkTextBlob> blob,
 
 DrawTextBlobOp::~DrawTextBlobOp() = default;
 
-DrawSlugOp::DrawSlugOp() : PaintOpWithFlags(kType) {}
+DrawSlugOp::DrawSlugOp() : PaintOpWithFlagsBaseInternal(kType) {}
 
 DrawSlugOp::DrawSlugOp(sk_sp<sktext::gpu::Slug> slug, const PaintFlags& flags)
-    : PaintOpWithFlags(kType, flags), slug(std::move(slug)) {}
+    : PaintOpWithFlagsBaseInternal(kType, flags), slug(std::move(slug)) {}
 
 DrawSlugOp::~DrawSlugOp() = default;
 
 SaveLayerFiltersOp::SaveLayerFiltersOp(
     base::span<const sk_sp<PaintFilter>> filters,
     const PaintFlags& flags)
-    : PaintOpWithFlags(kType, flags), filters(filters.begin(), filters.end()) {}
+    : PaintOpWithFlagsBaseInternal(kType, flags),
+      filters(filters.begin(), filters.end()) {}
 
-SaveLayerFiltersOp::SaveLayerFiltersOp() : PaintOpWithFlags(kType) {}
+SaveLayerFiltersOp::SaveLayerFiltersOp()
+    : PaintOpWithFlagsBaseInternal(kType) {}
 
 SaveLayerFiltersOp::~SaveLayerFiltersOp() = default;
 
