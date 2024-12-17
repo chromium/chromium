@@ -88,7 +88,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/trace_event/trace_event_etw_export_win.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"

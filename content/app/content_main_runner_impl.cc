@@ -128,7 +128,6 @@
 #include <malloc.h>
 #include <cstring>
 
-#include "base/trace_event/trace_event_etw_export_win.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/display/win/dpi.h"
 #elif BUILDFLAG(IS_MAC)

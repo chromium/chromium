@@ -2433,8 +2433,6 @@ component("base") {
       sources += [
         "trace_event/etw_interceptor_win.cc",
         "trace_event/etw_interceptor_win.h",
-        "trace_event/trace_event_etw_export_win.cc",
-        "trace_event/trace_event_etw_export_win.h",
         "trace_event/trace_logging_minimal_win.cc",
         "trace_event/trace_logging_minimal_win.h",
       ]

@@ -66,10 +66,6 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"  // nogncheck
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"  // nogncheck
 
-#if BUILDFLAG(IS_WIN)
-#include "base/trace_event/trace_event_etw_export_win.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "base/debug/elf_reader.h"
 
@@ -721,13 +717,6 @@ void TraceLog::UpdateCategoryState(TraceCategory* category) {
   if (enabled_ && category == CategoryRegistry::kCategoryMetadata) {
     state_flags |= TraceCategory::ENABLED_FOR_RECORDING;
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (base::trace_event::TraceEventETWExport::IsCategoryGroupEnabled(
-          category->name())) {
-    state_flags |= TraceCategory::ENABLED_FOR_ETW_EXPORT;
-  }
-#endif
 
   category->set_state(state_flags);
 }
@@ -1401,17 +1390,6 @@ bool TraceLog::ShouldAddAfterUpdatingState(
       }
     }
   }
-
-#if BUILDFLAG(IS_WIN)
-  // This is done sooner rather than later, to avoid creating the event and
-  // acquiring the lock, which is not needed for ETW as it's already threadsafe.
-  if (*category_group_enabled & TraceCategory::ENABLED_FOR_ETW_EXPORT) {
-    // ETW export expects non-null event names.
-    name = name ? name : "";
-    TraceEventETWExport::AddEvent(phase, category_group_enabled, name, id,
-                                  timestamp, args);
-  }
-#endif  // BUILDFLAG(IS_WIN)
   return true;
 }
 
@@ -1696,12 +1674,6 @@ void TraceLog::UpdateTraceEventDurationExplicit(
   }
   const AutoReset<bool> resetter(&thread_is_in_trace_event, true);
 
-#if BUILDFLAG(IS_WIN)
-  // Generate an ETW event that marks the end of a complete event.
-  if (*category_group_enabled & TraceCategory::ENABLED_FOR_ETW_EXPORT)
-    TraceEventETWExport::AddCompleteEndEvent(category_group_enabled, name);
-#endif  // BUILDFLAG(IS_WIN)
-
   if (*category_group_enabled & TraceCategory::ENABLED_FOR_RECORDING) {
     auto update_duration_override =
         update_duration_override_.load(std::memory_order_relaxed);
@@ -1952,21 +1924,6 @@ TraceBuffer* TraceLog::CreateTraceBuffer() {
       config_buffer_chunks > 0 ? config_buffer_chunks
                                : kTraceEventVectorBufferChunks);
 }
-
-#if BUILDFLAG(IS_WIN)
-void TraceLog::UpdateETWCategoryGroupEnabledFlags() {
-  // Go through each category and set/clear the ETW bit depending on whether the
-  // category is enabled.
-  for (TraceCategory& category : CategoryRegistry::GetAllCategories()) {
-    if (base::trace_event::TraceEventETWExport::IsCategoryGroupEnabled(
-            category.name())) {
-      category.set_state_flag(TraceCategory::ENABLED_FOR_ETW_EXPORT);
-    } else {
-      category.clear_state_flag(TraceCategory::ENABLED_FOR_ETW_EXPORT);
-    }
-  }
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 void TraceLog::SetTraceBufferForTesting(
     std::unique_ptr<TraceBuffer> trace_buffer) {

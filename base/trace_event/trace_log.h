@@ -384,13 +384,6 @@ class BASE_EXPORT TraceLog :
   // may not handle the flush request in time causing lost of unflushed events.
   void SetCurrentThreadBlocksMessageLoop();
 
-#if BUILDFLAG(IS_WIN)
-  // This function is called by the ETW exporting module whenever the ETW
-  // keyword (flags) changes. This keyword indicates which categories should be
-  // exported, so whenever it changes, we adjust accordingly.
-  void UpdateETWCategoryGroupEnabledFlags();
-#endif
-
   // Replaces |logged_events_| with a new TraceBuffer for testing.
   void SetTraceBufferForTesting(std::unique_ptr<TraceBuffer> trace_buffer);
 

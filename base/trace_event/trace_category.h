@@ -26,8 +26,8 @@ struct TraceCategory {
     // Not used anymore.
     DEPRECATED_ENABLED_FOR_MONITORING = 1 << 1,
     DEPRECATED_ENABLED_FOR_EVENT_CALLBACK = 1 << 2,
+    DEPRECATED_ENABLED_FOR_ETW_EXPORT = 1 << 3,
 
-    ENABLED_FOR_ETW_EXPORT = 1 << 3,
     ENABLED_FOR_FILTERING = 1 << 4
   };
 
