@@ -107,7 +107,8 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
                     tabGroup:tab_group_->GetWeakPtr()
                     consumer:tab_group_consumer_
                 gridConsumer:consumer_
-                  modeHolder:mode_holder_];
+                  modeHolder:mode_holder_
+            messagingService:nil];
     mediator_.browser = browser_.get();
   }
 

@@ -62,6 +62,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_activity_observer",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_idle_status_handler",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_page_mutator",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:activity_label_view",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_mediator",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_toolbars_mutator",

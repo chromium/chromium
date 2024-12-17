@@ -11,6 +11,7 @@
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
@@ -100,6 +101,9 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       ShareKitServiceFactory::GetForProfile(profile);
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  collaboration::messaging::MessagingBackendService* messagingService =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          profile);
 
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
@@ -109,7 +113,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                   tabGroup:_tabGroup->GetWeakPtr()
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController
-                modeHolder:self.modeHolder];
+                modeHolder:self.modeHolder
+          messagingService:messagingService];
   _mediator.browser = browser;
   _mediator.tabGroupsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
