@@ -588,9 +588,6 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  std::optional<std::string> csp = std::move(params->properties.csp);
-  bool enable_messaging = params->properties.messaging.value_or(false);
-
   std::optional<std::string> world_id;
   if (base::FeatureList::IsEnabled(
           extensions_features::kApiUserScriptsMultipleWorlds)) {
@@ -613,8 +610,25 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
                                  kMaxNumberOfRegisteredWorlds)));
   }
 
-  config_manager->SetUserScriptWorldInfo(*extension(), world_id, csp,
-                                         enable_messaging);
+  mojom::UserScriptWorldInfoPtr world_info =
+      config_manager->GetUserScriptWorldInfo(extension()->id(), world_id);
+  bool changed = false;
+
+  std::optional<std::string> csp = std::move(params->properties.csp);
+  if (csp && csp != world_info->csp) {
+    changed = true;
+    world_info->csp = std::move(csp);
+  }
+
+  std::optional<bool> enable_messaging = params->properties.messaging;
+  if (enable_messaging && *enable_messaging != world_info->enable_messaging) {
+    changed = true;
+    world_info->enable_messaging = *enable_messaging;
+  }
+
+  if (changed) {
+    config_manager->SetUserScriptWorldInfo(*extension(), std::move(world_info));
+  }
 
   return RespondNow(NoArguments());
 }

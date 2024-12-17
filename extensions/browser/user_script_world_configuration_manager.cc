@@ -103,10 +103,8 @@ UserScriptWorldConfigurationManager::~UserScriptWorldConfigurationManager() =
 
 void UserScriptWorldConfigurationManager::SetUserScriptWorldInfo(
     const Extension& extension,
-    const std::optional<std::string>& world_id,
-    std::optional<std::string> csp,
-    bool enable_messaging) {
-  CHECK(!world_id || !world_id->empty());
+    mojom::UserScriptWorldInfoPtr world_info) {
+  CHECK(!world_info->world_id || !world_info->world_id->empty());
   // Persist world configuratation in ExtensionPrefs.
   ExtensionPrefs::ScopedDictionaryUpdate update(
       extension_prefs_, extension.id(), kUserScriptsWorldsConfiguration.name);
@@ -115,17 +113,21 @@ void UserScriptWorldConfigurationManager::SetUserScriptWorldInfo(
     update_dict = update.Create();
   }
 
-  base::Value::Dict world_info;
-  world_info.Set(kUserScriptWorldMessagingKey, enable_messaging);
-  if (csp.has_value()) {
-    world_info.Set(kUserScriptWorldCspKey, *csp);
+  base::Value::Dict world_info_dict;
+  world_info_dict.Set(kUserScriptWorldMessagingKey,
+                      world_info->enable_messaging);
+  if (world_info->csp.has_value()) {
+    world_info_dict.Set(kUserScriptWorldCspKey, *world_info->csp);
   }
 
-  update_dict->SetKey(GetUserScriptWorldKeyForWorldId(world_id),
-                      base::Value(std::move(world_info)));
+  update_dict->SetKey(GetUserScriptWorldKeyForWorldId(world_info->world_id),
+                      base::Value(std::move(world_info_dict)));
 
-  renderer_helper_->SetUserScriptWorldProperties(extension, world_id, csp,
-                                                 enable_messaging);
+  // TODO(devlin): Have RendererStartupHelper::SetUserScriptWorldProperties()
+  // take a mojom::UserScriptWorldInfoPtr.
+  renderer_helper_->SetUserScriptWorldProperties(
+      extension, world_info->world_id, world_info->csp,
+      world_info->enable_messaging);
 }
 
 void UserScriptWorldConfigurationManager::ClearUserScriptWorldInfo(
