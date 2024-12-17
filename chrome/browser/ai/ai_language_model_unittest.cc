@@ -159,8 +159,9 @@ const optimization_guide::proto::Any& GetPromptApiMetadata(
 }  // namespace
 
 class AILanguageModelTest : public AITestUtils::AITestBase,
-                            public testing::WithParamInterface<
-                                /*is_model_streaming_chunk_by_chunk=*/bool> {
+                            public testing::WithParamInterface<testing::tuple<
+                                /*is_model_streaming_chunk_by_chunk=*/bool,
+                                /*is_api_streaming_chunk_by_chunk=*/bool>> {
  public:
   struct Options {
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params = nullptr;
@@ -176,16 +177,26 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
   };
 
   void SetUp() override {
-    AITestUtils::AITestBase::SetUp();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        base::test::FeatureRefAndParams(
             features::kAILanguageModelOverrideConfiguration,
-            {{"max_top_k", base::NumberToString(kOverrideMaxTopK)}})},
-        {});
+            {{"max_top_k", base::NumberToString(kOverrideMaxTopK)}})};
+    std::vector<base::test::FeatureRef> disabled_features{};
+    if (IsAPIStreamingChunkByChunk()) {
+      disabled_features.push_back(
+          features::kAILanguageModelForceStreamingFullResponse);
+    } else {
+      enabled_features.push_back(base::test::FeatureRefAndParams(
+          features::kAILanguageModelForceStreamingFullResponse, {}));
+    }
+    AITestUtils::AITestBase::SetUp();
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
  protected:
-  bool IsModelStreamingChunkByChunk() { return GetParam(); }
+  bool IsModelStreamingChunkByChunk() { return std::get<0>(GetParam()); }
+  bool IsAPIStreamingChunkByChunk() { return std::get<1>(GetParam()); }
 
   // The helper function that creates a `AILanguageModel` and executes the
   // prompt.
@@ -261,6 +272,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                     EXPECT_THAT(ToString(request_metadata),
                                 options.expected_context);
                   });
+
           EXPECT_CALL(*session, ExecuteModel(_, _))
               .WillOnce(
                   [&](const google::protobuf::MessageLite& request_metadata,
@@ -269,8 +281,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                               callback) {
                     EXPECT_THAT(ToString(request_metadata),
                                 options.expected_prompt);
-                    callback.Run(CreateExecutionResult(kTestResponse,
-                                                       /*is_complete=*/true));
+                    StreamResponse(callback);
                   });
           return session;
         })
@@ -298,8 +309,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                               callback) {
                     EXPECT_THAT(ToString(request_metadata),
                                 options.expected_prompt);
-                    callback.Run(CreateExecutionResult(kTestResponse,
-                                                       /*is_complete=*/true));
+                    StreamResponse(callback);
                   });
           return session;
         });
@@ -436,15 +446,46 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
             });
   }
 
+  void StreamResponse(
+      optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+          callback) {
+    std::string responses[3];
+    std::string response = std::string(kTestResponse);
+    if (IsModelStreamingChunkByChunk()) {
+      responses[0] = response.substr(0, 1);
+      responses[1] = response.substr(1);
+      responses[2] = "";
+    } else {
+      responses[0] = response.substr(0, 1);
+      responses[1] = kTestResponse;
+      responses[2] = kTestResponse;
+    }
+    callback.Run(CreateExecutionResult(responses[0],
+                                       /*is_complete=*/false));
+    callback.Run(CreateExecutionResult(responses[1],
+                                       /*is_complete=*/false));
+    callback.Run(CreateExecutionResult(responses[2],
+                                       /*is_complete=*/true));
+  }
+
   void TestPromptCall(mojo::Remote<blink::mojom::AILanguageModel>& mock_session,
                       std::string& prompt,
                       bool should_overflow_context) {
     AITestUtils::MockModelStreamingResponder mock_responder;
 
     base::RunLoop responder_run_loop;
+    std::string response = std::string(kTestResponse);
     EXPECT_CALL(mock_responder, OnStreaming(_))
+        .Times(3)
         .WillOnce(testing::Invoke([&](const std::string& text) {
-          EXPECT_THAT(text, kTestResponse);
+          EXPECT_THAT(text, response.substr(0, 1));
+        }))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, IsAPIStreamingChunkByChunk() ? response.substr(1)
+                                                         : kTestResponse);
+        }))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, IsAPIStreamingChunkByChunk() ? "" : kTestResponse);
         }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
@@ -460,14 +501,21 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AILanguageModelTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param
-                                      ? "IsModelStreamingChunkByChunk"
-                                      : "IsModelStreamingWithCurrentResponse";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AILanguageModelTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<testing::tuple<bool, bool>>& info) {
+      std::string description = "";
+      description += std::get<0>(info.param)
+                         ? "IsModelStreamingChunkByChunk"
+                         : "IsModelStreamingWithCurrentResponse";
+      description += "_";
+      description += std::get<1>(info.param)
+                         ? "IsAPIStreamingChunkByChunk"
+                         : "IsAPIStreamingWithCurrentResponse";
+      return description;
+    });
 
 TEST_P(AILanguageModelTest, PromptDefaultSession) {
   RunPromptTest(AILanguageModelTest::Options{
