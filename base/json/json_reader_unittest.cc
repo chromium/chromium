@@ -982,12 +982,28 @@ TEST_P(JSONReaderTest, ReplaceInvalidUTF16EscapeSequence) {
   EXPECT_EQ("_\xEF\xBF\xBD_", value->GetString());
 }
 
+TEST_P(JSONReaderTest, InvalidUTF16HighSurrogates) {
+  // U+dbaa is a high surrogate and expects a low surrogate, which U+001e is
+  // not, so the entire surrogate pair should be replaced by
+  // REPLACEMENT_CHARACTER.
+  const std::string surrogate_and_dquote = R"("\udbaa\u001e")";
+  std::optional<Value> value =
+      JSONReader::Read(surrogate_and_dquote, JSON_REPLACE_INVALID_CHARACTERS);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("\xEF\xBF\xBD", value->GetString());
+
+  // However, when not replacing invalid characters, the entire parse is
+  // invalid.
+  value = JSONReader::Read(surrogate_and_dquote);
+  ASSERT_FALSE(value);
+}
+
 TEST_P(JSONReaderTest, InvalidUTF16HighSurrogatesAndEscapes) {
   // U+dbaa is a lone high surrogate, and should be replaced with
   // REPLACEMENT_CHARACTER and not affect interpretation of the following `\`
   // character as a part of the escape sequence `\"`.
   const std::string surrogate_and_dquote = R"("\udbaa\"abc")";
-  LOG(ERROR) << surrogate_and_dquote;
   std::optional<Value> value =
       JSONReader::Read(surrogate_and_dquote, JSON_REPLACE_INVALID_CHARACTERS);
   ASSERT_TRUE(value);
