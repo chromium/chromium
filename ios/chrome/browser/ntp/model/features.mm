@@ -29,7 +29,7 @@ FirstRunVariationType GetSetUpListInFirstRunVariation() {
                                              kSetUpListInFirstRunParam, 1));
 }
 
-base::TimeDelta SetUpListDuration() {
+base::TimeDelta SetUpListDurationPastFirstRun() {
   return base::Days(base::GetFieldTrialParamByFeatureAsInt(
       kSetUpListShortenedDuration, kSetUpListDurationParam, 14));
 }

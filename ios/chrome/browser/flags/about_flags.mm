@@ -1205,11 +1205,11 @@ const FeatureEntry::FeatureVariation kSetUpListInFirstRunVariations[] = {
      std::size(kSetUpListInFirstRunArm3), nullptr}};
 
 const FeatureEntry::FeatureParam kSetUpListDuration3Days[] = {
-    {set_up_list::kSetUpListDurationParam, "3"}};
+    {set_up_list::kSetUpListDurationParam, "2"}};
 const FeatureEntry::FeatureParam kSetUpListDuration5Days[] = {
-    {set_up_list::kSetUpListDurationParam, "5"}};
+    {set_up_list::kSetUpListDurationParam, "4"}};
 const FeatureEntry::FeatureParam kSetUpListDuration7Days[] = {
-    {set_up_list::kSetUpListDurationParam, "7"}};
+    {set_up_list::kSetUpListDurationParam, "6"}};
 
 const FeatureEntry::FeatureVariation kSetUpListDurationVariations[] = {
     {" - 3 Days", kSetUpListDuration3Days, std::size(kSetUpListDuration3Days),

@@ -37,7 +37,7 @@ bool IsSetUpListActive(PrefService* local_prefs,
     // have been completed yet. In this case, we will wait until the next run.
     return false;
   }
-  if (!IsFirstRunRecent(set_up_list::SetUpListDuration())) {
+  if (!IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun())) {
     // It is past the max duration of the Set Up List, but if user has
     // interacted in the last day the time will be extended.
     base::Time last_interaction =

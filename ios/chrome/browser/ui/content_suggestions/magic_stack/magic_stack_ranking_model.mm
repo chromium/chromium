@@ -438,7 +438,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     inputContext->metadata_args.emplace(
         segmentation_platform::kIsNewUser,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            IsFirstRunRecent(set_up_list::SetUpListDuration())));
+            IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun())));
   }
 
   if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {

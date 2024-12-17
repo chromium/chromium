@@ -441,7 +441,7 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
   // This notification should only be requested during the duration of the Set
   // Up List minus the trigger interval after FirstRun.
   if (!IsFirstRunRecent(
-          set_up_list::SetUpListDuration() -
+          set_up_list::SetUpListDurationPastFirstRun() -
           TipsNotificationTriggerDelta(CanSendReactivation(), user_type_))) {
     return false;
   }

@@ -36,8 +36,10 @@ extern const char kSetUpListDurationParam[];
 FirstRunVariationType GetSetUpListInFirstRunVariation();
 
 // Returns the duration for the SetUpList based off the state of the
-// kSetUpListShortenedDuration feature.
-base::TimeDelta SetUpListDuration();
+// kSetUpListShortenedDuration feature. Returns the duration past the First Run,
+// so if the function returns 1 day, that means the Set Up List will appear one
+// day past the First Run.
+base::TimeDelta SetUpListDurationPastFirstRun();
 
 }  // namespace set_up_list
 
