@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.10.2...chromium-bidi-v0.11.0) (2024-12-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* align navigation started with the spec
+
+### Features
+
+* abort navigation only after frame navigated ([#2898](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2898)) ([6c3d406](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6c3d406296ad70ca51eca5dd7ec92b8e62843c95))
+
+
+### Bug Fixes
+
+* align navigation started with the spec ([960531f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/960531f4663a74de0dc5623889357d5c80172dbf))
+
 ## [0.10.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.10.1...chromium-bidi-v0.10.2) (2024-12-11)
 
 

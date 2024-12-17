@@ -1,6 +1,6 @@
 {
   "name": "chromium-bidi",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "scripts": {
     "build": "wireit",
