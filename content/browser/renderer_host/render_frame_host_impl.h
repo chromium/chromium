@@ -246,13 +246,6 @@ class UkmRecorder;
 
 namespace features {
 
-// Feature to prevent name updates to RenderFrameHost (and by extension its
-// relevant BrowsingContextState) when it is not current (i.e. is in the
-// BackForwardCache or is pending delete). This primarily will affect the
-// non-legacy implementation of BrowsingContextState.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
-
 // Feature to evict when accessibility events occur while in back/forward cache.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEvictOnAXEvents);
 

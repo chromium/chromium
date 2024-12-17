@@ -7574,33 +7574,21 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
 // enabled and disabled.
 class RenderFrameHostImplBrowsingContextStateNameTest
     : public RenderFrameHostImplBrowserTest,
-      public testing::WithParamInterface<testing::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    auto [enable_browsing_context_state_swap, disable_frame_name_update] =
-        info.param;
-    return base::StringPrintf(
-        "%s_%s",
-        enable_browsing_context_state_swap
-            ? "NewBrowsingContextStateOnBrowsingContextGroupSwap"
-            : "LegacyOneToOneWithFrameTreeNode",
-        disable_frame_name_update
-            ? "DisableFrameNameUpdateOnNonCurrentRenderFrameHost"
-            : "EnableFrameNameUpdateOnNonCurrentRenderFrameHost");
+    return info.param ? "NewBrowsingContextStateOnBrowsingContextGroupSwap"
+                      : "LegacyOneToOneWithFrameTreeNode";
   }
 
  protected:
   void SetUp() override {
-    // TODO(crbug.com/40840863): Flaky on Mac and Android.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/40840863): Flaky on Mac, Android, Linux, and ChromeOS.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     GTEST_SKIP();
 #else
-    // TODO(crbug.com/40840863): This configuration is flaky, for every tests.
-    if (!DisableFrameNameUpdateOnNonCurrentRenderFrameHost()) {
-      GTEST_SKIP();
-    }
 
     // TODO(crbug.com/40259517):
     // A RenderViewHostImpl from outside the BackForward take a
@@ -7618,30 +7606,20 @@ class RenderFrameHostImplBrowsingContextStateNameTest
         features::kNewBrowsingContextStateOnBrowsingContextGroupSwap,
         NewBrowsingContextStateOnBrowsingContextGroupSwap());
 
-    disable_name_update_feature_list_.InitWithFeatureState(
-        features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost,
-        DisableFrameNameUpdateOnNonCurrentRenderFrameHost());
-
     RenderFrameHostImplBrowserTest::SetUp();
 #endif
   }
 
-  bool DisableFrameNameUpdateOnNonCurrentRenderFrameHost() {
-    return testing::get<0>(GetParam());
-  }
-
   bool NewBrowsingContextStateOnBrowsingContextGroupSwap() {
-    return testing::get<1>(GetParam());
+    return GetParam();
   }
 
  private:
   base::test::ScopedFeatureList browsing_context_state_feature_list_;
-  base::test::ScopedFeatureList disable_name_update_feature_list_;
 };
 
 // Test that, when the RenderFrameHostImpl is in the BackForwardCache, the
-// name update is blocked if kDisableFrameNameUpdateOnNonCurrentRenderFrameHost
-// is enabled
+// name update is blocked.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                        BlockNameUpdateForBackForwardCache) {
   // This test specifically wants to test with BackForwardCache enabled, so skip
@@ -7682,22 +7660,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                                 ->current_replication_state()
                                 .unique_name;
 
-  if (DisableFrameNameUpdateOnNonCurrentRenderFrameHost()) {
-    // Verify that the frame name and unique name haven't been changed, even
-    // though a name change was triggered by the Javascript.
-    EXPECT_EQ(frame_name, "page_name");
-    EXPECT_EQ(unique_name, "");
-  } else {
-    // Verify that the frame name and unique name have been changed, as we are
-    // not disabling the update.
-    EXPECT_EQ(frame_name, "unused_name");
-    EXPECT_EQ(unique_name, "");
-  }
+  // Verify that the frame name and unique name haven't been changed, even
+  // though a name change was triggered by the Javascript.
+  EXPECT_EQ(frame_name, "page_name");
+  EXPECT_EQ(unique_name, "");
 }
 
 // Test that, when the RenderFrameHostImpl is in a pending delete state, the
-// name update is blocked if kDisableFrameNameUpdateOnNonCurrentRenderFrameHost
-// is enabled
+// name update is blocked.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                        BlockNameUpdateForPendingDelete) {
   // Disable BackForwardCache so that a pending delete state can be forced.
@@ -7738,23 +7708,16 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                                 ->current_replication_state()
                                 .unique_name;
 
-  if (DisableFrameNameUpdateOnNonCurrentRenderFrameHost()) {
-    // Verify that the frame name and unique name haven't been changed, even
-    // though a name change was triggered by the Javascript.
-    EXPECT_EQ(frame_name, "page_name");
-    EXPECT_EQ(unique_name, "");
-  } else {
-    // Verify that the frame name and unique name have been changed, as we are
-    // not disabling the update.
-    EXPECT_EQ(frame_name, "unused_name");
-    EXPECT_EQ(unique_name, "");
-  }
+  // Verify that the frame name and unique name haven't been changed, even
+  // though a name change was triggered by the Javascript.
+  EXPECT_EQ(frame_name, "page_name");
+  EXPECT_EQ(unique_name, "");
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     RenderFrameHostImplBrowsingContextStateNameTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
+    testing::Bool(),
     RenderFrameHostImplBrowsingContextStateNameTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

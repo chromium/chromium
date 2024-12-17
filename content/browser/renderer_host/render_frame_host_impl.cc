@@ -329,9 +329,6 @@
 #endif
 
 namespace features {
-BASE_FEATURE(kDisableFrameNameUpdateOnNonCurrentRenderFrameHost,
-             "DisableFrameNameUpdateOnNonCurrentRenderFrameHost",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Evict when accessibility events occur while in back/forward cache.
 // Disabling on all platforms since https://crbug.com/1341507 has been addressed
@@ -7354,9 +7351,7 @@ void RenderFrameHostImpl::DidChangeName(const std::string& name,
   // now occur in RenderFrameHostImpl (and by extension, BrowsingContextState),
   // ensure that invalid updates (i.e. when in the BackForwardCache or in a
   // pending deletion state) are not applied.
-  if ((IsInBackForwardCache() || IsPendingDeletion()) &&
-      base::FeatureList::IsEnabled(
-          features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost)) {
+  if (IsInBackForwardCache() || IsPendingDeletion()) {
     return;
   }
   if (GetParent() != nullptr) {
