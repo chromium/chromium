@@ -459,6 +459,101 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AssistContent.AttachedUrl" enum="BooleanSuccess"
+    expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records whether the current web page URI was attached to an AssistContent
+    object when assistant was invoked while ChromeActivity was in the
+    foreground.
+  </summary>
+</histogram>
+
+<histogram name="Android.AssistContent.StructuredDataAttachedSuccess.Pdf"
+    enum="BooleanSuccess" expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records whether PDF structured data was successfully attached to an
+    AssistContent object when assistant was invoked while ChromeActivity was in
+    the foreground.
+
+    Only recorded when the &quot;AndroidPdfAssistContent&quot; feature is
+    enabled and assistant is invoked while viewing a PDF.
+  </summary>
+</histogram>
+
+<histogram name="Android.AssistContent.StructuredDataAttachedSuccess.WebPage"
+    enum="BooleanSuccess" expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records whether web page structured data was successfully attached to an
+    AssistContent object when assistant was invoked while ChromeActivity was in
+    the foreground.
+
+    Only recorded when the &quot;PageContentProvider&quot; feature is enabled
+    and assistant is invoked while viewing a web page.
+  </summary>
+</histogram>
+
+<histogram name="Android.AssistContent.WebPageContentProvider.Events"
+    enum="WebPageContentProviderEvent" expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records events related to WebPageContentProvider as it generates a URI for
+    an external app and as it handles queries from said external app.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart"
+    units="ms" expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records the amount of time passed between sending a web page content
+    provider URI to an external app and receiving a query from an external app
+    with the same URI (this starts a content extraction task).
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.AssistContent.WebPageContentProvider.Latency.CreateToFinalQuery"
+    units="ms" expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records the total amount of time passed between sending a web page content
+    provider URI to an external app and it receiving the web page's contents.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.AssistContent.WebPageContentProvider.Latency.ExtractionEndToFinalQuery"
+    units="ms" expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records the amount of time passed between notifying an external app that a
+    web page content provider URI has changed and receiving a query from an
+    external app with the same URI (this returns the extracted content).
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd"
+    units="ms" expires_after="2025-03-01">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records the amount of time passed while extracting a web page's contents,
+    when done an external application is notified that their URI has changed.
+  </summary>
+</histogram>
+
 <histogram name="Android.Automotive.DeviceLockDialogAction.{Source}"
     enum="DeviceLockDialogAction" expires_after="2025-07-01">
   <owner>clhager@google.com</owner>

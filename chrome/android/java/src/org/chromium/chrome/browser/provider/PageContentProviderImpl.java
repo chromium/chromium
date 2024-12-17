@@ -24,7 +24,9 @@ import org.json.JSONObject;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.UsedByReflection;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.provider.PageContentProviderImpl.PageContentInvocationState.PageExtractionState;
+import org.chromium.chrome.browser.provider.PageContentProviderMetrics.PageContentProviderEvent;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderFrameHost;
 
@@ -77,6 +80,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
             mInvokedUrl = invokedUrl;
             mActivityTabProvider = activityTabProvider;
             mExtractionState = PageExtractionState.NOT_STARTED;
+            mInvocationStartTimestampMs = TimeUtils.elapsedRealtimeMillis();
         }
 
         @NonNull private final String mInvocationId;
@@ -84,6 +88,10 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         @Nullable private String mPageContents;
         @PageExtractionState private int mExtractionState;
         @NonNull private final ActivityTabProvider mActivityTabProvider;
+
+        private long mInvocationStartTimestampMs;
+        private long mExtractionStartTimestampMs;
+        private long mExtractionFinishedTimestampMs;
     }
 
     private static final String AUTHORITY_SUFFIX = ".PageContentProvider";
@@ -139,12 +147,17 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
             }
 
             synchronized (sLock) {
+                PageContentProviderMetrics.recordPageProviderEvent(PageContentProviderEvent.QUERY);
                 ensureUriMatcherInitialized();
                 final int match = mUriMatcher.match(uri);
 
                 switch (match) {
                     case URI_MATCH_INVOCATION_URL -> {}
-                    default -> throw new IllegalArgumentException("Unknown URL");
+                    default -> {
+                        PageContentProviderMetrics.recordPageProviderEvent(
+                                PageContentProviderEvent.QUERY_FAILED_INVALID_URL);
+                        throw new IllegalArgumentException("Unknown URL");
+                    }
                 }
 
                 String id = uri.getLastPathSegment();
@@ -154,6 +167,8 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                 if (id == null
                         || sInvocationState == null
                         || !id.equals(sInvocationState.mInvocationId)) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            PageContentProviderEvent.QUERY_FAILED_INVALID_ID);
                     return cursor;
                 }
 
@@ -182,6 +197,10 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
 
                 if (currentTabUrlAndFrameHost == null
                         || !sInvocationState.mInvokedUrl.equals(currentTabUrlAndFrameHost.first)) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            currentTabUrlAndFrameHost == null
+                                    ? PageContentProviderEvent.QUERY_FAILED_TO_GET_CURRENT_TAB
+                                    : PageContentProviderEvent.QUERY_FAILED_CURRENT_TAB_CHANGED);
                     return cursor;
                 }
 
@@ -190,11 +209,21 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                         sInvocationState.mExtractionState == PageExtractionState.COMPLETE;
                 if (isFinishedLoading) {
                     pageContents = sInvocationState.mPageContents;
+                    recordExtractionEndToFinalQueryLatency();
                     clearCachedContent();
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            PageContentProviderEvent.QUERY_SUCCEEDED_RETURNED_EXTRACTED);
                 } else if (sInvocationState.mExtractionState == PageExtractionState.NOT_STARTED) {
                     requestPageContents(
                             sInvocationState.mInvokedUrl, currentTabUrlAndFrameHost.second);
+                    recordCreateToExtractionStartLatency();
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            PageContentProviderEvent.QUERY_SUCCEEDED_STARTED_EXTRACTION);
                     sInvocationState.mExtractionState = PageExtractionState.STARTED;
+
+                } else {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            PageContentProviderEvent.QUERY_SUCCEEDED_ALREADY_EXTRACTING);
                 }
 
                 cursor.addRow(
@@ -342,6 +371,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                 return;
             }
 
+            PageContentProviderMetrics.recordPageProviderEvent(PageContentProviderEvent.TIMEOUT);
             clearCachedContent();
         }
     }
@@ -364,6 +394,57 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         }
     }
 
+    private static void recordCreateToExtractionStartLatency() {
+        synchronized (sLock) {
+            if (sInvocationState == null) return;
+
+            if (sInvocationState.mInvocationStartTimestampMs != 0) {
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart",
+                        TimeUtils.elapsedRealtimeMillis()
+                                - sInvocationState.mInvocationStartTimestampMs);
+                sInvocationState.mExtractionStartTimestampMs = TimeUtils.elapsedRealtimeMillis();
+            }
+        }
+    }
+
+    private static void recordExtractionStartToEndLatency() {
+        synchronized (sLock) {
+            if (sInvocationState == null) return;
+
+            if (sInvocationState.mExtractionStartTimestampMs != 0) {
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd",
+                        TimeUtils.elapsedRealtimeMillis()
+                                - sInvocationState.mExtractionStartTimestampMs);
+                sInvocationState.mExtractionStartTimestampMs = 0;
+                sInvocationState.mExtractionFinishedTimestampMs = TimeUtils.elapsedRealtimeMillis();
+            }
+        }
+    }
+
+    private static void recordExtractionEndToFinalQueryLatency() {
+        synchronized (sLock) {
+            if (sInvocationState == null) return;
+
+            if (sInvocationState.mExtractionFinishedTimestampMs != 0) {
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.AssistContent.WebPageContentProvider.Latency.ExtractionEndToFinalQuery",
+                        TimeUtils.elapsedRealtimeMillis()
+                                - sInvocationState.mExtractionFinishedTimestampMs);
+                sInvocationState.mExtractionFinishedTimestampMs = 0;
+            }
+
+            if (sInvocationState.mInvocationStartTimestampMs != 0) {
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.AssistContent.WebPageContentProvider.Latency.CreateToFinalQuery",
+                        TimeUtils.elapsedRealtimeMillis()
+                                - sInvocationState.mInvocationStartTimestampMs);
+                sInvocationState.mInvocationStartTimestampMs = 0;
+            }
+        }
+    }
+
     private void onPageTextReceived(String requestedUrl, Optional<String> pageText) {
         try (var u = TraceEvent.scoped("PageContentProvider.onPageTextReceived")) {
             synchronized (sLock) {
@@ -371,6 +452,10 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                 if (sInvocationState == null
                         || !sInvocationState.mInvokedUrl.equals(requestedUrl)
                         || pageText.isEmpty()) {
+                    PageContentProviderMetrics.recordPageProviderEvent(
+                            pageText.isEmpty()
+                                    ? PageContentProviderEvent.TEXT_EXTRACTION_FAILED_EMPTY_RESULT
+                                    : PageContentProviderEvent.TEXT_EXTRACTION_FAILED_TAB_CHANGED);
                     return;
                 }
 
@@ -380,6 +465,9 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                 ContextUtils.getApplicationContext()
                         .getContentResolver()
                         .notifyChange(uriToNotify, null);
+                PageContentProviderMetrics.recordPageProviderEvent(
+                        PageContentProviderEvent.TEXT_EXTRACTION_SUCCEEDED);
+                recordExtractionStartToEndLatency();
             }
         }
     }

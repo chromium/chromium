@@ -944,6 +944,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProviderImpl.java",
   "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProviderSuggestionsCursor.java",
   "java/src/org/chromium/chrome/browser/provider/PageContentProviderImpl.java",
+  "java/src/org/chromium/chrome/browser/provider/PageContentProviderMetrics.java",
   "java/src/org/chromium/chrome/browser/provider/SearchColumns.java",
   "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
   "java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDelegateImpl.java",
