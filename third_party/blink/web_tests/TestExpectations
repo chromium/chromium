@@ -2720,7 +2720,6 @@ crbug.com/383825172 [ Mac14-arm64 ] external/wpt/html/semantics/forms/the-select
 crbug.com/383825172 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac15-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383814062 [ Mac13 ] virtual/disable-raster-inducing-scroll/external/wpt/acid/acid2/reftest.html [ Failure ]
-crbug.com/383825171 external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-abspos-001.html [ Failure ]
 crbug.com/383999267 [ Mac ] external/wpt/editing/run/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
 crbug.com/383814059 [ Win11-arm64 ] external/wpt/css/css-paint-api/geometry-background-image-tiled-003.https.html [ Failure ]
 [ Mac13 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Timeout ]
@@ -8225,6 +8224,9 @@ crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-054.h
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Pass Timeout ]
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Pass Timeout ]
 
+# line-clamp
+crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-abspos-001.tentative.html [ Failure ]
+crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-abspos-001.tentative.html [ Pass ]
 # disable-css-line-clamp
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-040.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-047.html [ Failure ]
