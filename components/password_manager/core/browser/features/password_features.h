@@ -182,13 +182,14 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
 // First Flow.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 
-// Enables async implementation of OSCrypt inside LoginDatabase.
+// Enables async implementation of OSCrypt inside LoginDatabase (Stage 1).
 BASE_DECLARE_FEATURE(kUseAsyncOsCryptInLoginDatabase);
 
-// Enables async implementation of OSCrypt inside LoginDatabase.
+// Enables new encryption method of OSCrypt inside LoginDatabase (Stage 2).
 BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
 
-// Enables re-encryption of all passwords. Done separately for each store.
+// Enables re-encryption of all passwords. Done separately for each store
+// (Stage 3).
 BASE_DECLARE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync);
 
 // Marks all submitted credentials as leaked, useful for testing of a password
