@@ -55,7 +55,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidNonEOSDecoderBuffer) {
             base::strict_cast<size_t>(mojom_decoder_buffer->data_size));
   EXPECT_EQ(deserialized_decoder_buffer->is_key_frame(),
             mojom_decoder_buffer->is_key_frame);
-  EXPECT_FALSE(deserialized_decoder_buffer->has_side_data());
+  EXPECT_FALSE(deserialized_decoder_buffer->side_data());
 }
 
 TEST(StableVideoDecoderTypesMojomTraitsTest, InfiniteDecoderBufferDuration) {
@@ -111,7 +111,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, RawSideDataToValidSpatialLayers) {
   ASSERT_TRUE(deserialized_decoder_buffer);
 
   ASSERT_FALSE(deserialized_decoder_buffer->end_of_stream());
-  ASSERT_TRUE(deserialized_decoder_buffer->has_side_data());
+  ASSERT_TRUE(deserialized_decoder_buffer->side_data());
   EXPECT_EQ(deserialized_decoder_buffer->side_data()->spatial_layers,
             std::vector<uint32_t>(kValidSpatialLayers,
                                   kValidSpatialLayers + kLayersSize));

@@ -78,7 +78,7 @@ namespace {
 bool IsVp9KSVCStream(uint32_t input_format_fourcc,
                      const DecoderBuffer& decoder_buffer) {
   return input_format_fourcc == V4L2_PIX_FMT_VP9 &&
-         decoder_buffer.has_side_data() &&
+         decoder_buffer.side_data() &&
          !decoder_buffer.side_data()->spatial_layers.empty();
 }
 

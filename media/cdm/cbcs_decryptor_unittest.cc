@@ -147,7 +147,7 @@ TEST(CbcsDecryptorTest, AdditionalData) {
   EXPECT_EQ(encrypted_buffer->end_of_stream(),
             decrypted_buffer->end_of_stream());
   EXPECT_EQ(encrypted_buffer->is_key_frame(), decrypted_buffer->is_key_frame());
-  EXPECT_TRUE(decrypted_buffer->has_side_data());
+  EXPECT_TRUE(decrypted_buffer->side_data());
   EXPECT_TRUE(
       encrypted_buffer->side_data()->Matches(*decrypted_buffer->side_data()));
 }

@@ -148,7 +148,7 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
   buffer->set_timestamp(input.timestamp());
   buffer->set_duration(input.duration());
   buffer->set_is_key_frame(input.is_key_frame());
-  if (input.has_side_data()) {
+  if (input.side_data()) {
     buffer->set_side_data(input.side_data()->Clone());
   }
 

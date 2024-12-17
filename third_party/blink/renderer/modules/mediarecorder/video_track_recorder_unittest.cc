@@ -584,9 +584,9 @@ TEST_P(VideoTrackRecorderTestParam, VideoEncoding) {
     EXPECT_GE(third_frame_encoded_data->side_data()->alpha_data.size(),
               kEncodedSizeThreshold);
   } else {
-    EXPECT_FALSE(first_frame_encoded_data->has_side_data());
-    EXPECT_FALSE(second_frame_encoded_data->has_side_data());
-    EXPECT_FALSE(third_frame_encoded_data->has_side_data());
+    EXPECT_FALSE(first_frame_encoded_data->side_data());
+    EXPECT_FALSE(second_frame_encoded_data->side_data());
+    EXPECT_FALSE(third_frame_encoded_data->side_data());
   }
 
   // The encoder is configured non screen content by default.
@@ -1040,11 +1040,11 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
   run_loop.Run();
 
   const size_t kEmptySize = 0;
-  EXPECT_FALSE(first_frame_encoded_alpha->has_side_data());
-  EXPECT_TRUE(second_frame_encoded_alpha->has_side_data());
+  EXPECT_FALSE(first_frame_encoded_alpha->side_data());
+  EXPECT_TRUE(second_frame_encoded_alpha->side_data());
   EXPECT_GT(second_frame_encoded_alpha->side_data()->alpha_data.size(),
             kEmptySize);
-  EXPECT_TRUE(third_frame_encoded_alpha->has_side_data());
+  EXPECT_TRUE(third_frame_encoded_alpha->side_data());
   EXPECT_GT(third_frame_encoded_alpha->side_data()->alpha_data.size(),
             kEmptySize);
 

@@ -246,8 +246,6 @@ class MEDIA_EXPORT DecoderBuffer
     is_key_frame_ = is_key_frame;
   }
 
-  bool has_side_data() const { return !!side_data_; }
-
   // Returns DecoderBufferSideData associated with `this`. Check if `side_data_`
   // exists using `has_side_data()` before calling this function.
   const DecoderBufferSideData* side_data() const {

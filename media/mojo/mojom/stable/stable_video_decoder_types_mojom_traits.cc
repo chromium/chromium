@@ -333,7 +333,7 @@ std::vector<uint8_t> StructTraits<media::stable::mojom::DecoderBufferDataView,
   // need to convert the side data to a raw format. We only care about spatial
   // layers since alpha data isn't used by HW decoders and the secure handle is
   // only going to used in new code going forward.
-  if (!input->has_side_data() || input->side_data()->spatial_layers.empty()) {
+  if (!input->side_data() || input->side_data()->spatial_layers.empty()) {
     return {};
   }
   std::vector<uint8_t> raw_data;
@@ -419,7 +419,7 @@ StructTraits<media::stable::mojom::DecoderBufferDataView,
       "Unexpected type for input->side_data(). If you need to change this "
       "assertion, please contact chromeos-gfx-video@google.com.");
 
-  if (input->end_of_stream() || !input->has_side_data()) {
+  if (input->end_of_stream() || !input->side_data()) {
     return nullptr;
   }
   return input->side_data()->Clone();
@@ -496,7 +496,7 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
   // TODO(b/269383891): Remove this in M120.
   // If the input is an older version than us, then it may have |raw_side_data|
   // set and we need to copy that into the potential values in |side_data|.
-  if (!raw_side_data.empty() && !decoder_buffer->has_side_data()) {
+  if (!raw_side_data.empty() && !decoder_buffer->side_data()) {
     // Spatial layers is always a multiple of 4 with a max size of 12.
     // HW decoders don't use alpha data, so we can ignore that case.
     if (raw_side_data.size() % sizeof(uint32_t) != 0 ||

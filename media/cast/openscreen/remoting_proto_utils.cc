@@ -92,7 +92,7 @@ void ConvertDecoderBufferToProto(
   buffer_message->set_back_discard_usec(
       decoder_buffer.discard_padding().second.InMicroseconds());
 
-  if (decoder_buffer.has_side_data() &&
+  if (decoder_buffer.side_data() &&
       !decoder_buffer.side_data()->alpha_data.empty()) {
     buffer_message->set_side_data(
         decoder_buffer.side_data()->alpha_data.data(),

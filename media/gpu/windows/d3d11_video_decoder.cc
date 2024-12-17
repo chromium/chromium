@@ -500,7 +500,7 @@ void D3D11VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   const bool is_spatial_layer_buffer =
-      !buffer->end_of_stream() && buffer->has_side_data() &&
+      !buffer->end_of_stream() && buffer->side_data() &&
       !buffer->side_data()->spatial_layers.empty();
 
   input_buffer_queue_.push_back(

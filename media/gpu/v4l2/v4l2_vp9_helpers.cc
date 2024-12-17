@@ -103,7 +103,7 @@ bool OverwriteShowFrame(base::span<uint8_t> frame_data,
 }  // namespace
 
 bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
-  DCHECK(buffer->has_side_data());
+  DCHECK(buffer->side_data());
   std::vector<uint32_t> frame_sizes = buffer->side_data()->spatial_layers;
   DCHECK(!frame_sizes.empty());
 
