@@ -1374,9 +1374,10 @@ TEST(CSSParserImplTest, ParseNestedRule) {
   auto* a = To<StyleRule>(css_test_helpers::ParseRule(*document, ".a{}"));
   StyleRuleBase* nested = css_test_helpers::ParseNestedRule(
       *document, "&{}", CSSNestingType::kNesting, a);
-  EXPECT_EQ(":is(.a)", To<StyleRule>(nested)
-                           ->FirstSelector()
-                           ->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.a)",
+            To<StyleRule>(nested)
+                ->FirstSelector()
+                ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 }
 
 }  // namespace blink

@@ -156,11 +156,15 @@ class CORE_EXPORT CSSSelector {
   ~CSSSelector();
 
   String SelectorText() const;
-  // Like `SelectorText`, but replaces any '&' selectors
-  // with ':is(<parent rule selector list>)'. This is needed
-  // by the :has() cache, because it uses the serialization of
-  // the selector as a key.
-  String SelectorTextExpandingPseudoParent() const;
+  // Like `SelectorText`, but replaces any "pseudo-references" with an expansion
+  // which makes the result useful as a key in the :has() cache.
+  // A "pseudo-reference" is either a '&' selector (which is replaced with
+  // :is(<parent rule selector list>)), or a :scope selector (which is replaced
+  // with :-internal-scope-<scope_id>).
+  //
+  // Note that this means that the returned text is not necessarily a valid
+  // selector.
+  String SelectorTextExpandingPseudoReferences(uintptr_t scope_id) const;
   String SimpleSelectorTextForDebug() const;
 
   CSSSelector& operator=(const CSSSelector&) = delete;
@@ -685,18 +689,21 @@ class CORE_EXPORT CSSSelector {
   unsigned SpecificityForOneSelector() const;
   unsigned SpecificityForPage() const;
 
-  template <bool expand_pseudo_parent>
-  bool SerializeSimpleSelector(WTF::StringBuilder& builder) const;
+  template <bool expand_pseudo_references>
+  bool SerializeSimpleSelector(WTF::StringBuilder& builder,
+                               uintptr_t scope_id) const;
 
-  template <bool expand_pseudo_parent>
-  const CSSSelector* SerializeCompound(WTF::StringBuilder&) const;
+  template <bool expand_pseudo_references>
+  const CSSSelector* SerializeCompound(WTF::StringBuilder&,
+                                       uintptr_t scope_id) const;
 
-  template <bool expand_pseudo_parent>
+  template <bool expand_pseudo_references>
   static void SerializeSelectorList(const CSSSelectorList* selector_list,
-                                    WTF::StringBuilder& builder);
+                                    WTF::StringBuilder& builder,
+                                    uintptr_t scope_id);
 
-  template <bool expand_pseudo_parent>
-  String SelectorTextInternal() const;
+  template <bool expand_pseudo_references>
+  String SelectorTextInternal(uintptr_t scope_id) const;
 
   struct RareData : public GarbageCollected<RareData> {
     explicit RareData(const AtomicString& value);

@@ -290,8 +290,8 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
   };
 
  private:
-  static ElementCheckPseudoHasResultMap& GetResultMap(const Document*,
-                                                      const CSSSelector*);
+  static ElementCheckPseudoHasResultMap&
+  GetResultMap(const Document*, const CSSSelector*, const ContainerNode* scope);
   static ElementCheckPseudoHasFastRejectFilterMap& GetFastRejectFilterMap(
       const Document*,
       CheckPseudoHasArgumentTraversalType);

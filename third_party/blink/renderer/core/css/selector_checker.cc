@@ -1418,7 +1418,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   DCHECK(context.selector->SelectorList());
   for (const CSSSelector* selector = context.selector->SelectorList()->First();
        selector; selector = CSSSelectorList::Next(*selector)) {
-    CheckPseudoHasArgumentContext argument_context(selector,
+    CheckPseudoHasArgumentContext argument_context(selector, context.scope,
                                                    match_in_shadow_tree);
 
     // In case of matching a :has() argument on a shadow root subtree, skip

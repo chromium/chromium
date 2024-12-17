@@ -317,14 +317,17 @@ TEST_F(StyleRuleTest, RenestStyleRule) {
       /*parent_rule_for_nesting=*/a));
 
   EXPECT_EQ(":is(.a)",
-            nested->FirstSelector()->SelectorTextExpandingPseudoParent());
+            nested->FirstSelector()->SelectorTextExpandingPseudoReferences(
+                /*scope_id=*/0));
 
   auto* reparented = To<StyleRule>(nested->Renest(b));
   EXPECT_NE(nested, reparented);
   EXPECT_EQ(":is(.a)",
-            nested->FirstSelector()->SelectorTextExpandingPseudoParent());
+            nested->FirstSelector()->SelectorTextExpandingPseudoReferences(
+                /*scope_id=*/0));
   EXPECT_EQ(":is(.b)",
-            reparented->FirstSelector()->SelectorTextExpandingPseudoParent());
+            reparented->FirstSelector()->SelectorTextExpandingPseudoReferences(
+                /*scope_id=*/0));
 }
 
 TEST_F(StyleRuleTest, RenestStyleRuleNoOp) {
@@ -333,7 +336,8 @@ TEST_F(StyleRuleTest, RenestStyleRuleNoOp) {
       GetDocument(), "& {}", CSSNestingType::kNesting,
       /*parent_rule_for_nesting=*/a));
   EXPECT_EQ(":is(.a)",
-            nested->FirstSelector()->SelectorTextExpandingPseudoParent());
+            nested->FirstSelector()->SelectorTextExpandingPseudoReferences(
+                /*scope_id=*/0));
   auto* reparented = To<StyleRule>(nested->Renest(a));
   EXPECT_EQ(nested, reparented);
 }
@@ -346,20 +350,23 @@ TEST_F(StyleRuleTest, RenestStyleRuleMedia) {
       /*parent_rule_for_nesting=*/a));
 
   ASSERT_EQ(1u, media->ChildRules().size());
-  EXPECT_EQ(":is(.a)", To<StyleRule>(media->ChildRules().front().Get())
-                           ->FirstSelector()
-                           ->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.a)",
+            To<StyleRule>(media->ChildRules().front().Get())
+                ->FirstSelector()
+                ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 
   EXPECT_EQ(media->Renest(a), media);  // No-op.
 
   auto* reparented = To<StyleRuleMedia>(media->Renest(b));
   EXPECT_NE(media, reparented);
-  EXPECT_EQ(":is(.a)", To<StyleRule>(media->ChildRules().front().Get())
-                           ->FirstSelector()
-                           ->SelectorTextExpandingPseudoParent());
-  EXPECT_EQ(":is(.b)", To<StyleRule>(reparented->ChildRules().front().Get())
-                           ->FirstSelector()
-                           ->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.a)",
+            To<StyleRule>(media->ChildRules().front().Get())
+                ->FirstSelector()
+                ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
+  EXPECT_EQ(":is(.b)",
+            To<StyleRule>(reparented->ChildRules().front().Get())
+                ->FirstSelector()
+                ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 }
 
 TEST_F(StyleRuleTest, RenestStyleRuleStartingStyle) {
@@ -371,20 +378,23 @@ TEST_F(StyleRuleTest, RenestStyleRuleStartingStyle) {
           /*parent_rule_for_nesting=*/a));
 
   ASSERT_EQ(1u, starting_style->ChildRules().size());
-  EXPECT_EQ(":is(.a)", To<StyleRule>(starting_style->ChildRules().front().Get())
-                           ->FirstSelector()
-                           ->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.a)",
+            To<StyleRule>(starting_style->ChildRules().front().Get())
+                ->FirstSelector()
+                ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 
   EXPECT_EQ(starting_style->Renest(a), starting_style);  // No-op.
 
   auto* reparented = To<StyleRuleStartingStyle>(starting_style->Renest(b));
   EXPECT_NE(starting_style, reparented);
-  EXPECT_EQ(":is(.a)", To<StyleRule>(starting_style->ChildRules().front().Get())
-                           ->FirstSelector()
-                           ->SelectorTextExpandingPseudoParent());
-  EXPECT_EQ(":is(.b)", To<StyleRule>(reparented->ChildRules().front().Get())
-                           ->FirstSelector()
-                           ->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.a)",
+            To<StyleRule>(starting_style->ChildRules().front().Get())
+                ->FirstSelector()
+                ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
+  EXPECT_EQ(":is(.b)",
+            To<StyleRule>(reparented->ChildRules().front().Get())
+                ->FirstSelector()
+                ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 }
 
 }  // namespace blink

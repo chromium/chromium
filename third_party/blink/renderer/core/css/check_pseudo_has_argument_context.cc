@@ -245,8 +245,11 @@ void CheckPseudoHasArgumentCompoundIterator::operator++() {
 
 CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
     const CSSSelector* selector,
+    const ContainerNode* scope,
     bool match_in_shadow_tree)
-    : has_argument_(selector), match_in_shadow_tree_(match_in_shadow_tree) {
+    : has_argument_(selector),
+      scope_(scope),
+      match_in_shadow_tree_(match_in_shadow_tree) {
   depth_limit_ = 0;
   adjacent_distance_limit_ = 0;
   bool contains_child_or_descendant_combinator = false;
