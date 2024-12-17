@@ -229,6 +229,11 @@ struct PasswordGenerationAgent::GenerationItemInfo {
   // due to the generated password being edited. It's used to suppress the fake
   // blur events coming from there.
   bool updating_other_password_fields_ = false;
+
+  // True if the user explicitly rejected the generation by clicking the cancel
+  // button. In this case, the generation popup should not be shown again in
+  // this navigation unless explicitly triggered from the context menu.
+  bool generation_rejected_ = false;
 };
 
 PasswordGenerationAgent::PasswordGenerationAgent(
@@ -388,6 +393,12 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
     // https://crbug.com/493455
     password_agent_->autofill_agent().UpdateStateForTextChange(
         password_element, FieldPropertiesFlags::kUserTyped);
+  }
+}
+
+void PasswordGenerationAgent::GeneratedPasswordRejected() {
+  if (current_generation_item_) {
+    current_generation_item_->generation_rejected_ = true;
   }
 }
 
@@ -678,6 +689,11 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
     return;
   DCHECK(current_generation_item_);
   DCHECK(current_generation_item_->generation_element_);
+
+  if (current_generation_item_->generation_rejected_) {
+    return;
+  }
+
   LogMessage(Logger::STRING_GENERATION_RENDERER_AUTOMATIC_GENERATION_AVAILABLE);
   // If the field is not |type=password|, the list of suggestions
   // should not be populated with passwordS to avoid filling them in a

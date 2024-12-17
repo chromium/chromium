@@ -82,6 +82,10 @@ class PasswordManagerDriver {
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password) {}
 
+  // Notifies the driver that the user has rejected the generated password by
+  // clicking cancel button.
+  virtual void GeneratedPasswordRejected() {}
+
   // Notifies the driver that the focus should be advanced to the next input
   // field after password fields (assuming that password fields are adjacent
   // in account creation).

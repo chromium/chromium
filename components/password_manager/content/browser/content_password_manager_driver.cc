@@ -228,6 +228,10 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
       generation_element_id, password);
 }
 
+void ContentPasswordManagerDriver::GeneratedPasswordRejected() {
+  GetPasswordGenerationAgent()->GeneratedPasswordRejected();
+}
+
 void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
   GetPasswordGenerationAgent()->FocusNextFieldAfterPasswords();
 }

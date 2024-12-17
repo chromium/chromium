@@ -1572,5 +1572,21 @@ TEST_F(PasswordGenerationAgentTest, AutomaticSuggestionOnHasBeenPasswordField) {
   ExpectAutomaticGenerationAvailable(kPasswordElementId, kAvailable);
 }
 
+TEST_F(PasswordGenerationAgentTest,
+       PopupNotShowingUpAfterUserRejectedGeneration) {
+  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
+  SetFoundFormEligibleForGeneration(password_generation_,
+                                    GetMainFrame()->GetDocument(),
+                                    /*new_password_id=*/"first_password",
+                                    /*confirm_password_id=*/"second_password");
+  ExpectAutomaticGenerationAvailable("first_password", kAvailable);
+
+  password_generation_->GeneratedPasswordRejected();
+  ExpectAutomaticGenerationAvailable("first_password", kNotReported);
+
+  // The popup should still be available from the manual fallback.
+  SelectGenerationFallbackAndExpect(/*available=*/true);
+}
+
 }  // namespace
 }  // namespace autofill
