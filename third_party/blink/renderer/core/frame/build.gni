@@ -91,6 +91,8 @@ blink_core_sources_frame = [
   "frame_view.h",
   "frame_view_auto_size_info.cc",
   "frame_view_auto_size_info.h",
+  "frame_visibility_observer.cc",
+  "frame_visibility_observer.h",
   "fullscreen_controller.cc",
   "fullscreen_controller.h",
   "history.cc",

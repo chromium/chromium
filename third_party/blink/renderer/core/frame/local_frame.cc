@@ -214,6 +214,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -528,6 +529,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(lcpp_);
   visitor->Trace(v8_local_compile_hints_producer_);
   visitor->Trace(browser_interface_broker_proxy_);
+  visitor->Trace(frame_visibility_observers_);
 #if !BUILDFLAG(IS_ANDROID)
   visitor->Trace(window_controls_overlay_changed_delegate_);
 #endif
@@ -795,6 +797,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   if (text_fragment_handler_)
     text_fragment_handler_->DidDetachDocumentOrFrame();
+
+  frame_visibility_observers_.clear();
 
   not_restored_reasons_.reset();
 
@@ -4161,6 +4165,20 @@ void LocalFrame::OnStorageAccessCallback(
     bool is_allowed) {
   GetLocalFrameHostRemote().NotifyStorageAccessed(storage_type, !is_allowed);
   std::move(callback).Run(is_allowed);
+}
+
+void LocalFrame::NotifyFrameVisibilityChanged(
+    mojom::blink::FrameVisibility visibility) {
+  HeapVector<Member<FrameVisibilityObserver>>
+      frame_visibility_observers_as_vector;
+  // Iterate on a copy of the vector to avoid invalidating the iterator if
+  // `FrameVisibilityChanged` happens to remove the observer from
+  // `frame_visibility_observers_`.
+  CopyToVector(frame_visibility_observers_,
+               frame_visibility_observers_as_vector);
+  for (auto observer : frame_visibility_observers_as_vector) {
+    observer->FrameVisibilityChanged(visibility);
+  }
 }
 
 }  // namespace blink

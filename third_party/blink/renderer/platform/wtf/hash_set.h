@@ -378,6 +378,25 @@ inline auto HashSet<T, U, V>::TakeAny() -> ValueType {
   return Take(begin());
 }
 
+template <typename Value,
+          typename Traits,
+          typename Allocator,
+          typename VectorType>
+inline void CopyToVector(const HashSet<Value, Traits, Allocator>& collection,
+                         VectorType& vector) {
+  {
+    // Disallow GC across resize allocation, see crbug.com/568173
+    typename VectorType::GCForbiddenScope scope;
+    vector.resize(collection.size());
+  }
+
+  auto it = collection.begin();
+  auto end = collection.end();
+  for (unsigned i = 0; it != end; ++it, ++i) {
+    vector[i] = (*it);
+  }
+}
+
 }  // namespace WTF
 
 using WTF::HashSet;

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkinfo_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkoptions_string.h"
+#include "third_party/blink/renderer/core/frame/frame_visibility_observer.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/setsinkid_resolver.h"
@@ -49,7 +50,8 @@ class WebAudioLatencyHint;
 class MODULES_EXPORT AudioContext final
     : public BaseAudioContext,
       public mojom::blink::PermissionObserver,
-      public mojom::blink::MediaDevicesListener {
+      public mojom::blink::MediaDevicesListener,
+      public FrameVisibilityObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -98,6 +100,10 @@ class MODULES_EXPORT AudioContext final
   // mojom::blink::MediaDevicesListener
   void OnDevicesChanged(mojom::blink::MediaDeviceType,
                         const Vector<WebMediaDeviceInfo>&) override;
+
+  // FrameVisibilityObserver
+  void FrameVisibilityChanged(
+      mojom::blink::FrameVisibility frame_visibility) override;
 
   // https://webaudio.github.io/web-audio-api/#AudioContext
   double baseLatency() const;
@@ -276,6 +282,8 @@ class MODULES_EXPORT AudioContext final
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
   void SendLogMessage(const char* const function_name, const String& message);
 
+  LocalFrame* GetLocalFrame() const;
+
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
   bool suspended_by_user_ = false;
 
@@ -386,6 +394,14 @@ class MODULES_EXPORT AudioContext final
   // True if the context should transition to running after an interruption
   // ends.
   bool should_transition_to_running_after_interruption_ = false;
+
+  // True if the context should be interrupted when the frame is hidden.
+  const bool should_interrupt_when_frame_is_hidden_;
+
+  // True if the host frame's:
+  // - 'display' property is set to 'none';
+  // - 'visibility' property is set to 'hidden';
+  bool is_frame_hidden_ = false;
 
   // The number of pending device list updates, to allow waiting until the
   // device list is refrehsed before using it.  A value of 0 means no updates

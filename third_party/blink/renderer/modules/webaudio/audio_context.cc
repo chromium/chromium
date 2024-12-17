@@ -253,6 +253,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
                            WebAudioSinkDescriptor sink_descriptor,
                            bool update_echo_cancellation_on_first_start)
     : BaseAudioContext(&window, kRealtimeContext),
+      FrameVisibilityObserver(GetLocalFrame()),
       context_id_(context_id++),
       audio_context_manager_(&window),
       permission_service_(&window),
@@ -261,7 +262,15 @@ AudioContext::AudioContext(LocalDOMWindow& window,
       v8_sink_id_(
           MakeGarbageCollected<V8UnionAudioSinkInfoOrString>(g_empty_string)),
       media_device_service_(&window),
-      media_device_service_receiver_(this, &window) {
+      media_device_service_receiver_(this, &window),
+      should_interrupt_when_frame_is_hidden_(
+          RuntimeEnabledFeatures::
+              MediaPlaybackWhileNotVisiblePermissionPolicyEnabled() &&
+          RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled() &&
+          !GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::
+                  kMediaPlaybackWhileNotVisible,
+              ReportOptions::kDoNotReport)) {
   RecordAudioContextOperation(AudioContextOperation::kCreate);
   SendLogMessage(__func__, GetAudioContextLogString(latency_hint, sample_rate));
 
@@ -378,6 +387,7 @@ void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(media_device_service_receiver_);
   visitor->Trace(v8_sink_id_);
   BaseAudioContext::Trace(visitor);
+  FrameVisibilityObserver::Trace(visitor);
 }
 
 ScriptPromise<IDLUndefined> AudioContext::suspendContext(
@@ -431,6 +441,8 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot resume an interrupted AudioContext."));
+  } else if (is_frame_hidden_ && should_interrupt_when_frame_is_hidden_) {
+    StartContextInterruption();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -1210,6 +1222,31 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
   }
 }
 
+void AudioContext::FrameVisibilityChanged(
+    mojom::blink::FrameVisibility frame_visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
+  bool is_frame_hidden =
+      (frame_visibility == mojom::blink::FrameVisibility::kNotRendered);
+  if (is_frame_hidden == is_frame_hidden_) {
+    return;
+  }
+
+  is_frame_hidden_ = is_frame_hidden;
+
+  if (!should_interrupt_when_frame_is_hidden_) {
+    return;
+  }
+
+  if (is_frame_hidden_) {
+    // The frame is not rendered, so the audio context should be suspended.
+    StartContextInterruption();
+  } else {
+    // The frame is rendered, so the audio context should be resumed.
+    EndContextInterruption();
+  }
+}
+
 void AudioContext::UninitializeMediaDeviceService() {
   if (media_device_service_.is_bound()) {
     media_device_service_.reset();
@@ -1368,6 +1405,15 @@ void AudioContext::SendLogMessage(const char* const function_name,
           sink_descriptor_.SinkId().Utf8().c_str(),
           is_sink_id_given_ ? "true" : "false")
           .Utf8());
+}
+
+LocalFrame* AudioContext::GetLocalFrame() const {
+  LocalDOMWindow* window = GetWindow();
+  if (!window) {
+    return nullptr;
+  }
+
+  return window->GetFrame();
 }
 
 }  // namespace blink

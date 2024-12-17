@@ -2326,7 +2326,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // RunPostLayoutIntersectionObserverSteps will return true if any
     // observations led to content-visibility intersection changing visibility
     // state synchronously (which happens on the first intersection
-    // observeration of a context).
+    // observation of a context).
     //
     // Note that we run the content-visibility intersection observation first.
     // The idea is that we want to synchronously determine the initial,
@@ -4376,6 +4376,8 @@ void LocalFrameView::VisibilityChanged(
     frame_->Client()->GetWebFrame()->Client()->OnFrameVisibilityChanged(
         visibility);
   }
+
+  frame_->NotifyFrameVisibilityChanged(visibility);
 }
 
 void LocalFrameView::RenderThrottlingStatusChanged() {
