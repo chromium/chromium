@@ -363,6 +363,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/sync/LocalDataDescriptionTest.java",
   "junit/src/org/chromium/chrome/browser/sync/SyncErrorNotifierTest.java",
   "junit/src/org/chromium/chrome/browser/sync/ui/SyncErrorMessageImpressionTrackerTest.java",
+  "junit/src/org/chromium/chrome/browser/sync/ui/bookmark_batch_upload_card/BookmarkBatchUploadCardMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/tab/RequestDesktopUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabArchiveSettingsTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabAttributesTest.java",

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -14,7 +13,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -25,7 +24,9 @@ public class BookmarkBatchUploadCardCoordinator {
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     public BookmarkBatchUploadCardCoordinator(
-            Context context,
+            Activity activity,
+            LifecycleOwner lifecycleOwner,
+            ModalDialogManager modalDialogManager,
             Profile profile,
             SnackbarManager snackbarManager,
             Runnable batchUploadCardChangeAction) {
@@ -38,16 +39,16 @@ public class BookmarkBatchUploadCardCoordinator {
                         .with(
                                 BookmarkBatchUploadCardProperties.ICON,
                                 UiUtils.getTintedDrawable(
-                                        context,
+                                        activity,
                                         R.drawable.ic_cloud_upload_24dp,
                                         R.color.default_icon_color_accent1_tint_list))
                         .build();
 
         mMediator =
                 new BookmarkBatchUploadCardMediator(
-                        (Activity) context,
-                        (LifecycleOwner) context,
-                        (ModalDialogManagerHolder) context,
+                        activity,
+                        lifecycleOwner,
+                        modalDialogManager,
                         profile,
                         mModel,
                         snackbarManager,
@@ -68,8 +69,8 @@ public class BookmarkBatchUploadCardCoordinator {
                         mModel, view, BookmarkBatchUploadCardBinder::bind);
     }
 
-    public void hideBatchUploadCardAndUpdate() {
-        mMediator.hideBatchUploadCardAndUpdate();
+    public void immediatelyHideBatchUploadCardAndUpdateItsVisibility() {
+        mMediator.immediatelyHideBatchUploadCardAndUpdateItsVisibility();
     }
 
     public boolean shouldShowBatchUploadCard() {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -221,7 +223,9 @@ public class BookmarkManagerCoordinator
                 onScrollListener -> mRecyclerView.addOnScrollListener(onScrollListener);
         mMediator =
                 new BookmarkManagerMediator(
-                        context,
+                        (Activity) context,
+                        (LifecycleOwner) context,
+                        mModalDialogManager,
                         mBookmarkModel,
                         mBookmarkOpener,
                         mSelectableListLayout,

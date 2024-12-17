@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
@@ -60,6 +62,7 @@ import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -156,7 +159,7 @@ class BookmarkManagerMediator
                                 // local bookmarks.
                                 if (mBookmarkBatchUploadCardCoordinator != null) {
                                     mBookmarkBatchUploadCardCoordinator
-                                            .hideBatchUploadCardAndUpdate();
+                                            .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
                                 }
                             }
                         }
@@ -390,7 +393,9 @@ class BookmarkManagerMediator
     private boolean mShoppingFilterAvailable;
 
     BookmarkManagerMediator(
-            Context context,
+            Activity activity,
+            LifecycleOwner lifecycleOwner,
+            ModalDialogManager modalDialogManager,
             BookmarkModel bookmarkModel,
             BookmarkOpener bookmarkOpener,
             SelectableListLayout<BookmarkId> selectableListLayout,
@@ -410,7 +415,7 @@ class BookmarkManagerMediator
             BooleanSupplier canShowSigninPromo,
             Consumer<OnScrollListener> onScrollListenerConsumer,
             BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager) {
-        mContext = context;
+        mContext = activity;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
         mBookmarkOpener = bookmarkOpener;
@@ -441,7 +446,9 @@ class BookmarkManagerMediator
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             mBookmarkBatchUploadCardCoordinator =
                     new BookmarkBatchUploadCardCoordinator(
-                            mContext,
+                            activity,
+                            lifecycleOwner,
+                            modalDialogManager,
                             mProfile.getOriginalProfile(),
                             mSnackbarManager,
                             this::updateBatchUploadCard);

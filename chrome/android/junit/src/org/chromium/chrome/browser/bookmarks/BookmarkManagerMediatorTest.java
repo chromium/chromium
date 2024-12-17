@@ -38,6 +38,7 @@ import android.util.Pair;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -57,6 +58,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -77,6 +79,7 @@ import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -114,6 +117,8 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.DataType;
+import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
@@ -123,6 +128,7 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -133,7 +139,9 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -159,6 +167,7 @@ public class BookmarkManagerMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private SelectableListLayout<BookmarkId> mSelectableListLayout;
@@ -425,6 +434,7 @@ public class BookmarkManagerMediatorTest {
         doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+        doReturn(new Promise<>()).when(mAccountManagerFacade).getCoreAccountInfos();
 
         // Setup image fetching.
         doAnswer(
@@ -489,6 +499,8 @@ public class BookmarkManagerMediatorTest {
         mMediator =
                 new BookmarkManagerMediator(
                         mActivity,
+                        (LifecycleOwner) mActivity,
+                        mModalDialogManager,
                         mBookmarkModel,
                         mBookmarkOpener,
                         mSelectableListLayout,
@@ -1616,6 +1628,225 @@ public class BookmarkManagerMediatorTest {
         entry = mModelList.get(3).model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
         assertEquals(
                 R.string.local_bookmarks_section_header, entry.getSectionHeaderData().titleRes);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    public void testRootLevelFolders_batchUploadCardPresentWhenLocalBookmarksExist() {
+        doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
+        BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
+        BookmarkItem accountReadingListItem =
+                new BookmarkItem(
+                        accountReadingListId,
+                        "Reading list",
+                        null,
+                        /* isFolder= */ true,
+                        mRootFolderId,
+                        /* isEditable= */ false,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ true);
+        doReturn(accountReadingListItem).when(mBookmarkModel).getBookmarkById(accountReadingListId);
+        doReturn(
+                        Arrays.asList(
+                                accountReadingListId,
+                                mDesktopFolderId,
+                                mMobileFolderId,
+                                mOtherFolderId,
+                                mReadingListFolderId))
+                .when(mBookmarkModel)
+                .getTopLevelFolderIds();
+
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+        mMediator
+                .getBookmarkBatchUploadCardCoordinator()
+                .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
+
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
+        finishLoading();
+
+        mMediator.openFolder(mRootFolderId);
+
+        assertEquals(9, mModelList.size());
+        verifyCurrentBookmarkIds(
+                null, // Search bar
+                null, // Account heading
+                accountReadingListId,
+                null, //  Local heading.
+                null, // batch upload card
+                mDesktopFolderId,
+                mMobileFolderId,
+                mOtherFolderId,
+                mReadingListFolderId);
+
+        assertEquals(ViewType.BATCH_UPLOAD_CARD, mModelList.get(4).type);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    public void testRootLevelFolders_batchUploadCardPresentWhenLocalReadingListItemsExist() {
+        doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
+        BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
+        BookmarkItem accountReadingListItem =
+                new BookmarkItem(
+                        accountReadingListId,
+                        "Reading list",
+                        null,
+                        /* isFolder= */ true,
+                        mRootFolderId,
+                        /* isEditable= */ false,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ true);
+        doReturn(accountReadingListItem).when(mBookmarkModel).getBookmarkById(accountReadingListId);
+        doReturn(
+                        Arrays.asList(
+                                accountReadingListId,
+                                mDesktopFolderId,
+                                mMobileFolderId,
+                                mOtherFolderId,
+                                mReadingListFolderId))
+                .when(mBookmarkModel)
+                .getTopLevelFolderIds();
+
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+        mMediator
+                .getBookmarkBatchUploadCardCoordinator()
+                .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
+
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
+        finishLoading();
+
+        mMediator.openFolder(mRootFolderId);
+
+        assertEquals(9, mModelList.size());
+        verifyCurrentBookmarkIds(
+                null, // Search bar
+                null, // Account heading
+                accountReadingListId,
+                null, //  Local heading.
+                null, // batch upload card
+                mDesktopFolderId,
+                mMobileFolderId,
+                mOtherFolderId,
+                mReadingListFolderId);
+
+        assertEquals(ViewType.BATCH_UPLOAD_CARD, mModelList.get(4).type);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    public void testRootLevelFolders_batchUploadCardDoesNotPresentWhenOnlyLocalPasswordsExist() {
+        doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
+        BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
+        BookmarkItem accountReadingListItem =
+                new BookmarkItem(
+                        accountReadingListId,
+                        "Reading list",
+                        null,
+                        /* isFolder= */ true,
+                        mRootFolderId,
+                        /* isEditable= */ false,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ true);
+        doReturn(accountReadingListItem).when(mBookmarkModel).getBookmarkById(accountReadingListId);
+        doReturn(
+                        Arrays.asList(
+                                accountReadingListId,
+                                mDesktopFolderId,
+                                mMobileFolderId,
+                                mOtherFolderId,
+                                mReadingListFolderId))
+                .when(mBookmarkModel)
+                .getTopLevelFolderIds();
+
+        when(mReauthenticatorMock.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+        mMediator
+                .getBookmarkBatchUploadCardCoordinator()
+                .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
+
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
+        finishLoading();
+
+        mMediator.openFolder(mRootFolderId);
+
+        assertEquals(8, mModelList.size());
+        // Make sure that batch upload card does not present.
+        verifyCurrentBookmarkIds(
+                null, // Search bar
+                null, // Account heading
+                accountReadingListId,
+                null, //  Local heading.
+                mDesktopFolderId,
+                mMobileFolderId,
+                mOtherFolderId,
+                mReadingListFolderId);
     }
 
     // Tests directly related to a regression.

@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
@@ -104,6 +105,7 @@ public class BookmarkManagerCoordinatorTest {
         doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+        doReturn(new Promise<>()).when(mAccountManagerFacade).getCoreAccountInfos();
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
@@ -143,6 +145,20 @@ public class BookmarkManagerCoordinatorTest {
         FrameLayout parent = new FrameLayout(mActivity);
         assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
         assertNotNull(mCoordinator.buildLegacyPromoView(parent));
+        assertNotNull(mCoordinator.buildSectionHeaderView(parent));
+        assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
+        assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
+        assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
+        assertNotNull(mCoordinator.buildSearchBoxRow(parent));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    public void testCreateViewUNOPhase2FollowUpEnabled() {
+        FrameLayout parent = new FrameLayout(mActivity);
+        assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
+        assertNotNull(mCoordinator.buildLegacyPromoView(parent));
+        assertNotNull(mCoordinator.buildBatchUploadCardView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
