@@ -12,10 +12,13 @@ import androidx.annotation.DimenRes;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Provides semantic color values, typically in place of <macro>s which currently cannot be used in
  * Java code, or for surface colors that must be calculated to Java code.
  */
+@NullMarked
 public class SemanticColorUtils {
     private static final String TAG = "SemanticColorUtils";
 

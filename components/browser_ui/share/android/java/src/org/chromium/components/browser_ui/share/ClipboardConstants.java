@@ -4,15 +4,18 @@
 
 package org.chromium.components.browser_ui.share;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants used for {@link ClipboardImageFileProvider}. */
+@NullMarked
 public final class ClipboardConstants {
     /**
      * The preference keys for the last URI shared via the Android system clibpoard and the
      * timestamp of when that happened.
      *
-     * Note: We're using the 'Chrome' prefix here as this code came from //chrome and renaming these
-     * preferences would have been problematic for existing clients. Make sure to have a migration
-     * plan when updating these in future.
+     * <p>Note: We're using the 'Chrome' prefix here as this code came from //chrome and renaming
+     * these preferences would have been problematic for existing clients. Make sure to have a
+     * migration plan when updating these in future.
      */
     public static final String CLIPBOARD_SHARED_URI = "Chrome.Clipboard.SharedUri";
 
