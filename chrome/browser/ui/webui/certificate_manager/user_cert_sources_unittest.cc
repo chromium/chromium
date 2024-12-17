@@ -47,6 +47,10 @@ class FakeCertificateManagerPage
     std::move(callback).Run(confirmation_result_);
   }
 
+  void TriggerReload(
+      const std::vector<certificate_manager_v2::mojom::CertificateSource>&
+          sources) override {}
+
   void SetConfirmationResult(bool result) { confirmation_result_ = result; }
 
  private:

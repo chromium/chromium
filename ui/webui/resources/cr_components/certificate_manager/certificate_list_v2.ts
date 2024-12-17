@@ -112,6 +112,16 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     if (this.inSubpage) {
       this.$.listHeader.classList.add('subpage-padding');
     }
+
+    const proxy = CertificatesV2BrowserProxy.getInstance();
+    proxy.callbackRouter.triggerReload.addListener(
+        this.onRefreshRequested_.bind(this));
+  }
+
+  private onRefreshRequested_(certSources: CertificateSource[]) {
+    if (certSources.includes(this.certSource)) {
+      this.refreshCertificates();
+    }
   }
 
   private refreshCertificates() {

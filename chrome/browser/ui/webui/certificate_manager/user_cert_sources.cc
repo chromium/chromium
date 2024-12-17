@@ -59,11 +59,21 @@ void PopulateUserCertsAsync(
   std::move(callback).Run(std::move(cert_infos));
 }
 
+void ReloadAllUserCerts(base::WeakPtr<UserCertSource> user_cert_source,
+                        base::OnceCallback<void(bool)> update_callback,
+                        bool success) {
+  if (user_cert_source && success) {
+    user_cert_source->TriggerReload();
+  }
+  std::move(update_callback).Run(success);
+}
+
 void UpdateCertificateAsync(
     base::WeakPtr<Profile> profile,
+    base::WeakPtr<UserCertSource> user_cert_source,
     net::ServerCertificateDatabase::CertInformation cert_info,
     base::OnceCallback<void(bool)> update_callback) {
-  if (!profile) {
+  if (!profile || !user_cert_source) {
     std::move(update_callback).Run(false);
     return;
   }
@@ -72,12 +82,10 @@ void UpdateCertificateAsync(
           profile.get());
   std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
   cert_infos.push_back(std::move(cert_info));
-  // TODO(crbug.com/40928765): When the cert is modified we need to refresh the
-  // list of all of the user cert sources. This is complicated by the fact that
-  // this callback is specific to just one user cert source, whereas the refresh
-  // needs to accommodate all user cert sources.
-  server_cert_service->AddOrUpdateUserCertificates(std::move(cert_infos),
-                                                   std::move(update_callback));
+  server_cert_service->AddOrUpdateUserCertificates(
+      std::move(cert_infos),
+      base::BindOnce(&ReloadAllUserCerts, user_cert_source,
+                     std::move(update_callback)));
 }
 
 void ViewCertificateAsync(
@@ -86,6 +94,7 @@ void ViewCertificateAsync(
         CertificateTrustType trust,
     base::WeakPtr<content::WebContents> web_contents,
     base::WeakPtr<Profile> profile,
+    base::WeakPtr<UserCertSource> user_cert_source,
     std::vector<net::ServerCertificateDatabase::CertInformation>
         server_cert_infos) {
   // Containing web contents went away (e.g. user navigated away). Don't
@@ -113,7 +122,8 @@ void ViewCertificateAsync(
             std::move(web_contents),
             net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
             cert_info.cert_metadata,
-            base::BindRepeating(&UpdateCertificateAsync, profile));
+            base::BindRepeating(&UpdateCertificateAsync, profile,
+                                user_cert_source));
       } else {
         ShowCertificateDialog(
             std::move(web_contents),
@@ -222,9 +232,9 @@ void UserCertSource::ViewCertificate(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
-  server_cert_service->GetAllCertificates(
-      base::BindOnce(&ViewCertificateAsync, sha256_hex_hash, trust_,
-                     web_contents, profile_->GetWeakPtr()));
+  server_cert_service->GetAllCertificates(base::BindOnce(
+      &ViewCertificateAsync, sha256_hex_hash, trust_, web_contents,
+      profile_->GetWeakPtr(), weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UserCertSource::ExportCertificates(
@@ -373,4 +383,14 @@ void UserCertSource::ImportCertificateResult(bool success) {
       .Run(certificate_manager_v2::mojom::ActionResult::NewError(
           l10n_util::GetStringUTF8(
               IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_ERROR_TITLE)));
+}
+
+void UserCertSource::TriggerReload() {
+  (*remote_client_)
+      ->TriggerReload(
+          {certificate_manager_v2::mojom::CertificateSource::kUserTrustedCerts,
+           certificate_manager_v2::mojom::CertificateSource::
+               kUserIntermediateCerts,
+           certificate_manager_v2::mojom::CertificateSource::
+               kUserDistrustedCerts});
 }

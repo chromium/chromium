@@ -51,6 +51,9 @@ class UserCertSource : public CertificateManagerPageHandler::CertSource,
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
 
+  // Trigger reload of all user cert sources
+  void TriggerReload();
+
  private:
   void FileRead(std::optional<std::vector<uint8_t>> file_bytes);
   void ImportCertificateResult(bool success);
