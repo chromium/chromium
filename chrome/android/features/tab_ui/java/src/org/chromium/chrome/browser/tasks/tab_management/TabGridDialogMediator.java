@@ -222,7 +222,6 @@ public class TabGridDialogMediator
 
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
-    private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
     private boolean mTabListEditorSetup;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
@@ -534,10 +533,8 @@ public class TabGridDialogMediator
     }
 
     public void initWithNative(
-            @NonNull Supplier<TabListEditorController> tabListEditorControllerSupplier,
-            TabGroupTitleEditor tabGroupTitleEditor) {
+            @NonNull Supplier<TabListEditorController> tabListEditorControllerSupplier) {
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
-        mTabGroupTitleEditor = tabGroupTitleEditor;
 
         setupToolbarClickHandlers();
         setupToolbarEditText();
@@ -721,19 +718,17 @@ public class TabGridDialogMediator
 
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
-        if (mTabGroupTitleEditor != null) {
-            String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(currentTab.getRootId());
-            if (storedTitle != null && filter.isTabInTabGroup(currentTab)) {
-                mModel.set(
-                        TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
-                        res.getQuantityString(
-                                R.plurals.accessibility_dialog_back_button_with_group_name,
-                                tabsCount,
-                                storedTitle,
-                                tabsCount));
-                mModel.set(TabGridDialogProperties.HEADER_TITLE, storedTitle);
-                return;
-            }
+        String storedTitle = filter.getTabGroupTitle(currentTab.getRootId());
+        if (storedTitle != null && filter.isTabInTabGroup(currentTab)) {
+            mModel.set(
+                    TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
+                    res.getQuantityString(
+                            R.plurals.accessibility_dialog_back_button_with_group_name,
+                            tabsCount,
+                            storedTitle,
+                            tabsCount));
+            mModel.set(TabGridDialogProperties.HEADER_TITLE, storedTitle);
+            return;
         }
 
         mModel.set(
@@ -1113,7 +1108,6 @@ public class TabGridDialogMediator
         if (mCurrentGroupModifiedTitle == null) {
             return;
         }
-        assert mTabGroupTitleEditor != null;
 
         int tabsCount = getRelatedTabs(mCurrentTabId).size();
         if (mCurrentGroupModifiedTitle.length() == 0
@@ -1121,7 +1115,7 @@ public class TabGridDialogMediator
                         mActivity, mCurrentGroupModifiedTitle, tabsCount)) {
             // When dialog title is empty or was unchanged, delete previously stored title and
             // restore default title.
-            mTabGroupTitleEditor.deleteTabGroupTitle(currentTab.getRootId());
+            filter.deleteTabGroupTitle(currentTab.getRootId());
 
             String originalTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, tabsCount);
             mModel.set(
@@ -1133,17 +1127,19 @@ public class TabGridDialogMediator
                                     tabsCount,
                                     tabsCount));
             mModel.set(TabGridDialogProperties.HEADER_TITLE, originalTitle);
-            mTabGroupTitleEditor.updateTabGroupTitle(currentTab, originalTitle);
+            // Setting the tab group title to null ensures the default title isn't saved, but
+            // observers downstream will update to the correct default title.
+            filter.setTabGroupTitle(currentTab.getRootId(), null);
             mCurrentGroupModifiedTitle = null;
             RecordUserAction.record("TabGridDialog.ResetTabGroupName");
             return;
         }
-        mTabGroupTitleEditor.storeTabGroupTitle(currentTab.getRootId(), mCurrentGroupModifiedTitle);
-        mTabGroupTitleEditor.updateTabGroupTitle(currentTab, mCurrentGroupModifiedTitle);
+        filter.setTabGroupTitle(currentTab.getRootId(), mCurrentGroupModifiedTitle);
         int relatedTabsCount = getRelatedTabs(mCurrentTabId).size();
         mModel.set(
                 TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
-                mActivity.getResources()
+                mActivity
+                        .getResources()
                         .getQuantityString(
                                 R.plurals.accessibility_dialog_back_button_with_group_name,
                                 relatedTabsCount,

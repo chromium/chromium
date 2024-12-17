@@ -258,7 +258,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 TabSwitcherPaneCoordinator.this
                                                         ::getTabGridDialogAnimationSourceView,
                                                 scrimCoordinator,
-                                                getTabGroupTitleEditor(),
                                                 actionConfirmationManager,
                                                 mModalDialogManager,
                                                 desktopWindowStateManager);
@@ -633,10 +632,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private GridCardOnClickListenerProvider getGridCardOnClickListenerProvider() {
         return mMediator;
-    }
-
-    private TabGroupTitleEditor getTabGroupTitleEditor() {
-        return mTabListCoordinator.getTabGroupTitleEditor();
     }
 
     private PriceWelcomeMessageController getPriceWelcomeMessageController() {

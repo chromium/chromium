@@ -107,7 +107,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
-            TabGroupTitleEditor tabGroupTitleEditor,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
@@ -271,7 +270,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // This is always created post-native so calling these immediately is safe.
             // TODO(crbug.com/40894893): Consider inlining these behaviors in their respective
             // constructors if possible.
-            mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
+            mMediator.initWithNative(this::getTabListEditorController);
             mTabListCoordinator.initWithNative(originalProfile);
 
             CollaborationService collaborationService =
