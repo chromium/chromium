@@ -54,24 +54,6 @@ ItemPosition BoxAlignmentToItemPosition(EBoxAlignment alignment) {
   }
 }
 
-ContentPosition BoxPackToContentPosition(EBoxPack box_pack) {
-  switch (box_pack) {
-    case EBoxPack::kCenter:
-      return ContentPosition::kCenter;
-    case EBoxPack::kJustify:
-      return ContentPosition::kFlexStart;
-    case EBoxPack::kStart:
-      return ContentPosition::kFlexStart;
-    case EBoxPack::kEnd:
-      return ContentPosition::kFlexEnd;
-  }
-}
-
-ContentDistributionType BoxPackToContentDistribution(EBoxPack box_pack) {
-  return box_pack == EBoxPack::kJustify ? ContentDistributionType::kSpaceBetween
-                                        : ContentDistributionType::kDefault;
-}
-
 }  // namespace
 
 // static
@@ -101,62 +83,70 @@ FlexibleBoxAlgorithm::ContentAlignmentNormalBehavior() {
 // static
 StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
     const ComputedStyle& style) {
-  const bool is_webkit_box = style.IsDeprecatedWebkitBox();
-  ContentPosition position;
-  if (is_webkit_box) {
-    position = BoxPackToContentPosition(style.BoxPack());
-    // As row-reverse does layout in reverse, it effectively swaps end & start.
-    // -webkit-box didn't do this (-webkit-box always did layout starting at 0,
-    // and increasing).
-    if (style.ResolvedIsRowReverseFlexDirection()) {
-      if (position == ContentPosition::kFlexEnd)
-        position = ContentPosition::kFlexStart;
-      else if (position == ContentPosition::kFlexStart)
-        position = ContentPosition::kFlexEnd;
-    }
-  } else {
-    position =
-        style.ResolvedJustifyContentPosition(ContentAlignmentNormalBehavior());
-
-    const auto writing_direction = style.GetWritingDirection();
-    if (position == ContentPosition::kLeft ||
-        position == ContentPosition::kRight) {
-      if (IsColumnFlow(style)) {
-        if (writing_direction.IsHorizontal()) {
-          // The main-axis is in the top-down direction, fallback to start.
-          position = ContentPosition::kStart;
-        } else {
-          LogicalToPhysical physical(
-              writing_direction, ContentPosition::kStart, ContentPosition::kEnd,
-              ContentPosition::kStart, ContentPosition::kEnd);
-          position = position == ContentPosition::kLeft ? physical.Left()
-                                                        : physical.Right();
-        }
-      } else {
-        position =
-            ((position == ContentPosition::kLeft) == writing_direction.IsLtr())
-                ? ContentPosition::kStart
-                : ContentPosition::kEnd;
+  if (style.IsDeprecatedWebkitBox()) {
+    const ContentPosition position = ([&]() {
+      // -webkit-box row-reverse currently flips the start/end (e.g. it always
+      // uses "start" rather than "flex-start"). Firefox doesn't have this
+      // quirk, we should attempt to remove it.
+      const bool is_row_reverse = style.ResolvedIsRowReverseFlexDirection();
+      switch (style.BoxPack()) {
+        case EBoxPack::kCenter:
+          return ContentPosition::kCenter;
+        case EBoxPack::kJustify:
+        case EBoxPack::kStart:
+          return is_row_reverse ? ContentPosition::kFlexEnd
+                                : ContentPosition::kFlexStart;
+        case EBoxPack::kEnd:
+          return is_row_reverse ? ContentPosition::kFlexStart
+                                : ContentPosition::kFlexEnd;
       }
+    })();
+    const ContentDistributionType distribution =
+        style.BoxPack() == EBoxPack::kJustify
+            ? ContentDistributionType::kSpaceBetween
+            : ContentDistributionType::kDefault;
+    return StyleContentAlignmentData(position, distribution,
+                                     OverflowAlignment::kSafe);
+  }
+
+  ContentPosition position =
+      style.ResolvedJustifyContentPosition(ContentAlignmentNormalBehavior());
+
+  const auto writing_direction = style.GetWritingDirection();
+  if (position == ContentPosition::kLeft ||
+      position == ContentPosition::kRight) {
+    if (IsColumnFlow(style)) {
+      if (writing_direction.IsHorizontal()) {
+        // The main-axis is in the top-down direction, fallback to start.
+        position = ContentPosition::kStart;
+      } else {
+        LogicalToPhysical physical(
+            writing_direction, ContentPosition::kStart, ContentPosition::kEnd,
+            ContentPosition::kStart, ContentPosition::kEnd);
+        position = position == ContentPosition::kLeft ? physical.Left()
+                                                      : physical.Right();
+      }
+    } else {
+      position =
+          ((position == ContentPosition::kLeft) == writing_direction.IsLtr())
+              ? ContentPosition::kStart
+              : ContentPosition::kEnd;
     }
   }
   DCHECK_NE(position, ContentPosition::kLeft);
   DCHECK_NE(position, ContentPosition::kRight);
 
   ContentDistributionType distribution =
-      is_webkit_box ? BoxPackToContentDistribution(style.BoxPack())
-                    : style.ResolvedJustifyContentDistribution(
-                          ContentAlignmentNormalBehavior());
-  OverflowAlignment overflow = style.JustifyContent().Overflow();
-  if (is_webkit_box) {
-    overflow = OverflowAlignment::kSafe;
-  } else if (distribution == ContentDistributionType::kStretch) {
+      style.ResolvedJustifyContentDistribution(
+          ContentAlignmentNormalBehavior());
+  if (distribution == ContentDistributionType::kStretch) {
     // For flex, justify-content: stretch behaves as flex-start:
     // https://drafts.csswg.org/css-align/#distribution-flex
     position = ContentPosition::kFlexStart;
     distribution = ContentDistributionType::kDefault;
   }
-  return StyleContentAlignmentData(position, distribution, overflow);
+  return StyleContentAlignmentData(position, distribution,
+                                   style.JustifyContent().Overflow());
 }
 
 // static
