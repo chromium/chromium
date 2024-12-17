@@ -11,7 +11,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/events/event_rewriter_controller_impl.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/peripherals_app_delegate.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
@@ -2060,6 +2062,35 @@ TEST_F(InputDeviceSettingsControllerTest,
        KeyboardInternalDefaultsUpdatedDuringOobe) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::OOBE);
+
+  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
+                                        kKbdTopRowLayout2Tag);
+  const auto* keyboard = controller_->GetKeyboard(kSampleKeyboardInternal.id);
+  ASSERT_TRUE(keyboard);
+  ASSERT_EQ(kDefaultTopRowAreFKeys, keyboard->settings->top_row_are_fkeys);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
+                       !kDefaultTopRowAreFKeys);
+  active_pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
+                               std::move(updated_defaults));
+
+  ASSERT_EQ(1u, keyboard_pref_handler_
+                    ->num_force_initialize_with_default_settings_calls());
+}
+
+// This tests specifically when a device is already setup and the primary user
+// is added at a later time. This is often seen with ENT use cases.
+TEST_F(InputDeviceSettingsControllerTest,
+       KeyboardInternalDefaultsUpdatedDuringPrimaryUserRegistration) {
+  Shell::Get()
+      ->login_screen_controller()
+      ->data_dispatcher()
+      ->NotifyOobeDialogState(OobeDialogState::ONBOARDING);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
 
   fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
                                         kKbdTopRowLayout2Tag);
