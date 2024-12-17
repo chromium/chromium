@@ -114,16 +114,21 @@ void ViewCertificateAsync(
     }
     if (hash == crypto::SHA256Hash(cert_info.der_cert)) {
       // Found the cert, open cert viewer dialog if able and return.
-      // TODO (crbug.com/40928765): Allow modifying constraints through the
-      // certificate viewer.
       if (base::FeatureList::IsEnabled(
               ::features::kEnableCertManagementUIV2EditCerts)) {
-        ShowCertificateDialog(
-            std::move(web_contents),
-            net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
-            cert_info.cert_metadata,
-            base::BindRepeating(&UpdateCertificateAsync, profile,
-                                user_cert_source));
+        if (IsCACertificateManagementAllowed(*profile->GetPrefs())) {
+          ShowCertificateDialog(
+              std::move(web_contents),
+              net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
+              cert_info.cert_metadata,
+              base::BindRepeating(&UpdateCertificateAsync, profile,
+                                  user_cert_source));
+        } else {
+          ShowCertificateDialog(
+              std::move(web_contents),
+              net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
+              cert_info.cert_metadata, base::NullCallback());
+        }
       } else {
         ShowCertificateDialog(
             std::move(web_contents),
