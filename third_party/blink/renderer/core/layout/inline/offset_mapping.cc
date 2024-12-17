@@ -297,15 +297,15 @@ const OffsetMappingUnit* OffsetMapping::GetMappingUnitForPosition(
   if (range_start == range_end || units_[range_start].DOMStart() > offset)
     return nullptr;
   // Find the last unit where unit.dom_start <= offset
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  auto unit = std::prev(UNSAFE_TODO(std::upper_bound(
-      units_.begin() + range_start, units_.begin() + range_end, offset,
-      [](unsigned offset, const OffsetMappingUnit& unit) {
+  auto range = base::span(units_).subspan(range_start, range_end - range_start);
+  auto i = base::ranges::upper_bound(
+      range, offset, [](unsigned offset, const OffsetMappingUnit& unit) {
         return offset < unit.DOMStart();
-      })));
+      });
+  const OffsetMappingUnit* unit = &range[std::distance(range.begin(), i) - 1];
   if (unit->DOMEnd() < offset)
     return nullptr;
-  return &*unit;
+  return unit;
 }
 
 OffsetMapping::UnitVector OffsetMapping::GetMappingUnitsForDOMRange(
@@ -328,25 +328,30 @@ OffsetMapping::UnitVector OffsetMapping::GetMappingUnitsForDOMRange(
     return UnitVector();
 
   // Find the first unit where unit.dom_end >= start_offset
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  auto result_begin = UNSAFE_TODO(std::lower_bound(
-      units_.begin() + range_start, units_.begin() + range_end, start_offset,
-      [](const OffsetMappingUnit& unit, unsigned offset) {
-        return unit.DOMEnd() < offset;
-      }));
+  auto span1 = base::span(units_).subspan(range_start, range_end - range_start);
+  size_t result_begin =
+      range_start +
+      std::distance(span1.begin(),
+                    base::ranges::lower_bound(
+                        span1, start_offset,
+                        [](const OffsetMappingUnit& unit, unsigned offset) {
+                          return unit.DOMEnd() < offset;
+                        }));
 
   // Find the next of the last unit where unit.dom_start <= end_offset
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  auto result_end = UNSAFE_TODO(
-      std::upper_bound(result_begin, units_.begin() + range_end, end_offset,
-                       [](unsigned offset, const OffsetMappingUnit& unit) {
-                         return offset < unit.DOMStart();
-                       }));
+  auto span2 =
+      base::span(units_).subspan(result_begin, range_end - result_begin);
+  size_t result_size = std::distance(
+      span2.begin(), base::ranges::upper_bound(
+                         span2, end_offset,
+                         [](unsigned offset, const OffsetMappingUnit& unit) {
+                           return offset < unit.DOMStart();
+                         }));
 
   UnitVector result;
-  result.reserve(base::checked_cast<wtf_size_t>(result_end - result_begin));
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  for (const auto& unit : UNSAFE_TODO(base::span(result_begin, result_end))) {
+  result.reserve(base::checked_cast<wtf_size_t>(result_size));
+  for (const auto& unit :
+       base::span(units_).subspan(result_begin, result_size)) {
     // If the unit isn't fully within the range, create a new unit that's
     // within the range.
     const unsigned clamped_start = std::max(unit.DOMStart(), start_offset);
