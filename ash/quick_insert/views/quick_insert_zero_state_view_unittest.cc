@@ -535,7 +535,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsListItem) {
                            l10n_util::GetStringUTF16(
                                IDS_PICKER_LOBSTER_SELECTION_LABEL)
 #else
-                           u""
+                           u"Lobster"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
                                )))))))));
 }
