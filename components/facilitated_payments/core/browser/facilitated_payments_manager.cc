@@ -291,7 +291,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     return;
   }
 
-  LogInitiatePurchaseActionAttempt();
+  LogInitiatePurchaseActionAttempt(kPaymentsType);
   purchase_action_start_time_ = base::TimeTicks::Now();
   GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->action_token_,

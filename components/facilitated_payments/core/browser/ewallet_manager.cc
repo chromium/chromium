@@ -230,6 +230,8 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
     client_->ShowErrorScreen();
     return;
   }
+
+  LogInitiatePurchaseActionAttempt(kPaymentsType, scheme_);
   GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->action_token_,
       base::BindOnce(&EwalletManager::OnTransactionResult,

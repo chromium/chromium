@@ -558,6 +558,14 @@ TEST_F(EwalletManagerTest,
       "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency.ShopeePay",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePurchaseAction.Attempt",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePurchaseAction.Attempt.ShopeePay",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is

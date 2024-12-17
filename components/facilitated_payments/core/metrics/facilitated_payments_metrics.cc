@@ -194,10 +194,22 @@ void LogInitiatePaymentResultAndLatency(
   }
 }
 
-void LogInitiatePurchaseActionAttempt() {
+void LogInitiatePurchaseActionAttempt(
+    FacilitatedPaymentsType payment_type,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramBoolean(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Attempt",
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".InitiatePurchaseAction.Attempt"}),
       /*sample=*/true);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"FacilitatedPayments.Ewallet.InitiatePurchaseAction.Attempt.",
+             SchemeToString(*scheme)}),
+        /*sample=*/true);
+  }
 }
 
 void LogInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
