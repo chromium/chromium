@@ -432,6 +432,10 @@ void ToastView::AnimateOut(base::OnceClosure callback,
   }
 
   views::View* const bubble_frame_view = GetBubbleFrameView();
+  if (!bubble_frame_view->layer()) {
+    bubble_frame_view->SetPaintToLayer();
+    bubble_frame_view->layer()->SetFillsBoundsOpaquely(false);
+  }
 
   if (show_height_animation) {
     starting_widget_bounds_ = GetWidget()->GetWindowBoundsInScreen();
