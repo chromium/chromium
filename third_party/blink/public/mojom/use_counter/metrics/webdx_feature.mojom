@@ -326,6 +326,7 @@ enum WebDXFeature {
   kFetchPriority = 268,
   kHighlight = 269,
   kDRAFT_ErrorIsError = 270,
+  kClipboardCustomFormat = 271,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

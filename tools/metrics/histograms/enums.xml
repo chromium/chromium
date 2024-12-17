@@ -10943,6 +10943,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5224" label="AdScriptInStackOnBluetooth"/>
   <int value="5225" label="AdScriptInStackOnMicrophoneRead"/>
   <int value="5226" label="AdScriptInStackOnCameraRead"/>
+  <int value="5227" label="ClipboardCustomFormatRead"/>
+  <int value="5228" label="ClipboardCustomFormatWrite"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -34237,6 +34239,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="268" label="FetchPriority"/>
   <int value="269" label="Highlight"/>
   <int value="270" label="DRAFT_ErrorIsError"/>
+  <int value="271" label="ClipboardCustomFormat"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

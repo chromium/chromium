@@ -234,6 +234,9 @@ class ClipboardCustomFormatWriter final : public ClipboardWriter {
       DOMArrayBuffer* custom_format_data,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    promise_->GetExecutionContext()->CountUse(
+        WebFeature::kClipboardCustomFormatWrite);
     Write(custom_format_data);
   }
 

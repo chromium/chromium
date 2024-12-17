@@ -4610,6 +4610,8 @@ enum WebFeature {
   kAdScriptInStackOnBluetooth = 5224,
   kAdScriptInStackOnMicrophoneRead = 5225,
   kAdScriptInStackOnCameraRead = 5226,
+  kClipboardCustomFormatRead = 5227,
+  kClipboardCustomFormatWrite = 5228,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
   // spaces or comments in this file. Comments belong next to the usage of

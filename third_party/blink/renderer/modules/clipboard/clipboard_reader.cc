@@ -294,6 +294,8 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    promise_->GetExecutionContext()->CountUse(
+        WebFeature::kClipboardCustomFormatRead);
     system_clipboard()->ReadUnsanitizedCustomFormat(
         mime_type_,
         WTF::BindOnce(&ClipboardCustomFormatReader::OnCustomFormatRead,
