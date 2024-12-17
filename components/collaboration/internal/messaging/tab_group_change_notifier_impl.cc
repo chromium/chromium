@@ -336,6 +336,19 @@ TabGroupChangeNotifierImpl::GetSelectedSharedTabForPublishing(
     return std::nullopt;
   }
 
+  // Try to look up live data first, since we are not always updated, e.g. if a
+  // local tab ID changes for a particular tab.
+  std::optional<tab_groups::SavedTabGroup> tab_group;
+  if (sync_tab_group_id) {
+    tab_group = tab_group_sync_service_->GetGroup(*sync_tab_group_id);
+  }
+  if (tab_group) {
+    const tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(*sync_tab_id);
+    if (tab) {
+      return *tab;
+    }
+  }
+
   // The tab is in a shared tab group.
   const tab_groups::SavedTabGroup& group = group_it->second;
   const tab_groups::SavedTabGroupTab* tab = group.GetTab(*sync_tab_id);

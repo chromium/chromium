@@ -48,14 +48,11 @@ TabStrip* GetTabStripWithGroup(LocalTabGroupID local_tab_group_id) {
   return tab_strip;
 }
 
-// Returns the local tab group ID from the PersistentMessage. Asserts tab
-// group metadata exists and contains the group ID.
-LocalTabGroupID UnwrapTabGroupID(PersistentMessage message) {
+// Returns the local tab group ID from the PersistentMessage.
+std::optional<LocalTabGroupID> UnwrapTabGroupID(PersistentMessage message) {
   auto tab_group_metadata = message.attribution.tab_group_metadata;
   CHECK(tab_group_metadata.has_value());
-  auto local_tab_group_id = tab_group_metadata->local_tab_group_id;
-  CHECK(local_tab_group_id.has_value());
-  return local_tab_group_id.value();
+  return tab_group_metadata->local_tab_group_id;
 }
 
 // Returns the tab strip index of the tab. If the sync service is not
@@ -103,21 +100,30 @@ std::optional<TabInfo> UnwrapTabInfo(PersistentMessage message,
                                      Profile* profile) {
   // Get tab group ID.
   auto local_tab_group_id = UnwrapTabGroupID(message);
+  if (!local_tab_group_id) {
+    // The LocalTabGroupID is not guaranteed to be available from the
+    // MessagingBackenddService, so we need to handle this case gracefully.
+    return std::nullopt;
+  }
 
   // Get tab ID.
   auto tab_metadata = message.attribution.tab_metadata;
   CHECK(tab_metadata.has_value());
   auto local_tab_id = tab_metadata->local_tab_id;
-  CHECK(local_tab_id.has_value());
+  if (!local_tab_id.has_value()) {
+    // The LocalTabID is not guaranteed to be available from the
+    // MessagingBackenddService, so we need to handle this case gracefully.
+    return std::nullopt;
+  }
 
   // Get tab index.
   auto tabstrip_index =
-      GetTabStripIndex(*local_tab_id, local_tab_group_id, profile);
+      GetTabStripIndex(*local_tab_id, *local_tab_group_id, profile);
   if (!tabstrip_index.has_value()) {
     return std::nullopt;
   }
 
-  return TabInfo(*local_tab_id, local_tab_group_id, *tabstrip_index);
+  return TabInfo(*local_tab_id, *local_tab_group_id, *tabstrip_index);
 }
 
 }  // namespace
@@ -127,10 +133,15 @@ void CollaborationMessagingObserver::HandleDirtyTabGroup(
     MessageDisplayStatus display) {
   // DIRTY_TAB_GROUP notifications may not have tab metadata. Only the
   // group metadata is needed here.
-  LocalTabGroupID local_tab_group_id = UnwrapTabGroupID(message);
+  std::optional<LocalTabGroupID> local_tab_group_id = UnwrapTabGroupID(message);
+  if (!local_tab_group_id) {
+    // The LocalTabGroupID is not guaranteed to be available from the
+    // MessagingBackenddService, so we need to handle this case gracefully.
+    return;
+  }
 
-  GetTabStripWithGroup(local_tab_group_id)
-      ->SetTabGroupNeedsAttention(local_tab_group_id,
+  GetTabStripWithGroup(*local_tab_group_id)
+      ->SetTabGroupNeedsAttention(*local_tab_group_id,
                                   display == MessageDisplayStatus::kDisplay);
 }
 
