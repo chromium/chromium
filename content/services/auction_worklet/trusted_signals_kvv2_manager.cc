@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/cbor/reader.h"
