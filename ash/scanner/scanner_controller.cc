@@ -13,6 +13,8 @@
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_command_delegate_impl.h"
 #include "ash/scanner/scanner_session.h"
@@ -29,6 +31,9 @@ namespace {
 
 constexpr char kScannerActionNotificationId[] = "scanner_action_notification";
 constexpr char kScannerNotifierId[] = "ash.scanner";
+
+constexpr char kScannerActionSuccessToastId[] = "scanner_action_success";
+constexpr char kScannerActionFailureToastId[] = "scanner_action_failure";
 
 // Shows an action progress notification. Note that this will remove the
 // previous action notification if there is one.
@@ -58,11 +63,27 @@ void ShowActionProgressNotification() {
 
 // Should be called when an action finishes execution.
 void OnActionFinished(bool success) {
+  // Remove the action progress notification.
   message_center::MessageCenter::Get()->RemoveNotification(
       kScannerActionNotificationId,
       /*by_user=*/false);
-  // TODO: crbug.com/382182688 - Show an error message if the action was not
-  // successful.
+
+  if (success) {
+    // TODO: crbug.com/382182688 - The action success text should depend on the
+    // type of action executed.
+    constexpr char16_t kPlaceholderActionSuccessText[] = u"Action Finished";
+    // TODO: crbug.com/383925780 - Add feedback mechanism to the toast.
+    ToastManager::Get()->Show(ToastData(kScannerActionSuccessToastId,
+                                        ToastCatalogName::kScannerActionSuccess,
+                                        kPlaceholderActionSuccessText));
+  } else {
+    // TODO: crbug.com/378582420 - The action failure text should depend on the
+    // type of action attempted.
+    constexpr char16_t kPlaceholderActionFailureText[] = u"Action Failed";
+    ToastManager::Get()->Show(ToastData(kScannerActionFailureToastId,
+                                        ToastCatalogName::kScannerActionFailure,
+                                        kPlaceholderActionFailureText));
+  }
 }
 
 }  // namespace

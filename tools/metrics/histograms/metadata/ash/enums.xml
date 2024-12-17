@@ -2378,6 +2378,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="56" label="Copy Image To Clipboard Action"/>
   <int value="57" label="Capture Mode Text Copied"/>
   <int value="58" label="Coral Saved Groups Limit Max"/>
+  <int value="59" label="Scanner Action Success"/>
+  <int value="60" label="Scanner Action Failure"/>
 </enum>
 
 <enum name="TogglePickerAction">

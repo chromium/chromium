@@ -13,6 +13,7 @@
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_system_state.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/shell.h"
@@ -38,6 +39,9 @@ using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::WithArg;
+
+constexpr char kScannerActionSuccessToastId[] = "scanner_action_success";
+constexpr char kScannerActionFailureToastId[] = "scanner_action_failure";
 
 FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
     ScannerController& scanner_controller) {
@@ -160,6 +164,65 @@ TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
   // Notification should be hidden.
   EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
               IsEmpty());
+}
+
+TEST_F(ScannerControllerTest, ShowsToastAfterActionSuccess) {
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event title");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  // Mock a successful action.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  scanner_controller->ExecuteAction(actions[0]);
+
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
+}
+
+TEST_F(ScannerControllerTest, ShowsToastAfterActionFailure) {
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  output->add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event title");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(std::move(output), manta::MantaStatus()));
+  // Mock a failure to fetch action details.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          /*output=*/nullptr,
+          manta::MantaStatus{.status_code =
+                                 manta::MantaStatusCode::kBackendFailure}));
+
+  // Fetch an action and try to execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  scanner_controller->ExecuteAction(actions[0]);
+
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionFailureToastId));
 }
 
 }  // namespace
