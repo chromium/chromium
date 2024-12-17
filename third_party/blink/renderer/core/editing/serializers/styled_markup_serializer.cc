@@ -218,9 +218,11 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
     }
     if (RuntimeEnabledFeatures::IncludeTableTagInExtendedSelectionEnabled()) {
       if (last_closed_ && IsTablePartElement(last_closed_)) {
-        last_closed_ =
-            Traversal<HTMLTableElement>::FirstAncestor(*last_closed_);
-        should_append_parent_tag = true;
+        if (auto* first_ancestor_table_traversal =
+                Traversal<HTMLTableElement>::FirstAncestor(*last_closed_)) {
+          last_closed_ = first_ancestor_table_traversal;
+          should_append_parent_tag = true;
+        }
       }
     }
   }
@@ -304,7 +306,7 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
       if (ancestor == highest_node_to_be_serialized_)
         break;
     }
-  } else if (should_append_parent_tag) {
+  } else if (should_append_parent_tag && last_closed_) {
     EditingStyle* style = traverser.CreateInlineStyleIfNeeded(*last_closed_);
     traverser.WrapWithNode(To<ContainerNode>(*last_closed_), style);
   }

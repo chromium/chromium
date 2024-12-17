@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body></body>
+<script>
+  test(() => {
+    const body = document.getElementsByTagName("body")[0];
+    body.appendChild(document.createElement("td"));
+    body.appendChild(document.createElement("td"));
+    body.appendChild(document.createElement("td"));
+    document.designMode = "on";
+    assert_true(document.execCommand("selectAll"));
+    assert_true(document.execCommand("Cut"));
+  }, "copying only table part should not crash");
+</script>
