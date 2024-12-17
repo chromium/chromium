@@ -636,10 +636,7 @@ chromium-metrics-reviews@google.com.
     Component file was received and read successfully but did not contain a
     valid configuration.
   </int>
-  <int value="4" label="Failed processing">
-    Failed to finish processing same version previously so skipping to avoid
-    potential crash loop.
-  </int>
+  <int value="4" label="Deprecated: Failed finished processing"/>
   <int value="5" label="Skipped hints processing">
     Skipped processing hints, likely because the hint cache already contains the
     same version.

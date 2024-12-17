@@ -104,10 +104,6 @@ BASE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite,
              "OptGuideEnableXNNPACKDelegateWithTFLite",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOptimizationHintsComponent,
-             "OptimizationHintsComponent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch for fetching on search results from a remote Optimization Guide
 // Service.
 BASE_FEATURE(kOptimizationGuideFetchingForSRP,
@@ -597,12 +593,6 @@ std::optional<int> OverrideNumThreadsForOptTarget(
 
 bool TFLiteXNNPACKDelegateEnabled() {
   return base::FeatureList::IsEnabled(kOptGuideEnableXNNPACKDelegateWithTFLite);
-}
-
-bool ShouldCheckFailedComponentVersionPref() {
-  return GetFieldTrialParamByFeatureAsBool(
-      kOptimizationHintsComponent, "check_failed_component_version_pref",
-      false);
 }
 
 std::map<proto::OptimizationTarget, std::set<int64_t>>
