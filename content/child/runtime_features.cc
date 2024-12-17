@@ -705,18 +705,6 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableFledge(false);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
-    WebRuntimeFeatures::EnableFledgeMultiBid(false);
-    WebRuntimeFeatures::EnableFledgeRealTimeReporting(false);
-
-    if (!base::FeatureList::IsEnabled(
-            blink::features::
-                kAlwaysAllowFledgeDeprecatedRenderURLReplacements)) {
-      WebRuntimeFeatures::EnableFledgeDeprecatedRenderURLReplacements(false);
-    }
-  }
-
   // PermissionElement cannot be enabled without the support of the
   // browser process.
   if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
