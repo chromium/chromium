@@ -2697,8 +2697,6 @@ void LayoutBox::FinalizeLayoutResults() {
 
 void LayoutBox::RebuildFragmentTreeSpine() {
   DCHECK(PhysicalFragmentCount());
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
-      "Blink.Layout.RebuildFragmentTreeSpine");
   // If this box has an associated layout-result, rebuild the spine of the
   // fragment-tree to ensure consistency.
   LayoutBox* container = this;

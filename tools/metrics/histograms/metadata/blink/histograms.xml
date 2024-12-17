@@ -2969,16 +2969,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Layout.RebuildFragmentTreeSpine" units="microseconds"
-    expires_after="2025-01-26">
-  <owner>tkent@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Time spent to rebuild container physical fragments, recorded on sub-tree
-    root layout.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Layout.SVGImage.Count.InOutermostMainFrame"
     units="count" expires_after="2025-01-26">
   <owner>chikamune@chromium.org</owner>
