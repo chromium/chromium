@@ -3226,16 +3226,10 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   ContainerNode::RemovedFrom(insertion_point);
 
-  if (was_in_document) {
-    if (!RuntimeEnabledFeatures::KeepCSSTargetAfterReattachEnabled() &&
-        this == document.CssTarget()) {
-      document.SetCSSTarget(nullptr);
-    }
-
-    if (GetCustomElementState() == CustomElementState::kCustom &&
-        !GetDocument().StatePreservingAtomicMoveInProgress()) {
-      CustomElement::EnqueueDisconnectedCallback(*this);
-    }
+  if (was_in_document &&
+      GetCustomElementState() == CustomElementState::kCustom &&
+      !GetDocument().StatePreservingAtomicMoveInProgress()) {
+    CustomElement::EnqueueDisconnectedCallback(*this);
   }
 
   RecomputeDirectionFromParent();

@@ -2482,13 +2482,6 @@
       origin_trial_feature_name: "JavaScriptCompileHintsMagic",
     },
     {
-      // Allows :target to match elements even after they are removed and
-      // reattached to the document. Enabled in M128, should be safe to remove
-      // in M133.
-      name: "KeepCSSTargetAfterReattach",
-      status: "stable",
-    },
-    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
       base_feature: "none",
