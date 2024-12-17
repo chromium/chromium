@@ -238470,7 +238470,7 @@
       ]
      },
      "compute-kind-widget-no-fallback-props-001.html": [
-      "bda712ec50de76607aac917a661f203434dc3431",
+      "a193bee3d9a774897903d1288aae3b62458eceef",
       [
        null,
        [
@@ -308147,7 +308147,19 @@
      "545f0bec6d9822e7862fc4010fb8d52d3dc4b768",
      []
     ],
-    "idb-binary-key-roundtrip-expected.txt": [
+    "idb-binary-key-roundtrip.any-expected.txt": [
+     "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
+     []
+    ],
+    "idb-binary-key-roundtrip.any.serviceworker-expected.txt": [
+     "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
+     []
+    ],
+    "idb-binary-key-roundtrip.any.sharedworker-expected.txt": [
+     "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
+     []
+    ],
+    "idb-binary-key-roundtrip.any.worker-expected.txt": [
      "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
      []
     ],
@@ -308193,7 +308205,7 @@
       []
      ],
      "support-get-all.js": [
-      "9362ec14f0476b0f630e3f131b5b2df1a8635d1c",
+      "7336f7e3c2c5d8fd0b140791131205f4309ba4cc",
       []
      ],
      "support-promises.js": [
@@ -311890,7 +311902,7 @@
        []
       ],
       "frame-ancestors-test.sub.js": [
-       "6e816e89b3837bd620fc359045b7c0bf216616f2",
+       "ffa807b9346789b60f984e923a9481bfaf8a05a3",
        []
       ],
       "frame-ancestors.sub.html": [
@@ -413466,11 +413478,11 @@
     "signatures": {
      "tentative": {
       "helper.js": [
-       "c13c6c4dcf6ec0a217a839874cbcdf31eab00990",
+       "cebfc6c6c650ae82c30426386ce631cc5d1b0989",
        []
       ],
       "resource.py": [
-       "e857de46c0a634916e94fa71f6e1182109cbabcd",
+       "50dc235c00286342473b39e55940c883cbff31b4",
        []
       ]
      }
@@ -428330,11 +428342,101 @@
       {}
      ]
     ],
-    "idb-binary-key-roundtrip.htm": [
-     "d1bf4016f93ec1336b7bde8b9d8e8cbffa833f54",
+    "idb-binary-key-roundtrip.any.js": [
+     "0856a05cb64b6e65a9a61f92db57a4eb5e6a4cf7",
      [
-      null,
+      "IndexedDB/idb-binary-key-roundtrip.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Binary keys written to a database and read back"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/idb-binary-key-roundtrip.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Binary keys written to a database and read back"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/idb-binary-key-roundtrip.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Binary keys written to a database and read back"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/idb-binary-key-roundtrip.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Binary keys written to a database and read back"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ],
        "timeout": "long"
       }
      ]
@@ -428819,11 +428921,83 @@
       }
      ]
     ],
-    "idbcursor_continue_delete_objectstore.htm": [
-     "86b4abf113eea27e62e9bbb60fba23e4efb64da5",
+    "idbcursor_continue_delete_objectstore.any.js": [
+     "7c86fab046d13096456d48ef302de51bbe3910f2",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor_continue_delete_objectstore.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBObjectStore.delete() and IDBCursor.continue()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor_continue_delete_objectstore.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBObjectStore.delete() and IDBCursor.continue()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor_continue_delete_objectstore.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBObjectStore.delete() and IDBCursor.continue()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor_continue_delete_objectstore.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBObjectStore.delete() and IDBCursor.continue()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbcursor_continue_index.any.js": [
@@ -428905,11 +429079,83 @@
       }
      ]
     ],
-    "idbcursor_continue_invalid.htm": [
-     "c177c7f5655a94b7b8923238c4fbd928a398ed02",
+    "idbcursor_continue_invalid.any.js": [
+     "b08f362ab2e63f43b68b4ac69d5869a1d6d6f9f2",
      [
-      null,
-      {}
+      "IndexedDB/idbcursor_continue_invalid.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBCursor.continue()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor_continue_invalid.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBCursor.continue()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor_continue_invalid.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBCursor.continue()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbcursor_continue_invalid.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBCursor.continue()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbcursor_continue_objectstore.any.js": [
@@ -431566,7 +431812,7 @@
      ]
     ],
     "idbobjectstore_getAll.any.js": [
-     "ef5fee5be6a625ed235c16a10c8faab0b11ea9fb",
+     "6082163d3d24100994ce30d22797e72ee63386cf",
      [
       "IndexedDB/idbobjectstore_getAll.any.html",
       {
@@ -431594,8 +431840,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431625,8 +431876,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431656,8 +431912,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431687,13 +431948,18 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
     "idbobjectstore_getAllKeys.any.js": [
-     "d51779163b62bcacc28189167bf0d0738979e6c0",
+     "17244f6e49cad5811e860de12e7a17dd0b7a524a",
      [
       "IndexedDB/idbobjectstore_getAllKeys.any.html",
       {
@@ -431721,8 +431987,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431752,8 +432023,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431783,8 +432059,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431814,13 +432095,18 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
     "idbobjectstore_getAllRecords.tentative.any.js": [
-     "12546bb943a11916d44f08a8a74b674bc0ad3163",
+     "9ab885689423eab90c9b634e433ddfb6b28319c2",
      [
       "IndexedDB/idbobjectstore_getAllRecords.tentative.any.html",
       {
@@ -431848,8 +432134,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431879,8 +432170,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431910,8 +432206,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -431941,8 +432242,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
@@ -458571,6 +458877,20 @@
       [
        null,
        {}
+      ]
+     ],
+     "frame-ancestors-path-ignored.window.js": [
+      "a7897305ae5b43495704aee2d813adf6a4885bb2",
+      [
+       "content-security-policy/frame-ancestors/frame-ancestors-path-ignored.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "support/frame-ancestors-test.sub.js"
+         ]
+        ]
+       }
       ]
      ],
      "frame-ancestors-sandbox-same-origin-self.html": [
@@ -488714,6 +489034,15 @@
        null,
        {
         "timeout": "long"
+       }
+      ]
+     ],
+     "input-element-pseudo-open.optional.html": [
+      "815594f07aa1d1ba66fc79a006db0f97a42403a5",
+      [
+       null,
+       {
+        "testdriver": true
        }
       ]
      ],
@@ -802921,7 +803250,7 @@
          ]
         ],
         "invalid.py": [
-         "6fef42a48f01522a7cfa26baed85d12cdfb4df65",
+         "2e466c645c3d8a90bf412e6d2f8abca3a2d434cf",
          [
           null,
           {}
