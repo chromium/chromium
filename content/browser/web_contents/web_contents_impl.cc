@@ -4446,23 +4446,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
           },
           page_visibility);
 
-  if (page_visibility == PageVisibilityState::kHidden) {
-    GetController().SetActive(false);
-  } else {
-    // We cannot show a page or capture video unless there is a valid renderer
-    // associated with this web contents. The navigation controller for this
-    // page must be set to active (allowing navigation to complete, a renderer
-    // and its associated views to be created, etc.) if any of these conditions
-    // holds.
-    //
-    // Previously, it was possible for browser-side code to try to capture video
-    // from a restored tab (for a variety of reasons, including the browser
-    // creating preview thumbnails) and the tab would never actually load. By
-    // keying this behavior off of |page_visibility| instead of just
-    // |new_visibility| we avoid this case. See crbug.com/1020782 for more
-    // context.
-    GetController().SetActive(true);
-
+  if (page_visibility != PageVisibilityState::kHidden) {
     // This shows the Page before showing the individual RenderWidgets, as
     // RenderWidgets will work to produce compositor frames and handle input
     // as soon as they are shown. But the Page and other classes do not expect
@@ -4504,20 +4488,6 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     // Similar to when showing the page, we only hide the page after
     // hiding the individual RenderWidgets.
     ForEachRenderViewHost(view_mask, update_frame_tree_visibility);
-  } else {
-    for (FrameTreeNode* node :
-         FrameTree::SubtreeAndInnerTreeNodes(GetPrimaryMainFrame())) {
-      RenderFrameProxyHost* proxy_to_parent_or_outer_delegate =
-          node->render_manager()->GetProxyToParentOrOuterDelegate();
-      if (!proxy_to_parent_or_outer_delegate) {
-        continue;
-      }
-
-      // DelegateWasShown keeps track of crash metrics. This is safe to
-      // call for GuestViews, and inner frame trees.
-      proxy_to_parent_or_outer_delegate->cross_process_frame_connector()
-          ->DelegateWasShown();
-    }
   }
 
   if (new_visibility != Visibility::VISIBLE) {
@@ -4534,6 +4504,38 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     for (WebContents* inner : GetInnerWebContents()) {
       static_cast<WebContentsImpl*>(inner)
           ->UpdateVisibilityAndNotifyPageAndView(new_visibility, is_activity);
+    }
+  }
+
+  // We cannot show a page or capture video unless there is a valid renderer
+  // associated with this web contents. The navigation controller for this page
+  // must be set to active (allowing navigation to complete, a renderer and its
+  // associated views to be created, etc.) if any of these conditions holds.
+  //
+  // Previously, it was possible for browser-side code to try to capture video
+  // from a restored tab (for a variety of reasons, including the browser
+  // creating preview thumbnails) and the tab would never actually load. By
+  // keying this behavior off of |page_visibility| instead of just
+  // |new_visibility| we avoid this case. See crbug.com/1020782 for more
+  // context.
+  //
+  // SetActive() can immediately begin a navigation, synchronously emitting the
+  // relevant events. Ensure this is done after the WebContents has successfully
+  // transitioned to the visible state. See crbug.com/383189046 for details.
+  GetController().SetActive(page_visibility != PageVisibilityState::kHidden);
+
+  // DelegateWasShown() keeps track of crash metrics. This is safe to call for
+  // GuestViews, and inner frame trees. Call this only after visibility changes
+  // and navigations have been processed to ensure clients have all information
+  // necessary to log the correct crash metrics.
+  if (page_visibility != PageVisibilityState::kHidden) {
+    for (FrameTreeNode* node :
+         FrameTree::SubtreeAndInnerTreeNodes(GetPrimaryMainFrame())) {
+      if (RenderFrameProxyHost* proxy_to_parent_or_outer_delegate =
+              node->render_manager()->GetProxyToParentOrOuterDelegate()) {
+        proxy_to_parent_or_outer_delegate->cross_process_frame_connector()
+            ->DelegateWasShown();
+      }
     }
   }
 }

@@ -3551,6 +3551,65 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   ASSERT_EQ(all_frames_value, main_frame_value);
 }
 
+// Regression test for crbug.com/383189046. This test asserts that background
+// tabs marked as needs-reload correctly report foreground paint metrics
+// when activated and brought to the foreground.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       ActivatedNeedsReloadBackgroundTabsEmitCorrectMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a new active tab.
+  content::WebContents* target_contents = browser()->OpenURL(
+      {embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
+       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_TYPED,
+       false},
+      /*navigation_handle_callback=*/{});
+  auto fcp_waiter =
+      CreatePageLoadMetricsTestWaiter("fcp_waiter", target_contents);
+  fcp_waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                     TimingField::kFirstContentfulPaint);
+  auto navigation_observer =
+      std::make_unique<content::TestNavigationObserver>(target_contents);
+  navigation_observer->Wait();
+  fcp_waiter->Wait();
+
+  // Verify foreground fcp metrics are emitted.
+  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstContentfulPaint,
+                                      1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kBackgroundHistogramFirstContentfulPaint, 0);
+
+  // Activate the original tab, backgrounding the target tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_NE(target_contents,
+            browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(content::Visibility::HIDDEN, target_contents->GetVisibility());
+
+  // Shutdown the target tab's process and tag it as needs-reload.
+  content::RenderProcessHost* target_process =
+      target_contents->GetPrimaryMainFrame()->GetProcess();
+  target_contents->GetController().SetNeedsReload();
+  EXPECT_TRUE(target_process->FastShutdownIfPossible());
+  EXPECT_FALSE(target_process->IsInitializedAndNotDead());
+  EXPECT_TRUE(target_contents->GetController().NeedsReload());
+
+  // Activate the target tab.
+  fcp_waiter = CreatePageLoadMetricsTestWaiter("fcp_waiter", target_contents);
+  fcp_waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                     TimingField::kFirstContentfulPaint);
+  navigation_observer =
+      std::make_unique<content::TestNavigationObserver>(target_contents);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  navigation_observer->Wait();
+  fcp_waiter->Wait();
+
+  // Verify the appropriate foreground metrics are emitted.
+  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstContentfulPaint,
+                                      2);
+  histogram_tester_->ExpectTotalCount(
+      internal::kBackgroundHistogramFirstContentfulPaint, 0);
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 // The LinkPreview feature is implemented only on desktops, and window
 // implementation assumes the Aura for now.

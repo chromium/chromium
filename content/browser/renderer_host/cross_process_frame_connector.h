@@ -308,7 +308,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   bool IsVisible();
 
   // This function is called by the RenderFrameHostDelegate to signal that it
-  // became visible.
+  // became visible. This is called after any navigations resulting from
+  // visibility changes have been queued (e.g. if needs-reload was set).
   void DelegateWasShown();
 
   // Handlers for messages received from the parent frame.
