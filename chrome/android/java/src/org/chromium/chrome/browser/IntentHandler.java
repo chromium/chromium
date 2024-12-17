@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -1562,6 +1563,7 @@ public class IntentHandler {
 
     @NativeMethods
     interface Natives {
-        boolean isCorsSafelistedHeader(String name, String value);
+        boolean isCorsSafelistedHeader(
+                @JniType("std::string") String name, @JniType("std::string") String value);
     }
 }

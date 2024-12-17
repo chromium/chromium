@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -83,8 +84,10 @@ public class VariationsSession {
 
     @NativeMethods
     interface Natives {
-        void startVariationsSession(VariationsSession caller, String restrictMode);
+        void startVariationsSession(
+                VariationsSession caller, @JniType("std::string") String restrictMode);
 
+        @JniType("std::string")
         String getLatestCountry(VariationsSession caller);
     }
 }

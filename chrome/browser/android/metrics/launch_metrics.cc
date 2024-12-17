@@ -30,7 +30,7 @@ enum class HomeScreenLaunchType { STANDALONE = 0, SHORTCUT = 1, COUNT = 2 };
 static void JNI_LaunchMetrics_RecordLaunch(
     JNIEnv* env,
     jboolean is_shortcut,
-    const JavaParamRef<jstring>& jurl,
+    std::string& jurl,
     int source,
     int display_mode,
     const JavaParamRef<jobject>& jweb_contents) {
@@ -49,7 +49,7 @@ static void JNI_LaunchMetrics_RecordLaunch(
           webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE;
   }
 
-  GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));
+  GURL url(jurl);
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
 
