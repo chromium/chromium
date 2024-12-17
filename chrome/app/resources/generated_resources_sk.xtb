@@ -506,7 +506,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="135389172849514421">Funguje offline</translation>
 <translation id="1353980523955420967">Súbor PPD sa nepodarilo nájsť. Skontrolujte, či je Chromebook online, a skúste to znova.</translation>
 <translation id="1354045473509304750">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru a hýbať ňou</translation>
-<translation id="1355088139103479645">Chcete odstrániť všetky údaje?</translation>
+<translation id="1355088139103479645">Chcete odstrániť všetky dáta?</translation>
 <translation id="1356376170199999104">Povolený – <ph name="PERMISSION_DETAILS" />. Fyzickým prepínačom zapnite mikrofón.</translation>
 <translation id="1356959069439783953">Neaktívne karty majú nový vzhľad</translation>
 <translation id="1357766361161708728">Chcete zavrieť nepoužívané karty?</translation>
@@ -1584,7 +1584,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> Systém sa počas príslušného procesu reštartuje.</translation>
 <translation id="2095774564753225041">Podporované typy súborov</translation>
-<translation id="2096716221239095980">Odstrániť všetky údaje</translation>
+<translation id="2096716221239095980">Odstrániť všetky dáta</translation>
 <translation id="2097950021134740304">Zrušiť odstránenie odberu</translation>
 <translation id="2098805196501063469">Skontrolovať zostávajúce heslá</translation>
 <translation id="2099686503067610784">Odstrániť certifikát servera „<ph name="CERTIFICATE_NAME" />“?</translation>
@@ -8842,7 +8842,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7366415735885268578">Pridanie webu</translation>
 <translation id="7366909168761621528">Údaje prehliadania</translation>
 <translation id="7367714965999718019">Generátor QR kódov</translation>
-<translation id="7368695150573390554">Všetky údaje získané offline budú odstránené</translation>
+<translation id="7368695150573390554">Všetky offline dáta budú odstránené</translation>
 <translation id="736877393389250337"><ph name="URL" /> sa nedá otvoriť v prehliadači <ph name="ALTERNATIVE_BROWSER_NAME" />. Obráťte sa na správcu systému.</translation>
 <translation id="7368927539449986686">Úprava vyhľadávania na webe</translation>
 <translation id="7370592524170198497">EAP ethernetovej siete:</translation>
