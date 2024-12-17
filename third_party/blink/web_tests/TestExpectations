@@ -3228,8 +3228,6 @@ crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-l
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-004.html [ Failure ]
 crbug.com/334026778 external/wpt/workers/Worker-creation-happens-in-parallel.https.html [ Pass Timeout ]
 crbug.com/334026778 external/wpt/workers/Worker-postMessage-happens-in-parallel.https.html [ Timeout ]
-crbug.com/333225369 [ Mac14 ] external/wpt/IndexedDB/idbindex_getAllKeys.any.html [ Timeout ]
-crbug.com/333225369 [ Mac13 ] external/wpt/IndexedDB/idbindex_getAllKeys.any.html [ Timeout ]
 crbug.com/333225369 [ Mac14 ] external/wpt/IndexedDB/idbobjectstore_getKey.any.worker.html [ Timeout ]
 crbug.com/333225369 [ Mac13 ] external/wpt/IndexedDB/idbobjectstore_getKey.any.worker.html [ Timeout ]
 crbug.com/332933144 [ Win11-arm64 ] external/wpt/fetch/api/basic/request-headers.any.html [ Failure Timeout ]
