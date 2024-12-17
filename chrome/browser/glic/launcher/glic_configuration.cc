@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"

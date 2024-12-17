@@ -8,6 +8,7 @@ source_set("glic") {
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
     "glic_page_context_fetcher.h",
+    "glic_pref_names.h",
     "glic_profile_manager.h",
     "glic_window_controller.h",
     "guest_util.h",

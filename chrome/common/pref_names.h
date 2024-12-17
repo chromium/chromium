@@ -3249,19 +3249,6 @@ inline constexpr char kFeatureNotificationsEnabled[] =
 
 inline constexpr char kInternalOnlyUisEnabled[] = "internal_only_uis_enabled";
 
-#if BUILDFLAG(ENABLE_GLIC)
-inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
-// Boolean pref that enables or disables microphone access for Glic.
-inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
-// Boolean pref that enables or disables geolocation access for Glic.
-inline constexpr char kGlicGeolocationEnabled[] = "glic.geolocation_enabled";
-// Boolean pref that enables or disables tab context for Glic.
-inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
-// Dictionary pref that keeps track of the registered hotkey for Glic.
-inline constexpr char kGlicLauncherGlobalHotkey[] =
-    "glic.launcher_global_hotkey";
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
 // An enum that controls what level of toasts we show to the user.
 inline constexpr char kToastAlertLevel[] = "settings.toast.alert_level";
 
