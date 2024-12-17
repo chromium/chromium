@@ -519,6 +519,32 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   return shared_image_mapping;
 }
 
+scoped_refptr<ClientSharedImage>
+SharedImageInterfaceInProcess::CreateSharedImageForSoftwareCompositor(
+    const SharedImageInfo& si_info) {
+  base::WritableSharedMemoryMapping mapping;
+  gfx::GpuMemoryBufferHandle handle;
+  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
+
+  auto mailbox = Mailbox::Generate();
+  {
+    base::AutoLock lock(lock_);
+    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
+    // Note: we enqueue the task under the lock to guarantee monotonicity of
+    // the release ids as seen by the service. Unretained is safe because
+    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
+    // time, cancelling tasks, before |this| is destroyed.
+    ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
+                                       CreateSharedImageWithBufferOnGpuThread,
+                                   base::Unretained(this), mailbox, si_info,
+                                   std::move(handle)),
+                    /*sync_token_fences=*/{}, sync_token);
+  }
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
+                                                 GenUnverifiedSyncToken(),
+                                                 holder_, std::move(mapping));
+}
+
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferOnGpuThread(
     const Mailbox& mailbox,
     SharedImageInfo si_info,
