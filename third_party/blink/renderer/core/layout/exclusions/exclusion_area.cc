@@ -26,14 +26,13 @@ struct PrintableEFloat {
 };
 
 std::ostream& operator<<(std::ostream& os, const PrintableEFloat& printable) {
-  const char* kStrings[] = {
+  std::array<const char*, 5> kStrings = {
       "kNone", "kLeft", "kRight", "kInlineStart", "kInlineEnd",
   };
   const unsigned index = static_cast<unsigned>(printable.value);
   if (index >= std::size(kStrings))
     return os << "EFloat::" << index;
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  return os << "EFloat::" << UNSAFE_TODO(kStrings[index]);
+  return os << "EFloat::" << kStrings[index];
 }
 
 struct PrintableKind {
@@ -42,15 +41,14 @@ struct PrintableKind {
 };
 
 std::ostream& operator<<(std::ostream& os, const PrintableKind& printable) {
-  const char* kStrings[] = {
+  std::array<const char*, 2> kStrings = {
       "kFloat",
       "kInitialLetterBox",
   };
   const unsigned index = static_cast<unsigned>(printable.value);
   if (index >= std::size(kStrings))
     return os << "Kind::" << index;
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  return os << UNSAFE_TODO(kStrings[index]);
+  return os << kStrings[index];
 }
 
 }  // namespace
