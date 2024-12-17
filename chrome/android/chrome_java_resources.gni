@@ -519,7 +519,6 @@ chrome_java_resources = [
   "java/res/layout/incognito_history_placeholder.xml",
   "java/res/layout/incognito_indicator.xml",
   "java/res/layout/incognito_tracking_protection_card.xml",
-  "java/res/layout/infobar_control_url_ellipsizer.xml",
   "java/res/layout/infobar_footer.xml",
   "java/res/layout/legacy_sync_promo_view.xml",
   "java/res/layout/lightweight_fre_tos.xml",

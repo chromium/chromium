@@ -592,13 +592,3 @@ void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
   if (base::RandDouble() < 0.01)
     web_contents->GetPrimaryMainFrame()->GetProcess()->DumpProcessStack();
 }
-
-void JNI_TabWebContentsDelegateAndroidImpl_ShowFramebustBlockInfoBar(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents,
-    std::u16string& url_string) {
-  GURL url(url_string);
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(java_web_contents);
-  ShowFramebustBlockMessageInternal(web_contents, url);
-}

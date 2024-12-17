@@ -209,14 +209,10 @@ public class TabTestUtils {
                 .openNewTab(url, extraHeaders, postData, disposition, isRendererInitiated);
     }
 
-    /** Show {@link org.chromium.chrome.browser.infobar.FrameBustBlockInfoBar}. */
-    public static void showFramebustBlockInfobarForTesting(Tab tab, String url) {
-        getTabWebContentsDelegate(tab).showFramebustBlockInfobarForTesting(url);
-    }
-
     /**
-     * Sets whether the tab is showing an error page.  This is reset whenever the tab finishes a
+     * Sets whether the tab is showing an error page. This is reset whenever the tab finishes a
      * navigation.
+     *
      * @param tab {@link Tab} object.
      * @param isShowingErrorPage Whether the tab shows an error page.
      */
