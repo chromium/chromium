@@ -229,6 +229,10 @@
     inset-inline-end: 140px;
   }
 
+  :host([show-ghost-loader]) #searchboxContainer {
+    --color-searchbox-background: var(--color-searchbox-results-background);
+  }
+
   :host([is-searchbox-focused]) #searchboxContainer {
     inset-inline-end: 84px;
     --cr-searchbox-height: 52px;
