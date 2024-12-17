@@ -2900,8 +2900,10 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
 
   std::ostringstream verbose_error;
   verbose_error << new_error << "\n** Pending tree update **\n"
-                << update_state.pending_tree_update->ToString(
-                       /*verbose*/ false)
+                << update_state.pending_tree_update
+                       ->ToString(
+                           /*verbose*/ false)
+                       .substr(0, 1000)
                 << "** Root **\n"
                 << root() << "\n** AXTreeData **\n"
                 << data_.ToString() + "\n** AXTree **\n"
