@@ -538,6 +538,7 @@ chrome_java_resources = [
   "java/res/layout/new_tab_page_incognito.xml",
   "java/res/layout/new_tab_page_layout.xml",
   "java/res/layout/new_tab_page_tile_grid_placeholder.xml",
+  "java/res/layout/one_line_list_item.xml",
   "java/res/layout/open_full_chrome_history_header.xml",
   "java/res/layout/optional_toolbar_button.xml",
   "java/res/layout/os_version_unsupported_text.xml",

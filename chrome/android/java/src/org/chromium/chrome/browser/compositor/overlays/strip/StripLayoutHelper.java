@@ -652,7 +652,7 @@ public class StripLayoutHelper
         mTabMenu.setAdapter(
                 new ArrayAdapter<String>(
                         mContext,
-                        android.R.layout.simple_list_item_1,
+                        R.layout.one_line_list_item,
                         new String[] {
                             mContext.getString(
                                     !mIncognito
