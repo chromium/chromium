@@ -1201,7 +1201,11 @@ void WizardController::ShowFingerprintSetupScreen() {
 void WizardController::ShowPinSetupScreen() {
   // The PIN Setup screen can be used for setting up PIN as a main factor, or as
   // a secondary one. At this point, the mode must be known.
-  CHECK(wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
+  // M131 Patch : Fix OOBE resume crash when value not set. (b:376234823)
+  if (!wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value()) {
+    wizard_context_->knowledge_factor_setup.pin_setup_mode =
+        WizardContext::PinSetupMode::kSetupAsSecondaryFactor;
+  }
   SetCurrentScreen(GetScreen(PinSetupScreenView::kScreenId));
 }
 
