@@ -188,7 +188,6 @@ source_set("gaiacp_lib") {
     "reauth_credential.h",
     "scoped_user_profile.cc",
     "scoped_user_profile.h",
-    "stdafx.h",
   ]
   public_configs = [ ":gaiacp_config" ]
   public_deps = [ ":common" ]

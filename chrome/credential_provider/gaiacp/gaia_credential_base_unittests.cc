@@ -6,7 +6,8 @@
 
 #include <windows.h>
 
-#include <sddl.h>  // For ConvertSidToStringSid()
+#include <lm.h>
+#include <sddl.h>
 #include <wrl/client.h>
 
 #include <memory>

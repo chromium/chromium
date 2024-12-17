@@ -7,11 +7,11 @@
 #include <windows.h>
 
 #include <synchapi.h>
-#include <winbase.h>
 
 #include <tuple>
 
 #include "base/synchronization/lock.h"
+#include "base/win/winbase_shim.h"
 
 namespace base {
 

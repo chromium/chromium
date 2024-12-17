@@ -10,13 +10,15 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <Windows.h>  // For GetComputerNameW()
+#include <windows.h>
+
 // SECURITY_WIN32 must be defined in order to get
 // EXTENDED_NAME_FORMAT enumeration.
 #define SECURITY_WIN32 1
 #include <security.h>
 #undef SECURITY_WIN32
-#include <wincred.h>
+
+#include "base/win/wincred_shim.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \

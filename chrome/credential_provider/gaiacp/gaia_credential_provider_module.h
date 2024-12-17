@@ -5,13 +5,10 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_PROVIDER_MODULE_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_PROVIDER_MODULE_H_
 
-// Due to windows include file ordering, this needs to remain first.
-#include "chrome/credential_provider/gaiacp/stdafx.h"
-
+#include "base/at_exit.h"
+#include "base/win/atl.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
 #include "chrome/credential_provider/gaiacp/scoped_handle.h"
-
-#include "base/at_exit.h"
 
 namespace base {
 class AtExitManager;

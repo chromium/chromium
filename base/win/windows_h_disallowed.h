@@ -2,38 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file is designed to be included if windows.h is included from a source
-// file that should not need it. Conditionally including this file from a few
-// key source files will help to stop windows.h from creeping back into the
-// Chromium build, with the namespace pollution which that implies. Typical
-// usage is:
-//
-// // This should be after all other #includes.
-// #if defined(_WINDOWS_)  // Detect whether windows.h was included.
-// #include "base/win/windows_h_disallowed.h"
-// #endif  // defined(_WINDOWS_)
-//
-// If it is not obvious why Windows.h is getting included, a quick way to
-// determine the #include path is to edit your local Windows.h (e.g.,
-// third_party\depot_tools\win_toolchain\vs_files\698eb5635a\Windows Kits\10\
-// Include\10.0.26100.0\um\Windows.h) to add
-//
-// #error Windows.h included
-//
-// at the top and recompile the file(s) that are unexpectedly including
-// Windows.h, e.g.,
-//
-// autoninja -C out/Default
-// obj\chrome\browser\devtools\devtools\devtools_window.obj
-//
-// That will generate a compile error with the #include path.
-// Then, undo the change to Windows.h.
+// This file is designed to be included from source files that explicitly should
+// not use <windows.h>. The goal is to stop <windows.h> from creeping back into
+// the Chromium build, with the namespace pollution which that implies.
 //
 // See https://crbug.com/796644 for more historical context.
+//
+// If you don't know why windows.h is #included, there are multiple ways to find
+// out. One is to manually compile the file with `/showIncludes:user` and look at
+// the include tree that results. Another is to temporarily edit your local
+// windows.h (which may be in third_party\depot_tools\win_toolchain or installed
+// on the system) and add an #error directive, recompiling to see the problematic
+// #include chain.
 
-#ifndef BASE_WIN_WINDOWS_H_DISALLOWED_H_
-#define BASE_WIN_WINDOWS_H_DISALLOWED_H_
+// Avoid header guards; if this file is somehow multiply-included, we want the
+// preprocessor to check in every location. The next two lines disable PRESUBMIT
+// and cpplint warnings for missing the guards.
+// no-include-guard-because-multiply-included
+// NOLINT(build/header_guard)
 
+#if defined(_WINDOWS_)
 #error Windows.h was included unexpectedly. See comment above for details.
-
-#endif  // BASE_WIN_WINDOWS_H_DISALLOWED_H_
+#endif

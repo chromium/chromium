@@ -7,14 +7,13 @@
 #pragma allow_unsafe_buffers
 #endif
 
-// windows.h must be first otherwise Win8 SDK breaks.
+#include <objbase.h>
+
 #include <windows.h>
 
 #include <LM.h>
-#include <ntsecapi.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <wincred.h>
 
 // SECURITY_WIN32 must be defined in order to get
 // EXTENDED_NAME_FORMAT enumeration.
@@ -30,7 +29,9 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "base/win/atl.h"
+#include "base/win/ntsecapi_shim.h"
 #include "base/win/win_util.h"
+#include "base/win/wincred_shim.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/grit/branded_strings.h"

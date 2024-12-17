@@ -9,7 +9,6 @@
 #include <softpub.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <wintrust.h>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -17,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/pe_image_reader.h"
+#include "base/win/wintrust_shim.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {

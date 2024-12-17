@@ -13,10 +13,15 @@
 
 #include "chrome/credential_provider/gaiacp/auth_utils.h"
 
+#include <atlconv.h>
+#include <security.h>
+
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
+#include "base/win/ntsecapi_shim.h"
+#include "base/win/wincred_shim.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"

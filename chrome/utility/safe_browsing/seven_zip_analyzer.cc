@@ -15,8 +15,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-// Must be after <windows.h>
-#include <winbase.h>
+
+#include "base/win/winbase_shim.h"
 #elif BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
 #endif

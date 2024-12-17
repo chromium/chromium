@@ -4,14 +4,13 @@
 
 #include "chrome/credential_provider/test/com_fakes.h"
 
-#include <sddl.h>  // For ConvertSidToStringSid()
+#include <sddl.h>
 
 #include "base/check.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_other_user.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reauth_credential.h"
-#include "chrome/credential_provider/gaiacp/stdafx.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

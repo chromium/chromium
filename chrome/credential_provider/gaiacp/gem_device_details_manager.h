@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "base/win/windows_types.h"
 #include "chrome/credential_provider/extension/task_manager.h"
+#include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "url/gurl.h"
 
 namespace credential_provider {

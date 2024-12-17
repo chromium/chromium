@@ -4,7 +4,7 @@
 
 #include "base/message_loop/message_pump_win.h"
 
-#include <winbase.h>
+#include <windows.h>
 
 #include <algorithm>
 #include <atomic>

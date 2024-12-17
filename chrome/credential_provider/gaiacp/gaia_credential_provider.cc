@@ -9,6 +9,9 @@
 
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 
+#include <credentialprovider.h>
+#include <shlguid.h>
+
 #include <iomanip>
 #include <map>
 #include <string>

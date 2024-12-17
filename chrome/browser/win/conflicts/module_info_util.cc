@@ -7,7 +7,6 @@
 #include <windows.h>
 
 #include <tlhelp32.h>
-#include <wintrust.h>
 
 #include <limits>
 #include <memory>
@@ -27,6 +26,7 @@
 #include "base/win/pe_image_reader.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/wincrypt_shim.h"
+#include "base/win/wintrust_shim.h"
 #include "crypto/scoped_capi_types.h"
 
 // This must be after wincrypt and wintrust.
