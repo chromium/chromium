@@ -108,7 +108,7 @@ class PasswordFeatureManager {
 #if BUILDFLAG(IS_ANDROID)
   // Returns whether it is required to update the GMSCore based on the
   // GMSCore version.
-  virtual bool ShouldUpdateGmsCore();
+  virtual bool ShouldUpdateGmsCore() = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
