@@ -129,7 +129,8 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
   auto* spacer_view = AddChildView(std::make_unique<views::View>());
   spacer_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   // Add the vertical box layout for the button container that holds the "Done"
