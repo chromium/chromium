@@ -34,15 +34,11 @@
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/gpu/windows/mf_video_encoder_util.h"
 #include "media/gpu/windows/mf_video_processor_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
-
-struct FramerateAndResolution {
-  uint32_t frame_rate;
-  gfx::Size resolution;
-};
 
 class VideoRateControlWrapper;
 class TemporalScalabilityIdExtractor;
@@ -103,8 +99,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   IFACEMETHODIMP_(ULONG) AddRef() override;
   IFACEMETHODIMP_(ULONG) Release() override;
   IFACEMETHODIMP QueryInterface(REFIID riid, void** ppv) override;
-
-  enum class DriverVendor { kOther, kNvidia, kIntel, kAMD, kQualcomm };
 
   struct GetCommandBufferHelperResult {
     GetCommandBufferHelperResult();
