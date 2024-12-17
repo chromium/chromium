@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -50,7 +51,7 @@ struct PageFreezingState
   int num_freeze_votes = 0;
 
   // Reasons not to freeze the page.
-  std::vector<CannotFreezeReason> cannot_freeze_reasons;
+  CannotFreezeReasonSet cannot_freeze_reasons;
 
   // Timer to remove `CannotFreezeReason::kRecentlyVisible`.
   base::OneShotTimer recently_visible_timer;
@@ -327,9 +328,10 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
                                                 CannotFreezeReason reason) {
   auto& page_freezing_state = PageFreezingState::FromPage(page_node);
   if (add) {
-    DCHECK(!base::Contains(page_freezing_state.cannot_freeze_reasons, reason));
-    page_freezing_state.cannot_freeze_reasons.push_back(reason);
-    if (page_freezing_state.cannot_freeze_reasons.size() == 1U) {
+    DCHECK(!page_freezing_state.cannot_freeze_reasons.Has(reason));
+    const bool was_empty = page_freezing_state.cannot_freeze_reasons.empty();
+    page_freezing_state.cannot_freeze_reasons.Put(reason);
+    if (was_empty) {
       // Track that the browsing instance had a `CannotFreezeReason`, so that
       // the next CPU measurement for it can be ignored (this bit is sticky and
       // won't be reset if the `CannotFreezeReason` is removed before the next
@@ -343,9 +345,8 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
       UpdateFrozenState(page_node);
     }
   } else {
-    size_t num_removed =
-        std::erase(page_freezing_state.cannot_freeze_reasons, reason);
-    CHECK_EQ(num_removed, 1U);
+    DCHECK(page_freezing_state.cannot_freeze_reasons.Has(reason));
+    page_freezing_state.cannot_freeze_reasons.Remove(reason);
     if (page_freezing_state.cannot_freeze_reasons.empty()) {
       UpdateFrozenState(page_node);
     }
@@ -383,13 +384,11 @@ void FreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
       this);
 
   if (page_node->IsVisible()) {
-    page_freezing_state.cannot_freeze_reasons.push_back(
-        CannotFreezeReason::kVisible);
+    page_freezing_state.cannot_freeze_reasons.Put(CannotFreezeReason::kVisible);
   }
 
   if (page_node->IsAudible()) {
-    page_freezing_state.cannot_freeze_reasons.push_back(
-        CannotFreezeReason::kAudible);
+    page_freezing_state.cannot_freeze_reasons.Put(CannotFreezeReason::kAudible);
   }
 
   DCHECK(!page_node->IsHoldingWebLock());
@@ -676,20 +675,16 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
   // Present `CannotFreezeReason`s for other pages in browsing instances
   // associated with this page. They affect freezing for this page.
   {
-    base::flat_set<CannotFreezeReason> cannot_freeze_reasons_other_pages;
+    CannotFreezeReasonSet cannot_freeze_reasons_other_pages;
     for (auto browsing_instance : GetBrowsingInstances(node)) {
       auto browsing_instance_it = browsing_instances_.find(browsing_instance);
       CHECK(browsing_instance_it != browsing_instances_.end());
       for (const PageNode* other_page_node :
            browsing_instance_it->second.pages) {
-        if (other_page_node == node) {
-          continue;
-        }
-
-        auto& other_page_freezing_state =
-            PageFreezingState::FromPage(other_page_node);
-        for (auto reason : other_page_freezing_state.cannot_freeze_reasons) {
-          cannot_freeze_reasons_other_pages.insert(reason);
+        if (other_page_node != node) {
+          cannot_freeze_reasons_other_pages.PutAll(
+              PageFreezingState::FromPage(other_page_node)
+                  .cannot_freeze_reasons);
         }
       }
     }
