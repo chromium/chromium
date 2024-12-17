@@ -652,6 +652,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
                                                   expected_prediction_entry);
   }
 
+  void TestActivateOnWindowOpen(std::string_view window_features);
+
   void TestHostPrerenderingState(const GURL& prerender_url) {
     const GURL kInitialUrl = GetUrl("/empty.html");
 
@@ -3120,81 +3122,33 @@ IN_PROC_BROWSER_TEST_F(
           /*accurate=*/false)});
 }
 
-// Tests that window.open() annotated with "_blank" and "noopener" can activate
-// a prerender whose target_hint is "_blank".
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnWindowOpen_NewTab) {
-  const GURL kInitialUrl = GetUrl("/simple_links.html");
-  const GURL kPrerenderingUrl = GetUrl("/title2.html");
-
-  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Start prerendering `kPrerenderingUrl`.
-  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
-      kPrerenderingUrl, /*eagerness=*/std::nullopt, "_blank");
-  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
-  ASSERT_NE(prerender_web_contents, web_contents_impl());
-  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
-
-  // Open a new window with "_blank" and "noopener". This should activate the
-  // prerendered page.
-  TestNavigationObserver activation_observer(kPrerenderingUrl);
-  activation_observer.WatchExistingWebContents();
-  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
-                                                 host_id);
-  const std::string kWindowOpenScript = R"(
-      window.open("title2.html", "_blank", "noopener");
-  )";
-  EXPECT_TRUE(ExecJs(web_contents(), kWindowOpenScript));
-  activation_observer.WaitForNavigationFinished();
-  EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
-  EXPECT_EQ(activation_observer.last_navigation_url(), kPrerenderingUrl);
-  EXPECT_TRUE(prerender_observer.was_activated());
-  EXPECT_FALSE(HasHostForUrl(*prerender_web_contents, kPrerenderingUrl));
-
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
-
-  ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
-  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-      ukm_source_id, PreloadingType::kPrerender,
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-      PreloadingTriggeringOutcome::kSuccess,
-      PreloadingFailureReason::kUnspecified,
-      /*accurate=*/true,
-      /*ready_time=*/kMockElapsedTime,
-      blink::mojom::SpeculationEagerness::kEager)});
-
-  // The navigation occurred in a new WebContents, so the original WebContents
-  // should still be showing the initial trigger page.
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
-}
-
-// Tests that window.open() annotated with "_blank" and "noopener,popup" can
-// activate a prerender whose target_hint is "_blank".
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnWindowOpen_PopUp) {
+// `window_features` is passed to the 3rd argument of window.open().
+void PrerenderBrowserTest::TestActivateOnWindowOpen(
+    std::string_view window_features) {
   const GURL initial_url = GetUrl("/simple_links.html");
   const GURL prerendering_url = GetUrl("/title2.html");
 
-  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  // Navigate to an initial page which has a link to `prerendering_url`.
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
-  // Start prerendering `kPrerenderingUrl`.
+  // Start prerendering `prerendering_url`.
   FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
       prerendering_url, /*eagerness=*/std::nullopt, "_blank");
   auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
   ASSERT_NE(prerender_web_contents, web_contents_impl());
   ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
 
-  // Open a new window with "_blank" and "noopener,popup". This should activate
+  // Open a new window with "_blank" and `window_features`. This should activate
   // the prerendered page.
   TestNavigationObserver activation_observer(prerendering_url);
   activation_observer.WatchExistingWebContents();
   test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
                                                  host_id);
-  const std::string kWindowOpenScript = R"(
-      window.open("title2.html", "_blank", "noopener,popup");
-  )";
-  EXPECT_TRUE(ExecJs(web_contents(), kWindowOpenScript));
+  const std::string script = base::StringPrintf(R"(
+      window.open("title2.html", "_blank", "%s");
+  )",
+                                                window_features);
+  EXPECT_TRUE(ExecJs(web_contents(), script));
   activation_observer.WaitForNavigationFinished();
   EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), prerendering_url);
   EXPECT_EQ(activation_observer.last_navigation_url(), prerendering_url);
@@ -3216,6 +3170,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnWindowOpen_PopUp) {
   // The navigation occurred in a new WebContents, so the original WebContents
   // should still be showing the initial trigger page.
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+}
+
+// Tests that window.open() annotated with "_blank" and "noopener" can activate
+// a prerender whose target_hint is "_blank".
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnWindowOpen_NewTab) {
+  TestActivateOnWindowOpen("noopener");
+}
+
+// Tests that window.open() annotated with "_blank" and "noopener,popup" can
+// activate a prerender whose target_hint is "_blank".
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnWindowOpen_PopUp) {
+  TestActivateOnWindowOpen("noopener,popup");
 }
 
 // TODO(crbug.com/40234240): Add more test cases for prerender-in-new-tab:
