@@ -842,16 +842,15 @@ PaymentsDataManager::GetCreditCardCloudTokenData() const {
   return result;
 }
 
-std::vector<AutofillOfferData*> PaymentsDataManager::GetAutofillOffers() const {
+std::vector<const AutofillOfferData*> PaymentsDataManager::GetAutofillOffers()
+    const {
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
-  std::vector<AutofillOfferData*> result;
-  result.reserve(autofill_offer_data_.size());
-  for (const auto& data : autofill_offer_data_) {
-    result.push_back(data.get());
-  }
-  return result;
+  return base::ToVector(
+      autofill_offer_data_,
+      [](const std::unique_ptr<AutofillOfferData>& offer)
+          -> const AutofillOfferData* { return offer.get(); });
 }
 
 std::vector<const AutofillOfferData*>

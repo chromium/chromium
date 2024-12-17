@@ -211,7 +211,8 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     payments_data().SetSyncServiceForTest(&sync_service_);
     autofill_client_.GetPaymentsAutofillClient()->set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
-            &autofill_client_.GetPersonalDataManager()));
+            &autofill_client_.GetPersonalDataManager()
+                 .payments_data_manager()));
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
             &autofill_manager_);

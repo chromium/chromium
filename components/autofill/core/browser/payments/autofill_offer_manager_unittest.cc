@@ -56,8 +56,8 @@ class AutofillOfferManagerTest : public testing::Test {
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
     personal_data_manager_.SetSyncServiceForTest(&sync_service_);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
-    autofill_offer_manager_ =
-        std::make_unique<AutofillOfferManager>(&personal_data_manager_);
+    autofill_offer_manager_ = std::make_unique<AutofillOfferManager>(
+        &personal_data_manager_.payments_data_manager());
   }
 
   CreditCard CreateCreditCard(std::string guid,
@@ -223,7 +223,7 @@ TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnNothingWhenFindNoMatch) {
           card1, "5%", /*expired=*/false,
           {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
 
-  AutofillOfferData* result =
+  const AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
   EXPECT_EQ(nullptr, result);
 }
@@ -247,7 +247,7 @@ TEST_F(AutofillOfferManagerTest,
   personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
       offer2);
 
-  AutofillOfferData* result =
+  const AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
   EXPECT_EQ(offer2, *result);
 }

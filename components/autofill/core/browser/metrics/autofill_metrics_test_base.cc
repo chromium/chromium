@@ -87,7 +87,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       .set_credit_card_save_manager(
           std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()));
   autofill_client_->GetPaymentsAutofillClient()->set_autofill_offer_manager(
-      std::make_unique<AutofillOfferManager>(&personal_data()));
+      std::make_unique<AutofillOfferManager>(
+          &personal_data().payments_data_manager()));
 
   auto browser_autofill_manager =
       std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());

@@ -97,7 +97,7 @@ Suggestion CreateUndoOrClearFormSuggestion() {
 
 // Returns the card-linked offers map with credit card guid as the key and the
 // pointer to the linked AutofillOfferData as the value.
-std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
+std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
     const AutofillClient& autofill_client) {
   if (const AutofillOfferManager* offer_manager =
           autofill_client.GetPaymentsAutofillClient()
@@ -739,7 +739,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
           .GetCreditCardsToSuggest(use_legacy_algorithm);
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
-  if (std::map<std::string, AutofillOfferData*> card_linked_offers_map =
+  if (std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
           GetCardLinkedOffers(client);
       !card_linked_offers_map.empty()) {
     base::ranges::stable_sort(
@@ -950,7 +950,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
           features::kAutofillEnablePaymentsFieldSwapping) &&
       trigger_field.is_autofilled();
 
-  std::map<std::string, AutofillOfferData*> card_linked_offers_map =
+  std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(client);
   summary.with_offer = !card_linked_offers_map.empty();
   bool suppress_disused_cards =

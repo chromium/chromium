@@ -226,7 +226,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       const;
 
   // Returns autofill offer data, including card-linked and promo code offers.
-  virtual std::vector<AutofillOfferData*> GetAutofillOffers() const;
+  std::vector<const AutofillOfferData*> GetAutofillOffers() const;
 
   // Returns autofill offer data, but only promo code offers that are not
   // expired and that are for the given |origin|.

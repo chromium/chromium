@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/ranges/ranges.h"
@@ -20,10 +21,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-AutofillOfferManager::AutofillOfferManager(PersonalDataManager* personal_data)
-    : personal_data_(personal_data) {
-  payments_data_manager_observation.Observe(
-      &personal_data_->payments_data_manager());
+AutofillOfferManager::AutofillOfferManager(
+    PaymentsDataManager* payments_data_manager)
+    : payments_data_manager_(CHECK_DEREF(payments_data_manager)) {
+  payments_data_manager_observation.Observe(payments_data_manager);
   UpdateEligibleMerchantDomains();
 }
 
@@ -48,13 +49,12 @@ AutofillOfferManager::GetCardLinkedOffersMap(
     return {};
   }
 
-  const std::vector<AutofillOfferData*> offers =
-      personal_data_->payments_data_manager().GetAutofillOffers();
   const std::vector<const CreditCard*> cards =
-      personal_data_->payments_data_manager().GetCreditCards();
+      payments_data_manager_->GetCreditCards();
   AutofillOfferManager::CardLinkedOffersMap card_linked_offers_map;
 
-  for (AutofillOfferData* offer : offers) {
+  for (const AutofillOfferData* offer :
+       payments_data_manager_->GetAutofillOffers()) {
     // Ensure the offer is valid.
     if (!offer->IsActiveAndEligibleForOrigin(
             last_committed_primary_main_frame_origin)) {
@@ -86,10 +86,10 @@ bool AutofillOfferManager::IsUrlEligible(
       last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL());
 }
 
-AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
-    const GURL& last_committed_primary_main_frame_url) {
-  for (AutofillOfferData* offer :
-       personal_data_->payments_data_manager().GetAutofillOffers()) {
+const AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
+    const GURL& last_committed_primary_main_frame_url) const {
+  for (const AutofillOfferData* offer :
+       payments_data_manager_->GetAutofillOffers()) {
     if (offer->IsActiveAndEligibleForOrigin(
             last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL())) {
       return offer;
@@ -101,10 +101,8 @@ AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
 
 void AutofillOfferManager::UpdateEligibleMerchantDomains() {
   eligible_merchant_domains_.clear();
-  std::vector<AutofillOfferData*> offers =
-      personal_data_->payments_data_manager().GetAutofillOffers();
-
-  for (auto* offer : offers) {
+  for (const AutofillOfferData* offer :
+       payments_data_manager_->GetAutofillOffers()) {
     eligible_merchant_domains_.insert(offer->GetMerchantOrigins().begin(),
                                       offer->GetMerchantOrigins().end());
   }

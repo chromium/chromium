@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 
 namespace autofill {
@@ -45,7 +46,8 @@ std::unique_ptr<KeyedService>
 AutofillOfferManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<AutofillOfferManager>(
-      PersonalDataManagerFactory::GetForBrowserContext(context));
+      &PersonalDataManagerFactory::GetForBrowserContext(context)
+           ->payments_data_manager());
 }
 
 }  // namespace autofill
