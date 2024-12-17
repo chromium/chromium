@@ -124,6 +124,10 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
       aura::Window* host_window,
       std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);
 
+  // Callback invoked when the connection to `LayerTreeFrameSink` is lost. (i.e
+  // gpu crashed, host_window closes etc)
+  void OnFrameSinkLost();
+
   // Observation to track the lifetime of `host_window_`.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       host_window_observation_{this};

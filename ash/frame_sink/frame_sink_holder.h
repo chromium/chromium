@@ -51,14 +51,20 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
           bool auto_update,
           const gfx::Size& last_submitted_frame_size,
           float last_submitted_frame_dsf)>;
+
   // Refer to declaration of `FrameSinkHost::OnFirstFrameRequested` for a
   // detailed comment.
   using OnFirstFrameRequestedCallback = base::RepeatingCallback<void()>;
 
+  // Refer to declaration of `FrameSinkHost::OnFrameSinkLost` for a detailed
+  // comment.
+  using OnFrameSinkLost = base::OnceCallback<void()>;
+
   FrameSinkHolder(
       std::unique_ptr<cc::LayerTreeFrameSink> frame_sink,
       GetCompositorFrameCallback get_compositor_frame_callback,
-      OnFirstFrameRequestedCallback on_first_frame_requested_callback);
+      OnFirstFrameRequestedCallback on_first_frame_requested_callback,
+      OnFrameSinkLost on_frame_sink_lost_callback);
 
   FrameSinkHolder(const FrameSinkHolder&) = delete;
   FrameSinkHolder& operator=(const FrameSinkHolder&) = delete;
@@ -201,6 +207,9 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   // The callback invoked when the display compositor asks for a compositor
   // frame for the first time.
   OnFirstFrameRequestedCallback on_first_frame_requested_callback_;
+
+  // The callback invoked when the connection to `frame_sink_` is lost.
+  OnFrameSinkLost on_frame_sink_lost_callback_;
 
   // Observation of the root window to which this holder becomes an observer to
   // extend its lifespan till all the in-flight resource to display compositor

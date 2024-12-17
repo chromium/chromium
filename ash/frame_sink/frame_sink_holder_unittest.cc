@@ -79,8 +79,6 @@ class TestFrameFactory {
     return frame;
   }
 
-  void OnFirstFrameRequested() {}
-
   void SetFrameResources(std::vector<viz::ResourceId> frame_resource) {
     latest_frame_resources_ = std::move(frame_resource);
   }
@@ -126,8 +124,8 @@ class FrameSinkHolderTest : public AshTestBase {
         std::move(layer_tree_frame_sink),
         base::BindRepeating(&TestFrameFactory::CreateCompositorFrame,
                             base::Unretained(frame_factory_.get())),
-        base::BindRepeating(&TestFrameFactory::OnFirstFrameRequested,
-                            base::Unretained(frame_factory_.get())));
+        /*on_first_frame_requested_callback=*/base::DoNothing(),
+        /*on_frame_sink_lost_callback=*/base::DoNothing());
 
     holder_weak_ptr_ = frame_sink_holder_->GetWeakPtr();
   }
