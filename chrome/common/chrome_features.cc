@@ -314,6 +314,9 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kGlicStatusIconOpenMenuWithSecondaryClick{
+    &kGlic, "open-status-icon-menu-with-secondary-click", false};
+
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);

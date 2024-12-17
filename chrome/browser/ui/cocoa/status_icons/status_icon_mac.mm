@@ -10,6 +10,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/browser/status_icons/status_tray.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
@@ -32,12 +33,24 @@
 }
 
 - (void)handleClick:(id)sender {
-  // Pass along the click notification to our owner.
   DCHECK(_statusIcon);
+
   // Bring up the status icon menu if there is one, relay the click event
   // otherwise.
-  if (!_statusIcon->HasStatusIconMenu())
+  if (!_statusIcon->HasStatusIconMenu()) {
     _statusIcon->DispatchClickEvent();
+  } else if (_statusIcon->open_menu_with_secondary_click()) {
+    NSEvent* event = [NSApp currentEvent];
+    BOOL secondary_click =
+        ([event type] == NSEventTypeLeftMouseDown &&
+         [event modifierFlags] & NSEventModifierFlagControl) ||
+        ([event type] == NSEventTypeRightMouseUp);
+    if (secondary_click) {
+      _statusIcon->CreateAndOpenMenu();
+    } else if ([event type] == NSEventTypeLeftMouseDown) {
+      _statusIcon->DispatchClickEvent();
+    }
+  }
 }
 
 @end
@@ -82,7 +95,7 @@ void StatusIconMac::SetToolTip(const std::u16string& tool_tip) {
   // If we have a status icon menu, make the tool tip part of the menu instead
   // of a pop-up tool tip when hovering the mouse over the image.
   tool_tip_ = base::SysUTF16ToNSString(tool_tip);
-  if (menu_) {
+  if (menu_ && !open_menu_with_secondary_click_) {
     SetToolTip(nil);
     CreateMenu([menu_ model], tool_tip_);
   } else {
@@ -99,13 +112,29 @@ void StatusIconMac::DisplayBalloon(
                                contents, notifier_id);
 }
 
+void StatusIconMac::SetOpenMenuWithSecondaryClick(
+    bool open_menu_with_secondary_click) {
+  open_menu_with_secondary_click_ = open_menu_with_secondary_click;
+  [[item() button]
+      sendActionOn:(NSEventMaskLeftMouseDown | NSEventMaskRightMouseUp)];
+}
+
 bool StatusIconMac::HasStatusIconMenu() {
-  return menu_ != nil;
+  return open_menu_with_secondary_click_ ? menu_model_ : menu_ != nil;
+}
+
+void StatusIconMac::CreateAndOpenMenu() {
+  CreateMenu(menu_model_, nil);
+  [[item() button] performClick:nil];
+  [item() setMenu:nil];
 }
 
 void StatusIconMac::UpdatePlatformContextMenu(StatusIconMenuModel* model) {
   if (!model) {
     menu_ = nil;
+  } else if (open_menu_with_secondary_click_) {
+    SetToolTip(tool_tip_);
+    menu_model_ = model;
   } else {
     SetToolTip(nil);
     CreateMenu(model, tool_tip_);

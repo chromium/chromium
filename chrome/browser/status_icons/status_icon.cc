@@ -42,6 +42,11 @@ void StatusIcon::DispatchBalloonClickEvent() {
 
 void StatusIcon::ForceVisible() {}
 
+#if BUILDFLAG(IS_MAC)
+void StatusIcon::SetOpenMenuWithSecondaryClick(
+    bool open_menu_with_secondary_click) {}
+#endif
+
 void StatusIcon::SetContextMenu(std::unique_ptr<StatusIconMenuModel> menu) {
   // The UI may been showing a menu for the current model, don't destroy it
   // until we've notified the UI of the change.

@@ -13,6 +13,7 @@
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "glic_status_icon.h"
@@ -30,6 +31,11 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, status_tray_icon,
       l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_TOOLTIP));
+#if BUILDFLAG(IS_MAC)
+  if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
+    status_icon_->SetOpenMenuWithSecondaryClick(true);
+  }
+#endif
   status_icon_->AddObserver(this);
 
   std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
