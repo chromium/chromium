@@ -77,14 +77,12 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
       ash::features::IsLobsterEnabled()
           ? LobsterServiceProvider::GetForProfile(Profile::FromWebUI(web_ui))
           : nullptr;
-  const bool has_lobster_access =
-      lobster_service != nullptr && lobster_service->UserHasAccess();
   const bool should_use_l10n_strings = input_method::ShouldUseL10nStrings();
 
   auto should_use_resource =
       [&](const webui::ResourcePath& resource_path) -> bool {
     // when lobster access is not granted, lobster resources are not allowed.
-    if (!has_lobster_access &&
+    if (lobster_service == nullptr &&
         base::Contains(kLobsterResourceIds, resource_path.id)) {
       return false;
     }

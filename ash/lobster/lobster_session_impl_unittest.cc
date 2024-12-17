@@ -81,7 +81,6 @@ class MockLobsterClient : public LobsterClient {
               (override));
   MOCK_METHOD(void, ShowUI, (), (override));
   MOCK_METHOD(void, CloseUI, (), (override));
-  MOCK_METHOD(bool, UserHasAccess, (), (override));
 };
 
 class LobsterSessionImplTest : public AshTestBase {

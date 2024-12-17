@@ -58,7 +58,6 @@ class LobsterService : public KeyedService, public LobsterEventSink {
   void ShowUI();
 
   void CloseUI();
-  bool UserHasAccess();
 
   // Relevant input events
   void OnFocus(int context_id) override;

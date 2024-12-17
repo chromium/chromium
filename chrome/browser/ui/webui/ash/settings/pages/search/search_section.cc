@@ -90,11 +90,8 @@ bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
 }
 
 bool IsLobsterSettingsToggleVisible(Profile* profile) {
-  LobsterService* lobster_service =
-      ash::features::IsLobsterEnabled()
-          ? LobsterServiceProvider::GetForProfile(profile)
-          : nullptr;
-  return lobster_service != nullptr && lobster_service->UserHasAccess();
+  return ash::features::IsLobsterEnabled() &&
+         LobsterServiceProvider::GetForProfile(profile) != nullptr;
 }
 
 base::span<const SearchConcept> GetSearchPageSearchConcepts() {

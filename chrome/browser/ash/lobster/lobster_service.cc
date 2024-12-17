@@ -14,19 +14,7 @@
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_feedback.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/manta/snapper_provider.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_constants.h"
-
-namespace {
-
-constexpr std::string_view kLobsterKey(
-    "\xB3\x3A\x4C\xFC\x84\xA0\x2B\xBE\xAC\x88\x48\x09\xCF\x5E\xD6\xD9\x28\xEC"
-    "\x20\x2A",
-    base::kSHA1Length);
-
-}  // namespace
 
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider,
@@ -90,27 +78,6 @@ void LobsterService::ShowUI() {
 
 void LobsterService::CloseUI() {
   bubble_coordinator_.CloseUI();
-}
-
-bool LobsterService::UserHasAccess() {
-  // Command line looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --lobster-feature-key="INSERT KEY HERE" --enable-features=Lobster
-  if (base::SHA1HashString(
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              ash::switches::kLobsterFeatureKey)) == kLobsterKey) {
-    return true;
-  }
-
-  // Internal Google accounts do not need the key.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-
-  return identity_manager != nullptr &&
-         gaia::IsGoogleInternalAccountEmail(
-             identity_manager
-                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                 .email);
 }
 
 void LobsterService::OnFocus(int context_id) {
