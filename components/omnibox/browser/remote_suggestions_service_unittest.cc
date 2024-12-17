@@ -404,7 +404,8 @@ TEST_F(RemoteSuggestionsServiceTest,
   // No additional query params is appended for empty Lens suggest inputs.
   // iil is not expected to be sent for contextual searchbox requests.
   ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/suggest?q=query&client=chrome-contextual");
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-contextual&gs_ps=1");
 
   search_terms_args.lens_overlay_suggest_inputs->set_encoded_request_id(
       "vsrid");
@@ -416,7 +417,8 @@ TEST_F(RemoteSuggestionsServiceTest,
   // No additional query params are appended for empty Lens suggest inputs
   // because send_gsession_vsrid_for_contextual_suggest is false.
   ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/suggest?q=query&client=chrome-contextual");
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-contextual&gs_ps=1");
 
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_gsession_vsrid_for_contextual_suggest(true);
@@ -426,8 +428,8 @@ TEST_F(RemoteSuggestionsServiceTest,
   // Appended gsessionid and vsrids.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
-            "suggest?q=query&client=chrome-contextual&vsrid=vsrid&gsessionid="
-            "gsessionid");
+            "suggest?q=query&client=chrome-contextual&gs_ps=1&vsrid=vsrid&"
+            "gsessionid=gsessionid");
 
   search_terms_args.lens_overlay_suggest_inputs
       ->set_contextual_visual_input_type("vit");
@@ -437,8 +439,8 @@ TEST_F(RemoteSuggestionsServiceTest,
   // Appended vit.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
-            "suggest?q=query&client=chrome-contextual&vit=vit&vsrid=vsrid"
-            "&gsessionid=gsessionid");
+            "suggest?q=query&client=chrome-contextual&vit=vit&gs_ps=1&vsrid="
+            "vsrid&gsessionid=gsessionid");
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
