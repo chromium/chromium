@@ -664,10 +664,6 @@ public class TabListCoordinator
         mMediator.softCleanup();
     }
 
-    void hardCleanup() {
-        mMediator.hardCleanup();
-    }
-
     private void registerLayoutChangeListener() {
         if (mListLayoutListener != null) {
             // TODO(crbug.com/40288028): There might be a timing or race condition that
@@ -692,7 +688,6 @@ public class TabListCoordinator
     void prepareTabSwitcherPaneView() {
         registerLayoutChangeListener();
         mRecyclerView.setupCustomItemAnimator();
-        mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
     private void initializeEmptyStateView() {

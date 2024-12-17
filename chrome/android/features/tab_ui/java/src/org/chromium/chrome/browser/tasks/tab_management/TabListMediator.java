@@ -40,8 +40,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
@@ -333,7 +331,6 @@ class TabListMediator implements TabListNotificationHandler {
 
     private static final String TAG = "TabListMediator";
     private static Map<Integer, Integer> sTabClosedFromMapTabClosedFromMap = new HashMap<>();
-    private static Set<Integer> sViewedTabIds = new HashSet<>();
 
     private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
@@ -370,10 +367,6 @@ class TabListMediator implements TabListNotificationHandler {
     private Size mDefaultGridCardSize;
     private ComponentCallbacks mComponentCallbacks;
     private GridLayoutManager mGridLayoutManager;
-    // mRecyclerView and mOnScrollListener are null, unless the the price drop IPH or badge is
-    // enabled.
-    private @Nullable RecyclerView mRecyclerView;
-    private @Nullable OnScrollListener mOnScrollListener;
     // Set to true after a `resetWithListOfTabs` that used a non-null list of tabs. Remains true
     // until `postHiding` is invoked or the mediator is destroyed. While true, this mediator is
     // actively tracking updates to a TabModel.
@@ -1456,23 +1449,9 @@ class TabListMediator implements TabListNotificationHandler {
         return false;
     }
 
-    /**
-     * Add the tab id of a {@Tab} that has been viewed to the sViewedTabIds set.
-     *
-     * @param tabIndex The tab index of a {@Tab} the user has viewed.
-     */
-    private void addViewedTabId(int tabIndex) {
-        TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
-        assert !tabModel.isIncognito();
-        int tabId = mModelList.get(tabIndex).model.get(TabProperties.TAB_ID);
-        assert tabModel.getTabById(tabId) != null;
-        sViewedTabIds.add(tabId);
-    }
-
     void postHiding() {
         removeObservers(mCurrentTabGroupModelFilterSupplier.get());
         mShowingTabs = false;
-        unregisterOnScrolledListener();
         // if tab was marked for add later, add to model and mark as selected.
         if (mTabToAddDelayed != null) {
             int index = onTabAdded(mTabToAddDelayed, !mActionsOnAllRelatedTabs);
@@ -1502,11 +1481,6 @@ class TabListMediator implements TabListNotificationHandler {
                 model.set(TabProperties.FAVICON_FETCHER, null);
             }
         }
-    }
-
-    void hardCleanup() {
-        assert !mShowingTabs;
-        sViewedTabIds.clear();
     }
 
     private void updateTab(int index, Tab tab, boolean isUpdatingId, boolean quickMode) {
@@ -1564,10 +1538,6 @@ class TabListMediator implements TabListNotificationHandler {
         assert filter.isTabModelRestored();
 
         return filter.isTabInTabGroup(tab);
-    }
-
-    public Set<Integer> getViewedTabIdsForTesting() {
-        return sViewedTabIds;
     }
 
     /**
@@ -1631,52 +1601,6 @@ class TabListMediator implements TabListNotificationHandler {
 
     int getCurrentSpanCount() {
         return mCurrentSpanCount;
-    }
-
-    /**
-     * Adds an on scroll listener to {@link TabListRecyclerView} that determines whether a tab
-     * thumbnail is within view after a scroll is completed.
-     *
-     * @param recyclerView the {@link TabListRecyclerView} to add the listener too.
-     */
-    void registerOnScrolledListener(RecyclerView recyclerView) {
-        // For InstantStart, this can be called before native is initialized, so ensure the Profile
-        // is available before proceeding.
-        if (mOriginalProfile == null) return;
-
-        if (!mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded()
-                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile)
-                && (PriceTrackingFeatures.isPriceDropIphEnabled(mOriginalProfile)
-                        || PriceTrackingFeatures.isPriceDropBadgeEnabled(mOriginalProfile))) {
-            mRecyclerView = recyclerView;
-            mOnScrollListener =
-                    new OnScrollListener() {
-                        @Override
-                        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                            if (!mCurrentTabGroupModelFilterSupplier
-                                    .get()
-                                    .getTabModel()
-                                    .isIncognito()) {
-                                for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
-                                    if (mRecyclerView
-                                            .getLayoutManager()
-                                            .isViewPartiallyVisible(
-                                                    mRecyclerView.getChildAt(i), false, true)) {
-                                        addViewedTabId(i);
-                                    }
-                                }
-                            }
-                        }
-                    };
-            mRecyclerView.addOnScrollListener(mOnScrollListener);
-        }
-    }
-
-    private void unregisterOnScrolledListener() {
-        if (mRecyclerView != null && mOnScrollListener != null) {
-            mRecyclerView.removeOnScrollListener(mOnScrollListener);
-            mOnScrollListener = null;
-        }
     }
 
     /**
@@ -1744,7 +1668,6 @@ class TabListMediator implements TabListNotificationHandler {
         if (mComponentCallbacks != null) {
             mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         }
-        unregisterOnScrolledListener();
     }
 
     void setTabActionState(@TabActionState int tabActionState) {

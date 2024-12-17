@@ -188,7 +188,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /** Tests for {@link TabListMediator}. */
@@ -3927,31 +3926,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testPriceDropSeen() throws TimeoutException {
-        setPriceTrackingEnabledForTesting(true);
-        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
-                PriceTrackingUtilities.TRACK_PRICES_ON_TABS, true);
-
-        doReturn(false).when(mTab1).isIncognito();
-        doReturn(false).when(mTab2).isIncognito();
-
-        List<Tab> tabs = new ArrayList<>();
-        tabs.add(mTabModel.getTabAt(0));
-        tabs.add(mTabModel.getTabAt(1));
-
-        mMediator.resetWithListOfTabs(tabs, /* quickMode= */ false);
-
-        prepareRecyclerViewForScroll();
-        mMediator.registerOnScrolledListener(mRecyclerView);
-        verify(mRecyclerView).addOnScrollListener(mOnScrollListenerCaptor.capture());
-        mOnScrollListenerCaptor
-                .getValue()
-                .onScrolled(mRecyclerView, /* dx= */ mTabModel.getCount(), /* dy= */ 0);
-        assertEquals(2, mMediator.getViewedTabIdsForTesting().size());
-    }
-
-    @Test
     public void testSelectableUpdates_withoutRelated() {
         when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
         when(mSelectionDelegate.isItemSelected(TAB2_ID)).thenReturn(false);
@@ -4978,16 +4952,6 @@ public class TabListMediatorUnitTest {
         doReturn(mPriceDrop).when(mShoppingPersistedTabData).getPriceDrop();
     }
 
-    private void prepareRecyclerViewForScroll() {
-        View seenView = mock(View.class);
-        for (int i = 0; i < mTabModel.getCount(); i++) {
-            when(mRecyclerView.getChildAt(i)).thenReturn(seenView);
-        }
-
-        doReturn(true).when(mGridLayoutManager).isViewPartiallyVisible(seenView, false, true);
-        doReturn(mTabModel.getCount()).when(mRecyclerView).getChildCount();
-    }
-
     private ThumbnailProvider getTabThumbnailCallback() {
         return new TabContentManagerThumbnailProvider(mTabContentManager);
     }
@@ -4995,10 +4959,6 @@ public class TabListMediatorUnitTest {
     private static void setPriceTrackingEnabledForTesting(boolean value) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.PRICE_ANNOTATIONS,
-                PriceTrackingFeatures.PRICE_DROP_IPH_ENABLED_PARAM,
-                String.valueOf(value));
         FeatureList.mergeTestValues(testValues, /* replace= */ true);
 
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(value);

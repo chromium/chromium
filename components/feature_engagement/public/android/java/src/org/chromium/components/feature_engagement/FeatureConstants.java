@@ -105,7 +105,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
-    FeatureConstants.PRICE_DROP_NTP_FEATURE,
     FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
     FeatureConstants.IPH_RTL_GESTURE_NAVIGATION,
     FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
@@ -338,9 +337,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the Webnotes Stylize feature in Sharing Hub. */
     String SHARING_HUB_WEBNOTES_STYLIZE_FEATURE = "IPH_SharingHubWebnotesStylize";
-
-    /** An IPH feature to inform users that a price drop has occurred in any of their open tabs */
-    String PRICE_DROP_NTP_FEATURE = "IPH_PriceDropNTP";
 
     /**
      * An IPH feature to inform users that tabs from another synced device can be restored on FRE.

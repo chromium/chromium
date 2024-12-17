@@ -70,7 +70,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPageInfoStoreInfoFeature,
     &kIPHPageZoomFeature,
     &kIPHPreviewsOmniboxUIFeature,
-    &kIPHPriceDropNTPFeature,
     &kIPHReadAloudAppMenuFeature,
     &kIPHReadAloudExpandedPlayerFeature,
     &kIPHReadLaterContextMenuFeature,

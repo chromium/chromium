@@ -25,10 +25,6 @@ public class PriceTrackingFeatures {
     public static final String ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM =
             "allow_disable_price_annotations";
 
-    @VisibleForTesting
-    public static final String PRICE_DROP_IPH_ENABLED_PARAM = "enable_price_drop_iph";
-
-    private static final String PRICE_DROP_BADGE_ENABLED_PARAM = "enable_price_drop_badge";
     private static final String PRICE_ANNOTATIONS_ENABLED_METRICS_WINDOW_DURATION_PARAM =
             "price_annotations_enabled_metrics_window_duration_ms";
 
@@ -108,28 +104,6 @@ public class PriceTrackingFeatures {
                             ChromeFeatureList.PRICE_ANNOTATIONS,
                             ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM,
                             true);
-        }
-        return isPriceAnnotationsEligible(profile);
-    }
-
-    public static boolean isPriceDropIphEnabled(Profile profile) {
-        if (FeatureList.isInitialized()) {
-            return isPriceAnnotationsEligible(profile)
-                    && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.PRICE_ANNOTATIONS,
-                            PRICE_DROP_IPH_ENABLED_PARAM,
-                            false);
-        }
-        return isPriceAnnotationsEligible(profile);
-    }
-
-    public static boolean isPriceDropBadgeEnabled(Profile profile) {
-        if (FeatureList.isInitialized()) {
-            return isPriceAnnotationsEligible(profile)
-                    && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.PRICE_ANNOTATIONS,
-                            PRICE_DROP_BADGE_ENABLED_PARAM,
-                            false);
         }
         return isPriceAnnotationsEligible(profile);
     }

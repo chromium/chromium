@@ -392,9 +392,6 @@ BASE_FEATURE(kIPHPageZoomFeature,
 BASE_FEATURE(kIPHPreviewsOmniboxUIFeature,
              "IPH_PreviewsOmniboxUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHPriceDropNTPFeature,
-             "IPH_PriceDropNTP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHShoppingListMenuItemFeature,
              "IPH_ShoppingListMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);

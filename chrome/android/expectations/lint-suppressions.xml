@@ -250,9 +250,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!--TODO(crbug.com/40208161): Remove unused resources when UX is finalized. -->
     <ignore regexp="The resource `R.string.price_tracking_title` appears to be unused"/>
 
-    <!-- Temporarily suppressed until impelmentation is ready, see: https://crbug.com/1330631 -->
-    <ignore regexp="The resource `R.string.price_drop_spotted_iph` appears to be unused"/>
-
     <!-- TODO(crbug.com/40227734): Remove unused resources when UX is finalized. -->
     <ignore regexp="The resource `R.string.search_resumption_module_title_short` appears to be unused"/>
 

@@ -391,7 +391,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtilUnitTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/AppThemeColorProviderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/toolbar/ToolbarIphControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImplTest.java",
   "junit/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",
   "junit/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlockerUnitTest.java",

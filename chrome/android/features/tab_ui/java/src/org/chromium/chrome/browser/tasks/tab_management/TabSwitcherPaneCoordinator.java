@@ -461,7 +461,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /** Performs hard cleanup which saves price drop information. */
     public void hardCleanup() {
-        mTabListCoordinator.hardCleanup();
         // TODO(crbug.com/40946413): The pre-fork implementation resets the tab list, this seems
         // suboptimal. Consider not doing this.
         resetWithTabList(null);
