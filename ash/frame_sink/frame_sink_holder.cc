@@ -29,12 +29,14 @@ constexpr int32_t kPauseBeginFrameThreshold = 5;
 
 FrameSinkHolder::FrameSinkHolder(
     std::unique_ptr<cc::LayerTreeFrameSink> frame_sink,
-    const GetCompositorFrameCallback get_compositor_frame_callback,
-    const OnFirstFrameRequestedCallback on_first_frame_requested_callback)
+    GetCompositorFrameCallback get_compositor_frame_callback,
+    OnFirstFrameRequestedCallback on_first_frame_requested_callback,
+    OnFrameSinkLost on_frame_sink_lost_callback)
     : frame_sink_(std::move(frame_sink)),
       get_compositor_frame_callback_(std::move(get_compositor_frame_callback)),
       on_first_frame_requested_callback_(
-          std::move(on_first_frame_requested_callback)) {
+          std::move(on_first_frame_requested_callback)),
+      on_frame_sink_lost_callback_(std::move(on_frame_sink_lost_callback)) {
   frame_sink_->BindToClient(this);
 }
 
@@ -291,6 +293,8 @@ void FrameSinkHolder::DidLoseLayerTreeFrameSink() {
   resource_manager().LostExportedResources();
   if (WaitingToScheduleDelete()) {
     ScheduleDelete();
+  } else {
+    std::move(on_frame_sink_lost_callback_).Run();
   }
 }
 

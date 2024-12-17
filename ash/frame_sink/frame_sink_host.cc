@@ -58,7 +58,8 @@ void FrameSinkHost::InitFrameSinkHolder(
       base::BindRepeating(&FrameSinkHost::CreateCompositorFrame,
                           base::Unretained(this)),
       base::BindRepeating(&FrameSinkHost::OnFirstFrameRequested,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      base::BindOnce(&FrameSinkHost::OnFrameSinkLost, base::Unretained(this)));
 }
 
 void FrameSinkHost::SetHostWindow(aura::Window* host_window) {
@@ -122,5 +123,17 @@ void FrameSinkHost::OnWindowDestroying(aura::Window* window) {
 }
 
 void FrameSinkHost::OnFirstFrameRequested() {}
+
+void FrameSinkHost::OnFrameSinkLost() {
+  frame_sink_holder_.reset();
+  InitFrameSinkHolder(host_window(), host_window()->CreateLayerTreeFrameSink());
+
+  // Since some implementations of FrameSinkHost rarely update the surface,
+  // submit a compositor frame in order to update the surface. Otherwise,
+  // host_window will show a white surface instead.
+  const gfx::Rect& content_rect = host_window_->bounds();
+  const gfx::Rect& damage_rect = content_rect;
+  UpdateSurface(content_rect, damage_rect, /*synchronous_draw=*/true);
+}
 
 }  // namespace ash
