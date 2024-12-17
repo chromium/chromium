@@ -23,11 +23,22 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
-  sources =
-      [ "java/src/org/chromium/components/payments/ui/CurrencyFormatter.java" ]
+  sources = [
+    "java/src/org/chromium/components/payments/ui/CurrencyFormatter.java",
+    "java/src/org/chromium/components/payments/ui/InputProtector.java",
+  ]
   deps = [
+    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":jni_headers" ]
+}
+
+android_library("payments_java_test_support") {
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/components/payments/ui/test_support/FakeClock.java",
+  ]
+  deps = [ ":java" ]
 }

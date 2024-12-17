@@ -47,7 +47,7 @@ include_rules = [
   "+components/paint_preview/browser/android",
   "+components/paint_preview/player/android",
   "+components/payments/content/android/ui/java/src/org/chromium/components/payments/ui",
-  "+components/payments/content/android/junit/src/org/chromium/components/payments/test_support",
+  "+components/payments/content/android/ui/junit/src/org/chromium/components/payments/ui/test_support",
   "+components/permissions/android/java/src/org/chromium/components/permissions",
   "+components/safe_browsing/android/java/src/org/chromium/components/safe_browsing",
   "+components/saved_tab_groups/android/java/src/org/chromium/components/tab_group_sync",

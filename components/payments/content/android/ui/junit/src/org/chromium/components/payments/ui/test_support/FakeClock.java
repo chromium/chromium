@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.payments.test_support;
+package org.chromium.components.payments.ui.test_support;
 
-import org.chromium.components.payments.InputProtector;
+import org.chromium.components.payments.ui.InputProtector;
 
 /** An InputProtector.Clock implementation used by tests to simulate advancing the time. */
 public class FakeClock implements InputProtector.Clock {

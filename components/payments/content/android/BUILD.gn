@@ -168,7 +168,6 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
     "java/src/org/chromium/components/payments/HasEnrolledInstrumentQuery.java",
-    "java/src/org/chromium/components/payments/InputProtector.java",
     "java/src/org/chromium/components/payments/InvalidPaymentRequest.java",
     "java/src/org/chromium/components/payments/JniPaymentApp.java",
     "java/src/org/chromium/components/payments/JourneyLogger.java",
@@ -391,14 +390,6 @@ java_cpp_enum("pre_purchase_query_enum_javagen") {
   sources = [ "//components/payments/core/pre_purchase_query.h" ]
 }
 
-android_library("payments_java_test_support") {
-  testonly = true
-  sources = [
-    "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
-  ]
-  deps = [ ":java" ]
-}
-
 robolectric_library("junit_test_support") {
   sources = [
     "junit/src/org/chromium/components/payments/test_support/DefaultPaymentFeatureConfig.java",
@@ -433,7 +424,6 @@ robolectric_library("junit") {
     ":browser_binding_junit_test",
     ":java",
     ":junit_test_support",
-    ":payments_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -442,6 +432,7 @@ robolectric_library("junit") {
 
     # TODO(crbug.com/382867337): Non-UI code should not depend on UI code.
     "//components/payments/content/android/ui:java",
+    "//components/payments/content/android/ui:payments_java_test_support",
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
