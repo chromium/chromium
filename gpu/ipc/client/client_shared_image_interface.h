@@ -76,6 +76,8 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   // later to get the shared memory mapping.
   SharedImageInterface::SharedImageMapping CreateSharedImage(
       const SharedImageInfo& si_info) override;
+  scoped_refptr<ClientSharedImage> CreateSharedImageForSoftwareCompositor(
+      const SharedImageInfo& si_info) override;
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox) override;
 #if BUILDFLAG(IS_WIN)

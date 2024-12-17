@@ -219,6 +219,20 @@ ClientSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info) {
   return shared_image_mapping;
 }
 
+scoped_refptr<ClientSharedImage>
+ClientSharedImageInterface::CreateSharedImageForSoftwareCompositor(
+    const SharedImageInfo& si_info) {
+  base::WritableSharedMemoryMapping mapping;
+  gfx::GpuMemoryBufferHandle handle;
+  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
+
+  auto mailbox = proxy_->CreateSharedImage(si_info, std::move(handle));
+
+  return base::MakeRefCounted<ClientSharedImage>(
+      AddMailbox(mailbox), si_info.meta, GenUnverifiedSyncToken(), holder_,
+      std::move(mapping));
+}
+
 void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {

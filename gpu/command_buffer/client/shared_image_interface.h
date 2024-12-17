@@ -198,6 +198,13 @@ class GPU_EXPORT SharedImageInterface
   virtual SharedImageMapping CreateSharedImage(
       const SharedImageInfo& si_info) = 0;
 
+  // Creates a shared image with the usage of
+  // gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY only. A shared memory buffer is
+  // created internally and a shared image is created out of this buffer. This
+  // method is used by the software compositor only.
+  virtual scoped_refptr<ClientSharedImage>
+  CreateSharedImageForSoftwareCompositor(const SharedImageInfo& si_info);
+
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.
   virtual void UpdateSharedImage(const SyncToken& sync_token,
