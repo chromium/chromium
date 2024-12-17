@@ -842,13 +842,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.NumDataHostsRegisteredOnClientBounce.{Duration}"
+<histogram
+    name="Conversions.NumDataHostsRegisteredOnClientBounce.{Interaction}.{Duration}"
     units="data hosts" expires_after="2025-05-11">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     We consider a non-user-initiated navigation to be a client bounce if it
-    navigates the page away within {Duration} without any user interaction.
+    navigates the page away within {Duration} without any {Interaction}.
     Measures how many non-navigation data hosts were registered on the page when
     client bounce occurred. Recorded when a primary main frame and
     non-same-document navigation happens and is determined to be a client
@@ -859,6 +860,10 @@ chromium-metrics-reviews@google.com.
     <variant name="1s"/>
     <variant name="5s"/>
     <variant name="10s"/>
+  </token>
+  <token key="Interaction">
+    <variant name="UserActivation"/>
+    <variant name="UserInteraction"/>
   </token>
 </histogram>
 
