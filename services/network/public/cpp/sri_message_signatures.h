@@ -64,10 +64,10 @@ MaybeBlockResponseForSRIMessageSignature(
     const GURL& request_url,
     const network::mojom::URLResponseHead& response);
 
-// Adds an `Accept-Signatures` header to outgoing requests if the request's
+// Adds an `Accept-Signature` header to outgoing requests if the request's
 // initiator asserted signature-based integrity expectations.
 COMPONENT_EXPORT(NETWORK_CPP)
-void MaybeSetAcceptSignaturesHeader(
+void MaybeSetAcceptSignatureHeader(
     net::URLRequest*,
     const std::vector<std::string>& expected_signatures);
 

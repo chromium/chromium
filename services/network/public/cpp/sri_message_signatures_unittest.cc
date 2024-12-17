@@ -96,7 +96,7 @@ const char* kValidExpiringSignatureHeader =
     "W5IZhw4zG6wFnvd+T1BG3CQ==:";
 const int64_t kValidExpiringSignatureExpiresAt = 5459212800;
 
-constexpr std::string_view kAcceptSignatures = "Accept-Signatures";
+constexpr std::string_view kAcceptSignature = "accept-signature";
 
 const GURL kExampleURL = GURL("https://example.test/");
 
@@ -1074,10 +1074,10 @@ INSTANTIATE_TEST_SUITE_P(FeatureFlag,
                          testing::Values(true, false));
 
 TEST_P(SRIMessageSignatureRequestHeaderTest, NoSignaturesNoHeader) {
-  MaybeSetAcceptSignaturesHeader(url_request(), {});
+  MaybeSetAcceptSignatureHeader(url_request(), {});
   EXPECT_FALSE(url_request()
                    ->extra_request_headers()
-                   .GetHeader(kAcceptSignatures)
+                   .GetHeader(kAcceptSignature)
                    .has_value());
 }
 
@@ -1105,10 +1105,10 @@ TEST_P(SRIMessageSignatureRequestHeaderTest, InvalidSignatures) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(base::JoinString(test, ", "));
-    MaybeSetAcceptSignaturesHeader(url_request(), test);
+    MaybeSetAcceptSignatureHeader(url_request(), test);
     EXPECT_FALSE(url_request()
                      ->extra_request_headers()
-                     .GetHeader(kAcceptSignatures)
+                     .GetHeader(kAcceptSignature)
                      .has_value());
   }
 }
@@ -1126,10 +1126,10 @@ TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignature) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(base::JoinString(test, ", "));
-    MaybeSetAcceptSignaturesHeader(url_request(), test);
+    MaybeSetAcceptSignatureHeader(url_request(), test);
 
     auto result =
-        url_request()->extra_request_headers().GetHeader(kAcceptSignatures);
+        url_request()->extra_request_headers().GetHeader(kAcceptSignature);
     if (GetParam()) {
       std::string expected =
           base::StrCat({"sig0=(\"identity-digest\";sf);keyid=\"", kPublicKey,
@@ -1156,10 +1156,10 @@ TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignatures) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(base::JoinString(test, ", "));
-    MaybeSetAcceptSignaturesHeader(url_request(), test);
+    MaybeSetAcceptSignatureHeader(url_request(), test);
 
     auto result =
-        url_request()->extra_request_headers().GetHeader(kAcceptSignatures);
+        url_request()->extra_request_headers().GetHeader(kAcceptSignature);
     if (GetParam()) {
       std::string expected = base::StrCat(
           {"sig0=(\"identity-digest\";sf);keyid=\"", kPublicKey,

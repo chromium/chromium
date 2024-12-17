@@ -27,6 +27,7 @@ const kInvalidKey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 const EXPECT_BLOCKED = "block";
 const EXPECT_LOADED = "loaded";
 
+const kAcceptSignature = "accept-signature";
 
 // Given `{ digest: "...", body: "...", cors: true, type: "..." }`, generates
 // the URL to a script resource that has the given characteristics.
@@ -52,17 +53,17 @@ function generate_fetch_test(request_data, integrity, expectation, description) 
       return fetcher.then(r => {
         assert_equals(r.status, 200, "Response status is 200.");
 
-        // Verify `accept-signatures`: if the invalid key is present, both a valid and invalid
+        // Verify `accept-signature`: if the invalid key is present, both a valid and invalid
         // key were set. If just the valid key is present, that's the only key we should see
         // in the header.
         if (integrity.includes(`ed25519-${kInvalidKey}`)) {
-          assert_equals(r.headers.get('accept-signatures'),
+          assert_equals(r.headers.get(kAcceptSignature),
                         `sig0=("identity-digest";sf);keyid="${kInvalidKey}";tag="sri", sig1=("identity-digest";sf);keyid="${kValidKeys['rfc']}";tag="sri"`,
-                        "`accept-signatures` was set.");
+                        "`accept-signature` was set.");
         } else if (integrity.includes(`ed25519-${kValidKeys['rfc']}`)) {
-          assert_equals(r.headers.get('accept-signatures'),
+          assert_equals(r.headers.get(kAcceptSignature),
                         `sig0=("identity-digest";sf);keyid="${kValidKeys['rfc']}";tag="sri"`,
-                        "`accept-signatures` was set.");
+                        "`accept-signature` was set.");
         }
       });
     } else {

@@ -897,7 +897,7 @@ void URLLoader::ConfigureRequest(
                           *factory_params_, *origin_access_list_,
                           request_credentials_mode_);
 
-  MaybeSetAcceptSignaturesHeader(url_request_.get(), expected_signatures_);
+  MaybeSetAcceptSignatureHeader(url_request_.get(), expected_signatures_);
 
   url_request_->set_first_party_url_policy(first_party_url_policy);
 

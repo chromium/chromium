@@ -21,7 +21,7 @@ namespace {
 
 const size_t kEd25519KeyLength = 32;
 const size_t kEd25519SigLength = 64;
-constexpr std::string_view kAcceptSignatures = "Accept-Signatures";
+constexpr std::string_view kAcceptSignature = "accept-signature";
 
 constexpr std::array<std::string_view, 9u> kDerivedComponents = {
     "@path"
@@ -502,7 +502,7 @@ MaybeBlockResponseForSRIMessageSignature(
   return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;
 }
 
-void MaybeSetAcceptSignaturesHeader(
+void MaybeSetAcceptSignatureHeader(
     net::URLRequest* request,
     const std::vector<std::string>& expected_signatures) {
   // The `Accept-Signature` header is only sent if Signature-based SRI
@@ -534,7 +534,7 @@ void MaybeSetAcceptSignaturesHeader(
   if (header.str().empty()) {
     return;
   }
-  request->SetExtraRequestHeaderByName(kAcceptSignatures, header.str(),
+  request->SetExtraRequestHeaderByName(kAcceptSignature, header.str(),
                                        /*overwrite=*/true);
 }
 
