@@ -109,7 +109,7 @@ bool PersistentSystemProfile::RecordAllocator::Write(RecordType type,
       if (!AddSegment(remaining_size))
         return false;
     }
-    // Write out as much of the data as possible. |data| and |remaining_size|
+    // Write out as much of the data as possible. `data` and `remaining_size`
     // are updated in place.
     if (!WriteData(type, &data, &remaining_size))
       return false;
@@ -152,8 +152,7 @@ bool PersistentSystemProfile::RecordAllocator::Read(RecordType* type,
 
 bool PersistentSystemProfile::RecordAllocator::NextSegment() const {
   base::PersistentMemoryAllocator::Iterator iter(allocator_, alloc_reference_);
-  alloc_reference_ = iter.GetNextOfType(kTypeIdSystemProfile);
-  alloc_size_ = allocator_->GetAllocSize(alloc_reference_);
+  alloc_reference_ = iter.GetNextOfType(kTypeIdSystemProfile, &alloc_size_);
   end_offset_ = 0;
   return alloc_reference_ != 0;
 }
@@ -174,13 +173,15 @@ bool PersistentSystemProfile::RecordAllocator::AddSegment(size_t min_size) {
   size_t size =
       std::max(CalculateRecordSize(min_size), kSystemProfileAllocSize);
 
-  uint32_t ref = allocator_->Allocate(size, kTypeIdSystemProfile);
+  size_t new_alloc_size = 0;
+  uint32_t ref =
+      allocator_->Allocate(size, kTypeIdSystemProfile, &new_alloc_size);
   if (!ref)
     return false;  // Allocator must be full.
   allocator_->MakeIterable(ref);
 
   alloc_reference_ = ref;
-  alloc_size_ = allocator_->GetAllocSize(ref);
+  alloc_size_ = new_alloc_size;
   return true;
 }
 
@@ -289,7 +290,7 @@ void PersistentSystemProfile::RegisterPersistentAllocator(
     base::PersistentMemoryAllocator* memory_allocator) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Create and store the allocator. A |min_size| of "1" ensures that a memory
+  // Create and store the allocator. A `min_size` of "1" ensures that a memory
   // block is reserved now.
   RecordAllocator allocator(memory_allocator, 1);
   allocators_.push_back(std::move(allocator));
