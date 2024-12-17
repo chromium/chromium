@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace context {
+namespace content {
 class BrowserContext;
 }
 
