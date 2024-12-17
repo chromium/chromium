@@ -58,6 +58,9 @@ using OnProfileSwitchCompletion = base::OnceCallback<
                     sceneIdentifier:(NSString*)sceneIdentifier
                          completion:(OnProfileSwitchCompletion)completion;
 
+// Converts the personal profile to a managed one and attaches `identity` to it.
+- (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity;
+
 // Signs out of `profile` and sends `didSignOut` to the delegate when
 // complete.
 - (void)signOutProfile:(ProfileIOS*)profile;

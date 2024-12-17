@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -59,6 +58,7 @@ enum AuthenticationState {
   CHECK_SIGNIN_STEPS,
   FETCH_MANAGED_STATUS,
   SHOW_MANAGED_CONFIRMATION,
+  CONVERT_PERSONAL_PROFILE_TO_MANAGED,
   SIGN_OUT_IF_NEEDED,
   SIGN_IN,
   REGISTER_FOR_USER_POLICY,
@@ -163,6 +163,10 @@ BOOL IsIdentityInCoreAccountInfos(
   // YES if the signed in account is a managed account and the sign-in flow
   // includes sync.
   BOOL _shouldShowManagedConfirmation;
+  // YES if the personal profile should be converted to a managed (work) profile
+  // as part of the signin flow. Can only be true if the to-be-signed-in account
+  // is managed.
+  BOOL _shouldConvertPersonalProfileToManaged;
   // YES if user policies have to be fetched.
   BOOL _shouldFetchUserPolicy;
   // YES if user is opted into bookmark and reading list account storage.
@@ -275,6 +279,7 @@ BOOL IsIdentityInCoreAccountInfos(
     case CHECK_SIGNIN_STEPS:
     case FETCH_MANAGED_STATUS:
     case SHOW_MANAGED_CONFIRMATION:
+    case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
     case SIGN_OUT_IF_NEEDED:
     case SIGN_IN:
     case REGISTER_FOR_USER_POLICY:
@@ -310,10 +315,15 @@ BOOL IsIdentityInCoreAccountInfos(
       else
         return SIGN_IN;
     case SHOW_MANAGED_CONFIRMATION:
-      if (_shouldSignOut)
+      if (_shouldConvertPersonalProfileToManaged) {
+        return CONVERT_PERSONAL_PROFILE_TO_MANAGED;
+      } else if (_shouldSignOut) {
         return SIGN_OUT_IF_NEEDED;
-      else
+      } else {
         return SIGN_IN;
+      }
+    case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
+      return SIGN_IN;
     case SIGN_OUT_IF_NEEDED:
       return SIGN_IN;
     case SIGN_IN:
@@ -385,6 +395,11 @@ BOOL IsIdentityInCoreAccountInfos(
                        skipBrowsingDataMigration:_accessPoint ==
                                                  signin_metrics::AccessPoint::
                                                      ACCESS_POINT_START_PAGE];
+      return;
+    }
+
+    case CONVERT_PERSONAL_PROFILE_TO_MANAGED: {
+      [_performer makePersonalProfileManagedWithIdentity:_identityToSignIn];
       return;
     }
 
@@ -628,14 +643,12 @@ BOOL IsIdentityInCoreAccountInfos(
                                      prefs::kSigninHasAcceptedManagementDialog,
                                      gaiaIDHash, base::Value(true));
   }
-  if (AreSeparateProfilesForManagedAccountsEnabled() &&
+
+  _shouldConvertPersonalProfileToManaged =
+      AreSeparateProfilesForManagedAccountsEnabled() &&
       (!keepBrowsingDataSeparate ||
-       _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE)) {
-    GetApplicationContext()
-        ->GetAccountProfileMapper()
-        ->MakePersonalProfileManagedWithGaiaID(
-            base::SysNSStringToUTF8(_identityToSignIn.gaiaID));
-  }
+       _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
+
   [self continueSignin];
 }
 
@@ -658,6 +671,10 @@ BOOL IsIdentityInCoreAccountInfos(
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success {
   DCHECK_EQ(FETCH_USER_POLICY, _state);
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
+  [self continueSignin];
+}
+
+- (void)didMakePersonalProfileManaged {
   [self continueSignin];
 }
 

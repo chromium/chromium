@@ -44,6 +44,9 @@
 // was successful.
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success;
 
+// Indicates that the personal profile was converted to a managed one.
+- (void)didMakePersonalProfileManaged;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_DELEGATE_H_
