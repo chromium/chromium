@@ -47,17 +47,13 @@ class BrowserLoader {
   virtual void Unload();
 
  private:
-  // Called on unload completed.
-  void OnUnloadCompleted(LacrosSelection selection);
+  void OnUnloadCompleted();
 
-  // Loader for rootfs lacros and stateful lacros. Loader objects are
-  // constructed on start loading and reset on unload completion or on reload.
-  std::unique_ptr<LacrosSelectionLoader> rootfs_lacros_loader_;
   std::unique_ptr<LacrosSelectionLoader> stateful_lacros_loader_;
 
   std::unique_ptr<LacrosSelectionLoaderFactory> factory_;
 
-  // Called when Unload is completed for both rootfs and stateful lacros.
+  // Called when Unload is completed for stateful lacros.
   base::OnceClosure callback_on_unload_completion_;
 
   // Used for DCHECKs to ensure method calls executed in the correct thread.

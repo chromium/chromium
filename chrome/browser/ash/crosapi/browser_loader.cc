@@ -14,17 +14,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader_factory.h"
-#include "chrome/browser/ash/crosapi/rootfs_lacros_loader.h"
 #include "chrome/browser/ash/crosapi/stateful_lacros_loader.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 
@@ -45,10 +39,6 @@ class LacrosSelectionLoaderFactoryImpl : public LacrosSelectionLoaderFactory {
 
   ~LacrosSelectionLoaderFactoryImpl() override = default;
 
-  std::unique_ptr<LacrosSelectionLoader> CreateRootfsLacrosLoader() override {
-    return std::make_unique<RootfsLacrosLoader>();
-  }
-
   std::unique_ptr<LacrosSelectionLoader> CreateStatefulLacrosLoader() override {
     return std::make_unique<StatefulLacrosLoader>(component_manager_);
   }
@@ -56,10 +46,6 @@ class LacrosSelectionLoaderFactoryImpl : public LacrosSelectionLoaderFactory {
  private:
   scoped_refptr<component_updater::ComponentManagerAsh> component_manager_;
 };
-
-bool IsUnloading(LacrosSelectionLoader* loader) {
-  return loader && loader->IsUnloading();
-}
 
 }  // namespace
 
@@ -75,45 +61,17 @@ BrowserLoader::~BrowserLoader() = default;
 
 void BrowserLoader::Unload() {
   // Can be called even if Lacros isn't enabled, to clean up the old install.
-  // Unmount the rootfs/stateful lacros-chrome if it was mounted.
-  if (rootfs_lacros_loader_) {
-    rootfs_lacros_loader_->Unload(
-        base::BindOnce(&BrowserLoader::OnUnloadCompleted,
-                       weak_factory_.GetWeakPtr(), LacrosSelection::kRootfs));
-  }
-
+  // Unmount the stateful lacros-chrome if it was mounted.
   if (stateful_lacros_loader_) {
-    stateful_lacros_loader_->Unload(
-        base::BindOnce(&BrowserLoader::OnUnloadCompleted,
-                       weak_factory_.GetWeakPtr(), LacrosSelection::kStateful));
+    stateful_lacros_loader_->Unload(base::BindOnce(
+        &BrowserLoader::OnUnloadCompleted, weak_factory_.GetWeakPtr()));
   }
 }
 
-void BrowserLoader::OnUnloadCompleted(LacrosSelection selection) {
+void BrowserLoader::OnUnloadCompleted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  switch (selection) {
-    case LacrosSelection::kRootfs:
-      CHECK(rootfs_lacros_loader_->IsUnloaded());
-      rootfs_lacros_loader_.reset();
-      break;
-    case LacrosSelection::kStateful:
-      CHECK(stateful_lacros_loader_->IsUnloaded());
-      stateful_lacros_loader_.reset();
-      break;
-    case LacrosSelection::kDeployedLocally:
-      NOTREACHED();
-  }
-
-  // If either of rootfs or stateful lacros loader is still in the process of
-  // unload, wait running completion callback.
-  if (IsUnloading(rootfs_lacros_loader_.get()) ||
-      IsUnloading(stateful_lacros_loader_.get())) {
-    return;
-  }
-
-  // If both of the rootfs and stateful lacros load completed unloading, run the
-  // stored callback if exists.
+  CHECK(stateful_lacros_loader_->IsUnloaded());
+  stateful_lacros_loader_.reset();
   if (callback_on_unload_completion_) {
     std::move(callback_on_unload_completion_).Run();
   }

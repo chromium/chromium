@@ -15,8 +15,7 @@ class LacrosSelectionLoaderFactory {
  public:
   virtual ~LacrosSelectionLoaderFactory() = default;
 
-  // Interface to create LacrosSelectionLoader for rootfs/stateful.
-  virtual std::unique_ptr<LacrosSelectionLoader> CreateRootfsLacrosLoader() = 0;
+  // Interface to create LacrosSelectionLoader for stateful.
   virtual std::unique_ptr<LacrosSelectionLoader>
   CreateStatefulLacrosLoader() = 0;
 };
