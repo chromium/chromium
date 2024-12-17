@@ -1797,14 +1797,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "optimization_guide_components_unittests",
-    args = [
-        "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*",
-    ],
-    binary = "components_unittests",
-)
-
-targets.tests.gtest_test(
     name = "optimization_guide_gpu_unittests",
 )
 

@@ -2578,14 +2578,6 @@
     },
 
     'optimization_guide_android_gtests': {
-      'optimization_guide_components_unittests': {
-        'test_common': {
-          'args': [
-            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-          ],
-        },
-        'test': 'components_unittests',
-      },
     },
 
     'optimization_guide_cros_gtests': {
@@ -2596,14 +2588,6 @@
           ],
         },
         'test': 'browser_tests',
-      },
-      'optimization_guide_components_unittests': {
-        'test_common': {
-          'args': [
-            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-          ],
-        },
-        'test': 'components_unittests',
       },
     },
 
@@ -2640,17 +2624,6 @@
           ],
         },
         'test': 'browser_tests',
-        'linux_args': [
-          '--use-xvfb',
-        ],
-      },
-      'optimization_guide_components_unittests': {
-        'test_common': {
-          'args': [
-            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-          ],
-        },
-        'test': 'components_unittests',
         'linux_args': [
           '--use-xvfb',
         ],

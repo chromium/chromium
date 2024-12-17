@@ -1911,7 +1911,6 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "optimization_guide_android_gtests",
     tests = {
-        "optimization_guide_components_unittests": targets.legacy_test_config(),
         # TODO(mgeorgaklis): Add optimization_guide_unittests when they become Android compatible.
     },
 )
@@ -1920,7 +1919,6 @@ targets.legacy_basic_suite(
     name = "optimization_guide_cros_gtests",
     tests = {
         "optimization_guide_browser_tests": targets.legacy_test_config(),
-        "optimization_guide_components_unittests": targets.legacy_test_config(),
     },
 )
 
@@ -1945,11 +1943,6 @@ targets.legacy_basic_suite(
             ],
         ),
         "optimization_guide_browser_tests": targets.legacy_test_config(
-            linux_args = [
-                "--use-xvfb",
-            ],
-        ),
-        "optimization_guide_components_unittests": targets.legacy_test_config(
             linux_args = [
                 "--use-xvfb",
             ],
