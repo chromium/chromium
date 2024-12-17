@@ -350,10 +350,8 @@ bool IsPathEqualTo(const GURL& url, std::string_view test) {
 }
 
 bool IsFaviconURL(const GURL& url) {
-  return base::FeatureList::IsEnabled(
-             extensions_features::kNewExtensionFaviconHandling) &&
-         (IsPathEqualTo(url, kFaviconSourcePath) ||
-          IsPathEqualTo(url, base::StrCat({kFaviconSourcePath, "/"})));
+  return IsPathEqualTo(url, kFaviconSourcePath) ||
+         IsPathEqualTo(url, base::StrCat({kFaviconSourcePath, "/"}));
 }
 
 bool IsBackgroundPageURL(const GURL& url) {

@@ -160,9 +160,6 @@ BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 // cmd.exe process as a proxy.
 BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
 
-// Controls whether extensions can use the new favicon fetching in Manifest V3.
-BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
-
 // Controls whether omnibox extensions can use the new capability to intercept
 // input without needing keyword mode.
 BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
