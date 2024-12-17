@@ -42,9 +42,9 @@ class Extension;
 class ExtensionActionRunner : public content::WebContentsObserver,
                               public ExtensionRegistryObserver {
  public:
-  class TestObserver {
+  class TestObserver : public base::CheckedObserver {
    public:
-    virtual void OnBlockedActionAdded() = 0;
+    virtual void OnBlockedActionAdded() {}
   };
 
   explicit ExtensionActionRunner(content::WebContents* web_contents);
@@ -113,10 +113,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
     accept_bubble_for_testing_ = accept_bubble;
   }
 
-  void set_observer_for_testing(TestObserver* observer) {
-    test_observer_ = observer;
-  }
-
   // Handles mojom::LocalFrameHost::RequestScriptInjectionPermission(). It
   // replies back with |callback|.
   void OnRequestScriptInjectionPermission(
@@ -143,6 +139,9 @@ class ExtensionActionRunner : public content::WebContentsObserver,
     pending_scripts_.erase(extension.id());
   }
 #endif  // defined(UNIT_TEST)
+
+  void AddObserver(TestObserver* observer);
+  void RemoveObserver(TestObserver* observer);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtensionActionRunnerFencedFrameBrowserTest,
@@ -239,7 +238,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // callback.
   std::optional<bool> accept_bubble_for_testing_;
 
-  raw_ptr<TestObserver> test_observer_;
+  base::ObserverList<TestObserver> test_observers_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

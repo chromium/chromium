@@ -79,8 +79,7 @@ ExtensionActionRunner::ExtensionActionRunner(content::WebContents* web_contents)
       num_page_requests_(0),
       browser_context_(web_contents->GetBrowserContext()),
       was_used_on_page_(false),
-      ignore_active_tab_granted_(false),
-      test_observer_(nullptr) {
+      ignore_active_tab_granted_(false) {
   CHECK(web_contents);
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
@@ -217,8 +216,8 @@ void ExtensionActionRunner::OnWebRequestBlocked(const Extension* extension) {
     NotifyChange(extension);
   }
 
-  if (test_observer_) {
-    test_observer_->OnBlockedActionAdded();
+  for (TestObserver& observer : test_observers_) {
+    observer.OnBlockedActionAdded();
   }
 }
 
@@ -303,8 +302,8 @@ void ExtensionActionRunner::RequestScriptInjection(
 
   was_used_on_page_ = true;
 
-  if (test_observer_) {
-    test_observer_->OnBlockedActionAdded();
+  for (TestObserver& observer : test_observers_) {
+    observer.OnBlockedActionAdded();
   }
 }
 
@@ -374,6 +373,14 @@ void ExtensionActionRunner::OnRequestScriptInjectionPermission(
       // "no"). Just let the request fizzle and die.
       break;
   }
+}
+
+void ExtensionActionRunner::AddObserver(TestObserver* observer) {
+  test_observers_.AddObserver(observer);
+}
+
+void ExtensionActionRunner::RemoveObserver(TestObserver* observer) {
+  test_observers_.RemoveObserver(observer);
 }
 
 void ExtensionActionRunner::NotifyChange(const Extension* extension) {
