@@ -5,7 +5,7 @@
 import 'chrome://compare/app.js';
 
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction, LOADING_END_EVENT_TYPE, LOADING_START_EVENT_TYPE} from 'chrome://compare/app.js';
+import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction, CompareTableLoadStatus, LOADING_END_EVENT_TYPE, LOADING_START_EVENT_TYPE, TABLE_LOAD_HISTOGRAM_NAME} from 'chrome://compare/app.js';
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {Router} from 'chrome://compare/router.js';
@@ -1377,6 +1377,45 @@ suite('AppTest', () => {
           metrics.count(
               COLUMN_MODIFICATION_HISTOGRAM_NAME,
               CompareTableColumnAction.UPDATE_FROM_RECENTLY_VIEWED));
+    });
+
+    test('record metrics for success state', async () => {
+      // Table has been loaded in test setup.
+      assertEquals(
+          1,
+          metrics.count(
+              TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.SUCCESS));
+    });
+
+    test('record metrics for error state', async () => {
+      const productInfo1 = createProductInfo({
+        clusterId: BigInt(123),
+        title: 'Product 1',
+        productUrl: {url: 'https://example.com/1'},
+        imageUrl: {url: 'http://example.com/image1.png'},
+      });
+
+      const productInfo2 = createProductInfo({
+        clusterId: BigInt(456),
+        title: 'Product 2',
+        productUrl: {url: 'https://example.com/2'},
+        imageUrl: {url: 'http://example.com/image2.png'},
+      });
+
+      const promiseValues = createAppPromiseValues({
+        urlsParam: ['https://example.com/1', 'https://example.com/2'],
+        specs: createSpecs({
+          productDimensionMap: new Map<bigint, string>(),
+        }),
+        productInfos: [productInfo1, productInfo2],
+      });
+      await createAppElementWithPromiseValues(promiseValues);
+
+      assertTrue(appElement.$.errorToast.open);
+      assertEquals(
+          1,
+          metrics.count(
+              TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.FAILURE));
     });
   });
 

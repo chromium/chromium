@@ -193,6 +193,13 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Compare.Table.LoadStatus"
+    enum="CompareTableLoadStatus" expires_after="2025-05-18">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>Records the status of a comparison table load.</summary>
+</histogram>
+
 <histogram name="Commerce.Compare.Table.PercentageValidProducts" units="%"
     expires_after="2025-02-15">
   <owner>mdjones@chromium.org</owner>

@@ -99,8 +99,20 @@ export enum CompareTableColumnAction {
   MAX_VALUE = 6,
 }
 
+// This enum is used for metrics and should be kept in sync with the enum of
+// the same name in enums.xml.
+export enum CompareTableLoadStatus {
+  SUCCESS = 0,
+  FAILURE = 1,
+  // Must be last:
+  MAX_VALUE = 2,
+}
+
 export const COLUMN_MODIFICATION_HISTOGRAM_NAME: string =
     'Commerce.Compare.Table.ColumnModification';
+
+export const TABLE_LOAD_HISTOGRAM_NAME: string =
+    'Commerce.Compare.Table.LoadStatus';
 
 enum AppState {
   ERROR = 0,
@@ -475,6 +487,13 @@ export class ProductSpecificationsElement extends PolymerElement {
       // the URLs in the comparison will still be displayed as columns.
       if (productSpecs.productDimensionMap.size === 0 && urls.length > 1) {
         this.$.errorToast.show();
+        chrome.metricsPrivate.recordEnumerationValue(
+            TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.FAILURE,
+            CompareTableLoadStatus.MAX_VALUE);
+      } else {
+        chrome.metricsPrivate.recordEnumerationValue(
+            TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.SUCCESS,
+            CompareTableLoadStatus.MAX_VALUE);
       }
     }
 
