@@ -13,10 +13,15 @@
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/common/url_constants.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -40,6 +45,52 @@ class MockPerProfileWebUITracker : public PerProfileWebUITracker {
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 };
 
+// kWebUIUrl1 and kWebUIUrl2 are the two preloadable WebUIs set up
+// by this test harness.
+// The trailing '/' is important due to the assumption that
+// url == GURL(url).spec(), which simplifies mocking the WebUI tracker.
+constexpr char kWebUIUrl1[] = "chrome://example1/";
+constexpr char kWebUIUrl2[] = "chrome://example2/";
+
+class TestWebUIController1 : public TopChromeWebUIController {
+ public:
+  explicit TestWebUIController1(content::WebUI* web_ui)
+      : TopChromeWebUIController(web_ui) {}
+
+  static constexpr std::string GetWebUIName() { return "Test1"; }
+};
+
+class TestWebUIConfig1
+    : public DefaultTopChromeWebUIConfig<TestWebUIController1> {
+ public:
+  explicit TestWebUIConfig1(bool& enabled)
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme, "example1"),
+        enabled_(enabled) {}
+
+  // DefaultWebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* context) override {
+    return *enabled_;
+  }
+
+ private:
+  raw_ref<bool> enabled_;
+};
+
+class TestWebUIController2 : public TopChromeWebUIController {
+ public:
+  explicit TestWebUIController2(content::WebUI* web_ui)
+      : TopChromeWebUIController(web_ui) {}
+
+  static constexpr std::string GetWebUIName() { return "Test2"; }
+};
+
+class TestWebUIConfig2
+    : public DefaultTopChromeWebUIConfig<TestWebUIController2> {
+ public:
+  TestWebUIConfig2()
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme, "example2") {}
+};
+
 }  // namespace
 
 namespace webui {
@@ -47,14 +98,9 @@ namespace webui {
 class ProfilePreloadCandidateSelectorTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  // kWebUIUrl1 and kWebUIUrl2 are the two preloadable WebUIs set up
-  // by this test harness.
-  // The trailing '/' is important due to the assumption that
-  // url == GURL(url).spec(), which simplifies mocking the WebUI tracker.
-  static constexpr char kWebUIUrl1[] = "chrome://example1/";
-  static constexpr char kWebUIUrl2[] = "chrome://example2/";
-
-  ProfilePreloadCandidateSelectorTest() = default;
+  ProfilePreloadCandidateSelectorTest()
+    : registration1_(std::make_unique<TestWebUIConfig1>(enabled_webui_1_)),
+      registration2_(std::make_unique<TestWebUIConfig2>()) {}
   ~ProfilePreloadCandidateSelectorTest() override = default;
   ProfilePreloadCandidateSelectorTest(
       const ProfilePreloadCandidateSelectorTest&) = delete;
@@ -95,12 +141,16 @@ class ProfilePreloadCandidateSelectorTest
     service->ResetBaseScoreForURL(url, score);
   }
 
+ protected:
+  bool enabled_webui_1_ = true;
+
  private:
   // Use NiceMock because the exact interaction between the candidate selector
   // and the WebUI tracker is an implementation detail that we don't care.
   // The tests only use the mock tracker to simulate presence state of WebUIs.
   testing::NiceMock<MockPerProfileWebUITracker> mock_webui_tracker_;
   std::unique_ptr<ProfilePreloadCandidateSelector> candidate_selector_;
+  content::ScopedWebUIConfigRegistration registration1_, registration2_;
 };
 
 // Tests that the candidate selector does not select WebUIs that are present.
@@ -164,6 +214,26 @@ TEST_F(ProfilePreloadCandidateSelectorTest, PreferHighEngagementWebUI) {
   // Sets a higher engagement score for URL2, the selector should select URL2.
   SetEngagementScore(profile(), GURL(kWebUIUrl1), high_engagement_score);
   SetEngagementScore(profile(), GURL(kWebUIUrl2), high_engagement_score + 1);
+  EXPECT_EQ(GURL(kWebUIUrl2), *GetURLToPreload(profile()));
+}
+
+TEST_F(ProfilePreloadCandidateSelectorTest,
+       IgnoreDisabledWebUIs) {
+  // Set engagement scores to maximum, so that the selector won't reject a URL
+  // due to its low engagemen score.
+  SetEngagementScore(profile(), GURL(kWebUIUrl1),
+                     SiteEngagementService::GetMaxPoints());
+  // Set URL2 to have a lower engagement score than URL1, so that when URL2 is
+  // selected, it is not due to it having a higher engagement score.
+  SetEngagementScore(profile(), GURL(kWebUIUrl2),
+                     SiteEngagementService::GetMaxPoints()-1);
+
+  // By default no WebUI is present, selects either URL1 or URL2.
+  EXPECT_TRUE(
+      base::Contains(GetAllPreloableURLs(), *GetURLToPreload(profile())));
+
+  // If URL1 is disabled, selects URL2.
+  base::AutoReset<bool> disable_webui_1(&enabled_webui_1_, false);
   EXPECT_EQ(GURL(kWebUIUrl2), *GetURLToPreload(profile()));
 }
 
