@@ -540,7 +540,7 @@ static Node getNodeFromSizeOfArrayExpr(
   clang::SourceManager& source_manager = *result.SourceManager;
 
   const auto* array_variable =
-      result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
+      result.Nodes.getNodeAs<clang::VarDecl>("array_variable_rhs");
   const std::string& array_variable_as_string =
       array_variable->getNameAsString();
 
@@ -572,6 +572,7 @@ static Node getNodeFromSizeOfArrayExpr(
 
   Node n;
   n.replacement = replacement_directive;
+  n.is_deref_expr = true;
   return n;
 }
 
@@ -1152,6 +1153,12 @@ class PotentialNodes : public MatchFinder::MatchCallback {
       return getNodeFromCallToExternalFunction(result);
     }
 
+    if (const auto* sizeof_array_expr =
+            result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>(
+                "sizeof_array_expr")) {
+      return getNodeFromSizeOfArrayExpr(sizeof_array_expr, result);
+    }
+
     if (result.Nodes.getNodeAs<clang::VarDecl>("array_variable")) {
       return getNodeFromArrayType(result);
     }
@@ -1165,12 +1172,6 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (auto* type_loc =
             result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
       return getNodeFromPointerTypeLoc(type_loc, result);
-    }
-
-    if (const auto* sizeof_array_expr =
-            result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>(
-                "sizeof_array_expr")) {
-      return getNodeFromSizeOfArrayExpr(sizeof_array_expr, result);
     }
 
     if (auto* rhs_array_var =
@@ -1584,12 +1585,16 @@ class Spanifier {
             arraySubscriptExpr(hasLHS(declRefExpr(to(array_variable)))))));
     match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
 
+    auto c_style_array_var = varDecl(hasType(arrayType()), unless(exclusions),
+                                     unless(hasExternalFormalLinkage()));
+
     // `sizeof(c_array)` is rewritten to
     // `std_array.size() * sizeof(element_size)`.
-    auto sizeof_array_expr =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 sizeOfExpr(has(declRefExpr(to(array_variable))))
-                     .bind("sizeof_array_expr"));
+    auto sizeof_array_expr = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        sizeOfExpr(
+            has(declRefExpr(to(c_style_array_var.bind("array_variable_rhs")))))
+            .bind("sizeof_array_expr"));
     match_finder_.addMatcher(sizeof_array_expr, &potential_nodes_);
 
     auto deref_expression = traverse(
@@ -1635,8 +1640,7 @@ class Spanifier {
 
     // When passing c-style arrays to third_party functions as parameters, we
     // need to add `.data()` to extract the pointer and keep things compiling.
-    auto c_style_array_var = varDecl(hasType(arrayType()), unless(exclusions),
-                                     unless(hasExternalFormalLinkage()));
+    //
     // Functions that are annotated with UNSAFE_BUFFER_USAGE also get this
     // treatment because the annotation means it was left there intentionally.
     // And since they emit warnings we can easily find and spanify them later.

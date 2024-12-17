@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iterator>
+#include <string_view>
 
 void fct() {
   // Expected rewrite:
@@ -56,4 +57,13 @@ void fct3() {
   std::swap(data, data);
   std::ranges::find(data, 'a');
   std::ignore = std::ranges::min(data);
+}
+
+void fct4() {
+  // Adding .data() works for std::string_view rewrites too.
+  // Expected rewrite:
+  // const std::string_view buf = "123456789";
+  const std::string_view buf = "123456789";
+  std::ignore = buf[1];
+  std::ignore = memcmp(buf.data(), "xxx456789", 3);
 }

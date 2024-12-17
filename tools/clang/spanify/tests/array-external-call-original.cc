@@ -56,3 +56,12 @@ void fct3() {
   std::ranges::find(data, 'a');
   std::ignore = std::ranges::min(data);
 }
+
+void fct4() {
+  // Adding .data() works for std::string_view rewrites too.
+  // Expected rewrite:
+  // const std::string_view buf = "123456789";
+  const char buf[] = "123456789";
+  std::ignore = buf[1];
+  std::ignore = memcmp(buf, "xxx456789", 3);
+}
