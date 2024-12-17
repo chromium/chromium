@@ -187428,7 +187428,7 @@
        ]
       ],
       "grid-aspect-ratio-align-items-center.html": [
-       "4fa7b1c331f875fee095fdb6fb1d1d9de491e4c8",
+       "482326115c91fe76963e37e8e5850d3a067fd5db",
        [
         null,
         [
@@ -187437,23 +187437,7 @@
           "=="
          ]
         ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             1
-            ],
-            [
-             0,
-             1977
-            ]
-           ]
-          ]
-         ]
-        }
+        {}
        ]
       ],
       "intrinsic-size-001.html": [
@@ -191079,6 +191063,19 @@
       ],
       "bfc-next-to-float-1.html": [
        "9c2a60e6c01917f590d09710adb43c2203294fb2",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "bfc-next-to-float-2.html": [
+       "9683f92d49c11c2a436a023a0f758ae30c76da54",
        [
         null,
         [
@@ -277450,7 +277447,7 @@
       ]
      ],
      "backdrop-object.html": [
-      "01dc913a50dddc154f6463e7c2c2fd52f64cc0f7",
+      "6a2855f3c9bfe9df470f6c2e44481409794ce007",
       [
        null,
        [
@@ -339959,12 +339956,6 @@
       "a037967e493fa5eba3914db3c8f38914ee1d8729",
       []
      ],
-     "parsing": {
-      "grid-template-shorthand-composition-expected.txt": [
-       "f2f959a7933c5811850868f5af02ca49b7275bfb",
-       []
-      ]
-     },
      "reference": {
       "anonymous-grid-items-001-ref.html": [
        "20302c2f1aa48e45b0698ed42bca866cf8f6a58e",
@@ -347737,8 +347728,8 @@
       "c901a08d39299de0a4d731262b8bd42cd7025637",
       []
      ],
-     "register-property-syntax-parsing-expected.txt": [
-      "6d09c309224c0d019f57ca9e76297990e14f884a",
+     "initial-value-unit-arithmetic-expected.txt": [
+      "10b6b476c0afc65242f494442856f33a1ebd68be",
       []
      ],
      "registered-property-change-style-002-ref.html": [
@@ -347755,7 +347746,7 @@
      ],
      "resources": {
       "utils.js": [
-       "a952a4feedc5523219eccd231c9bf1c1dc624755",
+       "b850e61fc7287d82daa4749c073c78e190ec9258",
        []
       ]
      },
@@ -407655,7 +407646,7 @@
      []
     ],
     "testdriver.js": [
-     "bdd18cc0e7d063cd204fc930d88b2d0d4d7d485b",
+     "a7f9fb009897ce8881b6dd966ffcb5bbf57a5587",
      []
     ],
     "testdriver.js.headers": [
@@ -413474,6 +413465,10 @@
     ],
     "signatures": {
      "tentative": {
+      "helper.js": [
+       "c13c6c4dcf6ec0a217a839874cbcdf31eab00990",
+       []
+      ],
       "resource.py": [
        "e857de46c0a634916e94fa71f6e1182109cbabcd",
        []
@@ -414840,6 +414835,10 @@
       ],
       "SVGAnimatedEnumeration-SVGMarkerElement-expected.txt": [
        "ed30ff7f53c19456581a597a1901609fd319d3a7",
+       []
+      ],
+      "SVGGeometryElement.getTotalLength-01-expected.txt": [
+       "b00415a2f6780870939955e08b01cc1ecdc5e9aa",
        []
       ],
       "SVGGeometryElement.isPointInFill-01-expected.txt": [
@@ -428198,18 +428197,130 @@
       }
      ]
     ],
-    "globalscope-indexedDB-SameObject.html": [
-     "7263aaaace5331310558e3f80b8509ac8246ed69",
+    "globalscope-indexedDB-SameObject.any.js": [
+     "ae3676708d39d35dea703bb3088e354cf3392acf",
      [
-      null,
-      {}
+      "IndexedDB/globalscope-indexedDB-SameObject.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Verify [SameObject] behavior of the global scope's indexedDB attribute"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/globalscope-indexedDB-SameObject.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Verify [SameObject] behavior of the global scope's indexedDB attribute"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/globalscope-indexedDB-SameObject.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Verify [SameObject] behavior of the global scope's indexedDB attribute"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/globalscope-indexedDB-SameObject.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Verify [SameObject] behavior of the global scope's indexedDB attribute"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
      ]
     ],
-    "historical.html": [
-     "8e7097eb46fd2e2c1c339e44ef1805b2f8b0fcf7",
+    "historical.any.js": [
+     "fcd66f297d6031c9cc72adc44e017e1c03fe545d",
      [
-      null,
-      {}
+      "IndexedDB/historical.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Historical features"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/historical.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Historical features"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/historical.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Historical features"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/historical.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Historical features"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
      ]
     ],
     "idb-binary-key-detached.htm": [
@@ -428299,11 +428410,67 @@
       {}
      ]
     ],
-    "idb_binary_key_conversion.htm": [
-     "b55e6324b349987750816d49efb9eb908a845724",
+    "idb_binary_key_conversion.any.js": [
+     "0a615f86cd92bab2a3cef279ea813babd9024c88",
      [
-      null,
-      {}
+      "IndexedDB/idb_binary_key_conversion.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Verify the conversion of various types of BufferSource"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idb_binary_key_conversion.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Verify the conversion of various types of BufferSource"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idb_binary_key_conversion.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Verify the conversion of various types of BufferSource"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idb_binary_key_conversion.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Verify the conversion of various types of BufferSource"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
      ]
     ],
     "idb_webworkers.htm": [
@@ -473148,6 +473315,13 @@
        {}
       ]
      ],
+     "scope-overlapping-has.html": [
+      "542cda044c74b3cf3379f4e21852b4d5b0551eaf",
+      [
+       null,
+       {}
+      ]
+     ],
      "scope-proximity.html": [
       "7a2d6d562c36ba82d6265e6dda361371bb2da451",
       [
@@ -486429,6 +486603,43 @@
         {}
        ]
       ],
+      "parsing": {
+       "scroll-buttons-invalid.html": [
+        "752aa3c865be5cf2c24c22ab00f97c0b375feb93",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-buttons-valid.html": [
+        "b4e747efadfce0f2492bf740d93fe26b23911bd5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-markers-computed.html": [
+        "882ed83fe723c6984c588ae34bcdd93fd365fcdc",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-markers-invalid.html": [
+        "5194d5ab72b2f1126fda82dfb2c3126bcf9c6ab5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-markers-valid.html": [
+        "760efc877288115388018f6d014fcca8d79863b3",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "scrollbar-gutter-invalid.html": [
        "e59790c32eb6767f3a2d9594434f7886f57a532b",
        [
@@ -488255,6 +488466,13 @@
        {}
       ]
      ],
+     "initial-value-unit-arithmetic.html": [
+      "0974e13da8aed9dced19ae634340ee27735e9bd4",
+      [
+       null,
+       {}
+      ]
+     ],
      "invalid-at-computed-value-time.html": [
       "56a7756f40643478b5505390f29a982e7754bd8c",
       [
@@ -488270,7 +488488,7 @@
       ]
      ],
      "register-property-syntax-parsing.html": [
-      "793ef21ba1d3f875c2585a7af17896849ee9aa08",
+      "076eddb8ac5f591518fad5461efc3fcc39e4b269",
       [
        null,
        {}
@@ -509882,7 +510100,7 @@
      ]
     ],
     "CustomElementRegistry.html": [
-     "87da806bcab72e02c6c54bee8c1d0e5781700c1c",
+     "14e689a27f5a4b985bca1e876bd86dc4fc227ac6",
      [
       null,
       {}
@@ -515430,7 +515648,7 @@
      "moveBefore": {
       "tentative": {
        "Node-moveBefore.html": [
-        "bfee97b4459d590159f3c5d45b900867386b3df6",
+        "a23678082669f8696d1e7f63310e0259a70b5db4",
         [
          null,
          {}
@@ -619303,7 +619521,7 @@
         ]
        ],
        "show-picker-user-gesture.html": [
-        "8113a2f32cd13b0f605d8bafb897191d4b7e0117",
+        "c6ebb7a491a2214a17da26c95c3d295c0b9da2cb",
         [
          null,
          {
@@ -696384,7 +696602,7 @@
     "signatures": {
      "tentative": {
       "fetch.any.js": [
-       "fc81fcce453630666ba5a535f7be13d308349f41",
+       "4840451b27f17c0117badf12438e9468b58bcdb7",
        [
         "subresource-integrity/signatures/tentative/fetch.any.html",
         {
@@ -696392,6 +696610,10 @@
           [
            "global",
            "window,dedicatedworker,sharedworker"
+          ],
+          [
+           "script",
+           "helper.js"
           ]
          ]
         }
@@ -696403,6 +696625,10 @@
           [
            "global",
            "window,dedicatedworker,sharedworker"
+          ],
+          [
+           "script",
+           "helper.js"
           ]
          ]
         }
@@ -696414,16 +696640,41 @@
           [
            "global",
            "window,dedicatedworker,sharedworker"
+          ],
+          [
+           "script",
+           "helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "path.window.js": [
+       "37a6c04046098c89a2bb4defced7d5a2a1c835d0",
+       [
+        "subresource-integrity/signatures/tentative/path.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "helper.js"
           ]
          ]
         }
        ]
       ],
       "script.window.js": [
-       "89f2403c78d31c8f95a1919284305cbc0c15eea9",
+       "c9ccee34f324efdd71972be567661b9f13f461d2",
        [
         "subresource-integrity/signatures/tentative/script.window.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "script",
+           "helper.js"
+          ]
+         ]
+        }
        ]
       ]
      }
@@ -699757,7 +700008,7 @@
        ]
       ],
       "SVGGeometryElement.getTotalLength-01.svg": [
-       "49c8c165d70d66064643b50bd369ee4c5eaf05b6",
+       "0cf77bf86673074175edd02f92413ea15f111369",
        [
         null,
         {}
@@ -700339,7 +700590,7 @@
      ]
     ],
     "HTMLElement-generic.html": [
-     "832411b5f56ca01ebf84c27726c205220823aa18",
+     "1dfb16a45e987bf90ba81f4ee60a56fb747028af",
      [
       null,
       {}
@@ -740021,7 +740272,7 @@
       ]
      ],
      "lstm.https.any.js": [
-      "e52add43f94d5b932fda9365cbebb5b4782abe90",
+      "eef85b083048340ea995c6fd6833c306309178c4",
       [
        "webnn/conformance_tests/lstm.https.any.html?cpu",
        {
@@ -763415,6 +763666,15 @@
     ],
     "RTCPeerConnection-relay-canvas.https.html": [
      "78df2ee82d623403f2a627b99c43051a99c96edb",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "RTCPeerConnection-remote-track-currentTime.https.html": [
+     "4b8e6b1095b6467aa14d4b660666eca096f62e2b",
      [
       null,
       {
