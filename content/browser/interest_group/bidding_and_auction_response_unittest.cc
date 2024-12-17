@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 
 #include <optional>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -27,6 +28,22 @@ namespace content {
 namespace {
 std::string ToString(const blink::InterestGroupKey& key) {
   return "(" + key.owner.Serialize() + ", " + key.name + ")";
+}
+
+std::string ToString(
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
+  if (!request) {
+    return "null";
+  }
+  const blink::mojom::AggregatableReportHistogramContributionPtr& contribution =
+      request->contribution->get_histogram_contribution();
+  std::stringstream ss;
+  ss << "{bucket: ";
+  ss << contribution->bucket;
+  ss << ", value: ";
+  ss << contribution->value;
+  ss << "}";
+  return ss.str();
 }
 }  // namespace
 
@@ -82,6 +99,8 @@ std::ostream& operator<<(
   os << "KAnonGhostWinner(";
   os << "candidate: " << testing::PrintToString(winner.candidate) << ", ";
   os << "interest_group: " << ToString(winner.interest_group) << ", ";
+  os << "non_kanon_private_aggregation_request: "
+     << ToString(winner.non_kanon_private_aggregation_request) << ", ";
   os << "ghost_winner: " << testing::PrintToString(winner.ghost_winner) << ")";
   return os;
 }
@@ -425,7 +444,13 @@ MATCHER_P(EqualsKAnonGhostWinner,
           testing::Field(
               "interest_group",
               &BiddingAndAuctionResponse::KAnonGhostWinner::interest_group,
-              testing::Eq(other.get().interest_group))};
+              testing::Eq(other.get().interest_group)),
+          testing::Field(
+              "non_kanon_private_aggregation_request",
+              &BiddingAndAuctionResponse::KAnonGhostWinner::
+                  non_kanon_private_aggregation_request,
+              testing::Eq(std::ref(
+                  other.get().non_kanon_private_aggregation_request)))};
   if (other.get().ghost_winner.has_value()) {
     matchers.push_back(testing::Field(
         "ghost_winner",
@@ -1656,6 +1681,86 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
                   kValidMinimalkAnonGhostWinnersDict.Clone())))),
           CreateMinimalkAnonGhostWinnersServerResponse(),
       },
+      {
+          // Private aggregation not a dict
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerPrivateAggregationSignals",
+                      base::Value(1)))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Private aggregation bad type for bucket
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerPrivateAggregationSignals",
+                      base::Value(base::Value::Dict()
+                                      .Set("bucket", base::Value(1))
+                                      .Set("value", base::Value(1)))))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Private aggregation bucket too big (17 bytes > 16)
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerPrivateAggregationSignals",
+                      base::Value(
+                          base::Value::Dict()
+                              .Set("bucket",
+                                   base::Value(std::vector<uint8_t>{
+                                       0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+                                       0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+                                       0x0e, 0x0f, 0x10}))
+                              .Set("value", base::Value(4)))))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Private aggregation bad type for value
+          base::Value(CreateValidResponseDict().Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(
+                  kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                      "ghostWinnerPrivateAggregationSignals",
+                      base::Value(
+                          base::Value::Dict()
+                              .Set("bucket", base::Value(std::vector<uint8_t>{
+                                                 0x00, 0x01}))
+                              .Set("value", base::Value(std::vector<uint8_t>{
+                                                0x00, 0x01})))))))),
+          CreateExpectedValidResponse(),
+      },
+      {// Valid private aggregation
+       base::Value(CreateValidResponseDict().Set(
+           "kAnonGhostWinners",
+           base::Value(base::Value::List().Append(
+               kValidMinimalkAnonGhostWinnersDict.Clone().Set(
+                   "ghostWinnerPrivateAggregationSignals",
+                   base::Value(
+                       base::Value::Dict()
+                           .Set("bucket",
+                                base::Value(std::vector<uint8_t>{0x04, 0x01}))
+                           .Set("value", base::Value(2)))))))),
+       [&]() {
+         auto response = CreateMinimalkAnonGhostWinnersServerResponse();
+         response.k_anon_ghost_winner->non_kanon_private_aggregation_request =
+             auction_worklet::mojom::PrivateAggregationRequest::New(
+                 auction_worklet::mojom::AggregatableReportContribution::
+                     NewHistogramContribution(
+                         blink::mojom::AggregatableReportHistogramContribution::
+                             New(
+                                 /*bucket=*/1025,
+                                 /*value=*/2,
+                                 /*filtering_id=*/std::nullopt)),
+                 blink::mojom::AggregationServiceMode::kDefault,
+                 blink::mojom::DebugModeDetails::New());
+         return response;
+       }()},
       {
           // Bad ghost_winner type
           base::Value(CreateValidResponseDict().Set(

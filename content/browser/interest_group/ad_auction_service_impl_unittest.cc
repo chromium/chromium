@@ -17421,6 +17421,176 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerAndGhostWinner) {
 }
 
 TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
+       WinnerAndGhostWinnerWithNonKAnonPrivateAggregation) {
+  OverridePrivateAggregationManagerForTesting();
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginA, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "5678"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group2,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
+  int win_idx =
+      request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                /*selected_buyer_and_seller_reporting_id=*/
+                                std::nullopt)))))
+          .Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value(
+                  base::Value::Dict()
+                      .Set(
+                          "kAnonJoinCandidates",
+                          base::Value(
+                              base::Value::Dict()
+                                  .Set("adRenderURLHash",
+                                       AsBlobValue(HashedKAnonKeyForAdBid(
+                                           interest_group2,
+                                           interest_group2.ads.value()[0]
+                                               .render_url())))
+                                  .Set(
+                                      "reportingIdHash",
+                                      AsBlobValue(
+                                          HashedKAnonKeyForAdNameReporting(
+                                              interest_group2,
+                                              interest_group2.ads.value()[0],
+                                              /*selected_buyer_and_seller_reporting_id=*/
+                                              std::nullopt)))))
+                      .Set("interestGroupIndex", base::Value(win_idx))
+                      .Set("owner", base::Value("https://a.test/"))
+                      .Set("ghostWinnerPrivateAggregationSignals",
+                           base::Value::Dict()
+                               .Set("bucket", base::Value(std::vector<uint8_t>{
+                                                  0x04, 0x01}))
+                               .Set("value", base::Value(4))))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  base::RunLoop run_loop;
+  if (GetParam() == KAnonState::kEnforceOnDeviceEnforceOnServer) {
+    EXPECT_CALL(mock_private_aggregation_cb_, Run)
+        .WillOnce(testing::Invoke(
+            [&](PrivateAggregationHost::ReportRequestGenerator generator,
+                std::vector<
+                    blink::mojom::AggregatableReportHistogramContribution>
+                    contributions,
+                PrivateAggregationBudgetKey budget_key,
+                PrivateAggregationHost::NullReportBehavior
+                    null_report_behavior) {
+              AggregatableReportRequest request =
+                  std::move(generator).Run(contributions);
+              EXPECT_THAT(
+                  request.payload_contents().contributions,
+                  testing::UnorderedElementsAre(
+                      blink::mojom::AggregatableReportHistogramContribution(
+                          /*bucket=*/absl::MakeUint128(0, 1025), /*value=*/4,
+                          /*filtering_id=*/std::nullopt)));
+              EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
+              run_loop.Quit();
+            }));
+  }
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
+          }),
+      main_rfh());
+
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer:
+      EXPECT_FALSE(run_loop.AnyQuitCalled());
+      break;
+    case KAnonState::kEnforceOnDeviceEnforceOnServer:
+      run_loop.Run();
+      break;
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
        WinnerAndGhostWinnerWithAdComponents) {
   ProvideKeys();
   NavigateAndCommit(kUrlA);

@@ -70,6 +70,10 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
 
     KAnonJoinCandidate candidate;
     blink::InterestGroupKey interest_group;
+    // `non_kanon_private_aggregation_request` will only have reject reason
+    // contributions, which the server will guarantee.
+    auction_worklet::mojom::PrivateAggregationRequestPtr
+        non_kanon_private_aggregation_request;
     std::optional<GhostWinnerForTopLevelAuction> ghost_winner;
   };
 

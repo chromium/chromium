@@ -1907,6 +1907,8 @@ class InterestGroupAuction::BuyerHelper
           server_filtered_pagg_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>
           server_filtered_pagg_requests_non_reserved,
+      auction_worklet::mojom::PrivateAggregationRequestPtr
+          non_kanon_private_aggregation_request,
       std::map<BiddingAndAuctionResponse::DebugReportKey, std::optional<GURL>>
           component_win_debugging_only_reports,
       std::map<url::Origin, std::vector<GURL>>
@@ -2007,6 +2009,10 @@ class InterestGroupAuction::BuyerHelper
         std::move(server_filtered_pagg_requests_reserved);
     bid_state->server_filtered_pagg_requests_non_reserved =
         std::move(server_filtered_pagg_requests_non_reserved);
+    if (non_kanon_private_aggregation_request) {
+      bid_state->non_kanon_private_aggregation_requests.emplace_back(
+          std::move(non_kanon_private_aggregation_request));
+    }
 
     // 4. forDebuggingOnly reports.
     for (auto& [debug_key, maybeReportUrl] :
@@ -6579,6 +6585,7 @@ InterestGroupAuction::CreatePrimaryBidFromServerResponse(
       std::move(saved_response_->component_win_pagg_requests),
       std::move(saved_response_->server_filtered_pagg_requests_reserved),
       std::move(saved_response_->server_filtered_pagg_requests_non_reserved),
+      /*non_kanon_private_aggregation_request=*/{},
       std::move(saved_response_->component_win_debugging_only_reports),
       std::move(saved_response_->server_filtered_debugging_only_reports));
 }
@@ -6616,8 +6623,14 @@ InterestGroupAuction::CreateGhostBidFromServerResponse() {
       /*ad_descriptor=*/
       blink::AdDescriptor(
           saved_response_->k_anon_ghost_winner->ghost_winner->ad_render_url),
-      /*ad_component_descriptors=*/std::move(ghost_ad_components), {}, {}, {},
-      {}, {});
+      /*ad_component_descriptors=*/std::move(ghost_ad_components),
+      /*component_win_pagg_requests=*/{},
+      /*server_filtered_pagg_requests_reserved=*/{},
+      /*server_filtered_pagg_requests_non_reserved=*/{},
+      std::move(saved_response_->k_anon_ghost_winner
+                    ->non_kanon_private_aggregation_request),
+      /*component_win_debugging_only_reports=*/{},
+      /*server_filtered_debugging_only_reports=*/{});
 }
 
 void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
