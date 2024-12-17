@@ -261,6 +261,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeBottomChin,
     &kEdgeToEdgeEverywhere,
     &kEdgeToEdgeWebOptIn,
+    &kEmptyTabListAnimationKillSwitch,
     &kEnableXAxisActivityTransition,
     &kExperimentsForAgsa,
     &kFloatingSnackbar,
@@ -762,6 +763,10 @@ BASE_FEATURE(kEdgeToEdgeEverywhere,
 BASE_FEATURE(kEdgeToEdgeWebOptIn,
              "EdgeToEdgeWebOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEmptyTabListAnimationKillSwitch,
+             "EmptyTabListAnimationKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableXAxisActivityTransition,
              "EnableXAxisActivityTransition",

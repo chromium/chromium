@@ -329,6 +329,8 @@ public abstract class ChromeFeatureList {
     public static final String EDGE_TO_EDGE_EVERYWHERE = "EdgeToEdgeEverywhere";
     public static final String EDGE_TO_EDGE_WEB_OPT_IN = "EdgeToEdgeWebOptIn";
     public static final String EDUCATIONAL_TIP_MODULE = "EducationalTipModule";
+    public static final String EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH =
+            "EmptyTabListAnimationKillSwitch";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
     public static final String ENABLE_X_AXIS_ACTIVITY_TRANSITION = "EnableXAxisActivityTransition";
     public static final String ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID =
@@ -913,6 +915,10 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(CONTROLS_VISIBILITY_FROM_NAVIGATIONS, true);
     public static final MutableFlagWithSafeDefault sDynamicSafeAreaInsets =
             newMutableFlagWithSafeDefault(DYNAMIC_SAFE_AREA_INSETS, false);
+    // Defaulted to true in native, but since it is being used as a kill switch set the default
+    // value pre-native to false as it is safer if the feature needs to be killed via Finch config.
+    public static final MutableFlagWithSafeDefault sEmptyTabListAnimationKillSwitch =
+            newMutableFlagWithSafeDefault(EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH, false);
     public static final MutableFlagWithSafeDefault sForceBrowserControlsUponExitingFullscreen =
             newMutableFlagWithSafeDefault(FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN, true);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
