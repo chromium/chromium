@@ -29,6 +29,10 @@ const char kMainResourceHistogramLoadTiming[] =
     "ServiceWorker.LoadTiming.MainFrame.MainResource";
 const char kSubresourceHistogramLoadTiming[] =
     "ServiceWorker.LoadTiming.Subresource";
+const char kMainResourceHistogramForRaceNetworkFetchEvent[] =
+    "ServiceWorker.FetchEvent.MainResource.RaceNetworkRequest";
+const char kSubresourceHistogramForRaceNetworkFetchEvent[] =
+    "ServiceWorker.FetchEvent.Subresource.RaceNetworkRequest";
 }  // namespace
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -206,15 +210,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
       "state", state_);
-  if (owner_->IsMainResourceLoader()) {
-    base::UmaHistogramBoolean(
-        "ServiceWorker.FetchEvent.MainResource.RaceNetworkRequest.Redirect",
-        redirected_);
-  } else {
-    base::UmaHistogramBoolean(
-        "ServiceWorker.FetchEvent.Subresource.RaceNetworkRequest.Redirect",
-        redirected_);
-  }
+  base::UmaHistogramBoolean(
+      base::StrCat({owner_->IsMainResourceLoader()
+                        ? kMainResourceHistogramForRaceNetworkFetchEvent
+                        : kSubresourceHistogramForRaceNetworkFetchEvent,
+                    ".Redirect"}),
+      redirected_);
 
   switch (data_consume_policy_) {
     case DataConsumePolicy::kTeeResponse:
