@@ -98,7 +98,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ట్యాబ్ జోడించబడింది}other{<ph name="MANY_ADDED" /> ట్యాబ్‌లు జోడించబడ్డాయి}}</translation>
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
 <translation id="5339733443032484186">మీ చివరి ట్యాబ్</translation>
+<translation id="5380159289133845234">డూప్లికేట్ ట్యాబ్‌లను ఆర్కైవ్ చేయండి</translation>
 <translation id="5400836586163650660">బూడిద రంగు</translation>
+<translation id="5446043142172831860">ట్యాబ్‌ను తీసివేసి, గ్రూప్ నుండి నిష్క్రమించండి</translation>
 <translation id="5490235265819901748">ట్యాబ్ గ్రూప్ విస్తరించబడింది</translation>
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో మూసివేయండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో మూసివేయండి.}}</translation>
@@ -117,6 +119,7 @@
 <translation id="6051432659151380973">మీ ట్యాబ్ గ్రూప్‌లు ఆటోమేటిక్‌గా సేవ్ చేయబడతాయి</translation>
 <translation id="6054741997831917303">ఈ ఐటెమ్ ధర ఇటీవల <ph name="PREVIOUS_PRICE" /> నుండి <ph name="NEW_PRICE" />కు తగ్గింది</translation>
 <translation id="6082313992897617440">మీరు వెంటనే <ph name="GROUP_NAME" /> ట్యాబ్ గ్రూప్‌నకు యాక్సెస్ కోల్పోతారు</translation>
+<translation id="6109251075362363230">ఇటీవల ఉపయోగించిన కాపీ మినహా అన్ని డూప్లికేట్ ట్యాబ్‌లు కూడా ఇప్పుడు ఆర్కైవ్ చేయబడతాయి.</translation>
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
 <translation id="6228793724645064692">(స్టోర్ రేటింగ్)</translation>
 <translation id="6271513594716432922">అన్ని ఇన్‌యాక్టివ్ ట్యాబ్‌లను మూసివేయండి</translation>

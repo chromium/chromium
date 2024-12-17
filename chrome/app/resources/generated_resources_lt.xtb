@@ -500,7 +500,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1335929031622236846">Įrenginio registracija</translation>
 <translation id="133660899895084533">Skaityti „Bluetooth“ išorinių įrenginių informaciją ir duomenis</translation>
 <translation id="1336902454946927954">Jūsų saugos raktas užrakintas, nes nepavyko atpažinti kontrolinio kodo. Kad jį atrakintumėte, įveskite PIN kodą.</translation>
-<translation id="1337066099824654054">Kontekstinė pagalba išjungta</translation>
 <translation id="1338631221631423366">Susiejama...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> nori atidaryti šią programą.</translation>
 <translation id="1338950911836659113">Ištrinama...</translation>
@@ -1176,7 +1175,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1802687198411089702">Puslapis neatsako. Galite palaukti arba išeiti.</translation>
 <translation id="1803531841600994172">Kalba, į kurią verčiama</translation>
 <translation id="1803545009660609783">Mokyti iš naujo</translation>
-<translation id="1804195280859010019">Matysite daugiau naudingos informacijos ar pasiūlymų tokiose funkcijose kaip „Google“ paieškos šoninis skydelis</translation>
 <translation id="180441032496361123">Spustelėkite, kad suaktyvintumėte „<ph name="SEARCH_ENGINE_NAME" />“</translation>
 <translation id="1805738995123446102">Fone veikiančiame skirtuke naudojamas jūsų mikrofonas</translation>
 <translation id="1805822111539868586">Tikrinti rodinius</translation>
@@ -3584,7 +3582,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="350397915809787283">Jei neturite paskyros, pasirinkite pirmąją parinktį, kad ją sukurtumėte.</translation>
 <translation id="3503995387997205657">Galite atkurti ankstesnes programas</translation>
 <translation id="3505100368357440862">Apsipirkimo pasiūlymai</translation>
-<translation id="3505602163050943406">Kai naudojate tam tikras funkcijas, jos gali siųsti atidarytų puslapių dalis, susijusius naujausius puslapius ir jų URL į sistemą „Google“</translation>
 <translation id="3507132249039706973">Įprasta apsauga įjungta</translation>
 <translation id="3507888235492474624">Pakartotinai nuskaityti ieškant „Bluetooth“ įrenginių</translation>
 <translation id="3508492320654304609">Nepavyko ištrinti prisijungimo duomenų</translation>
@@ -3936,7 +3933,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Atidaryti „<ph name="APPLICATION" />“?</translation>
 <translation id="3739349485749941749">Svetainėse gali būti prašoma ieškoti įrenginiui pasiekiamų spausdintuvų ir juos naudoti</translation>
-<translation id="3740396996321407665">Gauti kontekstinės pagalbos naudojant kai kurias funkcijas</translation>
 <translation id="3740945083753997630">Sumažinti pateikties ir teksto dydį</translation>
 <translation id="3741056951918180319">Visada galite spustelėti plėtinį ir naudoti jį bet kurioje svetainėje</translation>
 <translation id="374124333420280219">Išsami programos informacija:</translation>
@@ -4334,6 +4330,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3993887353483242788">Sinchronizuokite „<ph name="DEVICE_TYPE" />“, kad jūsų nuostatos būtų paruoštos bet kuriame įrenginyje, kai prisijungsite naudodami „Google“ paskyrą. Nuostatos apima programas, nustatymus, „Wi-Fi“ slaptažodžius, kalbas, ekrano foną, sparčiuosius klavišus ir kt.</translation>
 <translation id="3994318741694670028">Deja, jūsų kompiuteris yra sukonfigūruotas naudojant netinkamai suformuotą aparatinės įrangos ID. Tai neleidžia „ChromeOS Flex“ atnaujinti naujausiais saugos pataisymais ir jūsų kompiuteris <ph name="BEGIN_BOLD" />gali būti neatsparus kenkėjiškoms atakoms<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Kad atrakintumėte „<ph name="DEVICE_TYPE" />“, atrakinkite telefoną ir padėkite jį arčiau.</translation>
+<translation id="3994522032746736727">Prisijungti kaip <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Planšetinio kompiuterio klavišai</translation>
 <translation id="3994708120330953242">Kai kurie jūsų slaptažodžiai rasti duomenų saugos pažeidime. Kad apsaugotumėte paskyras, pakeiskite šiuos slaptažodžius dabar.</translation>
 <translation id="3994878504415702912">Priartinti</translation>
@@ -7306,7 +7303,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6173623053897475761">Įveskite PIN kodą dar kartą</translation>
 <translation id="6175314957787328458">„Microsoft“ domeno GUID</translation>
 <translation id="6175910054050815932">Gauti nuorodą</translation>
-<translation id="6176701216248282552">Kontekstinė pagalba įjungta. Šios funkcijos gali siųsti atidarytus puslapius į sistemą „Google“.</translation>
 <translation id="6177412385419165772">Pašalinama...</translation>
 <translation id="6177478397823976397">Įrenginių nerasta. Atidarykite pagalbos centro straipsnį naujame skirtuke</translation>
 <translation id="6178664161104547336">Pasirinkite sertifikatą</translation>
@@ -9212,7 +9208,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="756445078718366910">Atidaryti naršyklės langą</translation>
 <translation id="7564847347806291057">Baigti procesą</translation>
 <translation id="756503097602602175">„Google“ paskyras, prie kurių prisijungiate, galite tvarkyti skiltyje <ph name="LINK_BEGIN" />„Nustatymai“<ph name="LINK_END" />. Leidimai, kuriuos suteikėte svetainėms ir programoms, gali būti taikomi visoms paskyroms. Jei nenorite, kad svetainės ar programos pasiektų jūsų paskyros informaciją, galite prisijungti prie „<ph name="DEVICE_TYPE" />“ kaip svečias arba naršyti žiniatinklį <ph name="LINK_2_BEGIN" />inkognito lange<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Kai kurios funkcijos gali naudoti atidarytų puslapių ir susijusių naujausių puslapių turinį, kad būtų galima teikti naudingesnę informaciją ar pasiūlymus</translation>
 <translation id="7566118625369982896">„Play“ programų nuorodų tvarkymas</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Sukurti klavišų derinį</translation>
@@ -10962,7 +10957,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8781980678064919987">Išjungti, kai dangtis uždarytas</translation>
 <translation id="8782565991310229362">Atšauktas viešojo terminalo programos paleidimas.</translation>
 <translation id="8783834180813871000">Įveskite „Bluetooth“ susiejimo kodą ir paspauskite „Return“ arba „Enter“.</translation>
-<translation id="8783955532752528811">Kontekstinė funkcijų pagalba</translation>
 <translation id="8784626084144195648">Intervalo vidurkis</translation>
 <translation id="8785622406424941542">Rašiklis</translation>
 <translation id="8786824282808281903">Kai vaikas matys šią piktogramą, naudojant kontrolinį kodą bus galima nustatyti tapatybę arba patvirtinti pirkimo operacijas.</translation>
@@ -11454,7 +11448,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9113529408970052045">Funkcija „Pagalba rašant“ gali būti automatiškai atidaroma, kai svetainės teksto laukelyje galima pateikti trumpos formos turinį</translation>
 <translation id="9114663181201435112">Lengvai prisijunkite</translation>
 <translation id="9115675100829699941">&amp;Žymės</translation>
-<translation id="9115932142612197835">Šis nustatymas nepakeičia „Google“ vertėjo arba „Lens“ pasiekiamumo</translation>
 <translation id="9116366756388192417">Pasirinkti subjektą</translation>
 <translation id="9116799625073598554">Užrašų programa</translation>
 <translation id="9117030152748022724">Tvarkykite programas</translation>

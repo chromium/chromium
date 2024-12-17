@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Deaktiver Mørkt tema</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1808803439260407870">Klassisk kunst</translation>
+<translation id="181434555916624618">Der vises ikke resultater med personer i øjeblikket. Prøv en anden prompt.</translation>
 <translation id="1815850098929213707">Den valgte tast er <ph name="KEYS" />. Tryk på knappen for at redigere styringselementet</translation>
 <translation id="1823120442877418684">Figurer</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
 <translation id="3340978935015468852">indstillinger</translation>
 <translation id="3347558044552027859">moderne</translation>
+<translation id="3353477144743332882">Download model til opsummering og navngivning</translation>
 <translation id="3359218928534347896">slå mikrofonen til/fra</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">Genvejen er ikke tilgængelig. Tryk på en ny genvej uden <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>
+<translation id="5875913454160982848">Download transskriptionsmodel</translation>
 <translation id="5876385649737594562">Aktivér for at vælge muligheder</translation>
 <translation id="5877503382465267833">Sæt <ph name="RECORDING_NAME" /> på pause</translation>
 <translation id="588258955323874662">Fuld skærm</translation>
@@ -1588,6 +1591,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
 <translation id="8505011850330200833">Gemini-modellen kræver 2 GB lagerplads for at behandle transskriptioner og oprette opsummeringer</translation>
 <translation id="8508640263392900755">Oplysninger om APN</translation>
+<translation id="8509574872955173831">Få flere oplysninger om opsummering og navngivning</translation>
 <translation id="8522687886059337719">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pauseskærme<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehus</translation>

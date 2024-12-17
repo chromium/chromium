@@ -484,6 +484,7 @@
 <translation id="3340011300870565703">Qurilmaning oʻng quloqlik batareyasi quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3340978935015468852">sozlamalar</translation>
 <translation id="3347558044552027859">zamonaviy</translation>
+<translation id="3353477144743332882">Xulosa va nom yaratish modelini yuklab olish</translation>
 <translation id="3359218928534347896">mikrofonni ovozsiz qilish</translation>
 <translation id="3360306038446926262">Oynalar</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -999,6 +1000,7 @@
 <translation id="5859969039821714932">Tezkor tugma ishlamayapti. <ph name="KEY" />siz yangi buyruq tugmasini bosing.</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
+<translation id="5875913454160982848">Transkripsiya modelini yuklab olish</translation>
 <translation id="5876385649737594562">Variantlarni tanlash uchun yoqing</translation>
 <translation id="5877503382465267833">Pauza: <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Butun ekran</translation>
@@ -1590,6 +1592,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
 <translation id="8505011850330200833">Gemini modeli transkripsiya tuzish va xulosa yaratish uchun xotiradan 2GB joy oladi</translation>
 <translation id="8508640263392900755">APN tafsiloti</translation>
+<translation id="8509574872955173831">Xulosa va nom yaratish haqida batafsil</translation>
 <translation id="8522687886059337719">Endi yangi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fon rasmlari<ph name="END_LINK_WALLPAPER_SUBPAGE" /> va <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran lavhasini<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ishlatish mumkin</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">choyxona</translation>

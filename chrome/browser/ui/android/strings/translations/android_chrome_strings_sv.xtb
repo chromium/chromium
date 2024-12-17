@@ -597,7 +597,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter.</translation>
 <translation id="3710560693796335511">Samarbete</translation>
 <translation id="3714981814255182093">Öppna sökfältet</translation>
-<translation id="3716182511346448902">Den här sidan har pausats i Chrome eftersom den använder för mycket minne.</translation>
 <translation id="3718765429352682176">Du kan se historiken från andra appar som öppnar länkar i Chrome.</translation>
 <translation id="3720422586473670527">Nej tack</translation>
 <translation id="3721119614952978349">Du och Google</translation>
@@ -1630,7 +1629,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8186512483418048923"><ph name="FILES" /> filer återstår</translation>
 <translation id="8190358571722158785">1 dag kvar</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Återuppta</translation>
 <translation id="820568752112382238">Mest besökta webbplatser</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /> och <ph name="NUMBER_OF_OTHER_MEMBERS" /> till}other{Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /> och <ph name="NUMBER_OF_OTHER_MEMBERS" /> till}}</translation>
 <translation id="8209050860603202033">Öppna bild</translation>

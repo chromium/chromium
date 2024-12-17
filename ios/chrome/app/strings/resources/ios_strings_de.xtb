@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="1408847409015257906">Tippe auf „Datenschutz und Sicherheit“.</translation>
 <translation id="1411386976162024013">Visuelle Suche mit Lens</translation>
+<translation id="1417474386970818917">Abmelden und löschen</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1436671784520050284">Einrichtung fortsetzen</translation>
@@ -1010,6 +1011,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5628388627414062173">{count,plural, =1{{count} Seite in deiner Leseliste}other{{count} Seiten in deiner Leseliste}}</translation>
 <translation id="5632485077360054581">Zeigen</translation>
 <translation id="5633237939819267663">{count,plural, =1{Lesezeichen unter „{title}“ gespeichert}other{{count} Lesezeichen unter „{title}“ gespeichert}}</translation>
+<translation id="564170563478022912">Abmelden? Nicht gespeicherte Kontodaten werden gelöscht.</translation>
 <translation id="5642707040609478753">Als ungelesen markieren</translation>
 <translation id="5646284034397250191">Label erstellt. Datum ausstehend.</translation>
 <translation id="5647096944343801045">Großer Einstiegspunkt</translation>
@@ -1022,6 +1024,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5669335982068190158">Du wurdest beim Zurücksetzen deines iPhones abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Konto wechseln? Nicht gespeicherte Kontodaten werden gelöscht.</translation>
 <translation id="5683499062697987550">Bestätige deine Identität, um Passwörter in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="5684761169742812828">Dieses Passwort wurde aufgrund einer Datenpanne im Internet preisgegeben. Falls du gerade keine Zeit hast, das Passwort zu ändern, empfiehlt Google, diese Warnung offen zu lassen, damit du später daran erinnert wirst.</translation>
 <translation id="5694848685995373177">In Google Drive für <ph name="USER_EMAIL" /> gespeichert.</translation>
@@ -1223,6 +1226,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6506996418997555004">Tabgruppe „<ph name="GROUP_NAME" />“ teilen</translation>
 <translation id="6507973708545996744">Melde dich an, um deine Lesezeichen auf allen deinen Geräten abrufen zu können.</translation>
 <translation id="6518133107902771759">Bestätigen</translation>
+<translation id="6518861084553706202">Tabs werden geschlossen und gelöschte Daten können z. B. Passwörter, Browserverlauf und Cookies umfassen.</translation>
 <translation id="6523575793810663688">Anleitung</translation>
 <translation id="6524082013156754186">In Konto speichern</translation>
 <translation id="6527303717912515753">Teilen</translation>
@@ -1679,6 +1683,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8545276357312221485">Einstellungen für Standardbrowser prüfen</translation>
 <translation id="854938212724803178">Du hast 1 kompromittiertes Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du hast {count} Warnung geschlossen}other{Du hast {count} Warnungen geschlossen}}</translation>
+<translation id="8558046478684552694">Gruppe schließen.</translation>
 <translation id="8560253818350321773">Häufig verwendete Elemente zuerst anzeigen</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} Passwort oben auf der Tastatur verfügbar.}other{{count} verschiedene Passwörter oben auf der Tastatur verfügbar.}}</translation>
 <translation id="8564894539416715395">Seite „Neuer Tab“</translation>
@@ -1847,6 +1852,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9205189991633470489">Inkognitosperre</translation>
 <translation id="9206887540681440657">Geschwindigkeit</translation>
 <translation id="9223358826628549784">Absturzbericht wurde gesendet.</translation>
+<translation id="926455622548529175">Wechseln und löschen</translation>
 <translation id="929748059769569925">Markierter Text</translation>
 <translation id="932305336591073205">{count,plural, =1{Tab schließen}other{Tabs schließen}}</translation>
 <translation id="939472100615258482">Aktuelle Website</translation>

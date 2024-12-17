@@ -497,7 +497,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1335929031622236846">Je apparaat inschrijven</translation>
 <translation id="133660899895084533">Informatie en gegevens over bluetooth-randapparatuur lezen</translation>
 <translation id="1336902454946927954">Je beveiligingssleutel is vergrendeld omdat je vingerafdruk niet kan worden herkend. Geef je pincode op om de sleutel te ontgrendelen.</translation>
-<translation id="1337066099824654054">Contextuele hulp staat uit</translation>
 <translation id="1338631221631423366">Koppelen...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wil deze app openen.</translation>
 <translation id="1338950911836659113">Verwijderen...</translation>
@@ -1164,7 +1163,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1802687198411089702">De pagina reageert niet. Je kunt wachten tot deze reageert of de pagina afsluiten.</translation>
 <translation id="1803531841600994172">Taal om naartoe te vertalen</translation>
 <translation id="1803545009660609783">Opnieuw trainen</translation>
-<translation id="1804195280859010019">Je ziet relevantere informatie of suggesties in functies zoals het zijvenster van Google Zoeken</translation>
 <translation id="180441032496361123">Klik om <ph name="SEARCH_ENGINE_NAME" /> te activeren</translation>
 <translation id="1805738995123446102">Achtergrondtabblad gebruikt je microfoon</translation>
 <translation id="1805822111539868586">Weergaven bekijken</translation>
@@ -3565,7 +3563,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="350397915809787283">Als je geen account hebt, selecteer je de eerste optie om een account te maken.</translation>
 <translation id="3503995387997205657">Je kunt je vorige apps herstellen</translation>
 <translation id="3505100368357440862">Winkelsuggesties</translation>
-<translation id="3505602163050943406">Als je bepaalde functies gebruikt, kunnen ze delen van geopende pagina's, gerelateerde recente pagina's en de bijbehorende URL's naar Google sturen</translation>
 <translation id="3507132249039706973">Standaardbeveiliging staat aan</translation>
 <translation id="3507888235492474624">Opnieuw scannen naar Bluetooth-apparaten</translation>
 <translation id="3508492320654304609">Je inloggegevens kunnen niet worden verwijderd</translation>
@@ -3917,7 +3914,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> openen?</translation>
 <translation id="3739349485749941749">Sites kunnen vragen of ze printers mogen zoeken en gebruiken die toegankelijk zijn voor je apparaat</translation>
-<translation id="3740396996321407665">Contextuele hulp krijgen van bepaalde functies</translation>
 <translation id="3740945083753997630">Weergave- en tekstgrootte verkleinen</translation>
 <translation id="3741056951918180319">Je kunt altijd op de extensie klikken om deze op een site te gebruiken</translation>
 <translation id="374124333420280219">App-gegevens:</translation>
@@ -4315,6 +4311,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3993887353483242788">Synchroniseer je <ph name="DEVICE_TYPE" /> zodat je voorkeuren beschikbaar zijn op elk apparaat als je inlogt met je Google-account. Voorkeuren omvatten onder andere apps, instellingen, wifi-wachtwoorden, talen, achtergrond en sneltoetsen.</translation>
 <translation id="3994318741694670028">Je computer is ingesteld met een hardware-ID met een onjuiste notatie. Dit zorgt ervoor dat Chrome OS Flex niet kan worden geüpdatet met de nieuwste beveiligingsoplossingen, waardoor je computer <ph name="BEGIN_BOLD" />kwetsbaar kan zijn voor schadelijke aanvallen<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Ontgrendel je telefoon en plaatst deze dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
+<translation id="3994522032746736727">Inloggen als <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Knoppen vinden op je tablet</translation>
 <translation id="3994708120330953242">Sommige van je wachtwoorden zijn gevonden bij een gegevenslek. Wijzig deze wachtwoorden nu om je accounts te beveiligen.</translation>
 <translation id="3994878504415702912">&amp;Zoomen</translation>
@@ -7280,7 +7277,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6173623053897475761">Typ je pincode nog een keer</translation>
 <translation id="6175314957787328458">Microsoft-domein-GUID</translation>
 <translation id="6175910054050815932">Een link ophalen</translation>
-<translation id="6176701216248282552">Contextuele hulp staat aan. Deze functies kunnen geopende pagina's naar Google sturen.</translation>
 <translation id="6177412385419165772">Verwijderen...</translation>
 <translation id="6177478397823976397">Geen apparaten gevonden. Open een Helpcentrum-artikel in een nieuw tabblad.</translation>
 <translation id="6178664161104547336">Een certificaat selecteren</translation>
@@ -9179,7 +9175,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="756445078718366910">Browservenster openen</translation>
 <translation id="7564847347806291057">Proces beëindigen</translation>
 <translation id="756503097602602175">Je kunt ingelogde Google-accounts beheren via <ph name="LINK_BEGIN" />Instellingen<ph name="LINK_END" />. Rechten die je hebt gegeven aan websites en apps kunnen van toepassing zijn op alle accounts. Als je niet wilt dat sites of apps toegang tot je accountgegevens hebben, kun je als gast inloggen op je <ph name="DEVICE_TYPE" /> of in een <ph name="LINK_2_BEGIN" />incognitovenster<ph name="LINK_2_END" /> op internet browsen.</translation>
-<translation id="756583107125124860">Sommige functies kunnen de content van geopende pagina's en gerelateerde recente pagina's gebruiken om relevantere informatie of suggesties te bieden</translation>
 <translation id="7566118625369982896">Play-app-links beheren</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Toetsencombinatie maken</translation>
@@ -10926,7 +10921,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8781980678064919987">Uitzetten wanneer de klep wordt gesloten</translation>
 <translation id="8782565991310229362">Starten van kiosk-app geannuleerd.</translation>
 <translation id="8783834180813871000">Typ de bluetooth-koppelingscode en druk op Return of Enter.</translation>
-<translation id="8783955532752528811">Contextuele hulp in functies</translation>
 <translation id="8784626084144195648">Gemiddelde van gegroepeerde gegevens</translation>
 <translation id="8785622406424941542">Stylus</translation>
 <translation id="8786824282808281903">Als je kind dit icoon ziet, kan er een vingerafdruk worden gebruikt voor identificatie of om aankopen goed te keuren.</translation>
@@ -11418,7 +11412,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9113529408970052045">Help me met schrijven kan automatisch worden geopend als een tekstvak op een site kan worden gevuld met korte content</translation>
 <translation id="9114663181201435112">Gemakkelijk inloggen</translation>
 <translation id="9115675100829699941">&amp;Bladwijzers</translation>
-<translation id="9115932142612197835">Deze instelling heeft geen invloed op de beschikbaarheid van Google Translate of Lens</translation>
 <translation id="9116366756388192417">Kies een onderwerp</translation>
 <translation id="9116799625073598554">Notitie-app</translation>
 <translation id="9117030152748022724">Je apps beheren</translation>

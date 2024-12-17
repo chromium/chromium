@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Conectado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que sites vejam e mudem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
+<translation id="4213239715282467974">Agora, o Chrome compartilha as guias recentes com o dispositivo. Você pode acessá-las rapidamente na lista de apps e nos resultados da pesquisa do aparelho. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Os sites não podem pedir para usar as informações que salvaram sobre você</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
+<translation id="5408906274948600065">Permita que o Chrome compartilhe suas guias recentes com o dispositivo para que elas apareçam na lista de apps e nos resultados da pesquisa do aparelho. É possível ativar ou desativar esse recurso a qualquer momento nas configurações do Chrome.</translation>
 <translation id="5438097262470833822">Essa ação redefinirá as permissões de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quando essa configuração está ativada, os sites podem pedir sua localização. Quando está desativada, os sites não têm acesso à sua localização.</translation>
 <translation id="5489227211564503167">Tempo decorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

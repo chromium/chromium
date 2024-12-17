@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Dunkles Design deaktivieren</translation>
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1808803439260407870">Klassik</translation>
+<translation id="181434555916624618">Ergebnisse mit Personen werden vorerst nicht angezeigt. Versuche es mit einem anderen Prompt.</translation>
 <translation id="1815850098929213707">Die ausgewählte Taste ist „<ph name="KEYS" />“. Wenn du das Steuerelement bearbeiten möchtest, tippe auf die Schaltfläche.</translation>
 <translation id="1823120442877418684">Objekte</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">Einstellungen</translation>
 <translation id="3347558044552027859">modernes</translation>
+<translation id="3353477144743332882">Modell für Zusammenfassung und Namenserstellung herunterladen</translation>
 <translation id="3359218928534347896">Mikrofonstummschalten ein- oder ausschalten</translation>
 <translation id="3360306038446926262">Fenster</translation>
 <translation id="3361618936611118375">Sushi</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">Tastenkombination nicht verfügbar. Drücke eine andere ohne <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
+<translation id="5875913454160982848">Transkriptmodell herunterladen</translation>
 <translation id="5876385649737594562">Aktivieren, um Optionen auszuwählen</translation>
 <translation id="5877503382465267833">„<ph name="RECORDING_NAME" />“ pausieren</translation>
 <translation id="588258955323874662">Vollbild</translation>
@@ -1588,6 +1591,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
 <translation id="8505011850330200833">Das Gemini-Modell zum Verarbeiten von Transkripten und Erstellen von Zusammenfassungen erfordert 2 GB Speicherplatz</translation>
 <translation id="8508640263392900755">APN-Details</translation>
+<translation id="8509574872955173831">Weitere Informationen zur Zusammenfassung und Namenserstellung</translation>
 <translation id="8522687886059337719">Du hast jetzt Zugriff auf neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> und <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />Bildschirmschoner<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">Teehaus</translation>

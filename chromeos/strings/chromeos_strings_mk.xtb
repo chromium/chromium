@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Нивото на батерија на десната слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">поставки</translation>
 <translation id="3347558044552027859">модерно</translation>
+<translation id="3353477144743332882">Преземи го моделот за создавање резимеа и имиња</translation>
 <translation id="3359218928534347896">исклучување на звукот на микрофонот</translation>
 <translation id="3360306038446926262">Прозорци</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Кратенката не е достапна. Притиснете нова кратенка без <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
+<translation id="5875913454160982848">Преземи го моделот за транскрипции</translation>
 <translation id="5876385649737594562">Вклучете за да изберете опции</translation>
 <translation id="5877503382465267833">Паузирај ја снимката <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Цел екран</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">Само уште неколку минути…</translation>
 <translation id="8505011850330200833">Моделот на Gemini бара простор од 2 GB за да обработува транскрипции и да создава резимеа</translation>
 <translation id="8508640263392900755">Детали за APN</translation>
+<translation id="8509574872955173831">Дознајте повеќе за создавањето резимеа и имиња</translation>
 <translation id="8522687886059337719">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />штедач на екран<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџилница</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">ሁሉንም ክፈት</translation>
 <translation id="1408847409015257906">«ግላዊነት እና ደህንነት» ላይ መታ ያድርጉ።</translation>
 <translation id="1411386976162024013">የሌንስ ምስላዊ ፍለጋ</translation>
+<translation id="1417474386970818917">ዘግተህ ውጣ እና ሰርዝ</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="1430915738399379752">አትም</translation>
 <translation id="1436671784520050284">ማዋቀር ቀጥል</translation>
@@ -1010,6 +1011,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5628388627414062173">{count,plural, =1{በንባብ ዝርዝርዎ ላይ {count} ገፅ}one{በንባብ ዝርዝርዎ ላይ {count} ገፅ}other{በንባብ ዝርዝርዎ ላይ {count} ገፆች}}</translation>
 <translation id="5632485077360054581">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="5633237939819267663">{count,plural, =1{ዕልባት ወደ «{title}» ተቀምጧል}one{{count} ዕልባት ወደ «{title}» ተቀምጧል}other{{count} ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
+<translation id="564170563478022912">ዘግተው ይወጣሉ? ያልተቀመጠ የመለያ ውሂብ ይሰረዛል።</translation>
 <translation id="5642707040609478753">እንዳልተነበበ ምልክት አድርግ</translation>
 <translation id="5646284034397250191">መሰየሚያ ተፈጥሯል። ቀንን በመጠባበቅ ላይ</translation>
 <translation id="5647096944343801045">ትልቅ የመግቢያ ነጥብ</translation>
@@ -1022,6 +1024,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5669335982068190158">እንደ የእርስዎ iPhone ዳግም ማስጀመር አንድ አካል ከመለያዎ ዘግተው እንዲወጡ ተደርገዋል። በመለያ ለመግባት ከታች ያለውን ቀጥልን መታ ያድርጉ።</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">ስሪት <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">መለያዎችን ያቀያይሩ? ያልተቀመጠ የመለያ ውሂብ ይሰረዛል።</translation>
 <translation id="5683499062697987550">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="5684761169742812828">ይህ ይለፍ ቃል በይነመረብ ላይ የውሂብ ጥሰት ውስጥ ተጋልጧል። እሱን ለመለወጥ አሁን ጊዜ ከሌለዎት Google ይህን ማስጠንቀቂያ እንዲያቆዩት ይመክራል።</translation>
 <translation id="5694848685995373177">በDrive ውስጥ ለ<ph name="USER_EMAIL" /> ተቀምጧል።</translation>
@@ -1223,6 +1226,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6506996418997555004">«<ph name="GROUP_NAME" />» የትር ቡድንን ያጋሩ</translation>
 <translation id="6507973708545996744">የንባብ ዝርዝርዎን በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ ይግቡ።</translation>
 <translation id="6518133107902771759">አረጋግጥ</translation>
+<translation id="6518861084553706202">ትሮች ይዘጋሉ እና የተሰረዘ ውሂብ የይለፍ ቃላት፣ የአሰሳ ታሪክ፣ ኩኪዎች እና ሌሎችን ሊያካትት ይችላል።</translation>
 <translation id="6523575793810663688">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="6524082013156754186">በመለያ ውስጥ አስቀምጥ</translation>
 <translation id="6527303717912515753">አጋራ</translation>
@@ -1679,6 +1683,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8545276357312221485">የእርስዎን ነባሪ የአሳሽ ቅንብሮች ይፈትሹ</translation>
 <translation id="854938212724803178">1 የተጠለፈ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} ማስጠንቀቂያ አሰናብተዋል}one{{count} ማስጠንቀቂያ አሰናብተዋል}other{{count} ማስጠንቀቂያዎች አሰናብተዋል}}</translation>
+<translation id="8558046478684552694">ቡድንን ዝጋ።</translation>
 <translation id="8560253818350321773">መጀመሪያ ጥቅም ላይ የዋሉ ንጥሎችን ያሳያል።</translation>
 <translation id="8561999115126307258">{count,plural, =1{የይለፍ ቃል {count} አማራጭ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}one{የይለፍ ቃል {count} አማራጭ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}other{የይለፍ ቃል {count} አማራጮች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}}</translation>
 <translation id="8564894539416715395">የአዲስ ትር ገፅ</translation>
@@ -1847,6 +1852,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9205189991633470489">ማንነት የማያሳውቅ ቁልፍ</translation>
 <translation id="9206887540681440657">ፍጥነት</translation>
 <translation id="9223358826628549784">የብልሽት ሪፖርት ተልኳል።</translation>
+<translation id="926455622548529175">ቀይር እና ሰርዝ</translation>
 <translation id="929748059769569925">የደመቀው ጽሁፍ</translation>
 <translation id="932305336591073205">{count,plural, =1{ትርን ዝጋ}one{ትርን ዝጋ}other{ትሮችን ዝጋ}}</translation>
 <translation id="939472100615258482">የአሁኑ ጣቢያ</translation>

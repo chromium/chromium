@@ -498,7 +498,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1335929031622236846">Înregistrează dispozitivul</translation>
 <translation id="133660899895084533">Citește informații și date despre dispozitivele periferice Bluetooth</translation>
 <translation id="1336902454946927954">Cheia de securitate este blocată, deoarece amprenta nu a fost recunoscută. Introdu codul PIN ca să o deblochezi.</translation>
-<translation id="1337066099824654054">Ajutorul contextual este dezactivat</translation>
 <translation id="1338631221631423366">Se asociază…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> intenționează să deschidă această aplicație.</translation>
 <translation id="1338950911836659113">Se șterge…</translation>
@@ -1165,7 +1164,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1802687198411089702">Pagina nu răspunde. Poți aștepta să răspundă sau o poți închide.</translation>
 <translation id="1803531841600994172">Limba în care se traduce</translation>
 <translation id="1803545009660609783">Resetează</translation>
-<translation id="1804195280859010019">Vei vedea informații sau sugestii mai utile în funcții precum panoul lateral Căutare Google</translation>
 <translation id="180441032496361123">Dă clic pentru a activa <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">O filă din fundal folosește microfonul</translation>
 <translation id="1805822111539868586">Inspectează afișările</translation>
@@ -3567,7 +3565,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="350397915809787283">Dacă nu ai un cont, selectează prima opțiune pentru a crea unul.</translation>
 <translation id="3503995387997205657">Poți restabili aplicațiile anterioare</translation>
 <translation id="3505100368357440862">Sugestii pentru cumpărături</translation>
-<translation id="3505602163050943406">Atunci când folosești anumite funcții, acestea pot trimite la Google părți din paginile deschise, paginile recente similare și adresele lor URL</translation>
 <translation id="3507132249039706973">Protecția standard este activată</translation>
 <translation id="3507888235492474624">Caută din nou dispozitive Bluetooth</translation>
 <translation id="3508492320654304609">Datele de conectare nu au putut fi șterse</translation>
@@ -3919,7 +3916,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Deschizi <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Site-urile pot solicita permisiunea de a căuta și de a folosi imprimante accesibile pentru dispozitivul tău</translation>
-<translation id="3740396996321407665">Obține ajutor contextual de la anumite funcții</translation>
 <translation id="3740945083753997630">Micșorează dimensiunea afișării și a textului</translation>
 <translation id="3741056951918180319">Poți da clic pe extensie ca să o folosești pe orice site</translation>
 <translation id="374124333420280219">Detaliile aplicației:</translation>
@@ -4317,6 +4313,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3993887353483242788">Sincronizează dispozitivul <ph name="DEVICE_TYPE" />, iar preferințele tale vor fi disponibile pe orice dispozitiv când te conectezi folosind Contul Google. Preferințele includ aplicații, setări, parole Wi-Fi, limbi, imagini de fundal, comenzi rapide de la tastatură și altele.</translation>
 <translation id="3994318741694670028">Din păcate, computerul este configurat cu un ID de hardware incorect. Acest lucru împiedică actualizarea sistemului de operare Chrome Flex cu cele mai recente remedieri de securitate, iar computerul <ph name="BEGIN_BOLD" />ar putea fi vulnerabil la atacuri<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Deblochează telefonul și apropie-l mai mult pentru a debloca dispozitivul <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Apasă butoanele tabletei</translation>
 <translation id="3994708120330953242">Unele dintre parolele tale au apărut într-o încălcare a securității datelor. Pentru a-ți securiza conturile, trebuie să schimbi aceste parole acum.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -7286,7 +7283,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6173623053897475761">Introdu din nou codul PIN</translation>
 <translation id="6175314957787328458">GUID domeniu Microsoft</translation>
 <translation id="6175910054050815932">Obține linkul</translation>
-<translation id="6176701216248282552">Ajutorul contextual este activat. Aceste funcții pot trimite paginile deschise la Google.</translation>
 <translation id="6177412385419165772">Se elimină...</translation>
 <translation id="6177478397823976397">Nu s-au găsit dispozitive. Deschide un articol din centrul de ajutor într-o filă nouă.</translation>
 <translation id="6178664161104547336">Selectează un certificat</translation>
@@ -9188,7 +9184,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="756445078718366910">Deschide fereastra de browser</translation>
 <translation id="7564847347806291057">Oprește procesul</translation>
 <translation id="756503097602602175">Poți să gestionezi Conturile Google conectate din <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" />. Permisiunile pe care le-ai acordat site-urilor și aplicațiilor se pot aplica tuturor conturilor. Dacă nu vrei ca site-urile sau aplicațiile să îți acceseze informațiile contului, poți să te conectezi pe <ph name="DEVICE_TYPE" /> ca invitat sau să navighezi pe web într-o <ph name="LINK_2_BEGIN" />fereastră incognito<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Unele funcții pot folosi conținutul paginilor deschise și al paginilor recente similare pentru a oferi informații sau sugestii mai utile</translation>
 <translation id="7566118625369982896">Gestionează linkurile aplicației Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Creează o combinație de taste</translation>
@@ -10936,7 +10931,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8781980678064919987">Când capacul este închis: oprire</translation>
 <translation id="8782565991310229362">Lansarea aplicațiilor de tip chioșc a fost anulată.</translation>
 <translation id="8783834180813871000">Introdu codul de asociere prin Bluetooth, apoi apasă pe Return sau pe Enter.</translation>
-<translation id="8783955532752528811">Ajutor contextual pentru funcții</translation>
 <translation id="8784626084144195648">Medie limitată</translation>
 <translation id="8785622406424941542">Creion</translation>
 <translation id="8786824282808281903">Când copilul tău vede această pictogramă, poate folosi amprenta pentru identificare sau pentru a aproba achiziții.</translation>
@@ -11428,7 +11422,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9113529408970052045">Funcția Ajută-mă să scriu se poate deschide automat atunci când o casetă text de pe un site poate fi completată cu conținut scurt</translation>
 <translation id="9114663181201435112">Conectează-te cu ușurință</translation>
 <translation id="9115675100829699941">&amp;Marcaje</translation>
-<translation id="9115932142612197835">Această setare nu modifică disponibilitatea serviciilor Google Traducere sau Lens</translation>
 <translation id="9116366756388192417">Alege un subiect</translation>
 <translation id="9116799625073598554">Aplicație pentru scris note</translation>
 <translation id="9117030152748022724">Gestionează aplicațiile</translation>

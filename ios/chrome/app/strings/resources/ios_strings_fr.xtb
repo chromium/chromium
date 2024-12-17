@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Appuyez sur "Confidentialité et sécurité".</translation>
 <translation id="1411386976162024013">Recherche visuelle Lens</translation>
+<translation id="1417474386970818917">Se déconnecter et supprimer</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
@@ -1010,6 +1011,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5628388627414062173">{count,plural, =1{{count} page sur votre liste de lecture}one{{count} page sur votre liste de lecture}other{{count} pages sur votre liste de lecture}}</translation>
 <translation id="5632485077360054581">Démonstration</translation>
 <translation id="5633237939819267663">{count,plural, =1{Favori enregistré dans "{title}"}one{{count} favori enregistré dans "{title}"}other{{count} favoris enregistrés dans "{title}"}}</translation>
+<translation id="564170563478022912">Se déconnecter ? Les données non enregistrées du compte seront supprimées.</translation>
 <translation id="5642707040609478753">Marquer comme non lu</translation>
 <translation id="5646284034397250191">Étiquette créée. En attente de la date.</translation>
 <translation id="5647096944343801045">Grand point d'entrée</translation>
@@ -1022,6 +1024,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5669335982068190158">Vous avez été déconnecté lors de la réinitialisation de votre iPhone. Appuyez sur "Continuer" ci-dessous pour vous connecter.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Changer de compte ? Les données non enregistrées du compte seront supprimées.</translation>
 <translation id="5683499062697987550">Pour utiliser et enregistrer les mots de passe dans votre compte Google, confirmez votre identité.</translation>
 <translation id="5684761169742812828">Ce mot de passe a été compromis lors d'une violation des données sur Internet. Si vous n'avez pas le temps de le modifier maintenant, Google vous recommande de conserver cet avertissement pour vous en souvenir plus tard.</translation>
 <translation id="5694848685995373177">Enregistré dans Drive pour <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="6506996418997555004">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Connectez-vous pour accéder à votre liste de lecture sur tous vos appareils.</translation>
 <translation id="6518133107902771759">Valider</translation>
+<translation id="6518861084553706202">Les onglets seront fermés, et les données supprimées pourraient inclure des mots de passe, l'historique de navigation, des cookies, etc.</translation>
 <translation id="6523575793810663688">Instructions</translation>
 <translation id="6524082013156754186">Enregistrer dans le compte</translation>
 <translation id="6527303717912515753">Partager</translation>
@@ -1679,6 +1683,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8545276357312221485">Vérifier les réglages par défaut de votre navigateur</translation>
 <translation id="854938212724803178">Vous avez 1 mot de passe compromis. Modifiez-le maintenant pour vous protéger.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Vous avez ignoré {count} avertissement}one{Vous avez ignoré {count} avertissement}other{Vous avez ignoré {count} avertissements}}</translation>
+<translation id="8558046478684552694">Fermez le groupe.</translation>
 <translation id="8560253818350321773">Afficher en premier les éléments fréquemment utilisés.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option de mot de passe disponible au-dessus de votre clavier.}one{{count} option de mot de passe disponible au-dessus de votre clavier.}other{{count} options de mot de passe disponibles au-dessus de votre clavier.}}</translation>
 <translation id="8564894539416715395">Page Nouvel onglet</translation>
@@ -1847,6 +1852,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9205189991633470489">Verrouillage de la navigation privée</translation>
 <translation id="9206887540681440657">Vitesse</translation>
 <translation id="9223358826628549784">Le rapport d'erreur a bien été envoyé.</translation>
+<translation id="926455622548529175">Changer et supprimer</translation>
 <translation id="929748059769569925">Texte en surbrillance</translation>
 <translation id="932305336591073205">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="939472100615258482">Site actuel</translation>

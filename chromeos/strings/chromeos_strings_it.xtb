@@ -484,6 +484,7 @@
 <translation id="3340011300870565703">Percentuale di batteria dell'auricolare destro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">impostazioni</translation>
 <translation id="3347558044552027859">moderno</translation>
+<translation id="3353477144743332882">Scarica il modello di riepilogo e creazione del nome</translation>
 <translation id="3359218928534347896">attiva/disattiva audio del microfono</translation>
 <translation id="3360306038446926262">Finestre</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -999,6 +1000,7 @@
 <translation id="5859969039821714932">Scorciatoia non disponibile. Premi una nuova scorciatoia senza <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Attiva</translation>
+<translation id="5875913454160982848">Scarica il modello di trascrizione</translation>
 <translation id="5876385649737594562">Attiva per selezionare le opzioni</translation>
 <translation id="5877503382465267833">Metti in pausa <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Schermo intero</translation>
@@ -1294,6 +1296,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Server dei nomi}other{Server dei nomi}}</translation>
 <translation id="7135814714616751706">Cerca scorciatoie</translation>
 <translation id="7138614237884624401">Testo semplificato</translation>
+<translation id="7138668887584231801">Numero insufficiente di parole per riassumere</translation>
 <translation id="7141470099673912333">Trasferimento contenuti</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
@@ -1589,6 +1592,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8503836310948963452">Solo qualche altro minuto…</translation>
 <translation id="8505011850330200833">Il modello Gemini richiede 2 GB di spazio di archiviazione per elaborare le trascrizioni e creare i riepiloghi</translation>
 <translation id="8508640263392900755">Dettagli APN</translation>
+<translation id="8509574872955173831">Scopri di più sul riepilogo e sulla creazione del nome</translation>
 <translation id="8522687886059337719">Ora hai accesso a nuovi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />sfondi<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />salvaschermi<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">sala da tè</translation>

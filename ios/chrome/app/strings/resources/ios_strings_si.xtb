@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1408847409015257906">“පෞද්ගලිකත්වය සහ ආරක්ෂාව” වෙත තට්ටු කරන්න.</translation>
 <translation id="1411386976162024013">Lens දෘශ්‍ය සෙවීම</translation>
+<translation id="1417474386970818917">වරනය වී මකන්න</translation>
 <translation id="1426410128494586442">ඔව්</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1436671784520050284">පිහිටුවීම දිගටම කරන්න</translation>
@@ -1010,6 +1011,7 @@
 <translation id="5628388627414062173">{count,plural, =1{ඔබේ කියවීම් ලැයිස්තුවෙහි {count} පිටුවක්}one{ඔබේ කියවීම් ලැයිස්තුවෙහි පිටු {count}ක්}other{ඔබේ කියවීම් ලැයිස්තුවෙහි පිටු {count}ක්}}</translation>
 <translation id="5632485077360054581">කෙසේද කියා මට පෙන්වන්න</translation>
 <translation id="5633237939819267663">{count,plural, =1{"{title}" වෙත පිටුසන සුරැකිණි}one{"{title}" වෙත පිටුසන් {count} සුරැකිණි}other{"{title}" වෙත පිටුසන් {count} සුරැකිණි}}</translation>
+<translation id="564170563478022912">වරන්න ද? නොසුරැකි ගිණුම් දත්ත මකනු ලැබේ.</translation>
 <translation id="5642707040609478753">නොකියවූ ලෙස සලකුණු කරන්න</translation>
 <translation id="5646284034397250191">ලේබලය තනන ලදි. දිනය පොරොත්තුවෙන්</translation>
 <translation id="5647096944343801045">විශාල පිවිසුම් ස්ථානය</translation>
@@ -1022,6 +1024,7 @@
 <translation id="5669335982068190158">ඔබේ iPhone යළි පිහිටුවීමේ කොටසක් ලෙස ඔබ වරනය වී ඇත. පුරනය වීමට පහත ඉදිරියට යන්න තට්ටු කරන්න.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" /> සංස්කරණය</translation>
+<translation id="5680012489335339762">ගිණුම් මාරු කරන්න ද? නොසුරැකි ගිණුම් දත්ත මකනු ලැබේ.</translation>
 <translation id="5683499062697987550">ඔබේ Google ගිණුමේ මුරපද භාවිතා කිරීමට සහ සුරැකීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න.</translation>
 <translation id="5684761169742812828">මෙම මුරපදය අන්තර්ජාලයෙහි දත්ත කඩකිරීමකින් හෙළිදරව් විය. ඔබට දැන් එය වෙනස් කිරීමට කාලය නොමැති නම්, පසුව ඔබට මතක් කිරීමට මෙම අනතුරු ඇඟවීම තබා ගැනීමට Google නිර්දේශ කරයි.</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> සඳහා Drive තුළ සුරැකිණි.</translation>
@@ -1223,6 +1226,7 @@
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" පටිති සමූහය බෙදා ගන්න</translation>
 <translation id="6507973708545996744">ඔබේ සියලු උපාංග මත ඔබේ කියවීම් ලැයිස්තුව ලබා ගැනීමට පුරන්න.</translation>
 <translation id="6518133107902771759">තහවුරු කරන්න</translation>
+<translation id="6518861084553706202">පටිති වැසෙනු ඇති අතර, මකා දැමූ දත්තවලට මුරපද, බ්‍රව්ස් කිරීමේ ඉතිහාසය, කුකීස්, සහ තවත් දේ ඇතුළත් විය හැක.</translation>
 <translation id="6523575793810663688">කෙසේද කියා මට පෙන්වන්න</translation>
 <translation id="6524082013156754186">ගිණුමේ සුරකින්න</translation>
 <translation id="6527303717912515753">බෙදාගන්න</translation>
@@ -1679,6 +1683,7 @@
 <translation id="8545276357312221485">ඔබේ පෙරනිමි බ්‍රවුසර සැකසීම් පරීක්ෂා කරන්න</translation>
 <translation id="854938212724803178">ඔබට අවදානමට පත් වූ 1 මුරපදයක් ඇත. ආරක්ෂිතව සිටීමට දැන් එය නිරාකරණය කරන්න.</translation>
 <translation id="8556590991644167667">{count,plural, =1{ඔබ {count} අනතුරු ඇඟවීමක් අස් කළා}one{ඔබ අනතුරු ඇඟවීම් {count}ක් අස් කළා}other{ඔබ අනතුරු ඇඟවීම් {count}ක් අස් කළා}}</translation>
+<translation id="8558046478684552694">සමූහය වසන්න.</translation>
 <translation id="8560253818350321773">නිතර භාවිතා කරන අයිතම පළමුව පෙන්වන්න.</translation>
 <translation id="8561999115126307258">{count,plural, =1{ඔබේ යතුරු පුවරුවට ඉහළින් මුරපද සඳහා {count} විකල්පයක් ඇත.}one{ඔබේ යතුරු පුවරුවට ඉහළින් මුරපද සඳහා විකල්ප {count}ක් ඇත.}other{ඔබේ යතුරු පුවරුවට ඉහළින් මුරපද සඳහා විකල්ප {count}ක් ඇත.}}</translation>
 <translation id="8564894539416715395">නව පටිති පිටුව</translation>
@@ -1847,6 +1852,7 @@
 <translation id="9205189991633470489">අප්‍රසිද්ධ අගුල</translation>
 <translation id="9206887540681440657">වේගය</translation>
 <translation id="9223358826628549784">බිඳ වැටීම් වාර්තාව යවන ලදි.</translation>
+<translation id="926455622548529175">මාරු කර මකන්න</translation>
 <translation id="929748059769569925">උද්දීපනය කළ පෙළ</translation>
 <translation id="932305336591073205">{count,plural, =1{පටිත්ත වසන්න}one{පටිති වසන්න}other{පටිති වසන්න}}</translation>
 <translation id="939472100615258482">වත්මන් අඩවිය</translation>

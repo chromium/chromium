@@ -100,6 +100,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="5339733443032484186">Ultima scheda</translation>
 <translation id="5380159289133845234">Archivia le schede duplicate</translation>
 <translation id="5400836586163650660">Grigio</translation>
+<translation id="5446043142172831860">Rimuovi scheda e esci dal gruppo</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Chiudi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>

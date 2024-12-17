@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">ለመቀጠል፣ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን <ph name="FIELDS_STRING" /> ከዚህ ጣቢያ ጋር ያጋራል።</translation>
 <translation id="3710560693796335511">ትብብር</translation>
 <translation id="3714981814255182093">የአግኝ አሞሌን ክፈት</translation>
-<translation id="3716182511346448902">ይህ ገፅ በጣም ብዙ ማህደረ ትውስታን ይጠቀማል፣ ስለዚህ Chrome ባለበት አቁሞታል።</translation>
 <translation id="3718765429352682176">በChrome ውስጥ አገናኞችን ከሚከፍቱ ሌሎች መተግበሪያዎች ታሪክን ማየት ይችላሉ።</translation>
 <translation id="3720422586473670527">አይ አመሰግናለሁ</translation>
 <translation id="3721119614952978349">እርስዎ እና Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ፋይሎች ይቀራሉ</translation>
 <translation id="8190358571722158785">1 ቀን ይቀራል</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />የእርስዎ መሣሪያዎች<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">ከቆመበት ቀጥል</translation>
 <translation id="820568752112382238">በብዛት የተጎበኙ ጣቢያዎች</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{ከ<ph name="OWNER_FIRST_NAME" /> እና <ph name="NUMBER_OF_OTHER_MEMBERS" /> ሌላ ጋር የትር ቡድን ይቀላቀላሉ}one{ከ<ph name="OWNER_FIRST_NAME" /> እና <ph name="NUMBER_OF_OTHER_MEMBERS" /> ሌላ ጋር የትር ቡድን ይቀላቀላሉ}other{ከ<ph name="OWNER_FIRST_NAME" /> እና <ph name="NUMBER_OF_OTHER_MEMBERS" /> ሌሎች ጋር የትር ቡድን ይቀላቀላሉ}}</translation>
 <translation id="8209050860603202033">ምስል ክፈት</translation>

@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="3710560693796335511">കൊളാബറേഷൻ</translation>
 <translation id="3714981814255182093">കണ്ടെത്തൽ ബാർ തുറക്കുക</translation>
-<translation id="3716182511346448902">ഈ പേജ് ഒരുപാട് മെമ്മറി ഉപയോഗിക്കുന്നു, അതിനാൽ Chrome ഇത് താൽക്കാലികമായി അവസാനിപ്പിച്ചു.</translation>
 <translation id="3718765429352682176">Chrome-ൽ ലിങ്കുകൾ തുറക്കുന്ന മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള ചരിത്രവും നിങ്ങൾ കണ്ടേക്കാം.</translation>
 <translation id="3720422586473670527">വേണ്ട</translation>
 <translation id="3721119614952978349">നിങ്ങളും Google-ഉം</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ഫയലുകൾ ശേഷിക്കുന്നു</translation>
 <translation id="8190358571722158785">ഒരു ദിവസം ശേഷിക്കുന്നു</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="820568752112382238">ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച സൈറ്റുകൾ</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കും മറ്റ് <ph name="NUMBER_OF_OTHER_MEMBERS" /> പേർക്കുമൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക}other{<ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കും മറ്റ് <ph name="NUMBER_OF_OTHER_MEMBERS" /> പേർക്കുമൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക}}</translation>
 <translation id="8209050860603202033">ചിത്രം തുറക്കുക</translation>

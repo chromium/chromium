@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ትር ታክሏል}one{<ph name="MANY_ADDED" /> ትር ታክሏል}other{<ph name="MANY_ADDED" /> ትሮች ታክለዋል}}</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>
+<translation id="5380159289133845234">የተባዙ ትሮችን በማህደር ያስቀምጡ</translation>
 <translation id="5400836586163650660">ግራጫ</translation>
 <translation id="5490235265819901748">የትር ቡድን ተዘርግቷል</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">የእርስዎ የትር ቡድኖች በራስ-ሰር ያስቀምጣሉ</translation>
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6082313992897617440">እርስዎ ወዲያውኑ የ<ph name="GROUP_NAME" /> ትር ቡድን መዳረሻን ያጣሉ</translation>
+<translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
 <translation id="6271513594716432922">ሁሉንም የቦዘኑ ትሮች ዝጋ</translation>

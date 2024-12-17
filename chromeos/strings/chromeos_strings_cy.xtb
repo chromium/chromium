@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Analluogi'r thema dywyll</translation>
 <translation id="1807246157184219062">Golau</translation>
 <translation id="1808803439260407870">Celf glasurol</translation>
+<translation id="181434555916624618">Am y tro, ni fydd canlyniadau gyda phobl yn cael eu dangos. Rhowch gynnig ar anogwr arall.</translation>
 <translation id="1815850098929213707">Y fysell a ddewiswyd yw <ph name="KEYS" />. Tapiwch ar y botwm i olygu'r rheolydd</translation>
 <translation id="1823120442877418684">nodau</translation>
 <translation id="1827738518074806965">Oriel gelf</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri bud dde.</translation>
 <translation id="3340978935015468852">gosodiadau</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Lawrlwythwch grynodeb a model creu enwau</translation>
 <translation id="3359218928534347896">toglo distewi'r meicroffon</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">swshi</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd heb <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Diffodd</translation>
 <translation id="5860491529813859533">Troi ymlaen</translation>
+<translation id="5875913454160982848">Lawrlwythwch y model trawsgrifio</translation>
 <translation id="5876385649737594562">Trowch ymlaen i ddewis opsiynau</translation>
 <translation id="5877503382465267833">Seibio <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Sgrîn lawn</translation>
@@ -1588,6 +1591,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8503836310948963452">Ychydig funudau yn rhagor...</translation>
 <translation id="8505011850330200833">Mae angen 2GB o storfa ar y model Gemini i brosesu trawsgrifiadau a chreu crynodebau</translation>
 <translation id="8508640263392900755">Manylion APN</translation>
+<translation id="8509574872955173831">Dysgu rhagor am grynodeb a chreu enwau</translation>
 <translation id="8522687886059337719">Mae bellach gennych fynediad at <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bapurau wal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ac <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />arbedwr sgrîn<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tŷ te</translation>

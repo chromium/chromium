@@ -597,7 +597,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3710501561113687889">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie andmeid (<ph name="FIELDS_STRING" />).</translation>
 <translation id="3710560693796335511">Koostöö</translation>
 <translation id="3714981814255182093">Leiuriba avamine</translation>
-<translation id="3716182511346448902">Chrome peatas selle lehe, kuna see kasutab liiga palju mälu.</translation>
 <translation id="3718765429352682176">Võite näha ajalugu muudest rakendustest, mis avavad linke Chrome'is.</translation>
 <translation id="3720422586473670527">Tänan, ei</translation>
 <translation id="3721119614952978349">Teie ja Google</translation>
@@ -1629,7 +1628,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8186512483418048923"><ph name="FILES" /> faili on jään.</translation>
 <translation id="8190358571722158785">Jäänud on 1 päev</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Teie seadmed<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Taasta</translation>
 <translation id="820568752112382238">Enim külastatavad saidid</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Liituge vahelehegrupiga, kus on <ph name="OWNER_FIRST_NAME" /> ja veel <ph name="NUMBER_OF_OTHER_MEMBERS" /> kasutaja}other{Liituge vahelehegrupiga, kus on <ph name="OWNER_FIRST_NAME" /> ja veel <ph name="NUMBER_OF_OTHER_MEMBERS" /> kasutajat}}</translation>
 <translation id="8209050860603202033">Ava kujutis</translation>

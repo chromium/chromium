@@ -597,7 +597,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3710501561113687889">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre <ph name="FIELDS_STRING" /> avec ce site.</translation>
 <translation id="3710560693796335511">Collaboration</translation>
 <translation id="3714981814255182093">Ouvrir la barre de recherche</translation>
-<translation id="3716182511346448902">Cette page utilise trop de mémoire, Chrome a donc interrompu son chargement.</translation>
 <translation id="3718765429352682176">Vous pourriez voir l'historique d'autres applis qui ouvrent des liens dans Chrome.</translation>
 <translation id="3720422586473670527">Non merci</translation>
 <translation id="3721119614952978349">Vous et Google</translation>
@@ -1629,7 +1628,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8190358571722158785">Il reste 1 jour</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Reprendre</translation>
 <translation id="820568752112382238">Sites les plus visités</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autre}one{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autre}other{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autres}}</translation>
 <translation id="8209050860603202033">Ouvrir l'image</translation>

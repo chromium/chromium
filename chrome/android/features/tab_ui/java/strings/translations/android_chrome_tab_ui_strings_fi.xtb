@@ -98,6 +98,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty}other{<ph name="MANY_ADDED" /> välilehteä lisätty}}</translation>
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
 <translation id="5339733443032484186">Viimeisin välilehti</translation>
+<translation id="5380159289133845234">Arkistoi välilehtien kopiot</translation>
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
@@ -117,6 +118,7 @@ Jos lähdet, menetät heti pääsyn välilehtiryhmään "<ph name="TITLE_OF_GROU
 <translation id="6051432659151380973">Välilehtiryhmät tallentuvat automaattisesti</translation>
 <translation id="6054741997831917303">Tämän tuotteen hinta on laskenut äskettäin: aiemmin <ph name="PREVIOUS_PRICE" />, nyt <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Menetät välittömästi pääsyn välilehtiryhmään (<ph name="GROUP_NAME" />)</translation>
+<translation id="6109251075362363230">Myös kaikki välilehtien kopiot arkistoidaan nyt, lukuun ottamatta viimeksi käytettyä kopiota.</translation>
 <translation id="6193448654517602979">Valitse välilehdet</translation>
 <translation id="6228793724645064692">(kaupan arvio)</translation>
 <translation id="6271513594716432922">Sulje kaikki ei-aktiiviset välilehdet</translation>

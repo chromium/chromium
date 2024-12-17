@@ -210,6 +210,7 @@
 <translation id="345171907106878721">Engádete a Chrome</translation>
 <translation id="3453763134178591239">Condicións de Chrome OS</translation>
 <translation id="3503306920980160878">Chrome necesita acceder á túa localización para compartila con este sitio</translation>
+<translation id="3512634283363927263">Estas páxinas están pensadas para os programadores de Chrome, polo que é posible que non se manteñan nin proben activamente. Para habilitalas, vai a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fai clic no botón para activar as páxinas de depuración e, a continuación, volve a esta páxina.</translation>
 <translation id="3533694711092285624">Non hai contrasinais gardados. Chrome pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="3541482654983822893">Chrome non puido comprobar os teus contrasinais. Téntao de novo dentro de 24 horas.</translation>
 <translation id="3564543103555793392">Cando inicias sesión en Chrome, podes gardar marcadores, contrasinais e moito máis para poder usalos despois no teléfono</translation>
@@ -528,6 +529,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7572537927358445944">Desactivado • Chrome non pode verificar de onde procede esta extensión</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
+<translation id="7617512710641355143">Chrome está xestionado</translation>
 <translation id="7626032353295482388">Dámosche a benvida a Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as de Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome permíteche saber se os teus contrasinais están en risco nalgún momento</translation>
@@ -637,6 +639,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8718062187489036808">Pechar sesión en Chrome</translation>
 <translation id="873133009373065397">Google Chrome non pode determinar nin establecer o navegador predeterminado</translation>
 <translation id="8748735421235723888">Chrome libera memoria das pestanas inactivas. Desta forma, as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chrome segue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas. <ph name="BEGIN_LINK" />Máis información sobre o aforro de memoria<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Quitar de Chrome os datos desta aplicación</translation>
 <translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="8781673607513845160">Para usar a cámara, concédelle acceso a Chrome na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erro de instalación: A persoa que administra a rede aplicou unha política de grupo que non permite a instalación (<ph name="INSTALL_ERROR" />)</translation>

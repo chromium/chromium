@@ -497,7 +497,6 @@
 <translation id="1335929031622236846">註冊您的裝置</translation>
 <translation id="133660899895084533">讀取藍牙周邊裝置資訊和資料</translation>
 <translation id="1336902454946927954">無法辨識您的指紋，因此安全密鑰已被鎖定。如要解鎖，請輸入您的 PIN。</translation>
-<translation id="1337066099824654054">背景說明已關閉</translation>
 <translation id="1338631221631423366">正在配對…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> 想開啟此應用程式。</translation>
 <translation id="1338950911836659113">刪除中…</translation>
@@ -1172,7 +1171,6 @@
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
 <translation id="1803531841600994172">翻譯目標語言</translation>
 <translation id="1803545009660609783">重新調校</translation>
-<translation id="1804195280859010019">在「Google 搜尋」側面板等功能中，你會看到更多實用資訊或建議</translation>
 <translation id="180441032496361123">㩒一下就可以啟用 <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">背景分頁正在使用您的麥克風</translation>
 <translation id="1805822111539868586">查看檢視模式</translation>
@@ -3577,7 +3575,6 @@
 <translation id="350397915809787283">如果沒有帳戶，請選取第一個選項建立帳戶。</translation>
 <translation id="3503995387997205657">您可還原先前的應用程式</translation>
 <translation id="3505100368357440862">購物建議</translation>
-<translation id="3505602163050943406">當你使用部分功能時，網站可能會將已開啟網頁的部分內容、近期相關網頁和網頁的網址傳送給 Google</translation>
 <translation id="3507132249039706973">已開啟「標準保護功能」</translation>
 <translation id="3507888235492474624">重新掃瞄藍牙裝置</translation>
 <translation id="3508492320654304609">無法刪除您的登入資料</translation>
@@ -3929,7 +3926,6 @@
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
 <translation id="3739254215541673094">要開啟「<ph name="APPLICATION" />」嗎？</translation>
 <translation id="3739349485749941749">網站可要求尋找及使用能存取你裝置的打印機</translation>
-<translation id="3740396996321407665">取得部分功能的背景說明</translation>
 <translation id="3740945083753997630">縮小顯示同文字大小</translation>
 <translation id="3741056951918180319">只要在任何網站上按一下擴充程式，即可隨時使用</translation>
 <translation id="374124333420280219">應用程式詳細資料：</translation>
@@ -4324,6 +4320,7 @@
 <translation id="3993887353483242788">同步 <ph name="DEVICE_TYPE" />，以便在使用 Google 帳戶登入後，將偏好設定同步至任何裝置。偏好設定包括應用程式、設定、Wi-Fi 密碼、語言、桌布、鍵盤快速鍵等。</translation>
 <translation id="3994318741694670028">抱歉，您的電腦是由格式錯誤的硬件 ID 設定。這導致 ChromeOS Flex 無法使用最新的安全性修正程式進行更新，您的電腦亦可能因此<ph name="BEGIN_BOLD" />容易被惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="3994374631886003300">解鎖手機並靠近您的 <ph name="DEVICE_TYPE" /> 即可解鎖。</translation>
+<translation id="3994522032746736727">使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="3994530503403062649">找出平板電腦按鈕位置</translation>
 <translation id="3994708120330953242">我們從資料外洩事件中發現部分您儲存的密碼。為確保帳戶安全，您應立即變更這些密碼。</translation>
 <translation id="3994878504415702912">縮放(&amp;Z)</translation>
@@ -7286,7 +7283,6 @@
 <translation id="6173623053897475761">重新輸入 PIN</translation>
 <translation id="6175314957787328458">Microsoft 網域 GUID</translation>
 <translation id="6175910054050815932">取得連結</translation>
-<translation id="6176701216248282552">背景說明已開啟。這些功能可能會將開啟的網頁傳送給 Google。</translation>
 <translation id="6177412385419165772">正在移除…</translation>
 <translation id="6177478397823976397">搵唔到裝置。你可以喺新分頁度開說明中心文章</translation>
 <translation id="6178664161104547336">選取憑證</translation>
@@ -9185,7 +9181,6 @@
 <translation id="756445078718366910">開啟瀏覽器視窗</translation>
 <translation id="7564847347806291057">結束處理程序</translation>
 <translation id="756503097602602175">您可透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。您向網站和應用程式授予的權限，可能會套用到所有帳戶。如果您不想網站和應用程式存取您的帳戶資料，請以訪客身分登入您的 <ph name="DEVICE_TYPE" />，或透過<ph name="LINK_2_BEGIN" />無痕式視窗<ph name="LINK_2_END" />瀏覽網頁。</translation>
-<translation id="756583107125124860">部分功能可運用已開啟網頁和近期相關網頁的內容，為你提供更實用的資訊或建議</translation>
 <translation id="7566118625369982896">管理 Play 應用程式連結</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">管理按鍵組合</translation>
@@ -10932,7 +10927,6 @@
 <translation id="8781980678064919987">蓋上螢幕時關機</translation>
 <translation id="8782565991310229362">Kiosk 應用程式已取消執行。</translation>
 <translation id="8783834180813871000">輸入藍牙配對碼，然後按返回鍵或 Enter 鍵。</translation>
-<translation id="8783955532752528811">功能中的背景說明</translation>
 <translation id="8784626084144195648">二進位化平均</translation>
 <translation id="8785622406424941542">觸控筆</translation>
 <translation id="8786824282808281903">當子女看到此圖示時，可以使用指紋識別身份或核准購物交易。</translation>
@@ -11422,7 +11416,6 @@
 <translation id="9113529408970052045">當網站上的文字框可填入簡短內容時，「幫我寫」會自動開啟</translation>
 <translation id="9114663181201435112">輕鬆登入</translation>
 <translation id="9115675100829699941">書籤(&amp;B)</translation>
-<translation id="9115932142612197835">此設定不會影響「Google 翻譯」或「Google 智能鏡頭」的可用性</translation>
 <translation id="9116366756388192417">選擇主題</translation>
 <translation id="9116799625073598554">筆記應用程式</translation>
 <translation id="9117030152748022724">管理應用程式</translation>

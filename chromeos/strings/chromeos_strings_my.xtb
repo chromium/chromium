@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">အမှောင်နောက်ခံ ပိတ်ရန်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1808803439260407870">ဂန္ထဝင်အနုပညာ</translation>
+<translation id="181434555916624618">လောလောဆယ် လူပါသော ရလဒ်များကို ပြမည်မဟုတ်ပါ။ အခြားတောင်းဆိုချက်ဖြင့် စမ်းကြည့်ပါ။</translation>
 <translation id="1815850098929213707">ရွေးထားသောကီးမှာ <ph name="KEYS" /> ဖြစ်သည်။ ထိန်းချုပ်မှုကို ပြင်ရန် ခလုတ်ကိုတို့ပါ</translation>
 <translation id="1823120442877418684">အကြောင်းအရာ</translation>
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">ညာနားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="3340978935015468852">ဆက်တင်များ</translation>
 <translation id="3347558044552027859">ခေတ်မီ</translation>
+<translation id="3353477144743332882">အနှစ်ချုပ်နှင့် အမည်ပေးခြင်း မော်ဒယ် ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="3359218928534347896">မိုက်ခရိုဖုန်း အသံပိတ် ခလုတ်</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">ဆူရှီ</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ <ph name="KEY" /> မပါဘဲ ဖြတ်လမ်းလင့်ခ်အသစ် နှိပ်ပါ။</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
+<translation id="5875913454160982848">စာသားမှတ်တမ်း မော်ဒယ် ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="5876385649737594562">ရွေးရန် ဖွင့်ပါ</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> ခဏရပ်ရန်</translation>
 <translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
@@ -1588,6 +1591,7 @@
 <translation id="8503836310948963452">နောက်ထပ် မိနစ်အနည်းငယ်သာ လိုသည်…</translation>
 <translation id="8505011850330200833">Gemini မော်ဒယ်သည် စာသားမှတ်တမ်းများ ဆောင်ရွက်ရန်နှင့် အနှစ်ချုပ်များ ပြုလုပ်ရန် သိုလှောင်ခန်းနေရာ ၂ GB လိုအပ်သည်</translation>
 <translation id="8508640263392900755">APN အသေးစိတ်</translation>
+<translation id="8509574872955173831">အနှစ်ချုပ်နှင့် အမည်ပေးခြင်းအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="8522687886059337719">ယခု သင်သည် <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />နောက်ခံပုံ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> အသစ်များနှင့် <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />စခရင်နားချိန်ပုံ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> တို့ကို သုံးနိုင်ပြီ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">လက်ဖက်ရည်ဆိုင်</translation>

@@ -70,6 +70,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="1896836275755235458">Chromium sparar batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video. <ph name="BEGIN_LINK" />Läs mer om strömsparläget<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium-uppdateringstjänst</translation>
 <translation id="1911763535808217981">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chromium</translation>
+<translation id="1916451563296275579">Ta bort datan för den här appen från Chromium</translation>
 <translation id="1929939181775079593">Chromium svarar inte. Vill du starta om?</translation>
 <translation id="1933341829955786215">Din organisation, <ph name="MANAGER" />, kräver att du loggar in i Chromium</translation>
 <translation id="193439633299369377">Chromium OS måste startas om för att uppdateringen ska börja gälla.</translation>
@@ -407,6 +408,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6455857529632101747">Välkommen till Chromium-profiler</translation>
 <translation id="6466344609055215035">Ta bort kontot från Chromium</translation>
 <translation id="6475912303565314141">Det styr också vilken sida som visas när du startar Chromium.</translation>
+<translation id="648062525172759633">Dessa sidor är avsedda för Chromium-utvecklare och kanske inte underhålls eller testas aktivt. Om du vill aktivera dem navigerar du till <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klickar på knappen för att aktivera felsökningssidor och navigerar sedan till den här sidan igen.</translation>
 <translation id="648319183876919572">Förbättrad säker webbsökning gör mer för att skydda dig mot farliga webbplatser och nedladdningar</translation>
 <translation id="6510925080656968729">Avinstallera Chromium</translation>
 <translation id="651535675648445253">Genvägar öppnas i Chromium</translation>
@@ -515,6 +517,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chromium ska inkludera.</translation>
 <translation id="7888981273428720788">Ställ in Chromium som standardwebbläsare</translation>
 <translation id="7934340546140346950">Chromium uppgraderar automatiskt osäkra anslutningar till HTTPS när det är möjligt</translation>
+<translation id="7935734571048689933">Chromium hanteras</translation>
 <translation id="7937630085815544518">Du var inloggad i Chromium som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7975919845073681630">Det här är en sekundär installation av Chromium. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="7997934263947464652">Tillägg, appar och teman från okända källor kan skada enheten. Vi rekommenderar att du bara installerar dem från <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>

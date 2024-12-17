@@ -98,6 +98,7 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> filă adăugată}few{<ph name="MANY_ADDED" /> file adăugate}other{<ph name="MANY_ADDED" /> de file adăugate}}</translation>
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
 <translation id="5339733443032484186">Ultima filă</translation>
+<translation id="5380159289133845234">Arhivează filele dublură</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
@@ -117,6 +118,7 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="6051432659151380973">Grupurile de file se salvează automat</translation>
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Vei pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6271513594716432922">Închide toate filele inactive</translation>

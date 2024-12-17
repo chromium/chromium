@@ -497,7 +497,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1335929031622236846">Registrer enheten din</translation>
 <translation id="133660899895084533">lese informasjon og data fra eksterne Bluetooth-enheter</translation>
 <translation id="1336902454946927954">Sikkerhetsnøkkelen er låst fordi fingeravtrykket ikke ble gjenkjent. For å låse den opp, skriv inn PIN-koden.</translation>
-<translation id="1337066099824654054">Kontekstuell hjelp er av</translation>
 <translation id="1338631221631423366">Kobler sammen …</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vil åpne denne appen.</translation>
 <translation id="1338950911836659113">Sletter …</translation>
@@ -1168,7 +1167,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1802687198411089702">Siden svarer ikke. Du kan vente på den eller avslutte.</translation>
 <translation id="1803531841600994172">Språket du vil oversette til</translation>
 <translation id="1803545009660609783">Lær opp på nytt</translation>
-<translation id="1804195280859010019">ser du nyttigere informasjon og flere forslag i funksjoner som sidepanelet i Google Søk</translation>
 <translation id="180441032496361123">Klikk for å aktivere <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">En fane i bakgrunnen bruker mikrofonen din</translation>
 <translation id="1805822111539868586">Inspiser visninger</translation>
@@ -3574,7 +3572,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="350397915809787283">Hvis du ikke har noen konto, velger du det første alternativet for å opprette en.</translation>
 <translation id="3503995387997205657">Du kan gjenopprette de tidligere appene dine</translation>
 <translation id="3505100368357440862">Handelsforslag</translation>
-<translation id="3505602163050943406">Når du bruker enkelte funksjoner, kan de sende deler av åpne sider, relaterte nylige sider og nettadressene deres til Google</translation>
 <translation id="3507132249039706973">Standardbeskyttelse er på</translation>
 <translation id="3507888235492474624">Skann etter Bluetooth-enheter på nytt</translation>
 <translation id="3508492320654304609">Påloggingsinformasjonen din kunne ikke slettes</translation>
@@ -3926,7 +3923,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vil du åpne <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Nettsteder kan be om å få se etter og bruke skrivere som er tilgjengelige for enheten din</translation>
-<translation id="3740396996321407665">Få kontekstuell hjelp fra noen funksjoner</translation>
 <translation id="3740945083753997630">Senk visnings- og tekststørrelsen</translation>
 <translation id="3741056951918180319">Du kan alltid klikke på utvidelsen for å bruke den på hvilke som helst nettsteder</translation>
 <translation id="374124333420280219">Informasjon om appen:</translation>
@@ -4322,6 +4318,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3993887353483242788">Synkroniser <ph name="DEVICE_TYPE" />, slik at preferansene dine er klare på alle enheter når du logger på med Google-kontoen din. Preferanser betyr blant annet apper, innstillinger, wifi-passord, språk, bakgrunnsbilde og hurtigtaster.</translation>
 <translation id="3994318741694670028">Dessverre er datamaskinen konfigurert med en feilformatert maskinvare-ID. Dette forhindrer ChromeOS Flex fra å ta i bruk de siste sikkerhetsoppdateringene, og datamaskinen <ph name="BEGIN_BOLD" />kan være sårbar for skadelige angrep<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås opp telefonen, og hold den nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
+<translation id="3994522032746736727">Logg på som <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Finn knappene på tegnebrettet</translation>
 <translation id="3994708120330953242">Noen av passordene dine ble funnet i et databrudd. Du bør endre disse passordene nå for å beskytte kontoene dine.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -7290,7 +7287,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6173623053897475761">Skriv inn PIN-koden din igjen</translation>
 <translation id="6175314957787328458">Microsoft domeneguide</translation>
 <translation id="6175910054050815932">Få en link</translation>
-<translation id="6176701216248282552">Kontekstuell hjelp er på. Disse funksjonene kan sende åpne sider til Google.</translation>
 <translation id="6177412385419165772">Fjerner …</translation>
 <translation id="6177478397823976397">Fant ingen enheter. Åpne en brukerstøtteartikkel på en ny fane.</translation>
 <translation id="6178664161104547336">Velg et sertifikat</translation>
@@ -9190,7 +9186,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="756445078718366910">Åpne nettleservindu</translation>
 <translation id="7564847347806291057">Avslutt prosessen</translation>
 <translation id="756503097602602175">Du kan administrere påloggede Google-kontoer i <ph name="LINK_BEGIN" />Innstillinger<ph name="LINK_END" />. Tillatelser du har gitt nettsteder og apper, kan gjelde for alle kontoer. Hvis du ikke vil at nettsteder eller apper skal ha tilgang til kontoinformasjonen din, kan du logge på <ph name="DEVICE_TYPE" /> som gjest eller surfe på nettet i et <ph name="LINK_2_BEGIN" />inkognitovindu<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Enkelte funksjoner kan bruke innholdet på åpne sider og relaterte nylige sider til å gi deg nyttigere informasjon eller forslag</translation>
 <translation id="7566118625369982896">Administrer Play-applinker</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Opprett en tastekombinasjon</translation>
@@ -10937,7 +10932,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8781980678064919987">Slå av maskinen når den lukkes</translation>
 <translation id="8782565991310229362">Oppstart av kiosk-appen er avbrutt.</translation>
 <translation id="8783834180813871000">Skriv inn Bluetooth-sammenkoblingskoden, og trykk på Retur eller Enter.</translation>
-<translation id="8783955532752528811">Kontekstuell hjelp i funksjoner</translation>
 <translation id="8784626084144195648">Gjennomsnitt av grupperte data</translation>
 <translation id="8785622406424941542">Pekepenn</translation>
 <translation id="8786824282808281903">Når barnet ser dette ikonet, kan barnet bruke fingeravtrykket sitt til å identifisere seg eller godkjenne kjøp.</translation>
@@ -11429,7 +11423,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9113529408970052045">«Hjelp meg å skrive» kan åpnes automatisk når et tekstfelt på et nettsted kan fylles med innhold i kort format</translation>
 <translation id="9114663181201435112">Logg på enkelt</translation>
 <translation id="9115675100829699941">&amp;Bokmerker</translation>
-<translation id="9115932142612197835">Denne innstillingen endrer ikke tilgjengeligheten av Google Oversetter eller Lens</translation>
 <translation id="9116366756388192417">Velg et emne</translation>
 <translation id="9116799625073598554">Notatapper</translation>
 <translation id="9117030152748022724">Administrer appene dine</translation>

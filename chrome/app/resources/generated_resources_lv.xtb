@@ -499,7 +499,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1335929031622236846">Ierīces reģistrēšana</translation>
 <translation id="133660899895084533">Lasīt Bluetooth perifērijas ierīču informāciju un datus</translation>
 <translation id="1336902454946927954">Jūsu drošības atslēga ir bloķēta, jo nevarēja atpazīt jūsu pirksta nospiedumu. Lai atbloķētu drošības atslēgu, ievadiet PIN.</translation>
-<translation id="1337066099824654054">Kontekstam atbilstošā palīdzība ir izslēgta.</translation>
 <translation id="1338631221631423366">Notiek savienošana pārī...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vēlas atvērt šo lietojumprogrammu.</translation>
 <translation id="1338950911836659113">Notiek dzēšana...</translation>
@@ -1166,7 +1165,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1802687198411089702">Lapa nereaģē. Varat uzgaidīt vai iziet no lapas.</translation>
 <translation id="1803531841600994172">Valoda, kurā jātulko saturs</translation>
 <translation id="1803545009660609783">Izveidot no jauna</translation>
-<translation id="1804195280859010019">Tādās funkcijās kā Google meklēšanas sānu panelis tiks rādīta noderīgāka informācija vai ieteikumi.</translation>
 <translation id="180441032496361123">Noklikšķiniet, lai aktivizētu meklētājprogrammu <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">Fona cilne izmanto jūsu ierīces mikrofonu.</translation>
 <translation id="1805822111539868586">Pārbaudīt skatījumus</translation>
@@ -3567,7 +3565,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="350397915809787283">Ja jums nav konta, atlasiet pirmo opciju, lai izveidotu kontu.</translation>
 <translation id="3503995387997205657">Varat atjaunot iepriekšējās lietotnes</translation>
 <translation id="3505100368357440862">Pirkumu ieteikumi</translation>
-<translation id="3505602163050943406">Kad izmantojat noteiktas funkcijas, no tām uz Google serveriem var tikt sūtītas atvērto lapu daļas, saistītas nesen apmeklētas lapas un to vietrāži URL.</translation>
 <translation id="3507132249039706973">Ir ieslēgta standarta aizsardzība.</translation>
 <translation id="3507888235492474624">Atkārtoti meklēt Bluetooth ierīces</translation>
 <translation id="3508492320654304609">Jūsu pierakstīšanās datus nevar izdzēst</translation>
@@ -3919,7 +3916,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vai atvērt lietojumprogrammu <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Atļaut vietnēm pieprasīt atļauju meklēt un izmantot jūsu ierīcei pieejamos printerus</translation>
-<translation id="3740396996321407665">Saņemt kontekstam atbilstošu palīdzību, izmantojot noteiktas funkcijas</translation>
 <translation id="3740945083753997630">Samazināt attēlojuma un teksta lielumu</translation>
 <translation id="3741056951918180319">Varat jebkurā laikā noklikšķināt uz paplašinājuma, lai to izmantotu jebkurā vietnē</translation>
 <translation id="374124333420280219">Lietotnes informācija:</translation>
@@ -4317,6 +4313,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3993887353483242788">Sinhronizējiet savu ierīci (<ph name="DEVICE_TYPE" />), lai jūsu preferences būtu pieejamas jebkurā ierīcē, kad pierakstāties ar savu Google kontu. Preferences ietver lietotnes, iestatījumus, Wi-Fi paroles, valodas, fona tapetes, īsinājumtaustiņus u.c.</translation>
 <translation id="3994318741694670028">Diemžēl jūsu datora konfigurācijā tika izmantots nepareizi veidots aparatūras ID. Tādēļ operētājsistēmu Chrome OS Flex nevarēja atjaunināt, izmantojot jaunākos drošības labojumus, un jūsu dators, <ph name="BEGIN_BOLD" />iespējams, nav aizsargāts pret ļaunprātīgiem uzbrukumiem<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Atbloķējiet tālruni un pietuviniet to, lai atbloķētu savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="3994522032746736727">Pierakstīties ar kontu <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Atrodiet pogas uz planšetdatora</translation>
 <translation id="3994708120330953242">Datu aizsardzības pārkāpuma dēļ tika atklātas dažas jūsu saglabātās paroles. Lai aizsargātu kontus, šīs paroles ir jānomaina tūlīt.</translation>
 <translation id="3994878504415702912">Tālummaiņa</translation>
@@ -7284,7 +7281,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6173623053897475761">Ierakstiet PIN kodu vēlreiz</translation>
 <translation id="6175314957787328458">Microsoft domēna GUID</translation>
 <translation id="6175910054050815932">Iegūt saiti</translation>
-<translation id="6176701216248282552">Kontekstam atbilstošā palīdzība ir ieslēgta. Izmantojot šīs funkcijas, atvērtās lapas var tikt nosūtītas uz Google serveriem.</translation>
 <translation id="6177412385419165772">Notiek noņemšana…</translation>
 <translation id="6177478397823976397">Netika atrasta neviena ierīce. Atveriet palīdzības centra rakstu jaunā cilnē.</translation>
 <translation id="6178664161104547336">Sertifikāta atlasīšana</translation>
@@ -9188,7 +9184,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="756445078718366910">Atvērt pārlūkprogrammas logu</translation>
 <translation id="7564847347806291057">Pārtraukt procesu</translation>
 <translation id="756503097602602175">Varat pārvaldīt Google kontus, kuros esat pierakstījies, sadaļā <ph name="LINK_BEGIN" />Iestatījumi<ph name="LINK_END" />. Jūsu piešķirtās atļaujas vietnēm un lietotnēm var būt spēkā visos kontos. Ja nevēlaties atļaut vietnēm vai lietotnēm piekļūt jūsu konta informācijai, varat pierakstīties <ph name="DEVICE_TYPE" /> ierīcē kā viesis vai pārlūkot tīmekli <ph name="LINK_2_BEGIN" />inkognito režīma logā<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Dažās funkcijās var tikt izmantots atvērto lapu un saistīto nesen apmeklēto lapu saturs, lai sniegtu noderīgāku informāciju vai ieteikumus.</translation>
 <translation id="7566118625369982896">Pārvaldīt Play lietotņu saites</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Izveidojiet taustiņu kombināciju</translation>
@@ -10936,7 +10931,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8781980678064919987">Izslēgt, kad vāks tiek aizvērts</translation>
 <translation id="8782565991310229362">Kioska lietojumprogrammas palaišana tika atcelta.</translation>
 <translation id="8783834180813871000">Ierakstiet kodu Bluetooth savienošanai pārī un pēc tam nospiediet ievadīšanas taustiņu.</translation>
-<translation id="8783955532752528811">Kontekstam atbilstoša palīdzība funkcijās</translation>
 <translation id="8784626084144195648">Apkopotais vidējais</translation>
 <translation id="8785622406424941542">Skārienekrāna pildspalva</translation>
 <translation id="8786824282808281903">Kad bērns redzēs šo ikonu, viņš varēs izmantot pirksta nospiedumu identifikācijai vai pirkumu apstiprināšanai.</translation>
@@ -11428,7 +11422,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9113529408970052045">Funkcija “Palīdziet man uzrakstīt” var tikt automātiski atvērta, ja tekstlodziņu vietnē var aizpildīt ar īsa formāta saturu.</translation>
 <translation id="9114663181201435112">Vienkārša pierakstīšanās</translation>
 <translation id="9115675100829699941">Grāmatzīmes</translation>
-<translation id="9115932142612197835">Šis iestatījums nemaina Google tulkotāja vai funkcijas Lens pieejamību.</translation>
 <translation id="9116366756388192417">Izvēlēties objektu</translation>
 <translation id="9116799625073598554">Piezīmju pierakstīšanas lietotne</translation>
 <translation id="9117030152748022724">Pārvaldīt lietotnes</translation>

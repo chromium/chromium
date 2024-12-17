@@ -597,7 +597,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3710501561113687889">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito.</translation>
 <translation id="3710560693796335511">Pakikipag-collaborate</translation>
 <translation id="3714981814255182093">Buksan ang Bar sa Paghahanap</translation>
-<translation id="3716182511346448902">Masyadong malaki ang ginagamit na memory ng page na ito kaya na-pause ito ng Chrome.</translation>
 <translation id="3718765429352682176">Puwede mong makita ang history mula sa iba pang app na nagbubukas ng mga link sa Chrome.</translation>
 <translation id="3720422586473670527">Huwag na lang</translation>
 <translation id="3721119614952978349">Ikaw at ang Google</translation>
@@ -1629,7 +1628,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8186512483418048923"><ph name="FILES" /> (na) file ang natitira</translation>
 <translation id="8190358571722158785">1 araw na lang ang natitira</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ang iyong mga device<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Resume</translation>
 <translation id="820568752112382238">Mga pinakamadalas bisitahing site</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Sumali sa grupo ng tab kasama ni <ph name="OWNER_FIRST_NAME" /> at <ph name="NUMBER_OF_OTHER_MEMBERS" /> pa}one{Sumali sa grupo ng tab kasama ni <ph name="OWNER_FIRST_NAME" /> at <ph name="NUMBER_OF_OTHER_MEMBERS" /> pa}other{Sumali sa grupo ng tab kasama ni <ph name="OWNER_FIRST_NAME" /> at <ph name="NUMBER_OF_OTHER_MEMBERS" /> pa}}</translation>
 <translation id="8209050860603202033">Buksan ang larawan</translation>

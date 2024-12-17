@@ -98,7 +98,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> टॅब जोडला}other{<ph name="MANY_ADDED" /> टॅब जोडले}}</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक</translation>
 <translation id="5339733443032484186">तुमचा शेवटचा टॅब</translation>
+<translation id="5380159289133845234">डुप्लिकेट टॅब संग्रहित करा</translation>
 <translation id="5400836586163650660">राखाडी</translation>
+<translation id="5446043142172831860">टॅब काढून टाका आणि गटातून बाहेर पडा</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{टॅब गट <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}other{टॅब गट <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}}</translation>
@@ -117,6 +119,7 @@
 <translation id="6051432659151380973">तुमचे टॅब गट आपोआप सेव्ह होतात</translation>
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="6082313992897617440">तुम्ही लगेच <ph name="GROUP_NAME" /> या टॅब गटाचा ॲक्सेस गमवाल</translation>
+<translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="6271513594716432922">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>

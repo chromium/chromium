@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">Ak chcete pokračovať, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s týmto webom zdieľať vaše <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Spolupráca</translation>
 <translation id="3714981814255182093">Otvorenie Panela vyhľadávania</translation>
-<translation id="3716182511346448902">Táto stránka využíva príliš veľa pamäte, a preto ju Chrome pozastavil.</translation>
 <translation id="3718765429352682176">Môžete si zobraziť históriu z iných aplikácií, ktoré otvárajú odkazy v Chrome.</translation>
 <translation id="3720422586473670527">Nie, vďaka</translation>
 <translation id="3721119614952978349">Vy a Google</translation>
@@ -1629,7 +1628,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8186512483418048923">Zostávajúce súbory: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Zostáva: 1 d</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zariadenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Pokračovať</translation>
 <translation id="820568752112382238">Najnavštevovanejšie weby</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> ďalším}few{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> ďalšími}many{Join tab group with <ph name="OWNER_FIRST_NAME" /> and <ph name="NUMBER_OF_OTHER_MEMBERS" /> others}other{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> ďalšími}}</translation>
 <translation id="8209050860603202033">Otvoriť obrázok</translation>

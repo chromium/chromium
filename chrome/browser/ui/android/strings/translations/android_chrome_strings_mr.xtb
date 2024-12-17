@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल.</translation>
 <translation id="3710560693796335511">सहयोग</translation>
 <translation id="3714981814255182093">शोध बार उघडा</translation>
-<translation id="3716182511346448902">हे पेज खूपच जास्त मेमरी वापरत असल्यामुळे Chrome ने ते थांबवून ठेवलेले आहे.</translation>
 <translation id="3718765429352682176">तुम्हाला Chrome मध्ये लिंक उघडणाऱ्या इतर ॲप्समधील इतिहास दिसू शकतो.</translation>
 <translation id="3720422586473670527">नाही, नको</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923"><ph name="FILES" /> फाइल शिल्लक</translation>
 <translation id="8190358571722158785">1 दिवस शिल्लक</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="820568752112382238">सर्वाधिक भेट दिलेल्या साइट</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUMBER_OF_OTHER_MEMBERS" /> व्यक्तीसोबत टॅब गटामध्ये सामील व्हा}other{<ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUMBER_OF_OTHER_MEMBERS" /> लोकांसोबत टॅब गटामध्ये सामील व्हा}}</translation>
 <translation id="8209050860603202033">इमेज उघडा</translation>

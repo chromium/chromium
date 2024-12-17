@@ -927,6 +927,7 @@
 <translation id="2628224721443278970">Microsoft OneDrive में साइन इन करें</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> का सर्वर आईपी पता नहीं मिल सका.</translation>
 <translation id="2639739919103226564">स्थिति:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">फ़ैब्रिक (सेमी-ग्लॉस)</translation>
 <translation id="264810637653812429">कोई संगत डिवाइस नहीं मिला.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1399,6 +1400,7 @@
 <translation id="351522771072578657">फ़िलहाल, मेन्यू का इस्तेमाल किया जा रहा है</translation>
 <translation id="3517264445792388751">आपके एडमिन ने फ़ाइल सिस्टम को बंद कर दिया है</translation>
 <translation id="3518941727116570328">कई ऑब्जेक्ट को हैंडल करना</translation>
+<translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> से पूछें</translation>
 <translation id="3525130752944427905">10 x 14 इंच</translation>
 <translation id="3525435918300186947">क्या एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करना है?</translation>
 <translation id="3527181387426738155">संगीत और ऑडियो</translation>
@@ -1953,6 +1955,7 @@
 <translation id="4451684391620232683">उपयोगकर्ता को दिखाया गया टेक्स्ट:</translation>
 <translation id="4452328064229197696">आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें. इस तरह आपके खाते सुरक्षित रहेंगे.</translation>
 <translation id="4456937135469235202">एडवेंचर ट्रैवल</translation>
+<translation id="4458013283022578512">कोई सवाल डालें</translation>
 <translation id="4464826014807964867">ऐसी वेबसाइटें जिनके बारे में आपके संगठन ने जानकारी दी है</translation>
 <translation id="4466576951214254884">कॉलेज के छात्र-छात्राओं के लिए लोन और वित्तीय सेवाएं</translation>
 <translation id="4467821340016922962">फ़ुल स्क्रीन से बाहर निकलने और डाउनलोड की गई फ़ाइलें देखने के लिए, |<ph name="ACCELERATOR" />| दबाएं</translation>

@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Ativar a sincronização?</translation>
 <translation id="1253032109800629289">Ocultar "Receba notificações de acompanhamento de preço"</translation>
 <translation id="1258491128795710625">Novidades</translation>
+<translation id="1259210743048744967">Os seus dados de navegação existentes vão estar disponíveis após terminar sessão em <ph name="USER_EMAIL" />. Não vão ser guardados nesta conta.</translation>
 <translation id="1262724000444746916">Ocultar Adicionar aos marcadores</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263433075299269530">O seu último separador aberto</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Remover o separador e eliminar o grupo?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
 <translation id="1709916727352927457">Elimine o token de acesso</translation>
+<translation id="1712341189152602203">Os dados de navegação existentes vão ser associados a <ph name="USER_EMAIL" />. Estes dados podem ser visualizados pela sua organização.</translation>
 <translation id="1713777106376424209">Entregue até</translation>
 <translation id="1715515772563243997">Se confiar em <ph name="SITE" />, pode usar uma palavra-passe guardada para iniciar sessão.</translation>
 <translation id="1728549374069268714">Colar e ir</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Num site onde guardou uma palavra-passe, toque no campo da palavra-passe de início de sessão.</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Escolha o que fazer com os dados de navegação existentes neste dispositivo, como palavras-passe, histórico e muito mais.</translation>
 <translation id="1881621406744213161">Convide membros da família</translation>
 <translation id="188237709236611317">Barra de menu com ordenação inteligente</translation>
 <translation id="1883255238294161206">Fechar lista</translation>
@@ -512,6 +515,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3324193307694657476">Morada 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="333229797575847124">Como ativar esta funcionalidade</translation>
+<translation id="3333566504534692948">Não, movê-los para o seu espaço de trabalho</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
 <translation id="334690320928261823">Separadores recentes</translation>
 <translation id="3348387552617855658">Este cartão ajuda a acompanhar os seus pacotes e a dar-lhe atualizações importantes sobre a entrega.</translation>

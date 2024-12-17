@@ -499,7 +499,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1335929031622236846">Registrirajte svoj uređaj</translation>
 <translation id="133660899895084533">Čitanje Bluetooth podataka i podataka o perifernim uređajima</translation>
 <translation id="1336902454946927954">Sigurnosni je ključ zaključan jer vaš otisak prsta nije prepoznat. Da biste ga otključali, unesite PIN.</translation>
-<translation id="1337066099824654054">Kontekstualna pomoć je isključena</translation>
 <translation id="1338631221631423366">Uparivanje...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> želi otvoriti ovu aplikaciju.</translation>
 <translation id="1338950911836659113">Brisanje...</translation>
@@ -1166,7 +1165,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1802687198411089702">Stranica ne reagira. Možete je pričekati ili napustiti.</translation>
 <translation id="1803531841600994172">Jezik na koji se prevodi</translation>
 <translation id="1803545009660609783">Ponovo uvježbaj</translation>
-<translation id="1804195280859010019">U značajkama kao što je bočna ploča Google pretraživanja prikazivat će se korisnije informacije ili prijedlozi</translation>
 <translation id="180441032496361123">Kliknite da biste aktivirali tražilicu <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">Pozadinska kartica upotrebljava mikrofon</translation>
 <translation id="1805822111539868586">Provjerite prikaze</translation>
@@ -2329,6 +2327,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2606568927909309675">Automatski izrađuje titlove za zvuk i videozapise na engleskom jeziku. Audiozapisi i titlovi nikad se ne šalju s uređaja.</translation>
 <translation id="2606890864830643943">Izvoz dijagnostičkih podataka</translation>
 <translation id="2607101320794533334">Informacije predmeta javnog ključa</translation>
+<translation id="2608837922830967145">Ne prikazuj ponovo ovu poruku</translation>
 <translation id="2609896558069604090">Stvaranje prečaca...</translation>
 <translation id="2609980095400624569">Nije bilo moguće uspostaviti vezu</translation>
 <translation id="2610157865375787051">Mirovanje</translation>
@@ -3569,7 +3568,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="350397915809787283">Ako nemate račun, odaberite prvu opciju da biste ga izradili.</translation>
 <translation id="3503995387997205657">Možete vratiti svoje prethodne aplikacije</translation>
 <translation id="3505100368357440862">Prijedlozi za kupnju</translation>
-<translation id="3505602163050943406">Kad upotrebljavate neke značajke, one Googleu mogu slati dijelove otvorenih stranica, povezane nedavne stranice i njihove URL-ove.</translation>
 <translation id="3507132249039706973">Uključena je Standardna zaštita</translation>
 <translation id="3507888235492474624">Ponovo skenirajte Bluetooth uređaje</translation>
 <translation id="3508492320654304609">Podatke za prijavu nije moguće izbrisati</translation>
@@ -3921,7 +3919,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Želite li otvoriti aplikaciju <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Web-lokacije mogu tražiti dopuštenje traženja i upotrebe pisača dostupnih vašem uređaju</translation>
-<translation id="3740396996321407665">Primaj kontekstualnu pomoć od nekih značajki</translation>
 <translation id="3740945083753997630">Smanjite veličinu prikaza i teksta</translation>
 <translation id="3741056951918180319">Uvijek možete kliknuti proširenje da biste ga koristili na bilo kojoj web-lokaciji</translation>
 <translation id="374124333420280219">Pojedinosti o aplikaciji:</translation>
@@ -4319,6 +4316,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3993887353483242788">Sinkronizirajte uređaj <ph name="DEVICE_TYPE" /> kako bi vaše preferencije bile spremne na svim uređajima kad se prijavite Google računom. Preferencije uključuju aplikacije, postavke, zaporke Wi-Fi mreže, jezike, pozadinu, tipkovne prečace i više.</translation>
 <translation id="3994318741694670028">Nažalost, vaše je računalo konfigurirano pogrešno oblikovanim ID-jem hardvera. To sprječava ažuriranje ChromeOS Flexa najnovijim sigurnosnim popravcima pa bi vaše računalo <ph name="BEGIN_BOLD" />moglo biti ranjivo na zlonamjerne napade<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Otključajte telefon i približite ga da biste otključali svoj <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Pronađite gumbe na tabletu</translation>
 <translation id="3994708120330953242">Neke od vaših zaporki otkrivene su u neovlaštenom pristupu podacima. Da biste zaštitili svoje račune, odmah promijenite te zaporke.</translation>
 <translation id="3994878504415702912">&amp;Zum</translation>
@@ -7285,7 +7283,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6173623053897475761">Ponovo unesite PIN</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Zatraži vezu</translation>
-<translation id="6176701216248282552">Kontekstualna pomoć je uključena. Ove značajke mogu slati otvorene stranice Googleu.</translation>
 <translation id="6177412385419165772">Uklanjanje...</translation>
 <translation id="6177478397823976397">Uređaji nisu pronađeni. Otvorite članak centra za pomoć u novoj kartici</translation>
 <translation id="6178664161104547336">Odabir certifikata</translation>
@@ -9189,7 +9186,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="756445078718366910">Otvori prozor preglednika</translation>
 <translation id="7564847347806291057">Završi proces</translation>
 <translation id="756503097602602175">Google računima na koje ste prijavljeni možete upravljati u <ph name="LINK_BEGIN" />postavkama<ph name="LINK_END" />. Dopuštenja koja ste dali web-lokacijama i aplikacijama mogu se primijeniti na sve račune. Ako ne želite da web-lokacije i aplikacije pristupaju podacima o vašem računu, možete se prijaviti na uređaj <ph name="DEVICE_TYPE" /> kao gost ili pregledavati web u <ph name="LINK_2_BEGIN" />anonimnom prozoru<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Neke značajke mogu upotrebljavati sadržaj otvorenih stranica i povezanih nedavnih stranica kako bi pružile korisnije informacije ili prijedloge</translation>
 <translation id="7566118625369982896">Upravljaj vezama aplikacije Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Izradi kombinaciju tipki</translation>
@@ -10938,7 +10934,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8781980678064919987">Isključi računalo kada se zatvori poklopac</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije kioska otkazano je.</translation>
 <translation id="8783834180813871000">Unesite kôd za uparivanje pa pritisnite Return ili Enter.</translation>
-<translation id="8783955532752528811">Kontekstualna pomoć u značajkama</translation>
 <translation id="8784626084144195648">Kvantizacijski prosjek</translation>
 <translation id="8785622406424941542">Olovka</translation>
 <translation id="8786824282808281903">Kada vaše dijete vidi tu ikonu, otiskom prsta moći će potvrditi svoj identitet ili odobriti kupnje.</translation>
@@ -11430,7 +11425,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="9113529408970052045">Pomoć pri pisanju može se automatski otvoriti kad se tekstni okvir na web-lokaciji može ispuniti sadržajem kratkog formata</translation>
 <translation id="9114663181201435112">Jednostavna prijava</translation>
 <translation id="9115675100829699941">&amp;Bookmarks (Oznake)</translation>
-<translation id="9115932142612197835">Ova postavka ne mijenja dostupnost Google prevoditelja i Objektiva</translation>
 <translation id="9116366756388192417">Odaberite predmet</translation>
 <translation id="9116799625073598554">Aplikacija za zapisivanje bilješki</translation>
 <translation id="9117030152748022724">Upravljanje aplikacijama</translation>

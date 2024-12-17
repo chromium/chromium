@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in regterknoppie.</translation>
 <translation id="3340978935015468852">instellings</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Laai opsomming en naamskeppingmodel af</translation>
 <translation id="3359218928534347896">wissel mikrofoondemping</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">soesji</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad sonder <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
+<translation id="5875913454160982848">Laai transkripsiemodel af</translation>
 <translation id="5876385649737594562">Skakel aan om opsies te kies</translation>
 <translation id="5877503382465267833">Onderbreek <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Volskerm</translation>
@@ -1588,6 +1590,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8503836310948963452">Net 'n paar minute …</translation>
 <translation id="8505011850330200833">Die Gemini-model benodig 2 GB se berging om transkripsies te verwerk en opsommings te skep</translation>
 <translation id="8508640263392900755">APN-besonderhede</translation>
+<translation id="8509574872955173831">Kry meer inligting oor opsomming en naamskepping</translation>
 <translation id="8522687886059337719">Jy het nou toegang tot nuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />muurpapiere<ph name="END_LINK_WALLPAPER_SUBPAGE" /> en <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />sluimerskerm<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teehuis</translation>

@@ -597,7 +597,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3710501561113687889">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your <ph name="FIELDS_STRING" /> with this site.</translation>
 <translation id="3710560693796335511">Collaboration</translation>
 <translation id="3714981814255182093">Open the Find Bar</translation>
-<translation id="3716182511346448902">This page uses too much memory, so Chrome paused it.</translation>
 <translation id="3718765429352682176">You may see the history from other apps that open links in Chrome.</translation>
 <translation id="3720422586473670527">No thanks</translation>
 <translation id="3721119614952978349">You and Google</translation>
@@ -1629,7 +1628,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
 <translation id="8190358571722158785">1 day left</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Resume</translation>
 <translation id="820568752112382238">Most-visited sites</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Join tab group with <ph name="OWNER_FIRST_NAME" /> and <ph name="NUMBER_OF_OTHER_MEMBERS" /> other}other{Join tab group with <ph name="OWNER_FIRST_NAME" /> and <ph name="NUMBER_OF_OTHER_MEMBERS" /> others}}</translation>
 <translation id="8209050860603202033">Open image</translation>

@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個のタブを追加しました}other{<ph name="MANY_ADDED" /> 個のタブを追加しました}}</translation>
 <translation id="5161254044473106830">タイトルが必要です</translation>
 <translation id="5339733443032484186">最後のタブ</translation>
+<translation id="5380159289133845234">重複するタブをアーカイブする</translation>
 <translation id="5400836586163650660">グレー</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">タブグループは自動的に保存されます</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
 <translation id="6082313992897617440">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなります</translation>
+<translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6271513594716432922">アクティブでないタブをすべて閉じる</translation>

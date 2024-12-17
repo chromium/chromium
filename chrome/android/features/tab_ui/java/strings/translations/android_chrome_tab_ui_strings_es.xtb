@@ -98,6 +98,7 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestaña añadida}other{<ph name="MANY_ADDED" /> pestañas añadidas}}</translation>
 <translation id="5161254044473106830">Título obligatorio</translation>
 <translation id="5339733443032484186">Tu última pestaña</translation>
+<translation id="5380159289133845234">Archivar pestañas duplicadas</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">Grupo de pestañas desplegado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
@@ -117,6 +118,7 @@ Si lo abandonas, perderás inmediatamente el acceso al grupo de pestañas <ph na
 <translation id="6051432659151380973">Tus grupos de pestañas se guardan automáticamente</translation>
 <translation id="6054741997831917303">El precio de este elemento ha bajado recientemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Perderás inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia usada más recientemente.</translation>
 <translation id="6193448654517602979">Selecciona pestañas</translation>
 <translation id="6228793724645064692">(valoración de la tienda)</translation>
 <translation id="6271513594716432922">Cerrar todas las pestañas inactivas</translation>

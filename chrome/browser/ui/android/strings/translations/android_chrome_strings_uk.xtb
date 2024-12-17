@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть цьому сайту таку інформацію: <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Співпраця</translation>
 <translation id="3714981814255182093">Відкрити рядок пошуку</translation>
-<translation id="3716182511346448902">Ця сторінка займає велику кількість пам’яті, тому Chrome призупинив її роботу.</translation>
 <translation id="3718765429352682176">Ви можете побачити історію інших додатків, які відкривають посилання в Chrome.</translation>
 <translation id="3720422586473670527">Ні, дякую</translation>
 <translation id="3721119614952978349">Ви й Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923">Залишилося файлів: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Залишився 1 день</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Відновити</translation>
 <translation id="820568752112382238">Сайти, які часто відвідуються</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувач}one{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувач}few{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувачі}many{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувачів}other{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувача}}</translation>
 <translation id="8209050860603202033">Відкрити зображення</translation>

@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">Үргэлжлүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны <ph name="FIELDS_STRING" />-г энэ сайттай хуваалцана.</translation>
 <translation id="3710560693796335511">Хамтын ажиллагаа</translation>
 <translation id="3714981814255182093">Find Bar-г нээх</translation>
-<translation id="3716182511346448902">Энэ хуудас хэт их хэмжээний санах ой ашиглаж байгаа тул үүнийг Chrome түр зогсоосон болно.</translation>
 <translation id="3718765429352682176">Chrome-д холбоос нээдэг бусад аппын хөтчийн түүх танд харагдаж болно.</translation>
 <translation id="3720422586473670527">Үгүй, баярлалаа</translation>
 <translation id="3721119614952978349">Та болон Google</translation>
@@ -1629,7 +1628,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8186512483418048923"><ph name="FILES" /> файл үлдсэн</translation>
 <translation id="8190358571722158785">1 өдөр үлдсэн</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Сэргээх</translation>
 <translation id="820568752112382238">Хамгийн их зочилсон сайт</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> болон өөр <ph name="NUMBER_OF_OTHER_MEMBERS" /> хүний байгаа табын бүлэгт нэгдэх}other{<ph name="OWNER_FIRST_NAME" /> болон өөр <ph name="NUMBER_OF_OTHER_MEMBERS" /> хүний байгаа табын бүлэгт нэгдэх}}</translation>
 <translation id="8209050860603202033">Зургийг нээх</translation>

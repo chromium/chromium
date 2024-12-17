@@ -98,7 +98,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> টা টেব যোগ দিয়া হ’ল}one{<ph name="MANY_ADDED" /> টা টেব যোগ দিয়া হ’ল}other{<ph name="MANY_ADDED" /> টা টেব যোগ দিয়া হ’ল}}</translation>
 <translation id="5161254044473106830">শিৰোনাম বাধ্যতামূলক</translation>
 <translation id="5339733443032484186">আপোনাৰ অন্তিম টেব</translation>
+<translation id="5380159289133845234">ডুপ্লিকেট টেব আৰ্কাইভ কৰক</translation>
 <translation id="5400836586163650660">ধোঁৱাবৰণীয়া</translation>
+<translation id="5446043142172831860">টেব আঁতৰাওক আৰু গোটৰ পৰা বাহিৰ হওক</translation>
 <translation id="5490235265819901748">টেবৰ গোটটো বিস্তাৰ কৰা হৈছে</translation>
 <translation id="5494920125229734069">সকলো বাছনি কৰক</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}one{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}other{টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বন্ধ কৰক।}}</translation>
@@ -117,6 +119,7 @@
 <translation id="6051432659151380973">আপোনাৰ টেবৰ গোটসমূহ স্বয়ংক্ৰিয়ভাৱে ছেভ কৰা হয়</translation>
 <translation id="6054741997831917303">শেহতীয়াকৈ এইটো বস্তুৰ মূল্য <ph name="PREVIOUS_PRICE" />ৰ পৰা <ph name="NEW_PRICE" />লৈ হ্ৰাস পাইছে</translation>
 <translation id="6082313992897617440">আপুনি লগে লগে <ph name="GROUP_NAME" /> টেবৰ গোটৰ এক্সেছ হেৰুৱাব</translation>
+<translation id="6109251075362363230">আটাইবোৰ ডুপ্লিকেট টেবো এতিয়া আৰ্কাইভ কৰা হ’ব, য’ত একেবাৰে শেহতীয়াকৈ ব্যৱহাৰ কৰা প্ৰতিলিপিটোৰ ক্ষেত্ৰত ব্যতিক্ৰম থাকিব।</translation>
 <translation id="6193448654517602979">টেবসমূহ বাছনি কৰক</translation>
 <translation id="6228793724645064692">(ষ্ট’ৰৰ মূল্যাংকন)</translation>
 <translation id="6271513594716432922">আটাইবোৰ নিষ্ক্ৰিয় টেব বন্ধ কৰক</translation>

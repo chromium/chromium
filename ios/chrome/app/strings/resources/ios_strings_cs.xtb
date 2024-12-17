@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Otevřít vše</translation>
 <translation id="1408847409015257906">Klepněte na Ochrana soukromí a zabezpečení.</translation>
 <translation id="1411386976162024013">Vizuální vyhledávání Lens</translation>
+<translation id="1417474386970818917">Odhlásit se a smazat</translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1436671784520050284">Pokračovat v nastavování</translation>
@@ -1010,6 +1011,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5628388627414062173">{count,plural, =1{{count} stránka ve vašem seznamu četby}few{{count} stránky ve vašem seznamu četby}many{{count} stránky ve vašem seznamu četby}other{{count} stránek ve vašem seznamu četby}}</translation>
 <translation id="5632485077360054581">Ukázat postup</translation>
 <translation id="5633237939819267663">{count,plural, =1{Záložka byla uložena do složky {title}}few{Do složky „{title}“ byly uloženy {count} záložky}many{Do složky „{title}“ bylo uloženo {count} záložky}other{Do složky „{title}“ bylo uloženo {count} záložek}}</translation>
+<translation id="564170563478022912">Odhlásit se? Neuložená data v účtu se smažou.</translation>
 <translation id="5642707040609478753">Označit jako nepřečtené</translation>
 <translation id="5646284034397250191">Byl vytvořen štítek. Datum bude upřesněno</translation>
 <translation id="5647096944343801045">Velký vstupní bod</translation>
@@ -1022,6 +1024,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5669335982068190158">V rámci resetování iPhonu jste byli odhlášeni. Níže klepněte na Pokračovat a přihlaste se.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Verze <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Přepnout účty? Neuložená data v účtu se smažou.</translation>
 <translation id="5683499062697987550">Pokud chcete používat a ukládat hesla ve svém účtu Google, ověřte svoji totožnost.</translation>
 <translation id="5684761169742812828">Toto heslo bylo vyzrazeno při porušení zabezpečení údajů na internetu. Pokud nemáte čas hned ho změnit, doporučuje Google ponechat si toto upozornění jako připomenutí na později.</translation>
 <translation id="5694848685995373177">Uloženo na Disk pro uživatele <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="6506996418997555004">Sdílení skupiny karet <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Pokud seznam četby chcete mít na všech svých zařízeních, přihlaste se.</translation>
 <translation id="6518133107902771759">Ověřit</translation>
+<translation id="6518861084553706202">Karty se zavřou a smazaná data můžou zahrnovat hesla, historii procházení, soubory cookie a podobně.</translation>
 <translation id="6523575793810663688">Ukázat postup</translation>
 <translation id="6524082013156754186">Uložit do účtu</translation>
 <translation id="6527303717912515753">Sdílet</translation>
@@ -1679,6 +1683,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8545276357312221485">Zkontrolujte nastavení výchozího prohlížeče</translation>
 <translation id="854938212724803178">Máte jedno prolomené heslo. Pokud chcete být v bezpečí, ihned to vyřešte.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Zamítli jste {count} upozornění}few{Zamítli jste {count} upozornění}many{Zamítli jste {count} upozornění}other{Zamítli jste {count} upozornění}}</translation>
+<translation id="8558046478684552694">Zavřít skupinu.</translation>
 <translation id="8560253818350321773">Nejdříve zobrazte často používané položky.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Nad klávesnicí je k dispozici {count} možnost hesla.}few{Nad klávesnicí jsou k dispozici {count} možnosti hesel.}many{Nad klávesnicí je k dispozici {count} možnosti hesla.}other{Nad klávesnicí je k dispozici {count} možností hesel.}}</translation>
 <translation id="8564894539416715395">Stránka Nová karta</translation>
@@ -1847,6 +1852,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9205189991633470489">Zámek anonymního režimu</translation>
 <translation id="9206887540681440657">Rychlost</translation>
 <translation id="9223358826628549784">Zpráva o selhání byla odeslána.</translation>
+<translation id="926455622548529175">Přepnout a smazat</translation>
 <translation id="929748059769569925">Zvýrazněný text</translation>
 <translation id="932305336591073205">{count,plural, =1{Zavřít kartu}few{Zavřít karty}many{Zavřít karty}other{Zavřít karty}}</translation>
 <translation id="939472100615258482">Aktuální web</translation>

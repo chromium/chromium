@@ -926,6 +926,7 @@
 <translation id="2628224721443278970">登录 Microsoft OneDrive</translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的服务器 IP 地址。</translation>
 <translation id="2639739919103226564">状态：</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">织物（半光）</translation>
 <translation id="264810637653812429">找不到任何兼容设备。</translation>
 <translation id="2649204054376361687"><ph name="COUNTRY" /><ph name="CITY" /></translation>
@@ -1396,6 +1397,7 @@
 <translation id="351522771072578657">您当前位于菜单上</translation>
 <translation id="3517264445792388751">管理员已停用文件系统</translation>
 <translation id="3518941727116570328">多对象处理</translation>
+<translation id="3519670528214225835">询问<ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 英寸</translation>
 <translation id="3525435918300186947">控制 MIDI 设备以及为其重新编程？</translation>
 <translation id="3527181387426738155">音乐与音频</translation>
@@ -1949,6 +1951,7 @@
 <translation id="4451684391620232683">向用户显示的文本：</translation>
 <translation id="4452328064229197696">您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，Google 密码管理工具建议您检查已保存的所有密码。</translation>
 <translation id="4456937135469235202">探险旅行</translation>
+<translation id="4458013283022578512">输入问题</translation>
 <translation id="4464826014807964867">包含来自贵组织的信息的网站</translation>
 <translation id="4466576951214254884">学生贷款与大学助学金</translation>
 <translation id="4467821340016922962">若要退出全屏模式并查看下载内容，请按 |<ph name="ACCELERATOR" />|</translation>

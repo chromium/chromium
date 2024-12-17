@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">налаштування</translation>
 <translation id="3347558044552027859">Сучасний</translation>
+<translation id="3353477144743332882">Завантажити модель для створення підсумку й назви</translation>
 <translation id="3359218928534347896">увімкнути або вимкнути мікрофон</translation>
 <translation id="3360306038446926262">ОС Windows</translation>
 <translation id="3361618936611118375">суші</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Комбінація клавіш недоступна. Натисніть нову комбінацію без клавіші <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
+<translation id="5875913454160982848">Завантажити модель транскрипції</translation>
 <translation id="5876385649737594562">Увімкніть, щоб вибрати параметри</translation>
 <translation id="5877503382465267833">Призупинити відтворення запису "<ph name="RECORDING_NAME" />"</translation>
 <translation id="588258955323874662">Повноекранний режим</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">Залишилося кілька хвилин…</translation>
 <translation id="8505011850330200833">Щоб обробляти текстові версії викликів і створювати підсумки, моделі Gemini потрібно 2 ГБ пам’яті</translation>
 <translation id="8508640263392900755">Відомості про APN</translation>
+<translation id="8509574872955173831">Докладніше про створення підсумку й назви</translation>
 <translation id="8522687886059337719">Тепер ви маєте доступ до нових <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />фонових малюнків<ph name="END_LINK_WALLPAPER_SUBPAGE" /> і <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />заставок<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">в стилі чайхани</translation>

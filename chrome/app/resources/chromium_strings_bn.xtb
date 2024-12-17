@@ -68,6 +68,7 @@
 <translation id="1896836275755235458">স্মুথ স্ক্রলিং ও ভিডিও ফ্রেম রেটের মতো ব্যাকগ্রাউন্ড অ্যাক্টিভিটি ও ভিজ্যুয়াল এফেক্টকে সীমিত করার মাধ্যমে Chromium ব্যাটারির চার্জ সাশ্রয় করে। <ph name="BEGIN_LINK" />পাওয়ার সেভার সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium আপডেটার পরিষেবা</translation>
 <translation id="1911763535808217981">এটি বন্ধ করার মানে হল, আপনি Chromium-এ সাইন-ইন না করে Gmail এর মতো Google সাইটগুলিতে সাইন-ইন করতে পারেন</translation>
+<translation id="1916451563296275579">Chromium থেকে এইসব অ্যাপ ডেটা সরিয়ে দিন</translation>
 <translation id="1929939181775079593">Chromium সাড়া দিচ্ছে না৷ আবার শুরু করবেন?</translation>
 <translation id="1933341829955786215">আপনার সংস্থা, <ph name="MANAGER" />-এর প্রয়োজন অনুযায়ী, আপনাকে Chromium-এ সাইন-ইন করতে হবে</translation>
 <translation id="193439633299369377">আপডেটটি প্রয়োগ করতে ChromiumOS আবার চালু করা প্রয়োজন।</translation>
@@ -405,6 +406,7 @@
 <translation id="6455857529632101747">Chromium প্রোফাইল-এ স্বাগতম</translation>
 <translation id="6466344609055215035">Chromium থেকে অ্যাকাউন্ট সরান</translation>
 <translation id="6475912303565314141">আপনি Chromium শুরু করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
+<translation id="648062525172759633">এইসব পৃষ্ঠা Chromium ডেভেলপারদের ব্যবহার করার উদ্দেশ্যে তৈরি এবং এগুলি হয়ত সক্রিয়ভাবে রক্ষণাবেক্ষণ বা পরীক্ষা করা হয় না। এগুলি চালু করতে <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> লিঙ্কে যান, ডিবাগ পৃষ্ঠা চালু করতে বোতামে ক্লিক করে আবার এই পৃষ্ঠায় নেভিগেট করুন।</translation>
 <translation id="648319183876919572">উন্নত Safe Browsing আপনাকে বিপজ্জনক ওয়েবসাইট, ডাউনলোড থেকে আরও সুরক্ষা দেয়</translation>
 <translation id="6510925080656968729">Chromium আনইনস্টল করুন</translation>
 <translation id="651535675648445253">শর্টকার্ট Chromium-এ খোলে</translation>

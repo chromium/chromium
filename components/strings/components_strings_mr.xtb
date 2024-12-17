@@ -926,6 +926,7 @@
 <translation id="2628224721443278970">Microsoft OneDrive मध्ये साइन इन करा</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> चा सर्व्हर आयपी ॲड्रेस सापडला नाही.</translation>
 <translation id="2639739919103226564">स्थिती:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">फॅब्रिक (सेमी-ग्लॉस)</translation>
 <translation id="264810637653812429">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1140,6 +1141,7 @@
 <translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
 <translation id="3067505415088964188">किंमत कमी आहे</translation>
 <translation id="3068118691172921711">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड १ मिनिटाने सुरू होईल</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} आयटम}other{{ITEMS} आयटम}}</translation>
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टीम</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3082007635241601060">उपलब्ध असतील, तेव्हा पर्सनलाइझ केलेल्या सवलती शोधण्यासाठी Google ला तुमची कार्ट वापरू द्या</translation>
@@ -2830,6 +2832,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> वरील वेबपेज कदाचित तात्पुरते बंद आहे किंवा ते कदाचित कायमचे नवीन वेब पत्त्यावर हलवले आहे.</translation>
 <translation id="6107012941649240045">यांना जारी केलेले</translation>
 <translation id="6107924765192360631">लेखनाशी संबंधित सूचना मिळवण्यासाठी फक्त काही शब्दांनी किंवा पहिल्या मसुद्याने सुरुवात करा.</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" /> ची तुलना करा</translation>
 <translation id="6108580855199168381">सर्टिफिकेटचे तपशील</translation>
 <translation id="6108702513636120202">Chromium मधील तुमचे शोध इंजीन</translation>
 <translation id="6108849843016142864">सर्पवर्गी प्राणी आणि उभयचर</translation>

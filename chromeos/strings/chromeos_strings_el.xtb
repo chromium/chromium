@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Απενεργοποίηση σκούρου θέματος</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
 <translation id="1808803439260407870">Κλασική τέχνη</translation>
+<translation id="181434555916624618">Προς το παρόν, τα αποτελέσματα που περιέχουν άτομα δεν θα εμφανίζονται. Δοκιμάστε άλλη οδηγία.</translation>
 <translation id="1815850098929213707">Το επιλεγμένο πλήκτρο είναι <ph name="KEYS" />. Πατήστε το κουμπί για να επεξεργαστείτε το στοιχείο ελέγχου</translation>
 <translation id="1823120442877418684">Χαρακτήρες</translation>
 <translation id="1827738518074806965">Γκαλερί</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ρυθμίσεις</translation>
 <translation id="3347558044552027859">μοντέρνο</translation>
+<translation id="3353477144743332882">Λήψη μοντέλου δημιουργίας σύνοψης και ονόματος</translation>
 <translation id="3359218928534347896">εναλλαγή σίγασης μικροφώνου.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">σούσι</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χωρίς το πλήκτρο <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
+<translation id="5875913454160982848">Λήψη μοντέλου μεταγραφής</translation>
 <translation id="5876385649737594562">Ενεργοποίηση για ορισμό επιλογών</translation>
 <translation id="5877503382465267833">Παύση <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Πλήρης οθόνη</translation>
@@ -1588,6 +1591,7 @@
 <translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
 <translation id="8505011850330200833">Το μοντέλο Gemini απαιτεί 2 GB αποθηκευτικού χώρου για την επεξεργασία μεταγραφών και τη δημιουργία συνόψεων</translation>
 <translation id="8508640263392900755">Λεπτομέρειες APN</translation>
+<translation id="8509574872955173831">Μάθετε περισσότερα σχετικά με τη δημιουργία σύνοψης και ονόματος</translation>
 <translation id="8522687886059337719">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /> και στην <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />προφύλαξη οθόνης<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">τσαγερί</translation>

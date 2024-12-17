@@ -98,6 +98,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane blev tilføjet}one{<ph name="MANY_ADDED" /> fane blev tilføjet}other{<ph name="MANY_ADDED" /> faner blev tilføjet}}</translation>
 <translation id="5161254044473106830">Der skal angives en titel</translation>
 <translation id="5339733443032484186">Din seneste fane</translation>
+<translation id="5380159289133845234">Arkivér dubletter af faner</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5490235265819901748">Fanegruppen blev udvidet</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
@@ -117,6 +118,7 @@ Hvis du forlader gruppen, mister du øjeblikkeligt adgangen til fanegruppen "<ph
 <translation id="6051432659151380973">Dine fanegrupper gemmes automatisk</translation>
 <translation id="6054741997831917303">Prisen på denne vare er for nylig faldet fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Du mister øjeblikkeligt adgangen til fanegruppen <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Alle dubletter af faner arkiveres nu også med undtagelse af den senest anvendte kopi.</translation>
 <translation id="6193448654517602979">Vælg faner</translation>
 <translation id="6228793724645064692">(butiksanmeldelse)</translation>
 <translation id="6271513594716432922">Luk alle inaktive faner</translation>

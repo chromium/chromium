@@ -98,6 +98,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Idinagdag ang <ph name="ONE_ADDED" /> tab}one{Idinagdag ang <ph name="MANY_ADDED" /> tab}other{Idinagdag ang <ph name="MANY_ADDED" /> na tab}}</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
 <translation id="5339733443032484186">Ang iyong huling tab</translation>
+<translation id="5380159289133845234">Mag-archive ng mga duplicate na tab</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
@@ -117,6 +118,7 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="6051432659151380973">Awtomatikong mase-save ang mga grupo ng tab mo</translation>
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
 <translation id="6082313992897617440">Mawawalan ka kaagad ng access sa grupo ng tab na <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6271513594716432922">Isara ang lahat ng hindi aktibong tab</translation>

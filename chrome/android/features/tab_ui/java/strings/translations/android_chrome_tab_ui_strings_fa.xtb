@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> برگه اضافه شد}one{‫<ph name="MANY_ADDED" /> برگه اضافه شد}other{‫<ph name="MANY_ADDED" /> برگه اضافه شد}}</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="5339733443032484186">آخرین برگه شما</translation>
+<translation id="5380159289133845234">بایگانی کردن برگه‌های تکراری</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5490235265819901748">گروه برگه گسترده شد</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">گروه‌های برگه به‌طور خودکار ذخیره می‌شود</translation>
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
 <translation id="6082313992897617440">دسترسی شما به گروه برگه <ph name="GROUP_NAME" /> فوراً برداشته می‌شود</translation>
+<translation id="6109251075362363230">همه برگه‌های تکراری اکنون بایگانی نیز خواهند شد، به‌غیراز نسخه‌ای که آخرین بار استفاده شده است.</translation>
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
 <translation id="6271513594716432922">بستن همه برگه‌های غیرفعال</translation>

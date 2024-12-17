@@ -926,6 +926,7 @@
 <translation id="2628224721443278970">Σύνδεση στο Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Δεν ήταν δυνατή η εύρεση της διεύθυνσης IP διακομιστή του κεντρικού υπολογιστή <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Κατάσταση:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Ύφασμα (Ημι-γυαλιστερό)</translation>
 <translation id="264810637653812429">Δεν βρέθηκαν συμβατές συσκευές.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1399,6 +1400,7 @@
 <translation id="351522771072578657">Βρίσκεστε σε ένα μενού</translation>
 <translation id="3517264445792388751">Το σύστημα αρχείων απενεργοποιήθηκε από τον διαχειριστή σας</translation>
 <translation id="3518941727116570328">Χειρισμός πολλών αντικειμένων</translation>
+<translation id="3519670528214225835">Ρωτήστε το <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 ίντσες</translation>
 <translation id="3525435918300186947">Έλεγχος και επαναπρογραμματισμός συσκευών MIDI;</translation>
 <translation id="3527181387426738155">Μουσική και ήχος</translation>
@@ -1954,6 +1956,7 @@
 <translation id="4451684391620232683">Κείμενο που εμφανίζεται στον χρήστη:</translation>
 <translation id="4452328064229197696">Ο κωδικός πρόσβασης που μόλις χρησιμοποιήσατε εντοπίστηκε σε μια παραβίαση δεδομένων. Για την ασφάλεια των λογαριασμών σας, η Διαχείριση κωδικών πρόσβασης της Google συνιστά να ελέγξετε τους αποθηκευμένους κωδικούς πρόσβασής σας.</translation>
 <translation id="4456937135469235202">Ταξίδια περιπέτειας</translation>
+<translation id="4458013283022578512">Εισαγάγετε μια ερώτηση</translation>
 <translation id="4464826014807964867">Ιστότοποι με πληροφορίες από τον οργανισμό σας</translation>
 <translation id="4466576951214254884">Φοιτητικά δάνεια και χρηματοδότηση σπουδών</translation>
 <translation id="4467821340016922962">Για έξοδο από την πλήρη οθόνη και εμφάνιση της λήψης, πατήστε |<ph name="ACCELERATOR" />|</translation>

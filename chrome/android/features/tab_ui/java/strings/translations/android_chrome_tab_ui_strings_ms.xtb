@@ -98,6 +98,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan}other{<ph name="MANY_ADDED" /> tab ditambahkan}}</translation>
 <translation id="5161254044473106830">Tajuk diperlukan</translation>
 <translation id="5339733443032484186">Tab terakhir anda</translation>
+<translation id="5380159289133845234">Arkibkan tab pendua</translation>
 <translation id="5400836586163650660">Kelabu</translation>
 <translation id="5446043142172831860">Alih keluar tab dan tinggalkan kumpulan</translation>
 <translation id="5490235265819901748">Kumpulan tab dikembangkan</translation>
@@ -118,6 +119,7 @@ Jika anda tinggalkan, anda akan kehilangan akses kepada kumpulan tab "<ph name="
 <translation id="6051432659151380973">Tab kumpulan anda disimpan secara automatik</translation>
 <translation id="6054741997831917303">Baru-baru ini harga item ini jatuh daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Anda akan kehilangan akses kepada kumpulan tab <ph name="GROUP_NAME" /> dengan serta-merta</translation>
+<translation id="6109251075362363230">Kini semua tab pendua akan turut diarkibkan kecuali salinan yang digunakan baru-baru ini.</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
 <translation id="6271513594716432922">Tutup semua tab tidak aktif</translation>

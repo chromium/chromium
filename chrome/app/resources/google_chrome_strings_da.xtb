@@ -206,6 +206,7 @@
 <translation id="345171907106878721">Tilføj dig selv i Chrome</translation>
 <translation id="3453763134178591239">Vilkår for ChromeOS</translation>
 <translation id="3503306920980160878">Chrome skal have adgang til din lokation for at dele din lokation med dette website</translation>
+<translation id="3512634283363927263">Disse sider er beregnet til brug af Chrome-udviklere og vedligeholdes eller testes muligvis ikke aktivt. Hvis du vil aktivere dem, skal du gå til <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikke på knappen for at aktivere fejlretningssider og derefter gå til denne side igen.</translation>
 <translation id="3533694711092285624">Der er ingen gemte adgangskoder. Chrome kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="3541482654983822893">Chrome kan ikke tjekke dine adgangskoder. Prøv igen efter 24 timer.</translation>
 <translation id="3564543103555793392">Når du logger ind i Chrome, kan du gemme bogmærker, adgangskoder og meget mere og derefter bruge dem på din telefon</translation>
@@ -520,6 +521,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7572537927358445944">Fra • Chrome kan ikke verificere, hvor denne udvidelse kommer fra</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
+<translation id="7617512710641355143">Chrome er administreret</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> kræver, at du læser og accepterer følgende servicevilkår, inden du bruger denne enhed. Disse vilkår udvider, ændrer eller begrænser på ingen måde vilkårene for Google ChromeOS.</translation>
 <translation id="7629695634924605473">Chrome giver dig besked, hvis dine adgangskoder kompromitteres</translation>
@@ -629,6 +631,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8718062187489036808">Log ud af Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastlægge eller angive standardbrowseren</translation>
 <translation id="8748735421235723888">Chrome frigør hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chrome hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger om Hukommelsessparefunktion<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Fjern denne apps data fra Chrome</translation>
 <translation id="8765470054473112089">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="8781673607513845160">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge dit kamera</translation>
 <translation id="878572486461146056">Installationsfejl: Din netværksadministrator anvender en gruppepolitik, der forhindrer installationen: <ph name="INSTALL_ERROR" /></translation>

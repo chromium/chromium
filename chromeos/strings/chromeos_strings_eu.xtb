@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
 <translation id="3340978935015468852">ezarpenak</translation>
 <translation id="3347558044552027859">modernoa</translation>
+<translation id="3353477144743332882">Deskargatu laburbiltzeko eta izenak sortzeko eredua</translation>
 <translation id="3359218928534347896">aktibatu edo desaktibatu mikrofonoa</translation>
 <translation id="3360306038446926262">Leihoak</translation>
 <translation id="3361618936611118375">sushia</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat <ph name="KEY" /> erabili gabe.</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
+<translation id="5875913454160982848">Deskargatu transkribatzeko eredua</translation>
 <translation id="5876385649737594562">Aukerak hautatzeko, aktiba ezazu</translation>
 <translation id="5877503382465267833">Pausatu <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
@@ -1588,6 +1590,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8503836310948963452">Minutu gutxi batzuk baino ez…</translation>
 <translation id="8505011850330200833">Gemini-ren ereduak 2 GB behar ditu transkripzioak prozesatu eta laburpenak sortu ahal izateko</translation>
 <translation id="8508640263392900755">APNaren xehetasunak</translation>
+<translation id="8509574872955173831">Lortu laburbiltzeari eta izenak sortzeari buruzko informazio gehiago</translation>
 <translation id="8522687886059337719">Orain, <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />horma-paper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> eta <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pantaila-babesle<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> berriak erabil ditzakezu</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">te-etxe estiloko</translation>

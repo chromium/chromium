@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Түзмөктүн оң кулакчынынын батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">жөндөөлөр</translation>
 <translation id="3347558044552027859">заманбап</translation>
+<translation id="3353477144743332882">Корутунду жана аталыш түзүү үлгүсүн жүктөп алуу</translation>
 <translation id="3359218928534347896">микрофондун үнүн өчүрүү/күйгүзүү</translation>
 <translation id="3360306038446926262">Терезелер</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Ыкчам баскыч жеткиликсиз. <ph name="KEY" /> баскычын кошпой жаңы ыкчам баскычын басыңыз.</translation>
 <translation id="5860033963881614850">Өчүк</translation>
 <translation id="5860491529813859533">Күйгүзүү</translation>
+<translation id="5875913454160982848">Транскрипция үлгүсүн жүктөп алуу</translation>
 <translation id="5876385649737594562">Параметрлерди тандоо үчүн күйгүзүңүз</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> тындыруу</translation>
 <translation id="588258955323874662">Толук экран</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
 <translation id="8505011850330200833">Gemini үлгүсү транскрипция иштеп чыгуу жана корутундуларды түзүү үчүн 2 Гб сактагычты талап кылат</translation>
 <translation id="8508640263392900755">APN тууралуу маалымат</translation>
+<translation id="8509574872955173831">Корутунду жана аталыш түзүү тууралуу кеңири маалымат</translation>
 <translation id="8522687886059337719">Эми жаңы <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тушкагаздарды<ph name="END_LINK_WALLPAPER_SUBPAGE" /> жана <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />көшөгөнү<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> колдоно аласыз</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайкана</translation>

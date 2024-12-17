@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн}other{<ph name="MANY_ADDED" /> таб нэмсэн}}</translation>
 <translation id="5161254044473106830">Гарчиг шаардлагатай</translation>
 <translation id="5339733443032484186">Таны сүүлийн таб</translation>
+<translation id="5380159289133845234">Давхардсан табуудыг архивлах</translation>
 <translation id="5400836586163650660">Саарал</translation>
 <translation id="5490235265819901748">Бүлэг табыг дэлгэсэн</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Таны табын бүлгүүдийг автоматаар хадгалдаг</translation>
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
 <translation id="6082313992897617440">Та <ph name="GROUP_NAME" /> табын бүлэгт хандах эрхээ тэр даруй алдана</translation>
+<translation id="6109251075362363230">Хамгийн сүүлд ашигласан хуулбарыг эс тооцвол бүх давхардсан табыг одоо мөн архивлана.</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
 <translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
 <translation id="6271513594716432922">Бүх идэвхгүй табыг хаах</translation>

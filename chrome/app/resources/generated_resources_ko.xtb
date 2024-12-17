@@ -497,7 +497,6 @@
 <translation id="1335929031622236846">기기 등록</translation>
 <translation id="133660899895084533">블루투스 주변기기 정보 및 데이터 읽기</translation>
 <translation id="1336902454946927954">지문을 인식할 수 없어 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 PIN을 입력하세요.</translation>
-<translation id="1337066099824654054">문맥 도움말 사용 안함</translation>
 <translation id="1338631221631423366">페어링 중...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" />에서 이 애플리케이션을 열려고 합니다.</translation>
 <translation id="1338950911836659113">삭제 중...</translation>
@@ -1173,7 +1172,6 @@
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
 <translation id="1803531841600994172">번역 타겟 언어</translation>
 <translation id="1803545009660609783">다시 학습시키기</translation>
-<translation id="1804195280859010019">Google 검색 측면 패널과 같은 기능에 더 유용한 정보나 추천이 표시됩니다.</translation>
 <translation id="180441032496361123">클릭하여 <ph name="SEARCH_ENGINE_NAME" /> 활성화</translation>
 <translation id="1805738995123446102">배경 탭에서 마이크를 사용 중입니다.</translation>
 <translation id="1805822111539868586">뷰 검사</translation>
@@ -3582,7 +3580,6 @@
 <translation id="350397915809787283">계정이 없는 경우 첫 번째 옵션을 선택하여 계정을 만드세요.</translation>
 <translation id="3503995387997205657">이전 앱을 복원할 수 있습니다.</translation>
 <translation id="3505100368357440862">쇼핑 추천</translation>
-<translation id="3505602163050943406">일부 기능을 사용하면 열린 페이지, 관련된 최근 페이지, URL의 일부를 Google에 전송할 수 있습니다.</translation>
 <translation id="3507132249039706973">표준 보호 모드를 사용 중입니다.</translation>
 <translation id="3507888235492474624">블루투스 기기 다시 검색</translation>
 <translation id="3508492320654304609">로그인 데이터를 삭제할 수 없음</translation>
@@ -3934,7 +3931,6 @@
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" />을(를) 여시겠습니까?</translation>
 <translation id="3739349485749941749">사이트에서 기기에 액세스할 수 있는 프린터를 찾고 사용하도록 요청할 수 있음</translation>
-<translation id="3740396996321407665">일부 기능을 통해 문맥에 맞는 도움말 보기</translation>
 <translation id="3740945083753997630">디스플레이 및 텍스트 크기 줄이기</translation>
 <translation id="3741056951918180319">확장 프로그램을 클릭하면 모든 사이트에서 사용할 수 있습니다</translation>
 <translation id="374124333420280219">앱 세부정보:</translation>
@@ -4332,6 +4328,7 @@
 <translation id="3993887353483242788">Google 계정으로 로그인했을 때 모든 기기에서 환경설정을 사용할 수 있도록 <ph name="DEVICE_TYPE" /> 기기를 동기화하세요. 환경설정에는 앱, 설정, Wi-Fi 비밀번호, 언어, 배경화면, 단축키 등이 포함됩니다.</translation>
 <translation id="3994318741694670028">컴퓨터가 잘못된 형식의 하드웨어 ID로 구성되어 있습니다. 이렇게 하면 ChromeOS Flex가 최신 보안 수정사항으로 업데이트되지 않으며 컴퓨터가 <ph name="BEGIN_BOLD" />악의적인 공격에 취약해질 수 있습니다<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 잠금 해제하고 더 가까이 가져오세요.</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" />(으)로 로그인</translation>
 <translation id="3994530503403062649">태블릿에서 버튼 찾기</translation>
 <translation id="3994708120330953242">일부 비밀번호가 정보 유출로 인해 노출된 것으로 확인되었습니다. 계정 보안을 유지하려면 지금 비밀번호를 변경해야 합니다.</translation>
 <translation id="3994878504415702912">글꼴 크기(&amp;Z)</translation>
@@ -7302,7 +7299,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6173623053897475761">PIN을 다시 입력하세요</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">링크 가져오기</translation>
-<translation id="6176701216248282552">문맥 도움말이 사용 설정되었습니다. 이 기능을 사용하면 열린 페이지를 Google에 전송할 수 있습니다.</translation>
 <translation id="6177412385419165772">삭제 중…</translation>
 <translation id="6177478397823976397">발견된 기기가 없습니다. 새 탭에서 고객센터 도움말을 엽니다</translation>
 <translation id="6178664161104547336">인증서 선택</translation>
@@ -9201,7 +9197,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="756445078718366910">브라우저 창 열기</translation>
 <translation id="7564847347806291057">프로세스 종료</translation>
 <translation id="756503097602602175">로그인된 Google 계정을 <ph name="LINK_BEGIN" />설정<ph name="LINK_END" />에서 관리할 수 있습니다. 웹사이트와 앱에 부여한 권한이 모든 계정에 적용될 수 있습니다. 사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 게스트로 <ph name="DEVICE_TYPE" />에 로그인하거나 <ph name="LINK_2_BEGIN" />시크릿 창<ph name="LINK_2_END" />에서 웹을 탐색하세요.</translation>
-<translation id="756583107125124860">일부 기능은 열린 페이지 및 관련 최근 페이지의 콘텐츠를 사용하여 더 유용한 정보나 제안을 제공할 수 있습니다.</translation>
 <translation id="7566118625369982896">Play 앱 링크 관리</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">키 조합 만들기</translation>
@@ -10949,7 +10944,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8781980678064919987">덮개가 닫히면 종료</translation>
 <translation id="8782565991310229362">키오스크 애플리케이션 실행이 취소되었습니다.</translation>
 <translation id="8783834180813871000">블루투스 페어링 코드를 입력하고 Return 또는 Enter 키를 누르세요.</translation>
-<translation id="8783955532752528811">기능 관련 문맥 도움말</translation>
 <translation id="8784626084144195648">비닝 평균</translation>
 <translation id="8785622406424941542">스타일러스</translation>
 <translation id="8786824282808281903">자녀에게 이 아이콘이 표시되면 자녀가 본인의 지문으로 신원을 확인하거나 구매를 승인할 수 있습니다</translation>
@@ -11441,7 +11435,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9113529408970052045">사이트의 텍스트 상자에 짧은 형식의 콘텐츠를 입력할 수 있을 때 '작성 지원 기능'이 자동으로 열릴 수 있습니다.</translation>
 <translation id="9114663181201435112">간편한 로그인</translation>
 <translation id="9115675100829699941">북마크(&amp;B)</translation>
-<translation id="9115932142612197835">이 설정을 사용해도 Google 번역 또는 렌즈 사용 가능 여부는 변경되지 않습니다.</translation>
 <translation id="9116366756388192417">주제 선택</translation>
 <translation id="9116799625073598554">메모 앱</translation>
 <translation id="9117030152748022724">앱 관리</translation>

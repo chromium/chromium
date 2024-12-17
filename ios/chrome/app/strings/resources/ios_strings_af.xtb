@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="1408847409015257906">Tik op “Privaatheid en Sekuriteit”.</translation>
 <translation id="1411386976162024013">Visuele soektog met Lens</translation>
+<translation id="1417474386970818917">Meld af en vee uit</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1436671784520050284">Gaan voort met opstelling</translation>
@@ -1010,6 +1011,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5628388627414062173">{count,plural, =1{{count} bladsy op jou leeslys}other{{count} bladsye op jou leeslys}}</translation>
 <translation id="5632485077360054581">Wys my hoe</translation>
 <translation id="5633237939819267663">{count,plural, =1{Boekmerk is gestoor na “{title}”}other{{count} boekmerke is gestoor na “{title}”}}</translation>
+<translation id="564170563478022912">Meld af? Ongestoorde rekeningdata sal uitgevee word.</translation>
 <translation id="5642707040609478753">Merk as ongelees</translation>
 <translation id="5646284034397250191">Etiket geskep. Datum is hangende</translation>
 <translation id="5647096944343801045">Groot toegangspunt</translation>
@@ -1022,6 +1024,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5669335982068190158">Jy is as deel van jou iPhone-terugestelling afgemeld. Tik hieronder op gaan voort om aan te meld.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Weergawe <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Wissel rekeninge? Ongestoorde rekeningdata sal uitgevee word.</translation>
 <translation id="5683499062697987550">Verifieer dis jy om wagwoorde in jou Google-rekening te gebruik en te stoor.</translation>
 <translation id="5684761169742812828">Hierdie wagwoord is in ’n dataskending op die internet blootgestel. Google beveel aan dat jy hierdie waarskuwing hou om jouself later te herinner as jy nie dadelik tyd het om dit te verander nie.</translation>
 <translation id="5694848685995373177">In Drive gestoor vir <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="6506996418997555004">Deel “<ph name="GROUP_NAME" />”-oortjiegroep</translation>
 <translation id="6507973708545996744">Meld aan om jou leeslys op al jou toestelle te kry.</translation>
 <translation id="6518133107902771759">Verifieer</translation>
+<translation id="6518861084553706202">Oortjies sal toegemaak word en data wat uitgevee is, kan wagwoorde, blaaigeskiedenis, webkoekies en meer insluit.</translation>
 <translation id="6523575793810663688">Wys my hoe</translation>
 <translation id="6524082013156754186">Stoor in rekening</translation>
 <translation id="6527303717912515753">Deel</translation>
@@ -1679,6 +1683,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8545276357312221485">Gaan jou verstekblaaierinstellings na</translation>
 <translation id="854938212724803178">Jy het 1 gekompromitteerde wagwoord. Maak dit nou reg om veilig te bly.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Jy het {count} waarskuwing toegemaak}other{Jy het {count} waarskuwings toegemaak}}</translation>
+<translation id="8558046478684552694">Maak groep toe.</translation>
 <translation id="8560253818350321773">Wys gereeld gebruikte items eerste.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opsie vir wagwoord is bo jou sleutelbord beskikbaar.}other{{count} opsies vir wagwoord is bo jou sleutelbord beskikbaar.}}</translation>
 <translation id="8564894539416715395">Nuwe oortjiebladsy</translation>
@@ -1847,6 +1852,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9205189991633470489">Incognito-slot</translation>
 <translation id="9206887540681440657">Spoed</translation>
 <translation id="9223358826628549784">Omvalverslag is gestuur.</translation>
+<translation id="926455622548529175">Wissel en vee uit</translation>
 <translation id="929748059769569925">Gemerkte teks</translation>
 <translation id="932305336591073205">{count,plural, =1{Maak oortjie toe}other{Maak oortjies toe}}</translation>
 <translation id="939472100615258482">Huidige werf</translation>

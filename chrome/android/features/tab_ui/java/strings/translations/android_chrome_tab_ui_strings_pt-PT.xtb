@@ -100,6 +100,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="5339733443032484186">O seu último separador</translation>
 <translation id="5380159289133845234">Arquivar separadores duplicados</translation>
 <translation id="5400836586163650660">Cinzento</translation>
+<translation id="5446043142172831860">Remover separador e sair do grupo</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Feche o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>

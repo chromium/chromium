@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">להפעיל סנכרון?</translation>
 <translation id="1253032109800629289">הסתרת האפשרות 'קבלת התראות על מעקב מחירים'</translation>
 <translation id="1258491128795710625">מה חדש</translation>
+<translation id="1259210743048744967">נתוני הגלישה הקיימים יהיו זמינים לאחר היציאה מ-<ph name="USER_EMAIL" />. הם לא יישמרו בחשבון הזה.</translation>
 <translation id="1262724000444746916">הסתרה של 'הוספה לסימניות'</translation>
 <translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1263433075299269530">הכרטיסייה הפתוחה האחרונה</translation>
@@ -167,6 +168,7 @@
 <translation id="169048873465870056">להסיר את הכרטיסייה ולמחוק את הקבוצה?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> נבחרו</translation>
 <translation id="1709916727352927457">מחיקת מפתח הגישה</translation>
+<translation id="1712341189152602203">נתוני הגלישה הקיימים יקושרו אל <ph name="USER_EMAIL" />. יכול להיות שהארגון שלך יוכל לראות את הנתונים האלה.</translation>
 <translation id="1713777106376424209">החבילה תימסר על ידי</translation>
 <translation id="1715515772563243997">אם הכתובת <ph name="SITE" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה כדי להיכנס לחשבון.</translation>
 <translation id="1728549374069268714">הדבקה והמשך</translation>
@@ -202,6 +204,7 @@
 <translation id="1864266050569350424">באתר שבו שמרת סיסמה, מקישים על שדה הסיסמה לכניסה.</translation>
 <translation id="1872096359983322073">פנס</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">יש לך אפשרות לבחור מה לעשות עם נתוני הגלישה הקיימים במכשיר הזה, כמו הסיסמאות, ההיסטוריה ועוד.</translation>
 <translation id="1881621406744213161">הזמנת חברים לקבוצה המשפחתית</translation>
 <translation id="188237709236611317">סרגל תפריטים למיון חכם</translation>
 <translation id="1883255238294161206">כיווץ רשימה</translation>
@@ -511,6 +514,7 @@
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="333229797575847124">איך מפעילים את התכונה הזו</translation>
+<translation id="3333566504534692948">לא, אני רוצה להעביר את הנתונים לפרופיל העבודה</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="334690320928261823">כרטיסיות אחרונות</translation>
 <translation id="3348387552617855658">בכרטיס הזה אפשר לעקוב אחר חבילות ולקבל עדכונים חשובים על משלוחים.</translation>

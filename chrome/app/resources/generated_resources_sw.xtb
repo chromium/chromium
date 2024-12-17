@@ -497,7 +497,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1335929031622236846">Andikisha kifaa chako</translation>
 <translation id="133660899895084533">Soma maelezo na data ya ziada ya Bluetooth</translation>
 <translation id="1336902454946927954">Ufunguo wako wa usalama umefungwa kwa sababu tumeshindwa kutambua alama yako ya kidole. Ili uufungue, weka PIN yako.</translation>
-<translation id="1337066099824654054">Kipengele cha usaidizi wa muktadha kimezimwa</translation>
 <translation id="1338631221631423366">Inaoanisha...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> inataka kufungua programu hii.</translation>
 <translation id="1338950911836659113">Inafuta...</translation>
@@ -1170,7 +1169,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1802687198411089702">Ukurasa huu haufanyi kazi. Unaweza kuusubiri au uufunge.</translation>
 <translation id="1803531841600994172">Lugha ya kutafsiria</translation>
 <translation id="1803545009660609783">Funza upya</translation>
-<translation id="1804195280859010019">Utaona mapendekezo au maelezo muhimu zaidi kwenye vipengele kama vile kidirisha cha pembeni cha huduma ya Tafuta na Google</translation>
 <translation id="180441032496361123">Bofya ili uwashe <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">Kichupo kinachofanya kazi chinichini kinatumia maikrofoni yako</translation>
 <translation id="1805822111539868586">Kagua maoni</translation>
@@ -3577,7 +3575,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="350397915809787283">Ikiwa huna akaunti, teua chaguo la kwanza ili ufungue akaunti.</translation>
 <translation id="3503995387997205657">Unaweza kurejesha programu zako za awali</translation>
 <translation id="3505100368357440862">Mapendekezo ya ununuzi</translation>
-<translation id="3505602163050943406">Ukitumia baadhi ya vipengele, vinaweza kutuma sehemu za kurasa zilizofunguliwa, kurasa zinazohusiana za hivi karibuni na URL zake kwa Google</translation>
 <translation id="3507132249039706973">Kipengele cha Ulinzi wa Kawaida kimewashwa</translation>
 <translation id="3507888235492474624">Tafuta tena vifaa vya Bluetooth</translation>
 <translation id="3508492320654304609">Imeshindwa kufuta data yako ya kuingia katika akaunti</translation>
@@ -3929,7 +3926,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Ungependa kufungua <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Tovuti zinaweza kuomba kutafuta na kutumia printa zinazoweza kufikiwa na kifaa chako</translation>
-<translation id="3740396996321407665">Pata usaidizi wa muktadha kutoka katika baadhi ya vipengele</translation>
 <translation id="3740945083753997630">Punguza ukubwa wa skrini na maandishi</translation>
 <translation id="3741056951918180319">Unaweza kubofya kiendelezi wakati wote ili ukitumie kwenye tovuti yoyote</translation>
 <translation id="374124333420280219">Maelezo ya programu:</translation>
@@ -4327,6 +4323,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3993887353483242788">Sawazisha <ph name="DEVICE_TYPE" /> yako ili mapendeleo yako yawe tayari kwenye kifaa chochote utakachoingia kwa kutumia Akaunti yako ya Google. Mapendeleo yanajumuisha programu, mipangilio, manenosiri ya Wi-Fi, lugha, mandhari, mikato ya kibodi na zaidi.</translation>
 <translation id="3994318741694670028">Kwa bahati mbaya, kompyuta yako imewekewa mipangilio na kitambulisho cha maunzi yenye hitilafu. Hali hii huzuia ChromeOS Flex isisasishe marekebisho ya usalama ya hivi karibuni na kompyuta yako <ph name="BEGIN_BOLD" />inaweza kuwa hatarini kutokana na mashambulizi ya hasidi<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Ifungue simu yako na uilete karibu ili ukifungue kifaa chako cha <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Ingia katika akaunti ukitumia <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Onyesha vitufe kwenye kishikwambi chako</translation>
 <translation id="3994708120330953242">Baadhi ya manenosiri yako yamepatikana katika tukio la ufichuzi haramu wa data. Ili uimarishe usalama wa akaunti zako, unatakiwa kubadilisha manenosiri haya sasa.</translation>
 <translation id="3994878504415702912">&amp;Kuza</translation>
@@ -7296,7 +7293,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6173623053897475761">Weka PIN yako tena</translation>
 <translation id="6175314957787328458">GUID ya Vikoa kutoka Microsoft</translation>
 <translation id="6175910054050815932">Pata kiungo</translation>
-<translation id="6176701216248282552">Kipengele cha usaidizi wa muktadha kimewashwa. Vipengele hivi vinaweza kutuma kurasa zilizofunguliwa kwenye Google.</translation>
 <translation id="6177412385419165772">Inaondoa...</translation>
 <translation id="6177478397823976397">Imeshindwa kupata kifaa. Fungua makala ya kituo cha usaidizi katika kichupo kipya</translation>
 <translation id="6178664161104547336">Chagua cheti</translation>
@@ -9196,7 +9192,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="756445078718366910">Fungua Dirisha la Kivinjari</translation>
 <translation id="7564847347806291057">Komesha shughuli</translation>
 <translation id="756503097602602175">Unaweza kudhibiti Akaunti za Google ulizotumia kuingia katika tovuti na programu, kwenye <ph name="LINK_BEGIN" />Mipangilio<ph name="LINK_END" />. Huenda ruhusa ulizozipa tovuti na programu zikatumika kwenye akaunti zote. Ikiwa hutaki tovuti au programu zifikie maelezo ya akaunti yako, unaweza kuingia katika akaunti kwenye <ph name="DEVICE_TYPE" /> yako kama mgeni au uvinjari wavuti katika <ph name="LINK_2_BEGIN" />dirisha fiche<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Baadhi ya vipengele vinaweza kutumia maudhui ya kurasa zilizofunguliwa na kurasa zinazohusiana za hivi karibuni kutoa taarifa au mapendekezo muhimu zaidi</translation>
 <translation id="7566118625369982896">Dhibiti viungo vya programu ya Google Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Buni mchanganyiko wa vitufe</translation>
@@ -10944,7 +10939,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8781980678064919987">Zima kifuniko kikiwa kimefungwa</translation>
 <translation id="8782565991310229362">Uzinduzi wa programu ya kioski umeghairiwa.</translation>
 <translation id="8783834180813871000">Andika msimbo wa kuoanisha Bluetooth kisha ubonyeze Return au Enter.</translation>
-<translation id="8783955532752528811">Usaidizi wa kimuktadha kwenye vipengele</translation>
 <translation id="8784626084144195648">Wastani wa Uwekaji Pamoja</translation>
 <translation id="8785622406424941542">Stylus</translation>
 <translation id="8786824282808281903">Mtoto wako akiona aikoni hii, anaweza kutumia alama ya kidole kwa ajili ya uthibitishaji au kuidhinisha ununuzi.</translation>
@@ -11436,7 +11430,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="9113529408970052045">Kipengele cha "Nisaidie kuandika" kinaweza kufunguliwa kiotomatiki wakati kisanduku cha maandishi kwenye tovuti kinaweza kujazwa kwa maudhui ya muundo mfupi</translation>
 <translation id="9114663181201435112">Ingia katika akaunti kwa urahisi</translation>
 <translation id="9115675100829699941">&amp;Alamisho</translation>
-<translation id="9115932142612197835">Mipangilio hii haibadilishi upatikanaji wa huduma ya Google Tafsiri au Lenzi</translation>
 <translation id="9116366756388192417">Chagua mada</translation>
 <translation id="9116799625073598554">Programu ya kuandika vidokezo</translation>
 <translation id="9117030152748022724">Dhibiti programu zako</translation>

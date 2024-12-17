@@ -926,6 +926,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2628224721443278970">Log ind på Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP-adressen på serveren for <ph name="HOST_NAME" /> blev ikke fundet.</translation>
 <translation id="2639739919103226564">Status:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Stof (halvblankt)</translation>
 <translation id="264810637653812429">Der blev ikke fundet nogen kompatible enheder.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1399,6 +1400,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="351522771072578657">Du bruger en menu i øjeblikket</translation>
 <translation id="3517264445792388751">Filsystemet er blevet deaktiveret af din administrator</translation>
 <translation id="3518941727116570328">Håndtering af flere objekter</translation>
+<translation id="3519670528214225835">Spørg <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 tommer</translation>
 <translation id="3525435918300186947">Styre og omprogrammere MIDI-enheder?</translation>
 <translation id="3527181387426738155">Musik og lyd</translation>
@@ -1953,6 +1955,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4451684391620232683">Tekst, der vises til brugeren:</translation>
 <translation id="4452328064229197696">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. For at beskytte dine konti anbefaler Google Adgangs­kode­admin­istrator, at du tjekker dine gemte adgangskoder.</translation>
 <translation id="4456937135469235202">Oplevelsesrejser</translation>
+<translation id="4458013283022578512">Angiv et spørgsmål</translation>
 <translation id="4464826014807964867">Websites med oplysninger fra din organisation</translation>
 <translation id="4466576951214254884">Studielån og finansiering af uddannelse</translation>
 <translation id="4467821340016922962">Tryk på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm og se downloads</translation>

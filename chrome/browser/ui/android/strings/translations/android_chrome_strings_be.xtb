@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць з гэтым сайтам наступныя даныя: <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Супрацоўніцтва</translation>
 <translation id="3714981814255182093">Адкрыць панэль пошуку</translation>
-<translation id="3716182511346448902">Гэта старонка выкарыстоўвае занадта многа памяці, таму Chrome прыпыніў яе.</translation>
 <translation id="3718765429352682176">Вы можаце бачыць гісторыю з іншых праграм, спасылкі з якіх адкрываюцца ў Chrome.</translation>
 <translation id="3720422586473670527">Не, дзякуй</translation>
 <translation id="3721119614952978349">Вы і Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923">Засталося файлаў: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Застаўся 1 дзень</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Узнавіць</translation>
 <translation id="820568752112382238">Сайты, якія часцей за ўсё наведваліся</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальнік}one{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальнік}few{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальнікі}many{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальнікаў}other{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ <ph name="NUMBER_OF_OTHER_MEMBERS" /> карыстальніка}}</translation>
 <translation id="8209050860603202033">Адкрыць відарыс</translation>

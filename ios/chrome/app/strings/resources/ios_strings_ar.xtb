@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">هل تريد تفعيل المزامنة؟</translation>
 <translation id="1253032109800629289">إخفاء بطاقة "الحصول على إشعارات ميزة تتبُّع الأسعار"</translation>
 <translation id="1258491128795710625">الميزات الجديدة</translation>
+<translation id="1259210743048744967">ستتوفّر بيانات التصفُّح الحالية عند تسجيل الخروج من حساب <ph name="USER_EMAIL" />. ولن يتم حفظها في هذا الحساب.</translation>
 <translation id="1262724000444746916">إخفاء خيار "الإضافة إلى الإشارات المرجعية"</translation>
 <translation id="1263231323834454256">قائمة القراءة</translation>
 <translation id="1263433075299269530">آخر علامة تبويب مفتوحة</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">هل تريد إزالة علامة التبويب وحذف المجموعة؟</translation>
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">حذف مفتاح المرور</translation>
+<translation id="1712341189152602203">سيتم ربط بيانات التصفُّح الحالية بحساب <ph name="USER_EMAIL" />. وقد تكون هذه البيانات مرئية لمؤسستك.</translation>
 <translation id="1713777106376424209">التسليم بحلول</translation>
 <translation id="1715515772563243997">إذا كنت تثق بالموقع الإلكتروني <ph name="SITE" />، يمكنك استخدام كلمة مرور محفوظة لتسجيل الدخول.</translation>
 <translation id="1728549374069268714">‏لصق عنوان URL والانتقال إليه</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">في أحد المواقع الإلكترونية التي حفظت فيها كلمة المرور، انقر على حقل كلمة المرور في صفحة تسجيل الدخول.</translation>
 <translation id="1872096359983322073">الكشاف</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">يمكنك اختيار ما تريد فعله ببيانات التصفّح الحالية على هذا الجهاز، مثل كلمات المرور والسجلّ وغير ذلك.</translation>
 <translation id="1881621406744213161">دعوة أفراد العائلة</translation>
 <translation id="188237709236611317">الترتيب الذكي لشريط القوائم</translation>
 <translation id="1883255238294161206">تصغير القائمة</translation>
@@ -261,7 +264,7 @@
 <translation id="2103075008456228677">‏فتح history.google.com</translation>
 <translation id="2104436223719117661">طلبات البحث الرائجة</translation>
 <translation id="21133533946938348">تثبيت علامة التبويب</translation>
-<translation id="2119636449201577317">فتح في…</translation>
+<translation id="2119636449201577317">الفتح في…</translation>
 <translation id="2122754583996902531">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="2147127444698817042">‏متوفّرة فقط على iPhone</translation>
@@ -399,7 +402,7 @@
 <translation id="2708051474374549906">‏يوفّر هذا الوضع حمايةً استباقية في الوقت الفعلي من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة استنادًا إلى بيانات التصفّح التي يتم إرسالها إلى Google.</translation>
 <translation id="2709516037105925701">الملء التلقائي</translation>
 <translation id="271033894570825754">جديد</translation>
-<translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
+<translation id="2718352093833049315">‏على Wi-Fi فقط</translation>
 <translation id="2721190673959776287">اطّلِع على عيّنة من المعلومات عدة مرات في اليوم لتقديم مساعدة مفيدة لك ضِمن "لوحة السياق".</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
 <translation id="2749231692441336879">تتم متابعة <ph name="CHANNEL_NAME" /> حاليًا.</translation>
@@ -512,6 +515,7 @@
 <translation id="3324193307694657476">العنوان 2</translation>
 <translation id="3328801116991980348">معلومات الموقع الإلكتروني</translation>
 <translation id="333229797575847124">طريقة تفعيل هذه الميزة</translation>
+<translation id="3333566504534692948">لا، أريد نقل البيانات إلى مساحة العمل</translation>
 <translation id="3344485292736684439">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضمن حسابك ({email}).}zero{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}two{تم حفظ الإشارتَين المرجعيتَين في "{title}" ضمن حسابك ({email}).}few{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}many{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}other{تم حفظ الإشارات المرجعية في "{title}" ضمن حسابك ({email}).}}</translation>
 <translation id="334690320928261823">علامات التبويب الأخيرة</translation>
 <translation id="3348387552617855658">تساعدك هذه البطاقة في تتبُّع الطرود وتقدِّم لك أهم المعلومات بشأن عملية التسليم.</translation>
@@ -1173,7 +1177,7 @@
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="6337234675334993532">التشفير</translation>
 <translation id="633809752005859102">حدث خطأ ما، وسنحاول حل المشكلة.</translation>
-<translation id="6339793034470834130">‏لاستخدام Web Inspector (أداة فحص الويب)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPhone من القائمة Develop (تطوير). يمكنك تفعيل القائمة Develop (تطوير) من خلال قسم Advanced (إعدادات متقدّمة) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
+<translation id="6339793034470834130">‏لاستخدام "أداة فحص الويب" (Web Inspector)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPhone من القائمة "تطوير" (Develop). يمكنك تفعيل هذه القائمة من خلال القسم "إعدادات متقدّمة" (Advanced) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6340285871011301182">خيار الترجمة الجزئية غير متاح.</translation>
 <translation id="6340526405444716530">التخصيص</translation>
 <translation id="6342069812937806050">الآن</translation>

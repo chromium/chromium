@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="1408847409015257906">Tryck på Integritet och säkerhet.</translation>
 <translation id="1411386976162024013">Visuell sökning med Lens</translation>
+<translation id="1417474386970818917">Logga ut och radera</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1436671784520050284">Fortsätt med konfigurationen</translation>
@@ -1010,6 +1011,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5628388627414062173">{count,plural, =1{{count} sida i läslistan}other{{count} sidor i läslistan}}</translation>
 <translation id="5632485077360054581">Visa hur man gör</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bokmärket har sparats i {title}}other{{count} bokmärken har sparats i {title}}}</translation>
+<translation id="564170563478022912">Vill du logga ut? Kontodata som inte har sparats raderas.</translation>
 <translation id="5642707040609478753">Markera som oläst</translation>
 <translation id="5646284034397250191">Etikett har skapats. Datum väntar</translation>
 <translation id="5647096944343801045">Stor ingångspunkt</translation>
@@ -1022,6 +1024,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5669335982068190158">Du har loggats ut som en del av återställningen av din iPhone. Tryck på Fortsätt nedan för att logga in.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Vill du byta konto? Kontodata som inte har sparats raderas.</translation>
 <translation id="5683499062697987550">Verifiera din identitet för att använda och spara lösenord i Google-kontot.</translation>
 <translation id="5684761169742812828">Det här lösenordet har läckt ut vid ett dataintrång på internet. Om du inte har tid att ändra det just nu rekommenderar Google att du behåller den här varningen som en påminnelse att göra det senare.</translation>
 <translation id="5694848685995373177">Har sparats i Drive för <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6506996418997555004">Dela flikgruppen <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Logga in om du vill ha läslistan på alla dina enheter.</translation>
 <translation id="6518133107902771759">Verifiera</translation>
+<translation id="6518861084553706202">Flikarna stängs och data som raderas kan omfatta lösenord, webbhistorik, cookies med mera.</translation>
 <translation id="6523575793810663688">Visa hur man gör</translation>
 <translation id="6524082013156754186">Spara i kontot</translation>
 <translation id="6527303717912515753">Dela</translation>
@@ -1679,6 +1683,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8545276357312221485">Kontrollera inställningarna för standardwebbläsare</translation>
 <translation id="854938212724803178">Du har 1 utsatt lösenord. Åtgärda det nu för att hålla dig säker.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du har ignorerat {count} varning}other{Du har ignorerat {count} varningar}}</translation>
+<translation id="8558046478684552694">Stäng grupp.</translation>
 <translation id="8560253818350321773">Visa ofta använda objekt först.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} alternativ för lösenord visas ovanför tangentbordet.}other{{count} alternativ för lösenord visas ovanför tangentbordet.}}</translation>
 <translation id="8564894539416715395">Sidan Ny flik</translation>
@@ -1847,6 +1852,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9205189991633470489">Inkognitolås</translation>
 <translation id="9206887540681440657">Hastighet</translation>
 <translation id="9223358826628549784">Felrapporten har skickats.</translation>
+<translation id="926455622548529175">Byt och radera</translation>
 <translation id="929748059769569925">Markerad text</translation>
 <translation id="932305336591073205">{count,plural, =1{Stäng flik}other{Stäng flikar}}</translation>
 <translation id="939472100615258482">Nuvarande webbplats</translation>

@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Slökkva á dökku þema</translation>
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1808803439260407870">klassískum stíl</translation>
+<translation id="181434555916624618">Í bili verða niðurstöður með fólki ekki sýndar. Prófaðu aðra skipun.</translation>
 <translation id="1815850098929213707">Lykillinn „<ph name="KEYS" />“ er valinn. Ýttu á hnappinn til að breyta stýringunni</translation>
 <translation id="1823120442877418684">Stafir</translation>
 <translation id="1827738518074806965">Listasafn</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Rafhleðsla hægra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">stillingar</translation>
 <translation id="3347558044552027859">nútímaleg</translation>
+<translation id="3353477144743332882">Sækja samantekt og líkan sem býr til heiti</translation>
 <translation id="3359218928534347896">kveikja/slökkva á hljóðnema</translation>
 <translation id="3360306038446926262">Gluggar</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil án <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
+<translation id="5875913454160982848">Sækja umritunarlíkan</translation>
 <translation id="5876385649737594562">Kveiktu til að velja valkosti</translation>
 <translation id="5877503382465267833">Gera hlé á <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Allur skjárinn</translation>
@@ -1588,6 +1591,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8503836310948963452">Aðeins nokkrar mínútur í viðbót…</translation>
 <translation id="8505011850330200833">Gemini-líkanið þarf að nota 2 GB af geymslurými til að geta unnið úr textauppskriftum og búið til samantektir</translation>
 <translation id="8508640263392900755">Upplýsingar um aðgangsstað</translation>
+<translation id="8509574872955173831">Nánar um samantekt og líkan sem býr til heiti</translation>
 <translation id="8522687886059337719">Nú hefurðu aðgang að nýjum <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />veggfóðrum<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skjávörum<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehús</translation>

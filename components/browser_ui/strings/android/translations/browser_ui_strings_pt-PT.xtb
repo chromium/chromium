@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Ligado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que os sites vejam e alterem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir definições de localização</translation>
+<translation id="4213239715282467974">Agora, o Chrome partilha os seus separadores recentes com o seu dispositivo. Pode aceder a eles rapidamente na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="4226663524361240545">As notificações podem fazer com que o dispositivo vibre</translation>
 <translation id="4259722352634471385">A navegação está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Os sites estão impedidos de pedir para usar informações que guardaram sobre si</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
+<translation id="5408906274948600065">Permita que o Chrome partilhe os seus separadores recentes com o seu dispositivo para os ver na lista de apps e nos resultados da pesquisa do dispositivo. Pode ativar ou desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="5438097262470833822">Esta opção repõe as autorizações de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quando esta opção está ativada, os sites podem pedir a sua localização. Quando esta opção está desativada, os sites não podem ver a sua localização.</translation>
 <translation id="5489227211564503167">Tempo decorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

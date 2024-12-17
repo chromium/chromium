@@ -206,6 +206,7 @@
 <translation id="345171907106878721">将您自己添加到Chrome</translation>
 <translation id="3453763134178591239">Chrome 操作系统条款</translation>
 <translation id="3503306920980160878">Chrome 需要获得位置权限，才能将您的位置信息共享给此网站</translation>
+<translation id="3512634283363927263">这些页面供 Chrome 开发者使用，可能不会积极维护或测试。如需启用这些页面，请前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，点击启用调试页面的按钮，然后再次前往此页面。</translation>
 <translation id="3533694711092285624">尚未保存任何密码。您需要先保存密码才能使用 Chrome 的密码检查功能。</translation>
 <translation id="3541482654983822893">Chrome 无法检查您的密码。请过 24 小时再试。</translation>
 <translation id="3564543103555793392">登录 Chrome 后，您可保存书签、密码等信息，然后在手机上使用这些信息</translation>
@@ -519,6 +520,7 @@
 <translation id="7572537927358445944">已关闭 • Chrome 无法验证此扩展程序的来源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
+<translation id="7617512710641355143">Chrome 处于受管理状态</translation>
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
 <translation id="7626072681686626474">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Google Chrome 操作系统条款。</translation>
 <translation id="7629695634924605473">Chrome 会让您知道您的密码是否曾被泄露</translation>
@@ -628,6 +630,7 @@
 <translation id="8718062187489036808">退出 Chrome</translation>
 <translation id="873133009373065397">Google Chrome 无法确定或设置默认浏览器</translation>
 <translation id="8748735421235723888">Chrome 会释放闲置标签页占用的内存。这可让活跃标签页和其他应用获得更多计算机资源，并让 Chrome 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活跃状态。<ph name="BEGIN_LINK" />详细了解省内存模式<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">从 Chrome 中移除此应用数据</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="8781673607513845160">如需使用摄像头，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="878572486461146056">安装时出错：您的网络管理员所应用的一项群组政策阻止了安装进程：<ph name="INSTALL_ERROR" /></translation>

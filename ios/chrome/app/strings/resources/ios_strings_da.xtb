@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="1408847409015257906">Tryk på "Sikkerhed og privatliv".</translation>
 <translation id="1411386976162024013">Visuel søgning med Lens</translation>
+<translation id="1417474386970818917">Log ud og slet</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1436671784520050284">Fortsæt konfiguration</translation>
@@ -1010,6 +1011,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5628388627414062173">{count,plural, =1{{count} side på din læseliste}one{{count} side på din læseliste}other{{count} sider på din læseliste}}</translation>
 <translation id="5632485077360054581">Vis mig hvordan</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bogmærket er gemt i "{title}"}one{{count} bogmærke er gemt i "{title}"}other{{count} bogmærker er gemt i "{title}"}}</translation>
+<translation id="564170563478022912">Vil du logge ud? Kontodata, der ikke er gemt, slettes.</translation>
 <translation id="5642707040609478753">Markér som ulæst</translation>
 <translation id="5646284034397250191">Etiket oprettet. Afventer dato</translation>
 <translation id="5647096944343801045">Stort indgangspunkt</translation>
@@ -1022,6 +1024,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5669335982068190158">Du er blevet logget ud som en del af nulstillingen af din iPhone. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Vil du skifte konto? Kontodata, der ikke er gemt, slettes.</translation>
 <translation id="5683499062697987550">Verificer din identitet for at bruge og gemme adgangskoder på din Google-konto.</translation>
 <translation id="5684761169742812828">Denne adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden på internettet. Hvis du ikke har tid til at ændre den lige nu, anbefaler Google, at du gemmer denne advarsel for at minde dig selv om det senere.</translation>
 <translation id="5694848685995373177">Gemt i Drev for <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="6506996418997555004">Del fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Log ind for at se din læseliste på alle dine enheder.</translation>
 <translation id="6518133107902771759">Verificer</translation>
+<translation id="6518861084553706202">Fanerne lukkes, og de data, der slettes, kan omfatte adgangskoder, browserhistorik, cookies m.m.</translation>
 <translation id="6523575793810663688">Vis mig hvordan</translation>
 <translation id="6524082013156754186">Gem på konto</translation>
 <translation id="6527303717912515753">Del</translation>
@@ -1679,6 +1683,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8545276357312221485">Tjek dine standardbrowserindstillinger</translation>
 <translation id="854938212724803178">Du har 1 kompromitteret adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du har afvist {count} advarsel}one{Du har afvist {count} advarsel}other{Du har afvist {count} advarsler}}</translation>
+<translation id="8558046478684552694">Luk gruppe.</translation>
 <translation id="8560253818350321773">Vis ofte benyttede elementer først.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} mulig adgangskode er tilgængelig over dit tastatur.}one{{count} mulig adgangskode er tilgængelig over dit tastatur.}other{{count} mulige adgangskoder er tilgængelige over dit tastatur.}}</translation>
 <translation id="8564894539416715395">Siden Ny fane</translation>
@@ -1847,6 +1852,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9205189991633470489">Låsning af inkognitofaner</translation>
 <translation id="9206887540681440657">Hastighed</translation>
 <translation id="9223358826628549784">Der er sendt en nedbrudsrapport.</translation>
+<translation id="926455622548529175">Skift og slet</translation>
 <translation id="929748059769569925">Fremhævet tekst</translation>
 <translation id="932305336591073205">{count,plural, =1{Luk fane}one{Luk fane}other{Luk faner}}</translation>
 <translation id="939472100615258482">Aktuelt website</translation>

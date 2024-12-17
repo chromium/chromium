@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavení</translation>
 <translation id="3347558044552027859">moderní</translation>
+<translation id="3353477144743332882">Stáhnout model k vytváření souhrnů a názvů</translation>
 <translation id="3359218928534347896">přepnout ztlumení mikrofonu</translation>
 <translation id="3360306038446926262">Okna</translation>
 <translation id="3361618936611118375">suši</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Zkratka není k dispozici. Stiskněte novou zkratku bez klávesy <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5860491529813859533">Zapnout</translation>
+<translation id="5875913454160982848">Stáhnout model přepisu</translation>
 <translation id="5876385649737594562">Pokud chcete vybrat možnosti, zapněte tuto funkci</translation>
 <translation id="5877503382465267833">Pozastavit nahrávku <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
@@ -1588,6 +1590,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8503836310948963452">Ještě pár minut…</translation>
 <translation id="8505011850330200833">Model Gemini vyžaduje ke zpracování přepisů a vytváření souhrnů 2 GB úložiště</translation>
 <translation id="8508640263392900755">Podrobnosti o APN</translation>
+<translation id="8509574872955173831">Další informace o vytváření souhrnů a názvů</translation>
 <translation id="8522687886059337719">Nyní máte přístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /> a <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />spořiči obrazovky<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajovna</translation>

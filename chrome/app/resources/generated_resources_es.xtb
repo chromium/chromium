@@ -497,7 +497,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1335929031622236846">Registra el dispositivo</translation>
 <translation id="133660899895084533">Leer información y datos de los periféricos Bluetooth</translation>
 <translation id="1336902454946927954">Tu llave de seguridad está bloqueada porque no se ha podido reconocer tu huella digital. Para desbloquearla, escribe tu PIN.</translation>
-<translation id="1337066099824654054">La ayuda contextual está desactivada</translation>
 <translation id="1338631221631423366">Emparejando...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quiere abrir esta aplicación.</translation>
 <translation id="1338950911836659113">Eliminando...</translation>
@@ -1164,7 +1163,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1802687198411089702">La página no responde. Puedes esperar a que lo haga o cerrarla.</translation>
 <translation id="1803531841600994172">Idioma al que quieres traducir</translation>
 <translation id="1803545009660609783">Volver a crear</translation>
-<translation id="1804195280859010019">Verás información o sugerencias más útiles en funciones, como en el panel lateral de la Búsqueda de Google</translation>
 <translation id="180441032496361123">Haz clic para activar <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">La pestaña en segundo plano está usando el micrófono</translation>
 <translation id="1805822111539868586">Inspeccionar vistas</translation>
@@ -3568,7 +3566,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="350397915809787283">Si no tienes una cuenta, selecciona la primera opción para crear una.</translation>
 <translation id="3503995387997205657">Puedes restaurar tus aplicaciones anteriores</translation>
 <translation id="3505100368357440862">Sugerencias de compra</translation>
-<translation id="3505602163050943406">Cuando utilizas algunas funciones, estas pueden enviar a Google partes de páginas abiertas, páginas recientes relacionadas y sus URLs</translation>
 <translation id="3507132249039706973">La protección estándar está activada</translation>
 <translation id="3507888235492474624">Volver a buscar dispositivos Bluetooth</translation>
 <translation id="3508492320654304609">No se han podido eliminar tus datos de inicio de sesión</translation>
@@ -3920,7 +3917,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">¿Abrir <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Los sitios pueden solicitar permiso para buscar y usar las impresoras a las que tu dispositivo tenga acceso</translation>
-<translation id="3740396996321407665">Obtén ayuda contextual de algunas funciones</translation>
 <translation id="3740945083753997630">Reducir el tamaño de la pantalla y del texto</translation>
 <translation id="3741056951918180319">Puedes hacer clic en la extensión siempre que quieras para usarla en cualquier sitio web</translation>
 <translation id="374124333420280219">Información de la aplicación:</translation>
@@ -4317,6 +4313,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3993887353483242788">Sincroniza tu <ph name="DEVICE_TYPE" /> para encontrar tus preferencias guardadas cuando inicies sesión con tu cuenta de Google en cualquier dispositivo. Tus preferencias incluyen aplicaciones, ajustes, contraseñas de redes Wi‑Fi, idiomas, fondos de pantalla y combinaciones de teclas, entre otros.</translation>
 <translation id="3994318741694670028">Lamentablemente, tu ordenador está configurado con un identificador de hardware incorrecto. Esto impide que ChromeOS Flex se actualice con los últimos parches de seguridad y hace que el ordenador <ph name="BEGIN_BOLD" />pueda ser vulnerable a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloquea el teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Iniciar sesión como <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Localizar botones en tu tablet</translation>
 <translation id="3994708120330953242">Algunas de tus contraseñas se han encontrado en una brecha de seguridad de datos. Para proteger tus cuentas, deberías cambiar estas contraseñas ahora.</translation>
 <translation id="3994878504415702912">&amp;Tamaño</translation>
@@ -7286,7 +7283,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6173623053897475761">Vuelve a escribir tu PIN</translation>
 <translation id="6175314957787328458">GUID de dominio de Microsoft</translation>
 <translation id="6175910054050815932">Obtener un enlace</translation>
-<translation id="6176701216248282552">La ayuda contextual está activada. Estas funciones pueden enviar páginas abiertas a Google.</translation>
 <translation id="6177412385419165772">Eliminando…</translation>
 <translation id="6177478397823976397">No se ha encontrado ningún dispositivo. Abre un artículo del Centro de Ayuda en una pestaña nueva.</translation>
 <translation id="6178664161104547336">Seleccionar un certificado</translation>
@@ -9186,7 +9182,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="756445078718366910">Abrir ventana del navegador</translation>
 <translation id="7564847347806291057">Finalizar proceso</translation>
 <translation id="756503097602602175">Puedes gestionar las cuentas de Google con las que se haya iniciado sesión en <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />. Es posible que los permisos que hayas dado a sitios web y aplicaciones se apliquen a todas las cuentas. Si no quieres que los sitios ni las aplicaciones accedan a la información de tu cuenta, puedes iniciar sesión en tu <ph name="DEVICE_TYPE" /> como invitado o navegar por Internet en una <ph name="LINK_2_BEGIN" />ventana de Incógnito<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Algunas funciones pueden usar el contenido de páginas abiertas y páginas recientes relacionadas para ofrecer información o sugerencias más útiles</translation>
 <translation id="7566118625369982896">Gestionar enlaces de aplicaciones de Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Crear combinación de teclas</translation>
@@ -10933,7 +10928,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8781980678064919987">Apagar cuando la tapa esté cerrada</translation>
 <translation id="8782565991310229362">Se ha cancelado el inicio de la aplicación del kiosco.</translation>
 <translation id="8783834180813871000">Escribe el código de emparejamiento por Bluetooth y pulsa Intro.</translation>
-<translation id="8783955532752528811">Ayuda contextual en funciones</translation>
 <translation id="8784626084144195648">Media de datos agrupados</translation>
 <translation id="8785622406424941542">Lápiz óptico</translation>
 <translation id="8786824282808281903">Cuando se muestre este icono a tu hijo/a, se podrá usar una huella digital para identificar al usuario o para aprobar compras.</translation>
@@ -11425,7 +11419,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9113529408970052045">Ayúdame a escribir se puede abrir automáticamente cuando un cuadro de texto de un sitio se puede rellenar con contenido de formato corto</translation>
 <translation id="9114663181201435112">Iniciar sesión fácilmente</translation>
 <translation id="9115675100829699941">&amp;Marcadores</translation>
-<translation id="9115932142612197835">Este ajuste no cambia la disponibilidad del Traductor de Google ni de Google Lens</translation>
 <translation id="9116366756388192417">Elige un tema</translation>
 <translation id="9116799625073598554">Aplicación para tomar notas</translation>
 <translation id="9117030152748022724">Gestionar tus aplicaciones</translation>

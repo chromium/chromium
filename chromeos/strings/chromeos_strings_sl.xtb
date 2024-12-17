@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavitve</translation>
 <translation id="3347558044552027859">sodobno</translation>
+<translation id="3353477144743332882">Prenos modela za ustvarjanje povzetka in imen</translation>
 <translation id="3359218928534347896">preklop izklopa zvoka</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">suši</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Bližnjica ni na voljo. Pritisnite novo bližnjico brez tipke <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
+<translation id="5875913454160982848">Prenos modela za prepisovanje</translation>
 <translation id="5876385649737594562">Vklopite, če želite izbrati možnosti.</translation>
 <translation id="5877503382465267833">Začasno zaustavi »<ph name="RECORDING_NAME" />«</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">Samo še nekaj minut …</translation>
 <translation id="8505011850330200833">Model Gemini za shranjevanje za obdelavo prepisov in ustvarjanje povzetkov potrebuje 2 GB prostora</translation>
 <translation id="8508640263392900755">Podrobnosti o APN-ju</translation>
+<translation id="8509574872955173831">Preberite več o ustvarjanju povzetka in imen</translation>
 <translation id="8522687886059337719">Zdaj imate dostop do novih <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />zaslonskih ozadij<ph name="END_LINK_WALLPAPER_SUBPAGE" /> in <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ohranjevalnika zaslona<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajnica</translation>

@@ -98,6 +98,7 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> lap hozzáadva}other{<ph name="MANY_ADDED" /> lap hozzáadva}}</translation>
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
 <translation id="5339733443032484186">A legutóbbi lap</translation>
+<translation id="5380159289133845234">Ismétlődő lapok archiválása</translation>
 <translation id="5400836586163650660">Szürke</translation>
 <translation id="5490235265819901748">Lapcsoport kibontva</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
@@ -117,6 +118,7 @@ Ha kilép, azonnal elveszíti a hozzáférését a(z) „<ph name="TITLE_OF_GROU
 <translation id="6051432659151380973">A lapcsoportokat automatikusan menti a rendszer</translation>
 <translation id="6054741997831917303">A tétel ára nemrég csökkent. Régi ár: <ph name="PREVIOUS_PRICE" />, új ár: <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Azonnal elveszíti hozzáférését a(z) <ph name="GROUP_NAME" /> lapcsoporthoz</translation>
+<translation id="6109251075362363230">Mostantól az összes ismétlődő lap is archiválva lesz a legutóbb használt példány kivételével.</translation>
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
 <translation id="6228793724645064692">(az üzlet értékelése)</translation>
 <translation id="6271513594716432922">Az összes inaktív lap bezárása</translation>

@@ -597,7 +597,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि तपाईंको <ph name="FIELDS_STRING" /> यो साइटसँग सेयर गर्ने छ।</translation>
 <translation id="3710560693796335511">सहकार्य</translation>
 <translation id="3714981814255182093">खोजको पट्टी खोल्नुहोस्</translation>
-<translation id="3716182511346448902">यस पृष्ठले अत्यधिक मेमोरी प्रयोग गर्ने भएकाले Chromium ले यसलाई पज गर्‍यो।</translation>
 <translation id="3718765429352682176">तपाईं Chrome मा लिंक खोल्ने अन्य एपहरूको हिस्ट्री देख्न सक्नुहुन्छ।</translation>
 <translation id="3720422586473670527">पर्दैन, धन्यवाद</translation>
 <translation id="3721119614952978349">तपाईं र Google</translation>
@@ -1628,7 +1627,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8186512483418048923"><ph name="FILES" /> फाइलहरू बाँकी छन्</translation>
 <translation id="8190358571722158785">१ दिन बाँकी छ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">रिजुमी</translation>
 <translation id="820568752112382238">सबैभन्दा बढी हेरिएका साइटहरू</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> र अन्य <ph name="NUMBER_OF_OTHER_MEMBERS" /> जना सामेल हुनुभएको ट्याब समूहमा सामेल हुनुहोस्}other{<ph name="OWNER_FIRST_NAME" /> र अन्य <ph name="NUMBER_OF_OTHER_MEMBERS" /> जना सामेल हुनुभएको ट्याब समूहमा सामेल हुनुहोस्}}</translation>
 <translation id="8209050860603202033">फोटो खोल्नुहोस्</translation>

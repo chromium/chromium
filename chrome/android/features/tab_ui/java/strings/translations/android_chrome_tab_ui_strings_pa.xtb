@@ -98,7 +98,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ਟੈਬ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}one{<ph name="MANY_ADDED" /> ਟੈਬ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}other{<ph name="MANY_ADDED" /> ਟੈਬਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="5161254044473106830">ਸਿਰਲੇਖ ਲਾਜ਼ਮੀ</translation>
 <translation id="5339733443032484186">ਤੁਹਾਡੀ ਪਿਛਲੀ ਟੈਬ</translation>
+<translation id="5380159289133845234">ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ</translation>
 <translation id="5400836586163650660">ਸਲੇਟੀ</translation>
+<translation id="5446043142172831860">ਟੈਬ ਹਟਾਓ ਅਤੇ ਗਰੁੱਪ ਛੱਡੋ</translation>
 <translation id="5490235265819901748">ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5494920125229734069">ਸਾਰੇ ਚੁਣੋ</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰੋ।}one{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰੋ।}other{<ph name="COLOR_NAME" /> ਰੰਗ ਅਤੇ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਕਰੋ।}}</translation>
@@ -117,6 +119,7 @@
 <translation id="6051432659151380973">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੱਖਿਅਤ ਹੋ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="6054741997831917303">ਇਸ ਆਈਟਮ ਦੀ ਕੀਮਤ ਹਾਲ ਹੀ ਵਿੱਚ <ph name="PREVIOUS_PRICE" /> ਤੋਂ ਘੱਟ ਕੇ <ph name="NEW_PRICE" /> ਹੋ ਗਈ ਹੈ</translation>
 <translation id="6082313992897617440">ਤੁਸੀਂ ਤੁਰੰਤ <ph name="GROUP_NAME" /> ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਬੈਠੋਗੇ</translation>
+<translation id="6109251075362363230">ਹੁਣ ਸਾਰੀਆਂ ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਨੂੰ ਵੀ ਪੁਰਾਲੇਖ ਕੀਤਾ ਜਾਵੇਗਾ, ਪਰ ਇਸ ਵਿੱਚ ਸਭ ਤੋਂ ਹਾਲੀਆ ਵਰਤੀ ਗਈ ਕਾਪੀ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6193448654517602979">ਟੈਬਾਂ ਚੁਣੋ</translation>
 <translation id="6228793724645064692">(ਸਟੋਰ ਰੇਟਿੰਗ)</translation>
 <translation id="6271513594716432922">ਸਾਰੀਆਂ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਬੰਦ ਕਰੋ</translation>

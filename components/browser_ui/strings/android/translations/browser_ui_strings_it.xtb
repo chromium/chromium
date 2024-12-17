@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Connesso a un dispositivo USB</translation>
 <translation id="4194328954146351878">Chiedi conferma prima di consentire ai siti di vedere e modificare informazioni su dispositivi NFC (opzione consigliata)</translation>
 <translation id="4200726100658658164">Apri Impostazioni di geolocalizzazione</translation>
+<translation id="4213239715282467974">Chrome ora condivide le schede recenti con il tuo dispositivo. Puoi accedervi rapidamente nell'elenco di app del dispositivo e nei risultati di ricerca. Puoi disattivare questa funzionalità in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="4226663524361240545">Le notifiche possono far vibrare il dispositivo</translation>
 <translation id="4259722352634471385">Navigazione bloccata: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Autorizzazione concessa</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">I siti non possono chiederti l'autorizzazione a usare le informazioni salvate su di te</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 altro)}other{(+ altri #)}}</translation>
 <translation id="5403592356182871684">Nomi</translation>
+<translation id="5408906274948600065">Consenti a Chrome di condividere le schede recenti con il tuo dispositivo per visualizzarle nell'elenco di app e nei risultati di ricerca del dispositivo. Puoi attivare o disattivare questa funzionalità in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="5438097262470833822">Questa selezione reimposterà le autorizzazioni per <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quando l'opzione è attiva, i siti possono chiedere la tua posizione. Quando l'opzione è disattivata, i siti non possono vedere la tua posizione.</translation>
 <translation id="5489227211564503167">Tempo trascorso: <ph name="ELAPSED_TIME" /> di <ph name="TOTAL_TIME" />.</translation>

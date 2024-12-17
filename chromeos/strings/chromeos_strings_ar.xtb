@@ -1296,6 +1296,7 @@
 <translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7135814714616751706">البحث في الاختصارات</translation>
 <translation id="7138614237884624401">نص مُبسّط</translation>
+<translation id="7138668887584231801">عدد الكلمات غير كافٍ لتلخيص النص</translation>
 <translation id="7141470099673912333">نقل المحتوى</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>

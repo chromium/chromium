@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">停用深色主题</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1808803439260407870">经典艺术</translation>
+<translation id="181434555916624618">目前，系统不会显示包含某个人的结果。请试试其他提示。</translation>
 <translation id="1815850098929213707">所选按键为 <ph name="KEYS" />。点按按钮即可修改控件</translation>
 <translation id="1823120442877418684">物体</translation>
 <translation id="1827738518074806965">画廊</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3340978935015468852">设置</translation>
 <translation id="3347558044552027859">现代</translation>
+<translation id="3353477144743332882">下载摘要和名称创建模型</translation>
 <translation id="3359218928534347896">使用切换开关可将麦克风静音或取消静音</translation>
 <translation id="3360306038446926262">窗口</translation>
 <translation id="3361618936611118375">寿司</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">此快捷键不可用。请按下不含 <ph name="KEY" /> 键的新快捷键。</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
+<translation id="5875913454160982848">下载转写模型</translation>
 <translation id="5876385649737594562">开启后才能选择所需选项</translation>
 <translation id="5877503382465267833">暂停“<ph name="RECORDING_NAME" />”</translation>
 <translation id="588258955323874662">全屏</translation>
@@ -1588,6 +1591,7 @@
 <translation id="8503836310948963452">只需再等几分钟…</translation>
 <translation id="8505011850330200833">Gemini 模型需要 2GB 的存储空间，才能处理转写文稿和创建摘要</translation>
 <translation id="8508640263392900755">APN 详细信息</translation>
+<translation id="8509574872955173831">详细了解摘要和名称创建</translation>
 <translation id="8522687886059337719">现在，您可以享用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />屏保<ph name="END_LINK_SCREENSAVER_SUBPAGE" />了</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">茶馆</translation>

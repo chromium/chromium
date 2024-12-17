@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{ເພີ່ມ <ph name="ONE_ADDED" /> ແຖບແລ້ວ}other{ເພີ່ມ <ph name="MANY_ADDED" /> ແຖບແລ້ວ}}</translation>
 <translation id="5161254044473106830">ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ຫົວ​ຂໍ້</translation>
 <translation id="5339733443032484186">ແຖບສຸດທ້າຍຂອງທ່ານ</translation>
+<translation id="5380159289133845234">ເກັບແຖບທີ່ຊ້ຳກັນໄວ້ໃນແຟ້ມ</translation>
 <translation id="5400836586163650660">ສີເທົາ</translation>
 <translation id="5490235265819901748">ຂະຫຍາຍກຸ່ມແຖບແລ້ວ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="6082313992897617440">ທ່ານຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ <ph name="GROUP_NAME" /> ທັນທີ</translation>
+<translation id="6109251075362363230">ຕອນນີ້ລະບົບຍັງຈະເກັບແຖບທີ່ຊ້ຳກັນທັງໝົດໄວ້ໃນແຟ້ມນຳ, ຍົກເວັ້ນສຳເນົາທີ່ໃຊ້ຫຼ້າສຸດ.</translation>
 <translation id="6193448654517602979">ເລືອກແຖບ</translation>
 <translation id="6228793724645064692">(ຄະແນນຮ້ານຄ້າ)</translation>
 <translation id="6271513594716432922">ປິດແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ທັງໝົດ</translation>

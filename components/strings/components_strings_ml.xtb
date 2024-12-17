@@ -926,6 +926,7 @@
 <translation id="2628224721443278970">Microsoft OneDrive-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ന്‍റെ സെർവർ IP വിലാസം കണ്ടെത്താനായില്ല.</translation>
 <translation id="2639739919103226564">നില:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ഫാബ്രിക് (സെമി ഗ്ലോസ്)</translation>
 <translation id="264810637653812429">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1140,6 +1141,7 @@
 <translation id="306573536155379004">ഗെയിം ആരംഭിച്ചു.</translation>
 <translation id="3067505415088964188">കുറഞ്ഞ നിരക്ക്</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> എന്നതിലേക്കുള്ള നിങ്ങളുടെ ഫയൽ അപ്‌ലോഡ് ഒരു മിനിറ്റിനുള്ളിൽ ആരംഭിക്കും</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ഇനം}other{{ITEMS} ഇനങ്ങൾ}}</translation>
 <translation id="3076865167425975822">ഓപ്പറേറ്റിംഗ് സിസ്റ്റങ്ങൾ</translation>
 <translation id="3080254622891793721">ഗ്രാഫിക്</translation>
 <translation id="3082007635241601060">വ്യക്തിപരമാക്കിയ കിഴിവുകൾ ലഭ്യമാകുമ്പോൾ അവ കണ്ടെത്തുന്നതിന് നിങ്ങളുടെ കാർട്ടുകൾ ഉപയോഗിക്കാൻ Google-നെ അനുവദിക്കുക</translation>
@@ -2830,6 +2832,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> എന്നതിലെ വെബ്‌പേജ് താല്‍ക്കാലികമായി പ്രവർത്തനരഹിതമായിരിക്കാം, അല്ലെങ്കില്‍ അത് ശാശ്വതമായി ഒരു പുതിയ വെബ് വിലാസത്തിലേക്ക് മാറ്റിയിരിക്കാം.</translation>
 <translation id="6107012941649240045">ഇതിന് നല്‍‌കി</translation>
 <translation id="6107924765192360631">എഴുതലുമായി ബന്ധപ്പെട്ട നിർദ്ദേശങ്ങൾ ലഭിക്കുന്നതിന് കുറച്ച് വാക്കുകളോ ആദ്യത്തെ ഡ്രാഫ്റ്റോ നൽകി ആരംഭിക്കുക.</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" /> താരതമ്യം ചെയ്യുക</translation>
 <translation id="6108580855199168381">സർട്ടിഫിക്കറ്റിന്റെ വിശദാംശങ്ങൾ</translation>
 <translation id="6108702513636120202">Chromium-ലെ, നിങ്ങളുടെ തിരയൽ എഞ്ചിൻ</translation>
 <translation id="6108849843016142864">ഇഴജന്തുക്കളും ഉഭയജീവികളും</translation>

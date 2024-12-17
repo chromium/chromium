@@ -597,7 +597,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3710501561113687889">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja a következőket ezzel a webhellyel: <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Együttműködés</translation>
 <translation id="3714981814255182093">A keresősáv megnyitása</translation>
-<translation id="3716182511346448902">Ez az oldal túl sok memóriát használ, ezért a Chrome szünetelteti.</translation>
 <translation id="3718765429352682176">Előfordulhat, hogy más olyan alkalmazásokból származó előzményeket is lát, amelyek a Chrome-ban nyitják meg a linkeket.</translation>
 <translation id="3720422586473670527">Köszönöm, nem</translation>
 <translation id="3721119614952978349">Ön és a Google</translation>
@@ -1629,7 +1628,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8186512483418048923"><ph name="FILES" /> fájl maradt</translation>
 <translation id="8190358571722158785">1 nap van hátra</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Saját eszközök<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Folytatás</translation>
 <translation id="820568752112382238">Leggyakrabban felkeresett webhelyek</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Csatlakozás <ph name="OWNER_FIRST_NAME" /> további <ph name="NUMBER_OF_OTHER_MEMBERS" /> főt tartalmazó lapcsoportjához}other{Csatlakozás <ph name="OWNER_FIRST_NAME" /> további <ph name="NUMBER_OF_OTHER_MEMBERS" /> főt tartalmazó lapcsoportjához}}</translation>
 <translation id="8209050860603202033">Kép megnyitása</translation>

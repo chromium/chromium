@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">הכרטיסייה האחרונה שלך</translation>
 <translation id="5380159289133845234">העברת כרטיסיות כפולות לארכיון</translation>
 <translation id="5400836586163650660">אפור</translation>
+<translation id="5446043142172831860">הסרת הכרטיסייה ויציאה מהקבוצה</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{סגירה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>

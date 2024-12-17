@@ -497,7 +497,6 @@
 <translation id="1335929031622236846">デバイスを登録する</translation>
 <translation id="133660899895084533">Bluetooth 周辺機器の情報とデータを読み取る</translation>
 <translation id="1336902454946927954">指紋を認識できなかったため、セキュリティ キーがロックされています。ロックを解除するには PIN を入力してください。</translation>
-<translation id="1337066099824654054">コンテキスト ヘルプはオフです</translation>
 <translation id="1338631221631423366">ペア設定中...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> がこのアプリケーションを開く許可を求めています。</translation>
 <translation id="1338950911836659113">削除しています...</translation>
@@ -1163,7 +1162,6 @@
 <translation id="1802687198411089702">ページが応答していません。しばらくお待ちいただくか、終了してください。</translation>
 <translation id="1803531841600994172">翻訳先の言語</translation>
 <translation id="1803545009660609783">再認識</translation>
-<translation id="1804195280859010019">Google 検索のサイドパネルなどの機能に、より有益な情報や候補が表示されるようになります</translation>
 <translation id="180441032496361123">クリックすると <ph name="SEARCH_ENGINE_NAME" /> が有効になります</translation>
 <translation id="1805738995123446102">バックグラウンドのタブでマイクが使用されています</translation>
 <translation id="1805822111539868586">ビューを検証</translation>
@@ -3559,7 +3557,6 @@
 <translation id="350397915809787283">アカウントがない場合は、最初のオプションを選択して作成してください。</translation>
 <translation id="3503995387997205657">前回のアプリを復元できます</translation>
 <translation id="3505100368357440862">おすすめのショッピング情報</translation>
-<translation id="3505602163050943406">一部の機能の使用時に、開いているページ、関連する最近のページ、それらの URL の一部が Google に送信されることがあります</translation>
 <translation id="3507132249039706973">標準保護機能がオンになっています</translation>
 <translation id="3507888235492474624">Bluetooth デバイスを再スキャン</translation>
 <translation id="3508492320654304609">ログインデータを削除できませんでした</translation>
@@ -3910,7 +3907,6 @@
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> を開きますか？</translation>
 <translation id="3739349485749941749">サイトがデバイスにアクセスできるプリンタの検索と使用を要求できるようにする</translation>
-<translation id="3740396996321407665">一部の機能でコンテキスト ヘルプを使用する</translation>
 <translation id="3740945083753997630">表示と文字サイズを縮小する</translation>
 <translation id="3741056951918180319">どのサイトでも、いつでも拡張機能をクリックして使用できます</translation>
 <translation id="374124333420280219">アプリの詳細:</translation>
@@ -4308,6 +4304,7 @@
 <translation id="3993887353483242788"><ph name="DEVICE_TYPE" /> を同期すると、Google アカウントでログインする他のデバイスでご自分の環境設定を使用できるようになります。環境設定には、アプリ、設定、Wi-Fi パスワード、言語、壁紙、キーボード ショートカットなどが含まれます。</translation>
 <translation id="3994318741694670028">パソコンに設定されているハードウェア ID の形式が正しくありません。このため、ChromeOS Flex に最新のセキュリティ修正を適用することができません。お使いのパソコンは、<ph name="BEGIN_BOLD" />悪意のある攻撃を受けやすくなる可能性があります<ph name="END_BOLD" />。</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> のロックを解除するには、スマートフォンのロックを解除してデバイスに近づけます。</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> としてログイン</translation>
 <translation id="3994530503403062649">タブレットのボタン設定</translation>
 <translation id="3994708120330953242">パスワードの一部がデータ侵害で漏洩しました。これらのパスワードを今すぐ変更して、アカウントを保護してください。</translation>
 <translation id="3994878504415702912">ズーム(&amp;Z)</translation>
@@ -5750,7 +5747,7 @@
 <translation id="5063480226653192405">使用状況</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> のプロフィールを開きます。このプロフィールは保護者によって管理されています。</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
-<translation id="5066100345385738837">Chrome OS の設定でセキュア DNS を管理する</translation>
+<translation id="5066100345385738837">ChromeOS の設定でセキュア DNS を管理する</translation>
 <translation id="5066534201484101197">オーバースクロールしてページ間を移動する</translation>
 <translation id="5067399438976153555">常にオン</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> がマイクへのアクセスを必要としているときは確認画面を表示する</translation>
@@ -7272,7 +7269,6 @@
 <translation id="6173623053897475761">もう一度 PIN を入力してください</translation>
 <translation id="6175314957787328458">Microsoft ドメイン GUID</translation>
 <translation id="6175910054050815932">リンクの取得</translation>
-<translation id="6176701216248282552">コンテキスト ヘルプはオンです。この機能では、開いているページが Google に送信されます。</translation>
 <translation id="6177412385419165772">削除しています...</translation>
 <translation id="6177478397823976397">デバイスが見つかりませんでした。新しいタブでヘルプセンター記事を開きます</translation>
 <translation id="6178664161104547336">証明書の選択</translation>
@@ -9170,7 +9166,6 @@
 <translation id="756445078718366910">ブラウザ ウィンドウを開く</translation>
 <translation id="7564847347806291057">プロセスを終了</translation>
 <translation id="756503097602602175">ログインする Google アカウントは、<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />で管理できます。ウェブサイトとアプリに許可した権限はすべてのアカウントに適用されます。サイトやアプリがアカウント情報にアクセスしないようにするには、<ph name="DEVICE_TYPE" /> にゲストとしてログインするか、<ph name="LINK_2_BEGIN" />シークレット ウィンドウ<ph name="LINK_2_END" />でウェブ ブラウジングします。</translation>
-<translation id="756583107125124860">一部の機能では、より有益な情報や候補を提供するため、開いているページや関連する最近のページのコンテンツを使用する場合があります</translation>
 <translation id="7566118625369982896">Play アプリのリンクを管理する</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">キーの組み合わせを作成</translation>
@@ -10916,7 +10911,6 @@
 <translation id="8781980678064919987">ディスプレイを閉じたときにシャットダウンする</translation>
 <translation id="8782565991310229362">キオスク アプリケーションの起動がキャンセルされました。</translation>
 <translation id="8783834180813871000">Bluetooth のペア設定コードを入力してから、Return キーまたは Enter キーを押してください。</translation>
-<translation id="8783955532752528811">機能のコンテキスト ヘルプ</translation>
 <translation id="8784626084144195648">ビニング平均</translation>
 <translation id="8785622406424941542">タッチペン</translation>
 <translation id="8786824282808281903">このアイコンが表示されているときは、お子様は本人確認や購入の承認に指紋認証を使用できます。</translation>
@@ -11408,7 +11402,6 @@
 <translation id="9113529408970052045">サイトのテキスト ボックスに短いコンテンツを入力できる場合に、「文書作成サポート」を自動的に開くことができます</translation>
 <translation id="9114663181201435112">簡単にログイン</translation>
 <translation id="9115675100829699941">ブックマーク(&amp;B)</translation>
-<translation id="9115932142612197835">この設定を行っても、Google 翻訳やレンズはこれまでどおり使用できます</translation>
 <translation id="9116366756388192417">主題を選択</translation>
 <translation id="9116799625073598554">メモ用アプリ</translation>
 <translation id="9117030152748022724">アプリを管理する</translation>

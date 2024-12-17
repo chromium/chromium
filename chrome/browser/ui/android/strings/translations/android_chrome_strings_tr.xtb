@@ -597,7 +597,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için <ph name="FIELDS_STRING" /> bilgilerinizi bu siteyle paylaşacak.</translation>
 <translation id="3710560693796335511">Ortak çalışma</translation>
 <translation id="3714981814255182093">Bulma Çubuğu'nu açar</translation>
-<translation id="3716182511346448902">Bu sayfa, bellekte çok fazla yer kapladığından Chrome tarafından duraklatıldı.</translation>
 <translation id="3718765429352682176">Chrome'da bağlantı açan diğer uygulamalardaki geçmişi görebilirsiniz.</translation>
 <translation id="3720422586473670527">Hayır, teşekkürler</translation>
 <translation id="3721119614952978349">Siz ve Google</translation>
@@ -1629,7 +1628,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8186512483418048923"><ph name="FILES" /> dosya kaldı</translation>
 <translation id="8190358571722158785">1 gün kaldı</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Sürdür</translation>
 <translation id="820568752112382238">En çok ziyaret edilen siteler</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUMBER_OF_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın}other{<ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUMBER_OF_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın}}</translation>
 <translation id="8209050860603202033">Resmi aç</translation>

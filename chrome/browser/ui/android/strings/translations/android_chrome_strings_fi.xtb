@@ -597,7 +597,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3710501561113687889">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa <ph name="FIELDS_STRING" /> tälle sivustolle.</translation>
 <translation id="3710560693796335511">Yhteiskäyttö</translation>
 <translation id="3714981814255182093">Avaa hakupalkki</translation>
-<translation id="3716182511346448902">Tämä sivu käyttää liikaa muistia, joten Chrome keskeytti sen.</translation>
 <translation id="3718765429352682176">Saatat nähdä muiden sellaisten sovellusten historian, jotka avaavat linkkejä Chromessa.</translation>
 <translation id="3720422586473670527">Ei kiitos</translation>
 <translation id="3721119614952978349">Sinä ja Google</translation>
@@ -1629,7 +1628,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8186512483418048923"><ph name="FILES" /> tiedostoa jäljellä</translation>
 <translation id="8190358571722158785">1 päivä jäljellä</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Omat laitteet<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Jatka</translation>
 <translation id="820568752112382238">Useimmin vieraillut sivustot</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Liity välilehtiryhmään, jossa <ph name="OWNER_FIRST_NAME" /> on ja <ph name="NUMBER_OF_OTHER_MEMBERS" /> muu}other{Liity välilehtiryhmään, jossa <ph name="OWNER_FIRST_NAME" /> on ja <ph name="NUMBER_OF_OTHER_MEMBERS" /> muuta}}</translation>
 <translation id="8209050860603202033">Avaa kuva</translation>

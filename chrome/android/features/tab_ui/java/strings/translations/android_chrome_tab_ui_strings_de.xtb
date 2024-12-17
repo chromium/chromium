@@ -98,6 +98,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt}}</translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
 <translation id="5339733443032484186">Dein letzter Tab</translation>
+<translation id="5380159289133845234">Tab-Duplikate archivieren</translation>
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
@@ -117,6 +118,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ verlässt, verlierst du
 <translation id="6051432659151380973">Deine Tabgruppen werden automatisch gespeichert</translation>
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
 <translation id="6082313992897617440">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“</translation>
+<translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme der zuletzt verwendeten Kopie.</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="6271513594716432922">Alle inaktiven Tabs schließen</translation>

@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3347558044552027859">moderne</translation>
+<translation id="3353477144743332882">Télécharger le résumé et le modèle de création de nom</translation>
 <translation id="3359218928534347896">activer/désactiver le son du micro</translation>
 <translation id="3360306038446926262">Fenêtres</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Raccourci non disponible. Appuyez sur un nouveau raccourci sans <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
+<translation id="5875913454160982848">Télécharger le modèle de transcription</translation>
 <translation id="5876385649737594562">Activez pour sélectionner des options</translation>
 <translation id="5877503382465267833">Mettre en pause <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Plein écran</translation>
@@ -1588,6 +1590,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
 <translation id="8505011850330200833">Le modèle Gemini nécessite 2 Go d'espace de stockage pour traiter les transcriptions et créer des résumés</translation>
 <translation id="8508640263392900755">Informations sur l'APN</translation>
+<translation id="8509574872955173831">En savoir plus sur le résumé et la création de nom</translation>
 <translation id="8522687886059337719">Vous avez désormais accès à de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /> et <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />économiseurs d'écran<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">salon de thé</translation>

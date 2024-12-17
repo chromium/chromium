@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Poista tumma teema käytöstä</translation>
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1808803439260407870">klassinen taide</translation>
+<translation id="181434555916624618">Ihmisiä koskevia tuloksia ei tällä hetkellä näytetä. Kokeile toista kehotetta.</translation>
 <translation id="1815850098929213707">Valittu avain on <ph name="KEYS" />. Muokkaa ohjainta napauttamalla painiketta</translation>
 <translation id="1823120442877418684">Aiheet</translation>
 <translation id="1827738518074806965">Taidegalleria</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Laitteen oikean kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">asetuksissa</translation>
 <translation id="3347558044552027859">moderni</translation>
+<translation id="3353477144743332882">Lataa yhteenveto- ja nimenluomismalli</translation>
 <translation id="3359218928534347896">laita mikrofonin mykistys päälle tai pois päältä</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">Pikanäppäin ei ole käytettävissä. Paina uutta pikanäppäintä ilman <ph name="KEY" />-näppäintä.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
+<translation id="5875913454160982848">Lataa transkriptiomalli</translation>
 <translation id="5876385649737594562">Laita tämä päälle, jotta voit valita vaihtoehdot</translation>
 <translation id="5877503382465267833">Keskeytä toisto: <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Koko näyttö</translation>
@@ -1588,6 +1591,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8503836310948963452">Vielä pari minuuttia…</translation>
 <translation id="8505011850330200833">Gemini-malli tarvitsee 2 Gt tallennustilaa transkriptioiden käsittelyyn ja yhteenvetojen luomiseen</translation>
 <translation id="8508640263392900755">APN-tiedot</translation>
+<translation id="8509574872955173831">Lue lisää yhteenvedon ja nimen luomisesta</translation>
 <translation id="8522687886059337719">Voit nyt käyttää uusia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustakuvia<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ja <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />näytönsäästäjiä<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teehuone</translation>

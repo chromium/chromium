@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Tümünü aç</translation>
 <translation id="1408847409015257906">"Gizlilik ve Güvenlik"e dokunun.</translation>
 <translation id="1411386976162024013">Lens görsel arama</translation>
+<translation id="1417474386970818917">Oturumu Kapat ve Sil</translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1436671784520050284">Kuruluma devam et</translation>
@@ -1010,6 +1011,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5628388627414062173">{count,plural, =1{Okuma listenizde {count} sayfa var}other{Okuma listenizde {count} sayfa var}}</translation>
 <translation id="5632485077360054581">Nasıl yapıldığını göster</translation>
 <translation id="5633237939819267663">{count,plural, =1{Yer işareti "{title}" konumuna kaydedildi}other{{count} yer işareti "{title}" konumuna kaydedildi}}</translation>
+<translation id="564170563478022912">Oturum kapatılsın mı? Kaydedilmemiş hesap verileri silinecek.</translation>
 <translation id="5642707040609478753">Okunmadı olarak işaretle</translation>
 <translation id="5646284034397250191">Etiket oluşturuldu. Tarih beklemede</translation>
 <translation id="5647096944343801045">Büyük giriş noktası</translation>
@@ -1022,6 +1024,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5669335982068190158">iPhone sıfırlama işleminin bir parçası olarak oturumunuz kapatıldı. Oturum açmak için aşağıdaki devam et seçeneğine dokunun.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Sürüm <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Hesap değiştirilsin mi? Kaydedilmemiş hesap verileri silinecek.</translation>
 <translation id="5683499062697987550">Şifreleri kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
 <translation id="5684761169742812828">Bu şifre, internette bir veri ihlalinde açığa çıktı. Şu anda şifreyi değiştirecek vaktiniz yoksa Google daha sonra hatırlamanız için bu uyarıyı saklamanızı önerir.</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> için Drive'a kaydedildi.</translation>
@@ -1223,6 +1226,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" sekme grubunu paylaşma</translation>
 <translation id="6507973708545996744">Okuma listenize tüm cihazlarınızdan erişmek için oturum açın.</translation>
 <translation id="6518133107902771759">Doğrula</translation>
+<translation id="6518861084553706202">Sekmeler kapatılarak şifreler, tarama geçmişi, çerezler ve diğer veriler silinecek.</translation>
 <translation id="6523575793810663688">Nasıl yapıldığını göster</translation>
 <translation id="6524082013156754186">Hesaba kaydet</translation>
 <translation id="6527303717912515753">Paylaş</translation>
@@ -1679,6 +1683,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8545276357312221485">Varsayılan tarayıcı ayarlarınızı kontrol edin</translation>
 <translation id="854938212724803178">Sızdırılmış 1 şifreniz var. Güvenlik için sorunu giderin.</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} uyarıyı kapattınız}other{{count} uyarıyı kapattınız}}</translation>
+<translation id="8558046478684552694">Grubu kapat.</translation>
 <translation id="8560253818350321773">Sık kullanılan öğeleri üstte gösterir.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Klavyenizin üzerinde {count} tane şifre seçeneği mevcut.}other{Klavyenizin üzerinde {count} tane şifre seçeneği mevcut.}}</translation>
 <translation id="8564894539416715395">Yeni sekme sayfası</translation>
@@ -1847,6 +1852,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9205189991633470489">Gizli mod kilidi</translation>
 <translation id="9206887540681440657">Hız</translation>
 <translation id="9223358826628549784">Kilitlenme raporu gönderildi.</translation>
+<translation id="926455622548529175">Geçiş Yap ve Sil</translation>
 <translation id="929748059769569925">Vurgulanan metin</translation>
 <translation id="932305336591073205">{count,plural, =1{Sekmeyi kapat}other{Sekmeleri kapat}}</translation>
 <translation id="939472100615258482">Geçerli site</translation>

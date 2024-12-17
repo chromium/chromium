@@ -497,7 +497,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1335929031622236846">Daftarkan peranti anda</translation>
 <translation id="133660899895084533">Bada maklumat dan data persisian Bluetooth</translation>
 <translation id="1336902454946927954">Kunci keselamatan anda dikunci kerana cap jari anda tidak dapat dikenal pasti. Untuk membuka kunci keselamatan itu, masukkan PIN anda.</translation>
-<translation id="1337066099824654054">Bantuan kontekstual dimatikan</translation>
 <translation id="1338631221631423366">Menggandingkan...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ingin membuka aplikasi ini.</translation>
 <translation id="1338950911836659113">Memadamkan...</translation>
@@ -1173,7 +1172,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1802687198411089702">Halaman tidak bertindak balas. Anda boleh menunggu atau keluar.</translation>
 <translation id="1803531841600994172">Bahasa sasaran terjemahan</translation>
 <translation id="1803545009660609783">Latih semula</translation>
-<translation id="1804195280859010019">Anda akan melihat maklumat dan cadangan berguna dalam ciri seperti panel sisi Google Search</translation>
 <translation id="180441032496361123">Klik untuk mengaktifkan <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">Tab latar belakang menggunakan mikrofon anda</translation>
 <translation id="1805822111539868586">Periksa paparan</translation>
@@ -3581,7 +3579,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="350397915809787283">Jika anda tiada akaun, pilih pilihan pertama untuk membuat akaun.</translation>
 <translation id="3503995387997205657">Anda boleh memulihkan apl terdahulu anda</translation>
 <translation id="3505100368357440862">Cadangan beli-belah</translation>
-<translation id="3505602163050943406">Apabila anda menggunakan sesetengah ciri, sebahagian daripada halaman terbuka, halaman terbaharu yang berkaitan dan URL boleh dihantar kepada Google</translation>
 <translation id="3507132249039706973">Perlindungan Standard dihidupkan</translation>
 <translation id="3507888235492474624">Imbas semula peranti Bluetooth</translation>
 <translation id="3508492320654304609">Data log masuk anda tidak dapat dipadamkan</translation>
@@ -3933,7 +3930,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Buka <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Laman boleh meminta untuk mencari dan menggunakan pencetak yang boleh diakses oleh peranti anda</translation>
-<translation id="3740396996321407665">Dapatkan bantuan kontekstual daripada sesetengah ciri</translation>
 <translation id="3740945083753997630">Kurangkan saiz paparan dan teks</translation>
 <translation id="3741056951918180319">Anda boleh mengklik sambungan pada bila-bila masa untuk menggunakannya di mana-mana laman</translation>
 <translation id="374124333420280219">Butiran apl:</translation>
@@ -4331,6 +4327,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3993887353483242788">Segerakkan <ph name="DEVICE_TYPE" /> anda supaya pilihan anda akan tersedia pada mana-mana peranti apabila anda log masuk dengan Google Account anda. Pilihan termasuk apl, tetapan, kata laluan Wi-Fi, bahasa, kertas dinding, pintasan papan kekunci dan pelbagai lagi.</translation>
 <translation id="3994318741694670028">Malangnya, komputer anda dikonfigurasi dengan ID perkakasan tidak sempurna. Hal ini menghalang Chrome OS Flex daripada mengemas kini kepada pembetulan keselamatan terbaharu dan komputer anda <ph name="BEGIN_BOLD" />mungkin terdedah kepada serangan berniat jahat<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Buka kunci telefon anda dan rapatkan untuk membuka kunci <ph name="DEVICE_TYPE" /> anda.</translation>
+<translation id="3994522032746736727">Log masuk sebagai <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Cari butang pada tablet anda</translation>
 <translation id="3994708120330953242">Sesetengah kata laluan anda ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, anda harus menukar kata laluan ini sekarang.</translation>
 <translation id="3994878504415702912">&amp;Zum</translation>
@@ -7302,7 +7299,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6173623053897475761">Taipkan PIN anda sekali lagi</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Dapatkan pautan</translation>
-<translation id="6176701216248282552">Bantuan kontekstual dihidupkan. Ciri ini boleh menghantar halaman terbuka kepada Google.</translation>
 <translation id="6177412385419165772">Mengalih keluar...</translation>
 <translation id="6177478397823976397">Tiada peranti ditemukan. Buka artikel pusat bantuan dalam tab baharu</translation>
 <translation id="6178664161104547336">Pilih sijil</translation>
@@ -9202,7 +9198,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="756445078718366910">Buka Tetingkap Penyemak Imbas</translation>
 <translation id="7564847347806291057">Tamatkan proses</translation>
 <translation id="756503097602602175">Anda boleh mengurus Google Account yang dilog masuk daripada <ph name="LINK_BEGIN" />Tetapan<ph name="LINK_END" />. Kebenaran yang telah anda berikan kepada laman web dan apl boleh digunakan pada semua akaun. Jika anda tidak mahu maklumat akaun anda diakses oleh laman atau apl, anda boleh log masuk ke <ph name="DEVICE_TYPE" /> anda sebagai tetamu atau menyemak imbas web dalam <ph name="LINK_2_BEGIN" />tetingkap Inkognito<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Beberapa ciri boleh menggunakan kandungan untuk membuka halaman dan halaman terbaharu yang berkaitan untuk memberikan maklumat dan cadangan yang lebih berguna</translation>
 <translation id="7566118625369982896">Urus pautan apl Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Buat gabungan kunci</translation>
@@ -10950,7 +10945,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8781980678064919987">Matikan apabila penutup ditutup</translation>
 <translation id="8782565991310229362">Pelancaran aplikasi kios dibatalkan.</translation>
 <translation id="8783834180813871000">Taip kod gandingan Bluetooth, kemudian tekan Return atau Enter.</translation>
-<translation id="8783955532752528811">Bantuan kontekstual pada ciri</translation>
 <translation id="8784626084144195648">Purata Bin</translation>
 <translation id="8785622406424941542">Stilus</translation>
 <translation id="8786824282808281903">Apabila anak anda melihat ikon ini, cap jari boleh digunakan untuk pengenalan atau meluluskan pembelian.</translation>
@@ -11442,7 +11436,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9113529408970052045">"Bantu saya tulis" boleh dibuka secara automatik apabila kotak teks pada laman boleh diisi dengan kandungan bentuk pendek</translation>
 <translation id="9114663181201435112">Log masuk dengan mudah</translation>
 <translation id="9115675100829699941">&amp;Bookmarks</translation>
-<translation id="9115932142612197835">Tetapan ini tidak mengubah ketersediaan Google Translate atau Lens</translation>
 <translation id="9116366756388192417">Pilih subjek</translation>
 <translation id="9116799625073598554">Apl pengambilan nota</translation>
 <translation id="9117030152748022724">Urus apl anda</translation>

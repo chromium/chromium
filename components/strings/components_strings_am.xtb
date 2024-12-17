@@ -926,6 +926,7 @@
 <translation id="2628224721443278970">ወደ Microsoft OneDrive ይግቡ</translation>
 <translation id="2634124572758952069">የ<ph name="HOST_NAME" /> አገልጋይ አይፒ አድራሻ ሊገኝ አልቻለም።</translation>
 <translation id="2639739919103226564">ሁኔታ፦</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ጨርቅ (በግማሽ አንጸባራቂ)</translation>
 <translation id="264810637653812429">ምንም ተኳሃኝ መሣሪያዎች አልተገኙም።</translation>
 <translation id="2649204054376361687"><ph name="CITY" />፣ <ph name="COUNTRY" /></translation>
@@ -1398,6 +1399,7 @@
 <translation id="351522771072578657">በአሁኑ ጊዜ በምናሌ ላይ ነዎት</translation>
 <translation id="3517264445792388751">የፋይል ሥርዓቱ በአስተዳዳሪዎ ተሰናክሏል</translation>
 <translation id="3518941727116570328">በርካታ ነገሮችን መያዝ</translation>
+<translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> ይጠይቁ</translation>
 <translation id="3525130752944427905">10 x 14 ኢንች</translation>
 <translation id="3525435918300186947">የMIDI መሳሪያዎችን ይቀጣጠሩ እና እንደገና ፕሮግራም ያድርጉ?</translation>
 <translation id="3527181387426738155">ሙዚቃ እና ኦዲዮ</translation>
@@ -1952,6 +1954,7 @@
 <translation id="4451684391620232683">ለተጠቃሚ የሚቀርብ ጽሁፍ፦</translation>
 <translation id="4452328064229197696">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ፣ Google የይለፍ ቃል አስተዳዳሪ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>
 <translation id="4456937135469235202">የጀብዱ ጉዞ</translation>
+<translation id="4458013283022578512">ጥያቄ ያስወግዱ</translation>
 <translation id="4464826014807964867">ከድርጅትዎ መረጃ ያላቸው ድርጣቢያዎች</translation>
 <translation id="4466576951214254884">የተማሪ ብድሮች እና የኮሌጅ ፋይናንስ</translation>
 <translation id="4467821340016922962">ከሙሉ ማያ ገጽ ለመውጣት እና ውርዱን ለማየት |<ph name="ACCELERATOR" />|ን ይጫኑ</translation>

@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> қойынды қосылды.}other{<ph name="MANY_ADDED" /> қойынды қосылды.}}</translation>
 <translation id="5161254044473106830">Тақырып қою қажет</translation>
 <translation id="5339733443032484186">Соңғы қойындыңыз</translation>
+<translation id="5380159289133845234">Қайталанатын қойындыларды мұрағаттау</translation>
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Қойындылар топтары автоматты түрде сақталады.</translation>
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Сіз <ph name="GROUP_NAME" /> қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз.</translation>
+<translation id="6109251075362363230">Ең соңғы қолданылған көшірмені есепке алмағанда, барлық қайталанатын қойынды да мұрағатталады.</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6271513594716432922">Барлық әрекетсіз қойындыны жабу</translation>

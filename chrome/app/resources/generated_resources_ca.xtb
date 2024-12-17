@@ -497,7 +497,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1335929031622236846">Inscriu el dispositiu</translation>
 <translation id="133660899895084533">Llegir informació i dades de perifèrics Bluetooth</translation>
 <translation id="1336902454946927954">La clau de seguretat està bloquejada perquè la teva empremta digital no s'ha pogut reconèixer. Per desbloquejar-la, introdueix el PIN.</translation>
-<translation id="1337066099824654054">L'ajuda contextual està desactivada</translation>
 <translation id="1338631221631423366">S'està vinculant...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vol obrir aquesta aplicació.</translation>
 <translation id="1338950911836659113">S'està suprimint...</translation>
@@ -1164,7 +1163,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1802687198411089702">La pàgina no respon. Pots esperar que respongui o pots sortir-ne.</translation>
 <translation id="1803531841600994172">Idioma d'arribada de la traducció</translation>
 <translation id="1803545009660609783">Torna a entrenar</translation>
-<translation id="1804195280859010019">Veuràs informació o suggeriments més útils en funcions com el tauler lateral de la Cerca de Google</translation>
 <translation id="180441032496361123">Fes clic per activar <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">Una pestanya de fons està utilitzant el micròfon</translation>
 <translation id="1805822111539868586">Inspecciona les visualitzacions</translation>
@@ -3565,7 +3563,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="350397915809787283">Si no tens cap compte, selecciona la primera opció per crear-ne un.</translation>
 <translation id="3503995387997205657">Pots restaurar les aplicacions anteriors</translation>
 <translation id="3505100368357440862">Suggeriments de compra</translation>
-<translation id="3505602163050943406">En utilitzar algunes funcions, pot ser que enviïn a Google parts de pàgines obertes, pàgines recents relacionades i els seus URL</translation>
 <translation id="3507132249039706973">La protecció estàndard està activada</translation>
 <translation id="3507888235492474624">Torna a cercar dispositius Bluetooth</translation>
 <translation id="3508492320654304609">Les dades d'inici de sessió no s'han pogut suprimir</translation>
@@ -3917,7 +3914,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vols obrir <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Els llocs web poden demanar permís per cercar i utilitzar les impressores a què el dispositiu pot accedir</translation>
-<translation id="3740396996321407665">Obtén ajuda contextual d'algunes funcions</translation>
 <translation id="3740945083753997630">Redueix la mida de la pantalla i del text</translation>
 <translation id="3741056951918180319">Sempre pots fer clic a l'extensió per utilitzar-la en qualsevol lloc web</translation>
 <translation id="374124333420280219">Detalls de l'aplicació:</translation>
@@ -4314,6 +4310,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3993887353483242788">Sincronitza <ph name="DEVICE_TYPE" /> perquè les teves preferències estiguin preparades en qualsevol dispositiu quan iniciïs la sessió amb el teu Compte de Google. Les preferències inclouen, entre altres coses, les aplicacions, la configuració, les contrasenyes de Wi-Fi, els idiomes, el fons de pantalla i les tecles de drecera.</translation>
 <translation id="3994318741694670028">Malauradament, l'ordinador està configurat amb un identificador de maquinari que té un format incorrecte. Això impedeix a ChromeOS Flex actualitzar-se amb les darreres correccions de seguretat i <ph name="BEGIN_BOLD" />pot ser que l'ordinador sigui vulnerable a atacs maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloqueja el telèfon i acosta'l per desbloquejar <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Localitza botons a la tauleta</translation>
 <translation id="3994708120330953242">Algunes de les teves contrasenyes s'han trobat en una violació de les dades. Et recomanem que les canviïs ara mateix per protegir els teus comptes.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -7282,7 +7279,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6173623053897475761">Torna a escriure el PIN</translation>
 <translation id="6175314957787328458">GUID de domini de Microsoft</translation>
 <translation id="6175910054050815932">Obtén un enllaç</translation>
-<translation id="6176701216248282552">L'ajuda contextual està activada. Aquestes funcions poden enviar pàgines obertes a Google.</translation>
 <translation id="6177412385419165772">S'està suprimint...</translation>
 <translation id="6177478397823976397">No s'ha trobat cap dispositiu. Obre un article del Centre d'ajuda en una pestanya nova.</translation>
 <translation id="6178664161104547336">Seleccioneu un certificat</translation>
@@ -9182,7 +9178,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="756445078718366910">Obre una finestra del navegador</translation>
 <translation id="7564847347806291057">Finalitza el procés</translation>
 <translation id="756503097602602175">A <ph name="LINK_BEGIN" />Configuració<ph name="LINK_END" /> pots gestionar els Comptes de Google en què tens la sessió iniciada. És possible que els permisos que hagis concedit a llocs web i aplicacions s'apliquin a tots els comptes. Si no vols que els llocs web o les aplicacions accedeixin a la informació del teu compte, pots iniciar la sessió al <ph name="DEVICE_TYPE" /> com a convidat o navegar pel web en una <ph name="LINK_2_BEGIN" />finestra d'incògnit<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Algunes funcions poden utilitzar el contingut de les pàgines obertes i de les pàgines recents relacionades per proporcionar informació o suggeriments més útils</translation>
 <translation id="7566118625369982896">Gestiona els enllaços d'aplicacions de Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Crea una combinació de tecles</translation>
@@ -10930,7 +10925,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8781980678064919987">Apaga quan es tanqui la tapa</translation>
 <translation id="8782565991310229362">S'ha cancel·lat l'inici de l'aplicació de quiosc.</translation>
 <translation id="8783834180813871000">Escriu el codi de vinculació per Bluetooth i, a continuació, prem Retorn.</translation>
-<translation id="8783955532752528811">Ajuda contextual a les funcions</translation>
 <translation id="8784626084144195648">Mitjana descartada</translation>
 <translation id="8785622406424941542">Llapis òptic</translation>
 <translation id="8786824282808281903">Quan el teu fill vegi aquesta icona, podrà utilitzar una empremta digital per identificar-se o aprovar compres.</translation>
@@ -11422,7 +11416,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9113529408970052045">La funció Ajuda'm a escriure es pot obrir automàticament quan un quadre de text d'un lloc web es pot emplenar amb contingut breu</translation>
 <translation id="9114663181201435112">Inicia la sessió fàcilment</translation>
 <translation id="9115675100829699941">&amp;Adreces d'interès</translation>
-<translation id="9115932142612197835">Aquesta opció de configuració no canvia la disponibilitat del Traductor de Google ni de Lens</translation>
 <translation id="9116366756388192417">Tria un tema</translation>
 <translation id="9116799625073598554">Aplicació per prendre notes</translation>
 <translation id="9117030152748022724">Gestiona les teves aplicacions</translation>

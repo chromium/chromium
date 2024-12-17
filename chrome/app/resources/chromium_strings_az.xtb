@@ -70,6 +70,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="1896836275755235458">Chromium arxa fon fəaliyyətini, habelə rahat sürüşdürmə və video çərçivə səviyyəsi kimi vizual effektləri məhdudlaşdırmaqla batareya enerjisinə qənaət edir. <ph name="BEGIN_LINK" />Enerjiyə Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Güncəlləyici Xidməti</translation>
 <translation id="1911763535808217981">Bunu deaktiv etməklə Chromium'a giriş etmədən Gmail kimi Google saytlarına daxil ola bilərsiniz</translation>
+<translation id="1916451563296275579">Bu tətbiq datasını Chromium-dan silin</translation>
 <translation id="1929939181775079593">Chromium cavab vermir. İndi yenidən başladılsın?</translation>
 <translation id="1933341829955786215">Təşkilatınız, <ph name="MANAGER" />, Chromium-a daxil olmağınızı tələb edir</translation>
 <translation id="193439633299369377">Güncəlləşmənin tətbiq olunması üçün ChromiumOS yenidən başladılmalıdır.</translation>
@@ -405,6 +406,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="6455857529632101747">Chromium profillərinə xoş gəlmisiniz</translation>
 <translation id="6466344609055215035">Hesabı Chromium-dan silin</translation>
 <translation id="6475912303565314141">Həmçinin, Chromium açılanda hansı səhifənin göstərildiyini idarə edir.</translation>
+<translation id="648062525172759633">Bu səhifələr Chromium developerləri tərəfindən istifadə üçün nəzərdə tutulub və aktiv şəkildə saxlanıla və ya sınaqdan keçirilə bilməz. Aktivləşdirmək üçün <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> ünvanına keçin, sazlama səhifələrini aktivləşdirmək üçün düyməni basın və sonra yenidən bu səhifəyə keçin.</translation>
 <translation id="648319183876919572">Qabaqcıl Güvənli Baxış təhlükəli veb-sayt və endirmələrə qarşı daha yaxşı qoruyur</translation>
 <translation id="6510925080656968729">Chromium'u sistemdən silin</translation>
 <translation id="651535675648445253">Qısayollar Chromium-da açılır</translation>

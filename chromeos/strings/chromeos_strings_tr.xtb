@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3340978935015468852">ayarlar</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Özet ve ad oluşturma modelini indir</translation>
 <translation id="3359218928534347896">mikrofonun sesini aç/kapat</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">suşi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Kısayol kullanılamıyor. <ph name="KEY" /> içermeyen yeni bir kısayola basın.</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
+<translation id="5875913454160982848">Metne dönüştürme modelini indir</translation>
 <translation id="5876385649737594562">Seçenekleri belirlemek için etkinleştirin</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> dosyasını duraklat</translation>
 <translation id="588258955323874662">Tam ekran</translation>
@@ -1588,6 +1590,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8503836310948963452">Sadece birkaç dakika kaldı…</translation>
 <translation id="8505011850330200833">Gemini modelinin transkriptleri işlemesi ve özet oluşturması için 2 GB depolama alanı gerekir</translation>
 <translation id="8508640263392900755">APN ayrıntıları</translation>
+<translation id="8509574872955173831">Özet ve ad oluşturma hakkında daha fazla bilgi</translation>
 <translation id="8522687886059337719">Artık yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />duvar kağıtları<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ve <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran koruyucu<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> özelliklerine erişebilirsiniz</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">çay bahçesi</translation>

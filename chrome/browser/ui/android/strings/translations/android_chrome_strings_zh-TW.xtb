@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的<ph name="FIELDS_STRING" />提供給這個網站。</translation>
 <translation id="3710560693796335511">協同合作</translation>
 <translation id="3714981814255182093">開啟搜尋列</translation>
-<translation id="3716182511346448902">這個網頁使用了過多記憶體，因此遭到 Chrome 暫停。</translation>
 <translation id="3718765429352682176">你可以查看透過其他應用程式在 Chrome 中開啟連結的歷史記錄。</translation>
 <translation id="3720422586473670527">不用了，謝謝</translation>
 <translation id="3721119614952978349">你與 Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923">還剩 <ph name="FILES" /> 個檔案</translation>
 <translation id="8190358571722158785">還剩 1 天</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">繼續</translation>
 <translation id="820568752112382238">最常造訪的網站</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUMBER_OF_OTHER_MEMBERS" /> 人的分頁群組}other{加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUMBER_OF_OTHER_MEMBERS" /> 人的分頁群組}}</translation>
 <translation id="8209050860603202033">開啟圖片</translation>

@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Desativar o tema escuro</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1808803439260407870">Arte clássica</translation>
+<translation id="181434555916624618">Por enquanto, os resultados com pessoas não vão aparecer. Tente algo diferente.</translation>
 <translation id="1815850098929213707">A tecla selecionada é <ph name="KEYS" />. Toque no botão para editar o controle.</translation>
 <translation id="1823120442877418684">Itens</translation>
 <translation id="1827738518074806965">Galeria de arte</translation>
@@ -1295,6 +1296,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Pesquisar atalhos</translation>
 <translation id="7138614237884624401">Texto simplificado</translation>
+<translation id="7138668887584231801">Não há palavras suficientes para resumir</translation>
 <translation id="7141470099673912333">Transferência de conteúdo</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>

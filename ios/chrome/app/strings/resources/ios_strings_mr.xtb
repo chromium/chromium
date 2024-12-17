@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">सिंक सुरू करायचे का?</translation>
 <translation id="1253032109800629289">"किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशन मिळवा" लपवा</translation>
 <translation id="1258491128795710625">नवीन काय आहे</translation>
+<translation id="1259210743048744967"><ph name="USER_EMAIL" /> मधून साइन आउट केल्यानंतर तुमचा सद्य ब्राउझिंग डेटा लगेच उपलब्ध होईल. तो या खात्यामध्ये सेव्ह केला जाणार नाही.</translation>
 <translation id="1262724000444746916">बुकमार्क मध्ये जोडा हे लपवा</translation>
 <translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1263433075299269530">तुमचा शेवटी उघडलेला टॅब</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">टॅब काढून टाकून गट हटवायचा आहे का?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> निवडले</translation>
 <translation id="1709916727352927457">पासकी हटवा</translation>
+<translation id="1712341189152602203">सद्य ब्राउझिंग डेटा हा <ph name="USER_EMAIL" /> सह लिंक केला जाईल. हा डेटा तुमच्या संस्थेद्वारे पाहण्यायोग्य असू शकतो.</translation>
 <translation id="1713777106376424209">द्वारे डिलिव्हर केले</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> वर तुमचा विश्वास असल्यास, साइन इन करण्यासाठी तुम्ही सेव्ह केलेला पासवर्ड वापरू शकता.</translation>
 <translation id="1728549374069268714">पेस्ट करा आणि जा</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">तुम्ही जिथे पासवर्ड सेव्ह केले आहेत त्या साइटवर, साइन-इन पासवर्ड फील्डवर टॅप करा.</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">या डिव्हाइसवरील पासवर्ड, इतिहास आणि इतर बऱ्याच सद्य ब्राउझिंग डेटाचे काय करावे हे निवडा.</translation>
 <translation id="1881621406744213161">कुटुंब सदस्यांना आमंत्रित करा</translation>
 <translation id="188237709236611317">स्मार्ट सॉर्ट मेनू बार</translation>
 <translation id="1883255238294161206">सूची कोलॅप्स</translation>
@@ -512,6 +515,7 @@
 <translation id="3324193307694657476">पत्ता 2</translation>
 <translation id="3328801116991980348">साइट माहिती</translation>
 <translation id="333229797575847124">हे वैशिष्ट्य कसे सुरू करावे</translation>
+<translation id="3333566504534692948">नाही, तो तुमच्या कार्य स्पेसमध्ये हलवा</translation>
 <translation id="3344485292736684439">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
 <translation id="334690320928261823">अलीकडील टॅब</translation>
 <translation id="3348387552617855658">हे कार्ड तुम्हाला तुमच्या पॅकेजचा माग ठेवण्यास आणि तुम्हाला महत्त्वाची डिलिव्हरी अपडेट देण्यात मदत करते.</translation>

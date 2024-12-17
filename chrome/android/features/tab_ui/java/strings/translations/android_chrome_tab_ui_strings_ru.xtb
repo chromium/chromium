@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Добавлена <ph name="ONE_ADDED" /> вкладка.}one{Добавлена <ph name="MANY_ADDED" /> вкладка.}few{Добавлены <ph name="MANY_ADDED" /> вкладки.}many{Добавлено <ph name="MANY_ADDED" /> вкладок.}other{Добавлено <ph name="MANY_ADDED" /> вкладки.}}</translation>
 <translation id="5161254044473106830">Введите название</translation>
 <translation id="5339733443032484186">Ваша последняя вкладка</translation>
+<translation id="5380159289133845234">Архивировать одинаковые вкладки</translation>
 <translation id="5400836586163650660">Серый</translation>
 <translation id="5490235265819901748">Группа вкладок развернута</translation>
 <translation id="5494920125229734069">Выделить все</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Группы вкладок сохраняются автоматически.</translation>
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Вы сразу потеряете доступ к группе вкладок "<ph name="GROUP_NAME" />".</translation>
+<translation id="6109251075362363230">Все одинаковые вкладки также будут добавляться в архив, за исключением недавно открытой</translation>
 <translation id="6193448654517602979">Выбрать вкладки</translation>
 <translation id="6228793724645064692">(оценка магазина)</translation>
 <translation id="6271513594716432922">Закрыть все неактивные вкладки</translation>

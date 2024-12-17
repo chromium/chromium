@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> આ સાઇટ સાથે તમારું <ph name="FIELDS_STRING" /> શેર કરશે.</translation>
 <translation id="3710560693796335511">સહયોગ</translation>
 <translation id="3714981814255182093">શોધો બાર ખોલો</translation>
-<translation id="3716182511346448902">આ પેજ ઘણી વધુ મેમરીનો ઉપયોગ કરે છે, તેથી Chromeએ તેને થોભાવ્યું છે.</translation>
 <translation id="3718765429352682176">તમે Chromeમાં લિંક ખોલતી અન્ય ઍપનો ઇતિહાસ જોઈ શકો છો.</translation>
 <translation id="3720422586473670527">ના, આભાર</translation>
 <translation id="3721119614952978349">તમે અને Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ફાઇલ બાકી છે</translation>
 <translation id="8190358571722158785">1 દિવસ બાકી</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="820568752112382238">સૌથી વધુ મુલાકાત લેવાયેલી સાઇટ</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> અને અન્ય <ph name="NUMBER_OF_OTHER_MEMBERS" /> વ્યક્તિ સાથે ટૅબના ગ્રૂપમાં જોડાઓ}one{<ph name="OWNER_FIRST_NAME" /> અને અન્ય <ph name="NUMBER_OF_OTHER_MEMBERS" /> વ્યક્તિ સાથે ટૅબના ગ્રૂપમાં જોડાઓ}other{<ph name="OWNER_FIRST_NAME" /> અને અન્ય <ph name="NUMBER_OF_OTHER_MEMBERS" /> લોકો સાથે ટૅબના ગ્રૂપમાં જોડાઓ}}</translation>
 <translation id="8209050860603202033">છબી ખોલો</translation>

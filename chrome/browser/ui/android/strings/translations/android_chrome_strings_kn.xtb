@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ <ph name="FIELDS_STRING" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="3710560693796335511">ಕೊಲಬೊರೇಶನ್</translation>
 <translation id="3714981814255182093">ಹುಡುಕು ಪಟ್ಟಿಯನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="3716182511346448902">ಈ ಪುಟವು ಅತಿ ಹೆಚ್ಚು ಮೆಮೊರಿಯನ್ನು ಬಳಸಿಕೊಳ್ಳುತ್ತದೆ, ಆದ್ದರಿಂದ Chrome ಇದನ್ನು ವಿರಾಮಗೊಳಿಸಿದೆ.</translation>
 <translation id="3718765429352682176">Chrome ನಲ್ಲಿ ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ ತೆರೆಯಲಾದ ಲಿಂಕ್‌ಗಳ ಇತಿಹಾಸವನ್ನು ನೀವು ನೋಡಲು ಸಾಧ್ಯವಾಗಬಹುದು.</translation>
 <translation id="3720422586473670527">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
 <translation id="3721119614952978349">ನೀವು ಮತ್ತು Google</translation>
@@ -1628,7 +1627,6 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಫೈಲ್‌ಗಳು</translation>
 <translation id="8190358571722158785">1 ದಿನ ಉಳಿದಿದೆ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="820568752112382238">ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು <ph name="NUMBER_OF_OTHER_MEMBERS" /> ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಸೇರಿಕೊಳ್ಳಿ}one{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು <ph name="NUMBER_OF_OTHER_MEMBERS" /> ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}other{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು <ph name="NUMBER_OF_OTHER_MEMBERS" /> ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}}</translation>
 <translation id="8209050860603202033">ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>

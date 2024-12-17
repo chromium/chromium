@@ -142,6 +142,7 @@
 Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Copier l'adr&amp;esse du lien</translation>
 <translation id="1085064499066015002">Toujours sur tous les sites</translation>
+<translation id="1085558727130096638">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUM_OTHER_MEMBERS" /> autre personne</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> non sélectionné. <ph name="INDEX" /> sur <ph name="COUNT" />. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour annuler la sélection.</translation>
 <translation id="1085697365578766383">Impossible de démarrer la machine virtuelle. Veuillez réessayer.</translation>
 <translation id="1090126737595388931">Aucune application active en arrière plan</translation>
@@ -497,7 +498,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1335929031622236846">Enregistrer votre appareil</translation>
 <translation id="133660899895084533">Lire les infos provenant des périphériques Bluetooth et leurs données</translation>
 <translation id="1336902454946927954">Empreinte digitale non reconnue. Votre clé de sécurité a été verrouillée. Pour la déverrouiller, saisissez votre code.</translation>
-<translation id="1337066099824654054">L'aide contextuelle est désactivée</translation>
 <translation id="1338631221631423366">Association…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> souhaite ouvrir cette application.</translation>
 <translation id="1338950911836659113">Suppression en cours...</translation>
@@ -1164,7 +1164,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1802687198411089702">La page ne répond plus. Vous pouvez attendre qu'elle soit de nouveau accessible ou la fermer.</translation>
 <translation id="1803531841600994172">Langue cible</translation>
 <translation id="1803545009660609783">Reprogrammer</translation>
-<translation id="1804195280859010019">Vous verrez plus d'informations ou de suggestions utiles dans des fonctionnalités comme le panneau latéral de la recherche Google</translation>
 <translation id="180441032496361123">Cliquer pour activer <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">Votre micro est utilisé par un onglet d'arrière-plan</translation>
 <translation id="1805822111539868586">Examiner les vues</translation>
@@ -2131,6 +2130,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2462752602710430187">L'imprimante <ph name="PRINTER_NAME" /> a bien été ajoutée.</translation>
 <translation id="2464079411014186876">Glace</translation>
 <translation id="2467755475704469005">Aucun appareil détecté. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="2467933879189426525">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUM_OTHER_MEMBERS" /> autres personnes</translation>
 <translation id="2468178265280335214">Accélération du défilement avec le pavé tactile</translation>
 <translation id="2468205691404969808">Utiliser des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2275,6 +2275,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="256481480019204378">ID de compte Google</translation>
 <translation id="256517381556987641">La synchronisation de fichiers a trouvé <ph name="ITEMS_FOUND" /> fichiers pour le moment et vérifie toujours l'espace de stockage. Essayez d'activer de nouveau la synchronisation de fichiers dans quelques minutes.</translation>
 <translation id="2565214867520763227">Activer le lecteur d'écran</translation>
+<translation id="2566146433999774844">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUM_OTHER_MEMBERS" /> autres personnes</translation>
 <translation id="2568694057933302218">Lorsque vous êtes en navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des sites. Votre activité de navigation n'est pas utilisée pour personnaliser les annonces, par exemple. Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
 <translation id="2568774940984945469">Conteneur de barres d'infos</translation>
 <translation id="2569972178052279830">Nom du marchand</translation>
@@ -2282,6 +2283,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2571655996835834626">Modifier les paramètres qui contrôlent l'accès des sites Web à des fonctionnalités telles que les cookies, le code JavaScript, les plug-ins, la géolocalisation, le micro, la caméra, etc.</translation>
 <translation id="257175846174451436">Groupe d'onglets suggéré</translation>
 <translation id="2572032849266859634">L'accès en lecture seule à "<ph name="VOLUME_NAME" />" a été accordé.</translation>
+<translation id="2573147659521059501"><ph name="NUM" /> onglets</translation>
 <translation id="2573276323521243649">Retour depuis la page de sélection de l'avatar</translation>
 <translation id="2573417407488272418">Avant la mise à niveau, sauvegardez vos applis et fichiers dans Fichiers &gt; Mes fichiers.</translation>
 <translation id="2573831315551295105">Associer un contacteur à "<ph name="ACTION" />"</translation>
@@ -2859,6 +2861,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2981113813906970160">Afficher le grand curseur</translation>
 <translation id="2983102365694924129">D'après votre activité sur un site. Ce paramètre est désactivé.</translation>
 <translation id="2983373101216420412">Niveau de batterie de l'étui (<ph name="PERCENTAGE" /> %).</translation>
+<translation id="2984384421572259426">Supprimer les onglets inutilisés</translation>
 <translation id="2984727013951557074">Le fichier est toujours en cours de synchronisation avec Drive.</translation>
 <translation id="2985348301114641460">Envoyer une requête à votre administrateur pour installer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> a désinstallé une appli}one{<ph name="APP_NAME" /> a désinstallé # appli}other{<ph name="APP_NAME" /> a désinstallé # applis}}</translation>
@@ -2953,6 +2956,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3038628620670416486">Localisez les boutons de votre souris</translation>
 <translation id="3039491566278747710">Échec de l'installation de la règle hors connexion sur l'appareil.</translation>
 <translation id="3040982432432547149">Aidez-nous à améliorer Steam pour les Chromebooks</translation>
+<translation id="304169924727249890">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3043016484125065343">Connectez-vous pour voir vos favoris</translation>
 <translation id="3043126717220766543">Effacer les suggestions de groupes</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -3291,6 +3295,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3308852433423051161">Chargement de l'Assistant Google…</translation>
 <translation id="3309124184713871355">Structures</translation>
 <translation id="3309330461362844500">ID du profil du certificat</translation>
+<translation id="3310379801837527592">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUM_OTHER_MEMBERS" /> autre personne</translation>
 <translation id="331080746368555063">Les sites privés peuvent inclure l'intranet de votre entreprise, par exemple</translation>
 <translation id="3311445899360743395">Les données associées à cette application pourront être supprimées de cet appareil.</translation>
 <translation id="3312470654018965389">Configuration du conteneur Linux…</translation>
@@ -3559,7 +3564,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="350397915809787283">Si vous n'avez pas de compte, sélectionnez la première option pour en créer un.</translation>
 <translation id="3503995387997205657">Vous pouvez restaurer vos précédentes applis</translation>
 <translation id="3505100368357440862">Suggestions d'achat</translation>
-<translation id="3505602163050943406">Lorsque vous utilisez certaines fonctionnalités, elles peuvent envoyer à Google du contenu de pages ouvertes, des pages récentes associées et leurs URL.</translation>
 <translation id="3507132249039706973">La protection standard est activée</translation>
 <translation id="3507888235492474624">Relancer la recherche d'appareils Bluetooth</translation>
 <translation id="3508492320654304609">Impossible de supprimer vos données de connexion</translation>
@@ -3911,7 +3915,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3738924763801731196"><ph name="OID" /> :</translation>
 <translation id="3739254215541673094">Ouvrir <ph name="APPLICATION" /> ?</translation>
 <translation id="3739349485749941749">Les sites peuvent demander à rechercher et à utiliser les imprimantes accessibles à votre appareil</translation>
-<translation id="3740396996321407665">Afficher l'aide contextuelle de certaines fonctionnalités</translation>
 <translation id="3740945083753997630">Réduire la taille d'affichage et du texte</translation>
 <translation id="3741056951918180319">Vous pouvez toujours cliquer sur l'extension pour l'utiliser sur n'importe quel site</translation>
 <translation id="374124333420280219">Informations sur l'appli :</translation>
@@ -4249,6 +4252,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3958088479270651626">Importer les favoris et les paramètres</translation>
 <translation id="3958110062351175311">Autorisée à afficher les demandes dans la barre d'outils</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> est déjà installé</translation>
+<translation id="3959969108528118741">Propriétaire</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Plus d'actions pour <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> a quitté le groupe</translation>
@@ -4308,6 +4312,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3993887353483242788">Synchronisez votre <ph name="DEVICE_TYPE" /> pour que vos préférences soient appliquées sur n'importe quel appareil lorsque vous vous connectez avec votre compte Google. Les préférences regroupent les applis, les paramètres, les mots de passe Wi-Fi, les langues, le fond d'écran, les raccourcis clavier, etc.</translation>
 <translation id="3994318741694670028">Malheureusement, votre ordinateur est configuré avec un ID matériel incorrect. Cela empêche l'installation des derniers correctifs de sécurité sur ChromeOS Flex et rend votre ordinateur <ph name="BEGIN_BOLD" />potentiellement vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Déverrouillez votre téléphone et rapprochez-le de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
+<translation id="3994522032746736727">Se connecter en tant que <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Localisez les boutons de votre tablette</translation>
 <translation id="3994708120330953242">Certains de vos mots de passe ont été exposés lors d'une violation de données. Changez-les maintenant pour protéger vos comptes.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -4415,6 +4420,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4072805772816336153">Réessayez plus tard</translation>
 <translation id="4074164314564067597">clavier</translation>
 <translation id="407520071244661467">Mise à l'échelle</translation>
+<translation id="4077623680826964850">Expiration du délai d'attente lors du démarrage ou de la reconnexion à la VM.</translation>
 <translation id="4077917118009885966">Annonces bloquées sur ce site</translation>
 <translation id="4078738236287221428">Systématique</translation>
 <translation id="4078903002989614318">Options de tri et de liste</translation>
@@ -4697,6 +4703,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="428963538941819373">Ces sites peuvent utiliser les informations qu'ils ont enregistrées vous concernant lorsque vous parcourez <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Sélectionner un code</translation>
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
+<translation id="4290826901752066702"><ph name="NUM" /> membre</translation>
 <translation id="4290898381118933198">Balayer l'écran pour changer de page</translation>
 <translation id="4291265871880246274">Boîte de dialogue de connexion</translation>
 <translation id="429312253194641664">Un site est en train de lire un contenu multimédia</translation>
@@ -4901,6 +4908,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4437879751057074691">Proposer d'enregistrer les mots de passe et les clés d'accès</translation>
 <translation id="4437947179446780764">Ajouter un fournisseur de services DNS personnalisé</translation>
 <translation id="4438043733494739848">Transparent</translation>
+<translation id="4439157218765614426">Interdit par le règlement.</translation>
 <translation id="4441124369922430666">Voulez-vous démarrer automatiquement cette application à la mise sous tension de l'ordinateur ?</translation>
 <translation id="4441147046941420429">Pour continuer, retirez la clé de sécurité de votre appareil, puis réinsérez-la et appuyez dessus</translation>
 <translation id="444134486829715816">Développer...</translation>
@@ -5357,6 +5365,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Renommer le réseau mobile de l'eSIM</translation>
+<translation id="4779855924282373274"><ph name="URL" /> • 1 doublon</translation>
 <translation id="4780321648949301421">Enregistrer la page sous...</translation>
 <translation id="4780558987886269159">Pour le travail</translation>
 <translation id="4785719467058219317">La clé de sécurité n'est pas enregistrée auprès de ce site Web</translation>
@@ -5435,6 +5444,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4833683849865011483">1 imprimante trouvée sur le serveur d'impression</translation>
 <translation id="4835598628985424375">Faire la moue en pinçant les lèvres</translation>
 <translation id="4835677468087803981">Masquer le code</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> doublons</translation>
 <translation id="4836504898754963407">Gérer les empreintes digitales</translation>
 <translation id="4837128290434901661">Revenir à la recherche Google ?</translation>
 <translation id="4837926214103741331">Vous n'êtes pas autorisé à utiliser cet appareil. Pour obtenir l'autorisation de vous y connecter, veuillez contacter son propriétaire.</translation>
@@ -5773,6 +5783,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5079950360618752063">Utiliser le mot de passe suggéré</translation>
 <translation id="508059534790499809">Actualiser un ticket Kerberos</translation>
 <translation id="5081124414979006563">&amp;Ouvrir le profil invité</translation>
+<translation id="5081974595802103358">Échec de la copie du lien</translation>
 <translation id="508209203623347828">Si cette carte est désactivée, vos cartes Microsoft telles que SharePoint et Calendrier Outlook le seront aussi.</translation>
 <translation id="5083035541015925118">Ctrl+Alt+Flèche vers le haut</translation>
 <translation id="5084328598860513926">La procédure de configuration a été interrompue. Veuillez réessayer, ou contactez le propriétaire ou l'administrateur de l'appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
@@ -6059,6 +6070,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="528208740344463258">Pour télécharger et utiliser des applications Android, vous devez d'abord installer cette mise à jour obligatoire. Vous ne pouvez pas utiliser votre <ph name="DEVICE_TYPE" /> pendant la mise à jour. Une fois l'installation terminée, votre <ph name="DEVICE_TYPE" /> redémarrera.</translation>
 <translation id="5283677936944177147">Petit problème… Échec de l'identification du modèle ou du numéro de série de l'appareil.</translation>
 <translation id="5284445933715251131">Continuer le téléchargement</translation>
+<translation id="5285484405698525101">Aucun onglet inutilisé pour le moment</translation>
 <translation id="5285635972691565180">Écran <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Recherche…</translation>
 <translation id="5287425679749926365">Vos comptes</translation>
@@ -6332,6 +6344,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5482417738572414119">Connectez-vous pour permettre à Chrome de vous suggérer des groupes d'onglets et d'organiser vos onglets</translation>
 <translation id="5483005706243021437">Continuer avec ce profil</translation>
+<translation id="5483112456833117221">{NUM_TABS,plural, =0{Aucun onglet inutilisé}=1{Examiner 1 onglet inutilisé}one{Examiner # onglet inutilisé}other{Examiner # onglets inutilisés}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}one{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jour. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}other{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jours. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ajouter l'application</translation>
 <translation id="5485435764083510385">Langue préférée pour les sous-titres</translation>
@@ -6617,6 +6630,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5691581861107245578">Obtenez des suggestions d'emoji en fonction de ce que vous écrivez</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5693255400847650006">Micro utilisé</translation>
+<translation id="5695046252726616755">Appuyez sur Entrée ou Espace pour plus d'options.</translation>
 <translation id="5695184138696833495">ADB pour les applications Android sous Linux</translation>
 <translation id="5696143504434933566">Signaler un abus lié à l'extension <ph name="EXTENSION_NAME" /></translation>
 <translation id="5696679855467848181">Fichier PPD en cours d'utilisation : <ph name="PPD_NAME" /></translation>
@@ -7013,6 +7027,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5982578203375898585">Afficher les téléchargements une fois qu'ils sont terminés</translation>
 <translation id="5983716913605894570">Génération...</translation>
 <translation id="5984222099446776634">Consultations récentes</translation>
+<translation id="5984334442529819751">Erreur lors de l'installation du contenu téléchargeable (un redémarrage est souvent nécessaire ; pour en savoir plus, accédez à Paramètres \&gt;\&gt;À propos de ChromeOS).</translation>
 <translation id="5985458664595100876">Le format de l'URL n'est pas valide. Les formats acceptés sont \\server\share et smb://server/share.</translation>
 <translation id="5985556342298151179">Appli Chrome installée par l'administrateur de votre appareil.</translation>
 <translation id="598810097218913399">Supprimer l'attribution</translation>
@@ -7268,7 +7283,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6173623053897475761">Saisir à nouveau votre code</translation>
 <translation id="6175314957787328458">GUID de domaine Microsoft</translation>
 <translation id="6175910054050815932">Obtenir un lien</translation>
-<translation id="6176701216248282552">L'aide contextuelle est activée. Ces fonctionnalités peuvent envoyer les pages ouvertes à Google.</translation>
 <translation id="6177412385419165772">Suppression…</translation>
 <translation id="6177478397823976397">Aucun appareil détecté. Ouvrir un article du centre d'aide dans un nouvel onglet.</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
@@ -7854,6 +7868,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6609478180749378879">Les données de connexion seront stockées sur l'appareil lorsque vous quitterez le mode navigation privée. Vous pourrez vous reconnecter à ce site Web avec votre appareil plus tard.</translation>
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="6610064275805055636">Gérer les applications Web isolées</translation>
+<translation id="6611432349566876829"><ph name="NUM" /> onglet</translation>
 <translation id="6611972847767394631">Retrouvez vos onglets ici</translation>
 <translation id="661266467055912436">Renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6613267708691765962">Recherche de logiciels malveillants…</translation>
@@ -8565,6 +8580,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7118268675952955085">capture d'écran</translation>
 <translation id="711840821796638741">Afficher les favoris gérés</translation>
 <translation id="711985611146095797">Cette page vous permet de gérer les comptes Google auxquels vous êtes connecté. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="71200494435060621">Rejoindre en tant que <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="7120762240626567834">Le trafic du navigateur Chrome et d'Android sera bloqué à moins qu'un VPN ne soit connecté</translation>
 <translation id="7120904433567247946">Ce favori n'est enregistré que sur cet appareil. Si vous l'enregistrez dans <ph name="ACCOUNT_FOLDER" />, ce favori sera également enregistré dans votre compte.</translation>
 <translation id="7121438501124788993">Mode développeur</translation>
@@ -9168,7 +9184,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="756445078718366910">Ouvrir une fenêtre du navigateur</translation>
 <translation id="7564847347806291057">Arrêter le processus</translation>
 <translation id="756503097602602175">Vous pouvez gérer les comptes Google auxquels vous êtes connecté dans les <ph name="LINK_BEGIN" />paramètres<ph name="LINK_END" />. Les autorisations que vous accordez aux sites Web et aux applis peuvent s'appliquer à tous ces comptes. Pour éviter que les sites ou les applis aient accès aux infos de votre compte, connectez-vous à votre <ph name="DEVICE_TYPE" /> en tant qu'invité ou utilisez une <ph name="LINK_2_BEGIN" />fenêtre de navigation privée<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Certaines fonctionnalités peuvent utiliser le contenu des pages ouvertes et des pages récentes associées pour fournir des informations ou des suggestions plus utiles</translation>
 <translation id="7566118625369982896">Gérer les liens des applications Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Créer une combinaison de touches</translation>
@@ -9248,6 +9263,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="762917478230183172">Sélectionnez une action pour chaque touche</translation>
 <translation id="7629206210984165492">Discret</translation>
 <translation id="7629827748548208700">Onglet : <ph name="TAB_NAME" /></translation>
+<translation id="7629858978065675960">Résultat inconnu.</translation>
 <translation id="7630426712700473382">Cet appareil étant géré par <ph name="MANAGER" />, vous devez vous connecter à chaque fois.</translation>
 <translation id="7631014249255418691">Les applications et fichiers Linux ont bien été sauvegardés</translation>
 <translation id="7631722872321401342">Aucune voix en <ph name="LANGUAGE" /> n'est disponible sur votre appareil. Vous pouvez installer des voix dans les paramètres.</translation>
@@ -9401,6 +9417,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7723388585204724670">Rétablir la version par défaut de Chrome</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7726391492136714301">Afficher les notifications et les applis de votre téléphone</translation>
+<translation id="7727898923446098954">Onglet masqué</translation>
 <translation id="7728465250249629478">Modifier la langue de l'appareil</translation>
 <translation id="7728570244950051353">Écran de verrouillage depuis le mode veille</translation>
 <translation id="7728668285692163452">Le changement de version sera appliqué ultérieurement</translation>
@@ -9793,6 +9810,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7992203134935383159">Synthèse vocale</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Priorité de traitement</translation>
+<translation id="7997828719430450286">Opération réussie.</translation>
 <translation id="7998701048266085837">URL</translation>
 <translation id="7999229196265990314">Les fichiers suivants ont été créés :
 
@@ -9961,6 +9979,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8105273883928376822">Connectez-vous pour continuer</translation>
 <translation id="8107015733319732394">Installation du Google Play Store sur votre <ph name="DEVICE_TYPE" />. Cette opération peut prendre quelques minutes.</translation>
 <translation id="810728361871746125">Résolution d'affichage</translation>
+<translation id="8108161424633979910"><ph name="NUM" /> membres</translation>
 <translation id="8109109153262930486">Avatar par défaut</translation>
 <translation id="8109991406044913868">Thème créé par l'IA</translation>
 <translation id="8110393529211831722">L'abonnement est installé sur cet appareil uniquement et n'est pas synchronisé avec les autres appareils de votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -10442,6 +10461,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="845702320058262034">Connexion impossible. Assurez-vous que le Bluetooth est activé sur votre téléphone.</translation>
 <translation id="8457251154056341970">Vous ne verrez plus de <ph name="MODULE_NAME" /> sur cette page</translation>
 <translation id="8457451314607652708">Importer les favoris</translation>
+<translation id="8458259704995116343">Échec du démarrage de la VM.</translation>
 <translation id="8458341576712814616">Raccourci</translation>
 <translation id="8458627787104127436">Tout ouvrir (<ph name="URL_COUNT" />) dans une nouvelle fenêtre</translation>
 <translation id="8459023460357294721">Ouvrir <ph name="FILE_NAME" /> quand même</translation>
@@ -10911,7 +10931,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8781980678064919987">Éteindre quand l'écran est rabattu</translation>
 <translation id="8782565991310229362">Annulation du lancement de l'application kiosque.</translation>
 <translation id="8783834180813871000">Saisissez le code d'association Bluetooth, puis appuyez sur Retour ou Entrée.</translation>
-<translation id="8783955532752528811">Aide contextuelle dans les fonctionnalités</translation>
 <translation id="8784626084144195648">Moyenne par intervalle</translation>
 <translation id="8785622406424941542">Stylet</translation>
 <translation id="8786824282808281903">Quand votre enfant voit cette icône, il peut utiliser l'empreinte pour s'identifier ou approuver des achats.</translation>
@@ -11102,12 +11121,14 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8918900204934259333">Installation de l'appli...</translation>
 <translation id="891931289445130855">Supprimer les données et autorisations</translation>
 <translation id="8920133120839850939">Sélectionnez l'onglet "Autres gestes", puis activez "Balayer pour passer d'une page à l'autre" pour passer à la page suivante ou précédente</translation>
+<translation id="8921369299636221117">Le service Concierge est indisponible.</translation>
 <translation id="8922348435910470639">Conflit d'agenda</translation>
 <translation id="8922624386829239660">Déplacer l'écran quand le pointeur touche les bords</translation>
 <translation id="8923880975836399332">Turquoise foncé</translation>
 <translation id="8925124370124776087">La barre de titre est désormais masquée</translation>
 <translation id="8925458182817574960">&amp;Paramètres</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
+<translation id="8926555406617248399">Onglets masqués</translation>
 <translation id="892706138619340876">Certains paramètres ont été réinitialisés</translation>
 <translation id="8927438609932588163">Autoriser les sites à enregistrer des données sur votre appareil</translation>
 <translation id="8929696694736010839">Session de navigation privée actuelle uniquement</translation>
@@ -11401,7 +11422,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9113529408970052045">M'aider à écrire peut s'ouvrir automatiquement quand une zone de texte sur un site peut être renseignée avec un contenu court</translation>
 <translation id="9114663181201435112">Connectez-vous en toute simplicité</translation>
 <translation id="9115675100829699941">&amp;Favoris</translation>
-<translation id="9115932142612197835">Ce paramètre ne modifie pas la disponibilité de Google Traduction ou Lens</translation>
 <translation id="9116366756388192417">Choisir un thème</translation>
 <translation id="9116799625073598554">Application de prise de notes</translation>
 <translation id="9117030152748022724">Gérer vos applications</translation>

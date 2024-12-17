@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Odpri vse</translation>
 <translation id="1408847409015257906">Dotaknite se »Privacy &amp; Security« (Zasebnost in varnost).</translation>
 <translation id="1411386976162024013">Vizualno iskanje z Googlom Lens</translation>
+<translation id="1417474386970818917">Odjava in izbris</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1436671784520050284">Nadaljuj nastavitev</translation>
@@ -1010,6 +1011,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5628388627414062173">{count,plural, =1{{count} stran na bralnem seznamu}one{{count} stran na bralnem seznamu}two{{count} strani na bralnem seznamu}few{{count} strani na bralnem seznamu}other{{count} strani na bralnem seznamu}}</translation>
 <translation id="5632485077360054581">Postopek</translation>
 <translation id="5633237939819267663">{count,plural, =1{Zaznamek je shranjen v »{title}«}one{{count} zaznamek je shranjen v »{title}«}two{{count} zaznamka sta shranjena v »{title}«}few{{count} zaznamki so shranjeni v »{title}«}other{{count} zaznamkov je shranjenih v »{title}«}}</translation>
+<translation id="564170563478022912">Se želite odjaviti? Neshranjeni podatki v računu bodo izbrisani.</translation>
 <translation id="5642707040609478753">Označi kot neprebrano</translation>
 <translation id="5646284034397250191">Oznaka je ustvarjena. Datum še ni določen.</translation>
 <translation id="5647096944343801045">Velika vstopna točka</translation>
@@ -1022,6 +1024,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5669335982068190158">Bili ste odjavljeni zaradi ponastavitve iPhona. Spodaj se dotaknite gumba za nadaljevanje, če se želite prijaviti.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Različica <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Želite preklopiti med računi? Neshranjeni podatki v računu bodo izbrisani.</translation>
 <translation id="5683499062697987550">Če želite v računu Google uporabljati in shranjevati gesla, potrdite, da ste to vi.</translation>
 <translation id="5684761169742812828">To geslo je bilo razkrito v podatkovni kršitvi v internetu. Če trenutno nimate časa, da bi ga spremenili, Google priporoča, da to opozorilo obdržite kot opomnik za pozneje.</translation>
 <translation id="5694848685995373177">Shranjeno v Drive za <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="6506996418997555004">Deljenje skupine zavihkov »<ph name="GROUP_NAME" />«</translation>
 <translation id="6507973708545996744">Prijavite se, da boste imeli bralni seznam v vseh napravah.</translation>
 <translation id="6518133107902771759">Preveri</translation>
+<translation id="6518861084553706202">Zavihki bodo zaprti, izbrisani podatki pa lahko vključujejo gesla, zgodovino brskanja, piškotke in drugo.</translation>
 <translation id="6523575793810663688">Postopek</translation>
 <translation id="6524082013156754186">Shrani v račun</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
@@ -1679,6 +1683,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8545276357312221485">Preverite nastavitve privzetega brskalnika</translation>
 <translation id="854938212724803178">Imate 1 ogroženo geslo. Popravite ga, če se želite zavarovati.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Opustili ste {count} opozorilo}one{Opustili ste {count} opozorilo}two{Opustili ste {count} opozorili}few{Opustili ste {count} opozorila}other{Opustili ste {count} opozoril}}</translation>
+<translation id="8558046478684552694">Zapiranje skupine.</translation>
 <translation id="8560253818350321773">Najprej prikaz pogosto uporabljenih elementov.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Nad tipkovnico je na voljo {count} možnost za geslo.}one{Nad tipkovnico je na voljo {count} možnost za geslo.}two{Nad tipkovnico sta na voljo {count} možnosti za geslo.}few{Nad tipkovnico so na voljo {count} možnosti za geslo.}other{Nad tipkovnico je na voljo {count} možnosti za geslo.}}</translation>
 <translation id="8564894539416715395">Nov zavihek s povezavami</translation>
@@ -1847,6 +1852,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9205189991633470489">Zaklepanje anonimnega načina</translation>
 <translation id="9206887540681440657">Hitrost</translation>
 <translation id="9223358826628549784">Poročilo o zrušitvi poslano.</translation>
+<translation id="926455622548529175">Preklopi in izbriši</translation>
 <translation id="929748059769569925">Označeno besedilo</translation>
 <translation id="932305336591073205">{count,plural, =1{Zapri zavihek}one{Zapri zavihke}two{Zapri zavihke}few{Zapri zavihke}other{Zapri zavihke}}</translation>
 <translation id="939472100615258482">Trenutna stran</translation>

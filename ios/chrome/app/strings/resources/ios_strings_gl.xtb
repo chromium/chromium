@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="1408847409015257906">Toca Privacidade e seguranza.</translation>
 <translation id="1411386976162024013">Busca visual de Lens</translation>
+<translation id="1417474386970818917">Pechar sesión e eliminar</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436671784520050284">Continuar coa configuración</translation>
@@ -1010,6 +1011,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5628388627414062173">{count,plural, =1{{count} páxina na túa lista de lectura}other{{count} páxinas na túa lista de lectura}}</translation>
 <translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="5633237939819267663">{count,plural, =1{Gardouse o marcador en {title}}other{Gardáronse {count} marcadores en {title}}}</translation>
+<translation id="564170563478022912">Queres pechar a sesión? Eliminaranse os datos da conta que non se gardasen.</translation>
 <translation id="5642707040609478753">Marcar como sen ler</translation>
 <translation id="5646284034397250191">Etiqueta creada. Data pendente</translation>
 <translation id="5647096944343801045">Punto de entrada grande</translation>
@@ -1022,6 +1024,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5669335982068190158">Pechouse sesión como parte do restablecemento do iPhone. Para iniciar sesión, toca debaixo a opción de continuar.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Queres cambiar de conta? Eliminaranse os datos da conta que non se gardasen.</translation>
 <translation id="5683499062697987550">Para gardar os contrasinais na túa Conta de Google e poder usalos, verifica a túa identidade.</translation>
 <translation id="5684761169742812828">Este contrasinal quedou exposto debido a unha violación da seguranza dos datos en Internet. Se non tes tempo agora mesmo para cambialo, Google recoméndache gardar esta advertencia para lembralo máis tarde.</translation>
 <translation id="5694848685995373177">Gardouse en Drive para <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6506996418997555004">Compartir o grupo de pestanas "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Inicia a sesión para consultar a túa lista de lectura en todos os teus dispositivos.</translation>
 <translation id="6518133107902771759">Verificar</translation>
+<translation id="6518861084553706202">Pecharanse as pestanas, e os datos eliminados poderían incluír contrasinais, historial de navegación, cookies e moito máis.</translation>
 <translation id="6523575793810663688">Ver como se fai</translation>
 <translation id="6524082013156754186">Gardar na conta</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -1679,6 +1683,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8545276357312221485">Comproba a configuración do navegador predeterminado</translation>
 <translation id="854938212724803178">Tes 1 contrasinal vulnerado. Cámbiao xa para non correr riscos.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Ignoraches {count} aviso}other{Ignoraches {count} avisos}}</translation>
+<translation id="8558046478684552694">Pechar o grupo.</translation>
 <translation id="8560253818350321773">Móstranse primeiro os elementos usados con máis frecuencia.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opción de contrasinal dispoñible sobre o teclado.}other{{count} opcións de contrasinal dispoñibles sobre o teclado.}}</translation>
 <translation id="8564894539416715395">Páxina Nova pestana</translation>
@@ -1847,6 +1852,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9205189991633470489">Bloqueo do modo de incógnito</translation>
 <translation id="9206887540681440657">Velocidade</translation>
 <translation id="9223358826628549784">Enviouse o informe de erros.</translation>
+<translation id="926455622548529175">Cambiar e eliminar</translation>
 <translation id="929748059769569925">Texto destacado</translation>
 <translation id="932305336591073205">{count,plural, =1{Pechar pestana}other{Pechar pestanas}}</translation>
 <translation id="939472100615258482">Sitio actual</translation>

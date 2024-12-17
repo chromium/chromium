@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Attivare la sincronizzazione?</translation>
 <translation id="1253032109800629289">Nascondi "Ricevi notifiche per il monitoraggio del prezzo"</translation>
 <translation id="1258491128795710625">Novità</translation>
+<translation id="1259210743048744967">I tuoi dati di navigazione esistenti saranno disponibili dopo l'uscita da <ph name="USER_EMAIL" />. Non verranno salvati in questo account.</translation>
 <translation id="1262724000444746916">Nascondi Aggiungi ai preferiti</translation>
 <translation id="1263231323834454256">Elenco di lettura</translation>
 <translation id="1263433075299269530">Ultima scheda aperta</translation>
@@ -100,6 +101,7 @@
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="1408847409015257906">Tocca l'opzione "Privacy e sicurezza".</translation>
 <translation id="1411386976162024013">Ricerca visiva di Lens</translation>
+<translation id="1417474386970818917">Esci ed elimina</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1436671784520050284">Continua configurazione</translation>
@@ -167,6 +169,7 @@
 <translation id="169048873465870056">Rimuovere scheda ed eliminare gruppo?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selezionati</translation>
 <translation id="1709916727352927457">Elimina passkey</translation>
+<translation id="1712341189152602203">I dati di navigazione esistenti verranno collegati a <ph name="USER_EMAIL" />. Questi dati potrebbero essere visualizzabili dalla tua organizzazione.</translation>
 <translation id="1713777106376424209">Consegnato da</translation>
 <translation id="1715515772563243997">Se ritieni attendibile <ph name="SITE" />, puoi usare una password salvata per accedere.</translation>
 <translation id="1728549374069268714">Incolla e vai</translation>
@@ -202,6 +205,7 @@
 <translation id="1864266050569350424">Su un sito in cui hai salvato una password, tocca il campo della password di accesso.</translation>
 <translation id="1872096359983322073">Torcia</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Scegli cosa fare con i dati di navigazione esistenti su questo dispositivo, ad esempio password, cronologia e altro ancora.</translation>
 <translation id="1881621406744213161">Invita membri del gruppo Famiglia</translation>
 <translation id="188237709236611317">Barra dei menu con ordine intelligente</translation>
 <translation id="1883255238294161206">Comprimi elenco</translation>
@@ -511,6 +515,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3324193307694657476">Indirizzo 2</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="333229797575847124">Come attivare questa funzionalità</translation>
+<translation id="3333566504534692948">No, spostali nello spazio di lavoro</translation>
 <translation id="3344485292736684439">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{Preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="334690320928261823">Schede recenti</translation>
 <translation id="3348387552617855658">Questa scheda ti consente di monitorare tuoi pacchi e ti dà importanti aggiornamenti sulla consegna.</translation>
@@ -604,7 +609,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="381219490185664296">Separare il gruppo di schede?</translation>
 <translation id="3812308602011798782">Recensioni</translation>
-<translation id="3818045793209708987">Monitoraggio del pacchetto interrotto</translation>
+<translation id="3818045793209708987">Tracciamento della spedizione interrotto</translation>
 <translation id="3819183753496523827">Sei offline. Controlla la connessione a Internet e riprova.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 metodo di pagamento}other{# metodi di pagamento}}</translation>
 <translation id="3831560640878483188">Ignorare l'avviso?</translation>
@@ -1010,6 +1015,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5628388627414062173">{count,plural, =1{{count} pagina nel tuo elenco di lettura}other{{count} pagine nel tuo elenco di lettura}}</translation>
 <translation id="5632485077360054581">Mostrami come fare</translation>
 <translation id="5633237939819267663">{count,plural, =1{Preferito salvato in "{title}"}other{{count} preferiti salvati in "{title}"}}</translation>
+<translation id="564170563478022912">Uscire? I dati dell'account non salvati verranno eliminati.</translation>
 <translation id="5642707040609478753">Segna come da leggere</translation>
 <translation id="5646284034397250191">Etichetta creata. In attesa della data</translation>
 <translation id="5647096944343801045">Punto di accesso di grandi dimensioni</translation>
@@ -1022,6 +1028,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5669335982068190158">Il tuo account è stato disconnesso durante il ripristino dell'iPhone. Tocca Continua sotto per accedere.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versione <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Cambiare account? I dati dell'account non salvati verranno eliminati.</translation>
 <translation id="5683499062697987550">Verifica la tua identità per usare e salvare le password nel tuo Account Google.</translation>
 <translation id="5684761169742812828">Questa password è stata compromessa nell'ambito di una violazione dei dati su internet. Se al momento non hai tempo per cambiarla, Google consiglia di conservare questo avviso per ricordarti di farlo in un secondo momento.</translation>
 <translation id="5694848685995373177">Salvato in Drive per <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1230,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6506996418997555004">Condividi il gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Accedi per visualizzare il tuo elenco di lettura su tutti i tuoi dispositivi.</translation>
 <translation id="6518133107902771759">Verifica</translation>
+<translation id="6518861084553706202">Le schede verranno chiuse ed è possibile che vengano eliminati dati quali password, cronologia di navigazione, cookie e altro ancora.</translation>
 <translation id="6523575793810663688">Mostrami come fare</translation>
 <translation id="6524082013156754186">Salva nell'account</translation>
 <translation id="6527303717912515753">Condividi</translation>
@@ -1679,6 +1687,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8545276357312221485">Controlla le impostazioni del browser predefinito</translation>
 <translation id="854938212724803178">Hai 1 password compromessa. Sistemala subito per rimanere al sicuro.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Hai ignorato {count} avviso}other{Hai ignorato {count} avvisi}}</translation>
+<translation id="8558046478684552694">Chiudi gruppo.</translation>
 <translation id="8560253818350321773">Mostra prima le voci usate di frequente.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opzione per la password disponibile sopra la tastiera.}other{{count} opzioni per la password disponibili sopra la tastiera.}}</translation>
 <translation id="8564894539416715395">Pagina Nuova scheda</translation>
@@ -1847,6 +1856,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9205189991633470489">Blocco delle schede di navigazione in incognito</translation>
 <translation id="9206887540681440657">Velocità</translation>
 <translation id="9223358826628549784">Report sugli arresti anomali inviato.</translation>
+<translation id="926455622548529175">Cambia ed elimina</translation>
 <translation id="929748059769569925">Testo evidenziato</translation>
 <translation id="932305336591073205">{count,plural, =1{Chiudi scheda}other{Chiudi schede}}</translation>
 <translation id="939472100615258482">Sito corrente</translation>

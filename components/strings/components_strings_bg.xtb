@@ -926,6 +926,7 @@
 <translation id="2628224721443278970">Вход в Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP адресът на сървъра на <ph name="HOST_NAME" /> не можа да бъде намерен.</translation>
 <translation id="2639739919103226564">Състояние:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Текстил (полугланциран)</translation>
 <translation id="264810637653812429">Няма намерени съвместими устройства.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1399,6 +1400,7 @@
 <translation id="351522771072578657">В момента сте в меню</translation>
 <translation id="3517264445792388751">Файловата система е деактивирана от администратора ви</translation>
 <translation id="3518941727116570328">Обработване на няколко обекта</translation>
+<translation id="3519670528214225835">Попитайте <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 инча</translation>
 <translation id="3525435918300186947">Да се контролират и препрограмират ли MIDI устройствата?</translation>
 <translation id="3527181387426738155">Музика и аудио</translation>
@@ -1953,6 +1955,7 @@
 <translation id="4451684391620232683">Показан на потребителя текст:</translation>
 <translation id="4452328064229197696">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите в Google ви препоръчва да проверите запазените си пароли.</translation>
 <translation id="4456937135469235202">Приключенски пътешествия</translation>
+<translation id="4458013283022578512">Въведете въпрос</translation>
 <translation id="4464826014807964867">Уебсайтове, които разполагат с информация от организацията ви</translation>
 <translation id="4466576951214254884">Студентски заеми и финансиране на обучение в колежи</translation>
 <translation id="4467821340016922962">За да излезете от режима на цял екран и да видите изтеглянето, натиснете |<ph name="ACCELERATOR" />|</translation>

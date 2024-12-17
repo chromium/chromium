@@ -497,7 +497,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1335929031622236846">Inscreva o seu dispositivo</translation>
 <translation id="133660899895084533">Ler dados e informações de periféricos Bluetooth</translation>
 <translation id="1336902454946927954">A sua chave de segurança está bloqueada porque não foi possível reconhecer a sua impressão digital. Para a desbloquear, introduza o seu PIN.</translation>
-<translation id="1337066099824654054">A ajuda contextual está desativada</translation>
 <translation id="1338631221631423366">A sincronizar…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quer abrir esta aplicação.</translation>
 <translation id="1338950911836659113">A eliminar...</translation>
@@ -1164,7 +1163,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1802687198411089702">A página não responde. Pode esperar pela resposta ou sair.</translation>
 <translation id="1803531841600994172">Idioma de destino da tradução</translation>
 <translation id="1803545009660609783">Repetir</translation>
-<translation id="1804195280859010019">Vai ver informações ou sugestões mais úteis em funcionalidades como o painel lateral da Pesquisa Google</translation>
 <translation id="180441032496361123">Clicar para ativar o <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">O separador em segundo plano está a utilizar o seu microfone.</translation>
 <translation id="1805822111539868586">Inspecionar vistas</translation>
@@ -2326,6 +2324,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2606568927909309675">Cria automaticamente legendas para áudio e vídeo em inglês. O áudio e as legendas nunca saem do seu dispositivo.</translation>
 <translation id="2606890864830643943">A exportar dados de diagnóstico</translation>
 <translation id="2607101320794533334">Informações de chave pública do requerente</translation>
+<translation id="2608837922830967145">Não voltar a mostrar esta mensagem</translation>
 <translation id="2609896558069604090">Criar Atalhos...</translation>
 <translation id="2609980095400624569">Não foi possível ligar</translation>
 <translation id="2610157865375787051">Suspensão</translation>
@@ -3568,7 +3567,6 @@ Quer pará-lo?</translation>
 <translation id="350397915809787283">Se não tiver uma conta, selecione a primeira opção para criar uma.</translation>
 <translation id="3503995387997205657">Pode restaurar as suas apps anteriores</translation>
 <translation id="3505100368357440862">Sugestões de compras</translation>
-<translation id="3505602163050943406">Quando usa algumas funcionalidades, estas podem enviar partes de páginas abertas, páginas recentes relacionadas e os respetivos URLs para a Google</translation>
 <translation id="3507132249039706973">A Proteção padrão está ativada.</translation>
 <translation id="3507888235492474624">Procurar novamente dispositivos Bluetooth</translation>
 <translation id="3508492320654304609">Não foi possível eliminar os seus dados de início de sessão.</translation>
@@ -3920,7 +3918,6 @@ Quer pará-lo?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Quer abrir <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Os sites podem pedir para procurar e usar impressoras acessíveis ao seu dispositivo</translation>
-<translation id="3740396996321407665">Receber ajuda contextual de algumas funcionalidades</translation>
 <translation id="3740945083753997630">Diminuir o tamanho da visualização e do texto</translation>
 <translation id="3741056951918180319">Pode sempre clicar na extensão para a utilizar em qualquer site</translation>
 <translation id="374124333420280219">Detalhes da app:</translation>
@@ -4318,6 +4315,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3993887353483242788">Sincronize o dispositivo <ph name="DEVICE_TYPE" /> para que as suas preferências fiquem prontas em qualquer dispositivo quando iniciar sessão com a sua Conta Google. As preferências incluem apps, definições, palavras-passe do Wi-Fi, idiomas, imagem de fundo, atalhos de teclado e muito mais.</translation>
 <translation id="3994318741694670028">Infelizmente, o seu computador está configurado com um ID de hardware formatado incorretamente. Este facto impede que o ChromeOS Flex faça a atualização com as últimas correções de segurança e o seu computador <ph name="BEGIN_BOLD" />pode estar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloqueie o telemóvel e aproxime-o para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Iniciar sessão como <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Localize os botões no seu tablet</translation>
 <translation id="3994708120330953242">Algumas das suas palavras-passe foram encontradas numa violação de dados. Para proteger as suas contas, deve alterar já essas palavras-passe.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -7290,7 +7288,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6173623053897475761">Introduza o PIN novamente</translation>
 <translation id="6175314957787328458">GUID de Domínio do Windows</translation>
 <translation id="6175910054050815932">Receba um link</translation>
-<translation id="6176701216248282552">A ajuda contextual está ativada. Estas funcionalidades podem enviar as páginas abertas para a Google.</translation>
 <translation id="6177412385419165772">A remover…</translation>
 <translation id="6177478397823976397">Não foram encontrados dispositivos. Abrir um artigo do Centro de Ajuda num novo separador</translation>
 <translation id="6178664161104547336">Selecionar um certificado</translation>
@@ -9190,7 +9187,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="756445078718366910">Abrir janela do navegador</translation>
 <translation id="7564847347806291057">Concluir processo</translation>
 <translation id="756503097602602175">Pode gerir Contas Google com sessão iniciada nas <ph name="LINK_BEGIN" />Definições<ph name="LINK_END" />. As autorizações que concedeu aos Websites e às apps podem aplicar-se a todas as contas. Se não pretender que os sites ou as apps acedam às informações da sua conta, pode iniciar sessão no dispositivo <ph name="DEVICE_TYPE" /> como convidado ou navegar na Web numa <ph name="LINK_2_BEGIN" />janela de navegação anónima<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Algumas funcionalidades podem usar o conteúdo de páginas abertas e páginas recentes relacionadas para facultar informações ou sugestões mais úteis</translation>
 <translation id="7566118625369982896">Gerir links para aplicações do Google Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Criar combinação de teclas</translation>
@@ -10937,7 +10933,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8781980678064919987">Encerrar quando a tampa for fechada</translation>
 <translation id="8782565991310229362">A iniciação da app de quiosque foi cancelada.</translation>
 <translation id="8783834180813871000">Introduza o código de sincronização de Bluetooth e, em seguida, prima Enter.</translation>
-<translation id="8783955532752528811">Ajuda contextual nas funcionalidades</translation>
 <translation id="8784626084144195648">Média arquivada</translation>
 <translation id="8785622406424941542">Caneta stylus</translation>
 <translation id="8786824282808281903">Quando a criança vê este ícone, é possível utilizar uma impressão digital para identificação ou para aprovar compras.</translation>
@@ -11429,7 +11424,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9113529408970052045">A funcionalidade "Ajuda-me a escrever" pode ser aberta automaticamente quando uma caixa de texto num site pode ser preenchida com conteúdo de formato curto</translation>
 <translation id="9114663181201435112">Iniciar sessão facilmente</translation>
 <translation id="9115675100829699941">&amp;Marcadores</translation>
-<translation id="9115932142612197835">Esta definição não altera a disponibilidade do Google Tradutor nem do Lens</translation>
 <translation id="9116366756388192417">Escolher tema</translation>
 <translation id="9116799625073598554">Aplicação para tirar notas</translation>
 <translation id="9117030152748022724">Gerir as suas apps</translation>

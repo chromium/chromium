@@ -926,6 +926,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2628224721443278970">Accedi a Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Impossibile trovare l'indirizzo IP del server di <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Stato:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tessuto (semilucido)</translation>
 <translation id="264810637653812429">Nessun dispositivo compatibile trovato.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1140,6 +1141,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="306573536155379004">Gioco iniziato.</translation>
 <translation id="3067505415088964188">Prezzo basso</translation>
 <translation id="3068118691172921711">Il caricamento del file su <ph name="CLOUD_PROVIDER" /> inizierà tra 1 minuto</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elemento}other{{ITEMS} elementi}}</translation>
 <translation id="3076865167425975822">Sistemi operativi</translation>
 <translation id="3080254622891793721">Grafico</translation>
 <translation id="3082007635241601060">Consenti a Google di usare i tuoi carrelli per trovare sconti personalizzati, quando sono disponibili</translation>
@@ -1396,6 +1398,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="351522771072578657">Al momento sei in un menu</translation>
 <translation id="3517264445792388751">Il file system è stato disattivato dall'amministratore</translation>
 <translation id="3518941727116570328">Gestione di più oggetti</translation>
+<translation id="3519670528214225835">Chiedi a <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
 <translation id="3525435918300186947">Vuoi controllare e riprogrammare i dispositivi MIDI?</translation>
 <translation id="3527181387426738155">Musica e audio</translation>
@@ -1950,6 +1953,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4451684391620232683">Testo presentato all'utente:</translation>
 <translation id="4452328064229197696">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di controllare le password salvate.</translation>
 <translation id="4456937135469235202">Viaggi avventura</translation>
+<translation id="4458013283022578512">Inserisci una domanda</translation>
 <translation id="4464826014807964867">Siti web con informazioni della tua organizzazione</translation>
 <translation id="4466576951214254884">Prestiti per studenti e finanziamenti per lo studio</translation>
 <translation id="4467821340016922962">Per uscire dalla modalità a schermo intero e visualizzare il download, premi |<ph name="ACCELERATOR" />|</translation>
@@ -2826,6 +2830,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6106989379647458772">La pagina web all'indirizzo <ph name="PAGE" /> potrebbe non essere momentaneamente disponibile o potrebbe essere stata trasferita definitivamente a un nuovo indirizzo web.</translation>
 <translation id="6107012941649240045">Rilasciato a</translation>
 <translation id="6107924765192360631">Inizia con poche parole o una prima bozza per ottenere suggerimenti di scrittura.</translation>
+<translation id="6108508372809181847">Confronta <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Dettagli certificato</translation>
 <translation id="6108702513636120202">Il tuo motore di ricerca in Chromium</translation>
 <translation id="6108849843016142864">Rettili e anfibi</translation>

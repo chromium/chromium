@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408847409015257906">点按“隐私与安全”。</translation>
 <translation id="1411386976162024013">智能镜头视觉搜索</translation>
+<translation id="1417474386970818917">退出账号并删除</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1436671784520050284">继续设置</translation>
@@ -1010,6 +1011,7 @@
 <translation id="5628388627414062173">{count,plural, =1{阅读清单中有 {count} 个页面}other{阅读清单中有 {count} 个页面}}</translation>
 <translation id="5632485077360054581">操作步骤</translation>
 <translation id="5633237939819267663">{count,plural, =1{书签已保存到“{title}”}other{{count} 个书签已保存到“{title}”}}</translation>
+<translation id="564170563478022912">要退出账号？未保存的账号数据将被删除。</translation>
 <translation id="5642707040609478753">标为未读</translation>
 <translation id="5646284034397250191">已创建标签，日期待定</translation>
 <translation id="5647096944343801045">大型入口点</translation>
@@ -1022,6 +1024,7 @@
 <translation id="5669335982068190158">您在 iPhone 重置过程中退出了账号。点按下方的“继续”即可登录。</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">要切换账号？未保存的账号数据将被删除。</translation>
 <translation id="5683499062697987550">要使用 Google 账号中的密码或将密码保存到 Google 账号，请验证是您本人在操作。</translation>
 <translation id="5684761169742812828">此密码已在互联网上遭遇数据泄露。如果您现在没有时间更改密码，Google 建议您保留此警告，以便之后继续提醒自己。</translation>
 <translation id="5694848685995373177">已保存到 <ph name="USER_EMAIL" /> 的云端硬盘中。</translation>
@@ -1223,6 +1226,7 @@
 <translation id="6506996418997555004">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
 <translation id="6507973708545996744">登录后即可将您的阅读清单同步到您的所有设备上。</translation>
 <translation id="6518133107902771759">验证</translation>
+<translation id="6518861084553706202">系统将关闭标签页，并可能删除密码、浏览记录、Cookie 等数据。</translation>
 <translation id="6523575793810663688">显示具体操作</translation>
 <translation id="6524082013156754186">保存到账号</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -1679,6 +1683,7 @@
 <translation id="8545276357312221485">检查默认浏览器设置</translation>
 <translation id="854938212724803178">您有 1 个密码已泄露。请立即更改，确保安全。</translation>
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
+<translation id="8558046478684552694">关闭分组。</translation>
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>
 <translation id="8561999115126307258">{count,plural, =1{键盘上方显示了 {count} 个密码选项。}other{键盘上方显示了 {count} 个密码选项。}}</translation>
 <translation id="8564894539416715395">新标签页</translation>
@@ -1847,6 +1852,7 @@
 <translation id="9205189991633470489">无痕式标签页锁定</translation>
 <translation id="9206887540681440657">速度</translation>
 <translation id="9223358826628549784">已发送崩溃报告。</translation>
+<translation id="926455622548529175">切换并删除</translation>
 <translation id="929748059769569925">突出显示的文字</translation>
 <translation id="932305336591073205">{count,plural, =1{关闭标签页}other{关闭标签页}}</translation>
 <translation id="939472100615258482">当前网站</translation>

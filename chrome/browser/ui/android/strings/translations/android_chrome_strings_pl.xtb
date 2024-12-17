@@ -597,7 +597,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3710501561113687889">Aby można było kontynuować, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni tej witrynie Twoje <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Współpraca</translation>
 <translation id="3714981814255182093">Otwórz pasek wyszukiwania</translation>
-<translation id="3716182511346448902">Ta strona używa zbyt dużo pamięci, dlatego została wstrzymana w Chrome.</translation>
 <translation id="3718765429352682176">Możesz zobaczyć historię z innych aplikacji, które otwierają linki w Chrome.</translation>
 <translation id="3720422586473670527">Nie, dziękuję</translation>
 <translation id="3721119614952978349">Ty i Google</translation>
@@ -1629,7 +1628,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8186512483418048923">Pozostałe pliki: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Pozostał dzień</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Twoje urządzenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Wznów</translation>
 <translation id="820568752112382238">Najczęściej odwiedzane strony</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> inna osoba}few{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> inne osoby}many{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> innych osób}other{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> innej osoby}}</translation>
 <translation id="8209050860603202033">Otwórz grafikę</translation>

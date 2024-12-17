@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Presiona "Privacidad y seguridad".</translation>
 <translation id="1411386976162024013">Búsqueda visual de Lens</translation>
+<translation id="1417474386970818917">Salir y borrar</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436671784520050284">Continuar con la configuración</translation>
@@ -1010,6 +1011,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5628388627414062173">{count,plural, =1{{count} página en tu lista de lectura}other{{count} páginas en tu lista de lectura}}</translation>
 <translation id="5632485077360054581">Cómo hacerlo</translation>
 <translation id="5633237939819267663">{count,plural, =1{Se guardó el favorito en "{title}"}other{Se guardaron {count} favoritos en "{title}"}}</translation>
+<translation id="564170563478022912">¿Quieres salir? Se borrarán los datos no guardados de la cuenta.</translation>
 <translation id="5642707040609478753">Marcar como no leídas</translation>
 <translation id="5646284034397250191">Se creó la etiqueta. Fecha pendiente</translation>
 <translation id="5647096944343801045">Punto de entrada grande</translation>
@@ -1022,6 +1024,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5669335982068190158">Saliste de tu cuenta como parte del restablecimiento de tu iPhone. Presiona Continuar para acceder.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">¿Quieres cambiar de cuenta? Se borrarán los datos no guardados de la cuenta.</translation>
 <translation id="5683499062697987550">Para usar y guardar contraseñas en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="5684761169742812828">Se expuso esta contraseña en una violación de la seguridad de los datos en Internet. Si no tienes tiempo para cambiarla en este momento, Google recomienda conservar esta advertencia para recordar hacerlo más adelante.</translation>
 <translation id="5694848685995373177">Se guardó en Drive para <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="6506996418997555004">Comparte el grupo de pestañas “<ph name="GROUP_NAME" />”</translation>
 <translation id="6507973708545996744">Accede para obtener tu lista de lectura en todos tus dispositivos.</translation>
 <translation id="6518133107902771759">Verificar</translation>
+<translation id="6518861084553706202">Se cerrarán las pestañas y se borrarán datos que pueden incluir contraseñas, historial de navegación, cookies y más.</translation>
 <translation id="6523575793810663688">Cómo hacerlo</translation>
 <translation id="6524082013156754186">Guardar en la cuenta</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -1679,6 +1683,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8545276357312221485">Revisa la configuración de tu navegador predeterminado</translation>
 <translation id="854938212724803178">Tienes 1 contraseña hackeada. Cámbiala ahora para mantener tu cuenta segura.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Descartaste {count} advertencia}other{Descartaste {count} advertencias}}</translation>
+<translation id="8558046478684552694">Cerrar grupo.</translation>
 <translation id="8560253818350321773">Muestra primero los elementos que se usan con frecuencia.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Hay {count} opción de contraseña disponible arriba del teclado.}other{Hay {count} opciones de contraseña disponibles arriba del teclado.}}</translation>
 <translation id="8564894539416715395">Página Nueva pestaña</translation>
@@ -1847,6 +1852,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9205189991633470489">Bloqueo de incógnito</translation>
 <translation id="9206887540681440657">Velocidad</translation>
 <translation id="9223358826628549784">Informe de fallos enviado.</translation>
+<translation id="926455622548529175">Cambiar y borrar</translation>
 <translation id="929748059769569925">Texto destacado</translation>
 <translation id="932305336591073205">{count,plural, =1{Cerrar pestaña}other{Cerrar pestañas}}</translation>
 <translation id="939472100615258482">Sitio actual</translation>

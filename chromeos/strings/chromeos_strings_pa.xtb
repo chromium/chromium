@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
 <translation id="1808803439260407870">ਕਲਾਸਿਕ ਆਰਟ</translation>
+<translation id="181434555916624618">ਫ਼ਿਲਹਾਲ, ਅਜਿਹੇ ਨਤੀਜੇ ਨਹੀਂ ਦਿਖਾਏ ਜਾਣਗੇ, ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਲੋਕ ਸ਼ਾਮਲ ਹੋਣ। ਕੋਈ ਹੋਰ ਉਤਪ੍ਰੇਰਕ ਅਜ਼ਮਾਓ।</translation>
 <translation id="1815850098929213707">ਚੁਣੀ ਹੋਈ ਕੁੰਜੀ <ph name="KEYS" /> ਹੈ। ਕੰਟਰੋਲ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="1823120442877418684">ਅੱਖਰ-ਚਿੰਨ੍ਹ</translation>
 <translation id="1827738518074806965">ਕਲਾ ਗੈਲਰੀ</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">ਡੀਵਾਈਸ ਦੇ ਸੱਜੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="3340978935015468852">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3347558044552027859">ਮਾਡਰਨ</translation>
+<translation id="3353477144743332882">ਸਾਰਾਂਸ਼ ਅਤੇ ਨਾਮ ਬਣਾਉਣ ਦਾ ਮਾਡਲ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="3359218928534347896">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਮਿਊਟ 'ਤੇ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">ਸੁਸ਼ੀ</translation>
@@ -998,6 +1000,7 @@
 <translation id="5859969039821714932">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। <ph name="KEY" /> ਤੋਂ ਬਿਨਾਂ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
 <translation id="5860491529813859533">ਚਾਲੂ ਕਰੋ</translation>
+<translation id="5875913454160982848">ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਮਾਡਲ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="5876385649737594562">ਵਿਕਲਪ ਚੁਣਨ ਲਈ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> ਨੂੰ ਰੋਕੋ</translation>
 <translation id="588258955323874662">ਫੁਲਸਕ੍ਰੀਨ</translation>
@@ -1293,6 +1296,7 @@
 <translation id="7134436342991564651">{0,plural, =1{ਨਾਮ ਸਰਵਰ}one{ਨਾਮ ਸਰਵਰ}other{ਨਾਮ ਸਰਵਰ}}</translation>
 <translation id="7135814714616751706">ਸ਼ਾਰਟਕੱਟ ਖੋਜੋ</translation>
 <translation id="7138614237884624401">ਲਿਖਤ ਨੂੰ ਸਰਲੀਕਿਰਤ ਕਰੋ</translation>
+<translation id="7138668887584231801">ਸਾਰਾਂਸ਼ ਲਈ ਚੁਣੇ ਗਏ ਸ਼ਬਦ ਬਹੁਤ ਘੱਟ ਹਨ</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
@@ -1588,6 +1592,7 @@
 <translation id="8503836310948963452">ਬਸ ਕੁਝ ਮਿੰਟ ਹੋਰ…</translation>
 <translation id="8505011850330200833">Gemini ਮਾਡਲ ਨੂੰ ਪ੍ਰਤੀਲਿਪੀਆਂ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਅਤੇ ਸਾਰਾਂਸ਼ ਬਣਾਉਣ ਲਈ 2GB ਸਟੋਰੇਜ ਲੋੜੀਂਦੀ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="8508640263392900755">APN ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
+<translation id="8509574872955173831">ਸਾਰਾਂਸ਼ ਅਤੇ ਨਾਮ ਬਣਾਉਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8522687886059337719">ਤੁਹਾਡੇ ਕੋਲ ਹੁਣ ਨਵੇਂ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ਵਾਲਪੇਪਰਾਂ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ਅਤੇ <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ਸਕ੍ਰੀਨ ਸੇਵਰ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ਤੱਕ ਪਹੁੰਚ ਹੈ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ਟੀ ਹਾਊਸ</translation>

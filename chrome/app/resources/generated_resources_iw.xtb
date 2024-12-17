@@ -499,7 +499,6 @@
 <translation id="1335929031622236846">רישום המכשיר שלך</translation>
 <translation id="133660899895084533">‏קריאת נתונים ומידע מציוד היקפי בחיבור Bluetooth</translation>
 <translation id="1336902454946927954">מפתח האבטחה נעול מאחר שאי אפשר לזהות את טביעת האצבע שלך. כדי לבטל את הנעילה, יש להזין את קוד האימות.</translation>
-<translation id="1337066099824654054">העזרה לפי הקשר מושבתת</translation>
 <translation id="1338631221631423366">מתבצעת התאמה…</translation>
 <translation id="1338802252451106843">האתר <ph name="ORIGIN" /> רוצה לפתוח את האפליקציה הזו.</translation>
 <translation id="1338950911836659113">המחיקה מתבצעת...</translation>
@@ -1172,7 +1171,6 @@
 <translation id="1802687198411089702">הדף לא מגיב. אפשר לחכות או לצאת.</translation>
 <translation id="1803531841600994172">שפת היעד של התרגום</translation>
 <translation id="1803545009660609783">יש לומר שוב</translation>
-<translation id="1804195280859010019">‏יוצגו לך הצעות או פרטים מועילים יותר בתכונות כמו החלונית הצדדית של חיפוש Google</translation>
 <translation id="180441032496361123">צריך ללחוץ כדי להפעיל את <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">כרטיסיית הרקע משתמשת במיקרופון</translation>
 <translation id="1805822111539868586">בדיקת תצוגות</translation>
@@ -2338,6 +2336,7 @@
 <translation id="2606568927909309675">יצירה אוטומטית של כתוביות לאודיו ולווידאו באנגלית. קטעי האודיו והכתוביות אף פעם לא מועברים מהמכשיר.</translation>
 <translation id="2606890864830643943">מתבצע ייצוא של נתוני אבחון</translation>
 <translation id="2607101320794533334">פרטי מפתח ציבורי של נושא</translation>
+<translation id="2608837922830967145">אין צורך להציג את ההודעה הזו שוב</translation>
 <translation id="2609896558069604090">יצירת קיצורי דרך...</translation>
 <translation id="2609980095400624569">לא ניתן היה ליצור חיבור</translation>
 <translation id="2610157865375787051">שינה</translation>
@@ -3578,7 +3577,6 @@
 <translation id="350397915809787283">אם אין לך חשבון, עליך לבחור באפשרות הראשונה כדי ליצור חשבון.</translation>
 <translation id="3503995387997205657">יש לך אפשרות לשחזר את האפליקציות הקודמות שבהן השתמשת</translation>
 <translation id="3505100368357440862">הצעות לקניות</translation>
-<translation id="3505602163050943406">‏כשמשתמשים בתכונות מסוימות, עשויים להישלח ל-Google חלקים מדפים פתוחים, דפים קשורים מהזמן האחרון וכתובות ה-URL שלהם</translation>
 <translation id="3507132249039706973">מופעלת הגנה רגילה</translation>
 <translation id="3507888235492474624">‏סריקה חוזרת לאיתור מכשירי Bluetooth</translation>
 <translation id="3508492320654304609">לא ניתן למחוק את פרטי הכניסה שלך</translation>
@@ -3930,7 +3928,6 @@
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">לפתוח את <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">אתרים יכולים לבקש הרשאה לחפש מדפסות שלמכשיר יש גישה אליהן ולהשתמש בהן</translation>
-<translation id="3740396996321407665">קבלת עזרה לפי הקשר בתכונות מסוימות</translation>
 <translation id="3740945083753997630">הקטנה של התצוגה והטקסט</translation>
 <translation id="3741056951918180319">תמיד אפשר ללחוץ על התוסף כדי להשתמש בו בכל אתר שהוא</translation>
 <translation id="374124333420280219">פרטי האפליקציה:</translation>
@@ -4328,6 +4325,7 @@
 <translation id="3993887353483242788">‏צריך לסנכרן את <ph name="DEVICE_TYPE" /> כדי שההעדפות שלך יהיו מוכנות בכל המכשירים בעת הכניסה לחשבון Google. ההעדפות מתייחסות לאפליקציות, להגדרות, לסיסמאות ל-Wi-Fi, לשפות, לטפט, למקשי קיצור ועוד.</translation>
 <translation id="3994318741694670028">‏לצערנו, המחשב שלך מוגדר באמצעות מזהה חומרה פגום. המצב הזה מונע מ-ChromeOS Flex להתקין את עדכוני האבטחה האחרונים, <ph name="BEGIN_BOLD" />ויכול להיות שהמחשב שלך יהיה חשוף להתקפות זדוניות<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">עליך לבטל את נעילת הטלפון ולקרב אותו ל-<ph name="DEVICE_TYPE" /> כדי לבטל את הנעילה שלו.</translation>
+<translation id="3994522032746736727">כניסה בתור <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">איתור לחצנים בטאבלט</translation>
 <translation id="3994708120330953242">חלק מהסיסמאות שלך נחשפו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, עליך לשנות את הסיסמאות האלה עכשיו.</translation>
 <translation id="3994878504415702912">מרחק מתצוגה</translation>
@@ -7293,7 +7291,6 @@
 <translation id="6173623053897475761">יש להקליד שוב את הקוד</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">קבלת קישור</translation>
-<translation id="6176701216248282552">‏העזרה לפי הקשר מופעלת. התכונות האלה יכולות לשלוח דפים פתוחים ל-Google.</translation>
 <translation id="6177412385419165772">מתבצעת הסרה…</translation>
 <translation id="6177478397823976397">לא נמצאו מכשירים. אפשר לפתוח מאמר במרכז העזרה בכרטיסייה חדשה.</translation>
 <translation id="6178664161104547336">בחירת אישור</translation>
@@ -9197,7 +9194,6 @@
 <translation id="756445078718366910">פתיחת חלון דפדפן</translation>
 <translation id="7564847347806291057">סיום התהליך</translation>
 <translation id="756503097602602175">‏ב<ph name="LINK_BEGIN" />הגדרות<ph name="LINK_END" /> אפשר לנהל את חשבונות Google המחוברים. ייתכן שהרשאות שנתת לאתרים ולאפליקציות יחולו על כל החשבונות. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון שלך, ניתן להיכנס אל <ph name="DEVICE_TYPE" /> כאורח או לגלוש באינטרנט ב<ph name="LINK_2_BEGIN" />חלון אנונימי<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">לתכונות מסוימות יש אפשרות להיעזר בתוכן של דפים פתוחים ושל דפים קשורים מהזמן האחרון כדי להציג הצעות או פרטים מועילים יותר</translation>
 <translation id="7566118625369982896">‏ניהול קישורים של אפליקציות מ-Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">יצירת שילוב מקשים</translation>
@@ -10943,7 +10939,6 @@
 <translation id="8781980678064919987">כיבוי כשהמכסה סגור</translation>
 <translation id="8782565991310229362">ההפעלה של יישום קיוסק בוטלה.</translation>
 <translation id="8783834180813871000">‏עליך להקליד את קוד ההתאמה ל-Bluetooth ולאחר מכן ללחוץ על Return או Enter.</translation>
-<translation id="8783955532752528811">תכונות שמספקות עזרה לפי הקשר</translation>
 <translation id="8784626084144195648">ממוצע צבור</translation>
 <translation id="8785622406424941542">סטיילוס</translation>
 <translation id="8786824282808281903">כשהסמל הזה יוצג לילד או לילדה, ניתן יהיה להשתמש בטביעת אצבע לצורך זיהוי או כדי לאשר רכישות.</translation>
@@ -11433,7 +11428,6 @@
 <translation id="9113529408970052045">הלחצן 'עזרה בכתיבה' יכול להיפתח אוטומטית כשבאתר מופיעה תיבת טקסט שיכולה להתמלא בתוכן בפורמט קצר</translation>
 <translation id="9114663181201435112">כניסה בקלות</translation>
 <translation id="9115675100829699941">&amp;סימניות</translation>
-<translation id="9115932142612197835">‏ההגדרה הזו לא משנה את הזמינות של Google Translate או של Lens</translation>
 <translation id="9116366756388192417">בחירת נושא</translation>
 <translation id="9116799625073598554">אפליקציה לרישום הערות</translation>
 <translation id="9117030152748022724">ניהול האפליקציות שלך</translation>

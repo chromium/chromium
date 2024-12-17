@@ -101,6 +101,7 @@
 <translation id="1407135791313364759">Barchasini ochish</translation>
 <translation id="1408847409015257906">“Maxfiylik va xavfsizlik” ustiga bosing.</translation>
 <translation id="1411386976162024013">Lens orqali vizual qidiruv</translation>
+<translation id="1417474386970818917">Hisobdan chiqish va oʻchirish</translation>
 <translation id="1426410128494586442">Ha</translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1436671784520050284">Sozlashni davom ettirish</translation>
@@ -1014,6 +1015,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5628388627414062173">{count,plural, =1{Saqlangan sahifalardagi {count} ta sahifa}other{Saqlangan sahifalardagi {count} ta sahifa}}</translation>
 <translation id="5632485077360054581">Koʻrsatish</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bukmark "{title}" jildiga saqlandi}other{{count} ta bukmark "{title}" jildiga saqlandi}}</translation>
+<translation id="564170563478022912">Chiqilsinmi? Saqlanmagan hisob maʼlumotlari oʻchirib tashlanadi.</translation>
 <translation id="5642707040609478753">Ochilmagan deb belgilash</translation>
 <translation id="5646284034397250191">Yorliq yaratildi. Yetib kelish sanasi</translation>
 <translation id="5647096944343801045">Yirik kirish nuqtasi</translation>
@@ -1026,6 +1028,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5669335982068190158">iPhone qurilmasini tiklash mobaynida hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" />-versiya</translation>
+<translation id="5680012489335339762">Hisobni almashtirasizmi? Saqlanmagan hisob maʼlumotlari oʻchirib tashlanadi.</translation>
 <translation id="5683499062697987550">Parollarni Google hisobiga saqlashda va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
 <translation id="5684761169742812828">Parol internet maʼlumotlari sizib chiqishida oshkor qilingan. Hozir uni almashtira olmasangiz, Google buni keyinroq qilishni unutmaslik uchun ogohlantirish qoldirishni tavsiya qiladi.</translation>
 <translation id="5694848685995373177">Drive omboriga (<ph name="USER_EMAIL" />) saqlandi.</translation>
@@ -1227,6 +1230,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="6506996418997555004">“<ph name="GROUP_NAME" />” varaqlar guruhini ulashish</translation>
 <translation id="6507973708545996744">Oʻqish roʻyxatini barcha qurilmalarda ochish uchun hisobga kiring.</translation>
 <translation id="6518133107902771759">Tasdiqlash</translation>
+<translation id="6518861084553706202">Sahifalar yopiladi hamda oʻchiriladigan maʼlumotlar parollar, brauzer tarixi, cookie fayllar va boshqalarni oʻz ichiga olishi mumkin.</translation>
 <translation id="6523575793810663688">Qanday bajariladi</translation>
 <translation id="6524082013156754186">Hisobda saqlash</translation>
 <translation id="6527303717912515753">Ulashish</translation>
@@ -1683,6 +1687,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8545276357312221485">Birlamchi brauzer sozlamalarini tekshiring</translation>
 <translation id="854938212724803178">1 ta parolingiz oshkor qilingan. Xavfsiz qolish uchun uni tuzating.</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} ta ogohlantirishni yopdingiz}other{{count} ta ogohlantirishni yopdingiz}}</translation>
+<translation id="8558046478684552694">Guruhni yoping.</translation>
 <translation id="8560253818350321773">Avval tez-tez ishlatilgan elementlarni chiqarish.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} ta parol varianti klaviatura ustida chiqadi.}other{{count} ta parol varianti klaviatura ustida chiqadi.}}</translation>
 <translation id="8564894539416715395">Yangi varaq sahifasi</translation>
@@ -1851,6 +1856,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9205189991633470489">Inkognito qulflanishi</translation>
 <translation id="9206887540681440657">Tezlik</translation>
 <translation id="9223358826628549784">Ishdan chiqish hisoboti yuborildi.</translation>
+<translation id="926455622548529175">Almashtirish va oʻchirish</translation>
 <translation id="929748059769569925">Belgilangan matn</translation>
 <translation id="932305336591073205">{count,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
 <translation id="939472100615258482">Joriy sayt</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Opna alla</translation>
 <translation id="1408847409015257906">Ýttu á „Persónuvernd og öryggi“.</translation>
 <translation id="1411386976162024013">Myndleit Linsu</translation>
+<translation id="1417474386970818917">Skrá út og eyða</translation>
 <translation id="1426410128494586442">Já</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1436671784520050284">Halda uppsetningu áfram</translation>
@@ -1010,6 +1011,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5628388627414062173">{count,plural, =1{{count} síða á leslistanum þínum}one{{count} síða á leslistanum þínum}other{{count} síður á leslistanum þínum}}</translation>
 <translation id="5632485077360054581">Fá leiðbeiningar</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bókamerki vistað í „{title}“}one{{count} bókamerki vistað í „{title}“}other{{count} bókamerki vistuð í „{title}“}}</translation>
+<translation id="564170563478022912">Skrá út? Óvistuðum reikningsgögnum verður eytt.</translation>
 <translation id="5642707040609478753">Merkja sem ólesið</translation>
 <translation id="5646284034397250191">Merking búin til. Dagsetning bíður staðfestingar</translation>
 <translation id="5647096944343801045">Stór aðgangsstaður</translation>
@@ -1022,6 +1024,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5669335982068190158">Þú varst skráð(ur) út í tengslum við endurstillingu iPhone. Ýttu á „Halda áfram“ hér fyrir neðan til að skrá þig inn.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Útgáfa <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Skipta um reikning? Óvistuðum reikningsgögnum verður eytt.</translation>
 <translation id="5683499062697987550">Staðfestu að þetta sért þú til að nota og vista aðgangsorð á Google-reikningnum þínum.</translation>
 <translation id="5684761169742812828">Þetta aðgangsorð var afhjúpað í öryggisbroti á netinu. Ef þú hefur ekki tíma til að breyta því strax mælir Google með að þú lokir ekki viðvöruninni til að minna þig á að gera það seinna.</translation>
 <translation id="5694848685995373177">Vistað á Drive fyrir <ph name="USER_EMAIL" />.</translation>
@@ -1223,6 +1226,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6506996418997555004">Deildu flipahópnum „<ph name="GROUP_NAME" />“</translation>
 <translation id="6507973708545996744">Skráðu þig inn til að fá leslistann þinn í öllum tækjunum þínum.</translation>
 <translation id="6518133107902771759">Staðfesta</translation>
+<translation id="6518861084553706202">Flipum verður lokað og gögnum eytt, þ.m.t. aðgangsorðum, vafraferli, fótsporum og fleiru.</translation>
 <translation id="6523575793810663688">Fá leiðbeiningar</translation>
 <translation id="6524082013156754186">Vista á reikningi</translation>
 <translation id="6527303717912515753">Deila</translation>
@@ -1679,6 +1683,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8545276357312221485">Athugaðu stillingar sjálfgefins vafra</translation>
 <translation id="854938212724803178">1 aðgangsorð er í hættu. Lagfærðu það núna til að gæta öryggis.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Þú hunsaðir {count} viðvörun}one{Þú hunsaðir {count} viðvörun}other{Þú hunsaðir {count} viðvaranir}}</translation>
+<translation id="8558046478684552694">Loka hópi.</translation>
 <translation id="8560253818350321773">Sýna atriði sem eru notuð oft fyrst.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} aðgangsorð tiltækt ofan við lyklaborðið.}one{{count} aðgangsorð tiltækt ofan við lyklaborðið.}other{{count} aðgangsorð tiltæk ofan við lyklaborðið.}}</translation>
 <translation id="8564894539416715395">Síða nýrra flipa</translation>
@@ -1847,6 +1852,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9205189991633470489">Lás huliðsstillingar</translation>
 <translation id="9206887540681440657">Hraði</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>
+<translation id="926455622548529175">Skipta um og eyða</translation>
 <translation id="929748059769569925">Yfirstrikaður texti</translation>
 <translation id="932305336591073205">{count,plural, =1{Loka flipa}one{Loka flipum}other{Loka flipum}}</translation>
 <translation id="939472100615258482">Þessi síða</translation>

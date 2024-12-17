@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3340978935015468852">cilësimet</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Shkarko modelin e krijimit të përmbledhjeve dhe emrave</translation>
 <translation id="3359218928534347896">aktivizo/çaktivizo audion e mikrofonit</translation>
 <translation id="3360306038446926262">Dritaret</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa tastin <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
+<translation id="5875913454160982848">Shkarko modelin e transkriptimit</translation>
 <translation id="5876385649737594562">Aktivizoje për të zgjedhur opsionet</translation>
 <translation id="5877503382465267833">Vendose në pauzë "<ph name="RECORDING_NAME" />"</translation>
 <translation id="588258955323874662">Ekrani i plotë</translation>
@@ -1588,6 +1590,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
 <translation id="8505011850330200833">Modeli i Gemini kërkon 2 GB hapësirë ruajtëse për të përpunuar transkriptet dhe për të krijuar përmbledhje</translation>
 <translation id="8508640263392900755">Detajet e APN-së</translation>
+<translation id="8509574872955173831">Mëso më shumë rreth krijimit të përmbledhjeve dhe emrave</translation>
 <translation id="8522687886059337719">Tani ke qasje tek <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imazhet e reja të sfondit<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dhe te <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />mbrojtësit e rinj të ekranit<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">çajtore</translation>

@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ် <ph name="ONE_ADDED" /> ခု ထည့်လိုက်သည်}other{တဘ် <ph name="MANY_ADDED" /> ခု ထည့်လိုက်သည်}}</translation>
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>
+<translation id="5380159289133845234">မိတ္တူပွားတဘ်များ သိမ်းဆည်းခြင်း</translation>
 <translation id="5400836586163650660">မီးခိုး</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">သင့်တဘ်အုပ်စုများကို အလိုအလျောက်သိမ်းသည်</translation>
 <translation id="6054741997831917303">ဤပစ္စည်းမှာ မကြာမီက <ph name="PREVIOUS_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျသွားသည်</translation>
 <translation id="6082313992897617440">သင်သည် <ph name="GROUP_NAME" /> တဘ်အုပ်စုသုံးခွင့်ကို ချက်ချင်းဆုံးရှုံးမည်</translation>
+<translation id="6109251075362363230">နောက်ဆုံးသုံးထားသည့် မိတ္တူမှလွဲ၍ မိတ္တူပွားတဘ်အားလုံးကိုလည်း ယခုသိမ်းဆည်းပါမည်။</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6271513594716432922">အသုံးမပြုသောတဘ်အားလုံး ပိတ်ရန်</translation>

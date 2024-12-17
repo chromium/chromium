@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">ছিংক অন কৰিবনে?</translation>
 <translation id="1253032109800629289">"মূল্য ট্ৰেকিঙৰ জাননী" লুকুৱাওক</translation>
 <translation id="1258491128795710625">নতুন কি আছে</translation>
+<translation id="1259210743048744967"><ph name="USER_EMAIL" />এ ছাইন আউট কৰিলে আপোনাৰ ইতিমধ্যে থকা ব্ৰাউজিঙৰ ডেটা উপলব্ধ হ’ব। এই একাউণ্টত সেয়া ছেভ কৰা নহ’ব।</translation>
 <translation id="1262724000444746916">বুকমাৰ্কত যোগ দিয়াৰ সুবিধাটো লুকুৱাওক</translation>
 <translation id="1263231323834454256">পঢ়াৰ সূচী</translation>
 <translation id="1263433075299269530">আপুনি শেহতীয়াকৈ খোলা টেব</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">টেবটো আঁতৰাই গোটটো মচিবনে?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> বাছনি কৰা হ’ল</translation>
 <translation id="1709916727352927457">পাছকী মচক</translation>
+<translation id="1712341189152602203">ইতিমধ্যে থকা ব্ৰাউজিঙৰ ডেটা <ph name="USER_EMAIL" />ৰ সৈতে লিংক কৰা হ’ব। আপোনাৰ প্ৰতিষ্ঠানে এই ডেটা চাব পৰা হ’ব পাৰে।</translation>
 <translation id="1713777106376424209">পাৰ্চেলৰ বাহক</translation>
 <translation id="1715515772563243997">আপুনি যদি <ph name="SITE" />ক বিশ্বাস কৰে, ছাইন ইন কৰিবলৈ আপুনি এটা ছেভ হৈ থকা পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="1728549374069268714">পে’ষ্ট কৰক আৰু তালৈ যাওক</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">আপুনি কোনো পাছৱৰ্ড ছেভ কৰা ছাইটত, ছাইন ইনৰ পাছৱৰ্ড ক্ষেত্ৰখনত টিপক।</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />।</translation>
+<translation id="1879793121657209834">পাছৱৰ্ড, ইতিহাস আৰু অধিকৰ দৰে এই ডিভাইচত পূৰ্বৰে পৰা থকা ব্ৰাউজিঙৰ ডেটা কি কৰিব লাগে সেয়া বাছনি কৰক।</translation>
 <translation id="1881621406744213161">পৰিয়ালৰ সদস্যসকলক আমন্ত্ৰণ জনাওক</translation>
 <translation id="188237709236611317">স্মাৰ্ট উপায়েৰে সজোৱা মেনু বাৰ</translation>
 <translation id="1883255238294161206">সূচী সংকোচন কৰক</translation>
@@ -512,6 +515,7 @@
 <translation id="3324193307694657476">ঠিকনা ২</translation>
 <translation id="3328801116991980348">ছাইটৰ তথ্য</translation>
 <translation id="333229797575847124">এই সুবিধাটো কেনেকৈ সক্ষম কৰিব লাগে</translation>
+<translation id="3333566504534692948">নহয়, এয়া আপোনাৰ ৱৰ্ক স্পেচলৈ স্থানান্তৰ কৰক</translation>
 <translation id="3344485292736684439">{count,plural, =1{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে, {email}}one{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}other{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}}</translation>
 <translation id="334690320928261823">শেহতীয়া টেব</translation>
 <translation id="3348387552617855658">এই কাৰ্ডখনে আপোনাক নিজৰ পেকেজসমূহ ট্ৰেক কৰা আৰু ডেলিভাৰী সম্পৰ্কীয় গুৰুত্বপূৰ্ণ আপডে’টসমূহ দিয়াত সহায় কৰে।</translation>

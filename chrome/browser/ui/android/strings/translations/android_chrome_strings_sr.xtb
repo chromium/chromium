@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити <ph name="FIELDS_STRING" /> са овим сајтом.</translation>
 <translation id="3710560693796335511">Сарадња</translation>
 <translation id="3714981814255182093">Отварање траке за тражење</translation>
-<translation id="3716182511346448902">Ова страница користи превише меморије, па ју је Chrome паузирао.</translation>
 <translation id="3718765429352682176">Можете да видите историју из других апликација које отварају линкове у Chrome-у.</translation>
 <translation id="3720422586473670527">Не, хвала</translation>
 <translation id="3721119614952978349">Ви и Google</translation>
@@ -1629,7 +1628,6 @@ Google налог можда има друге облике историје п�
 <translation id="8186512483418048923">Преостале датотеке: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Још 1 дан</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Настави</translation>
 <translation id="820568752112382238">Најпосећенији сајтови</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /> и још <ph name="NUMBER_OF_OTHER_MEMBERS" /> особом}one{Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /> и још <ph name="NUMBER_OF_OTHER_MEMBERS" /> особом}few{Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /> и још <ph name="NUMBER_OF_OTHER_MEMBERS" /> особе}other{Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /> и још <ph name="NUMBER_OF_OTHER_MEMBERS" /> особа}}</translation>
 <translation id="8209050860603202033">Отвори слику</translation>

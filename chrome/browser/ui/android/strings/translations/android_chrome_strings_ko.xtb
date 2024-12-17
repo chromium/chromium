@@ -597,7 +597,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3710501561113687889">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다.</translation>
 <translation id="3710560693796335511">공동작업</translation>
 <translation id="3714981814255182093">찾기 창 열기</translation>
-<translation id="3716182511346448902">페이지에서 너무 많은 메모리를 사용하므로 Chrome에서 페이지를 일시중지했습니다.</translation>
 <translation id="3718765429352682176">Chrome에서 링크를 열어 다른 앱의 방문 기록을 볼 수 있습니다.</translation>
 <translation id="3720422586473670527">나중에</translation>
 <translation id="3721119614952978349">내 Google 서비스 설정</translation>
@@ -1629,7 +1628,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
 <translation id="8190358571722158785">1일 남음</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">다시 시작</translation>
 <translation id="820568752112382238">자주 방문한 사이트</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUMBER_OF_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여}other{<ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUMBER_OF_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여}}</translation>
 <translation id="8209050860603202033">이미지 열기</translation>

@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Želite li uključiti sinkronizaciju?</translation>
 <translation id="1253032109800629289">Sakrij opciju Primajte obavijesti o praćenju cijena</translation>
 <translation id="1258491128795710625">Što je novo</translation>
+<translation id="1259210743048744967">Vaši postojeći podaci o pregledavanju bit će dostupni nakon odjave s računa <ph name="USER_EMAIL" />. Neće se spremiti na ovaj račun.</translation>
 <translation id="1262724000444746916">Sakrij stavku Dodaj u oznake</translation>
 <translation id="1263231323834454256">Popis za čitanje</translation>
 <translation id="1263433075299269530">Vaša posljednja otvorena kartica</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Želite li ukloniti karticu i izbrisati grupu?</translation>
 <translation id="1700629756560807968">Broj odabranih oznaka: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Brisanje pristupnog ključa</translation>
+<translation id="1712341189152602203">Postojeći podaci o pregledavanju povezat će se s računom <ph name="USER_EMAIL" />. Vaša organizacija može vidjeti te podatke.</translation>
 <translation id="1713777106376424209">Dostava do</translation>
 <translation id="1715515772563243997">Ako web-lokaciju <ph name="SITE" /> smatrate pouzdanom, možete upotrijebiti spremljenu zaporku za prijavu.</translation>
 <translation id="1728549374069268714">Zalijepi i idi</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Na web-lokaciji na kojoj ste spremili zaporku dodirnite polje zaporke za prijavu.</translation>
 <translation id="1872096359983322073">Svjetlo</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Odaberite što želite učiniti s postojećim podacima o pregledavanju na ovom uređaju, kao što su zaporke, povijest i drugo.</translation>
 <translation id="1881621406744213161">Pozovite članove obitelji</translation>
 <translation id="188237709236611317">Traka izbornika za pametno razvrstavanje</translation>
 <translation id="1883255238294161206">Sažmi popis</translation>
@@ -512,6 +515,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3324193307694657476">2. adresni redak</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
 <translation id="333229797575847124">Kako omogućiti tu značajku</translation>
+<translation id="3333566504534692948">Ne, premjestite ih u poslovni prostor</translation>
 <translation id="3344485292736684439">{count,plural, =1{Oznaka je spremljena u "{title}" na vašem računu, {email}}one{Oznake spremljene na "{title}" na vašem računu, {email}}few{Oznake spremljene na "{title}" na vašem računu, {email}}other{Oznake spremljene na "{title}" na vašem računu, {email}}}</translation>
 <translation id="334690320928261823">Nedavne kartice</translation>
 <translation id="3348387552617855658">Ta vam kartica pomaže pratiti pakete i pruža vam važne novosti o isporuci.</translation>

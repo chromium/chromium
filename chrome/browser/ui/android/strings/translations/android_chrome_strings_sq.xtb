@@ -597,7 +597,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3710501561113687889">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë <ph name="FIELDS_STRING" /> me këtë sajt.</translation>
 <translation id="3710560693796335511">Bashkëpunimi</translation>
 <translation id="3714981814255182093">Hap shiritin e gjetjes</translation>
-<translation id="3716182511346448902">Kjo faqe përdor shumë memorie, prandaj Chrome e ka vendosur atë në pauzë.</translation>
 <translation id="3718765429352682176">Mund të shikosh historikun nga aplikacionet e tjera që hapin lidhjet në Chrome.</translation>
 <translation id="3720422586473670527">Jo, faleminderit</translation>
 <translation id="3721119614952978349">Ti dhe Google</translation>
@@ -1629,7 +1628,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8186512483418048923"><ph name="FILES" /> skedarë të mbetur</translation>
 <translation id="8190358571722158785">1 ditë e mbetur</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Pajisjet e tua<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Vazhdo</translation>
 <translation id="820568752112382238">Sajtet më të vizituara</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /> dhe <ph name="NUMBER_OF_OTHER_MEMBERS" /> tjetër}other{Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /> dhe <ph name="NUMBER_OF_OTHER_MEMBERS" /> të tjerë}}</translation>
 <translation id="8209050860603202033">Hape imazhin</translation>

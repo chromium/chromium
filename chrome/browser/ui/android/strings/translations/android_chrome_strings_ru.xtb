@@ -380,7 +380,7 @@
 <translation id="2708051474374549906">Эффективная защита в реальном времени от опасных сайтов, расширений и скачанных файлов. Она действует с учетом данных о вашей работе в браузере, которые отправляются в Google.</translation>
 <translation id="2708226184420201102">Открыть в браузере <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Новое</translation>
-<translation id="2718352093833049315">Только Wi-Fi</translation>
+<translation id="2718352093833049315">Только по Wi-Fi</translation>
 <translation id="2718846868787000099">Сайты, которые вы посещаете, могут видеть выбранные вами настройки, чтобы показывать контент на нужном языке.</translation>
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2739887572830526131">Вы сможете пользоваться ей в дальнейшем. Если группа больше не нужна, удалите ее.</translation>
@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">Для продолжения регистрации <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />).</translation>
 <translation id="3710560693796335511">Доступ для совместной работы</translation>
 <translation id="3714981814255182093">Открыть панель поиска</translation>
-<translation id="3716182511346448902">Эта страница расходовала слишком много памяти, поэтому работа ее скриптов была приостановлена.</translation>
 <translation id="3718765429352682176">Вы можете просматривать историю из других приложений, которые открывают ссылки в Chrome.</translation>
 <translation id="3720422586473670527">Нет, спасибо</translation>
 <translation id="3721119614952978349">Я и Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923">Осталось файлов: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Остался 1 день</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Возобновить</translation>
 <translation id="820568752112382238">Часто посещаемые сайты</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователь}one{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователь}few{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователя}many{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователей}other{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователя}}</translation>
 <translation id="8209050860603202033">Открыть изображение</translation>

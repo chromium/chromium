@@ -70,6 +70,7 @@
 <translation id="1896836275755235458">Chromium ले ब्याकग्राउन्डमा हुने गतिविधि र निर्वाध स्क्रोलिङ तथा भिडियोको फ्रेम रेटलगायतका भिजुअल इफेक्टहरू सीमित पारेर ब्याट्रीको पावर जोगाउँछ। <ph name="BEGIN_LINK" />इनर्जी सेभरका बारेमा थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium अपडेटर सर्भिस</translation>
 <translation id="1911763535808217981">यसलाई निष्क्रिय पारेर, तपाईं Chromium मा साइन इन नगरिकनै Gmail जस्ता Google का साइटहरूमा साइन इन गर्न सक्नुहुन्छ</translation>
+<translation id="1916451563296275579">Chromium बाट यो एपसम्बन्धी डेटा हटाउनुहोस्</translation>
 <translation id="1929939181775079593">Chromium ले कुनै प्रतिक्रिया जनाइरहेको छैन। अहिले नै पुन: लन्च गर्ने?</translation>
 <translation id="1933341829955786215">तपाईंको सङ्गठन <ph name="MANAGER" /> को नीतिअनुसार तपाईंले Chromium मा साइन इन गर्नु पर्ने हुन्छ</translation>
 <translation id="193439633299369377">यो अपडेट लागू गर्न ChromiumOS रिस्टार्ट गर्नु पर्ने हुन्छ।</translation>
@@ -405,6 +406,7 @@
 <translation id="6455857529632101747">Chromium का प्रोफाइलमा तपाईंलाई स्वागत छ</translation>
 <translation id="6466344609055215035">Chromium बाट खाता हटाउनुहोस्</translation>
 <translation id="6475912303565314141">तपाइँले क्रोमियम सुरु गर्दा कुन पृष्ठ देखाउँछ भनेर पनि यसले नियन्त्रण गर्छ।</translation>
+<translation id="648062525172759633">यी पेजहरू Chromium विकासकर्ताहरूको प्रयोगका लागि बनाइएका हुनाले सक्रिय रूपमा यिनको व्यवस्थापन वा परीक्षण नगरिएको हुन सक्छ। यी पेजहरू अन गर्न <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> मा जानुहोस्, यो बटन क्लिक गरी पेज डिबग गर्ने सुविधा अन गर्नुहोस् र त्यसपछि फेरि यो पेजमा जानुहोस्।</translation>
 <translation id="648319183876919572">परिष्कृत Safe Browsing सुविधाले तपाईंलाई खतरनाक वेबसाइट तथा डाउनलोडबाट थप सुरक्षित राख्छ</translation>
 <translation id="6510925080656968729">Chromium को स्थापना हटाउनुहोस्</translation>
 <translation id="651535675648445253">सर्टकट Chromium मा खुल्छ</translation>

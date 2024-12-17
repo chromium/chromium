@@ -98,6 +98,7 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{S'ha afegit <ph name="ONE_ADDED" /> pestanya}other{S'han afegit <ph name="MANY_ADDED" /> pestanyes}}</translation>
 <translation id="5161254044473106830">Cal indicar un títol</translation>
 <translation id="5339733443032484186">La teva darrera pestanya</translation>
+<translation id="5380159289133845234">Arxiva les pestanyes duplicades</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">El grup de pestanyes s'ha desplegat</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
@@ -117,6 +118,7 @@ Si l'abandones, perdràs immediatament l'accés al grup de pestanyes "<ph name="
 <translation id="6051432659151380973">Els teus grups de pestanyes es desen automàticament</translation>
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Perdràs immediatament l'accés al grup de pestanyes <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Ara també s'arxivaran totes les pestanyes duplicades, a excepció de la còpia que s'hagi utilitzat més recentment.</translation>
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
 <translation id="6271513594716432922">Tanca totes les pestanyes inactives</translation>

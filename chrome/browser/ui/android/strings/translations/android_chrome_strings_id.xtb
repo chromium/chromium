@@ -597,7 +597,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3710501561113687889">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan <ph name="FIELDS_STRING" /> Anda ke situs ini.</translation>
 <translation id="3710560693796335511">Kolaborasi</translation>
 <translation id="3714981814255182093">Membuka Bilah Cari</translation>
-<translation id="3716182511346448902">Halaman ini menggunakan terlalu banyak memori, sehingga Chrome menjedanya.</translation>
 <translation id="3718765429352682176">Anda mungkin melihat histori dari aplikasi lain yang membuka link di Chrome.</translation>
 <translation id="3720422586473670527">Lain kali</translation>
 <translation id="3721119614952978349">Anda dan Google</translation>
@@ -1629,7 +1628,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8186512483418048923"><ph name="FILES" /> file tersisa</translation>
 <translation id="8190358571722158785">1 hari lagi</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Perangkat Anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="820568752112382238">Situs yang paling sering dikunjungi</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Bergabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" /> dan <ph name="NUMBER_OF_OTHER_MEMBERS" /> orang lainnya}other{Bergabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" /> dan <ph name="NUMBER_OF_OTHER_MEMBERS" /> orang lainnya}}</translation>
 <translation id="8209050860603202033">Buka gambar</translation>

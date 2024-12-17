@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
 <translation id="4194328954146351878">Pitaj prije omogućavanja web-lokacijama da vide i mijenjaju podatke na NFC uređajima (preporučeno)</translation>
 <translation id="4200726100658658164">Otvori postavke lokacije</translation>
+<translation id="4213239715282467974">Chrome sada nedavne kartice dijeli s vašim uređajem. Možete im brzo pristupiti na popisu aplikacija na uređaju i u rezultatima pretraživanja. To uvijek možete isključiti u postavkama Chromea.</translation>
 <translation id="4226663524361240545">Obavijesti mogu uključiti vibriranje uređaja</translation>
 <translation id="4259722352634471385">Otvaranje je blokirano: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dopušteno</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Web-lokacije od vas ne smiju tražiti da odobrite korištenje podataka koje je spremila o vama</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ još 1)}one{(+ još #)}few{(+ još #)}other{(+ još #)}}</translation>
 <translation id="5403592356182871684">Nazivi</translation>
+<translation id="5408906274948600065">Dopustite Chromeu da dijeli vaše nedavne kartice s uređajem kako biste ih vidjeli na popisu aplikacija i u rezultatima pretraživanja na uređaju. Tu značajku uvijek možete uključiti ili isključiti u postavkama Chromea.</translation>
 <translation id="5438097262470833822">Poništit će se dopuštenja za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kad je ta postavka uključena, web-lokacije mogu tražiti vašu lokaciju. Kad je ta postavka isključena, web-lokacije ne mogu vidjeti vašu lokaciju.</translation>
 <translation id="5489227211564503167">Proteklo vrijeme: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" /></translation>

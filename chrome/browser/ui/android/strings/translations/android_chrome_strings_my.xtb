@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့် <ph name="FIELDS_STRING" /> ကို ဤဝဘ်ဆိုက်နှင့် မျှဝေမည်။</translation>
 <translation id="3710560693796335511">ပူးတွဲလုပ်ကိုင်ခြင်း</translation>
 <translation id="3714981814255182093">ရှာဖွေမှုဘားတန်းကို ဖွင့်ရန်</translation>
-<translation id="3716182511346448902">ဤစာမျက်နှာက မှတ်ဉာဏ်အများအပြား အသုံးပြုနေသောကြောင့် Chrome က ၎င်းကို ခေတ္တရပ်ထားပါသည်။</translation>
 <translation id="3718765429352682176">Chrome တွင် လင့်ခ်များဖွင့်သော အခြားအက်ပ်များမှ မှတ်တမ်းများကို မြင်ရနိုင်သည်။</translation>
 <translation id="3720422586473670527">မလိုပါ</translation>
 <translation id="3721119614952978349">သင်နှင့် Google</translation>
@@ -1628,7 +1627,6 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ဖိုင် ကျန်ပါသည်</translation>
 <translation id="8190358571722158785">၁ ရက် ကျန်သည်</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />သင့်စက်ပစ္စည်းများ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="820568752112382238">အများဆုံး ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUMBER_OF_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း}other{<ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUMBER_OF_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း}}</translation>
 <translation id="8209050860603202033">ပုံဖွင့်</translation>

@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">కొనసాగించడానికి, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో మీ <ph name="FIELDS_STRING" />‌ను షేర్ చేస్తుంది.</translation>
 <translation id="3710560693796335511">సహకారం</translation>
 <translation id="3714981814255182093">శోధన బార్‌ను తెరవండి</translation>
-<translation id="3716182511346448902">ఈ పేజీ చాలా మెమరీని ఉపయోగిస్తోంది, కాబట్టి దీన్ని Chrome పాజ్ చేయబడింది.</translation>
 <translation id="3718765429352682176">మీరు Chromeలో లింక్‌లను తెరిచే ఇతర యాప్‌ల నుండి హిస్టరీని చూడవచ్చు.</translation>
 <translation id="3720422586473670527">వద్దు, థ్యాంక్స్</translation>
 <translation id="3721119614952978349">మీరు మరియు Google</translation>
@@ -1627,7 +1626,6 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ఫైళ్లు మిగిలి ఉన్నాయి</translation>
 <translation id="8190358571722158785">1 రోజు మిగిలి ఉంది</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />మీ పరికరాలు<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="820568752112382238">అత్యంత ఎక్కువగా సందర్శించిన సైట్‌లు</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUMBER_OF_OTHER_MEMBERS" /> వ్యక్తితో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}other{<ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUMBER_OF_OTHER_MEMBERS" /> వ్యక్తులతో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}}</translation>
 <translation id="8209050860603202033">చిత్రాన్ని తెరువు</translation>

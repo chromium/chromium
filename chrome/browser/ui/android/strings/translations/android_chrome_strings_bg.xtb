@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт вашите <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Съвместна работа</translation>
 <translation id="3714981814255182093">Отваряне на лентата за търсене</translation>
-<translation id="3716182511346448902">Тази страница използва твърде много памет, така че Chrome я постави на пауза.</translation>
 <translation id="3718765429352682176">Възможно е да виждате историята от други приложения, които отварят връзки в Chrome.</translation>
 <translation id="3720422586473670527">Не, благодаря</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923">Остават <ph name="FILES" /> файла</translation>
 <translation id="8190358571722158785">Остава 1 ден</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Възобновяване</translation>
 <translation id="820568752112382238">Най-посещавани сайтове</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /> и още <ph name="NUMBER_OF_OTHER_MEMBERS" /> човек}other{Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /> и още <ph name="NUMBER_OF_OTHER_MEMBERS" /> души}}</translation>
 <translation id="8209050860603202033">Отваряне на изображението</translation>

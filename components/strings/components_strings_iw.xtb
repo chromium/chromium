@@ -926,6 +926,7 @@
 <translation id="2628224721443278970">‏כניסה ל-Microsoft OneDrive</translation>
 <translation id="2634124572758952069">‏לא ניתן היה למצוא את כתובת ה-IP של השרת של <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">סטטוס:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Fabric (Semi-Gloss)</translation>
 <translation id="264810637653812429">לא נמצאו מכשירים תואמים.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1140,6 +1141,7 @@
 <translation id="306573536155379004">המשחק התחיל.</translation>
 <translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3068118691172921711">העלאת הקבצים אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד דקה</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{פריט אחד ({ITEMS})}one{‫{ITEMS} פריטים}two{‫{ITEMS} פריטים}other{‫{ITEMS} פריטים}}</translation>
 <translation id="3076865167425975822">מערכות הפעלה</translation>
 <translation id="3080254622891793721">גרפיקה</translation>
 <translation id="3082007635241601060">‏רוצה ש-Google תשתמש בעגלות הקניות כדי למצוא הנחות זמינות בהתאמה אישית?</translation>
@@ -2834,6 +2836,7 @@ Del</translation>
 <translation id="6106989379647458772">ייתכן שדף האינטרנט בכתובת <ph name="PAGE" /> אינו פעיל זמנית, או שהוא הועבר לכתובת אינטרנט קבועה אחרת.</translation>
 <translation id="6107012941649240045">מונפק ל</translation>
 <translation id="6107924765192360631">כדי לקבל הצעות לכתיבה, פשוט צריך להתחיל עם כמה מילים או טיוטה ראשונית.</translation>
+<translation id="6108508372809181847">השוואה למוצר <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">פרטי אישור</translation>
 <translation id="6108702513636120202">‏מנוע החיפוש שלך ב-Chromium</translation>
 <translation id="6108849843016142864">זוחלים ודו-חיים</translation>

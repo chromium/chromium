@@ -597,7 +597,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website.</translation>
 <translation id="3710560693796335511">Zusammenarbeit</translation>
 <translation id="3714981814255182093">Suchleiste öffnen</translation>
-<translation id="3716182511346448902">Diese Seite benötigt zu viel Arbeitsspeicher und wurde daher von Chrome angehalten.</translation>
 <translation id="3718765429352682176">Möglicherweise siehst du den Verlauf von anderen Apps, die Links in Chrome öffnen.</translation>
 <translation id="3720422586473670527">Nein, danke</translation>
 <translation id="3721119614952978349">Google und ich</translation>
@@ -1629,7 +1628,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8186512483418048923">Noch <ph name="FILES" /> Dateien</translation>
 <translation id="8190358571722158785">1 Tag übrig</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="820568752112382238">Am häufigsten besuchte Websites</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und <ph name="NUMBER_OF_OTHER_MEMBERS" /> weiteren Person beitreten}other{Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und <ph name="NUMBER_OF_OTHER_MEMBERS" /> weiteren Personen beitreten}}</translation>
 <translation id="8209050860603202033">Bild öffnen</translation>

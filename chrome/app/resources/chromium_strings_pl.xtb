@@ -67,6 +67,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="1896836275755235458">Chromium oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie. <ph name="BEGIN_LINK" />Więcej informacji o Oszczędzaniu energii<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Usługa aktualizatora Chromium</translation>
 <translation id="1911763535808217981">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chromium</translation>
+<translation id="1916451563296275579">Usuń dane tej aplikacji z Chromium</translation>
 <translation id="1929939181775079593">Chromium nie odpowiada. Uruchomić go teraz ponownie?</translation>
 <translation id="1933341829955786215">Twoja organizacja (<ph name="MANAGER" />) wymaga od Ciebie zalogowania się w Chromium</translation>
 <translation id="193439633299369377">Zastosowanie aktualizacji wymaga ponownego uruchomienia systemu operacyjnego Chromium.</translation>
@@ -402,6 +403,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6455857529632101747">Witamy w profilach Chromium</translation>
 <translation id="6466344609055215035">Usuń konto z Chromium</translation>
 <translation id="6475912303565314141">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium.</translation>
+<translation id="648062525172759633">Te strony są przeznaczone dla programistów Chromium i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
 <translation id="648319183876919572">Ulepszone Bezpieczne przeglądanie skuteczniej chroni Cię przed niebezpiecznymi stronami i pobieranymi plikami</translation>
 <translation id="6510925080656968729">Odinstaluj Chromium</translation>
 <translation id="651535675648445253">Skróty otwierają się w Chromium</translation>

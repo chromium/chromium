@@ -98,6 +98,7 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flipa bætt við}one{<ph name="MANY_ADDED" /> flipa bætt við}other{<ph name="MANY_ADDED" /> flipum bætt við}}</translation>
 <translation id="5161254044473106830">Titil vantar</translation>
 <translation id="5339733443032484186">Síðasti flipi</translation>
+<translation id="5380159289133845234">Setja tvítekna flipa í geymslu</translation>
 <translation id="5400836586163650660">Grár</translation>
 <translation id="5490235265819901748">Flipahópur stækkaður</translation>
 <translation id="5494920125229734069">Velja allt</translation>
@@ -117,6 +118,7 @@ Ef þú yfirgefur hann muntu umsvifalaust missa aðgang að flipahópnum „<ph 
 <translation id="6051432659151380973">Flipahóparnir þínir vistast sjálfkrafa</translation>
 <translation id="6054741997831917303">Verð á þessari vöru lækkaði nýlega úr <ph name="PREVIOUS_PRICE" /> í <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Þú munt umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“</translation>
+<translation id="6109251075362363230">Allir tvíteknir flipar verða nú einnig settir í geymslu, fyrir utan það afrit sem síðast var notað.</translation>
 <translation id="6193448654517602979">Velja flipa</translation>
 <translation id="6228793724645064692">(einkunn verslunar)</translation>
 <translation id="6271513594716432922">Loka öllum óvirkum flipum</translation>

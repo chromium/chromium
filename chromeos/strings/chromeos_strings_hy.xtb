@@ -484,6 +484,7 @@
 <translation id="3340011300870565703">Աջ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="3340978935015468852">կարգավորումներում</translation>
 <translation id="3347558044552027859">ժամանակակից</translation>
+<translation id="3353477144743332882">Ներբեռնել ամփոփագրերի և անվանումների ստեղծման մոդելը</translation>
 <translation id="3359218928534347896">միացնել/անջատել խոսափողը</translation>
 <translation id="3360306038446926262">Պատուհաններ</translation>
 <translation id="3361618936611118375">սուշի</translation>
@@ -999,6 +1000,7 @@
 <translation id="5859969039821714932">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում առանց <ph name="KEY" /> ստեղնի։</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5860491529813859533">Միացնել</translation>
+<translation id="5875913454160982848">Ներբեռնել գրադարձման մոդելը</translation>
 <translation id="5876385649737594562">Միացրեք՝ պարամետրեր ընտրելու համար</translation>
 <translation id="5877503382465267833">Դադարեցնել նվագարկումը՝<ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Լիաէկրան</translation>
@@ -1589,6 +1591,7 @@
 <translation id="8503836310948963452">Սպասեք ևս մի քանի րոպե…</translation>
 <translation id="8505011850330200833">Gemini-ի մոդելի համար անհրաժեշտ է 2 ԳԲ տարածք՝ գրադարձումները մշակելու և ամփոփագրեր ստեղծելու համար</translation>
 <translation id="8508640263392900755">APN-ի մանրամասներ</translation>
+<translation id="8509574872955173831">Իմանալ ավելին ամփոփագրերի և անվանումների ստեղծման մասին</translation>
 <translation id="8522687886059337719">Այժմ ձեզ հասանելի են նոր <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />պաստառներ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> և <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />էկրանապահ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">CrosVm</translation>
 <translation id="852896705346853285">թեյատուն</translation>

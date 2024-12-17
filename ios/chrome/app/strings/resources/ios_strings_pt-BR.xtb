@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Ativar sincronização?</translation>
 <translation id="1253032109800629289">Ocultar "Receber notificações de monitoramento de preço"</translation>
 <translation id="1258491128795710625">O que há de novo</translation>
+<translation id="1259210743048744967">Seus dados de navegação atuais estarão disponíveis quando você sair de <ph name="USER_EMAIL" />. Eles não serão salvos nesta conta.</translation>
 <translation id="1262724000444746916">Ocultar "Adicionar aos favoritos"</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263433075299269530">Sua última guia aberta</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Remover guia e excluir grupo?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
 <translation id="1709916727352927457">Excluir chave de acesso</translation>
+<translation id="1712341189152602203">Os dados de navegação atuais serão vinculados a <ph name="USER_EMAIL" />. Esses dados podem estar visíveis para sua organização.</translation>
 <translation id="1713777106376424209">Enviado por</translation>
 <translation id="1715515772563243997">Se você confia no site <ph name="SITE" />, pode usar uma senha salva para fazer login.</translation>
 <translation id="1728549374069268714">Colar e ir</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Em um site em que você salvou uma senha, toque no campo de senha de login.</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Escolha o que fazer com os dados de navegação neste dispositivo, como senhas, histórico e muito mais.</translation>
 <translation id="1881621406744213161">Convidar membros da família</translation>
 <translation id="188237709236611317">Barra de menus da ordenação inteligente</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
@@ -512,6 +515,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3324193307694657476">Endereço 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="333229797575847124">Como ativar esse recurso</translation>
+<translation id="3333566504534692948">Não, mover dados para o espaço de trabalho</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{Favorito salvo em "{title}" na conta {email}}other{Favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="334690320928261823">Guias recentes</translation>
 <translation id="3348387552617855658">Este card ajuda você a monitorar seus pacotes e fornece atualizações importantes sobre a entrega.</translation>
@@ -1699,7 +1703,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8609743333007776886">Adicionar ${url} aos favoritos</translation>
 <translation id="8611922158252451755">Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. O link expira em 48 horas.</translation>
 <translation id="8620640915598389714">Editar</translation>
-<translation id="8625706492572042370">Editar Tela de Início</translation>
+<translation id="8625706492572042370">Editar tela inicial</translation>
 <translation id="8633025649649592204">Atividade recente</translation>
 <translation id="8636825310635137004">Para acessar suas guias abertas em outros dispositivos, ative a sincronização.</translation>
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>

@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{탭 <ph name="ONE_ADDED" />개 추가됨}other{탭 <ph name="MANY_ADDED" />개 추가됨}}</translation>
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
 <translation id="5339733443032484186">마지막 탭</translation>
+<translation id="5380159289133845234">중복 탭 보관처리</translation>
 <translation id="5400836586163650660">그레이</translation>
 <translation id="5490235265819901748">탭 그룹 펼침</translation>
 <translation id="5494920125229734069">모두 선택</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">탭 그룹이 자동으로 저장됩니다.</translation>
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440"><ph name="GROUP_NAME" /> 탭 그룹에 대한 액세스 권한을 즉시 잃게 됩니다.</translation>
+<translation id="6109251075362363230">이제 가장 최근에 사용한 사본을 제외한 모든 중복 탭도 보관처리됩니다.</translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
 <translation id="6271513594716432922">비활성 탭 모두 닫기</translation>

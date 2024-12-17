@@ -484,6 +484,7 @@
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="3340978935015468852">सेटिंग</translation>
 <translation id="3347558044552027859">मॉडर्न</translation>
+<translation id="3353477144743332882">खास जानकारी और नाम जनरेट करने का मॉडल डाउनलोड करें</translation>
 <translation id="3359218928534347896">माइक्रोफ़ोन को म्यूट करने वाले बटन को टॉगल करें</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">सुशी</translation>
@@ -999,6 +1000,7 @@
 <translation id="5859969039821714932">शॉर्टकट उपलब्ध नहीं है. <ph name="KEY" /> के बिना, नया शॉर्टकट दबाएं.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
+<translation id="5875913454160982848">बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड करें</translation>
 <translation id="5876385649737594562">विकल्प चुनने के लिए, ऐंबियंट मोड चालू करें</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> को रोकें</translation>
 <translation id="588258955323874662">पूर्णस्‍क्रीन</translation>
@@ -1589,6 +1591,7 @@
 <translation id="8503836310948963452">बस कुछ मिनट और...</translation>
 <translation id="8505011850330200833">ट्रांसक्रिप्ट प्रोसेस करने और खास जानकारी तैयार करने के लिए, Gemini मॉडल को आपके डिवाइस के स्टोरेज में 2 जीबी तक की जगह चाहिए</translation>
 <translation id="8508640263392900755">एपीएन की जानकारी</translation>
+<translation id="8509574872955173831">खास जानकारी और नाम जनरेट करने की सुविधा के बारे में ज़्यादा जानें</translation>
 <translation id="8522687886059337719">अब आपके पास नए <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> और <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />स्क्रीन सेवर<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> का ऐक्सेस है</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">टी हाउस</translation>

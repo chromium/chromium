@@ -497,7 +497,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1335929031622236846">Enrol your device</translation>
 <translation id="133660899895084533">Read Bluetooth peripherals information and data</translation>
 <translation id="1336902454946927954">Your security key is locked because your fingerprint couldn't be recognised. To unlock it, enter your PIN.</translation>
-<translation id="1337066099824654054">Contextual help is off</translation>
 <translation id="1338631221631423366">Pairing…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wants to open this application.</translation>
 <translation id="1338950911836659113">Deleting...</translation>
@@ -1173,7 +1172,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1802687198411089702">The page isn't responding. You can wait for it or exit.</translation>
 <translation id="1803531841600994172">Language to translate into</translation>
 <translation id="1803545009660609783">Retrain</translation>
-<translation id="1804195280859010019">You'll see more useful information or suggestions in features like the Google Search side panel</translation>
 <translation id="180441032496361123">Click to activate <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">Background tab is using your microphone</translation>
 <translation id="1805822111539868586">Inspect views</translation>
@@ -3580,7 +3578,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="350397915809787283">If you don't have an account, select the first option to create one.</translation>
 <translation id="3503995387997205657">You can restore your previous apps</translation>
 <translation id="3505100368357440862">Shopping suggestions</translation>
-<translation id="3505602163050943406">When you use some features, they can send parts of open pages, related recent pages, and their URLs to Google</translation>
 <translation id="3507132249039706973">Standard protection is on</translation>
 <translation id="3507888235492474624">Re-scan Bluetooth devices</translation>
 <translation id="3508492320654304609">Your sign-in data couldn't be deleted</translation>
@@ -3932,7 +3929,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Open <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Sites can ask to look for and use printers that are accessible to your device</translation>
-<translation id="3740396996321407665">Get contextual help from some features</translation>
 <translation id="3740945083753997630">Decrease display and text size</translation>
 <translation id="3741056951918180319">You can always click the extension to use it on any site</translation>
 <translation id="374124333420280219">App details:</translation>
@@ -4330,6 +4326,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3993887353483242788">Sync your <ph name="DEVICE_TYPE" /> so that your preferences will be ready on any device when you sign in with your Google Account. Preferences include apps, settings, Wi-Fi passwords, languages, wallpaper, keyboard shortcuts and more.</translation>
 <translation id="3994318741694670028">Unfortunately, your computer is configured with a malformed hardware ID. This prevents Chrome OS Flex from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD" />may be vulnerable to malicious attacks<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Unlock your phone and bring it closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Sign in as <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Locate buttons on your tablet</translation>
 <translation id="3994708120330953242">Some of your passwords were found in a data breach. To secure your accounts, you should change these passwords now.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -7301,7 +7298,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6173623053897475761">Type your PIN again</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Get a link</translation>
-<translation id="6176701216248282552">Contextual help is on. These features can send open pages to Google.</translation>
 <translation id="6177412385419165772">Removing…</translation>
 <translation id="6177478397823976397">No devices found. Open a Help Centre article in a new tab</translation>
 <translation id="6178664161104547336">Select a certificate</translation>
@@ -9201,7 +9197,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="756445078718366910">Open Browser Window</translation>
 <translation id="7564847347806291057">End process</translation>
 <translation id="756503097602602175">You can manage signed-in Google Accounts from <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" />. Permissions that you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign in to your <ph name="DEVICE_TYPE" /> as a guest or browse the web in an <ph name="LINK_2_BEGIN" />Incognito window<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Some features can use the content of open pages and related recent pages to provide more useful information or suggestions</translation>
 <translation id="7566118625369982896">Manage Play app links</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Create key combination</translation>
@@ -10948,7 +10943,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8781980678064919987">Shut down when lid is closed</translation>
 <translation id="8782565991310229362">Kiosk application launch cancelled.</translation>
 <translation id="8783834180813871000">Type the pairing code then press Return or Enter</translation>
-<translation id="8783955532752528811">Contextual help in features</translation>
 <translation id="8784626084144195648">Binned Average</translation>
 <translation id="8785622406424941542">Stylus</translation>
 <translation id="8786824282808281903">When your child sees this icon, a fingerprint can be used for identification or to approve purchases.</translation>
@@ -11440,7 +11434,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9113529408970052045">'Help me write' can automatically open when a text box on a site can be filled with short-form content</translation>
 <translation id="9114663181201435112">Sign in easily</translation>
 <translation id="9115675100829699941">&amp;Bookmarks</translation>
-<translation id="9115932142612197835">This setting doesn't change the availability of Google Translate or Lens</translation>
 <translation id="9116366756388192417">Choose a subject</translation>
 <translation id="9116799625073598554">Note-taking app</translation>
 <translation id="9117030152748022724">Manage your apps</translation>

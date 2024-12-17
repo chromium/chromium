@@ -597,7 +597,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3710501561113687889">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų <ph name="FIELDS_STRING" /> su šia svetaine.</translation>
 <translation id="3710560693796335511">Bendradarbiavimas</translation>
 <translation id="3714981814255182093">Atidaryti radimo juostą</translation>
-<translation id="3716182511346448902">Šis puslapis naudoja per daug atminties, todėl „Chrome“ jį pristabdė.</translation>
 <translation id="3718765429352682176">Galite matyti kitų programų, kurios atidaro nuorodas naršyklėje „Chrome“, istoriją.</translation>
 <translation id="3720422586473670527">Ne, ačiū</translation>
 <translation id="3721119614952978349">Jūs ir „Google“</translation>
@@ -1629,7 +1628,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8186512483418048923">Liko failų: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Liko 1 d.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsų įrenginiai<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="820568752112382238">Dažniausiai lankomos svetainės</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar <ph name="NUMBER_OF_OTHER_MEMBERS" /> asmeniu}one{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar <ph name="NUMBER_OF_OTHER_MEMBERS" /> asmeniu}few{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar <ph name="NUMBER_OF_OTHER_MEMBERS" /> asmenimis}many{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar <ph name="NUMBER_OF_OTHER_MEMBERS" /> asmens}other{Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar <ph name="NUMBER_OF_OTHER_MEMBERS" /> asmenų}}</translation>
 <translation id="8209050860603202033">Atidaryti vaizdą</translation>

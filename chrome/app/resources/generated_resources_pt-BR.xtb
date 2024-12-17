@@ -498,7 +498,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1335929031622236846">Inscrever seu dispositivo</translation>
 <translation id="133660899895084533">Ler informações e dados de periféricos Bluetooth</translation>
 <translation id="1336902454946927954">A chave de segurança está bloqueada porque sua impressão digital não foi reconhecida. Para desbloquear, digite seu PIN.</translation>
-<translation id="1337066099824654054">A ajuda contextual está desativada</translation>
 <translation id="1338631221631423366">Pareando…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quer abrir esse aplicativo.</translation>
 <translation id="1338950911836659113">Excluindo...</translation>
@@ -1174,7 +1173,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1802687198411089702">A página não está respondendo. Você pode esperar até que ele volte a responder ou sair.</translation>
 <translation id="1803531841600994172">Traduzir para</translation>
 <translation id="1803545009660609783">Redefinir</translation>
-<translation id="1804195280859010019">Mais informações ou sugestões mais úteis estão disponíveis em recursos como o painel lateral da Pesquisa Google</translation>
 <translation id="180441032496361123">Clique para ativar <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">A guia em segundo plano está usando o microfone</translation>
 <translation id="1805822111539868586">Inspecionar visualizações</translation>
@@ -2340,6 +2338,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2606568927909309675">Cria legendas automaticamente para áudios e vídeos em inglês. O áudio e as legendas nunca deixam o dispositivo.</translation>
 <translation id="2606890864830643943">Como exportar dados de diagnóstico</translation>
 <translation id="2607101320794533334">Informações da chave pública do requerente</translation>
+<translation id="2608837922830967145">Não mostrar esta mensagem novamente</translation>
 <translation id="2609896558069604090">Criar atalhos...</translation>
 <translation id="2609980095400624569">Não foi possível estabelecer a conexão</translation>
 <translation id="2610157865375787051">Suspender</translation>
@@ -3581,7 +3580,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="350397915809787283">Se você não tem uma conta, selecione a primeira opção para criar uma.</translation>
 <translation id="3503995387997205657">Você pode restaurar seus apps anteriores</translation>
 <translation id="3505100368357440862">Sugestões de compras</translation>
-<translation id="3505602163050943406">Quando você usa alguns recursos, eles podem enviar partes de páginas abertas, páginas recentes relacionadas e os URLs delas ao Google</translation>
 <translation id="3507132249039706973">A Proteção padrão está ativa</translation>
 <translation id="3507888235492474624">Procurar dispositivos Bluetooth novamente</translation>
 <translation id="3508492320654304609">Não foi possível excluir os dados de login</translation>
@@ -3933,7 +3931,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Abrir <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Os sites podem pedir para procurar e usar impressoras acessíveis ao dispositivo</translation>
-<translation id="3740396996321407665">Receba ajuda contextual sobre alguns recursos</translation>
 <translation id="3740945083753997630">Diminuir o tamanho de visualização da tela e do texto</translation>
 <translation id="3741056951918180319">Você pode clicar na extensão quando quiser para usá-la em qualquer site</translation>
 <translation id="374124333420280219">Detalhes do app:</translation>
@@ -4331,6 +4328,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3993887353483242788">Sincronize o <ph name="DEVICE_TYPE" /> para que suas preferências estejam em qualquer dispositivo em que você fizer login na Conta do Google. As preferências incluem apps, configurações, senhas de Wi-Fi, idiomas, planos de fundo, atalhos do teclado e muito mais.</translation>
 <translation id="3994318741694670028">Infelizmente, seu computador está configurado com um ID de hardware incorreto. Isso impede que o ChromeOS Flex seja atualizado com as correções de segurança mais recentes e, por isso, ele <ph name="BEGIN_BOLD" />pode ficar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloqueie seu smartphone e aproxime-o para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3994522032746736727">Fazer login como <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Localizar botões no tablet</translation>
 <translation id="3994708120330953242">Algumas das suas senhas foram encontradas em um vazamento de dados. Para proteger suas contas, mude as senhas imediatamente.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -7303,7 +7301,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6173623053897475761">Digite seu PIN novamente</translation>
 <translation id="6175314957787328458">GUID do domínio da Microsoft</translation>
 <translation id="6175910054050815932">Gerar um link</translation>
-<translation id="6176701216248282552">A ajuda contextual está ativada. Esses recursos podem enviar páginas abertas ao Google.</translation>
 <translation id="6177412385419165772">Removendo...</translation>
 <translation id="6177478397823976397">Nenhum dispositivo encontrado. Abra um artigo da Central de Ajuda em uma nova guia.</translation>
 <translation id="6178664161104547336">Selecione um certificado</translation>
@@ -9205,7 +9202,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="756445078718366910">Abrir janela do navegador</translation>
 <translation id="7564847347806291057">Encerrar processo</translation>
 <translation id="756503097602602175">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para gerenciar as Contas do Google conectadas. As permissões concedidas a sites e apps podem ser aplicadas a todas as contas. Se você não quer que sites ou apps tenham acesso às informações da sua conta, faça login no <ph name="DEVICE_TYPE" /> como visitante ou navegue na Web usando uma <ph name="LINK_2_BEGIN" />janela anônima<ph name="LINK_2_END" />.</translation>
-<translation id="756583107125124860">Alguns recursos podem usar o conteúdo de páginas recentes relacionadas e abertas para fornecer informações ou sugestões mais úteis</translation>
 <translation id="7566118625369982896">Gerenciar links do app Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Criar combinação de teclas</translation>
@@ -10953,7 +10949,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8781980678064919987">Desligar quando a tampa estiver fechada</translation>
 <translation id="8782565991310229362">A inicialização do aplicativo de quiosque foi cancelada.</translation>
 <translation id="8783834180813871000">Digite o código de pareamento do Bluetooth e pressione "Voltar" ou "Enter".</translation>
-<translation id="8783955532752528811">Ajuda contextual em recursos</translation>
 <translation id="8784626084144195648">Média de pré-processamento</translation>
 <translation id="8785622406424941542">Stylus</translation>
 <translation id="8786824282808281903">Quando a criança vir este ícone, a impressão digital poderá ser usada para identificação ou aprovação de compras.</translation>
@@ -11445,7 +11440,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9113529408970052045">O recurso "Quero ajuda para escrever" pode ser aberto automaticamente quando é possível preencher uma caixa de texto em um site com conteúdo curto</translation>
 <translation id="9114663181201435112">Fazer login de forma fácil</translation>
 <translation id="9115675100829699941">&amp;Favoritos</translation>
-<translation id="9115932142612197835">Essa configuração não muda a disponibilidade do Google Tradutor ou do Lens</translation>
 <translation id="9116366756388192417">Escolha um tema</translation>
 <translation id="9116799625073598554">App de anotações</translation>
 <translation id="9117030152748022724">Gerenciar seus apps</translation>

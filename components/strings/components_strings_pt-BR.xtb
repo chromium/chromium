@@ -926,6 +926,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2628224721443278970">Fazer login no Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Status:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tecido (semibrilho)</translation>
 <translation id="264810637653812429">Nenhum dispositivo compatível encontrado.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -1140,6 +1141,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="306573536155379004">Jogo iniciado.</translation>
 <translation id="3067505415088964188">Preço baixo</translation>
 <translation id="3068118691172921711">O upload do arquivo para o <ph name="CLOUD_PROVIDER" /> vai começar em 1 minuto</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} item}one{{ITEMS} item}other{{ITEMS} itens}}</translation>
 <translation id="3076865167425975822">Sistemas operacionais</translation>
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3082007635241601060">Autorize que o Google use seus carrinhos para encontrar descontos personalizados, quando disponíveis</translation>
@@ -2831,6 +2833,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6106989379647458772">A página da Web no endereço <ph name="PAGE" /> pode estar temporariamente inativa ou pode ter sido transferida para um novo endereço.</translation>
 <translation id="6107012941649240045">Emitido para</translation>
 <translation id="6107924765192360631">Comece com algumas palavras ou um primeiro rascunho para receber sugestões de escrita.</translation>
+<translation id="6108508372809181847">Comparar <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Detalhes do certificado</translation>
 <translation id="6108702513636120202">Seu mecanismo de pesquisa no Chromium</translation>
 <translation id="6108849843016142864">Répteis e anfíbios</translation>

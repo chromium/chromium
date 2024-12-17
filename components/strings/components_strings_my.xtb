@@ -931,6 +931,7 @@
 <translation id="2628224721443278970">Microsoft OneDrive သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ၏ ဆာဗာ IP လိပ်စာကို မတွေ့ပါ။</translation>
 <translation id="2639739919103226564">အခြေအနေ:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">အထည် (အနည်းငယ် တောက်ပြောင်)</translation>
 <translation id="264810637653812429">ကိုက်ညီမှုရှိသည့် စက်ပစ္စည်းများ မတွေ့ပါ။</translation>
 <translation id="2649204054376361687"><ph name="CITY" />၊ <ph name="COUNTRY" /></translation>
@@ -1400,6 +1401,7 @@
 <translation id="351522771072578657">သင်သည် လောလောဆယ် မီနူးတစ်ခုတွင် ရှိနေသည်</translation>
 <translation id="3517264445792388751">သင်၏စီမံခန့်ခွဲသူက ဖိုင်စနစ်ကို ပိတ်ထားသည်</translation>
 <translation id="3518941727116570328">အကြောင်းအရာ အမျိုးစုံ ဆောင်ရွက်ခြင်း</translation>
+<translation id="3519670528214225835"><ph name="KEYWORD_SUFFIX" /> ဟု မေးပါ</translation>
 <translation id="3525130752944427905">၁၀ x ၁၄ လက်မ</translation>
 <translation id="3525435918300186947">MIDI စက်များကို စီမံပြီး ပရိုဂရမ်ပြန်လုပ်မလား။</translation>
 <translation id="3527181387426738155">ဂီတ၊ အသံ</translation>
@@ -1954,6 +1956,7 @@
 <translation id="4451684391620232683">အသုံးပြုသူကိုပြသည့် စာသား</translation>
 <translation id="4452328064229197696">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်အကောင့်များကို လုံခြုံစေရန် ‘Google စကားဝှက်မန်နေဂျာ’ က သင်သိမ်းထားသော စကားဝှက်များကို စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
 <translation id="4456937135469235202">စွန့်စား၍ ခရီးသွားခြင်း</translation>
+<translation id="4458013283022578512">မေးခွန်းထည့်ပါ</translation>
 <translation id="4464826014807964867">သင့်အဖွဲ့အစည်းမှ အချက်အလက်ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
 <translation id="4466576951214254884">ကျောင်းသားချေးငွေ၊ ကောလိပ်အတွက်ငွေထောက်ပံ့ခြင်း</translation>
 <translation id="4467821340016922962">ဖန်သားပြင်အပြည့်မှ ထွက်ပြီး ဒေါင်းလုဒ်ကို ကြည့်ရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>

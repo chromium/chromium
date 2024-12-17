@@ -44,17 +44,6 @@ Dit beleid wordt in de toekomst verwijderd nadat de functie voor de OOPIF-pdf-vi
 <translation id="1020006815010587263">De prullenbak is uitgezet voor de gebruiker.</translation>
 <translation id="1021462144002396313"><ph name="PRIVACY_SANDBOX_NAME" />-beleid</translation>
 <translation id="1022361784792428773">Id's van extensies die de gebruiker niet mag installeren (of '*' voor alle extensies)</translation>
-<translation id="1023465280109914543">Als je dit beleid toepast, wordt aanbevolen dat anonieme rapportage van gebruiks- en crashgegevens over <ph name="PRODUCT_NAME" /> aan Google standaard aanstaat. Gebruikers kunnen deze instelling nog steeds wijzigen.
-
-Als je dit beleid niet toepast, staat anonieme rapportage uit en worden er geen gebruiks- of crashgegevens naar Google gestuurd. Gebruikers kunnen deze instelling niet wijzigen.
-
-Als dit beleid niet is ingesteld, kunnen gebruikers het gedrag voor anonieme rapportage kiezen tijdens de installatie of de eerste uitvoering. Ze kunnen deze instelling later wijzigen.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-(Zie <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" /> voor <ph name="PRODUCT_OS_NAME" />.)</translation>
 <translation id="102492767056134033">De standaardstatus van het schermtoetsenbord op het inlogscherm instellen</translation>
 <translation id="1026335125982730097">Hiermee kun je een lijst met URL-patronen invoeren van sites die cookies mogen instellen.
 
@@ -95,35 +84,6 @@ Als je dit beleid toepast of niet instelt, wordt de functie voor autocorrectie o
 Als je dit beleid niet toepast, is de functie voor autocorrectie op het fysieke toetsenbord niet toegestaan.</translation>
 <translation id="1038725366103635282">Share-discovery voor NetBIOS toestaan</translation>
 <translation id="1040446814317236570">Verwijderen van gegevens uit PAC-URL's toestaan (voor https://)</translation>
-<translation id="1043965859599437362">Dit beleid biedt een manier om de lijst met sets te overschrijven die de browser gebruikt voor first-party sets-functies.
-
-Elke set in de lijst met first-party sets van de browser moet voldoen aan de vereisten van een first-party set.
-Een first-party set moet een primaire site en een of meer lidsites bevatten.
-Een set kan ook een lijst bevatten van servicesites waarvan de set de eigenaar is, evenals een routebeschrijving van een site naar alle ccTLD-varianten.
-Ga naar https://github.com/WICG/first-party-sets voor meer informatie over hoe <ph name="PRODUCT_NAME" /> first-party sets gebruikt.
-
-Alle sites in een first-party set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost. Elke site in een first-party set moet ook uniek zijn. Dit betekent dat een site niet meer dan één keer kan worden vermeld in een first-party set.
-
-Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met first-party sets.
-
-Voor alle sites in een first-party set uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, die site wordt verwijderd uit de first-party set van de browser.
-Daarna wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
-
-Voor alle sites in een first-party set uit de lijst <ph name="ADDITIONS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, de first-party set van de browser wordt geüpdatet zodat de nieuwe first-party set kan worden toegevoegd aan de lijst van de browser. Nadat de lijst van de browser is geüpdatet, wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
-
-De lijst met first-party sets van de browser vereist dat voor alle sites op de lijst geen site in meer dan één set is opgenomen. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
-
-Jokertekens (*) worden zowel in first-party sets als in deze lijsten niet ondersteund als beleidswaarde.
-
-Alle sets die in dit beleid worden vermeld, moeten geldige first-party sets zijn. Zo niet, dan krijg je de relevante foutmelding.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Dit is het equivalent van het beleid <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Beide beleidsregels kunnen worden gebruikt, maar dit beleid wordt binnenkort beëindigd. Daarom heeft het beleid <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> de voorkeur.
-Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="1046484220783400299">Verouderde webplatformfuncties tijdelijk aanzetten</translation>
 <translation id="1047128214168693844">Niet toestaan dat sites de fysieke locatie van gebruikers bijhouden</translation>
 <translation id="1049138910114524876">Hiermee wordt de taal geconfigureerd die wordt afgedwongen op het <ph name="PRODUCT_OS_NAME" />-inlogscherm.
@@ -1005,40 +965,7 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
       Opmerking: Geef de beleidswaarden op in procenten, minimaal 0 en maximaal 100.</translation>
 <translation id="1733092875104864334">Verzamelen van WebRTC-tekstlogboeken van Google-services niet toestaan</translation>
 <translation id="1733768596873041559">Standaard omleiden naar SAML IdP (voorafgaand aan <ph name="PRODUCT_NAME" /> 99 is gebruikersbevestiging vereist)</translation>
-<translation id="173503685261877709">Dit beleid biedt een manier om de lijst met sets te overschrijven die de browser gebruikt voor functies van gehelen van gerelateerde websites.
-
-Dit beleid overschrijft het beleid <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
-
-Elke set in de lijst met gehelen van gerelateerde websites van de browser moet voldoen aan de vereisten van een geheel van gerelateerde websites.
-Een geheel van gerelateerde websites moet bestaan uit een primaire site en een of meer lidsites.
-Een set kan ook een lijst bevatten van servicesites waarvan de set de eigenaar is, evenals een routebeschrijving van een site naar alle ccTLD-varianten.
-Ga naar https://github.com/WICG/first-party-sets voor meer informatie over hoe <ph name="PRODUCT_NAME" /> gehelen van gerelateerde websites gebruikt.
-
-
-Alle sites in een geheel van gerelateerde websites moeten een registreerbaar domein zijn dat via HTTPS wordt gehost. Elke site in een geheel van gerelateerde websites moet ook uniek zijn. Dit betekent dat een site niet meer dan één keer in een geheel van gerelateerde websites kan voorkomen.
-
-Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met gehelen van gerelateerde websites.
-
-Voor alle sites in een geheel van gerelateerde websites uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een geheel van gerelateerde websites in de lijst van de browser, die site wordt verwijderd uit het geheel van gerelateerde websites van de browser.
-Daarna wordt het geheel van gerelateerde websites van het beleid toegevoegd aan de lijst met gehelen van gerelateerde websites van de browser.
-
-Voor alle sites in een geheel van gerelateerde websites uit de lijst <ph name="ADDITIONS" /> geldt dat als een site ook aanwezig is in een geheel van gerelateerde websites in de lijst van de browser, het geheel van gerelateerde websites van de browser wordt geüpdatet zodat het nieuwe geheel van gerelateerde websites aan de lijst van de browser kan worden toegevoegd. Nadat de lijst van de browser is geüpdatet, wordt het geheel van gerelateerde websites van het beleid toegevoegd aan de lijst met gehelen van gerelateerde websites van de browser.
-
-De lijst met gehelen van gerelateerde websites van de browser vereist dat geen van de sites op de lijst in meer dan één set voorkomt. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
-
-Jokertekens (*) worden niet ondersteund als beleidswaarde of binnen een geheel van gerelateerde websites in deze lijsten.
-
-Alle sets die in het beleid worden vermeld, moeten geldige gehelen van gerelateerde websites zijn. Zo niet, dan krijg je de relevante foutmelding.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1736269219679256369">Doorgaan vanaf de SSL-waarschuwingspagina toestaan</translation>
-<translation id="1736319469723030923">Als je het beleid aanzet of niet instelt, scant Chrome Cleanup het systeem periodiek op ongewenste software. Als er ongewenste software wordt aangetroffen, wordt de gebruiker gevraagd of deze software moet worden verwijderd. Het is in dit geval mogelijk Chrome Cleanup handmatig te starten via chrome://settings.
-
-Als je het beleid uitzet, scant Chrome Cleanup niet periodiek en wordt handmatige activering uitgezet.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1736990730683753958">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is niet zichtbaar op chrome://history/grouped.</translation>
 <translation id="1740724790865999129">Als je dit beleid instelt op een lijst met apparaattypen, kunnen foutopsporingsgegevens op laag niveau van de genoemde apparaattypen worden opgenomen in gebruikersfeedback.
 
@@ -1216,13 +1143,6 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 <translation id="1883274744253492031">Automatisch upgraden van gemengde content aanzetten</translation>
 <translation id="1885782360784839335">Promotiecontent op volledig tabblad tonen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>
-<translation id="1889913120568244368">Als je het beleid aanzet en <ph name="CHROME_CLEANUP_NAME" /> ongewenste software vindt, kan dit beleid (in overeenstemming met het beleid ingesteld door <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />) de resultaten van de scan naar Google sturen. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen. De resultaten worden naar Google gestuurd.
-
-Als je het beleid uitzet en <ph name="CHROME_CLEANUP_NAME" /> ongewenste software vindt, worden de resultaten van de scan niet naar Google gestuurd, ongeacht de waarde van <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen. De resultaten worden niet naar Google gestuurd.
-
-Als je het beleid niet instelt, kan <ph name="CHROME_CLEANUP_NAME" /> (in overeenstemming met het beleid ingesteld door <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />) de resultaten van scans op ongewenste software naar Google sturen. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen en de resultaten willen delen met Google om bij te dragen aan de toekomstige detectie van ongewenste software. Deze resultaten bevatten metadata van bestanden, automatisch geïnstalleerde extensies en registersleutels zoals beschreven in de whitepaper over het Privacybeleid van Chrome.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1890850749633603276">Toegestaan gedrag van <ph name="WEBVIEW_TAG_NAME" /> voor Chrome-apps herstellen</translation>
 <translation id="1893271062894546361">Als je dit beleid toepast, is de gebruikersinterface voor de afspeelbediening voor media beschikbaar voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten in het lokale netwerk.
 
@@ -1235,11 +1155,6 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 Als je dit beleid instelt, hoeven gebruikers in de vermelde domeinen geen nieuw afzonderlijk profiel te maken.
 
 Dit beleid kan worden ingesteld op een lege tekenreeks, zodat alle gebruikers die inloggen bij hun account een nieuw afzonderlijk profiel moeten maken.</translation>
-<translation id="1895052641245790471">Als je <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> instelt op RestoreOnStartupIsURLs, geef je aan welke URL's moeten worden geopend door <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> in te stellen op een lijst met URL's.
-
-Als je het beleid niet instelt, wordt de pagina 'Nieuw tabblad' geopend als de browser wordt opgestart.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1897095538209040086">Als je het beleid toepast of niet instelt, houdt <ph name="PRODUCT_NAME" /> minstens één tabblad open nadat er is overgeschakeld naar een alternatieve browser.
 
 Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nadat er is overgeschakeld naar een alternatieve browser, ook als dit het laatste tabblad was. Hierdoor wordt <ph name="PRODUCT_NAME" /> volledig gesloten.</translation>
@@ -1780,25 +1695,6 @@ Als je het beleid niet toepast of niet instelt, kunnen gebruikers bestanden over
 <translation id="2269319728625047531">Synchronisatietoestemming tonen tijdens het inloggen</translation>
 <translation id="2269837888511509900">Delen van inloggegevens van gebruikers aanzetten</translation>
 <translation id="2270747976331889601">TLS 1.3-beveiligingsfunctie voor lokale vertrouwensinstanties aanzetten.</translation>
-<translation id="2273993844348404990">Dit beleid biedt een lijst met sites die gebruikers snel kunnen zoeken met snelkoppelingen in de adresbalk. Gebruikers kunnen een zoekopdracht starten door de snelkoppeling of @snelkoppeling (bijvoorbeeld @werk), gevolgd door de spatiebalk of Tab, in de adresbalk te typen.
-
-De volgende velden zijn vereist voor elke site: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
-
-Het veld <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> komt overeen met de naam van de site of zoekmachine die aan de gebruiker wordt getoond in de adresbalk.
-
-Het veld <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> kan gewone woorden en tekens bevatten, maar mag geen spaties bevatten of beginnen met het symbool @. Snelkoppelingen moeten ook uniek zijn.
-
-Voor elke invoer geeft het veld <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> de URL aan van de zoekmachine die tijdens een zoekopdracht met het bijbehorende zoekwoord wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker. Ongeldige invoer en vermeldingen met dubbele snelkoppelingen worden genegeerd.
-
-Items voor Zoekopdrachten op site die zijn ingesteld als aanbevolen, worden weergegeven in de adresbalk als de gebruiker '@' typt. Er kunnen maximaal 3 items als aanbevolen worden geselecteerd.
-
-Gebruikers kunnen items voor Zoekopdrachten op site die zijn ingesteld via het beleid, niet bewerken of uitzetten. Ze kunnen wel nieuwe snelkoppelingen voor dezelfde URL toevoegen. Daarnaast kunnen gebruikers geen nieuwe items voor Zoekopdrachten op site maken met een snelkoppeling die eerder via dit beleid is gemaakt.
-
-Als er een conflict is met een snelkoppeling die de gebruiker eerder heeft gemaakt, krijgt de gebruikersinstelling voorrang. Gebruikers kunnen de optie die door het beleid is gemaakt nog wel activeren door '@' in de zoekbalk te typen. Als de gebruiker bijvoorbeeld 'werk' al heeft gedefinieerd als snelkoppeling naar URL1 en het beleid de optie 'werk' definieert als snelkoppeling naar URL2, wordt er een zoekopdracht naar URL1 gestart als de gebruiker 'werk' in de zoekbalk typt, maar wordt er naar URL2 gezocht als de gebruiker '@werk' in de zoekbalk typt.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="22754818344448444">Toestaan dat gebruikers een indeling voor bureautemplates selecteren om te laden</translation>
 <translation id="2277117728011250860">Niet toestaan dat filters voor toegankelijkheidsprestaties worden gebruikt.</translation>
 <translation id="2279381650184876122">Ondersteuning voor gegevens-URL's in SVGUseElement uitzetten.</translation>
@@ -2970,13 +2866,6 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
       Dit kan worden gebruikt door beheerders die meer tijd nodig hebben om hun interne website te updaten waarop deze nieuwe beperking van invloed is. Dit zakelijke beleid is tijdelijk. Het is de bedoeling het te verwijderen na <ph name="PRODUCT_NAME" /> versie 117.
       </translation>
 <translation id="3185009703220253572">sinds versie <ph name="SINCE_VERSION" /></translation>
-<translation id="3185146554126007874">Als je dit beleid instelt, stel je de URL in waarmee gebruikers hun wachtwoord moeten wijzigen nadat zij een waarschuwing zien in de browser. De service voor wachtwoordbeveiliging stuurt gebruikers de URL (alleen HTTP- en HTTPS-protocollen) die je opgeeft via dit beleid. Zorg dat je pagina voor het wijzigen van wachtwoorden voldoet aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de 'salted hash' van het nieuwe wachtwoord op deze pagina voor het wijzigen van wachtwoorden juist vastlegt.
-
-Als je dit beleid niet toepast of niet instelt, stuurt de service gebruikers naar https://myaccount.google.com om hun wachtwoord te wijzigen.
-
-In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd, via MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3192902750888034827">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die wordt gebruikt om een pagina Nieuw tabblad te leveren.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> niet instelt, wordt er geen pagina Nieuw tabblad geopend.</translation>
@@ -3132,13 +3021,6 @@ Als het beleid is ingesteld op True of niet is ingesteld, worden web-apps zelfs 
       Opmerking: Voor apparaten die via <ph name="MS_AD_NAME" /> worden beheerd, ondersteunt dit beleid de uitbreiding van <ph name="MACHINE_NAME_VARIABLE" /> naar de naam van de <ph name="MS_AD_NAME" />-machine of naar een subtekenreeks daarvan. Als de machinenaam bijvoorbeeld <ph name="MACHINE_NAME_EXAMPLE" /> is, wordt <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> vervangen door 4 tekens vanaf de 6e positie, oftewel <ph name="MACHINE_NAME_PART_EXAMPLE" />. De positie wordt geteld vanaf 0.
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTERS_POLICY_NAME" />.</translation>
-<translation id="3294852060412792476">Als je het beleid aanzet of niet instelt, worden gedownloade bestanden voor analyse naar Safe Browsing gestuurd, zelfs als deze van een vertrouwde bron afkomstig zijn.
-
-Als je het beleid uitzet, worden gedownloade bestanden niet voor analyse naar Safe Browsing gestuurd als deze van een vertrouwde bron afkomstig zijn.
-
-Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voor downloads die via de menuoptie 'Link downloaden' geactiveerd zijn. Deze beperkingen gelden niet voor het opslaan of downloaden van de huidige pagina die wordt getoond of voor de afdrukoptie Opslaan als pdf.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3296560797994110772">Snelkoppelingen met de zoektoets worden eerst naar de app gestuurd voordat ze worden verwerkt door het OS.</translation>
 <translation id="3300441638895109781">Verificatieproces automatisch opnieuw laden in ChromeOS</translation>
 <translation id="3300784749135986828">De functie <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> aan- of uitzetten.</translation>
@@ -3772,17 +3654,6 @@ Als je het beleid instelt op 2, wordt voorkomen dat geïsoleerde web-app-oorspro
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde Enterprise-gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="3791179836066841809">Documentatie voor beleid</translation>
-<translation id="3792144912556572267">Als je het beleid instelt, wordt de standaard-URL voor de homepage ingesteld in <ph name="PRODUCT_NAME" />. Je kunt de homepage openen met de knop Homepage. Op desktops bepaalt het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> welke pagina's worden geopend als de browser wordt opgestart.
-
-Als de homepage is ingesteld op de pagina 'Nieuw tabblad' (door de gebruiker of <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />), heeft dit beleid geen effect.
-
-De URL heeft een standaardschema nodig, zoals http://example.com of https://example.com. Als dit beleid is ingesteld, kunnen gebruikers de URL van de homepage niet wijzigen in <ph name="PRODUCT_NAME" />.
-
-Als je <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> en <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> geen van beide instelt, kunnen gebruikers hun homepage kiezen.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="379318040165550702">Gebruikers laten kiezen</translation>
 <translation id="3793244042614155322">Help me met schrijven is een op AI gebaseerde schrijfassistent voor korte content op het web. Voorgestelde content is gebaseerd op prompts die de gebruiker heeft ingevoerd en de content van de webpagina.
 
@@ -4435,13 +4306,6 @@ Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PROD
 <translation id="4322842393287974810">Toestaan dat de kiosk-app die automatisch zonder vertraging is gestart, de <ph name="PRODUCT_OS_NAME" />-versie beheert</translation>
 <translation id="4323412353642577604">Extern attest voor contentbescherming aanzetten</translation>
 <translation id="4325690621216251241">Een afmeldknop toevoegen aan de systeembalk</translation>
-<translation id="4326070401554882952">Als je het beleid instelt, wordt de lijst met zakelijke login-URL's (alleen HTTP- en HTTPS-protocollen) ingesteld. De service voor wachtwoordbeveiliging legt salted hashes van wachtwoorden op deze URL's vast en gebruikt ze om hergebruik van wachtwoorden op te sporen. Zorg ervoor dat je inlogpagina's voldoen aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de 'salted hashes' van wachtwoorden juist vastlegt.
-
-Als je deze instelling uitzet of niet instelt, legt de service voor wachtwoordbeveiliging 'salted hashes' van wachtwoorden alleen vast op https://accounts.google.com.
-
-In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd, via MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4329095223358818804">'Snelle antwoorden' toegang tot geselecteerde content geven</translation>
 <translation id="4330908525441222205">Standaard AppCache-gedrag gebruiken</translation>
 <translation id="4331357743227845302">Met dit beleid kunnen beheerders bluetooth-services instellen waarmee <ph name="PRODUCT_OS_NAME" /> verbinding mag maken.
@@ -4607,19 +4471,6 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
       Als je het beleid toepast, rapporteren ingeschreven apparaten periodiek hun locatie.
 
       Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten hun locatie niet.</translation>
-<translation id="445993724309045747">Met dit beleid wordt de standaard-URL van de pagina 'Nieuw tabblad' geconfigureerd en wordt voorkomen dat gebruikers deze kunnen wijzigen.
-
-De pagina 'Nieuw tabblad' wordt geopend als er nieuwe tabbladen en vensters worden geopend.
-
-Met dit beleid bepaal je niet welke pagina's worden geopend als de browser wordt opgestart. Deze pagina's worden beheerd door het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Dit beleid is wel van invloed op de homepage als hiervoor is ingesteld dat de pagina 'Nieuw tabblad' moet worden geopend, maar ook op de homepage als deze is ingesteld op de pagina 'Nieuw tabblad'.
-
-Het is verstandig om de volledige canonieke URL op te geven. Als de URL niet volledig canoniek is, gebruikt <ph name="PRODUCT_NAME" /> standaard https://.
-
-Als je het beleid niet instelt of leeg laat, wordt de standaardpagina 'Nieuw tabblad' gebruikt.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4461400898496433231">De IPv6-bereikbaarheidscheck niet overschrijven. Vraag de AAAA-record alleen op voor hostnaamresolutie als het apparaat bereikbaar is via een algemene IPv6-host.</translation>
 <translation id="4463467966408770621">Sta generatieve AI-functies van DevTools niet toe.</translation>
 <translation id="4463675333222095358">Eenheidsconversie van Snelle antwoorden aanzetten</translation>
@@ -4975,13 +4826,6 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="4726895359147376813">Toewijzing van permanente ID's naar VM-configuraties</translation>
 <translation id="4732069502693984686">Hiermee zet je automatische schermopname van meerdere schermen aan</translation>
 <translation id="4733471537137819387">Beleid met betrekking tot geïntegreerde HTTP-authenticatie.</translation>
-<translation id="473673197014866318">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels. Dit beleid vervangt verouderde beleidsregels die misschien zijn ingesteld.
-
-Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de markering override_update_url is ingesteld op True, wordt de extensie geïnstalleerd en geüpdatet met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
-
-In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of is ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4737832614429402441">Standaardwaarde gebruiken voor post-quantum sleutelovereenkomst voor TLS</translation>
 <translation id="4739596156184678950">Toestaan dat bestanden rechtstreeks worden opgeslagen in <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">De modus voor afdrukken met achtergrondbeelden beperken</translation>
@@ -5038,15 +4882,6 @@ Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggeg
       Als je deze instelling uitzet, mogen gebruikers geen toestemming geven voor Telefoonhub.
 
       Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
-<translation id="4775667151768335538">Als je dit beleid toepast, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
-
-Als je het beleid niet instelt, wordt de standaardbescherming van Safe Browsing toegepast op alle bronnen.
-
-Dit beleid ondersteunt geen reguliere expressies. Subdomeinen van een bepaald domein worden wel op de toelatingslijst gezet. Volledig gekwalificeerde domeinnamen (FQDN's) zijn niet vereist.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4777573685807338095">Met dit beleid bepaal je of het introductiescherm voor Gemini aan de gebruiker wordt getoond tijdens de eerste keer inloggen.
 
       Als je dit beleid niet toepast, wordt het Gemini-introductiescherm niet getoond.
@@ -6141,7 +5976,6 @@ Opmerking: Dit beleid is niet van toepassing op de incognito- of gastmodus.</tra
       Als dit beleid niet is ingesteld of is ingesteld op False, worden de servercertificaten die geen subjectAlternativeName-extensie met een DNS-naam of IP-adres bevatten, niet vertrouwd.</translation>
 <translation id="5576377426850850084">NTLM-verificatie gebruiken</translation>
 <translation id="5577475143148445339">Bevat het aantal dagen en het percentage van de apparaten dat na het verstrijken van die dagen moet worden geüpdatet.</translation>
-<translation id="5579179012798142131">Tenzij de kortstondige modus of toegang tot meerdere accounts is aangezet tijdens de sessie van de gebruiker, wordt ARC aangezet als ArcEnabled wordt ingesteld op True. Als het beleid wordt ingesteld op False of niet wordt ingesteld, kunnen zakelijke gebruikers ARC niet gebruiken.</translation>
 <translation id="5582429816116769246">Hiermee kun je bepalen of gebruikers toegang hebben tot printers die niet van het bedrijf zijn.
 
       Als je het beleid instelt op True of helemaal niet instelt, kunnen gebruikers hun systeemeigen printers toevoegen, configureren en ermee afdrukken.
@@ -6150,19 +5984,6 @@ Opmerking: Dit beleid is niet van toepassing op de incognito- of gastmodus.</tra
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="USER_PRINTERS_ALLOWED" />.
       </translation>
-<translation id="5583556212159295911">Dit beleid is beëindigd in <ph name="PRODUCT_NAME" /> 83. Gebruik in plaats daarvan <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
-
-Als je het beleid aanzet, blijft de Safe Browsing-functie van Chrome actief. Als je het beleid uitzet, blijft Safe Browsing uit.
-
-Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen en de instelling 'Bescherming tegen phishing en malware aanzetten' niet overschrijven. Als je dit beleid niet instelt, wordt 'Bescherming tegen phishing en malware aanzetten' ingesteld op True, maar kan de gebruiker dit wijzigen.
-
-Ga naar https://developers.google.com/safe-browsing voor meer informatie over Safe Browsing.
-
-Als je het beleid <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> instelt, wordt de waarde van het beleid <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> genegeerd.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="5583806683960333345">Als deze instelling aanstaat, kunnen gebruikers instant tethering gebruiken, waarmee hun Google-telefoon mobiele data kan delen met hun apparaat.
 
       Als deze instelling uitstaat, kunnen gebruikers instant tethering niet gebruiken.
@@ -7319,13 +7140,6 @@ Als je het beleid niet instelt, kunnen gebruikers de functie voor vingerafdrukbe
 <translation id="6453641799812499182"><ph name="CORS" />-controlebeperkingen voor de nieuwe <ph name="CORS" />-implementatie aanzetten</translation>
 <translation id="645425387487868471">Inloggen voor <ph name="PRODUCT_NAME" /> verplichten</translation>
 <translation id="6454450724849956537">Focusbare scrollers voor toetsenbord aanzetten</translation>
-<translation id="645467061280066516">Als je het beleid aanzet, wordt de pagina 'Nieuw tabblad' gebruikt als homepage van de gebruiker en wordt de URL voor de homepage genegeerd. Als je het beleid uitzet, wordt de pagina 'Nieuw tabblad' nooit gebruikt als homepage van de gebruiker, tenzij de URL voor de homepage is ingesteld op chrome://newtab.
-
-Als je het beleid instelt, kunnen gebruikers het type homepage niet wijzigen in <ph name="PRODUCT_NAME" />. Als je dit beleid niet instelt, kan de gebruiker bepalen of de pagina 'Nieuw tabblad' als homepage wordt gebruikt.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="6455842857207956758">Hiermee wordt SAML-wachtwoordsynchronisatie tussen meerdere Chrome-apparaten aangezet door de waarde van de wachtwoordsynchronisatietoken te monitoren en een gebruiker de online verificatie opnieuw te laten uitvoeren als het wachtwoord is geüpdatet en moet worden gesynchroniseerd.
 
       Hiermee wordt een pagina op chrome://password-change actief waar SAML-gebruikers hun SAML-wachtwoorden kunnen wijzigen tijdens een sessie. Dit zorgt ervoor dat het SAML-wachtwoord en het wachtwoord voor schermvergrendeling van het apparaat gesynchroniseerd blijven.
@@ -8088,13 +7902,6 @@ Als je dit beleid instelt op alleen lezen of niet instelt, blijven lokale bestan
 <translation id="6972540544240464302">Geselecteerde taakplannerconfiguratie</translation>
 <translation id="6975533677426693807">Pdf-bestanden altijd openen met de interne pdf-viewer</translation>
 <translation id="6986172482189158664">Instellingen voor levensduur van browsegegevens</translation>
-<translation id="6986838929449128437">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
-
-      Als je dit beleid toepast, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
-
-      Als je het beleid niet toepast of niet instelt, wordt de standaardbescherming van Safe Browsing toegepast op alle resources.
-
-       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="6988791975283483023">Wifi uitzetten</translation>
 <translation id="6990546578776912554">Vermeld domeinen die zijn uitgesloten voor omzetting via DNS-over-HTTPS</translation>
 <translation id="6990736882800900101">Toestaan dat alle pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die het openen van de pop-up heeft aangevraagd, tenzij de openende pagina expliciet geen toestemming geeft voor dergelijke interactie </translation>
@@ -8212,13 +8019,6 @@ Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
 <translation id="7075847434649667522">Door de gebruiker toegevoegde TLS-certificaten van truststores van het platform gebruiken voor serververificatie</translation>
 <translation id="7077471517869658421">Gebruikers kunnen de waarde wijzigen van de instelling De Launcher-/zoektoets gebruiken om het gedrag van functietoetsen te wijzigen.</translation>
 <translation id="707988220162760379">Pdf-bestanden altijd openen met een externe pdf-viewer</translation>
-<translation id="7081401546407362463">Lijst met bestandstypen die automatisch moeten worden geopend nadat ze zijn gedownload. Het voorafgaande scheidingsteken mag niet worden opgenomen als je het bestandstype vermeldt. Vermeld dus 'txt' in plaats van '.txt'.
-
-Bestanden met typen die automatisch moeten worden geopend, vallen nog steeds onder de geactiveerde Safe Browsing-checks en worden niet geopend als ze die checks niet doorstaan.
-
-Als dit beleid niet is ingesteld, worden alleen bestandstypen waarvoor een gebruiker dit al heeft opgegeven, automatisch geopend nadat ze zijn gedownload.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7081699207881888532">Emoji-suggesties terwijl gebruikers typen aanzetten</translation>
 <translation id="7081784525008938771">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er video wordt afgespeeld. Hiermee wordt voorkomen dat de vertraging voor het dimmen, uitzetten en vergrendelen van het scherm wordt bereikt en dat de bijbehorende acties worden uitgevoerd.
 
@@ -8554,17 +8354,6 @@ Als je dit beleid niet toepast of niet instelt, staan de instellingen voor Kerbe
       Dit beleid geldt alleen voor ARM-apparaten die naar ARC VM worden gemigreerd.</translation>
 <translation id="731208205557053914">VPD-gegevens rapporteren</translation>
 <translation id="7313672174502374994">De SHA-256-hash van de achtergrondafbeelding.</translation>
-<translation id="7313681786668291607">Als je dit beleid instelt, kun je opgeven hoe het systeem moet reageren als de browser wordt opgestart. Als je deze instelling uitzet, heeft dit hetzelfde effect als wanneer je het beleid niet instelt, omdat het opstartgedrag van <ph name="PRODUCT_NAME" /> moet zijn opgegeven.
-
-Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers dit wijzigen.
-
-Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> of <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, worden sommige instellingen uitgezet die afhankelijk zijn van sessies of waarmee bij het afsluiten bepaalde acties worden uitgevoerd (zoals browsergegevens wissen bij afsluiten of sessiespecifieke cookies).
-
-Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, herstelt de browser de vorige sessie en wordt een afzonderlijk venster geopend om URL's te tonen die zijn ingesteld via <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Gebruikers kunnen ervoor kiezen om deze URL's geopend te laten en dan worden ze ook hersteld in de toekomstige sessie.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7317472245305274219">Bepalen of het maken van toegangssleutels standaard wordt ingesteld op iCloud Sleutelhanger.</translation>
 <translation id="7318503436349210241">Aangezet: css-zoom voldoet aan de standaardspecificatie.</translation>
 <translation id="7322825363493984512">Het wachtwoord om systeemservices te verifiëren bij de externe webproxy.</translation>
@@ -8660,13 +8449,6 @@ Als je dit beleid instelt op Onwaar, wordt het oude gedrag toegepast.</translati
 <translation id="7395790871181951311">Smartcardverbinding door geïsoleerde apps blokkeren</translation>
 <translation id="7400208209734208176">Links standaard openen in de Chrome-browser</translation>
 <translation id="7402257017733669351">Voorkomen dat het browserproces dynamische code maakt</translation>
-<translation id="7402772023599097052">Als je dit beleid aanzet of niet instelt, worden beveiligingswaarschuwingen getoond als Chrome wordt gestart met bepaalde mogelijk schadelijke opdrachtregelmarkeringen.
-
-Als dit beleid is uitgezet, worden er geen beveiligingswaarschuwingen getoond als Chrome wordt gestart met bepaalde mogelijk schadelijke opdrachtregelmarkeringen.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7406039009275722824">Als je <ph name="CHROME_SYNC_NAME" /> uitzet, werkt de Android-functie 'Back-up maken en resetten' niet meer naar behoren.</translation>
 <translation id="7406276857470642718">Bepaalt instellingen voor gebruikers die zijn geverifieerd via SAML met een externe IdP</translation>
 <translation id="7407441173422042771">Met dit beleid wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> beheerd. Hiermee worden DNS-prefetching, het vooraf verbinden met TCP en SSL en het vooraf renderen van webpagina's beheerd.
@@ -8980,23 +8762,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de vertraging van de uitschakeling van het scherm (indien ingesteld) en van de inactieve vertraging.</translation>
 <translation id="7680437377926096177">Dialoogvenster voor uitloggen niet tonen als het laatste venster wordt gesloten.</translation>
 <translation id="7683777542468165012">Beleid dynamisch vernieuwen</translation>
-<translation id="7685309118897567488">Met dit beleid kunnen beheerders een aangewezen zakelijke verzamelsite voor zoeken instellen die zoekaanbevelingen en -resultaten in de adresbalk geeft indien geactiveerd door een specifiek zoekwoord. Gebruikers kunnen een zoekopdracht starten door het aangegeven zoekwoord in het veld <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> met of zonder het voorvoegsel @ (bijvoorbeeld <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), gevolgd door de spatiebalk of Tab, in de adresbalk te typen.
-
-De volgende velden zijn vereist: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Het veld <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> komt overeen met de naam van de zoekmachine die aan de gebruiker wordt getoond in de adresbalk.
-
-Het veld <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> komt overeen met het zoekwoord dat de gebruiker invoert om de zoekopdracht te activeren. De snelkoppeling kan gewone woorden en tekens bevatten, maar mag geen spaties bevatten of beginnen met het symbool @. Snelkoppelingen moeten uniek zijn.
-
-Het veld <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan waarop moet worden gezocht. Voer het webadres voor de resultatenpagina van de zoekmachine in en gebruik <ph name="SEARCH_TERM_MARKER" /> in plaats van de zoekopdracht.
-
-Het veld <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan die zoeksuggesties levert. Als <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> <ph name="SEARCH_TERM_MARKER" /> bevat, krijgt Chrome zoeksuggesties via een GET-verzoek aan de URL, waarbij <ph name="SEARCH_TERM_MARKER" /> wordt vervangen door de zoekopdracht van de gebruiker. Anders wordt een POST-verzoek verstuurd en wordt de zoekopdracht van de gebruiker doorgegeven in de POST-parameters onder de sleutel <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Het veld <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> geeft de URL aan van een afbeelding die wordt gebruikt voor de zoeksuggesties. Er wordt een standaardicoon gebruikt als dit veld niet is ingesteld. We raden je aan een favicon te gebruiken (bijvoorbeeld <ph name="ICON_URL_EXAMPLE" />).
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7687943045976362719">Als dit beleid is ingesteld, worden de opgegeven contenttypen verwerkt door <ph name="PRODUCT_FRAME_NAME" />.
 
           Als dit beleid niet is ingesteld, wordt het standaard weergaveprogramma gebruikt voor alle sites. (Het beleid <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> kan worden gebruikt om het standaard weergaveprogramma te configureren.)</translation>
@@ -9924,23 +9689,6 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
 
       Als je dit beleid niet toepast of niet instelt, worden alleen de gewone lokale profielen gebruikt.</translation>
 <translation id="8417305981081876834">De maximumlengte van de pincode voor het vergrendelscherm instellen</translation>
-<translation id="8418020431103978663">Als je het beleid instelt, wordt een lijst met apps en extensies gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers via de <ph name="PRODUCT_NAME" />-interface. Rechten worden impliciet verleend, waaronder voor de extensie-API's enterprise.deviceAttributes en enterprise.platformKeys. (Deze 2 API's zijn niet beschikbaar voor apps en extensies die niet afgedwongen geïnstalleerd zijn.)
-
-Hoewel <ph name="PRODUCT_NAME" /> probeert te voorkomen dat gebruikers deze extensies verwijderen, maken sommige besturingssystemen het onmogelijk voor <ph name="PRODUCT_NAME" /> om zich goed te verdedigen tegen externe wijzigingen in extensies. Deze poging tot voorkomen is dus een maximale inspanning.
-
-Als je dit beleid niet instelt, worden apps of extensies niet automatisch geïnstalleerd en kunnen gebruikers elke app of extensie in <ph name="PRODUCT_NAME" /> verwijderen.
-
-Dit beleid vervangt het beleid <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Als een eerder afgedwongen geïnstalleerde app of extensie wordt verwijderd uit deze lijst, verwijdert <ph name="PRODUCT_NAME" /> de app of extensie automatisch.
-
-Gebruikers kunnen de broncode van een extensie wijzigen via de ontwikkelaarstools, waardoor de extensie misschien niet meer functioneert. Als je je hierover zorgen maakt, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.
-
-Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien aangegeven, moet verwijzen naar een XML-updatedocument voor het manifest ( https://developer.chrome.com/extensions/autoupdate ). De update-URL moet een van de volgende schema's gebruiken: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> of <ph name="FILE_SCHEME" />. Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven. De update-URL voor volgende updates kan worden overschreven door het beleid <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Zie http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
-
-In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of is ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen geïnstalleerd worden als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Lees meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).</translation>
 <translation id="841977920223099909">Waarschuwingstrigger voor wachtwoordbeveiliging</translation>
 <translation id="8419965165591256432">Snelheid waarmee de apparaatactiviteitsstatus wordt verzameld op ingeschreven apparaten voor aangesloten gebruikers. Het toegestane minimum is 1 minuut.
 
@@ -10498,13 +10246,6 @@ Dit is handig als de beheerder weet dat de gebruikers van het apparaat een funct
 <translation id="8865404058177794289">De standaardinstelling gebruiken voor controle van het RSA-sleutelgebruik</translation>
 <translation id="8866430022832109569">Rapportage van app-voorraad</translation>
 <translation id="886645881209114007">Gebruikers toestaan een <ph name="PLUGIN_VM_NAME" /> te gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8867166356020504023">Als je het beleid toepast, wordt er een standaard zoekopdracht uitgevoerd als een gebruiker in de adresbalk tekst opgeeft die geen URL is. Als je de standaard zoekprovider wilt opgeven, stel je alle andere standaard zoekbeleidsregels in. Als je die zoekbeleidsregels leeg laat, kan de gebruiker zelf de standaardprovider kiezen. Als je het beleid niet toepast, wordt er geen zoekopdracht uitgevoerd als de gebruiker in de adresbalk tekst opgeeft die geen URL is. De waarde Uitgezet wordt niet ondersteund door de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je dit beleid niet instelt, wordt de standaard zoekprovider ingeschakeld en kunnen gebruikers de lijst met zoekproviders instellen.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="8867894831390233044">Bepaalt of gebruikers foutopsporing op afstand mogen toevoegen.
 
       Als dit beleid aanstaat of niet is ingesteld, kunnen gebruikers foutopsporing op afstand gebruiken door de opdrachtregelschakelaars --remote-debugging-port en --remote-debugging-pipe op te geven.

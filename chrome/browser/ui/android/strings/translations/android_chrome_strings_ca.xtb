@@ -597,7 +597,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3710501561113687889">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web.</translation>
 <translation id="3710560693796335511">Col·laboració</translation>
 <translation id="3714981814255182093">Obre la barra de cerca</translation>
-<translation id="3716182511346448902">Com que aquesta pàgina fa servir massa memòria, Chrome l'ha posat en pausa.</translation>
 <translation id="3718765429352682176">És possible que vegis l'historial d'altres aplicacions que obren enllaços a Chrome.</translation>
 <translation id="3720422586473670527">No, gràcies</translation>
 <translation id="3721119614952978349">Tu i Google</translation>
@@ -1629,7 +1628,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8186512483418048923">Queden <ph name="FILES" /> fitxers</translation>
 <translation id="8190358571722158785">Queda 1 dia</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Els teus dispositius<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Reprèn</translation>
 <translation id="820568752112382238">Els llocs web més visitats</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> persona més}other{Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i <ph name="NUMBER_OF_OTHER_MEMBERS" /> persones més}}</translation>
 <translation id="8209050860603202033">Obre la imatge</translation>

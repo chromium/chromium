@@ -597,7 +597,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3710501561113687889">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo <ph name="FIELDS_STRING" /> con questo sito.</translation>
 <translation id="3710560693796335511">Collaborazione</translation>
 <translation id="3714981814255182093">Apri la barra Trova</translation>
-<translation id="3716182511346448902">Questa pagina è stata messa in pausa da Chromium perché utilizza troppa memoria.</translation>
 <translation id="3718765429352682176">Potresti vedere la cronologia di altre app che aprono link in Chrome.</translation>
 <translation id="3720422586473670527">No, grazie</translation>
 <translation id="3721119614952978349">Tu e Google</translation>
@@ -1629,7 +1628,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8186512483418048923"><ph name="FILES" /> file rimanenti</translation>
 <translation id="8190358571722158785">1 giorno rimanente</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />I tuoi dispositivi<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Riprendi</translation>
 <translation id="820568752112382238">Siti più visitati</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUMBER_OF_OTHER_MEMBERS" /> altra persona}other{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUMBER_OF_OTHER_MEMBERS" /> altre persone}}</translation>
 <translation id="8209050860603202033">Apri immagine</translation>

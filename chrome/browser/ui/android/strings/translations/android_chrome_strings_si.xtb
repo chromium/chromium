@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබේ <ph name="FIELDS_STRING" /> මෙම අඩවිය සමග බෙදා ගනු ඇත.</translation>
 <translation id="3710560693796335511">සහයෝගිතාවය</translation>
 <translation id="3714981814255182093">සෙවීම් තීරුව විවෘත කරන්න</translation>
-<translation id="3716182511346448902">මෙම පිටුව මතකය බොහෝමයක් භාවිතා කරයි, එබැවින් Chrome එය විරාම ගන්වන ලදී.</translation>
 <translation id="3718765429352682176">ඔබ Chrome තුළ සබැඳි විවෘත කරන වෙනත් යෙදුම්වලින් ඉතිහාසය දකීවි.</translation>
 <translation id="3720422586473670527">එපා, ස්තුතියි</translation>
 <translation id="3721119614952978349">ඔබ සහ Google</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923">ගොනු <ph name="FILES" />ක් ඉතිරියි</translation>
 <translation id="8190358571722158785">දින 1ක් ඉතිරියි</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ඔබගේ උපාංග<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">කරගෙන යන්න</translation>
 <translation id="820568752112382238">වැඩියෙන් පැමිණි වෙබ් අඩවි</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> සහ තව <ph name="NUMBER_OF_OTHER_MEMBERS" /> අයෙකු සමග පටිති සමූහයට එකතු වන්න}one{<ph name="OWNER_FIRST_NAME" /> සහ තව <ph name="NUMBER_OF_OTHER_MEMBERS" /> දෙනෙකු සමග පටිති සමූහයට එකතු වන්න}other{<ph name="OWNER_FIRST_NAME" /> සහ තව <ph name="NUMBER_OF_OTHER_MEMBERS" /> දෙනෙකු සමග පටිති සමූහයට එකතු වන්න}}</translation>
 <translation id="8209050860603202033">රූපය විවෘත කරන්න</translation>

@@ -597,7 +597,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3710501561113687889">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ <ph name="FIELDS_STRING" /> của bạn với trang web này.</translation>
 <translation id="3710560693796335511">Cộng tác</translation>
 <translation id="3714981814255182093">Mở thanh Tìm kiếm</translation>
-<translation id="3716182511346448902">Chrome đã tạm dừng trang này vì trang dùng quá nhiều bộ nhớ.</translation>
 <translation id="3718765429352682176">Nhật ký có thể bao gồm các đường liên kết được mở trong Chrome từ các ứng dụng khác.</translation>
 <translation id="3720422586473670527">Không, cảm ơn</translation>
 <translation id="3721119614952978349">Bạn và Google</translation>
@@ -1629,7 +1628,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8186512483418048923">Còn lại <ph name="FILES" /> tệp</translation>
 <translation id="8190358571722158785">Còn 1 ngày</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Thiết bị của bạn<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="820568752112382238">Các trang web truy cập nhiều nhất</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /> và <ph name="NUMBER_OF_OTHER_MEMBERS" /> người khác}other{Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /> và <ph name="NUMBER_OF_OTHER_MEMBERS" /> người khác}}</translation>
 <translation id="8209050860603202033">Mở ảnh</translation>

@@ -597,7 +597,6 @@
 <translation id="3710501561113687889">தொடர, <ph name="FIELDS_STRING" /> ஐ இந்தத் தளத்துடன் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும்.</translation>
 <translation id="3710560693796335511">கூட்டுப்பணி</translation>
 <translation id="3714981814255182093">கண்டறி பட்டியைத் திறக்கும்</translation>
-<translation id="3716182511346448902">இந்தப் பக்கம் அதிகளவு நினைவகத்தைப் பயன்படுத்துவதால், Chrome அதை இடைநிறுத்தியுள்ளது.</translation>
 <translation id="3718765429352682176">Chromeமில் இணைப்புகளைத் திறக்கக்கூடிய பிற ஆப்ஸின் பதிவுகளும் காட்டப்படக்கூடும்.</translation>
 <translation id="3720422586473670527">வேண்டாம்</translation>
 <translation id="3721119614952978349">நீங்களும் Googleளும்</translation>
@@ -1629,7 +1628,6 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ஃபைல்கள்  மீதமுள்ளன</translation>
 <translation id="8190358571722158785">1 நாள் மீதமுள்ளது</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />உங்கள் சாதனங்கள்<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="820568752112382238">அதிகம் பார்த்த தளங்கள்</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> மற்றும் <ph name="NUMBER_OF_OTHER_MEMBERS" /> நபருடன் பக்கக் குழுவில் சேருங்கள்}other{<ph name="OWNER_FIRST_NAME" /> மற்றும் <ph name="NUMBER_OF_OTHER_MEMBERS" /> பேருடன் பக்கக் குழுவில் சேருங்கள்}}</translation>
 <translation id="8209050860603202033">படத்தைத் திற</translation>

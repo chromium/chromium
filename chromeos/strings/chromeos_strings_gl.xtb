@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Nivel de batería do auricular dereito do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3347558044552027859">moderna</translation>
+<translation id="3353477144743332882">Descargar o modelo de creación de nomes e resumos</translation>
 <translation id="3359218928534347896">activar ou desactivar o son do micrófono</translation>
 <translation id="3360306038446926262">Ventás</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">O atallo non está dispoñible. Preme un novo sen a tecla <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5875913454160982848">Descargar o modelo de transcrición</translation>
 <translation id="5876385649737594562">Actívao para seleccionar as opcións</translation>
 <translation id="5877503382465267833">Pór <ph name="RECORDING_NAME" /> en pausa</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
@@ -1588,6 +1590,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
 <translation id="8505011850330200833">O modelo de Gemini ocupa 2 GB de almacenamento para procesar transcricións e crear resumos</translation>
 <translation id="8508640263392900755">Detalles do APN</translation>
+<translation id="8509574872955173831">Máis información sobre a creación de nomes e resumos</translation>
 <translation id="8522687886059337719">Xa podes acceder a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />protectores de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tipo casa de té</translation>
