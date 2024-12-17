@@ -1904,6 +1904,21 @@
             ]
         }
     ],
+    "AutofillEnablePaymentSettingsCardPromoAndScanCard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnablePaymentSettingsCardPromoAndScanCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnablePaymentsFieldSwapping": [
         {
             "platforms": [
