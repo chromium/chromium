@@ -47,7 +47,6 @@ group("api_implementations") {
       "//chrome/browser/extensions/api/extension_action",
       "//chrome/browser/extensions/api/font_settings",
       "//chrome/browser/extensions/api/idltest",
-      "//chrome/browser/extensions/api/mdns",
       "//chrome/browser/extensions/api/networking_private",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/extensions/api/page_capture",
