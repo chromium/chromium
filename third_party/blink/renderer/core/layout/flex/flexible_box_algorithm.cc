@@ -57,27 +57,10 @@ ItemPosition BoxAlignmentToItemPosition(EBoxAlignment alignment) {
 }  // namespace
 
 // static
-bool FlexibleBoxAlgorithm::IsColumnFlow(const ComputedStyle& style) {
-  return style.ResolvedIsColumnFlexDirection();
-}
-
-// static
 bool FlexibleBoxAlgorithm::IsHorizontalFlow(const ComputedStyle& style) {
   if (style.IsHorizontalWritingMode())
     return !style.ResolvedIsColumnFlexDirection();
   return style.ResolvedIsColumnFlexDirection();
-}
-
-// static
-const StyleContentAlignmentData&
-FlexibleBoxAlgorithm::ContentAlignmentNormalBehavior() {
-  // The justify-content property applies along the main axis, but since
-  // flexing in the main axis is controlled by flex, stretch behaves as
-  // flex-start (ignoring the specified fallback alignment, if any).
-  // https://drafts.csswg.org/css-align/#distribution-flex
-  static const StyleContentAlignmentData kNormalBehavior = {
-      ContentPosition::kNormal, ContentDistributionType::kStretch};
-  return kNormalBehavior;
 }
 
 // static
@@ -109,13 +92,14 @@ StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
                                      OverflowAlignment::kSafe);
   }
 
-  ContentPosition position =
-      style.ResolvedJustifyContentPosition(ContentAlignmentNormalBehavior());
-
   const auto writing_direction = style.GetWritingDirection();
+  const StyleContentAlignmentData& justify_content = style.JustifyContent();
+
+  // Coerce "left"/"right" their logical variants.
+  ContentPosition position = justify_content.GetPosition();
   if (position == ContentPosition::kLeft ||
       position == ContentPosition::kRight) {
-    if (IsColumnFlow(style)) {
+    if (style.ResolvedIsColumnFlexDirection()) {
       if (writing_direction.IsHorizontal()) {
         // The main-axis is in the top-down direction, fallback to start.
         position = ContentPosition::kStart;
@@ -133,31 +117,9 @@ StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
               : ContentPosition::kEnd;
     }
   }
-  DCHECK_NE(position, ContentPosition::kLeft);
-  DCHECK_NE(position, ContentPosition::kRight);
 
-  ContentDistributionType distribution =
-      style.ResolvedJustifyContentDistribution(
-          ContentAlignmentNormalBehavior());
-  if (distribution == ContentDistributionType::kStretch) {
-    // For flex, justify-content: stretch behaves as flex-start:
-    // https://drafts.csswg.org/css-align/#distribution-flex
-    position = ContentPosition::kFlexStart;
-    distribution = ContentDistributionType::kDefault;
-  }
-  return StyleContentAlignmentData(position, distribution,
-                                   style.JustifyContent().Overflow());
-}
-
-// static
-StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedAlignContent(
-    const ComputedStyle& style) {
-  ContentPosition position =
-      style.ResolvedAlignContentPosition(ContentAlignmentNormalBehavior());
-  ContentDistributionType distribution =
-      style.ResolvedAlignContentDistribution(ContentAlignmentNormalBehavior());
-  OverflowAlignment overflow = style.AlignContent().Overflow();
-  return StyleContentAlignmentData(position, distribution, overflow);
+  return StyleContentAlignmentData(position, justify_content.Distribution(),
+                                   justify_content.Overflow());
 }
 
 // static

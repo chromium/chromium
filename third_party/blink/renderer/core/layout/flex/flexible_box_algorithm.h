@@ -50,11 +50,8 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
 
  public:
   static bool IsHorizontalFlow(const ComputedStyle&);
-  static bool IsColumnFlow(const ComputedStyle&);
 
-  static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
   static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);
-  static StyleContentAlignmentData ResolvedAlignContent(const ComputedStyle&);
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
 };

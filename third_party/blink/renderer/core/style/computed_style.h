@@ -103,7 +103,6 @@ class NinePieceImage;
 class ShadowList;
 class ShapeValue;
 class StyleAdjuster;
-class StyleContentAlignmentData;
 class StyleDifference;
 class StyleImage;
 class StyleInheritedVariables;
@@ -398,24 +397,12 @@ class ComputedStyle final : public ComputedStyleBase {
                                       const ComputedStyle* old_style,
                                       const ComputedStyle* new_style);
 
-  ContentPosition ResolvedJustifyContentPosition(
-      const StyleContentAlignmentData& normal_value_behavior) const;
-  ContentDistributionType ResolvedJustifyContentDistribution(
-      const StyleContentAlignmentData& normal_value_behavior) const;
-  ContentPosition ResolvedAlignContentPosition(
-      const StyleContentAlignmentData& normal_value_behavior) const;
-  ContentDistributionType ResolvedAlignContentDistribution(
-      const StyleContentAlignmentData& normal_value_behavior) const;
   StyleSelfAlignmentData ResolvedAlignSelf(
       const StyleSelfAlignmentData& normal_value_behavior,
       const ComputedStyle* parent_style = nullptr) const;
-  StyleContentAlignmentData ResolvedAlignContent(
-      const StyleContentAlignmentData& normal_behaviour) const;
   StyleSelfAlignmentData ResolvedJustifySelf(
       const StyleSelfAlignmentData& normal_value_behavior,
       const ComputedStyle* parent_style = nullptr) const;
-  StyleContentAlignmentData ResolvedJustifyContent(
-      const StyleContentAlignmentData& normal_behaviour) const;
 
   CORE_EXPORT StyleDifference
   VisualInvalidationDiff(const Document&, const ComputedStyle&) const;

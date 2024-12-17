@@ -1450,8 +1450,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
   const StyleContentAlignmentData justify_content =
       FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
-  const StyleContentAlignmentData align_content =
-      FlexibleBoxAlgorithm::ResolvedAlignContent(style);
+  const StyleContentAlignmentData align_content = style.AlignContent();
 
   // Determine the cross-axis free-space.
   const wtf_size_t num_lines = flex_lines->size();
@@ -1466,13 +1465,16 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   }
   cross_axis_free_space -= (num_lines - 1) * gap_between_lines_;
 
+  const bool is_align_content_stretch =
+      align_content.Distribution() == ContentDistributionType::kStretch ||
+      (align_content.GetPosition() == ContentPosition::kNormal &&
+       align_content.Distribution() == ContentDistributionType::kDefault);
   if (!is_multi_line_) {
     // A single line flexbox will always be the cross-axis content-size.
     flex_lines->back().line_cross_size = cross_axis_content_size;
     cross_axis_free_space = LayoutUnit();
   } else if (cross_axis_free_space >= LayoutUnit() &&
-             align_content.Distribution() ==
-                 ContentDistributionType::kStretch) {
+             is_align_content_stretch) {
     // Stretch lines in a multi-line flexbox to the available free-space.
     const LayoutUnit delta = cross_axis_free_space / num_lines;
     for (FlexLine& line : *flex_lines) {
