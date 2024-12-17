@@ -230,15 +230,6 @@ interface SpeechRecognitionSurfaceClient {
   OnFullscreenToggled@1();
 };
 
-// Static metadata about a remote speech surface. Used by the speech service
-// client in Ash.
-struct SpeechRecognitionSurfaceMetadata {
-  // A unique identifier for the "session" (i.e. tab) of the surface. Is used to
-  // hide the caption bubble for all streams in a tab if the bubble is closed
-  // once.
-  mojo_base.mojom.UnguessableToken session_id;
-};
-
 // This interface between the speech recognition client and the browser.
 // The remote lives in the renderer process and the receiver lives in the
 // browser process. Not necessary for browser-side features (e.g. CrOS system
@@ -248,16 +239,8 @@ interface SpeechRecognitionClientBrowserInterface {
   BindSpeechRecognitionBrowserObserver@0(
       pending_remote<SpeechRecognitionBrowserObserver> observer);
 
-  // Requests that a remote speech recognition client be instantiated and bound
-  // in the Ash browser process. The instantiated client should use the surface
-  // and surface client bindings to perform tasks (such as refocusing) that
-  // require coordination with the current lacros tab.
   [MinVersion=1]
-  BindRecognizerToRemoteClient@1(
-      pending_receiver<SpeechRecognitionRecognizerClient> client,
-      pending_receiver<SpeechRecognitionSurfaceClient> surface_client,
-      pending_remote<SpeechRecognitionSurface> surface,
-      SpeechRecognitionSurfaceMetadata metadata);
+  REMOVED_1@1();
 
   // Similar to BindSpeechRecognitionBrowserObserver, however binds Browser
   // observers that listen to events specific to BabelOrca rather than

@@ -13,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ui_base_switches.h"

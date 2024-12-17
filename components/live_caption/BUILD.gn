@@ -12,6 +12,8 @@ if (!is_android && !is_ios) {
       "caption_bubble_context_remote.h",
       "caption_bubble_controller.h",
       "caption_bubble_session_observer.h",
+      "live_caption_controller.cc",
+      "live_caption_controller.h",
     ]
 
     deps = [
@@ -57,20 +59,6 @@ if (!is_android && !is_ios) {
         "//ui/views",
       ]
     }  # toolkit_views
-
-    if (is_chromeos_ash) {
-      sources += [
-        "live_caption_ui_remote_driver.cc",
-        "live_caption_ui_remote_driver.h",
-      ]
-    }  # is_chromeos_ash
-
-    if (!is_chromeos_lacros) {
-      sources += [
-        "live_caption_controller.cc",
-        "live_caption_controller.h",
-      ]
-    }
   }
 
   static_library("live_translate") {
@@ -122,7 +110,7 @@ if (!is_android && !is_ios) {
       "//ui/gfx/geometry:geometry",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "caption_bubble_context_remote_unittest.cc",
 

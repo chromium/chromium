@@ -3493,6 +3493,10 @@ static_library("browser") {
       "accessibility/embedded_a11y_extension_loader.h",
       "accessibility/invert_bubble_prefs.cc",
       "accessibility/invert_bubble_prefs.h",
+      "accessibility/live_caption/live_caption_controller_factory.cc",
+      "accessibility/live_caption/live_caption_controller_factory.h",
+      "accessibility/live_caption/live_caption_speech_recognition_host.cc",
+      "accessibility/live_caption/live_caption_speech_recognition_host.h",
       "accessibility/live_translate_controller_factory.cc",
       "accessibility/live_translate_controller_factory.h",
       "accessibility/phrase_segmentation/dependency_parser_model_loader.cc",
@@ -4514,15 +4518,6 @@ static_library("browser") {
       # "browser_public_dependencies".
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/webui/signin:profile_impl" ]
-    }
-
-    if (!is_chromeos_lacros) {
-      sources += [
-        "accessibility/live_caption/live_caption_controller_factory.cc",
-        "accessibility/live_caption/live_caption_controller_factory.h",
-        "accessibility/live_caption/live_caption_speech_recognition_host.cc",
-        "accessibility/live_caption/live_caption_speech_recognition_host.h",
-      ]
     }
 
     if (!is_win) {
@@ -5797,8 +5792,6 @@ static_library("browser") {
 
   if (is_chromeos_lacros) {
     sources += [
-      "accessibility/live_caption/live_caption_surface.cc",
-      "accessibility/live_caption/live_caption_surface.h",
       "apps/digital_goods/digital_goods_factory_stub.cc",
       "apps/digital_goods/digital_goods_factory_stub.h",
       "apps/digital_goods/digital_goods_lacros.cc",

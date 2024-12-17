@@ -231,7 +231,7 @@ class CaptionBubbleEventObserver : public ui::EventObserver {
 
 namespace captions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsCaptionBubbleKey, false)
 #endif
 
@@ -913,7 +913,7 @@ void CaptionBubble::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
   params->z_order = ui::ZOrderLevel::kFloatingWindow;
   params->visible_on_all_workspaces = true;
   params->name = "LiveCaptionWindow";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   params->init_properties_container.SetProperty(kIsCaptionBubbleKey, true);
 #endif
 }

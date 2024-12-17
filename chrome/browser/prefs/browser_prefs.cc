@@ -2174,6 +2174,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   bookmarks_webui::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   BrowserUserEducationStorageService::RegisterProfilePrefs(registry);
+  captions::LiveCaptionController::RegisterProfilePrefs(registry);
   captions::LiveTranslateController::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   commerce::CommerceUiTabHelper::RegisterProfilePrefs(registry);
@@ -2212,10 +2213,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   toolbar::RegisterProfilePrefs(registry);
   UnifiedAutoplayConfig::RegisterProfilePrefs(registry);
   user_notes::RegisterProfilePrefs(registry);
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  captions::LiveCaptionController::RegisterProfilePrefs(registry);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

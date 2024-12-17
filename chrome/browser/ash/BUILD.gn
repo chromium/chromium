@@ -367,7 +367,6 @@ if (is_chromeos_device) {
     testonly = true
 
     deps = [
-      "//chrome/browser/ash/accessibility/live_caption:interactive_ui_tests",
       "//chrome/browser/ash/app_list:interactive_ui_tests",
       "//chrome/browser/ash/child_accounts:interactive_ui_tests",
       "//chrome/browser/ash/file_manager:interactive_ui_tests",
