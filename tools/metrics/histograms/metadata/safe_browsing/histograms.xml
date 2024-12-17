@@ -708,6 +708,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.Enhanced.ProtegoRequestSentInLast28Days"
+    enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2025-12-09">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Similar to the SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days metric,
+    records whether an ESB user has sent a Protego ping to the Safe Browsing
+    consumer API servers within the last 28 days. If a ping was sent since the
+    last time this metric was logged, then this metric will report the type of
+    that ping, otherwise it will report that none was sent. Pings that had a
+    token are logged preferrentially over pings without a token. This metric is
+    logged at most once per day and only for users that have enhanced protection
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days"
     enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2025-11-07">
   <owner>jacastro@chromium.org</owner>

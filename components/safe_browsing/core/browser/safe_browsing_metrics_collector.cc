@@ -97,6 +97,26 @@ void SafeBrowsingMetricsCollector::LogMetricsAndScheduleNextLogging() {
   ScheduleNextLoggingAfterInterval(base::Days(kMetricsLoggingIntervalDay));
 }
 
+safe_browsing::SafeBrowsingMetricsCollector::ProtegoPingType
+SafeBrowsingMetricsCollector::GetMostRecentPingType(
+    base::Time last_ping_with_token,
+    base::Time last_ping_without_token,
+    base::TimeDelta time_delta) {
+  // If a ping with token was sent within the last time_delta,
+  // the most recent ping type is kWithToken.
+  // If both last_ping_with_token and last_ping_without_token are present,
+  // we log kWithToken instead of kWithoutToken because if a token has been
+  // sent before, we are certain that this account is a signed in account
+  // and the server has received the token.
+  // The kWithoutToken ping could be sent after the account logged out.
+  if (base::Time::Now() - last_ping_with_token < time_delta) {
+    return ProtegoPingType::kWithToken;
+  } else if (base::Time::Now() - last_ping_without_token < time_delta) {
+    return ProtegoPingType::kWithoutToken;
+  }
+  return ProtegoPingType::kNone;
+}
+
 void SafeBrowsingMetricsCollector::MaybeLogDailyEsbProtegoPingSent() {
   if (GetSafeBrowsingState(*pref_service_) !=
       SafeBrowsingState::ENHANCED_PROTECTION) {
@@ -118,53 +138,30 @@ void SafeBrowsingMetricsCollector::MaybeLogDailyEsbProtegoPingSent() {
 
   bool sent_ping_since_last_collector_run =
       most_recent_ping_time > most_recent_collector_run_time;
-
-  auto logged_ping_type = ProtegoPingType::kNone;
-
-  if (base::Time::Now() - last_ping_with_token < base::Hours(24)) {
-    // If a ping with token was sent within the last 24 hours,
-    // the most recent ping type is kWithToken.
-    // If both last_ping_with_token and last_ping_without_token are present,
-    // we log kWithToken instead of kWithoutToken because if a token has been
-    // sent before, we are certain that this account is a signed in account
-    // and the server has received the token.
-    // The kWithoutToken ping could be sent after the account logged out.
-    logged_ping_type = ProtegoPingType::kWithToken;
-  } else if (base::Time::Now() - last_ping_without_token < base::Hours(24)) {
-    // If no ping with token was sent but a ping without token was sent within
-    // the last 24 hours, the most recent ping type is kWithoutToken.
-    // Otherwise, it is the default value, kNone.
-    logged_ping_type = ProtegoPingType::kWithoutToken;
-  }
   base::UmaHistogramEnumeration(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
       sent_ping_since_last_collector_run ? most_recent_ping_type
                                          : ProtegoPingType::kNone);
 
+  auto logged_ping_last_24_hours_type = GetMostRecentPingType(
+      last_ping_with_token, last_ping_without_token, base::Hours(24));
   base::UmaHistogramEnumeration(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours2",
-      logged_ping_type);
+      logged_ping_last_24_hours_type);
 
-  auto logged_ping_last_7_days_type = ProtegoPingType::kNone;
-  if (base::Time::Now() - last_ping_with_token < base::Days(7)) {
-    // If a ping with token was sent within the last 7 days,
-    // the most recent ping type is kWithToken.
-    // If both last_ping_with_token and last_ping_without_token are present,
-    // we log kWithToken instead of kWithoutToken because if a token has been
-    // sent before, we are certain that this account is a signed in account
-    // and the server has received the token.
-    // The kWithoutToken ping could be sent after the account logged out.
-    logged_ping_last_7_days_type = ProtegoPingType::kWithToken;
-  } else if (base::Time::Now() - last_ping_without_token < base::Days(7)) {
-    // If no ping with token was sent but a ping without token was sent within
-    // the last 7 days, the most recent ping type is kWithoutToken.
-    // Otherwise, it is the default value, kNone.
-    logged_ping_last_7_days_type = ProtegoPingType::kWithoutToken;
-  }
+  auto logged_ping_last_7_days_type = GetMostRecentPingType(
+      last_ping_with_token, last_ping_without_token, base::Days(7));
 
   base::UmaHistogramEnumeration(
       "SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days",
       logged_ping_last_7_days_type);
+
+  auto logged_ping_last_28_days_type = GetMostRecentPingType(
+      last_ping_with_token, last_ping_without_token, base::Days(28));
+
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast28Days",
+      logged_ping_last_28_days_type);
 }
 
 void SafeBrowsingMetricsCollector::ScheduleNextLoggingAfterInterval(
