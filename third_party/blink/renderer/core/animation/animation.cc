@@ -2059,7 +2059,13 @@ ExecutionContext* Animation::GetExecutionContext() const {
 }
 
 bool Animation::HasPendingActivity() const {
+  // Canceling an animation creates a new finished promise by spec.
+  // This finished promise does not count as having pending activity since
+  // a cancelled animation will never finish. Otherwise, we need to keep the
+  // animation alive until it finishes and any pending events have been
+  // processed.
   bool has_pending_promise =
+      (CalculateAnimationPlayState() != V8AnimationPlayState::Enum::kIdle) &&
       finished_promise_ &&
       finished_promise_->GetState() == AnimationPromise::kPending;
 
