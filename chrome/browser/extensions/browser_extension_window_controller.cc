@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/platform_util.h"

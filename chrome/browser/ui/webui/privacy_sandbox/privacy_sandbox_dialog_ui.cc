@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/profiles/profile.h"

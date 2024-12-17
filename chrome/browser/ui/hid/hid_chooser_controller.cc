@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
