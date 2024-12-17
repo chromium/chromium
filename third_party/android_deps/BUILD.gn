@@ -1722,6 +1722,26 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm_java") {
+    jar_path = "cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm/kotlinx-coroutines-test-jvm-1.7.3.jar"
+    output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm"
+    supports_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
+    deps = [
+      ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_objenesis_objenesis_java") {
     jar_path = "cipd/libs/org_objenesis_objenesis/objenesis-3.3.jar"
     output_name = "org_objenesis_objenesis"

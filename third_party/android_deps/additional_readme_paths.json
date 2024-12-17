@@ -90,6 +90,7 @@
     "libs/org_jetbrains_kotlinx_kotlinx_coroutines_android",
     "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     "libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava",
+    "libs/org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm",
     "libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm",
     "libs/org_jsoup_jsoup",
     "libs/org_jspecify_jspecify",
