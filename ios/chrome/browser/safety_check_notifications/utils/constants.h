@@ -49,6 +49,11 @@ enum class SafetyCheckNotificationType {
 inline constexpr base::TimeDelta kSafetyCheckNotificationDefaultDelay =
     base::Hours(24);
 
+// Duration of time to suppress scheduling new Safety Check notifications if one
+// is already present in the notification center.
+inline constexpr base::TimeDelta
+    kSafetyCheckNotificationSuppressDelayIfPresent = base::Days(30);
+
 // Unique identifiers and keys for Safety Check push notifications.
 
 // Notification ID for the current Password notification.

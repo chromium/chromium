@@ -81,9 +81,17 @@ extern const char kSafetyCheckNotificationsProvisionalEnabled[];
 // Returns true if provisional Safety Check notifications are enabled.
 bool ProvisionalSafetyCheckNotificationsEnabled();
 
+// A parameter defining the duration to suppress scheduling new Safety Check
+// notifications if one is already present in the notification center.
+extern const char kSafetyCheckNotificationsSuppressDelayIfPresent[];
+
 // A parameter defining the duration of user inactivity required before
 // displaying Safety Check push notifications.
 extern const char kSafetyCheckNotificationsUserInactiveThreshold[];
+
+// Returns the duration of time to suppress scheduling new Safety Check
+// notifications if one is already present in the notification center.
+const base::TimeDelta SuppressDelayForSafetyCheckNotificationsIfPresent();
 
 // Returns the time duration of user inactivity that must elapse before Safety
 // Check notifications are displayed.

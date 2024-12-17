@@ -705,6 +705,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Register pref used to determine if Browser Lockdown Mode is enabled.
   registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
 
+  registry->RegisterTimePref(
+      prefs::kIosSafetyCheckNotificationFirstPresentTimestamp, base::Time());
+
   // Preferences related to the Safety Check Notifications feature.
   registry->RegisterIntegerPref(prefs::kIosSafetyCheckNotificationsLastSent,
                                 -1);

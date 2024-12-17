@@ -192,10 +192,12 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
         safety_check_manager->GetInsecurePasswordCounts();
   }
 
-  // TODO(crbug.com/362479882): Exit if the user shouldn't receive a new Safety
-  // Check notification (e.g., notifications disabled, recent notification
-  // already shown).
   if (!IsPermitted()) {
+    std::move(completion).Run();
+    return;
+  }
+
+  if (!CheckAndResetIfSchedulingIsAllowed()) {
     std::move(completion).Run();
     return;
   }
@@ -357,10 +359,12 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362479882): Exit if the user shouldn't receive a new Safety
-  // Check notification (e.g., notifications disabled, recent notification
-  // already shown).
   if (!IsPermitted()) {
+    std::move(completion).Run();
+    return;
+  }
+
+  if (!CheckAndResetIfSchedulingIsAllowed()) {
     std::move(completion).Run();
     return;
   }
@@ -589,24 +593,91 @@ void SafetyCheckNotificationClient::LogDismissedNotifications() {
       getDeliveredNotificationsWithCompletionHandler:completion];
 }
 
+// Iterates through delivered notifications in the device's notification
+// center, sets the `prefs::kIosSafetyCheckNotificationFirstPresentTimestamp`
+// if a Safety Check notification is present (and the timestamp is not
+// already set), and logs any previously triggered Safety Check notifications
+// that were dismissed.
 void SafetyCheckNotificationClient::OnGetDeliveredNotifications(
     NSArray<UNNotification*>* notifications) {
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+  bool safety_check_notification_found = false;
+
   for (UNNotification* notification in notifications) {
     if (ParseSafetyCheckNotificationType(notification.request).has_value()) {
-      return;
+      safety_check_notification_found = true;
+      break;
     }
   }
 
-  // No Safety Check notification was found, so it must have been dismissed.
+  if (safety_check_notification_found) {
+    // Record the timestamp when the notification was first set to present
+    // only if it is not already set.
+    if (local_pref_service->GetTime(
+            prefs::kIosSafetyCheckNotificationFirstPresentTimestamp) ==
+        base::Time()) {
+      local_pref_service->SetTime(
+          prefs::kIosSafetyCheckNotificationFirstPresentTimestamp,
+          base::Time::Now());
+    }
+  } else {
+    // No Safety Check notification is currently delivered in the device's
+    // notification center. Check the "last triggered" pref to see if a
+    // notification was previously triggered and now dismissed.
+    const PrefService::Preference* last_triggered_pref =
+        local_pref_service->FindPreference(
+            prefs::kIosSafetyCheckNotificationsLastTriggered);
+
+    if (!last_triggered_pref->IsDefaultValue()) {
+      // A Safety Check notification was previously triggered and has since
+      // been dismissed (not currently delivered in the device's
+      // notification center). Log the dismissal for analytics.
+      SafetyCheckNotificationType type =
+          static_cast<SafetyCheckNotificationType>(
+              local_pref_service->GetInteger(
+                  prefs::kIosSafetyCheckNotificationsLastTriggered));
+
+      base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Dismissed",
+                                    type);
+
+      // Clear the "last triggered" pref since the dismissal has been
+      // processed.
+      local_pref_service->ClearPref(
+          prefs::kIosSafetyCheckNotificationsLastTriggered);
+    }
+
+    // Clear the "first present" timestamp. Since no Safety Check
+    // notifications are present in the device's notification center,
+    // this allows new notifications to be scheduled.
+    local_pref_service->ClearPref(
+        prefs::kIosSafetyCheckNotificationFirstPresentTimestamp);
+  }
+}
+
+bool SafetyCheckNotificationClient::CheckAndResetIfSchedulingIsAllowed() {
   PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
 
-  SafetyCheckNotificationType type =
-      static_cast<SafetyCheckNotificationType>(local_pref_service->GetInteger(
-          prefs::kIosSafetyCheckNotificationsLastTriggered));
+  base::Time first_present_time = local_pref_service->GetTime(
+      prefs::kIosSafetyCheckNotificationFirstPresentTimestamp);
 
-  base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Dismissed",
-                                type);
+  // If the timestamp is not set, scheduling is allowed.
+  if (first_present_time == base::Time()) {
+    return true;
+  }
 
+  // If the duration defined by
+  // `SuppressDelayForSafetyCheckNotificationsIfPresent()` has not elapsed since
+  // the timestamp was set, scheduling is not allowed.
+  if (base::Time::Now() - first_present_time <
+      SuppressDelayForSafetyCheckNotificationsIfPresent()) {
+    return false;
+  }
+
+  // If the duration defined by
+  // `SuppressDelayForSafetyCheckNotificationsIfPresent()` has elapsed since the
+  // timestamp was set, we reset the timestamp and allow scheduling.
   local_pref_service->ClearPref(
-      prefs::kIosSafetyCheckNotificationsLastTriggered);
+      prefs::kIosSafetyCheckNotificationFirstPresentTimestamp);
+
+  return true;
 }

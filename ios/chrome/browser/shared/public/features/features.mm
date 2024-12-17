@@ -140,6 +140,9 @@ const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
 const char kSafetyCheckNotificationsProvisionalEnabled[] =
     "SafetyCheckNotificationsProvisionalEnabled";
 
+const char kSafetyCheckNotificationsSuppressDelayIfPresent[] =
+    "SafetyCheckNotificationsSuppressDelayIfPresent";
+
 const char kSafetyCheckNotificationsUserInactiveThreshold[] =
     "SafetyCheckNotificationsUserInactiveThreshold";
 
@@ -172,6 +175,13 @@ bool ProvisionalSafetyCheckNotificationsEnabled() {
       kSafetyCheckNotifications, kSafetyCheckNotificationsProvisionalEnabled,
       /*default_value=*/
       true);
+}
+
+const base::TimeDelta SuppressDelayForSafetyCheckNotificationsIfPresent() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kSafetyCheckNotifications,
+      kSafetyCheckNotificationsSuppressDelayIfPresent,
+      /*default_value=*/kSafetyCheckNotificationSuppressDelayIfPresent);
 }
 
 const base::TimeDelta InactiveThresholdForSafetyCheckNotifications() {

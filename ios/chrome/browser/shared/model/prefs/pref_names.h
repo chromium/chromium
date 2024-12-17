@@ -347,6 +347,12 @@ inline constexpr char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
 inline constexpr char kIosSafetyCheckManagerInsecurePasswordCounts[] =
     "ios.safety_check_manager.insecure_password_counts";
 
+// Time preference containing the timestamp when a Safety Check notification was
+// first set to present in the device's notification center and has not been
+// interacted with or dismissed.
+inline constexpr char kIosSafetyCheckNotificationFirstPresentTimestamp[] =
+    "ios.safety_check.notifications.first_present_timestamp";
+
 // Integer preference containing which Safety Check notification type was sent
 // last.
 inline constexpr char kIosSafetyCheckNotificationsLastSent[] =
