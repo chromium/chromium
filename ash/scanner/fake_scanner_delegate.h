@@ -6,6 +6,7 @@
 #define ASH_SCANNER_FAKE_SCANNER_DELEGATE_H_
 
 #include "ash/public/cpp/scanner/scanner_delegate.h"
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 
 namespace ash {
@@ -20,7 +21,7 @@ class FakeScannerDelegate : public ScannerDelegate {
 
   // ScannerDelegate:
   ScannerProfileScopedDelegate* GetProfileScopedDelegate() override;
-  void OpenFeedbackDialog() override {}
+  void OpenFeedbackDialog(ScannerFeedbackInfo feedback_info) override {}
 
  private:
   FakeScannerProfileScopedDelegate fake_scanner_profile_scoped_delegate_;

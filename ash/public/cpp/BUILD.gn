@@ -308,6 +308,8 @@ component("cpp") {
     "scanner/scanner_action.h",
     "scanner/scanner_delegate.h",
     "scanner/scanner_enums.h",
+    "scanner/scanner_feedback_info.cc",
+    "scanner/scanner_feedback_info.h",
     "scanner/scanner_profile_scoped_delegate.h",
     "scanner/scanner_system_state.cc",
     "scanner/scanner_system_state.h",

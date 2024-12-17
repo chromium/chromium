@@ -13,17 +13,20 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_scanner_feedback_ui_resources.h"
 #include "ash/webui/grit/ash_scanner_feedback_ui_resources_map.h"
+#include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom.h"
+#include "ash/webui/scanner_feedback_ui/scanner_feedback_page_handler.h"
 #include "ash/webui/scanner_feedback_ui/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/bindings_policy.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
+#include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-#include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace ash {
 
@@ -39,7 +42,10 @@ bool ScannerFeedbackUntrustedUIConfig::IsWebUIEnabled(
 }
 
 ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
-    : ui::UntrustedWebUIController(web_ui) {
+    : ui::WebDialogUI(web_ui) {
+  // Emulate `ui::UntrustedWebUIController`. This should never enable bindings.
+  web_ui->SetBindings(content::BindingsPolicySet());
+
   // `content::WebUIDataSource`s are stored on the browser context. If an
   // existing `content::WebUIDataSource` exists in the browser context for the
   // given source name, calling `CreateAndAdd` will destroy the previous one.
@@ -81,6 +87,11 @@ void ScannerFeedbackUntrustedUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void ScannerFeedbackUntrustedUI::BindInterface(
+    mojo::PendingReceiver<mojom::scanner_feedback_ui::PageHandler> receiver) {
+  page_handler_.Bind(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ScannerFeedbackUntrustedUI)

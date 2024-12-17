@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_controller.h"
 #include "chrome/browser/ash/scanner/scanner_keyed_service_factory.h"
@@ -21,7 +22,8 @@ ChromeScannerDelegate::GetProfileScopedDelegate() {
       ProfileManager::GetActiveUserProfile());
 }
 
-void ChromeScannerDelegate::OpenFeedbackDialog() {
-  auto* dialog = new ash::ScannerFeedbackDialog();
+void ChromeScannerDelegate::OpenFeedbackDialog(
+    ash::ScannerFeedbackInfo feedback_info) {
+  auto* dialog = new ash::ScannerFeedbackDialog(std::move(feedback_info));
   dialog->ShowSystemDialog();
 }

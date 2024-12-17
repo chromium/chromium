@@ -5,7 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SCANNER_FEEDBACK_DIALOG_SCANNER_FEEDBACK_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SCANNER_FEEDBACK_DIALOG_SCANNER_FEEDBACK_DIALOG_H_
 
+#include <optional>
+
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+
+namespace content {
+class WebUI;
+}
 
 namespace ash {
 
@@ -16,12 +23,19 @@ namespace ash {
 // be destroyed when the dialog is closed.
 class ScannerFeedbackDialog : public SystemWebDialogDelegate {
  public:
-  ScannerFeedbackDialog();
+  explicit ScannerFeedbackDialog(ScannerFeedbackInfo info);
 
   ScannerFeedbackDialog(const ScannerFeedbackDialog&) = delete;
   ScannerFeedbackDialog& operator=(const ScannerFeedbackDialog&) = delete;
 
   ~ScannerFeedbackDialog() override;
+
+  // SystemWebDialogDelegate:
+  void OnDialogShown(content::WebUI* webui) override;
+
+ private:
+  // Set on construction. Unset on `OnDialogShown`.
+  std::optional<ScannerFeedbackInfo> feedback_info_;
 };
 
 }  // namespace ash

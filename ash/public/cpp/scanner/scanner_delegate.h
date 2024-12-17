@@ -9,6 +9,7 @@
 
 namespace ash {
 
+struct ScannerFeedbackInfo;
 class ScannerProfileScopedDelegate;
 
 // Provides access to the browser from //ash/scanner.
@@ -22,7 +23,7 @@ class ASH_PUBLIC_EXPORT ScannerDelegate {
   //
   // TODO: b/382562555 - Consider taking in a `context::BrowserContext*` here
   // to ensure that the dialog is opened for the correct user.
-  virtual void OpenFeedbackDialog() = 0;
+  virtual void OpenFeedbackDialog(ScannerFeedbackInfo feedback_info) = 0;
 };
 
 }  // namespace ash

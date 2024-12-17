@@ -9,6 +9,13 @@ import type {OrcaFeedback} from '//resources/cros_components/orca_feedback/orca-
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {PageHandler} from './scanner_feedback_ui.mojom-webui.js';
+
+const PAGE_HANDLER_REMOTE = PageHandler.getRemote();
+
+const FEEDBACK_INFO_PROMISE = PAGE_HANDLER_REMOTE.getFeedbackInfo().then(
+    ({feedbackInfo}) => feedbackInfo);
+
 
 // `StringSource` is not exported from orca-feedback.js, so get a reference to
 // it via `OrcaFeedback`.
@@ -51,14 +58,18 @@ export class ScannerFeedbackAppElement extends PolymerElement {
       // Private properties:
       stringSource: Object,
       openUrl: Object,
+      extraInfoCallback: Object,
     };
   }
 
+  // Used in template:
   private readonly stringSource = STRING_SOURCE;
   private readonly openUrl = (url: string) => {
     window.open(url, '_blank');
     // TODO: b/382562555 - Close the dialog after opening the URL.
   };
+  private readonly extraInfoCallback = () =>
+      FEEDBACK_INFO_PROMISE.then(feedbackInfo => feedbackInfo.actionDetails);
 }
 
 declare global {
