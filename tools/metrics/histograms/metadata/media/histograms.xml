@@ -5464,16 +5464,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Session.Suspended" enum="MediaSessionSuspendedSource"
-    expires_after="2022-02-06">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The number of times a media session is suspended and why it has been
-    suspended.
-  </summary>
-</histogram>
-
 <histogram name="Media.SRC.VideoCodec.MP4" enum="VideoCodec"
     expires_after="never">
 <!-- expires-never: Codec and container support planning metric. -->

@@ -114,9 +114,6 @@ class MediaSessionImpl : public MediaSession,
   // these were the last players in the session.
   CONTENT_EXPORT void RemovePlayers(MediaSessionPlayerObserver* observer);
 
-  // Record that the session was ducked.
-  void RecordSessionDuck();
-
   // Called when a player is paused in the content.
   // If the paused player is the last player, we suspend the MediaSession.
   // Otherwise, the paused player will be removed from the MediaSession.

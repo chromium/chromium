@@ -1479,14 +1479,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Registered Automatic"/>
 </enum>
 
-<enum name="MediaSessionSuspendedSource">
-  <int value="0" label="System Transient"/>
-  <int value="1" label="System Permanent"/>
-  <int value="2" label="UI"/>
-  <int value="3" label="CONTENT"/>
-  <int value="4" label="System Transient Duck"/>
-</enum>
-
 <enum name="MediaSinkType">
   <int value="0" label="Cast"/>
   <int value="1" label="Cast Audio Group"/>

@@ -70,9 +70,6 @@ using MapRenderFrameHostToDepth = std::map<RenderFrameHost*, size_t>;
 
 using media_session::mojom::AudioFocusType;
 
-using MediaSessionSuspendedSource =
-    MediaSessionUmaHelper::MediaSessionSuspendedSource;
-
 const char kMediaSessionDataName[] = "MediaSessionDataName";
 
 class MediaSessionData : public base::SupportsUserData::Data {
@@ -571,11 +568,6 @@ void MediaSessionImpl::RemovePlayers(MediaSessionPlayerObserver* observer) {
   RebuildAndNotifyMediaPositionChanged();
 }
 
-void MediaSessionImpl::RecordSessionDuck() {
-  uma_helper_.RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemTransientDuck);
-}
-
 void MediaSessionImpl::OnPlayerPaused(MediaSessionPlayerObserver* observer,
                                       int player_id) {
   // If a playback is completed, BrowserMediaPlayerManager will call
@@ -942,29 +934,6 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
 
   if (audio_focus_state_ != State::ACTIVE)
     return;
-
-  switch (suspend_type) {
-    case SuspendType::kUI:
-      uma_helper_.RecordSessionSuspended(MediaSessionSuspendedSource::kUI);
-      break;
-    case SuspendType::kSystem:
-      switch (new_state) {
-        case State::SUSPENDED:
-          uma_helper_.RecordSessionSuspended(
-              MediaSessionSuspendedSource::kSystemTransient);
-          break;
-        case State::INACTIVE:
-          uma_helper_.RecordSessionSuspended(
-              MediaSessionSuspendedSource::kSystemPermanent);
-          break;
-        case State::ACTIVE:
-          NOTREACHED();
-      }
-      break;
-    case SuspendType::kContent:
-      uma_helper_.RecordSessionSuspended(MediaSessionSuspendedSource::kCONTENT);
-      break;
-  }
 
   SetAudioFocusState(new_state);
   suspend_type_ = suspend_type;
