@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/i18n/string_search.h"
+
 #include <stdint.h>
 
-#include "base/i18n/string_search.h"
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -14,18 +16,17 @@ namespace base {
 namespace i18n {
 
 FixedPatternStringSearch::FixedPatternStringSearch(
-    const std::u16string& find_this,
+    std::u16string_view find_this,
     bool case_sensitive)
     : find_this_(find_this) {
-  // usearch_open requires a valid string argument to be searched, even if we
-  // want to set it by usearch_setText afterwards. So, supplying a dummy text.
-  const std::u16string& dummy = find_this_;
-
   UErrorCode status = U_ZERO_ERROR;
-  search_ = usearch_open(find_this_.data(), find_this_.size(), dummy.data(),
-                         dummy.size(), uloc_getDefault(),
-                         nullptr,  // breakiter
-                         &status);
+  search_ =
+      usearch_open(find_this_.data(), find_this_.size(),
+                   // `usearch_open()` requires a valid string argument to be
+                   // searched, even if we want to set it by `usearch_setText()`
+                   // afterwards. So just provide `find_this_` again.
+                   find_this_.data(), find_this_.size(), uloc_getDefault(),
+                   /*breakiter=*/nullptr, &status);
   if (U_SUCCESS(status)) {
     // http://icu-project.org/apiref/icu4c40/ucol_8h.html#6a967f36248b0a1bc7654f538ee8ba96
     // Set comparison level to UCOL_PRIMARY to ignore secondary and tertiary
@@ -46,7 +47,7 @@ FixedPatternStringSearch::~FixedPatternStringSearch() {
     usearch_close(search_.ExtractAsDangling());
 }
 
-bool FixedPatternStringSearch::Search(const std::u16string& in_this,
+bool FixedPatternStringSearch::Search(std::u16string_view in_this,
                                       size_t* match_index,
                                       size_t* match_length,
                                       bool forward_search) {
@@ -81,27 +82,27 @@ bool FixedPatternStringSearch::Search(const std::u16string& in_this,
 
 FixedPatternStringSearchIgnoringCaseAndAccents::
     FixedPatternStringSearchIgnoringCaseAndAccents(
-        const std::u16string& find_this)
+        std::u16string_view find_this)
     : base_search_(find_this, /*case_sensitive=*/false) {}
 
 bool FixedPatternStringSearchIgnoringCaseAndAccents::Search(
-    const std::u16string& in_this,
+    std::u16string_view in_this,
     size_t* match_index,
     size_t* match_length) {
   return base_search_.Search(in_this, match_index, match_length,
                              /*forward_search=*/true);
 }
 
-bool StringSearchIgnoringCaseAndAccents(const std::u16string& find_this,
-                                        const std::u16string& in_this,
+bool StringSearchIgnoringCaseAndAccents(std::u16string_view find_this,
+                                        std::u16string_view in_this,
                                         size_t* match_index,
                                         size_t* match_length) {
   return FixedPatternStringSearchIgnoringCaseAndAccents(find_this).Search(
       in_this, match_index, match_length);
 }
 
-bool StringSearch(const std::u16string& find_this,
-                  const std::u16string& in_this,
+bool StringSearch(std::u16string_view find_this,
+                  std::u16string_view in_this,
                   size_t* match_index,
                   size_t* match_length,
                   bool case_sensitive,
@@ -110,8 +111,8 @@ bool StringSearch(const std::u16string& find_this,
       .Search(in_this, match_index, match_length, forward_search);
 }
 
-RepeatingStringSearch::RepeatingStringSearch(const std::u16string& find_this,
-                                             const std::u16string& in_this,
+RepeatingStringSearch::RepeatingStringSearch(std::u16string_view find_this,
+                                             std::u16string_view in_this,
                                              bool case_sensitive)
     : find_this_(find_this), in_this_(in_this) {
   std::string locale = uloc_getDefault();

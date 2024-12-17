@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
-#include <string>
+#include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/memory/raw_ptr.h"
 
@@ -25,8 +26,8 @@ namespace i18n {
 // accent differences are ignored. Please refer to 'primary level' in
 // http://userguide.icu-project.org/collation/concepts for additional details.
 BASE_I18N_EXPORT
-bool StringSearchIgnoringCaseAndAccents(const std::u16string& find_this,
-                                        const std::u16string& in_this,
+bool StringSearchIgnoringCaseAndAccents(std::u16string_view find_this,
+                                        std::u16string_view in_this,
                                         size_t* match_index,
                                         size_t* match_length);
 
@@ -41,8 +42,8 @@ bool StringSearchIgnoringCaseAndAccents(const std::u16string& find_this,
 // When |forward_search| is true, finds the first instance of |find_this|,
 // otherwise finds the last instance
 BASE_I18N_EXPORT
-bool StringSearch(const std::u16string& find_this,
-                  const std::u16string& in_this,
+bool StringSearch(std::u16string_view find_this,
+                  std::u16string_view in_this,
                   size_t* match_index,
                   size_t* match_length,
                   bool case_sensitive,
@@ -51,37 +52,38 @@ bool StringSearch(const std::u16string& find_this,
 // This class is for speeding up multiple StringSearch()
 // with the same |find_this| argument. |find_this| is passed as the constructor
 // argument, and precomputation for searching is done only at that time.
-class BASE_I18N_EXPORT FixedPatternStringSearch {
+class BASE_I18N_EXPORT GSL_POINTER FixedPatternStringSearch {
  public:
-  explicit FixedPatternStringSearch(const std::u16string& find_this,
+  explicit FixedPatternStringSearch(std::u16string_view find_this,
                                     bool case_sensitive);
   ~FixedPatternStringSearch();
 
   // Returns true if |in_this| contains |find_this|. If |match_index| or
   // |match_length| are non-NULL, they are assigned the start position and total
   // length of the match.
-  bool Search(const std::u16string& in_this,
+  bool Search(std::u16string_view in_this,
               size_t* match_index,
               size_t* match_length,
               bool forward_search);
 
  private:
-  std::u16string find_this_;
+  std::u16string_view find_this_;
   raw_ptr<UStringSearch> search_;
 };
 
 // This class is for speeding up multiple StringSearchIgnoringCaseAndAccents()
 // with the same |find_this| argument. |find_this| is passed as the constructor
 // argument, and precomputation for searching is done only at that time.
-class BASE_I18N_EXPORT FixedPatternStringSearchIgnoringCaseAndAccents {
+class BASE_I18N_EXPORT GSL_POINTER
+    FixedPatternStringSearchIgnoringCaseAndAccents {
  public:
   explicit FixedPatternStringSearchIgnoringCaseAndAccents(
-      const std::u16string& find_this);
+      std::u16string_view find_this);
 
   // Returns true if |in_this| contains |find_this|. If |match_index| or
   // |match_length| are non-NULL, they are assigned the start position and total
   // length of the match.
-  bool Search(const std::u16string& in_this,
+  bool Search(std::u16string_view in_this,
               size_t* match_index,
               size_t* match_length);
 
@@ -91,10 +93,10 @@ class BASE_I18N_EXPORT FixedPatternStringSearchIgnoringCaseAndAccents {
 
 // This class is for performing all matches of `find_this` in `in_this`.
 // `find_this` and `in_this` are passed as arguments in constructor.
-class BASE_I18N_EXPORT RepeatingStringSearch {
+class BASE_I18N_EXPORT GSL_POINTER RepeatingStringSearch {
  public:
-  RepeatingStringSearch(const std::u16string& find_this,
-                        const std::u16string& in_this,
+  RepeatingStringSearch(std::u16string_view find_this,
+                        std::u16string_view in_this,
                         bool case_sensitive);
   ~RepeatingStringSearch();
 
@@ -103,8 +105,8 @@ class BASE_I18N_EXPORT RepeatingStringSearch {
   bool NextMatchResult(int& match_index, int& match_length);
 
  private:
-  std::u16string find_this_;
-  std::u16string in_this_;
+  std::u16string_view find_this_;
+  std::u16string_view in_this_;
   raw_ptr<UStringSearch> search_;
 };
 
