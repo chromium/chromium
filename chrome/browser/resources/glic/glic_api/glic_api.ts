@@ -236,3 +236,18 @@ export declare interface Observable<T> {
 export declare interface Subscriber {
   unsubscribe(): void;
 }
+
+
+//
+// Types used in the boot process.
+//
+
+
+export declare interface WithGlicApi {
+  internalAutoGlicBoot?(chromeSource: WindowProxy): GlicHostRegistry;
+}
+
+export declare interface GlicApiBootMessage {
+  type: 'glic-bootstrap';
+  glicApiSource: string;
+}

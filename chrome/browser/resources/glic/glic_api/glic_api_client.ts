@@ -13,7 +13,7 @@ import {ImageAlphaType, ImageColorType} from './request_types.js';
 // Web client side of the Glic API.
 // Communicates with the Chrome-WebUI-side in glic_api_host.ts
 
-class GlicHostRegistryImpl implements GlicHostRegistry {
+export class GlicHostRegistryImpl implements GlicHostRegistry {
   constructor(private windowProxy: WindowProxy) {}
 
   async registerWebClient(webClient: GlicWebClient): Promise<void> {
@@ -176,12 +176,6 @@ export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
   };
   window.addEventListener('message', messageHandler);
   return promise;
-}
-
-// DEPRECATED: Provided for the old code-injected style of booting the API.
-// Supports the test client. May be removed in the future.
-export function boot(windowProxy: WindowProxy): GlicHostRegistry {
-  return new GlicHostRegistryImpl(windowProxy);
 }
 
 class ErrorWithReasonImpl<T> extends Error implements ErrorWithReason<T> {
