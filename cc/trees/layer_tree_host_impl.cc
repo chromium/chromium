@@ -3381,6 +3381,23 @@ void LayerTreeHostImpl::DidFinishImplFrame(const viz::BeginFrameArgs& args) {
 
 void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                            FrameSkippedReason reason) {
+  TRACE_EVENT2(
+      "cc,benchmark", "LayerTreeHostImpl::DidNotProduceFrame",
+      "FrameSkippedReason",
+      [](FrameSkippedReason reason) {
+        switch (reason) {
+          case FrameSkippedReason::kRecoverLatency:
+            return "kRecoverLatency";
+          case FrameSkippedReason::kNoDamage:
+            return "kNoDamage";
+          case FrameSkippedReason::kWaitingOnMain:
+            return "kWaitingOnMain";
+          case FrameSkippedReason::kDrawThrottled:
+            return "kDrawThrottled";
+        }
+        return "";
+      }(reason),
+      "Frame Sequence Number", ack.frame_id.sequence_number);
   frame_rate_estimator_.DidNotProduceFrame();
   if (layer_tree_frame_sink_) {
     static const bool feature_allowed = base::FeatureList::IsEnabled(
