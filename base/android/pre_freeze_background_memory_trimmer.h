@@ -187,25 +187,58 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     OnceCallback<void(MemoryReductionTaskContext)> task_;
   };
 
+ private:
+  class CompactionMetric : public RefCountedThreadSafe<CompactionMetric> {
+   public:
+    explicit CompactionMetric(base::TimeTicks started_at);
+
+    void RecordDelayedMetrics();
+
+    void RecordBeforeMetrics();
+    void MaybeRecordCompactionMetrics();
+
+   private:
+    friend class RefCountedThreadSafe<CompactionMetric>;
+    ~CompactionMetric();
+    void RecordSmapsRollup(std::optional<debug::SmapsRollup>* target);
+    void RecordSmapsRollupWithDelay(std::optional<debug::SmapsRollup>* target,
+                                    base::TimeDelta delay);
+    base::TimeTicks started_at_;
+    // We use std::optional here because:
+    // - We record these incrementally.
+    // - We may stop recording at some point.
+    // - We only want to emit histograms if all values were recorded.
+    std::optional<debug::SmapsRollup> smaps_before_;
+    std::optional<debug::SmapsRollup> smaps_after_;
+    std::optional<debug::SmapsRollup> smaps_after_1s_;
+    std::optional<debug::SmapsRollup> smaps_after_10s_;
+    std::optional<debug::SmapsRollup> smaps_after_60s_;
+  };
+
   PreFreezeBackgroundMemoryTrimmer();
 
   void StartSelfCompaction(scoped_refptr<base::SequencedTaskRunner> task_runner,
                            std::vector<debug::MappedMemoryRegion> regions,
-                           uint64_t max_size);
+                           scoped_refptr<CompactionMetric> metric,
+                           uint64_t max_size,
+                           base::TimeTicks started_at);
   static base::TimeDelta GetDelayBetweenSelfCompaction();
   void MaybePostSelfCompactionTask(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::vector<debug::MappedMemoryRegion> regions,
+      scoped_refptr<CompactionMetric> metric,
       uint64_t max_size,
       base::TimeTicks started_at);
   void SelfCompactionTask(scoped_refptr<base::SequencedTaskRunner> task_runner,
                           std::vector<debug::MappedMemoryRegion> regions,
+                          scoped_refptr<CompactionMetric> metric,
                           uint64_t max_size,
                           base::TimeTicks started_at);
-  void FinishSelfCompaction(base::TimeTicks started_at);
+  void FinishSelfCompaction(scoped_refptr<CompactionMetric> metric,
+                            base::TimeTicks started_at);
 
-  bool ShouldContinueSelfCompaction(base::TimeTicks compaction_started_at)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  static bool ShouldContinueSelfCompaction(
+      base::TimeTicks compaction_started_at) LOCKS_EXCLUDED(Instance().lock_);
 
   static std::optional<uint64_t> CompactMemory(
       std::vector<debug::MappedMemoryRegion>* regions,
@@ -249,6 +282,9 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   void PostMetricsTasksIfModern() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void PostMetricsTask() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void RecordMetrics() LOCKS_EXCLUDED(lock_);
+
+  void RecordSmapsRollup(std::optional<debug::SmapsRollup>* target,
+                         base::TimeTicks started_at);
 
   mutable base::Lock lock_;
   std::deque<std::unique_ptr<BackgroundTask>> background_tasks_

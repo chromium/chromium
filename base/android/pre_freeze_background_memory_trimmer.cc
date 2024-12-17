@@ -65,9 +65,16 @@ const char* GetProcessType() {
   return process_type;
 }
 
-std::string GetMetricName(std::string_view name, std::string_view suffix) {
+std::string GetPreFreezeMetricName(std::string_view name,
+                                   std::string_view suffix) {
   const char* process_type = GetProcessType();
   return StrCat({"Memory.PreFreeze2.", process_type, ".", name, ".", suffix});
+}
+
+std::string GetSelfCompactionMetricName(std::string_view name,
+                                        std::string_view suffix) {
+  const char* process_type = GetProcessType();
+  return StrCat({"Memory.SelfCompact.", process_type, ".", name, ".", suffix});
 }
 
 class PrivateMemoryFootprintMetric
@@ -91,16 +98,57 @@ class PrivateMemoryFootprintMetric
 
 bool PrivateMemoryFootprintMetric::did_register_ = false;
 
-void MaybeRecordMetric(std::optional<uint64_t> value_bytes,
-                       std::string_view metric_name,
-                       std::string_view suffix) {
+void MaybeRecordPreFreezeMetric(std::optional<uint64_t> value_bytes,
+                                std::string_view metric_name,
+                                std::string_view suffix) {
   // Skip recording the metric if we failed to get the PMF.
   if (!value_bytes.has_value()) {
     return;
   }
 
-  UmaHistogramMemoryMB(GetMetricName(metric_name, suffix),
+  UmaHistogramMemoryMB(GetPreFreezeMetricName(metric_name, suffix),
                        static_cast<int>(BytesToMiB(value_bytes.value())));
+}
+
+void RecordSelfCompactionMetric(size_t value_bytes,
+                                std::string_view metric_name,
+                                std::string_view suffix) {
+  UmaHistogramMemoryMB(GetSelfCompactionMetricName(metric_name, suffix),
+                       static_cast<int>(BytesToMiB(value_bytes)));
+}
+
+void RecordSelfCompactionMetrics(const debug::SmapsRollup& value,
+                                 std::string_view suffix) {
+  RecordSelfCompactionMetric(value.rss, "Rss", suffix);
+  RecordSelfCompactionMetric(value.pss, "Pss", suffix);
+  RecordSelfCompactionMetric(value.pss_anon, "PssAnon", suffix);
+  RecordSelfCompactionMetric(value.pss_file, "PssFile", suffix);
+  RecordSelfCompactionMetric(value.swap_pss, "SwapPss", suffix);
+}
+
+void RecordSelfCompactionDiffMetric(size_t before_value_bytes,
+                                    size_t after_value_bytes,
+                                    std::string_view name,
+                                    std::string_view suffix) {
+  size_t diff_non_negative = std::max(before_value_bytes, after_value_bytes) -
+                             std::min(before_value_bytes, after_value_bytes);
+  const std::string full_suffix = StrCat(
+      {"Diff.", suffix, ".",
+       before_value_bytes < after_value_bytes ? "Increase" : "Decrease"});
+  RecordSelfCompactionMetric(diff_non_negative, name, full_suffix);
+}
+
+void RecordSelfCompactionDiffMetrics(const debug::SmapsRollup before,
+                                     const debug::SmapsRollup after,
+                                     std::string_view suffix) {
+  RecordSelfCompactionDiffMetric(before.rss, after.rss, "Rss", suffix);
+  RecordSelfCompactionDiffMetric(before.pss, after.pss, "Pss", suffix);
+  RecordSelfCompactionDiffMetric(before.pss_anon, after.pss_anon, "PssAnon",
+                                 suffix);
+  RecordSelfCompactionDiffMetric(before.pss_file, after.pss_file, "PssFile",
+                                 suffix);
+  RecordSelfCompactionDiffMetric(before.swap_pss, after.swap_pss, "SwapPss",
+                                 suffix);
 }
 
 std::optional<uint64_t> Diff(std::optional<uint64_t> before,
@@ -195,9 +243,10 @@ void PreFreezeBackgroundMemoryTrimmer::RecordMetrics() {
 
     std::optional<uint64_t> value_after = metric->Measure();
 
-    MaybeRecordMetric(value_before, metric->name(), "Before");
-    MaybeRecordMetric(value_after, metric->name(), "After");
-    MaybeRecordMetric(Diff(value_before, value_after), metric->name(), "Diff");
+    MaybeRecordPreFreezeMetric(value_before, metric->name(), "Before");
+    MaybeRecordPreFreezeMetric(value_after, metric->name(), "After");
+    MaybeRecordPreFreezeMetric(Diff(value_before, value_after), metric->name(),
+                               "Diff");
   }
 
   values_before_.clear();
@@ -252,6 +301,62 @@ void PreFreezeBackgroundMemoryTrimmer::PostMetricsTask() {
       base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::RecordMetrics,
                      base::Unretained(this)),
       kDelayForMetrics);
+}
+
+void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::
+    MaybeRecordCompactionMetrics() {
+  // If we did not record smaps_rollup for any reason, such as returning to
+  // foreground, being frozen by App Freezer, or failing to read
+  // /proc/self/smaps_rollup, skip emitting metrics.
+  if (!smaps_before_.has_value() || !smaps_after_.has_value() ||
+      !smaps_after_1s_.has_value() || !smaps_after_10s_.has_value() ||
+      !smaps_after_60s_.has_value()) {
+    return;
+  }
+
+  if (!ShouldContinueSelfCompaction(started_at_)) {
+    return;
+  }
+
+  // Record absolute values of each metric.
+  RecordSelfCompactionMetrics(*smaps_before_, "Before");
+  RecordSelfCompactionMetrics(*smaps_after_, "After");
+  RecordSelfCompactionMetrics(*smaps_after_1s_, "After1s");
+  RecordSelfCompactionMetrics(*smaps_after_10s_, "After10s");
+  RecordSelfCompactionMetrics(*smaps_after_60s_, "After60s");
+
+  // Record diff of before and after to see how much memory was compacted.
+  RecordSelfCompactionDiffMetrics(*smaps_before_, *smaps_after_, "BeforeAfter");
+
+  // Record diff after a delay, so we can see if any memory comes back after
+  // compaction.
+  RecordSelfCompactionDiffMetrics(*smaps_after_, *smaps_after_1s_, "After1s");
+  RecordSelfCompactionDiffMetrics(*smaps_after_, *smaps_after_10s_, "After10s");
+  RecordSelfCompactionDiffMetrics(*smaps_after_, *smaps_after_60s_, "After60s");
+}
+
+void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::RecordSmapsRollup(
+    std::optional<debug::SmapsRollup>* target) {
+  if (!ShouldContinueSelfCompaction(started_at_)) {
+    return;
+  }
+
+  *target = debug::ReadAndParseSmapsRollup();
+
+  MaybeRecordCompactionMetrics();
+}
+
+void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::
+    RecordSmapsRollupWithDelay(std::optional<debug::SmapsRollup>* target,
+                               base::TimeDelta delay) {
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, MayBlock()},
+      base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::CompactionMetric::
+                         RecordSmapsRollup,
+                     // target is a member a of |this|, so it's lifetime is
+                     // always ok here.
+                     this, base::Unretained(target)),
+      delay);
 }
 
 // static
@@ -376,52 +481,70 @@ bool PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported() {
 // static
 bool PreFreezeBackgroundMemoryTrimmer::ShouldContinueSelfCompaction(
     base::TimeTicks self_compaction_started_at) {
-  return self_compaction_last_cancelled_ < self_compaction_started_at;
+  base::AutoLock locker(Instance().lock_);
+  return Instance().self_compaction_last_cancelled_ <
+         self_compaction_started_at;
 }
 
 void PreFreezeBackgroundMemoryTrimmer::MaybePostSelfCompactionTask(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::vector<debug::MappedMemoryRegion> regions,
+    scoped_refptr<CompactionMetric> metric,
     uint64_t max_size,
     base::TimeTicks started_at) {
-  base::AutoLock locker(lock_);
-
+  TRACE_EVENT0("base", "MaybePostSelfCompactionTask");
   if (ShouldContinueSelfCompaction(started_at) && !regions.empty()) {
     task_runner->PostDelayedTask(
         FROM_HERE,
         // |base::Unretained| is safe here because we never destroy |this|.
         base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::SelfCompactionTask,
                        base::Unretained(this), std::move(task_runner),
-                       std::move(regions), max_size, started_at),
+                       std::move(regions), std::move(metric), max_size,
+                       started_at),
         GetDelayBetweenSelfCompaction());
   } else {
-    FinishSelfCompaction(started_at);
+    FinishSelfCompaction(std::move(metric), started_at);
   }
 }
 
 void PreFreezeBackgroundMemoryTrimmer::SelfCompactionTask(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::vector<debug::MappedMemoryRegion> regions,
+    scoped_refptr<CompactionMetric> metric,
     uint64_t max_size,
     base::TimeTicks started_at) {
+  if (!ShouldContinueSelfCompaction(started_at)) {
+    return;
+  }
+
+  TRACE_EVENT0("base", "SelfCompactionTask");
+
   CompactMemory(&regions, max_size);
 
   MaybePostSelfCompactionTask(std::move(task_runner), std::move(regions),
-                              max_size, started_at);
+                              std::move(metric), max_size, started_at);
 }
 
 void PreFreezeBackgroundMemoryTrimmer::StartSelfCompaction(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::vector<debug::MappedMemoryRegion> regions,
-    uint64_t max_size) {
-  auto started_at = base::TimeTicks::Now();
-
-  MaybePostSelfCompactionTask(std::move(task_runner), std::move(regions),
-                              max_size, started_at);
+    scoped_refptr<CompactionMetric> metric,
+    uint64_t max_bytes,
+    base::TimeTicks started_at) {
+  TRACE_EVENT0("base", "StartSelfCompaction");
+  metric->RecordBeforeMetrics();
+  SelfCompactionTask(std::move(task_runner), std::move(regions),
+                     std::move(metric), max_bytes, started_at);
 }
 
 void PreFreezeBackgroundMemoryTrimmer::FinishSelfCompaction(
-    base::TimeTicks started_at) {}
+    scoped_refptr<CompactionMetric> metric,
+    base::TimeTicks started_at) {
+  TRACE_EVENT0("base", "FinishSelfCompaction");
+  if (ShouldContinueSelfCompaction(started_at)) {
+    metric->RecordDelayedMetrics();
+  }
+}
 
 // static
 base::TimeDelta
@@ -449,6 +572,7 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf() {
     return;
   }
 
+  TRACE_EVENT0("base", "CompactSelf");
   std::vector<debug::MappedMemoryRegion> regions;
 
   std::string proc_maps;
@@ -460,9 +584,12 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf() {
     return;
   }
 
-  Instance().StartSelfCompaction(base::SequencedTaskRunner::GetCurrentDefault(),
-                                 std::move(regions),
-                                 MiBToBytes(kShouldFreezeSelfMaxSize.Get()));
+  auto started_at = base::TimeTicks::Now();
+  Instance().StartSelfCompaction(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT, MayBlock()}),
+      std::move(regions), MakeRefCounted<CompactionMetric>(started_at),
+      MiBToBytes(kShouldFreezeSelfMaxSize.Get()), started_at);
 }
 
 // static
@@ -538,6 +665,8 @@ void PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze() {
   if (!base::FeatureList::IsEnabled(kShouldFreezeSelf)) {
     return;
   }
+
+  TRACE_EVENT0("base", "OnSelfFreeze");
 
   Instance().OnSelfFreezeInternal();
 }
@@ -757,5 +886,23 @@ PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric::PreFreezeMetric(
     : name_(name) {}
 
 PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric::~PreFreezeMetric() = default;
+
+PreFreezeBackgroundMemoryTrimmer::CompactionMetric::CompactionMetric(
+    base::TimeTicks started_at)
+    : started_at_(started_at) {}
+PreFreezeBackgroundMemoryTrimmer::CompactionMetric::~CompactionMetric() =
+    default;
+
+void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::RecordBeforeMetrics() {
+  RecordSmapsRollup(&smaps_before_);
+}
+
+void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::
+    RecordDelayedMetrics() {
+  RecordSmapsRollup(&smaps_after_);
+  RecordSmapsRollupWithDelay(&smaps_after_1s_, base::Seconds(1));
+  RecordSmapsRollupWithDelay(&smaps_after_10s_, base::Seconds(10));
+  RecordSmapsRollupWithDelay(&smaps_after_60s_, base::Seconds(60));
+}
 
 }  // namespace base::android

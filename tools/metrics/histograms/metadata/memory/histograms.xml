@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DiffDirection">
+  <variant name="Decrease" summary="The latter metric is lower."/>
+  <variant name="Increase" summary="The latter metric is higher."/>
+</variants>
+
 <variants name="GpuPeakMemoryUsage">
   <variant name="ChangeTab2"
       summary="Changing tabs. Note that this histogram uses presentation
@@ -45,6 +50,30 @@ chromium-metrics-reviews@google.com.
   <variant name=".Utility" summary="a Utility process"/>
 </variants>
 
+<variants name="RecordedDelay">
+  <variant name="After"
+      summary="Recorded directly after self-compaction is finished."/>
+  <variant name="After1s"
+      summary="Recorded 1s after self-compaction is finished."/>
+  <variant name="After10s"
+      summary="Recorded 10s after self-compaction is finished."/>
+  <variant name="After60s"
+      summary="Recorded 60s after self-compaction is finished."/>
+  <variant name="Before" summary="Recorded directly before self-compaction."/>
+</variants>
+
+<variants name="RecordedDelayDiff">
+  <variant name="After1s"
+      summary="Comparison of metrics directly after vs 1s later."/>
+  <variant name="After10s"
+      summary="Comparison of metrics directly after vs 10s later."/>
+  <variant name="After60s"
+      summary="Comparison of metrics directly after vs 60s later."/>
+  <variant name="BeforeAfter"
+      summary="Comparison of metrics directly before vs directly after
+               self-compaction."/>
+</variants>
+
 <variants name="RecordedTiming">
   <variant name="After"
       summary="Recorded a small delay after all memory-purging tasks are run,
@@ -54,6 +83,14 @@ chromium-metrics-reviews@google.com.
   <variant name="Diff"
       summary="The difference between before and after any memory-purging
                tasks are run, clamped at 0."/>
+</variants>
+
+<variants name="SmapsMetric">
+  <variant name="Pss" summary="Proportional set size"/>
+  <variant name="PssAnon" summary="Anonymous PSS"/>
+  <variant name="PssFile" summary="File-backed PSS"/>
+  <variant name="Rss" summary="Resident set size"/>
+  <variant name="SwapPss"/>
 </variants>
 
 <variants name="UtilityProcessType">
@@ -2041,6 +2078,38 @@ chromium-metrics-reviews@google.com.
     should separate users with and without OriginKeyedProcessesByDefault, to
     distinguish actual header adoption.
   </summary>
+</histogram>
+
+<histogram
+    name="Memory.SelfCompact{Process}.{Metric}.Diff.{Timing}.{Direction}"
+    units="MiB" expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    The difference in the chosen metric, taken from /proc/self/smaps_rollup at
+    the two specified times. &quot;Increase&quot; metrics are recorded when the
+    latter snapshot is higher, &quot;Decrease&quot; metrics when the latter
+    snapshot is lower. Either a metric is recorded for all variants, or no
+    metric is recorded.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+  <token key="Metric" variants="SmapsMetric"/>
+  <token key="Timing" variants="RecordedDelayDiff"/>
+  <token key="Direction" variants="DiffDirection"/>
+</histogram>
+
+<histogram name="Memory.SelfCompact{Process}.{Metric}.{Timing}" units="MiB"
+    expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    The amount of memory used, taken from /proc/self/smaps_rollup. Recorded
+    directly before self-compaction, directly after, and after the specified
+    delays. Either a metric is recorded for all variants, or no metric is.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+  <token key="Metric" variants="SmapsMetric"/>
+  <token key="Timing" variants="RecordedDelay"/>
 </histogram>
 
 <histogram name="Memory.StackSamplingProfiler.StackSampleSize2" units="KB"
