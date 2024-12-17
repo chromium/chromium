@@ -177,8 +177,6 @@ crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
-
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
 # Fails with Graphite on Windows and Mac
@@ -190,9 +188,6 @@ crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_InfoFo
 crbug.com/329145823 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan no-clang-coverage nvidia-0xfe9 release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ asan graphite-disabled intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
-
-
-
 
 # Flaky failure on Mac AMD ASAN - 3 GPU process crashes instead of 4
 crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
@@ -209,6 +204,9 @@ crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
 
 # Flaky crash affects this test in particular for some reason
 crbug.com/365565140 [ win qualcomm ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
+
+# Flaky Timed out while waiting 10s for IsJavaScriptExpressionTrue
+crbug.com/384605105 [ win nvidia ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
