@@ -205,6 +205,36 @@ TabMessageMetadata CreateTabMessageMetadata(
   return tab_metadata;
 }
 
+TabMessageMetadata CreateTabMessageMetadataFromMessageOrTab(
+    const collaboration_pb::Message& message,
+    std::optional<tab_groups::SavedTabGroupTab> tab) {
+  if (tab) {
+    return CreateTabMessageMetadata(*tab);
+  }
+
+  // Tab no longer available, so fill in what we can.
+  TabMessageMetadata tab_metadata = TabMessageMetadata();
+  tab_metadata.last_known_url = message.tab_data().last_url();
+  tab_metadata.sync_tab_id =
+      base::Uuid::ParseLowercase(message.tab_data().sync_tab_id());
+  return tab_metadata;
+}
+
+std::optional<tab_groups::SavedTabGroupTab> GetTabFromGroup(
+    const collaboration_pb::Message& message,
+    std::optional<tab_groups::SavedTabGroup> tab_group) {
+  if (!tab_group) {
+    return std::nullopt;
+  }
+
+  const tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(
+      base::Uuid::ParseCaseInsensitive(message.tab_data().sync_tab_id()));
+  if (tab) {
+    return std::make_optional(*tab);
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
@@ -553,19 +583,14 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
   data_sharing::GroupId collaboration_group_id(message.collaboration_id());
 
   std::optional<GaiaId> gaia_id = GetGaiaIdFromMessage(message);
-  std::optional<data_sharing::GroupMember> group_member;
+  std::optional<data_sharing::GroupMember> group_member =
+      GetGroupMemberFromGaiaId(collaboration_group_id, gaia_id);
   if (gaia_id) {
     std::optional<std::string> user_name_for_display =
         GetDisplayNameForUserInGroup(collaboration_group_id, *gaia_id,
                                      std::nullopt, message);
     if (user_name_for_display) {
       item.user_display_name = *user_name_for_display;
-    }
-    std::optional<data_sharing::GroupMemberPartialData> group_member_data =
-        data_sharing_service_->GetPossiblyRemovedGroupMember(
-            collaboration_group_id, *gaia_id);
-    if (group_member_data) {
-      group_member = group_member_data->ToGroupMember();
     }
   }
 
@@ -589,28 +614,15 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
       item.show_favicon = true;
 
       std::optional<tab_groups::SavedTabGroup> tab_group =
-          tab_group_sync_service_->GetGroup(base::Uuid::ParseCaseInsensitive(
-              message.tab_data().sync_tab_group_id()));
-      if (!tab_group) {
-        break;
-      }
+          GetTabGroupFromMessage(message);
       item.activity_metadata.tab_group_metadata =
-          CreateTabGroupMessageMetadata(*tab_group);
-      tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(
-          base::Uuid::ParseCaseInsensitive(message.tab_data().sync_tab_id()));
-      GURL url;
-      if (tab) {
-        item.activity_metadata.tab_metadata = CreateTabMessageMetadata(*tab);
-        url = tab->url();
-      } else {
-        // Tab no longer available, so fill in what we can.
-        item.activity_metadata.tab_metadata = TabMessageMetadata();
-        item.activity_metadata.tab_metadata->last_known_url =
-            message.tab_data().last_url();
-        item.activity_metadata.tab_metadata->sync_tab_id =
-            base::Uuid::ParseLowercase(message.tab_data().sync_tab_id());
-        url = GURL(message.tab_data().last_url());
-      }
+          CreateTabGroupMessageMetadataFromMessageOrTabGroup(message,
+                                                             tab_group);
+      item.activity_metadata.tab_metadata =
+          CreateTabMessageMetadataFromMessageOrTab(
+              message, GetTabFromGroup(message, tab_group));
+      // We are guaranteed to have a value for `last_known_url`.
+      GURL url = GURL(*item.activity_metadata.tab_metadata->last_known_url);
       item.activity_metadata.triggering_user = group_member;
 
       item.description =
@@ -621,26 +633,9 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
     }
     case MessageCategory::kTabGroup: {
       item.activity_metadata.triggering_user = group_member;
-      std::optional<tab_groups::SavedTabGroup> tab_group;
-      if (!message.tab_group_data().sync_tab_group_id().empty()) {
-        tab_group =
-            tab_group_sync_service_->GetGroup(base::Uuid::ParseLowercase(
-                message.tab_group_data().sync_tab_group_id()));
-      }
-      if (tab_group) {
-        item.activity_metadata.tab_group_metadata =
-            CreateTabGroupMessageMetadata(*tab_group);
-      } else {
-        item.activity_metadata.tab_group_metadata = TabGroupMessageMetadata();
-        std::optional<std::u16string> previous_title =
-            tab_group_sync_service_
-                ->GetTitleForPreviouslyExistingSharedTabGroup(
-                    ToCollaborationId(collaboration_group_id));
-        if (previous_title) {
-          item.activity_metadata.tab_group_metadata->last_known_title =
-              base::UTF16ToUTF8(*previous_title);
-        }
-      }
+      item.activity_metadata.tab_group_metadata =
+          CreateTabGroupMessageMetadataFromMessageOrTabGroup(message,
+                                                             std::nullopt);
 
       // Only tab group name changes have specialized description.
       if (message.event_type() == collaboration_pb::TAB_GROUP_NAME_UPDATED) {
@@ -674,6 +669,74 @@ MessagingBackendServiceImpl::GetCollaborationGroupIdForTab(
     return std::nullopt;
   }
   return GroupIdForTabGroup(*tab_group);
+}
+
+TabGroupMessageMetadata
+MessagingBackendServiceImpl::CreateTabGroupMessageMetadataFromCollaborationId(
+    std::optional<tab_groups::SavedTabGroup> tab_group,
+    std::optional<data_sharing::GroupId> collaboration_group_id) {
+  if (tab_group) {
+    return CreateTabGroupMessageMetadata(*tab_group);
+  }
+
+  TabGroupMessageMetadata tab_group_metadata = TabGroupMessageMetadata();
+  if (!collaboration_group_id) {
+    return tab_group_metadata;
+  }
+  std::optional<std::u16string> previous_title =
+      tab_group_sync_service_->GetTitleForPreviouslyExistingSharedTabGroup(
+          ToCollaborationId(data_sharing::GroupId(*collaboration_group_id)));
+  if (previous_title) {
+    tab_group_metadata.last_known_title = base::UTF16ToUTF8(*previous_title);
+  }
+  return tab_group_metadata;
+}
+
+TabGroupMessageMetadata
+MessagingBackendServiceImpl::CreateTabGroupMessageMetadataFromMessageOrTabGroup(
+    const collaboration_pb::Message& message,
+    const std::optional<tab_groups::SavedTabGroup>& tab_group) {
+  if (tab_group) {
+    return CreateTabGroupMessageMetadata(*tab_group);
+  }
+
+  return CreateTabGroupMessageMetadataFromCollaborationId(
+      GetTabGroupFromMessage(message),
+      data_sharing::GroupId(message.collaboration_id()));
+}
+
+std::optional<tab_groups::SavedTabGroup>
+MessagingBackendServiceImpl::GetTabGroupFromMessage(
+    const collaboration_pb::Message& message) {
+  std::string sync_tab_group_id = message.tab_group_data().sync_tab_group_id();
+  if (sync_tab_group_id.empty()) {
+    // Try from tab data next.
+    sync_tab_group_id = message.tab_data().sync_tab_group_id();
+  }
+
+  if (sync_tab_group_id.empty()) {
+    return std::nullopt;
+  }
+
+  return tab_group_sync_service_->GetGroup(
+      base::Uuid::ParseLowercase(sync_tab_group_id));
+}
+
+std::optional<data_sharing::GroupMember>
+MessagingBackendServiceImpl::GetGroupMemberFromGaiaId(
+    const data_sharing::GroupId& collaboration_group_id,
+    std::optional<GaiaId> gaia_id) {
+  if (!gaia_id) {
+    return std::nullopt;
+  }
+
+  std::optional<data_sharing::GroupMemberPartialData> group_member_data =
+      data_sharing_service_->GetPossiblyRemovedGroupMember(
+          collaboration_group_id, *gaia_id);
+  if (group_member_data) {
+    return group_member_data->ToGroupMember();
+  }
+  return std::nullopt;
 }
 
 }  // namespace collaboration::messaging

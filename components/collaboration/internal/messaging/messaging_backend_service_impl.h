@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier.h"
+#include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
@@ -115,6 +116,25 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   // information available in the tab group sync service.
   std::optional<data_sharing::GroupId> GetCollaborationGroupIdForTab(
       const tab_groups::SavedTabGroupTab& tab);
+
+  // Uses the provided data to create TabGroupMessageMetadata.
+  TabGroupMessageMetadata CreateTabGroupMessageMetadataFromCollaborationId(
+      std::optional<tab_groups::SavedTabGroup> tab_group,
+      std::optional<data_sharing::GroupId> collaboration_group_id);
+
+  // Creates a TabGroupMessageMetadata based on the sources given as input.
+  TabGroupMessageMetadata CreateTabGroupMessageMetadataFromMessageOrTabGroup(
+      const collaboration_pb::Message& message,
+      const std::optional<tab_groups::SavedTabGroup>& tab_group);
+
+  // Tries to retrieve the correct tab group based on data in the Message.
+  std::optional<tab_groups::SavedTabGroup> GetTabGroupFromMessage(
+      const collaboration_pb::Message& message);
+
+  // Uses the available data to look up a GroupMember.
+  std::optional<data_sharing::GroupMember> GetGroupMemberFromGaiaId(
+      const data_sharing::GroupId& collaboration_group_id,
+      std::optional<GaiaId> gaia_id);
 
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.
