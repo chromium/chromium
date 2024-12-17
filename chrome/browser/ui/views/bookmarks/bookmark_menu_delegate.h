@@ -29,16 +29,16 @@ class Profile;
 
 namespace bookmarks {
 class ManagedBookmarkService;
-}
+}  // namespace bookmarks
 
 namespace ui {
 class OSExchangeData;
-}
+}  // namespace ui
 
 namespace views {
 class MenuItemView;
 class Widget;
-}
+}  // namespace views
 
 // BookmarkMenuDelegate acts as the (informal) views::MenuDelegate for showing
 // bookmarks in a MenuItemView. BookmarkMenuDelegate informally implements
@@ -100,8 +100,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
 
   // MenuDelegate like methods (see class description for details).
   std::u16string GetTooltipText(int id, const gfx::Point& p) const;
-  bool IsTriggerableEvent(views::MenuItemView* menu,
-                          const ui::Event& e);
+  bool IsTriggerableEvent(views::MenuItemView* menu, const ui::Event& e);
   void ExecuteCommand(int id, int mouse_event_flags);
   bool ShouldExecuteCommandWithoutClosingMenu(int id, const ui::Event& e);
   bool GetDropFormats(views::MenuItemView* menu,
@@ -229,14 +228,26 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // are also removed.
   void RemoveBookmarkNode(const bookmarks::BookmarkNode* node,
                           views::MenuItemView* menu);
+
   // Updates non-bookmark node menu items that are managed by this controller.
   // E.g., removes the separator in the "other" bookmarks folder if there are no
   // more child bookmarks.
-  void UpdateMenuArtifacts();
+  // Returns a list of menus whose children changed. The caller is responsible
+  // for invoking `ChildrenChanged` on them.
+  std::vector<raw_ref<views::MenuItemView>> GetAndUpdateStaleMenuArtifacts();
 
+  // Adds or removes the bookmarks title + separator as necessary.
+  // Returns the updated menu if there were changes; otherwise, returns null.
+  views::MenuItemView* UpdateBookmarksTitle();
   bool ShouldHaveBookmarksTitle();
   void BuildBookmarksTitle();
   void RemoveBookmarksTitle();
+
+  // Adds or removes the separator of the "other" bookmarks folder as necessary.
+  // Returns the updated menu if there were changes; otherwise, returns null.
+  views::MenuItemView* UpdateOtherNodeSeparator();
+  void BuildOtherNodeMenuHeader(const bookmarks::BookmarkNode* other_node,
+                                views::MenuItemView* menu);
 
   const raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
@@ -264,6 +275,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // These are all owned by `parent_menu_item_`, if not null.
   raw_ptr<views::View> bookmarks_title_;
   raw_ptr<views::View> bookmarks_title_separator_;
+  raw_ptr<views::View> permanent_nodes_separator_;
+
+  // The separator within the "other" bookmarks menu.
+  raw_ptr<views::View> other_node_menu_separator_;
 
   // Maps from node to menu.
   NodeToMenuMap node_to_menu_map_;
