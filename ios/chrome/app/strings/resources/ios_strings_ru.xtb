@@ -398,7 +398,7 @@
 <translation id="2708051474374549906">Эффективная защита в реальном времени от опасных сайтов, расширений и скачанных файлов. Она действует с учетом данных о вашей работе в браузере, которые отправляются в Google.</translation>
 <translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="271033894570825754">Новое</translation>
-<translation id="2718352093833049315">Только Wi-Fi</translation>
+<translation id="2718352093833049315">Только по Wi-Fi</translation>
 <translation id="2721190673959776287">Пример расширенной Справки для контекстной панели. Такие подсказки должны появляться несколько раз в день.</translation>
 <translation id="2747003861858887689">Предыдущее поле</translation>
 <translation id="2749231692441336879">Вы подписались на "<ph name="CHANNEL_NAME" />".</translation>
@@ -830,7 +830,7 @@
 <translation id="4860895144060829044">Позвонить</translation>
 <translation id="4869146460927742717">Расположение адресной строки</translation>
 <translation id="4870911314065352661">Закрыть все вкладки?</translation>
-<translation id="4872664437015695612">Открыть папку "Скачанные файлы"</translation>
+<translation id="4872664437015695612">Открыть папку "Загрузки"</translation>
 <translation id="4876305945144899064">Имя пользователя не указано</translation>
 <translation id="4876665338492917862">Открыто <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Напомнить позже</translation>
