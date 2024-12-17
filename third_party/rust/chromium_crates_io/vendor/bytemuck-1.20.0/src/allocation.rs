@@ -149,6 +149,38 @@ pub fn zeroed_slice_box<T: Zeroable>(length: usize) -> Box<[T]> {
   try_zeroed_slice_box(length).unwrap()
 }
 
+/// Allocates a `Arc<T>` with all contents being zeroed out.
+#[cfg(all(feature = "alloc_uninit", target_has_atomic = "ptr"))]
+pub fn zeroed_arc<T: Zeroable>() -> Arc<T> {
+  let mut arc = Arc::new_uninit();
+  crate::write_zeroes(Arc::get_mut(&mut arc).unwrap()); // unwrap never fails for a newly allocated Arc
+  unsafe { arc.assume_init() }
+}
+
+/// Allocates a `Arc<[T]>` with all contents being zeroed out.
+#[cfg(all(feature = "alloc_uninit", target_has_atomic = "ptr"))]
+pub fn zeroed_arc_slice<T: Zeroable>(length: usize) -> Arc<[T]> {
+  let mut arc = Arc::new_uninit_slice(length);
+  crate::fill_zeroes(Arc::get_mut(&mut arc).unwrap()); // unwrap never fails for a newly allocated Arc
+  unsafe { arc.assume_init() }
+}
+
+/// Allocates a `Rc<T>` with all contents being zeroed out.
+#[cfg(feature = "alloc_uninit")]
+pub fn zeroed_rc<T: Zeroable>() -> Rc<T> {
+  let mut rc = Rc::new_uninit();
+  crate::write_zeroes(Rc::get_mut(&mut rc).unwrap()); // unwrap never fails for a newly allocated Rc
+  unsafe { rc.assume_init() }
+}
+
+/// Allocates a `Rc<[T]>` with all contents being zeroed out.
+#[cfg(feature = "alloc_uninit")]
+pub fn zeroed_rc_slice<T: Zeroable>(length: usize) -> Rc<[T]> {
+  let mut rc = Rc::new_uninit_slice(length);
+  crate::fill_zeroes(Rc::get_mut(&mut rc).unwrap()); // unwrap never fails for a newly allocated Rc
+  unsafe { rc.assume_init() }
+}
+
 /// As [`try_cast_slice_box`], but unwraps for you.
 #[inline]
 pub fn cast_slice_box<A: NoUninit, B: AnyBitPattern>(

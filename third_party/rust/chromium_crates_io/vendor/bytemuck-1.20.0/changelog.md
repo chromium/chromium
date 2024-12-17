@@ -1,5 +1,11 @@
 # `bytemuck` changelog
 
+## 1.20
+
+* New functions to allocate zeroed `Arc` and `Rc`. Requires Rust 1.82
+* `TransparentWrapper` impls for `core::cmp::Reverse` and `core::num::Saturating`.
+* internal: Simplified the library's `fill_zeroes` calls to `write_bytes`
+
 ## 1.19
 
 * Adds the `#[track_caller]` attribute to functions which may panic.

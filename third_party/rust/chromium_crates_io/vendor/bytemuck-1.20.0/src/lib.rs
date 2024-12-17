@@ -532,8 +532,8 @@ pub fn fill_zeroes<T: Zeroable>(slice: &mut [T]) {
     slice.iter_mut().for_each(write_zeroes);
   } else {
     // Otherwise we can be really fast and just fill everthing with zeros.
-    let len = core::mem::size_of_val::<[T]>(slice);
-    unsafe { core::ptr::write_bytes(slice.as_mut_ptr() as *mut u8, 0u8, len) }
+    let len = slice.len();
+    unsafe { core::ptr::write_bytes(slice.as_mut_ptr(), 0u8, len) }
   }
 }
 
