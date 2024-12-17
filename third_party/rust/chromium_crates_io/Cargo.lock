@@ -194,7 +194,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.131"
+version = "1.0.134"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "clap",
