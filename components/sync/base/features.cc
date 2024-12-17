@@ -169,6 +169,12 @@ BASE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions,
              "SyncPasswordCleanUpAccidentalBatchDeletions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMigrateAccountPrefs,
+             "MigrateAccountPrefs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+
 BASE_FEATURE(kSeparateLocalAndAccountThemes,
              "SeparateLocalAndAccountThemes",
              base::FEATURE_DISABLED_BY_DEFAULT);
