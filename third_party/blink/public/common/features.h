@@ -1454,10 +1454,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kReleaseResourceStrongReferencesOnMemoryPressure);
 
-// Kill-switch for removing Authorization header upon cross origin redirects.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kRemoveAuthroizationOnCrossOriginRedirect);
-
 // Makes preloaded fonts render-blocking up to the limits below.
 // See https://crbug.com/1412861
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);

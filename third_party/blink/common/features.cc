@@ -2265,10 +2265,6 @@ BASE_FEATURE(kReleaseResourceDecodedDataOnMemoryPressure,
              "ReleaseResourceDecodedDataOnMemoryPressure",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRemoveAuthroizationOnCrossOriginRedirect,
-             "RemoveAutorizationOnCrossOriginRedirect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRenderBlockingFonts,
              "RenderBlockingFonts",
              base::FEATURE_ENABLED_BY_DEFAULT);

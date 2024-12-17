@@ -602,9 +602,7 @@ bool ResourceLoader::WillFollowRedirect(
   // the placement of this code, together with the //net counterpart.
   if (removed_headers) {
     // Step 13 of https://fetch.spec.whatwg.org/#http-redirect-fetch
-    if (base::FeatureList::IsEnabled(
-            features::kRemoveAuthroizationOnCrossOriginRedirect) &&
-        !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
+    if (!SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
                                        new_url)) {
       removed_headers->push_back(net::HttpRequestHeaders::kAuthorization);
     }
