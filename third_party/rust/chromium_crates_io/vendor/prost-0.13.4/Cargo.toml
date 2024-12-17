@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.71.1"
 name = "prost"
-version = "0.13.3"
+version = "0.13.4"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com>",
@@ -21,6 +21,7 @@ authors = [
     "Tokio Contributors <team@tokio.rs>",
 ]
 build = false
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -50,7 +51,7 @@ version = "1"
 default-features = false
 
 [dependencies.prost-derive]
-version = "0.13.3"
+version = "0.13.4"
 optional = true
 
 [dev-dependencies.criterion]

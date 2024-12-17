@@ -24,7 +24,7 @@ std = []
 
 [dependencies]
 bytes = { version = "1", default-features = false }
-prost-derive = { version = "0.13.3", path = "../prost-derive", optional = true }
+prost-derive = { version = "0.13.4", path = "../prost-derive", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.5", default-features = false }

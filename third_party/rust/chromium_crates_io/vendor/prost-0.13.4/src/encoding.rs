@@ -583,7 +583,7 @@ pub mod string {
         // in the buf implementation, a drop guard is used.
         unsafe {
             struct DropGuard<'a>(&'a mut Vec<u8>);
-            impl<'a> Drop for DropGuard<'a> {
+            impl Drop for DropGuard<'_> {
                 #[inline]
                 fn drop(&mut self) {
                     self.0.clear();

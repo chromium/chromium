@@ -1,4 +1,5 @@
 use core::cmp::min;
+use core::num::NonZeroU64;
 
 use ::bytes::{Buf, BufMut};
 
@@ -25,8 +26,10 @@ pub fn encode_varint(mut value: u64, buf: &mut impl BufMut) {
 #[inline]
 pub fn encoded_len_varint(value: u64) -> usize {
     // Based on [VarintSize64][1].
-    // [1]: https://github.com/google/protobuf/blob/3.3.x/src/google/protobuf/io/coded_stream.h#L1301-L1309
-    ((((value | 1).leading_zeros() ^ 63) * 9 + 73) / 64) as usize
+    // [1]: https://github.com/protocolbuffers/protobuf/blob/v28.3/src/google/protobuf/io/coded_stream.h#L1744-L1756
+    // Safety: value | 1 is non-zero.
+    let log2value = unsafe { NonZeroU64::new_unchecked(value | 1) }.ilog2();
+    ((log2value * 9 + (64 + 9)) / 64) as usize
 }
 
 /// Decodes a LEB128-encoded variable length integer from the buffer.
