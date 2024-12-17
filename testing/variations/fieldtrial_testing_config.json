@@ -20896,21 +20896,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "InternalServerSideSpeechRecognitionUSMModelFinch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScreencastUseUSMForS3": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                        "InternalServerSideSpeechRecognitionUSMModelFinch",
                         "ProjectorUseUSMForS3"
                     ]
                 }
