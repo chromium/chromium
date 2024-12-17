@@ -821,12 +821,6 @@ void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
   }
 }
 
-void ArcApps::LaunchShortcut(const std::string& app_id,
-                             const std::string& shortcut_id,
-                             int64_t display_id) {
-  arc::ExecuteArcShortcutCommand(profile_, app_id, shortcut_id, display_id);
-}
-
 void ArcApps::SetPermission(const std::string& app_id,
                             PermissionPtr permission) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
