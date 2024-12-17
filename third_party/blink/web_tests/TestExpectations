@@ -8848,8 +8848,8 @@ crbug.com/382506777 [ Linux ] external/wpt/scroll-animations/css/animation-inact
 crbug.com/383105114 [ Linux ] tables/mozilla/bugs/bug78162.html [ Failure Pass ]
 crbug.com/383105114 [ Win ] tables/mozilla/bugs/bug78162.html [ Failure Pass ]
 
-crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.html [ Pass Timeout ]
-crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.worker.html [ Pass Timeout ]
+crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.html [ Failure Pass Timeout ]
+crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.worker.html [ Failure Pass Timeout ]
 
 crbug.com/383855460 inspector-protocol/css/css-get-animated-styles.js [ Failure Pass ]
 
