@@ -2099,21 +2099,30 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return RoleFromLayoutObjectOrNode();
   }
 
-  if (GetNode()->IsPseudoElement() && GetCSSAltText(GetElement())) {
-    const ComputedStyle* style = GetElement()->GetComputedStyle();
-    ContentData* content_data = style->GetContentData();
-    // We just check the first item of the content list to determine the
-    // appropriate role, should only ever be image or text.
-    // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
-    // with strong semantics? If so, why are we overriding the role here?
-    // We only need to ensure the accessible name gets the CSS alt text.
-    // Note: by doing this, we are often hiding child pseudo element content
-    // because IsRelevantPseudoElementDescendant() returns false when an
-    // ancestor has CSS alt text.
-    if (content_data->IsImage())
-      return ax::mojom::blink::Role::kImage;
+  if (GetNode()->IsPseudoElement()) {
+    // This is for carousel scroll buttons (left/right/up/down) which are meant
+    // to look and act like buttons, but are generated as ::scroll-button(...)
+    // pseudos.
+    if (GetNode()->IsScrollButtonPseudoElement()) {
+      return ax::mojom::blink::Role::kButton;
+    }
 
-    return ax::mojom::blink::Role::kStaticText;
+    if (GetCSSAltText(GetElement())) {
+      const ComputedStyle* style = GetElement()->GetComputedStyle();
+      ContentData* content_data = style->GetContentData();
+      // We just check the first item of the content list to determine the
+      // appropriate role, should only ever be image or text.
+      // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
+      // with strong semantics? If so, why are we overriding the role here?
+      // We only need to ensure the accessible name gets the CSS alt text.
+      // Note: by doing this, we are often hiding child pseudo element content
+      // because IsRelevantPseudoElementDescendant() returns false when an
+      // ancestor has CSS alt text.
+      if (content_data->IsImage()) {
+        return ax::mojom::blink::Role::kImage;
+      }
+      return ax::mojom::blink::Role::kStaticText;
+    }
   }
 
   if (GetNode()->IsTextNode())

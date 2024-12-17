@@ -161,5 +161,36 @@ TEST_F(AccessibilityTest,
   EXPECT_EQ(8, ax_css_generated->TextOffsetInFormattingContext(1));
 }
 
+TEST_F(AccessibilityTest, ScrollButtonAccessibilityRole) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #carousel {
+      scroll-marker-group: after;
+
+      &::scroll-button(inline-start) {
+        content: '<';
+      }
+      &::scroll-button(inline-end) {
+        content: '>' / 'next';
+      }
+    }
+    </style>
+
+    <div id=carousel>
+      <div>One</div>
+      <div>Two</div>
+    </div>)HTML");
+
+  const AXObject* left_button =
+      GetAXObjectByElementId("carousel", kPseudoIdScrollButtonInlineStart);
+  ASSERT_NE(nullptr, left_button);
+  ASSERT_EQ(ax::mojom::Role::kButton, left_button->RoleValue());
+
+  const AXObject* right_button =
+      GetAXObjectByElementId("carousel", kPseudoIdScrollButtonInlineEnd);
+  ASSERT_NE(nullptr, right_button);
+  ASSERT_EQ(ax::mojom::Role::kButton, right_button->RoleValue());
+}
+
 }  // namespace test
 }  // namespace blink
