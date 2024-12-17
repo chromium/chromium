@@ -21,6 +21,7 @@
 
 .icon-container {
   text-align: center;
+  margin-bottom: 24px;
 }
 
 .text-container {
@@ -39,15 +40,18 @@
   line-height: 24px;
   width: 564px;
 }
+
 .tangible-sync-style .title {
-  font-size: 36px;
-  line-height: 44px;
+  font-size: 24px;
+  line-height: 32px;
+  margin: auto;
 }
 
 .tangible-sync-style .subtitle {
+  color: var(--google-grey-700);
   font-size: 16px;
   line-height: 24px;
-  color: var(--google-grey-700);
+  margin: auto;
 }
 
 @media (prefers-color-scheme: dark) {
