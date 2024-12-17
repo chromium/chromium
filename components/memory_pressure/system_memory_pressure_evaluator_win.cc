@@ -312,7 +312,7 @@ bool SystemMemoryPressureEvaluator::GetPerformanceInfoWrapper(
     PERFORMANCE_INFORMATION* perf_info) {
   DCHECK(perf_info);
 
-  return GetPerformanceInfo(perf_info, sizeof(perf_info));
+  return GetPerformanceInfo(perf_info, sizeof(*perf_info));
 }
 
 }  // namespace win
