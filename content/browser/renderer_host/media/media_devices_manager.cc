@@ -679,11 +679,6 @@ void MediaDevicesManager::StartMonitoring() {
   if (!base::SystemMonitor::Get())
     return;
 
-#if BUILDFLAG(IS_MAC)
-  if (!base::FeatureList::IsEnabled(features::kDeviceMonitorMac))
-    return;
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kAudioServiceOutOfProcess)) {
     DCHECK(!audio_service_device_listener_);

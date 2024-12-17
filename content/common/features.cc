@@ -118,13 +118,6 @@ BASE_FEATURE(kCriticalClientHint,
              "CriticalClientHint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables caching of media devices for the purpose of enumerating them.
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kDeviceMonitorMac,
-             "DeviceMonitorMac",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enable document policy negotiation mechanism.
 BASE_FEATURE(kDocumentPolicyNegotiation,
              "DocumentPolicyNegotiation",
