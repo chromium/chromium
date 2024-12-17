@@ -23,6 +23,27 @@ reviewer.
 
 <enums>
 
+<!-- LINT.IfChange(FacilitatedPayments.EwalletFlowExitedReason) -->
+
+<enum name="FacilitatedPayments.EwalletFlowExitedReason">
+  <int value="0" label="Invalid link"/>
+  <int value="1"
+      label="User opted out of the flow using the Settings page pref"/>
+  <int value="2" label="No supported eWallet account"/>
+  <int value="3"
+      label="The device was in landscape orientation when the payflow was
+             triggered"/>
+  <int value="4" label="The domain for the payment link is not allowlisted"/>
+  <int value="5" label="API client not available"/>
+  <int value="6" label="Risk data not available"/>
+  <int value="7" label="Client token not available"/>
+  <int value="8" label="InitiatePayment request failed"/>
+  <int value="9" label="Action token not available"/>
+  <int value="10" label="User logged out after selecting payment method"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:EwalletFlowExitedReason) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.FopSelectorAction) -->
 
 <enum name="FacilitatedPayments.FopSelectorAction">
@@ -39,9 +60,9 @@ reviewer.
   <int value="2" label="Abandoned"/>
 </enum>
 
-<!-- LINT.IfChange(FacilitatedPayments.PayFlowExitedReason) -->
+<!-- LINT.IfChange(FacilitatedPayments.PixFlowExitedReason) -->
 
-<enum name="FacilitatedPayments.PayFlowExitedReason">
+<enum name="FacilitatedPayments.PixFlowExitedReason">
   <int value="0" label="Code validator failed"/>
   <int value="1" label="Invalid code"/>
   <int value="2"
@@ -63,7 +84,7 @@ reviewer.
   <int value="13" label="The purchase action could not be invoked"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PayflowExitedReason) -->
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->
 
 <!-- LINT.IfChange(FacilitatedPayments.UiScreen) -->
 

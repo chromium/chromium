@@ -128,13 +128,78 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectorShownLatency) {
       /*expected_bucket_count=*/1);
 }
 
-class FacilitatedPaymentsMetricsExitedReasonTest
-    : public testing::TestWithParam<PayflowExitedReason> {};
+class FacilitatedPaymentsMetricsEwalletExitedReasonTest
+    : public testing::TestWithParam<
+          std::tuple<EwalletFlowExitedReason, PaymentLinkValidator::Scheme>> {
+ public:
+  EwalletFlowExitedReason payflow_exit_reason() const {
+    return std::get<0>(GetParam());
+  }
 
-TEST_P(FacilitatedPaymentsMetricsExitedReasonTest, LogPayflowExitedReason) {
+  PaymentLinkValidator::Scheme scheme() const {
+    return std::get<1>(GetParam());
+  }
+
+  std::string GetSchemeString() const {
+    switch (scheme()) {
+      case PaymentLinkValidator::Scheme::kDuitNow:
+        return "DuitNow";
+      case PaymentLinkValidator::Scheme::kShopeePay:
+        return "ShopeePay";
+      case PaymentLinkValidator::Scheme::kTngd:
+        return "Tngd";
+      case PaymentLinkValidator::Scheme::kInvalid:
+        NOTREACHED();
+    }
+  }
+};
+
+TEST_P(FacilitatedPaymentsMetricsEwalletExitedReasonTest,
+       LogEwalletFlowExitedReason) {
   base::HistogramTester histogram_tester;
 
-  LogPayflowExitedReason(GetParam());
+  LogEwalletFlowExitedReason(payflow_exit_reason(), scheme());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/payflow_exit_reason(),
+      /*expected_bucket_count=*/1);
+  if (payflow_exit_reason() != EwalletFlowExitedReason::kNotInAllowlist &&
+      payflow_exit_reason() != EwalletFlowExitedReason::kLinkIsInvalid) {
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Ewallet.PayflowExitedReason.",
+                      GetSchemeString()}),
+        /*sample=*/payflow_exit_reason(),
+        /*expected_bucket_count=*/1);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsEwalletExitedReasonTest,
+    testing::Combine(
+        testing::Values(EwalletFlowExitedReason::kLinkIsInvalid,
+                        EwalletFlowExitedReason::kUserOptedOut,
+                        EwalletFlowExitedReason::kNoSupportedEwallet,
+                        EwalletFlowExitedReason::kLandscapeScreenOrientation,
+                        EwalletFlowExitedReason::kNotInAllowlist,
+                        EwalletFlowExitedReason::kApiClientNotAvailable,
+                        EwalletFlowExitedReason::kRiskDataEmpty,
+                        EwalletFlowExitedReason::kClientTokenNotAvailable,
+                        EwalletFlowExitedReason::kInitiatePaymentFailed,
+                        EwalletFlowExitedReason::kActionTokenNotAvailable,
+                        EwalletFlowExitedReason::kUserLoggedOut),
+        testing::Values(PaymentLinkValidator::Scheme::kDuitNow,
+                        PaymentLinkValidator::Scheme::kShopeePay,
+                        PaymentLinkValidator::Scheme::kTngd)));
+
+class FacilitatedPaymentsMetricsPixExitedReasonTest
+    : public testing::TestWithParam<PixFlowExitedReason> {};
+
+TEST_P(FacilitatedPaymentsMetricsPixExitedReasonTest, LogPixFlowExitedReason) {
+  base::HistogramTester histogram_tester;
+
+  LogPixFlowExitedReason(GetParam());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
@@ -144,21 +209,20 @@ TEST_P(FacilitatedPaymentsMetricsExitedReasonTest, LogPayflowExitedReason) {
 
 INSTANTIATE_TEST_SUITE_P(
     FacilitatedPaymentsMetricsTest,
-    FacilitatedPaymentsMetricsExitedReasonTest,
-    testing::Values(PayflowExitedReason::kCodeValidatorFailed,
-                    PayflowExitedReason::kInvalidCode,
-                    PayflowExitedReason::kUserOptedOut,
-                    PayflowExitedReason::kNoLinkedAccount,
-                    PayflowExitedReason::kLandscapeScreenOrientation,
-                    PayflowExitedReason::kApiClientNotAvailable,
-                    PayflowExitedReason::kRiskDataNotAvailable,
-                    PayflowExitedReason::kClientTokenNotAvailable,
-                    PayflowExitedReason::kInitiatePaymentFailed,
-                    PayflowExitedReason::kActionTokenNotAvailable,
-                    PayflowExitedReason::kUserLoggedOut,
-                    PayflowExitedReason::kFopSelectorClosedNotByUser,
-                    PayflowExitedReason::kFopSelectorClosedByUser,
-                    PayflowExitedReason::kPurchaseActionCouldNotBeInvoked));
+    FacilitatedPaymentsMetricsPixExitedReasonTest,
+    testing::Values(PixFlowExitedReason::kCodeValidatorFailed,
+                    PixFlowExitedReason::kInvalidCode,
+                    PixFlowExitedReason::kUserOptedOut,
+                    PixFlowExitedReason::kNoLinkedAccount,
+                    PixFlowExitedReason::kLandscapeScreenOrientation,
+                    PixFlowExitedReason::kApiClientNotAvailable,
+                    PixFlowExitedReason::kRiskDataNotAvailable,
+                    PixFlowExitedReason::kClientTokenNotAvailable,
+                    PixFlowExitedReason::kInitiatePaymentFailed,
+                    PixFlowExitedReason::kActionTokenNotAvailable,
+                    PixFlowExitedReason::kUserLoggedOut,
+                    PixFlowExitedReason::kFopSelectorClosedNotByUser,
+                    PixFlowExitedReason::kFopSelectorClosedByUser));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:

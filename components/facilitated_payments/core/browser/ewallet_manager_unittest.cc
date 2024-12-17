@@ -21,6 +21,7 @@
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
@@ -140,6 +141,7 @@ TEST_F(EwalletManagerTest,
 // API availability is not invoked if payment link is invalid.
 TEST_F(EwalletManagerTest,
        InvalidPaymentLink_ApiClientNotCheckedForAvailability) {
+  base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -154,10 +156,43 @@ TEST_F(EwalletManagerTest,
 
   ewallet_manager_->TriggerEwalletPushPayment(invalidPaymentLink,
                                               GURL("https://www.example.com"));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kLinkIsInvalid,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kLinkIsInvalid,
+      /*expected_bucket_count=*/0);
+}
+
+// API availability is not invoked if there is no linked account.
+TEST_F(EwalletManagerTest,
+       NoEwalletAccount_ApiClientNotCheckedForAvailability) {
+  base::HistogramTester histogram_tester;
+  GURL supportedPaymentLink(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+
+  ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
+                                              GURL("https://www.example.com"));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kNoSupportedEwallet,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kNoSupportedEwallet,
+      /*expected_bucket_count=*/1);
 }
 
 // API availability is not invoked if in landscape mode.
 TEST_F(EwalletManagerTest, InLandscapeMode_ApiClientNotCheckedForAvailability) {
+  base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -177,6 +212,15 @@ TEST_F(EwalletManagerTest, InLandscapeMode_ApiClientNotCheckedForAvailability) {
 
   ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
                                               GURL("https://www.example.com"));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kLandscapeScreenOrientation,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kLandscapeScreenOrientation,
+      /*expected_bucket_count=*/1);
 }
 
 // API availability is not invoked if payments data manager is not available.
@@ -206,6 +250,7 @@ TEST_F(EwalletManagerTest,
 // API availability is not invoked if the user has opted out of the eWallet
 // flow.
 TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
+  base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -224,6 +269,15 @@ TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
 
   ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
                                               GURL("https://www.example.com"));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kUserOptedOut,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kUserOptedOut,
+      /*expected_bucket_count=*/1);
 }
 
 // If the facilitated payment API is available, then the manager shows the
@@ -281,6 +335,15 @@ TEST_F(EwalletManagerTest,
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.IsApiAvailable.Failure.Latency.ShopeePay",
       /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kApiClientNotAvailable,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kApiClientNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
@@ -355,11 +418,22 @@ TEST_F(EwalletManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
 
 // If the client token is empty, an error screen will be shown.
 TEST_F(EwalletManagerTest, OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(client_, ShowErrorScreen);
 
   test_api(*ewallet_manager_)
       .OnGetClientToken(base::TimeTicks::Now() - base::Seconds(2),
                         std::vector<uint8_t>{});
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kClientTokenNotAvailable,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kClientTokenNotAvailable,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that GetClientToken related metrics are logged correctly.
@@ -434,6 +508,14 @@ TEST_F(EwalletManagerTest,
       "FacilitatedPayments.Ewallet.InitiatePayment.Failure.Latency.ShopeePay",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kInitiatePaymentFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kInitiatePaymentFailed,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the response from
@@ -462,6 +544,14 @@ TEST_F(EwalletManagerTest,
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency.ShopeePay",
       /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kActionTokenNotAvailable,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kActionTokenNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
@@ -496,6 +586,14 @@ TEST_F(EwalletManagerTest,
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.InitiatePayment.Success.Latency.ShopeePay",
       /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kUserLoggedOut,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kUserLoggedOut,
       /*expected_bucket_count=*/1);
 }
 
@@ -617,6 +715,7 @@ TEST_F(EwalletManagerTest,
 // allowlist.
 TEST_F(EwalletManagerTest,
        TriggerEwalletPushPayment_UrlNotInAllowlist_ApiAvailabilityNotInvoked) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -642,6 +741,15 @@ TEST_F(EwalletManagerTest,
   EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
 
   ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, url);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kNotInAllowlist,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kNotInAllowlist,
+      /*expected_bucket_count=*/0);
 }
 
 // Test that API availability is not invoked if the allowlist is not

@@ -263,7 +263,7 @@ TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_RiskDataEmpty) {
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kRiskDataNotAvailable,
+      /*sample=*/PixFlowExitedReason::kRiskDataNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
@@ -321,7 +321,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kClientTokenNotAvailable,
+      /*sample=*/PixFlowExitedReason::kClientTokenNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
@@ -510,7 +510,7 @@ TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_InvalidCode) {
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kInvalidCode,
+      /*sample=*/PixFlowExitedReason::kInvalidCode,
       /*expected_bucket_count=*/1);
 }
 
@@ -528,7 +528,7 @@ TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_UserOptedOut) {
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kUserOptedOut,
+      /*sample=*/PixFlowExitedReason::kUserOptedOut,
       /*expected_bucket_count=*/1);
 }
 
@@ -543,7 +543,7 @@ TEST_F(FacilitatedPaymentsManagerTest, PayflowExitedReason_NoLinkedAccount) {
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kNoLinkedAccount,
+      /*sample=*/PixFlowExitedReason::kNoLinkedAccount,
       /*expected_bucket_count=*/1);
 }
 
@@ -577,7 +577,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kCodeValidatorFailed,
+      /*sample=*/PixFlowExitedReason::kCodeValidatorFailed,
       /*expected_bucket_count=*/1);
 }
 
@@ -662,7 +662,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kInitiatePaymentFailed,
+      /*sample=*/PixFlowExitedReason::kInitiatePaymentFailed,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.InitiatePayment.Failure.Latency",
@@ -696,7 +696,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kActionTokenNotAvailable,
+      /*sample=*/PixFlowExitedReason::kActionTokenNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
@@ -727,7 +727,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kUserLoggedOut,
+      /*sample=*/PixFlowExitedReason::kUserLoggedOut,
       /*expected_bucket_count=*/1);
 }
 
@@ -758,7 +758,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kUserLoggedOut,
+      /*sample=*/PixFlowExitedReason::kUserLoggedOut,
       /*expected_bucket_count=*/1);
 }
 
@@ -821,7 +821,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kApiClientNotAvailable,
+      /*sample=*/PixFlowExitedReason::kApiClientNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
@@ -837,7 +837,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kPurchaseActionCouldNotBeInvoked,
+      /*sample=*/PixFlowExitedReason::kPurchaseActionCouldNotBeInvoked,
       /*expected_bucket_count=*/1);
 }
 
@@ -1021,7 +1021,7 @@ TEST_P(FacilitatedPaymentsManagerTestInLandscapeMode,
   // disabled, Pix payment is not offered, and a histogram should be logged.
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kLandscapeScreenOrientation,
+      /*sample=*/PixFlowExitedReason::kLandscapeScreenOrientation,
       /*expected_bucket_count=*/IsPaymentEnabledInLandscapeMode() ? 0 : 1);
 }
 
@@ -1235,7 +1235,7 @@ TEST_P(FacilitatedPaymentsManagerTestForUiScreens, NewScreenCouldNotBeShown) {
   // Verify that the payflow exited histogram is logged.
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kFopSelectorClosedNotByUser,
+      /*sample=*/PixFlowExitedReason::kFopSelectorClosedNotByUser,
       /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
 }
 
@@ -1254,7 +1254,7 @@ TEST_P(FacilitatedPaymentsManagerTestForUiScreens, ScreenClosedNotByUser) {
   // Verify that the payflow exited histogram is logged.
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kFopSelectorClosedNotByUser,
+      /*sample=*/PixFlowExitedReason::kFopSelectorClosedNotByUser,
       /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
 }
 
@@ -1273,7 +1273,7 @@ TEST_P(FacilitatedPaymentsManagerTestForUiScreens, ScreenClosedByUser) {
   // Verify that the payflow exited histogram is logged.
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PayflowExitedReason::kFopSelectorClosedByUser,
+      /*sample=*/PixFlowExitedReason::kFopSelectorClosedByUser,
       /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
   if (ui_state() == UiState::kFopSelector) {
     auto ukm_entries = ukm_recorder_.GetEntries(

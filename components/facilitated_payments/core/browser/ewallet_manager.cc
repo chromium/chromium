@@ -53,27 +53,33 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
       optimization_guide::OptimizationGuideDecision::kTrue) {
     // The merchant is not part of the allowlist, ignore the eWallet push
     // payment.
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kNotInAllowlist);
     return;
   }
 
   scheme_ = PaymentLinkValidator().GetScheme(payment_link_url);
   if (scheme_ == PaymentLinkValidator::Scheme::kInvalid) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kLinkIsInvalid);
     return;
   }
 
   // Ewallet payment flow can't be completed in the landscape mode as the
   // Payments server doesn't support it yet.
   if (client_->IsInLandscapeMode()) {
+    LogEwalletFlowExitedReason(
+        EwalletFlowExitedReason::kLandscapeScreenOrientation, scheme_);
     return;
   }
 
   autofill::PaymentsDataManager* payments_data_manager =
       client_->GetPaymentsDataManager();
   if (!payments_data_manager) {
+    // Payments data manager can be null only in tests.
     return;
   }
 
   if (!payments_data_manager->IsFacilitatedPaymentsEwalletUserPrefEnabled()) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kUserOptedOut, scheme_);
     return;
   }
 
@@ -87,6 +93,8 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
       });
 
   if (supported_ewallets_.size() == 0) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kNoSupportedEwallet,
+                               scheme_);
     return;
   }
 
@@ -127,6 +135,8 @@ void EwalletManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
                                           (base::TimeTicks::Now() - start_time),
                                           scheme_);
   if (!is_api_available) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kApiClientNotAvailable,
+                               scheme_);
     return;
   }
 
@@ -162,6 +172,8 @@ void EwalletManager::OnRiskDataLoaded(base::TimeTicks start_time,
                                   /*was_successful=*/!risk_data.empty(),
                                   base::TimeTicks::Now() - start_time, scheme_);
   if (risk_data.empty()) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kRiskDataEmpty,
+                               scheme_);
     client_->ShowErrorScreen();
     return;
   }
@@ -179,6 +191,8 @@ void EwalletManager::OnGetClientToken(base::TimeTicks start_time,
                                     (base::TimeTicks::Now() - start_time),
                                     scheme_);
   if (client_token.empty()) {
+    LogEwalletFlowExitedReason(
+        EwalletFlowExitedReason::kClientTokenNotAvailable, scheme_);
     client_->ShowErrorScreen();
     return;
   }
@@ -216,9 +230,13 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
                                      scheme_);
   if (!is_successful) {
     client_->ShowErrorScreen();
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kInitiatePaymentFailed,
+                               scheme_);
     return;
   }
   if (!response_details || response_details->action_token_.empty()) {
+    LogEwalletFlowExitedReason(
+        EwalletFlowExitedReason::kActionTokenNotAvailable, scheme_);
     client_->ShowErrorScreen();
     return;
   }
@@ -227,6 +245,8 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
   // `account_info` would be empty, and the  the payment flow should be
   // abandoned.
   if (!account_info.has_value() || account_info.value().IsEmpty()) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kUserLoggedOut,
+                               scheme_);
     client_->ShowErrorScreen();
     return;
   }

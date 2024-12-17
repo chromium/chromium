@@ -128,6 +128,35 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Ewallet.PayflowExitedReason"
+    enum="FacilitatedPayments.EwalletFlowExitedReason"
+    expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the reasons why
+    the payflow was exited. [Trigger] Payflow was exited early. [Frequency]
+    Logged at most once per payflow.
+  </summary>
+</histogram>
+
+<histogram name="FacilitatedPayments.Ewallet.PayflowExitedReason.{Scheme}"
+    enum="FacilitatedPayments.EwalletFlowExitedReason"
+    expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the reasons why
+    the payflow was exited. The payment is supported by {Scheme}. [Trigger]
+    Payflow was exited early. [Frequency] Logged at most once per payflow.
+  </summary>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
@@ -194,7 +223,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.PayflowExitedReason"
-    enum="FacilitatedPayments.PayFlowExitedReason" expires_after="2025-07-01">
+    enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>

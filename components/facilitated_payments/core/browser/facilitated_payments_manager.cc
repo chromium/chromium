@@ -112,13 +112,13 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
       is_pix_code_valid, (base::TimeTicks::Now() - start_time));
   if (!is_pix_code_valid.has_value()) {
     // Pix code validator encountered an error.
-    LogPayflowExitedReason(PayflowExitedReason::kCodeValidatorFailed);
+    LogPixFlowExitedReason(PixFlowExitedReason::kCodeValidatorFailed);
     return;
   }
 
   if (!is_pix_code_valid.value()) {
     // Pix code is not valid.
-    LogPayflowExitedReason(PayflowExitedReason::kInvalidCode);
+    LogPixFlowExitedReason(PixFlowExitedReason::kInvalidCode);
     return;
   }
   // If a valid PIX code is found, and the user has Google wallet linked PIX
@@ -133,12 +133,12 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   }
 
   if (!payments_data_manager->IsFacilitatedPaymentsPixUserPrefEnabled()) {
-    LogPayflowExitedReason(PayflowExitedReason::kUserOptedOut);
+    LogPixFlowExitedReason(PixFlowExitedReason::kUserOptedOut);
     return;
   }
 
   if (!payments_data_manager->HasMaskedBankAccounts()) {
-    LogPayflowExitedReason(PayflowExitedReason::kNoLinkedAccount);
+    LogPixFlowExitedReason(PixFlowExitedReason::kNoLinkedAccount);
     return;
   }
 
@@ -146,7 +146,7 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   // doesn't support it yet.
   if (client_->IsInLandscapeMode() &&
       !base::FeatureList::IsEnabled(kEnablePixPaymentsInLandscapeMode)) {
-    LogPayflowExitedReason(PayflowExitedReason::kLandscapeScreenOrientation);
+    LogPixFlowExitedReason(PixFlowExitedReason::kLandscapeScreenOrientation);
     return;
   }
 
@@ -177,7 +177,7 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
       kPaymentsType, is_api_available,
       (base::TimeTicks::Now() - api_availability_check_start_time_));
   if (!is_api_available) {
-    LogPayflowExitedReason(PayflowExitedReason::kApiClientNotAvailable);
+    LogPixFlowExitedReason(PixFlowExitedReason::kApiClientNotAvailable);
     return;
   }
 
@@ -196,6 +196,7 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     bool is_prompt_accepted,
     int64_t selected_instrument_id) {
   if (!is_prompt_accepted) {
+    // The metric for the reason of this early-return is logged in `OnUiEvent`.
     return;
   }
   LogFopSelected();
@@ -217,7 +218,7 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
                                   base::TimeTicks::Now() - start_time);
   if (risk_data.empty()) {
     ShowErrorScreen();
-    LogPayflowExitedReason(PayflowExitedReason::kRiskDataNotAvailable);
+    LogPixFlowExitedReason(PixFlowExitedReason::kRiskDataNotAvailable);
     return;
   }
   initiate_payment_request_details_->risk_data_ = risk_data;
@@ -235,7 +236,7 @@ void FacilitatedPaymentsManager::OnGetClientToken(
       (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
     ShowErrorScreen();
-    LogPayflowExitedReason(PayflowExitedReason::kClientTokenNotAvailable);
+    LogPixFlowExitedReason(PixFlowExitedReason::kClientTokenNotAvailable);
     return;
   }
   initiate_payment_request_details_->client_token_ = client_token;
@@ -269,7 +270,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     LogInitiatePaymentResultAndLatency(kPaymentsType, /*result=*/false,
                                        latency);
-    LogPayflowExitedReason(PayflowExitedReason::kInitiatePaymentFailed);
+    LogPixFlowExitedReason(PixFlowExitedReason::kInitiatePaymentFailed);
     ShowErrorScreen();
     return;
   }
@@ -277,7 +278,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
 
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
-    LogPayflowExitedReason(PayflowExitedReason::kActionTokenNotAvailable);
+    LogPixFlowExitedReason(PixFlowExitedReason::kActionTokenNotAvailable);
     ShowErrorScreen();
     return;
   }
@@ -286,7 +287,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   // `account_info` would be empty, and the `FacilitatedPaymentsManager` should
   // abandon the payment flow.
   if (!account_info.has_value() || account_info.value().IsEmpty()) {
-    LogPayflowExitedReason(PayflowExitedReason::kUserLoggedOut);
+    LogPixFlowExitedReason(PixFlowExitedReason::kUserLoggedOut);
     ShowErrorScreen();
     return;
   }
@@ -309,8 +310,8 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
     PurchaseActionResult result) {
   switch (result) {
     case PurchaseActionResult::kCouldNotInvoke:
-      LogPayflowExitedReason(
-          PayflowExitedReason::kPurchaseActionCouldNotBeInvoked);
+      LogPixFlowExitedReason(
+          PixFlowExitedReason::kPurchaseActionCouldNotBeInvoked);
       ShowErrorScreen();
       break;
     case PurchaseActionResult::kResultOk:
@@ -339,15 +340,15 @@ void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
     }
     case UiEvent::kScreenClosedNotByUser: {
       if (ui_state_ == UiState::kFopSelector) {
-        LogPayflowExitedReason(
-            PayflowExitedReason::kFopSelectorClosedNotByUser);
+        LogPixFlowExitedReason(
+            PixFlowExitedReason::kFopSelectorClosedNotByUser);
       }
       ui_state_ = UiState::kHidden;
       break;
     }
     case UiEvent::kScreenClosedByUser: {
       if (ui_state_ == UiState::kFopSelector) {
-        LogPayflowExitedReason(PayflowExitedReason::kFopSelectorClosedByUser);
+        LogPixFlowExitedReason(PixFlowExitedReason::kFopSelectorClosedByUser);
         LogFopSelectorResultUkm(/*accepted=*/false, ukm_source_id_);
       }
       ui_state_ = UiState::kHidden;

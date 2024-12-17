@@ -164,7 +164,22 @@ void LogGetClientTokenResultAndLatency(
   }
 }
 
-void LogPayflowExitedReason(PayflowExitedReason reason) {
+void LogEwalletFlowExitedReason(
+    EwalletFlowExitedReason reason,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
+  base::UmaHistogramEnumeration(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason", reason);
+  // `scheme` might be empty during some invalid cases (payment url not in
+  // allowlist).
+  if (scheme.has_value() && *scheme != PaymentLinkValidator::Scheme::kInvalid) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"FacilitatedPayments.Ewallet.PayflowExitedReason.",
+                      SchemeToString(*scheme)}),
+        reason);
+  }
+}
+
+void LogPixFlowExitedReason(PixFlowExitedReason reason) {
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.PayflowExitedReason",
                                 reason);
 }

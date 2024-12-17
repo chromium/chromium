@@ -25,15 +25,47 @@ enum class FacilitatedPaymentsType {
   kPix = 1,
 };
 
-// Reasons for why the payflow was exited early. These only include the reasons
-// after the renderer has detected a valid code and sent the signal to the
-// browser process.
-//
+// Reasons for why the eWallet payflow was exited early. These only include the
+// reasons after the renderer has detected a valid payment link and sent the
+// signal to the browser process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(EwalletFlowExitedReason)
+enum class EwalletFlowExitedReason {
+  // The code for the payflow is not valid.
+  kLinkIsInvalid = 0,
+  // The user has opted out of the payflow.
+  kUserOptedOut = 1,
+  // The user has no supported accounts available for the payflow.
+  kNoSupportedEwallet = 2,
+  // The device is in landscape orientation when payflow was to be triggered.
+  kLandscapeScreenOrientation = 3,
+  // The domain for the payment link is not allowlisted.
+  kNotInAllowlist = 4,
+  // The API Client is not available when the payflow was to be triggered.
+  kApiClientNotAvailable = 5,
+  // The risk data needed to send the server request is not available.
+  kRiskDataEmpty = 6,
+  // The client token needed to send the server request is not available.
+  kClientTokenNotAvailable = 7,
+  // The InitiatePayment response indicated a failure.
+  kInitiatePaymentFailed = 8,
+  // The action token returned in the InitiatePayment response is not available.
+  kActionTokenNotAvailable = 9,
+  // The user has logged out after selecting a payment method.
+  kUserLoggedOut = 10,
+  kMaxValue = kUserLoggedOut
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.EwalletFlowExitedReason)
+
+// Reasons for why the Pix payflow was exited early. These only include the
+// reasons after the renderer has detected a valid code and sent the signal to
+// the browser process.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange(PayflowExitedReason)
-enum class PayflowExitedReason {
+// LINT.IfChange(PixFlowExitedReason)
+enum class PixFlowExitedReason {
   // The code validator encountered an error.
   kCodeValidatorFailed = 0,
   // The code for the payflow is not valid.
@@ -66,7 +98,7 @@ enum class PayflowExitedReason {
   kPurchaseActionCouldNotBeInvoked = 13,
   kMaxValue = kPurchaseActionCouldNotBeInvoked
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PayFlowExitedReason)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 
 // Log when a Pix code is copied to the clippboard on an allowlisted merchant
 // website.
@@ -122,10 +154,17 @@ void LogGetClientTokenResultAndLatency(
     base::TimeDelta duration,
     std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
-// Log the reason for the payflow was exited early. This includes all the
+// Log the reason for the eWallet flow was exited early. This includes all the
+// reasons after receiving a signal from the renderer process that a valid
+// payment link has been found.
+void LogEwalletFlowExitedReason(
+    EwalletFlowExitedReason reason,
+    std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
+
+// Log the reason for the Pix flow was exited early. This includes all the
 // reasons after receiving a signal from the renderer process that a valid code
 // has been found.
-void LogPayflowExitedReason(PayflowExitedReason reason);
+void LogPixFlowExitedReason(PixFlowExitedReason reason);
 
 // Log the attempt to send the call to the InitiatePayment backend endpoint.
 void LogInitiatePaymentAttempt();
