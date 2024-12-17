@@ -137,7 +137,8 @@ public class BookmarkPersonalizedSigninPromoTest {
                 .perform(click());
         continuedHistogram.assertExpected();
         Assert.assertEquals(
-                mMockSyncConsentActivityLauncher, SyncConsentActivityLauncherImpl.get());
+                mMockSyncConsentActivityLauncher,
+                SyncConsentActivityLauncherImpl.getForProfile(sActivityTestRule.getProfile(false)));
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoDefaultFlow(
                         any(Activity.class),
@@ -164,7 +165,8 @@ public class BookmarkPersonalizedSigninPromoTest {
                 .perform(click());
         continuedHistogram.assertExpected();
         Assert.assertEquals(
-                mMockSyncConsentActivityLauncher, SyncConsentActivityLauncherImpl.get());
+                mMockSyncConsentActivityLauncher,
+                SyncConsentActivityLauncherImpl.getForProfile(sActivityTestRule.getProfile(false)));
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoChooseAccountFlow(
                         any(Activity.class),
@@ -186,7 +188,8 @@ public class BookmarkPersonalizedSigninPromoTest {
                 .perform(click());
         continuedHistogram.assertExpected();
         Assert.assertEquals(
-                mMockSyncConsentActivityLauncher, SyncConsentActivityLauncherImpl.get());
+                mMockSyncConsentActivityLauncher,
+                SyncConsentActivityLauncherImpl.getForProfile(sActivityTestRule.getProfile(false)));
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoAddAccountFlow(
                         any(Activity.class), eq(SigninAccessPoint.BOOKMARK_MANAGER));

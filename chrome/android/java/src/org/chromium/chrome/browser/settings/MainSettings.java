@@ -249,7 +249,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             getProfile(),
                             bottomSheetStrings,
                             SigninAccessPoint.SETTINGS,
-                            SyncConsentActivityLauncherImpl.get(),
+                            SyncConsentActivityLauncherImpl.getForProfile(getProfile()),
                             SigninAndHistorySyncActivityLauncherImpl.get()));
             getPreferenceScreen().addPreference(syncPromoPreference);
         }
@@ -473,7 +473,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         // REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS.
                         assert !ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
-                        SyncConsentActivityLauncherImpl.get()
+                        SyncConsentActivityLauncherImpl.getForProfile(getProfile())
                                 .launchActivityForPromoDefaultFlow(
                                         context,
                                         SigninAccessPoint.SETTINGS_SYNC_OFF_ROW,

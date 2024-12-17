@@ -39,7 +39,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -101,7 +100,7 @@ public class SigninSignoutIntegrationTest {
                 () -> {
                     mSigninManager =
                             IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+                                    .getSigninManager(mActivityTestRule.getProfile(false));
                     mSigninManager.addSignInStateObserver(mSignInStateObserverMock);
                 });
     }
@@ -131,7 +130,8 @@ public class SigninSignoutIntegrationTest {
                         InstrumentationRegistry.getInstrumentation(),
                         SyncConsentActivity.class,
                         () -> {
-                            SyncConsentActivityLauncherImpl.get()
+                            SyncConsentActivityLauncherImpl.getForProfile(
+                                            mActivityTestRule.getProfile(false))
                                     .launchActivityForPromoDefaultFlow(
                                             mActivityTestRule.getActivity(),
                                             SigninAccessPoint.SETTINGS,

@@ -358,9 +358,9 @@ public class IdentityDiscController
         }
         recordIdentityDiscUsed();
 
+        Profile originalProfile = mProfileSupplier.get().getOriginalProfile();
         SigninManager signinManager =
-                IdentityServicesProvider.get()
-                        .getSigninManager(mProfileSupplier.get().getOriginalProfile());
+                IdentityServicesProvider.get().getSigninManager(originalProfile);
         if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
             if (SigninUtils.shouldShowNewSigninFlow()) {
                 AccountPickerBottomSheetStrings bottomSheetStrings =
@@ -382,14 +382,14 @@ public class IdentityDiscController
                         SigninAndHistorySyncActivityLauncherImpl.get()
                                 .createBottomSheetSigninIntentOrShowError(
                                         mContext,
-                                        mProfileSupplier.get().getOriginalProfile(),
+                                        originalProfile,
                                         config,
                                         SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 if (intent != null) {
                     mContext.startActivity(intent);
                 }
             } else {
-                SyncConsentActivityLauncherImpl.get()
+                SyncConsentActivityLauncherImpl.getForProfile(originalProfile)
                         .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
             }
         } else {

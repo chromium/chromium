@@ -117,7 +117,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void showSyncConsentActivity(int signinAccessPoint) {
-        SyncConsentActivityLauncherImpl.get()
+        SyncConsentActivityLauncherImpl.getForProfile(mProfile)
                 .launchActivityForPromoDefaultFlow(mActivity, signinAccessPoint, null);
     }
 

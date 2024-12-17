@@ -134,7 +134,7 @@ public class RecentTabsManager
                         mProfile,
                         bottomSheetStrings,
                         SigninAccessPoint.RECENT_TABS,
-                        SyncConsentActivityLauncherImpl.get(),
+                        SyncConsentActivityLauncherImpl.getForProfile(mProfile),
                         SigninAndHistorySyncActivityLauncherImpl.get());
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             mSigninPromoCoordinator =

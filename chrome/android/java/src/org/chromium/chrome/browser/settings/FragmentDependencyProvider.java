@@ -130,7 +130,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     new SafetyCheckUpdatesDelegateImpl(),
                     new SafetyCheckBridge(mProfile),
                     SigninAndHistorySyncActivityLauncherImpl.get(),
-                    SyncConsentActivityLauncherImpl.get(),
+                    SyncConsentActivityLauncherImpl.getForProfile(mProfile),
                     mModalDialogManagerSupplier,
                     SyncServiceFactory.getForProfile(mProfile),
                     UserPrefs.get(mProfile),

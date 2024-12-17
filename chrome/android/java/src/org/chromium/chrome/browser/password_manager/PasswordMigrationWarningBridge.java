@@ -62,7 +62,7 @@ class PasswordMigrationWarningBridge {
                         context,
                         profile,
                         bottomSheetController,
-                        SyncConsentActivityLauncherImpl.get(),
+                        SyncConsentActivityLauncherImpl.getForProfile(profile),
                         ManageSyncSettings.class,
                         new ExportFlow(PasswordAccessLossWarningType.NONE),
                         (PasswordListObserver observer) ->

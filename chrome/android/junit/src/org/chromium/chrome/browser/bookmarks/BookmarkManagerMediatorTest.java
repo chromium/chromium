@@ -365,6 +365,9 @@ public class BookmarkManagerMediatorTest {
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
 
+        // Setup Profile
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
+
         // Setup ShoppingServiceFactory
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
 

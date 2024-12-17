@@ -231,7 +231,7 @@ public class SignInPreference extends Preference
                             getContext().startActivity(intent);
                         }
                     } else {
-                        SyncConsentActivityLauncherImpl.get()
+                        SyncConsentActivityLauncherImpl.getForProfile(mProfile)
                                 .launchActivityIfAllowed(
                                         getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW);
                     }

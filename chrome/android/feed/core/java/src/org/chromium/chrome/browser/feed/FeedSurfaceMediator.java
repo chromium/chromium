@@ -902,7 +902,7 @@ public class FeedSurfaceMediator
                             mProfile,
                             bottomSheetStrings,
                             SigninAccessPoint.NTP_FEED_TOP_PROMO,
-                            SyncConsentActivityLauncherImpl.get(),
+                            SyncConsentActivityLauncherImpl.getForProfile(mProfile),
                             SigninAndHistorySyncActivityLauncherImpl.get());
             if (!shouldCreatePromo || !promoController.canShowSyncPromo()) {
                 return false;

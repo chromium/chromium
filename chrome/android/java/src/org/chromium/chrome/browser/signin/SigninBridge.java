@@ -67,20 +67,6 @@ final class SigninBridge {
 
     @VisibleForTesting static final int ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT = 3;
 
-    /**
-     * Launches {@link SyncConsentActivity}.
-     * @param windowAndroid WindowAndroid from which to get the Context.
-     * @param accessPoint for metrics purposes.
-     */
-    @CalledByNative
-    private static void launchSigninActivity(
-            WindowAndroid windowAndroid, @SigninAccessPoint int accessPoint) {
-        final Context context = windowAndroid.getContext().get();
-        if (context != null) {
-            SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(context, accessPoint);
-        }
-    }
-
     /** Opens account management screen. */
     @CalledByNative
     private static void openAccountManagementScreen(
