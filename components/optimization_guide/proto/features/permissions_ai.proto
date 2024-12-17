@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-package optimization_guide.proto.features;
+package optimization_guide.proto;
 
 import "components/optimization_guide/proto/model_quality_metadata.proto";
 
