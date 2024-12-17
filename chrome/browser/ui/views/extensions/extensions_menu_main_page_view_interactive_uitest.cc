@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -535,9 +537,34 @@ class ExtensionsMenuMainPageViewInteractiveTest
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 
+  content::WebContents* active_web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  extensions::ExtensionActionRunner* active_action_runner() {
+    return extensions::ExtensionActionRunner::GetForWebContents(
+        active_web_contents());
+  }
+
   auto OpenExtensionsMenu() {
     return Steps(PressButton(kExtensionsMenuButtonElementId),
                  WaitForShow(kExtensionsMenuMainPageElementId));
+  }
+
+  // Clicks on the menu item button corresponding to `extension`.
+  auto PressExtensionMenuItemButton(const extensions::Extension& extension) {
+    constexpr char kExtensionMenuItemActionButton[] =
+        "extension_menu_item_action_button";
+
+    return Steps(
+        CheckView(kExtensionMenuItemViewElementId,
+                  [&extension](ExtensionMenuItemView* menu_item) {
+                    return menu_item->view_controller()->GetId() ==
+                           extension.id();
+                  }),
+        NameDescendantViewByType<ExtensionsMenuButton>(
+            kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
+        PressButton(kExtensionMenuItemActionButton));
   }
 
   // Verifies whether the context menu for `extension_id` opened from
@@ -572,6 +599,28 @@ class ExtensionsMenuMainPageViewInteractiveTest
     return CheckResult(
         [&]() { return extensions_container()->GetPoppedOutActionId(); },
         extension_id);
+  }
+
+  // Verifies whether `extension` wants to run on the current web contents given
+  // `expected_result`.
+  auto CheckActionWantsToRun(const extensions::Extension& extension,
+                             bool expected_result) {
+    return CheckResult(
+        [&]() { return active_action_runner()->WantsToRun(&extension); },
+        expected_result);
+  }
+
+  // Verifies whether `extension` has `expected_site_interaction` on the current
+  // web contents.
+  auto CheckSiteInteraction(const extensions::Extension& extension,
+                            extensions::SitePermissionsHelper::SiteInteraction
+                                expected_site_interaction) {
+    return CheckResult(
+        [&]() {
+          return extensions::SitePermissionsHelper(profile())
+              .GetSiteInteraction(extension, active_web_contents());
+        },
+        expected_site_interaction);
   }
 
   // Returns the menu item view for `extension_id` in the menu's main page, if
@@ -1064,4 +1113,109 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // using DialogModel::Builder. Thus, we check for its existence by
       // checking the visibility of one of its elements.
       WaitForShow(extensions::kReloadPageDialogOkButtonElementId));
+}
+
+// Tests that accepting the reload page dialog when clicking on an action runs
+// the script/blocked actions.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       ExecuteAction_AcceptReload) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+
+  // Load an extension that injects a script, and withhold its permissions.
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  RunTestSequence(
+      InstrumentTab(kTab),
+      NavigateWebContents(kTab, embedded_test_server()->GetURL("/simple.html")),
+
+      // Verify extension wants to run in the current site.
+      CheckActionWantsToRun(*extension, true),
+
+      // Trigger the extension's action by clicking on its menu entry.
+      OpenExtensionsMenu(), PressExtensionMenuItemButton(*extension),
+
+      // Accept the reload dialog.
+      WaitForShow(extensions::kReloadPageDialogOkButtonElementId),
+      PressButton(extensions::kReloadPageDialogOkButtonElementId),
+      WaitForWebContentsNavigation(kTab),
+
+      // The extension permission should have been applied at this point, and
+      // the extension's script and blocked actions should have run since there
+      // was a page reload.
+      CheckResult(
+          [&]() {
+            return extensions::browsertest_util::DidChangeTitle(
+                *active_web_contents(), /*original_title=*/u"OK",
+                /*changed_title=*/u"success");
+          },
+          true),
+      CheckActionWantsToRun(*extension, false),
+      CheckSiteInteraction(
+          *extension,
+          extensions::SitePermissionsHelper::SiteInteraction::kGranted)
+
+  );
+}
+
+// Tests that canceling the reload page dialog when clicking on an action
+// doesn't run the script/blocked actions until there is a manual reload.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       ExecuteAction_CancelReload) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+
+  // Load an extension that injects a script, and withhold its permissions.
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  RunTestSequence(
+      InstrumentTab(kTab),
+      NavigateWebContents(kTab, embedded_test_server()->GetURL("/simple.html")),
+
+      // Verify extension wants access to the current site.
+      CheckResult(
+          [&]() { return active_action_runner()->WantsToRun(extension); },
+          true),
+
+      // Trigger the extension's action by clicking on its menu entry.
+      OpenExtensionsMenu(), PressExtensionMenuItemButton(*extension),
+
+      // Accept the reload dialog.
+      WaitForShow(extensions::kReloadPageDialogCancelButtonElementId),
+      PressButton(extensions::kReloadPageDialogCancelButtonElementId),
+
+      // The extension permission should have been applied at this point, but
+      // the extension's script and blocked actions should not run since a
+      // reload is needed.
+      CheckResult(
+          [&]() {
+            return extensions::browsertest_util::DidChangeTitle(
+                *active_web_contents(), /*original_title=*/u"OK",
+                /*changed_title=*/u"success");
+          },
+          false),
+      CheckActionWantsToRun(*extension, true),
+      CheckSiteInteraction(
+          *extension,
+          extensions::SitePermissionsHelper::SiteInteraction::kGranted),
+
+      // Refresh the page manually.
+      Do([&]() {
+        chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+      }),
+      WaitForWebContentsNavigation(kTab),
+
+      // Extension's script and blocked action should have run.
+      CheckResult(
+          [&]() {
+            return extensions::browsertest_util::DidChangeTitle(
+                *active_web_contents(), /*original_title=*/u"OK",
+                /*changed_title=*/u"success");
+          },
+          true),
+      CheckActionWantsToRun(*extension, false));
 }
