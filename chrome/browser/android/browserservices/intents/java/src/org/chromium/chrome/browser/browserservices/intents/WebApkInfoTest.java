@@ -11,7 +11,6 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 
@@ -25,7 +24,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.XmlResourceParserImpl;
 import org.robolectric.annotation.Config;
 import org.robolectric.res.ResourceTable;
-import org.robolectric.util.ReflectionHelpers;
 import org.w3c.dom.Document;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -199,7 +197,7 @@ public class WebApkInfoTest {
     }
 
     @Test
-    public void testSanity() {
+    public void testReadValueFromShell() {
         // Test guidelines:
         // - Stubbing out native calls in this test likely means that there is a bug.
         // - For every WebappInfo boolean there should be a test which tests both values.
@@ -297,26 +295,6 @@ public class WebApkInfoTest {
         Assert.assertEquals(
                 new String[][] {{"text/plain"}, {"image/png", "image/jpeg"}},
                 shareTarget.getFileAccepts());
-    }
-
-    /**
-     * Test that {@link createWebApkInfo()} ignores the maskable icon on pre-Android-O Android OSes.
-     */
-    @Test
-    public void testOsVersionDoesNotSupportAdaptive() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.N);
-
-        Bundle bundle = new Bundle();
-        bundle.putInt(WebApkMetaDataKeys.ICON_ID, PRIMARY_ICON_ID);
-        bundle.putInt(WebApkMetaDataKeys.MASKABLE_ICON_ID, PRIMARY_MASKABLE_ICON_ID);
-        bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
-        WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
-
-        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
-        WebappInfo info = createWebApkInfo(intent);
-        Assert.assertEquals(PRIMARY_ICON_ID, info.icon().resourceIdForTesting());
-        Assert.assertEquals(false, info.isIconAdaptive());
     }
 
     /**

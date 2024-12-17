@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -75,8 +74,7 @@ public class SplashLayout {
         ImageView splashIconView = (ImageView) layout.findViewById(R.id.webapp_splash_screen_icon);
         if (splashIconView == null) return;
 
-        // Adaptive icons should only be present on Android O.
-        if (isIconAdaptive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (isIconAdaptive) {
             splashIconView.setImageIcon(Icon.createWithAdaptiveBitmap(icon));
         } else {
             splashIconView.setImageBitmap(icon);

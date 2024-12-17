@@ -15,9 +15,6 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 
@@ -69,7 +66,6 @@ public class WebappsIconUtils {
 
     private static final float SHORTCUT_ICON_IDEAL_SIZE_DP = 48;
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     public static Bitmap generateAdaptiveIconBitmap(Bitmap bitmap) {
         Bitmap padded = createHomeScreenIconFromWebIcon(bitmap, true);
