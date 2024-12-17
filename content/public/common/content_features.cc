@@ -450,6 +450,11 @@ BASE_FEATURE(kFedCmButtonMode,
              "FedCmButtonMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables usage of the FedCM Delegation API.
+BASE_FEATURE(kFedCmDelegation,
+             "FedCmDelegation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration,
              "FedCmIdPregistration",

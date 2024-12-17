@@ -1823,6 +1823,7 @@ class WebIdDelegationBrowserTest : public WebIdBrowserTest {
 
     std::vector<base::test::FeatureRef> features;
     features.push_back(features::kFedCm);
+    features.push_back(features::kFedCmDelegation);
     // Needs the fields API
     features.push_back(features::kFedCmAuthz);
     // Intended to be used in Active mode

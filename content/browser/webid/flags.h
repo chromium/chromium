@@ -35,6 +35,9 @@ bool IsFedCmMetricsEndpointEnabled();
 // Whether the Selective Disclosure API is enabled.
 bool IsFedCmSelectiveDisclosureEnabled();
 
+// Whether the Delegation API is enabled.
+bool IsFedCmDelegationEnabled();
+
 // Whether the IdP Registration API is enabled.
 bool IsFedCmIdPRegistrationEnabled();
 

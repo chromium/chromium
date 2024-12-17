@@ -42,6 +42,10 @@ bool IsFedCmSelectiveDisclosureEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSelectiveDisclosure);
 }
 
+bool IsFedCmDelegationEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmDelegation);
+}
+
 bool IsFedCmIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }

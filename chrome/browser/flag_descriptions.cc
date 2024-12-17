@@ -1941,6 +1941,10 @@ const char kFedCmButtonModeDescription[] =
     "Enables RPs specify whether they want to trigger the FedCM widget flow or "
     "the button flow.";
 
+const char kFedCmDelegationName[] = "FedCM with delegation support";
+const char kFedCmDelegationDescription[] =
+    "Enables IdPs to delegate presentation to the browser.";
+
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
     "Enables RPs to get identity credentials from registered IdPs.";

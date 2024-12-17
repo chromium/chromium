@@ -4478,6 +4478,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "fedcm-delegation",
+    "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "fedcm-idp-registration",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 135

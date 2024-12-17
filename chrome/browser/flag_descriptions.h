@@ -1097,6 +1097,9 @@ extern const char kFedCmAuthzDescription[];
 extern const char kFedCmButtonModeName[];
 extern const char kFedCmButtonModeDescription[];
 
+extern const char kFedCmDelegationName[];
+extern const char kFedCmDelegationDescription[];
+
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];
 

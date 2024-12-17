@@ -31,5 +31,5 @@ dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
   [RuntimeEnabled=FedCmAuthz] sequence<(USVString or IdentityProviderField)> fields;
   [RuntimeEnabled=FedCmAuthz] any params;
-  [RuntimeEnabled=FedCmIdPRegistration] IdentityProviderRequestOptionsFormat format;
+  [RuntimeEnabled=FedCmDelegation] IdentityProviderRequestOptionsFormat format;
 };

@@ -8928,6 +8928,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmButtonModeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmButtonMode)},
 
+    {"fedcm-delegation", flag_descriptions::kFedCmDelegationName,
+     flag_descriptions::kFedCmDelegationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmDelegation)},
+
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},

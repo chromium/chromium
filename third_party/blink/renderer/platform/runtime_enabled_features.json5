@@ -1781,6 +1781,13 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "FedCmDelegation",
+      depends_on: ["FedCm"],
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "FedCmDisconnect",
       depends_on: ["FedCm"],
       base_feature: "none",

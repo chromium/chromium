@@ -1266,7 +1266,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
     if (get_info_it->second.provider->format) {
       // If a token format was specified, make sure that the configURL
       // supports it as well as the feature is enabled.
-      if (!IsFedCmIdPRegistrationEnabled() ||
+      if (!IsFedCmDelegationEnabled() ||
           !base::Contains(fetch_result.metadata->formats, kVcSdJwt)) {
         OnFetchDataForIdpFailed(
             std::move(idp_info),
@@ -2307,7 +2307,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   std::string query;
   if (idp_blindness) {
     // Checked previously.
-    DCHECK(IsFedCmIdPRegistrationEnabled());
+    DCHECK(IsFedCmDelegationEnabled());
 
     // Creates a throw away private key for a one-time use for
     // a single presentation. The public key gets sent to the
@@ -2743,7 +2743,7 @@ void FederatedAuthRequestImpl::CompleteRequestWithError(
 void FederatedAuthRequestImpl::ProcessSdJwt(const GURL& config_url,
                                             const std::string& token) {
   // Checked previously.
-  DCHECK(IsFedCmIdPRegistrationEnabled());
+  DCHECK(IsFedCmDelegationEnabled());
 
   auto value = sdjwt::SdJwt::Parse(token);
   if (!value) {
