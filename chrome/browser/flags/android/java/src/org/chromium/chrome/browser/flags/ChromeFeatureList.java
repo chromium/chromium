@@ -586,7 +586,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
             newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sAndroidAppIntegration =
-            newCachedFlag(ANDROID_APP_INTEGRATION, false);
+            newCachedFlag(ANDROID_APP_INTEGRATION, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, false);
     public static final CachedFlag sAndroidAppIntegrationV2 =
