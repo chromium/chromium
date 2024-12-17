@@ -151,7 +151,7 @@ chrome.virtualKeyboardPrivate.keyboardLoaded = function(callback) {};
 chrome.virtualKeyboardPrivate.getKeyboardConfig = function(callback) {};
 
 /**
- * Opens chrome://os-settings/osLanguages page.
+ * Opens chrome://os-settings/osLanguages/input page.
  */
 chrome.virtualKeyboardPrivate.openSettings = function() {};
 

@@ -658,30 +658,6 @@ export function createRoutes(): OsSettingsRoutes {
         Subpage.kExternalStorage);
     r.POWER =
         createSubpage(r.DEVICE, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
-
-    // Languages and Input section.
-    r.OS_LANGUAGES = createSection(
-        r.ADVANCED, routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH,
-        Section.kLanguagesAndInput);
-    r.OS_LANGUAGES_LANGUAGES = createSubpage(
-        r.OS_LANGUAGES, routesMojom.LANGUAGES_SUBPAGE_PATH, Subpage.kLanguages);
-    r.OS_LANGUAGES_INPUT = createSubpage(
-        r.OS_LANGUAGES, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
-    r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
-        r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
-        Subpage.kInputMethodOptions);
-    r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
-        r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
-        Subpage.kEditDictionary);
-    r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
-        r.OS_LANGUAGES_INPUT,
-        routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
-        Subpage.kJapaneseManageUserDictionary);
-    if (loadTimeData.getBoolean('isPerAppLanguageEnabled')) {
-      r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
-          r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
-          Subpage.kAppLanguages);
-    }
   }
 
   // Crostini details subpages.

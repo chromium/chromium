@@ -1081,10 +1081,7 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddString(
       "osSettingsLanguagesPageUrl",
-      chrome::GetOSSettingsUrl(
-          ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? chromeos::settings::mojom::kLanguagesSubpagePath
-              : chromeos::settings::mojom::kLanguagesAndInputSectionPath)
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kLanguagesSubpagePath)
           .spec());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

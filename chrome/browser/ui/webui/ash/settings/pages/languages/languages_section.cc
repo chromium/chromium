@@ -32,7 +32,6 @@ namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::kAppLanguagesSubpagePath;
-using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
 using ::chromeos::settings::mojom::kLanguagesSubpagePath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;

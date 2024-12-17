@@ -45,11 +45,6 @@ export function createPageAvailability(): OsPageAvailability {
     [Section.kPeople]: !!routes.OS_PEOPLE,
     [Section.kPersonalization]: !!routes.PERSONALIZATION,
     [Section.kPrivacyAndSecurity]: !!routes.OS_PRIVACY,
-
-    // Only available when OsSettingsRevampWayfinding feature is enabled.
     [Section.kSystemPreferences]: !!routes.SYSTEM_PREFERENCES,
-
-    // Only available when OsSettingsRevampWayfinding feature is disabled.
-    [Section.kLanguagesAndInput]: !!routes.OS_LANGUAGES,
   };
 }

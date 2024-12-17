@@ -284,7 +284,6 @@ build_webui("build") {
     "os_languages_page/os_japanese_dictionary_expand.ts",
     "os_languages_page/os_japanese_dictionary_entry_row.ts",
     "os_languages_page/os_languages_page_v2.ts",
-    "os_languages_page/os_languages_section.ts",
     "os_people_page/account_manager_settings_card.ts",
     "os_people_page/add_user_dialog.ts",
     "os_people_page/additional_accounts_settings_card.ts",

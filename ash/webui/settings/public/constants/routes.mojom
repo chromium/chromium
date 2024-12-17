@@ -22,7 +22,7 @@ enum Section {
   // https://crbug.com/1074101. Do not reuse.
   // Note: Value 10 was for deprecated kDateAndTime. Do not reuse.
   kPrivacyAndSecurity = 11,
-  kLanguagesAndInput = 12,
+  // Note: Value 12 was used for deprecated kLanguagesAndInput. Do not reuse.
   // Note: Value 13 was for deprecated kFiles. Do not reuse.
   // Note: Value 14 was for deprecated kPrinting. Do not reuse.
   kAccessibility = 15,
@@ -310,7 +310,6 @@ const string kPrivacyHubGeolocationAdvancedSubpagePath =
       "osPrivacy/privacyHub/geolocation/advanced";
 
 // Languages and Input section.
-const string kLanguagesAndInputSectionPath = "osLanguages";
 const string kInputMethodOptionsSubpagePath = "osLanguages/inputMethodOptions";
 const string kLanguagesSubpagePath = "osLanguages/languages";
 const string kInputSubpagePath = "osLanguages/input";

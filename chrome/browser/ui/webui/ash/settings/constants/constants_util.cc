@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 
 namespace ash::settings {
@@ -39,28 +38,11 @@ std::vector<T> All() {
   return all;
 }
 
-void IncludeRevampSectionsOnly(std::vector<mojom::Section>& sections) {
-  std::erase_if(sections, [](mojom::Section section) {
-    //  An old Section can be filtered out once it has been fully incorporated
-    // into the new revamp Section.
-    return section == mojom::Section::kLanguagesAndInput;
-  });
-}
-
-void RemoveRevampSections(std::vector<mojom::Section>& sections) {
-  std::erase(sections, mojom::Section::kSystemPreferences);
-}
-
 }  // namespace
 
 const std::vector<mojom::Section>& AllSections() {
   static const base::NoDestructor<std::vector<mojom::Section>> all_sections([] {
     std::vector<mojom::Section> sections = All<mojom::Section>();
-    if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-      IncludeRevampSectionsOnly(sections);
-    } else {
-      RemoveRevampSections(sections);
-    }
     return sections;
   }());
 

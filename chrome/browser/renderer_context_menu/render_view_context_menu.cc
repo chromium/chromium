@@ -4649,10 +4649,7 @@ void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {
 // added benefit of also doing the right thing when Lacros is enabled).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      GetProfile(),
-      ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? chromeos::settings::mojom::kLanguagesSubpagePath
-          : chromeos::settings::mojom::kLanguagesAndInputSectionPath);
+      GetProfile(), chromeos::settings::mojom::kLanguagesSubpagePath);
 #else
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
       event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
