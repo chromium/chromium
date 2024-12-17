@@ -497,7 +497,7 @@ class Task:
       preamble = [
           f'FAILED: {self.name}',
           f'Return code: {self._return_code}',
-          'CMD: ' + ' '.join(self.cmd),
+          'CMD: ' + shlex.join(self.cmd),
           'STDOUT:',
       ]
 
