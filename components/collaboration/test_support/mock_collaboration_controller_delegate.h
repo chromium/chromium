@@ -26,7 +26,8 @@ class MockCollaborationControllerDelegate
   MOCK_METHOD(void, NotifySignInAndSyncStatusChange, (), (override));
   MOCK_METHOD(void,
               ShowJoinDialog,
-              (data_sharing::SharedDataPreview preview_data,
+              (const data_sharing::GroupToken& token,
+               const data_sharing::SharedDataPreview& preview_data,
                ResultCallback result),
               (override));
   MOCK_METHOD(void, ShowShareDialog, (ResultCallback result), (override));

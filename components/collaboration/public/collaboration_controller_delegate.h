@@ -64,8 +64,10 @@ class CollaborationControllerDelegate {
   virtual void NotifySignInAndSyncStatusChange() = 0;
 
   // Request to show the invitation dialog with preview data.
-  virtual void ShowJoinDialog(data_sharing::SharedDataPreview preview_data,
-                              ResultCallback result) = 0;
+  virtual void ShowJoinDialog(
+      const data_sharing::GroupToken& token,
+      const data_sharing::SharedDataPreview& preview_data,
+      ResultCallback result) = 0;
 
   // Request to show the share dialog.
   virtual void ShowShareDialog(ResultCallback result) = 0;

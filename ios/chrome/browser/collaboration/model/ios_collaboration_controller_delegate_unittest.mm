@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/test/mock_callback.h"
+#import "components/data_sharing/public/group_data.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
@@ -150,7 +151,8 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialog) {
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
   data_sharing::SharedDataPreview preview_data;
-  delegate_->ShowJoinDialog(preview_data, completion_callback.Get());
+  delegate_->ShowJoinDialog(data_sharing::GroupToken(), preview_data,
+                            completion_callback.Get());
   EXPECT_TRUE(base_view_controller_.presentedViewController);
   // The callback is not expected to be called, as it is called when the
   // given ShareKit flow returns, i.e. when the presented view controller is

@@ -37,7 +37,8 @@ class IOSCollaborationControllerDelegate
   void Cancel(ResultCallback result) override;
   void ShowAuthenticationUi(ResultCallback result) override;
   void NotifySignInAndSyncStatusChange() override;
-  void ShowJoinDialog(data_sharing::SharedDataPreview preview_data,
+  void ShowJoinDialog(const data_sharing::GroupToken& token,
+                      const data_sharing::SharedDataPreview& preview_data,
                       ResultCallback result) override;
   void ShowShareDialog(ResultCallback result) override;
   void ShowManageDialog(ResultCallback result) override;

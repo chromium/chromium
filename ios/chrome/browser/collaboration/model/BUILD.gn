@@ -56,7 +56,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/collaboration/public",
-    "//components/data_sharing/public:features",
+    "//components/data_sharing/public",
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/share_kit/model:test_support",

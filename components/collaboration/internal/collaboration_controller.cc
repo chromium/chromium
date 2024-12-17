@@ -244,8 +244,9 @@ class AddingUserToGroupState : public ControllerState {
     // TODO(crbug.com/380113830): Add preview data here.
     data_sharing::SharedDataPreview preview_data;
     controller->delegate()->ShowJoinDialog(
-        preview_data, base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
-                                     weak_ptr_factory_.GetWeakPtr()));
+        controller->flow().join_token(), preview_data,
+        base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnProcessingFinishedWithSuccess() override {

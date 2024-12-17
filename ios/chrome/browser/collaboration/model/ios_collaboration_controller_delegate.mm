@@ -98,7 +98,8 @@ void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange() {
 }
 
 void IOSCollaborationControllerDelegate::ShowJoinDialog(
-    data_sharing::SharedDataPreview preview_data,
+    const data_sharing::GroupToken& token,
+    const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
   CHECK_EQ(collaboration_flow_->type(),
            CollaborationFlowConfiguration::Type::kJoin);
