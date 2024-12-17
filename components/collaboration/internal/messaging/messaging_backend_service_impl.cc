@@ -271,6 +271,19 @@ std::vector<PersistentMessage> RemoveDuplicateDirtyTabGroupMessages(
   }
   return result;
 }
+
+std::vector<PersistentMessage> CreatePersistentMessagesForTypes(
+    PersistentMessage base_message,
+    const std::vector<PersistentNotificationType>& types) {
+  std::vector<PersistentMessage> messages;
+  for (const PersistentNotificationType& type : types) {
+    PersistentMessage message = base_message;
+    message.type = type;
+    messages.emplace_back(message);
+  }
+  return messages;
+}
+
 }  // namespace
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
@@ -299,8 +312,15 @@ void MessagingBackendServiceImpl::SetInstantMessageDelegate(
 void MessagingBackendServiceImpl::AddPersistentMessageObserver(
     PersistentMessageObserver* observer) {
   persistent_message_observers_.AddObserver(observer);
-  // TODO(345856704): Implement this and inform the observer if we have already
-  // initialized.
+  if (IsInitialized()) {
+    // We invoke the observer here in a re-entrant manner (documented in the
+    // public API), because at any time after adding the observer, new messages
+    // can come in, and they could arrive before the posted task with the
+    // callback executes, which means they could get calls to Display/Hide of
+    // PersistentMessages before they get the call to
+    // OnMessagingBackendServiceInitialized().
+    observer->OnMessagingBackendServiceInitialized();
+  }
 }
 
 void MessagingBackendServiceImpl::RemovePersistentMessageObserver(
@@ -498,6 +518,16 @@ void MessagingBackendServiceImpl::OnTabAdded(
       CreateTabMessage(*collaboration_group_id, added_tab,
                        collaboration_pb::TAB_ADDED, DirtyType::kDotAndChip);
   store_->AddMessage(message);
+
+  PersistentMessage persistent_message =
+      CreatePersistentMessage(message, std::nullopt, added_tab, std::nullopt);
+
+  NotifyDisplayPersistentMessagesForTypes(
+      persistent_message, {PersistentNotificationType::CHIP,
+                           PersistentNotificationType::DIRTY_TAB});
+
+  DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
+                                           added_tab.saved_group_guid());
 }
 
 void MessagingBackendServiceImpl::OnTabRemoved(
@@ -513,6 +543,21 @@ void MessagingBackendServiceImpl::OnTabRemoved(
       CreateTabMessage(*collaboration_group_id, removed_tab,
                        collaboration_pb::TAB_REMOVED, DirtyType::kNone);
   store_->AddMessage(message);
+
+  // Tab no longer available, so should not contribute to any dirty tab groups.
+  store_->ClearDirtyMessageForTab(*collaboration_group_id,
+                                  removed_tab.saved_tab_guid(),
+                                  DirtyType::kDotAndChip);
+
+  PersistentMessage persistent_message =
+      CreatePersistentMessage(message, std::nullopt, removed_tab, std::nullopt);
+
+  NotifyHidePersistentMessagesForTypes(persistent_message,
+                                       {PersistentNotificationType::CHIP,
+                                        PersistentNotificationType::DIRTY_TAB});
+
+  DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
+                                           removed_tab.saved_group_guid());
 }
 
 void MessagingBackendServiceImpl::OnTabUpdated(
@@ -528,10 +573,62 @@ void MessagingBackendServiceImpl::OnTabUpdated(
       CreateTabMessage(*collaboration_group_id, updated_tab,
                        collaboration_pb::TAB_UPDATED, DirtyType::kDotAndChip);
   store_->AddMessage(message);
+
+  PersistentMessage persistent_message =
+      CreatePersistentMessage(message, std::nullopt, updated_tab, std::nullopt);
+
+  NotifyDisplayPersistentMessagesForTypes(
+      persistent_message, {PersistentNotificationType::CHIP,
+                           PersistentNotificationType::DIRTY_TAB});
+
+  DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
+                                           updated_tab.saved_group_guid());
 }
 
 void MessagingBackendServiceImpl::OnTabSelected(
-    std::optional<tab_groups::SavedTabGroupTab> selected_tab) {}
+    std::optional<tab_groups::SavedTabGroupTab> selected_tab) {
+  last_selected_tab_ = selected_tab;
+  if (!selected_tab) {
+    // A tab outside shared tab groups was selected.
+    // TODO(crbug.com/378422466): Maybe clear chip on desktop here.
+    return;
+  }
+
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GetCollaborationGroupIdForTab(selected_tab.value());
+
+  if (!collaboration_group_id) {
+    // Unable to find the collaboration, so nothing to clear.
+    return;
+  }
+
+  // TODO(crbug.com/378422466): Do not clear chip on desktop, until the user
+  // goes away from the tab.
+  store_->ClearDirtyMessageForTab(*collaboration_group_id,
+                                  selected_tab->saved_tab_guid(),
+                                  DirtyType::kDotAndChip);
+
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(selected_tab->saved_group_guid());
+
+  // Specialized handling of creating a PersistentMessage, since we do not have
+  // a stored collaboration_pb::Message available.
+  PersistentMessage persistent_message;
+  persistent_message.collaboration_event = CollaborationEvent::UNDEFINED;
+  persistent_message.attribution = MessageAttribution();
+  persistent_message.attribution.collaboration_id = *collaboration_group_id;
+  persistent_message.attribution.tab_group_metadata =
+      CreateTabGroupMessageMetadata(*tab_group);
+  persistent_message.attribution.tab_metadata =
+      CreateTabMessageMetadata(*selected_tab);
+
+  NotifyHidePersistentMessagesForTypes(persistent_message,
+                                       {PersistentNotificationType::CHIP,
+                                        PersistentNotificationType::DIRTY_TAB});
+
+  DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
+                                           selected_tab->saved_group_guid());
+}
 
 void MessagingBackendServiceImpl::OnGroupAdded(
     const data_sharing::GroupId& group_id,
@@ -673,7 +770,8 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
     }
   }
 
-  // TODO(nyquist): Compare GaiaId with current user in this profile.
+  // TODO(crbug.com/380517719): Compare GaiaId with current user in this
+  // profile.
   item.user_is_self = false;
 
   // By default, we use an empty description. This is special cased below.
@@ -904,18 +1002,20 @@ MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
 
   if (has_dirty_chip && looking_for_dirty_chip) {
     persistent_messages.push_back(CreatePersistentMessage(
-        message, tab_group, PersistentNotificationType::CHIP));
+        message, tab_group, std::nullopt, PersistentNotificationType::CHIP));
   }
 
   if (has_dirty_dot && looking_for_dirty_dot) {
     if (add_dirty_tab_messages) {
-      persistent_messages.push_back(CreatePersistentMessage(
-          message, tab_group, PersistentNotificationType::DIRTY_TAB));
+      persistent_messages.push_back(
+          CreatePersistentMessage(message, tab_group, std::nullopt,
+                                  PersistentNotificationType::DIRTY_TAB));
     }
 
     if (add_dirty_tab_group_messages && has_dirty_tab_messages_in_group) {
-      PersistentMessage persistent_message = CreatePersistentMessage(
-          message, tab_group, PersistentNotificationType::DIRTY_TAB_GROUP);
+      PersistentMessage persistent_message =
+          CreatePersistentMessage(message, tab_group, std::nullopt,
+                                  PersistentNotificationType::DIRTY_TAB_GROUP);
       // Override collaboration event and tab metadata since this is about
       // a group.
       persistent_message.collaboration_event = CollaborationEvent::UNDEFINED;
@@ -929,20 +1029,96 @@ MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
 PersistentMessage MessagingBackendServiceImpl::CreatePersistentMessage(
     const collaboration_pb::Message& message,
     const std::optional<tab_groups::SavedTabGroup>& tab_group,
-    PersistentNotificationType type) {
+    const std::optional<tab_groups::SavedTabGroupTab>& tab,
+    const std::optional<PersistentNotificationType>& type) {
   PersistentMessage persistent_message;
   persistent_message.collaboration_event =
       ToCollaborationEvent(message.event_type());
+  persistent_message.attribution = MessageAttribution();
+  persistent_message.attribution.collaboration_id =
+      data_sharing::GroupId(message.collaboration_id());
+  std::optional<tab_groups::SavedTabGroup> stack_tab_group = tab_group;
+  if (!tab_group && tab) {
+    stack_tab_group =
+        tab_group_sync_service_->GetGroup(tab->saved_group_guid());
+  }
   persistent_message.attribution.tab_group_metadata =
       CreateTabGroupMessageMetadataFromMessageOrTabGroup(message, tab_group);
   persistent_message.attribution.tab_metadata =
       CreateTabMessageMetadataFromMessageOrTab(
-          message, GetTabFromGroup(message, tab_group));
+          message, tab.has_value() ? tab : GetTabFromGroup(message, tab_group));
   persistent_message.attribution.triggering_user = GetGroupMemberFromGaiaId(
       data_sharing::GroupId(message.collaboration_id()),
       GaiaId(message.triggering_user_gaia_id()));
-  persistent_message.type = type;
+  if (type) {
+    persistent_message.type = *type;
+  }
   return persistent_message;
+}
+
+void MessagingBackendServiceImpl::NotifyDisplayPersistentMessagesForTypes(
+    const PersistentMessage& base_message,
+    const std::vector<PersistentNotificationType>& types) {
+  for (const PersistentMessage& message :
+       CreatePersistentMessagesForTypes(base_message, types)) {
+    persistent_message_observers_.Notify(
+        &PersistentMessageObserver::DisplayPersistentMessage, message);
+  }
+}
+
+void MessagingBackendServiceImpl::NotifyHidePersistentMessagesForTypes(
+    const PersistentMessage& base_message,
+    const std::vector<PersistentNotificationType>& types) {
+  for (const PersistentMessage& message :
+       CreatePersistentMessagesForTypes(base_message, types)) {
+    persistent_message_observers_.Notify(
+        &PersistentMessageObserver::HidePersistentMessage, message);
+  }
+}
+
+void MessagingBackendServiceImpl::DisplayOrHideTabGroupDirtyDotForTabGroup(
+    const data_sharing::GroupId& collaboration_group_id,
+    base::Uuid shared_tab_group_id) {
+  bool hasDirtyDotMessagesForGroup =
+      !store_->GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot)
+           .empty();
+
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(shared_tab_group_id);
+  PersistentMessage persistent_message;
+
+  persistent_message.attribution = MessageAttribution();
+  persistent_message.attribution.collaboration_id = collaboration_group_id;
+
+  if (tab_group) {
+    persistent_message.attribution.tab_group_metadata =
+        CreateTabGroupMessageMetadata(*tab_group);
+  } else {
+    // Unable to find the group, so we fill in what we known.
+    persistent_message.attribution.tab_group_metadata =
+        TabGroupMessageMetadata();
+    persistent_message.attribution.tab_group_metadata->sync_tab_group_id =
+        shared_tab_group_id;
+    std::optional<std::u16string> previous_title =
+        tab_group_sync_service_->GetTitleForPreviouslyExistingSharedTabGroup(
+            ToCollaborationId(collaboration_group_id));
+    if (previous_title) {
+      persistent_message.attribution.tab_group_metadata->last_known_title =
+          base::UTF16ToUTF8(*previous_title);
+    }
+  }
+
+  persistent_message.collaboration_event = CollaborationEvent::UNDEFINED;
+  // We do not fill in triggering user or affeted user, because any action
+  // related to dirty tabs could have been relevant here.
+
+  if (hasDirtyDotMessagesForGroup) {
+    NotifyDisplayPersistentMessagesForTypes(
+        persistent_message, {PersistentNotificationType::DIRTY_TAB_GROUP});
+  } else {
+    NotifyHidePersistentMessagesForTypes(
+        persistent_message, {PersistentNotificationType::DIRTY_TAB_GROUP});
+  }
 }
 
 }  // namespace collaboration::messaging

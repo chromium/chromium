@@ -23,9 +23,9 @@ class MessagingBackendService : public KeyedService,
   class PersistentMessageObserver : public base::CheckedObserver {
    public:
     // Invoked once when the service is initialized. This is invoked only once
-    // and is immediately invoked if the service was initialized before the
-    // observer was added. The initialization state can also be inspected using
-    // IsInitialized().
+    // and is immediately invoked (re-entrant) if the service was initialized
+    // before the observer was added. You can invoke `IsInitialized()` if you
+    // want to know the state and whether this is going to happen or not.
     virtual void OnMessagingBackendServiceInitialized() = 0;
 
     // Invoked when the frontend needs to display a specific persistent message.

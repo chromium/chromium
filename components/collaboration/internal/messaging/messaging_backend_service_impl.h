@@ -163,7 +163,25 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   PersistentMessage CreatePersistentMessage(
       const collaboration_pb::Message& message,
       const std::optional<tab_groups::SavedTabGroup>& tab_group,
-      PersistentNotificationType type);
+      const std::optional<tab_groups::SavedTabGroupTab>& tab,
+      const std::optional<PersistentNotificationType>& type);
+
+  // Creates individual messages based on `base_message` per type, and notifies
+  // oservers to display the messages.
+  void NotifyDisplayPersistentMessagesForTypes(
+      const PersistentMessage& base_message,
+      const std::vector<PersistentNotificationType>& types);
+
+  // Creates individual messages based on `base_message` per type, and notifies
+  // oservers to hide the messages.
+  void NotifyHidePersistentMessagesForTypes(
+      const PersistentMessage& base_message,
+      const std::vector<PersistentNotificationType>& types);
+
+  // Notifies observers to display or hide the dirty dot for a tab group.
+  void DisplayOrHideTabGroupDirtyDotForTabGroup(
+      const data_sharing::GroupId& collaboration_group_id,
+      base::Uuid shared_tab_group_id);
 
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.
@@ -190,6 +208,10 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   // A callback invoked when we are ready to flush all the events from the
   // data sharing service.
   DataSharingChangeNotifier::FlushCallback data_sharing_flush_callback_;
+
+  // The last tab the user selected, or `std::nullopt` if it was outside a
+  // shared tab group.
+  std::optional<tab_groups::SavedTabGroupTab> last_selected_tab_;
 
   // Service providing information about tabs and tab groups.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
