@@ -20,7 +20,6 @@
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/trace_time.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

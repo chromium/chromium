@@ -123,15 +123,11 @@ PerfettoTracedProcess::DataSourceBase::~DataSourceBase() = default;
 
 void PerfettoTracedProcess::DataSourceBase::StartTracing(
     uint64_t data_source_id,
-    PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
 
   data_source_id_ = data_source_id;
-  // Producer may already be set if startup tracing in TraceEventDataSource.
-  DCHECK(!producer_ || producer_ == producer) << name_;
-  producer_ = producer;
-  StartTracingImpl(producer_, data_source_config);
+  StartTracingImpl(data_source_config);
 }
 
 void PerfettoTracedProcess::DataSourceBase::StopTracing(
@@ -141,7 +137,6 @@ void PerfettoTracedProcess::DataSourceBase::StopTracing(
   StopTracingImpl(base::BindOnce(
       [](DataSourceBase* self, base::OnceClosure original_callback) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(self->perfetto_sequence_checker_);
-        self->producer_ = nullptr;
         if (original_callback)
           std::move(original_callback).Run();
       },
@@ -150,7 +145,6 @@ void PerfettoTracedProcess::DataSourceBase::StopTracing(
 }
 
 void PerfettoTracedProcess::DataSourceBase::StartTracingImpl(
-    PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {}
 
 void PerfettoTracedProcess::DataSourceBase::StopTracingImpl(

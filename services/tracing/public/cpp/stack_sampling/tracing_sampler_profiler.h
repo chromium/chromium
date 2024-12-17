@@ -42,8 +42,6 @@
 
 namespace tracing {
 
-class PerfettoProducer;
-
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 class LoaderLockSamplingThread;
 #endif
@@ -206,7 +204,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   // For tests.
   static void SetupStartupTracingForTesting();
   static void DeleteOnChildThreadForTesting();
-  static void StartTracingForTesting(tracing::PerfettoProducer* producer);
+  static void StartTracingForTesting();
   static void StopTracingForTesting();
   static void ResetDataSourceForTesting();
   // Returns whether of not the sampler profiling is able to unwind the stack

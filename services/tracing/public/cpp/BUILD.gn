@@ -67,8 +67,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/metadata_data_source.h",
       "perfetto/perfetto_config.cc",
       "perfetto/perfetto_config.h",
-      "perfetto/perfetto_producer.cc",
-      "perfetto/perfetto_producer.h",
       "perfetto/perfetto_session.cc",
       "perfetto/perfetto_session.h",
       "perfetto/perfetto_traced_process.cc",

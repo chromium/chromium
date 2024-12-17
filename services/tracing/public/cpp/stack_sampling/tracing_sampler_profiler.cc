@@ -129,12 +129,9 @@ class TracingSamplerProfilerDataSource
   // PerfettoTracedProcess::DataSourceBase implementation, called by
   // ProducerClient.
   void StartTracingImpl(
-      PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override {
     base::AutoLock lock(lock_);
-    DCHECK(!producer_);
     DCHECK(!is_started_);
-    producer_ = producer;
     is_started_ = true;
     is_startup_tracing_ = false;
     data_source_config_ = data_source_config;
@@ -152,7 +149,6 @@ class TracingSamplerProfilerDataSource
     DCHECK(is_started_);
     is_started_ = false;
     is_startup_tracing_ = false;
-    producer_ = nullptr;
 
     for (TracingSamplerProfiler* profiler : profilers_) {
       profiler->StopTracing();
@@ -165,8 +161,7 @@ class TracingSamplerProfilerDataSource
     flush_complete_callback.Run();
   }
 
-  void SetupStartupTracing(PerfettoProducer* producer,
-                           const base::trace_event::TraceConfig& trace_config,
+  void SetupStartupTracing(const base::trace_event::TraceConfig& trace_config,
                            bool privacy_filtering_enabled) override {
     bool enable_sampler_profiler = trace_config.IsCategoryGroupEnabled(
         TRACE_DISABLED_BY_DEFAULT("cpu_profiler"));
@@ -245,7 +240,6 @@ class TracingSamplerProfilerDataSource
 
   // TODO(eseckler): Use GUARDED_BY annotations for all members below.
   base::Lock lock_;  // Protects subsequent members.
-  raw_ptr<tracing::PerfettoProducer> producer_ GUARDED_BY(lock_) = nullptr;
   std::set<raw_ptr<TracingSamplerProfiler, SetExperimental>> profilers_;
   bool is_startup_tracing_ = false;
   bool is_started_ = false;
@@ -772,10 +766,9 @@ void TracingSamplerProfiler::SetAuxUnwinderFactoryOnMainThread(
 // TODO(b/336718643): Remove unused code after removing use_perfetto_client_library build
 // flag.
 // static
-void TracingSamplerProfiler::StartTracingForTesting(
-    PerfettoProducer* producer) {
+void TracingSamplerProfiler::StartTracingForTesting() {
   TracingSamplerProfilerDataSource::Get()->StartTracing(
-      1, producer, perfetto::DataSourceConfig());
+      1, perfetto::DataSourceConfig());
 }
 
 // static
@@ -784,7 +777,7 @@ void TracingSamplerProfiler::SetupStartupTracingForTesting() {
       TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
       base::trace_event::TraceRecordMode::RECORD_UNTIL_FULL);
   TracingSamplerProfilerDataSource::Get()->SetupStartupTracing(
-      /*producer=*/nullptr, config, /*privacy_filtering_enabled=*/false);
+      config, /*privacy_filtering_enabled=*/false);
 }
 
 // static

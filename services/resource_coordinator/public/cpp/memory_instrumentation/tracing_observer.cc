@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
@@ -31,7 +30,6 @@ TracingObserver::TracingObserver()
 TracingObserver::~TracingObserver() = default;
 
 void TracingObserver::StartTracingImpl(
-    tracing::PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   const base::trace_event::TraceConfig trace_config{
       data_source_config.chrome_config().trace_config()};

@@ -108,12 +108,10 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
   // Called from the tracing::PerfettoProducer on its sequence.
   void StartTracingImpl(
-      tracing::PerfettoProducer* perfetto_producer,
       const perfetto::DataSourceConfig& data_source_config) override {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&CrOSDataSource::StartTracingOnUI,
-                                  base::Unretained(this), perfetto_producer,
-                                  data_source_config));
+                                  base::Unretained(this), data_source_config));
   }
 
   // Called from the tracing::PerfettoProducer on its sequence.
@@ -145,12 +143,9 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     DataSourceProxy::Register(dsd, this);
   }
 
-  void StartTracingOnUI(tracing::PerfettoProducer* producer,
-                        const perfetto::DataSourceConfig& data_source_config) {
+  void StartTracingOnUI(const perfetto::DataSourceConfig& data_source_config) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-    DCHECK(!producer_);
     DCHECK(!session_);
-    producer_ = producer;
     target_buffer_ = data_source_config.target_buffer();
     session_ = std::make_unique<CrOSSystemTracingSession>();
     session_->StartTracing(
@@ -211,14 +206,12 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
     session_.reset();
     session_started_ = false;
-    producer_ = nullptr;
 
-    tracing::PerfettoTracedProcess::GetTaskRunner()->PostTask(
+    tracing::PerfettoTracedProcess::Get().GetTaskRunner()->PostTask(
         FROM_HERE, std::move(stop_complete_callback));
   }
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
-  raw_ptr<tracing::PerfettoProducer> producer_ = nullptr;
   std::unique_ptr<CrOSSystemTracingSession> session_;
   bool session_started_ = false;
   base::OnceClosure on_session_started_callback_;

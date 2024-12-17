@@ -307,7 +307,6 @@ void TraceEventMetadataSource::GenerateMetadata(
 }
 
 void TraceEventMetadataSource::StartTracingImpl(
-    PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   auto json_generators =
       std::make_unique<std::vector<JsonMetadataGeneratorFunction>>();

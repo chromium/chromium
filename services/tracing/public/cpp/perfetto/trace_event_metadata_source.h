@@ -54,7 +54,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
 
   // PerfettoTracedProcess::DataSourceBase implementation:
   void StartTracingImpl(
-      PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override;
   void StopTracingImpl(base::OnceClosure stop_complete_callback) override;
   void Flush(base::RepeatingClosure flush_complete_callback) override;

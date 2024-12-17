@@ -34,8 +34,6 @@ namespace mojom {
 class TracingService;
 }  // namespace mojom
 
-class PerfettoProducer;
-
 // This represents global process level state that the Perfetto tracing system
 // expects to exist. This includes a single base implementation of DataSources
 // all implementors should use and the perfetto task runner that should be used
@@ -58,13 +56,11 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     virtual ~DataSourceBase();
 
     void StartTracing(uint64_t data_source_id,
-                      PerfettoProducer* producer,
                       const perfetto::DataSourceConfig& data_source_config);
     void StopTracing(
         base::OnceClosure stop_complete_callback = base::OnceClosure());
 
     virtual void StartTracingImpl(
-        PerfettoProducer* producer,
         const perfetto::DataSourceConfig& data_source_config);
     virtual void StopTracingImpl(
         base::OnceClosure stop_complete_callback = base::OnceClosure());
@@ -81,7 +77,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     // later call to StartTracing() to bind to the perfetto service, or a call
     // to AbortStartupTracing(). Called on any thread.
     virtual void SetupStartupTracing(
-        PerfettoProducer* producer,
         const base::trace_event::TraceConfig& trace_config,
         bool privacy_filtering_enabled) {}
 
@@ -97,15 +92,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
       DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
       return data_source_id_;
     }
-    const PerfettoProducer* producer() const {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
-      return producer_;
-    }
-
-    // In some tests we violate the assumption that only a single tracing
-    // session is alive. This allows tests to explicitly ignore the DCHECK in
-    // place to check this.
-    void ClearProducerForTesting() { producer_ = nullptr; }
 
     // By default, data source callbacks (e.g., Start/StopTracingImpl) are
     // called on PerfettoTracedProcess::GetTaskRunner()'s sequence. This method
@@ -121,7 +107,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
    private:
     uint64_t data_source_id_ = 0;
     std::string name_;
-    raw_ptr<PerfettoProducer, AcrossTasksDanglingUntriaged> producer_ = nullptr;
   };
 
   // A proxy that adapts Chrome's DataSourceBase class into a Perfetto
@@ -197,8 +182,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Attempt to enable startup tracing for the current process and given
   // producer. Returns false on failure, e.g. because another concurrent tracing
   // session is already active. Can be called on any thread.
-  bool SetupStartupTracing(PerfettoProducer*,
-                           const base::trace_event::TraceConfig&,
+  bool SetupStartupTracing(const base::trace_event::TraceConfig&,
                            bool privacy_filtering_enabled);
 
   // Called on the process's main thread once the thread pool is ready.
@@ -305,8 +289,7 @@ void PerfettoTracedProcess::DataSourceProxy<T>::OnStart(
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &PerfettoTracedProcess::DataSourceBase::StartTracingImpl,
-                     base::Unretained(*data_source_ptr_), nullptr,
-                     data_source_config_));
+                     base::Unretained(*data_source_ptr_), data_source_config_));
 }
 
 template <typename T>
