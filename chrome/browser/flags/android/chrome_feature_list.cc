@@ -899,7 +899,7 @@ BASE_FEATURE(kPartnerCustomizationsUma,
 
 BASE_FEATURE(kQuickDeleteAndroidFollowup,
              "QuickDeleteAndroidFollowup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuickDeleteAndroidSurvey,
              "QuickDeleteAndroidSurvey",

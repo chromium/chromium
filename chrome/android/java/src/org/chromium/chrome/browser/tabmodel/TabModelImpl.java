@@ -1020,8 +1020,8 @@ public class TabModelImpl extends TabModelJniBridge {
 
         getTabRemover().closeTabs(params, /* allowDialog= */ false);
 
-        // Open a new tab if all tabs are closed and the respective experiment arm is eanbled.
-        if (QuickDeleteController.isQuickDeleteFollowupEnabledOpenNewTabOnEmptyState()) {
+        // Open a new tab if all tabs are closed and the respective experiment is eanbled.
+        if (QuickDeleteController.isQuickDeleteFollowupEnabled()) {
             for (Tab tab : mTabs) {
                 if (!tab.isCustomTab()) {
                     return;

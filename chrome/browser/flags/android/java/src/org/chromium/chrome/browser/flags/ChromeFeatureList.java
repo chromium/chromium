@@ -918,7 +918,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
     public static final MutableFlagWithSafeDefault sQuickDeleteAndroidFollowup =
-            newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_FOLLOWUP, false);
+            newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_FOLLOWUP, true);
     public static final MutableFlagWithSafeDefault sQuickDeleteAndroidSurvey =
             newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sReadAloudTapToSeek =

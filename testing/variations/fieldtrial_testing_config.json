@@ -18450,25 +18450,6 @@
             ]
         }
     ],
-    "QuickDeleteAndroidFollowup": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable_tab_closure": "true",
-                        "open_tab_on_empty_state": "true"
-                    },
-                    "enable_features": [
-                        "QuickDeleteAndroidFollowup"
-                    ]
-                }
-            ]
-        }
-    ],
     "QuickDeleteAndroidSurvey": [
         {
             "platforms": [
