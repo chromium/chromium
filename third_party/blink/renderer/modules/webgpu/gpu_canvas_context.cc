@@ -103,14 +103,13 @@ V8OffscreenRenderingContext* GPUCanvasContext::AsV8OffscreenRenderingContext() {
 }
 
 SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
-  if (!swap_buffers_) {
-    return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
-                       SkColorSpace::MakeSRGB());
-  }
   return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
 }
 
 SkAlphaType GPUCanvasContext::GetAlphaType() const {
+  if (!swap_buffers_) {
+    return kPremul_SkAlphaType;
+  }
   return alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
              ? kOpaque_SkAlphaType
              : kPremul_SkAlphaType;
