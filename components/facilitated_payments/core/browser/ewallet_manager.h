@@ -87,7 +87,9 @@ class EwalletManager {
 
   // Called after retrieving the client token from the facilitated payment API.
   // If not empty, the client token can be used for initiating payment.
-  void OnGetClientToken(std::vector<uint8_t> client_token);
+  // The call was made at `start_time`.
+  void OnGetClientToken(base::TimeTicks start_time,
+                        std::vector<uint8_t> client_token);
 
   // Makes a payment request to the Payments server after the user has selected
   // the eWallet for making the payment.

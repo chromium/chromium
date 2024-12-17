@@ -231,7 +231,7 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
 void FacilitatedPaymentsManager::OnGetClientToken(
     std::vector<uint8_t> client_token) {
   LogGetClientTokenResultAndLatency(
-      !client_token.empty(),
+      kPaymentsType, !client_token.empty(),
       (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
     ShowErrorScreen();

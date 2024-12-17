@@ -144,11 +144,24 @@ void LogLoadRiskDataResultAndLatency(
   }
 }
 
-void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration) {
+void LogGetClientTokenResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool result,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.GetClientToken.",
-                    result ? "Success" : "Failure", ".Latency"}),
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".GetClientToken.", ResultToString(result), ".Latency"}),
       duration);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.Ewallet.GetClientToken.",
+                      ResultToString(result), ".Latency.",
+                      SchemeToString(*scheme)}),
+        duration);
+  }
 }
 
 void LogPayflowExitedReason(PayflowExitedReason reason) {

@@ -357,7 +357,35 @@ TEST_F(EwalletManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
 TEST_F(EwalletManagerTest, OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
   EXPECT_CALL(client_, ShowErrorScreen);
 
-  test_api(*ewallet_manager_).OnGetClientToken(std::vector<uint8_t>{});
+  test_api(*ewallet_manager_)
+      .OnGetClientToken(base::TimeTicks::Now() - base::Seconds(2),
+                        std::vector<uint8_t>{});
+}
+
+// Test that GetClientToken related metrics are logged correctly.
+TEST_F(EwalletManagerTest, LogGetClientTokenResultAndLatency) {
+  for (bool get_client_token_result : {true, false}) {
+    base::HistogramTester histogram_tester;
+
+    test_api(*ewallet_manager_)
+        .OnGetClientToken(base::TimeTicks::Now() - base::Seconds(2),
+                          get_client_token_result
+                              ? std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'}
+                              : std::vector<uint8_t>{});
+
+    std::string result = get_client_token_result ? "Success" : "Failure";
+
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Ewallet.GetClientToken.", result,
+                      ".Latency"}),
+        /*sample=*/2000,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Ewallet.GetClientToken.", result,
+                      ".Latency.ShopeePay"}),
+        /*sample=*/2000,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 // Test that SendInitiatePaymentRequest doesn't initiates payment when

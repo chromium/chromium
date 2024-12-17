@@ -113,7 +113,14 @@ void LogLoadRiskDataResultAndLatency(
     std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
 // Log the result and the latency of the GetClientToken call made to api client.
-void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration);
+// `payment_type` must be either `kEwallet` or `kPix`.
+// The `scheme` parameter is required for the 'kEwallet' payment type and should
+// not be `kInvalid`.
+void LogGetClientTokenResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool result,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
 // Log the reason for the payflow was exited early. This includes all the
 // reasons after receiving a signal from the renderer process that a valid code

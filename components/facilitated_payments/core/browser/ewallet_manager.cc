@@ -168,11 +168,16 @@ void EwalletManager::OnRiskDataLoaded(base::TimeTicks start_time,
 
   initiate_payment_request_details_->risk_data_ = risk_data;
 
-  GetApiClient()->GetClientToken(base::BindOnce(
-      &EwalletManager::OnGetClientToken, weak_ptr_factory_.GetWeakPtr()));
+  GetApiClient()->GetClientToken(
+      base::BindOnce(&EwalletManager::OnGetClientToken,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void EwalletManager::OnGetClientToken(std::vector<uint8_t> client_token) {
+void EwalletManager::OnGetClientToken(base::TimeTicks start_time,
+                                      std::vector<uint8_t> client_token) {
+  LogGetClientTokenResultAndLatency(kPaymentsType, !client_token.empty(),
+                                    (base::TimeTicks::Now() - start_time),
+                                    scheme_);
   if (client_token.empty()) {
     client_->ShowErrorScreen();
     return;

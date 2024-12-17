@@ -42,6 +42,23 @@ reviewer.
 </variants>
 
 <histogram
+    name="FacilitatedPayments.Ewallet.GetClientToken.{Result}.Latency.{Scheme}"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the call to fetch the client token. The client token is fetched
+    from the platform specific payment library in preparation for facilitating
+    the payment using Google Pay. Logged when an eWallet payflow is triggered.
+    {Result} is the token fetch result. The payment is supported by {Scheme}.
+  </summary>
+  <token key="Result" variants="BooleanResult"/>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.Ewallet.InitiatePayment.{Result}.Latency.{Scheme}"
     units="ms" expires_after="2025-07-01">
   <owner>junhuihe@google.com</owner>
@@ -120,22 +137,6 @@ reviewer.
     triggered at most once per page load. [Trigger] The histogram is logged when
     the Pix FOP selector is shown.
   </summary>
-</histogram>
-
-<histogram name="FacilitatedPayments.Pix.GetClientToken.{Result}.Latency"
-    units="ms" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Latency for the call to fetch the client token. The client token is fetched
-    from the platform specific payment library in preparation for facilitating
-    the payment using Google Pay. {Result} is the token fetch result.
-    [Frequency] Logged at most once per Pix payflow. [Trigger] Page is loaded
-    and the main frame contains a valid payment code for Pix.
-  </summary>
-  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.InitiatePayment.Attempt"
@@ -288,6 +289,25 @@ reviewer.
     settings page. [Frequency] Logged once per toggle update.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
+    units="ms" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the call to fetch the client token. The client token is fetched
+    from the platform specific payment library in preparation for facilitating
+    the payment using Google Pay. {Result} is the token fetch result.
+    [Frequency] Logged at most once per {FacilitatedPaymentsType} payflow.
+    [Trigger] Page is loaded and the main frame contains a valid payment code
+    for {FacilitatedPaymentsType}.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram

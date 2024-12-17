@@ -54,8 +54,9 @@ class EwalletManagerTestApi {
     ewallet_manager_->OnRiskDataLoaded(start_time, risk_data);
   }
 
-  void OnGetClientToken(std::vector<uint8_t> client_token) {
-    ewallet_manager_->OnGetClientToken(client_token);
+  void OnGetClientToken(base::TimeTicks start_time,
+                        std::vector<uint8_t> client_token) {
+    ewallet_manager_->OnGetClientToken(start_time, client_token);
   }
 
   FacilitatedPaymentsInitiatePaymentRequestDetails*
