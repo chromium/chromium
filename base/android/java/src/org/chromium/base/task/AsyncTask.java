@@ -206,35 +206,31 @@ public abstract class AsyncTask<Result extends @Nullable Object> {
     protected void onPreExecute() {}
 
     /**
-     * <p>Runs on the UI thread after {@link #doInBackground}. The
-     * specified result is the value returned by {@link #doInBackground}.</p>
+     * Runs on the UI thread after {@link #doInBackground}. The specified result is the value
+     * returned by {@link #doInBackground}.
      *
-     * <p>This method won't be invoked if the task was cancelled.</p>
+     * <p>This method won't be invoked if the task was cancelled.
      *
-     * <p> Must be overridden by subclasses. If a subclass doesn't need
-     * post-execution, is should extend BackgroundOnlyAsyncTask instead.
+     * <p>Must be overridden by subclasses. If a subclass doesn't need post-execution, is should
+     * extend BackgroundOnlyAsyncTask instead.
      *
      * @param result The result of the operation computed by {@link #doInBackground}.
-     *
      * @see #onPreExecute
      * @see #doInBackground
      * @see #onCancelled(Object)
      */
     @SuppressWarnings({"UnusedDeclaration"})
     @MainThread
-    protected abstract void onPostExecute(@Nullable Result result);
+    protected abstract void onPostExecute(Result result);
 
     /**
-     * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-     * {@link #doInBackground()} has finished.</p>
+     * Runs on the UI thread after {@link #cancel(boolean)} is invoked and {@link #doInBackground()}
+     * has finished.
      *
-     * <p>The default implementation simply invokes {@link #onCancelled()} and
-     * ignores the result. If you write your own implementation, do not call
-     * <code>super.onCancelled(result)</code>.</p>
+     * <p>The default implementation simply invokes {@link #onCancelled()} and ignores the result.
+     * If you write your own implementation, do not call <code>super.onCancelled(result)</code>.
      *
-     * @param result The result, if any, computed in
-     *               {@link #doInBackground()}, can be null
-     *
+     * @param result The result, if any, computed in {@link #doInBackground()}, can be null
      * @see #cancel(boolean)
      * @see #isCancelled()
      */
@@ -463,6 +459,7 @@ public abstract class AsyncTask<Result extends @Nullable Object> {
         return this;
     }
 
+    @SuppressWarnings("NullAway") // onPostExecute is non-null when <Result> is non-null.
     private void finish(@Nullable Result result) {
         if (isCancelled()) {
             onCancelled(result);

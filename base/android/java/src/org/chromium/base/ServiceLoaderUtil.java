@@ -4,11 +4,13 @@
 
 package org.chromium.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.ArrayMap;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.AlwaysInline;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -43,8 +45,9 @@ import java.util.ServiceLoader;
  *
  * </pre>
  */
+@NullMarked
 public final class ServiceLoaderUtil {
-    private static Map<Class<?>, Object> sOverridesForTesting;
+    private static @Nullable Map<Class<?>, Object> sOverridesForTesting;
 
     private ServiceLoaderUtil() {}
 
@@ -75,6 +78,6 @@ public final class ServiceLoaderUtil {
             sOverridesForTesting = new ArrayMap<>();
         }
         sOverridesForTesting.put(clazz, instance);
-        ResettersForTesting.register(() -> sOverridesForTesting.remove(clazz));
+        ResettersForTesting.register(() -> assumeNonNull(sOverridesForTesting).remove(clazz));
     }
 }

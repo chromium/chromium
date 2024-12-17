@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -15,9 +16,10 @@ public class StreamUtil {
     /**
      * Handle closing a {@link java.io.Closeable} via {@link java.io.Closeable#close()} and catch
      * the potentially thrown {@link java.io.IOException}.
+     *
      * @param closeable The Closeable to be closed.
      */
-    public static void closeQuietly(Closeable closeable) {
+    public static void closeQuietly(@Nullable Closeable closeable) {
         if (closeable == null) return;
 
         try {
