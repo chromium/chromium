@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "base/test/mock_callback.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -29,6 +31,18 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+namespace {
+std::unique_ptr<KeyedService> BuildTestShareKitService(
+    web::BrowserState* context) {
+  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  data_sharing::DataSharingService* data_sharing_service =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+
+  return std::make_unique<TestShareKitService>(data_sharing_service, nullptr,
+                                               nullptr);
+}
+}  // namespace
+
 namespace collaboration {
 
 // Test fixture for the iOS collaboration controller delegate.
@@ -45,6 +59,9 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    test_cbs_builder.AddTestingFactory(
+        ShareKitServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildTestShareKitService));
     profile_ = std::move(test_cbs_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -54,24 +71,24 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     [command_dispatcher
         startDispatchingToTarget:application_commands_mock_
                      forProtocol:@protocol(ApplicationCommands)];
-    share_kit_service_ =
-        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
+    share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile_.get());
     base_view_controller_ = [[FakeUIViewController alloc] init];
   }
 
   // Init the delegate for a share flow.
   void InitShareFlowDelegate() {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
+        browser_.get(), base_view_controller_,
         std::make_unique<CollaborationFlowConfigurationShare>(
-            share_kit_service_.get(), browser_.get(), base_view_controller_,
             tab_group_->GetWeakPtr()));
   }
 
   // Init the delegate for a join flow.
   void InitJoinFlowDelegate() {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
+        browser_.get(), base_view_controller_,
         std::make_unique<CollaborationFlowConfigurationJoin>(
-            share_kit_service_.get(), browser_.get(), base_view_controller_,
+
             GURL()));
   }
 
@@ -97,7 +114,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   UIViewController* base_view_controller_;
   raw_ptr<const TabGroup> tab_group_;
-  std::unique_ptr<ShareKitService> share_kit_service_;
+  raw_ptr<ShareKitService> share_kit_service_;
 };
 
 // Tests `ShowShareDialog` with a valid tabGroup.

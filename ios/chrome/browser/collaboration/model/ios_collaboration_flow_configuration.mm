@@ -13,58 +13,32 @@
 
 namespace collaboration {
 
-#pragma mark - CollaborationFlowConfiguration
+#pragma mark - CollaborationFlowConfigurationShare
 
-CollaborationFlowConfiguration::CollaborationFlowConfiguration(
-    ShareKitService* share_kit_service,
-    Browser* browser,
-    UIViewController* base_view_controller)
-    : share_kit_service_(share_kit_service),
-      browser_(browser),
-      base_view_controller_(base_view_controller) {
-  CHECK(share_kit_service_);
-  CHECK(browser_);
-  CHECK(base_view_controller_);
+CollaborationFlowConfigurationShare::CollaborationFlowConfigurationShare(
+    base::WeakPtr<const TabGroup> tab_group)
+    : tab_group_(tab_group) {
+  CHECK(tab_group_);
 }
 
-#pragma mark - CollaborationFlowConfigurationShare
+CollaborationFlowConfigurationShare::~CollaborationFlowConfigurationShare() {}
 
 CollaborationFlowConfiguration::Type CollaborationFlowConfigurationShare::type()
     const {
   return kType;
 }
 
-CollaborationFlowConfigurationShare::CollaborationFlowConfigurationShare(
-    ShareKitService* share_kit_service,
-    Browser* browser,
-    UIViewController* base_view_controller,
-    base::WeakPtr<const TabGroup> tab_group)
-    : CollaborationFlowConfiguration(share_kit_service,
-                                     browser,
-                                     base_view_controller),
-      tab_group_(tab_group) {
-  CHECK(tab_group_);
-}
-
-CollaborationFlowConfigurationShare::~CollaborationFlowConfigurationShare() {}
-
 #pragma mark - CollaborationFlowConfigurationJoin
+
+CollaborationFlowConfigurationJoin::CollaborationFlowConfigurationJoin(
+    const GURL& url)
+    : url_(url) {}
+
+CollaborationFlowConfigurationJoin::~CollaborationFlowConfigurationJoin() {}
 
 CollaborationFlowConfiguration::Type CollaborationFlowConfigurationJoin::type()
     const {
   return kType;
 }
-
-CollaborationFlowConfigurationJoin::CollaborationFlowConfigurationJoin(
-    ShareKitService* share_kit_service,
-    Browser* browser,
-    UIViewController* base_view_controller,
-    const GURL& url)
-    : CollaborationFlowConfiguration(share_kit_service,
-                                     browser,
-                                     base_view_controller),
-      url_(url) {}
-
-CollaborationFlowConfigurationJoin::~CollaborationFlowConfigurationJoin() {}
 
 }  // namespace collaboration

@@ -5,7 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_COLLABORATION_MODEL_IOS_COLLABORATION_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_COLLABORATION_MODEL_IOS_COLLABORATION_CONTROLLER_DELEGATE_H_
 
+#import <UIKit/UIKit.h>
+
 #import "components/collaboration/public/collaboration_controller_delegate.h"
+
+class Browser;
+class ShareKitService;
 
 namespace collaboration {
 
@@ -16,6 +21,8 @@ class IOSCollaborationControllerDelegate
     : public CollaborationControllerDelegate {
  public:
   IOSCollaborationControllerDelegate(
+      Browser* browser,
+      UIViewController* base_view_controller,
       std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow);
 
   IOSCollaborationControllerDelegate(
@@ -38,6 +45,9 @@ class IOSCollaborationControllerDelegate
   void PromoteCurrentScreen() override;
 
  private:
+  raw_ptr<ShareKitService> share_kit_service_;
+  raw_ptr<Browser> browser_;
+  __weak UIViewController* base_view_controller_;
   std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow_;
   NSString* session_id_ = nil;
 };

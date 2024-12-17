@@ -391,17 +391,16 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
           browser->GetProfile());
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(browser->GetProfile());
 
-  if (!_tabGroup || !collaborationService || !shareKitService) {
+  if (!_tabGroup || !collaborationService) {
     return;
   }
 
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController,
           std::make_unique<collaboration::CollaborationFlowConfigurationShare>(
-              shareKitService, browser, self.baseViewController,
+
               _tabGroup->GetWeakPtr()));
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                _tabGroup->tab_group_id());

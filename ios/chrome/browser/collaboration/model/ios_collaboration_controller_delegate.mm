@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -23,8 +24,18 @@
 namespace collaboration {
 
 IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
+    Browser* browser,
+    UIViewController* base_view_controller,
     std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow)
-    : collaboration_flow_(std::move(collaboration_flow)) {}
+    : browser_(browser),
+      base_view_controller_(base_view_controller),
+      collaboration_flow_(std::move(collaboration_flow)) {
+  CHECK(browser_);
+  CHECK(base_view_controller_);
+  share_kit_service_ =
+      ShareKitServiceFactory::GetForProfile(browser_->GetProfile());
+  CHECK(share_kit_service_);
+}
 
 IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 
@@ -42,25 +53,22 @@ void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
 
 void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
   if (session_id_) {
-    collaboration_flow_->share_kit_service()->CancelSession(session_id_);
+    share_kit_service_->CancelSession(session_id_);
   }
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
 
 void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
     ResultCallback result) {
-  Browser* browser = collaboration_flow_->browser();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browser->GetProfile());
+      IdentityManagerFactory::GetForProfile(browser_->GetProfile());
   AuthenticationOperation operation =
       identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
           ? AuthenticationOperation::kHistorySync
           : AuthenticationOperation::kSheetSigninAndHistorySync;
 
   id<ApplicationCommands> application_handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  UIViewController* base_view_controller =
-      collaboration_flow_->base_view_controller();
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -82,11 +90,11 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
              }];
 
   [application_handler showSignin:command
-               baseViewController:base_view_controller];
+               baseViewController:base_view_controller_];
 }
 
 void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange() {
-  collaboration_flow_->share_kit_service()->PrimaryAccountChanged();
+  share_kit_service_->PrimaryAccountChanged();
 }
 
 void IOSCollaborationControllerDelegate::ShowJoinDialog(
@@ -99,7 +107,7 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
 
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
   config.URL = join_flow.url();
-  config.baseViewController = join_flow.base_view_controller();
+  config.baseViewController = base_view_controller_;
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completionBlock = ^(BOOL completion_result) {
     CollaborationControllerDelegate::Outcome outcome =
@@ -108,7 +116,7 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     completion_block(outcome);
   };
 
-  session_id_ = join_flow.share_kit_service()->JoinTabGroup(config);
+  session_id_ = share_kit_service_->JoinTabGroup(config);
 }
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
@@ -126,9 +134,9 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
   ShareKitShareGroupConfiguration* config =
       [[ShareKitShareGroupConfiguration alloc] init];
   config.tabGroup = share_flow.tab_group().get();
-  config.baseViewController = share_flow.base_view_controller();
-  config.applicationHandler = HandlerForProtocol(
-      share_flow.browser()->GetCommandDispatcher(), ApplicationCommands);
+  config.baseViewController = base_view_controller_;
+  config.applicationHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completionBlock = ^(BOOL completion_result) {
     CollaborationControllerDelegate::Outcome outcome =
@@ -137,7 +145,7 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
     completion_block(outcome);
   };
 
-  session_id_ = share_flow.share_kit_service()->ShareTabGroup(config);
+  session_id_ = share_kit_service_->ShareTabGroup(config);
 }
 
 void IOSCollaborationControllerDelegate::ShowManageDialog(

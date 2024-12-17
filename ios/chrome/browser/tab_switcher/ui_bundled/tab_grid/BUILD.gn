@@ -38,6 +38,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/bring_android_tabs/ui_bundled:coordinator",
     "//ios/chrome/browser/bubble/ui_bundled:constants",
     "//ios/chrome/browser/collaboration/model",
+    "//ios/chrome/browser/collaboration/model:collaboration_delegate",
     "//ios/chrome/browser/commerce/ui_bundled:price_card",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",

@@ -220,16 +220,16 @@
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
           browser->GetProfile());
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(browser->GetProfile());
-  if (!tabGroup || !collaborationService || !shareKitService) {
+
+  if (!tabGroup || !collaborationService) {
     return;
   }
 
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController,
           std::make_unique<collaboration::CollaborationFlowConfigurationShare>(
-              shareKitService, browser, self.baseViewController,
+
               tabGroup->GetWeakPtr()));
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                tabGroup->tab_group_id());

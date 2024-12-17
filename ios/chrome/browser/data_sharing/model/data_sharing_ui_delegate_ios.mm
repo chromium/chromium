@@ -60,8 +60,8 @@ void DataSharingUIDelegateIOS::OnJoinFlowReadyToBePresented(GURL url,
 
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
       std::make_unique<IOSCollaborationControllerDelegate>(
-          std::make_unique<CollaborationFlowConfigurationJoin>(
-              share_kit_service_, browser, base_view_controller, url));
+          browser, base_view_controller,
+          std::make_unique<CollaborationFlowConfigurationJoin>(url));
   collaboration_service_->StartJoinFlow(std::move(delegate), url);
 }
 
