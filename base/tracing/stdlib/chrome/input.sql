@@ -148,11 +148,15 @@ default_mapping AS MATERIALIZED (
     (
       (
         SELECT slice_id AS id, *
-        FROM scroll_update_steps),
+        FROM scroll_update_steps
+        WHERE dur > 0
+      ),
       (
         SELECT slice_id AS id, *
         FROM chrome_input_pipeline_steps step
-        WHERE step = 'STEP_TOUCH_EVENT_HANDLED')
+        WHERE step = 'STEP_TOUCH_EVENT_HANDLED'
+          AND dur > 0
+      )
     ),
     (utid)
   ) AS ii
@@ -177,11 +181,16 @@ fallback_mapping AS MATERIALIZED (
     (
       (
         SELECT slice_id AS id, *
-        FROM scroll_update_steps),
+        FROM scroll_update_steps
+        WHERE dur > 0
+      ),
       (
         SELECT slice_id AS id, *
         FROM chrome_input_pipeline_steps step
-        WHERE step = 'STEP_SEND_INPUT_EVENT_UI' AND input_type = 'TOUCH_MOVE_EVENT')
+        WHERE step = 'STEP_SEND_INPUT_EVENT_UI'
+          AND input_type = 'TOUCH_MOVE_EVENT'
+          AND dur > 0
+      )
     ),
     (utid)
   ) AS ii
