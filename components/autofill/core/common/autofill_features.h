@@ -271,6 +271,8 @@ BASE_DECLARE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillThirdPartyModeContentProvider);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroid);
 
 // Used as param for `kAutofillVirtualViewStructureAndroid` to allow

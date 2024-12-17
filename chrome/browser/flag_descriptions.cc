@@ -3739,6 +3739,13 @@ const char kTextSafetyClassifierName[] = "Text Safety Classifier";
 const char kTextSafetyClassifierDescription[] =
     "Enables text safety classifier for on-device models";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAutofillThirdPartyModeContentProviderName[] =
+    "Autofill Third Party Mode Content Provider";
+const char kAutofillThirdPartyModeContentProviderDescription[] =
+    "Enables querying the third party autofill mode state from the Chrome app.";
+#endif
+
 const char kThreadedScrollPreventRenderingStarvationName[] =
     "threaded-scroll-prevent-rendering-starvation";
 const char kThreadedScrollPreventRenderingStarvationDescription[] =

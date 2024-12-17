@@ -11855,6 +11855,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseManagedPrintJobOptionsInPrintPreview)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-third-party-mode-content-provider",
+     flag_descriptions::kAutofillThirdPartyModeContentProviderName,
+     flag_descriptions::kAutofillThirdPartyModeContentProviderDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillThirdPartyModeContentProvider)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

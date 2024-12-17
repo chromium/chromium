@@ -754,6 +754,12 @@ BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,
              "AutofillEnableSecurityTouchEventFilteringAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Autofill Services can query whether Chrome provides forms as
+// virtual view structures to third party providers.
+BASE_FEATURE(kAutofillThirdPartyModeContentProvider,
+             "AutofillThirdPartyModeContentProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the whether the Chrome may provide a virtual view structure for
 // Android Autofill.
 BASE_FEATURE(kAutofillVirtualViewStructureAndroid,

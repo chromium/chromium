@@ -102,6 +102,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableSecurityTouchEventFilteringAndroid,
     &autofill::features::kAutofillEnableVerveCardSupport,
     &autofill::features::kAutofillVirtualViewStructureAndroid,
+    &autofill::features::kAutofillThirdPartyModeContentProvider,
     &autofill::features::kAutofillEnableCvcStorageAndFilling,
     &autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation,
     &autofill::features::kAutofillSyncEwalletAccounts,

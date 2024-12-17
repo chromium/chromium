@@ -24022,6 +24022,8 @@ from previous Chrome versions.
   <int value="1444634753" label="OsFeedbackJelly:disabled"/>
   <int value="1444719196"
       label="CellularBypassESimInstallationConnectivityCheck:enabled"/>
+  <int value="1445634746"
+      label="AutofillThirdPartyModeContentProvider:enabled"/>
   <int value="1446349255" label="ArcEnableUsap:disabled"/>
   <int value="1446904662" label="CCTResizableWindowAboveNavbar:disabled"/>
   <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>
@@ -25721,6 +25723,8 @@ from previous Chrome versions.
   <int value="2101151142" label="disable-direct-write"/>
   <int value="2102772909"
       label="EnableGenericOidcAuthProfileManagement:disabled"/>
+  <int value="2103800063"
+      label="AutofillThirdPartyModeContentProvider:disabled"/>
   <int value="2104245260" label="OmniboxSteadyStateBackgroundColor:disabled"/>
   <int value="2104340988" label="CrostiniUsername:disabled"/>
   <int value="2104439359"

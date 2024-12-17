@@ -2167,6 +2167,11 @@ extern const char kTextInShelfDescription[];
 extern const char kTextSafetyClassifierName[];
 extern const char kTextSafetyClassifierDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillThirdPartyModeContentProviderName[];
+extern const char kAutofillThirdPartyModeContentProviderDescription[];
+#endif
+
 extern const char kThreadedScrollPreventRenderingStarvationName[];
 extern const char kThreadedScrollPreventRenderingStarvationDescription[];
 

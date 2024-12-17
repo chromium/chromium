@@ -813,6 +813,14 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-third-party-mode-content-provider",
+    "owners": [
+      "izuzic@google.com",
+      "friedrichh@chromium.org",
+      "//components/autofill/android/OWNERS" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "autofill-throttle-doc-form-scans",
     "owners": ["vincb@google.com", "tmartino@google.com", "bling-transactions@google.com"],
     "expiry_milestone": 136
