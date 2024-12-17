@@ -490,6 +490,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 #endif
 
   // Returns true if the RenderWidget is hidden.
+  // TODO(mustaq@chromium.org): Use `IsHidden()` instead!
   bool is_hidden() const { return is_hidden_; }
 
   // Called to notify the RenderWidget that its associated native window
@@ -701,6 +702,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Don't check whether we expected a resize ack during web tests.
   static void DisableResizeAckCheckForTesting();
 
+  // TODO(mustaq@chromium.org): Fix the odd name, should be capitalized!
   input::InputRouter* input_router();
 
   void SetForceEnableZoom(bool);
@@ -1305,9 +1307,25 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // The ID of the corresponding object in the Renderer Instance.
   const int routing_id_;
 
-  // Indicates whether a page is hidden or not. Need to call
+  // Indicates whether the page is hidden or not. Need to call
   // process_->UpdateClientPriority when this value changes.
-  bool is_hidden_;
+  bool is_hidden_ = true;
+
+  // Indicates whether the page is ever shown to the user so far.  This state
+  // remains `false` until `is_hidden_` becomes `false` for the first time.
+  bool was_ever_shown_ = false;
+
+  // Records the time when `was_ever_shown_` above becomes `true` for the first
+  // time.
+  base::TimeTicks first_shown_time_;
+
+  // Indicates whether the renderer host has received the first metadata signal
+  // implying the renderer has pushed content to cc.
+  bool first_content_metadata_received_ = false;
+
+  // Records the time when `first_content_metadata_received_` above becomes
+  // `true` for the first time.
+  base::TimeTicks first_content_metadata_time_;
 
   // For a widget that does not have an associated RenderFrame/View, assume it
   // is depth 1, ie just below the root widget.

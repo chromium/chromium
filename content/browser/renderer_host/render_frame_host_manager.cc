@@ -5053,7 +5053,7 @@ void RenderFrameHostManager::CommitPending(
   // local frame is detached. https://crbug.com/419087
   //
   // The blink::WidgetBase in the renderer process has its lifetime connected to
-  // a RenderWdigetHost, which is owned by a RenderFrameHost. While the host is
+  // a RenderWidgetHost, which is owned by a RenderFrameHost. While the host is
   // eligible for BFCache it will remain alive. The eligibility is decided in
   // UnloadOldFrame. If not eligible then the host will be added to
   // `pending_delete_host_` to be destroyed.
