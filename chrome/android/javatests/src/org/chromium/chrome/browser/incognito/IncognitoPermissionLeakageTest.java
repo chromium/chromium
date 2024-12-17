@@ -38,7 +38,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
@@ -146,7 +145,6 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(RegularAndIncognito.class)
-    @DisabledTest(message = "https://crbug.com/1103488")
     public void testAllowPermissionDoNotLeakBetweenRegularAndIncognito(
             String activityType1, String activityType2) throws Exception {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
@@ -233,7 +231,6 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.RegularToIncognito.class)
-    @DisabledTest(message = "crbug.com/1489541")
     public void testBlockPermissionLeakFromRegularToIncognito(
             String regularActivityType, String incognitoActivityType) throws Exception {
         ActivityType regularActivity = ActivityType.valueOf(regularActivityType);
@@ -263,7 +260,6 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToRegular.class)
-    @DisabledTest(message = "https://crbug.com/1103488")
     public void testBlockPermissionDoNotLeakFromIncognitoToRegular(
             String incognitoActivityType, String regularActivityType) throws Exception {
         ActivityType incognitoActivity = ActivityType.valueOf(incognitoActivityType);
