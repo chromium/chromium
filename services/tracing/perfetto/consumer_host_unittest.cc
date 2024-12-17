@@ -557,28 +557,22 @@ TEST_F(TracingConsumerTest, DeleteConsumerWhenReceiving) {
   no_more_data.Run();
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/383878432): Re-enable this test
-#define MAYBE_FlushProducers DISABLED_FlushProducers
-#else
-#define MAYBE_FlushProducers FlushProducers
-#endif
-TEST_F(TracingConsumerTest, MAYBE_FlushProducers) {
+TEST_F(TracingConsumerTest, FlushProducers) {
   EnableTracingWithDataSourceName(kDataSourceName);
 
   threaded_perfetto_service()->CreateProducer();
   auto writer = threaded_perfetto_service()->CreateTraceWriter(kDataSourceName);
-  MockProducer::WritePackets(*writer, 10);
 
   base::RunLoop wait_for_packets;
   ExpectPackets(kPerfettoTestString, wait_for_packets.QuitClosure());
 
-  base::RunLoop wait_for_flush;
+  MockProducer::WritePackets(*writer, 10);
 
+  base::RunLoop wait_for_flush;
   threaded_perfetto_service()->Flush(*writer, wait_for_flush.QuitClosure());
-  ReadBuffers();
 
   wait_for_flush.Run();
+  ReadBuffers();
   wait_for_packets.Run();
 
   EXPECT_EQ(10u, matching_packet_count());
