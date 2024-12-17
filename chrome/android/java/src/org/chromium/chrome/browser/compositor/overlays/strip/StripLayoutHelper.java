@@ -395,10 +395,11 @@ public class StripLayoutHelper
 
     // Strip State
     /**
-     * The width of a tab based on the number of tabs and the available space on the tab strip.
-     * Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
+     * The {@link Supplier} for the width of a tab based on the number of tabs and the available
+     * space on the tab strip. Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
      */
-    private float mCachedTabWidth;
+    private ObservableSupplierImpl<Float> mCachedTabWidthSupplier =
+            new ObservableSupplierImpl<>(0f);
 
     // Reorder State
     private boolean mMovingGroup;
@@ -759,7 +760,7 @@ public class StripLayoutHelper
      * @return The effective width of a tab (accounting for overlap).
      */
     private float getEffectiveTabWidth() {
-        return mCachedTabWidth - TAB_OVERLAP_WIDTH_DP;
+        return mCachedTabWidthSupplier.get() - TAB_OVERLAP_WIDTH_DP;
     }
 
     /**
@@ -783,7 +784,7 @@ public class StripLayoutHelper
      * @return Whether the tab strip is full.
      */
     private boolean isTabStripFull() {
-        return mCachedTabWidth < MAX_TAB_WIDTH_DP;
+        return mCachedTabWidthSupplier.get() < MAX_TAB_WIDTH_DP;
     }
 
     /**
@@ -1047,6 +1048,7 @@ public class StripLayoutHelper
                 mTabGroupModelFilter,
                 mScrollDelegate,
                 mTabDragSource,
+                mCachedTabWidthSupplier,
                 mGroupIdToHideSupplier,
                 mToolbarContainerView);
 
@@ -2138,12 +2140,7 @@ public class StripLayoutHelper
             }
 
             mReorderDelegate.startReorderMode(
-                    mStripTabs,
-                    mStripGroupTitles,
-                    interactingView,
-                    getEffectiveTabWidth(),
-                    new PointF(x, y),
-                    reorderType);
+                    mStripTabs, mStripGroupTitles, interactingView, new PointF(x, y), reorderType);
         } else {
             // Broadcast to start moving the window instance as the user has long pressed on the
             // open space of the tab strip.
@@ -2780,7 +2777,7 @@ public class StripLayoutHelper
                 mWidth,
                 mLeftMargin,
                 mRightMargin,
-                mCachedTabWidth,
+                mCachedTabWidthSupplier.get(),
                 TAB_OVERLAP_WIDTH_DP,
                 mGroupTitleOverlapWidth);
     }
@@ -3366,7 +3363,7 @@ public class StripLayoutHelper
     private void pushPropertiesToTab(StripLayoutTab tab) {
         // The close button is visible by default. If it should be hidden on tab creation, do not
         // animate the fade-out. See (https://crbug.com/1342654).
-        boolean shouldShowCloseButton = mCachedTabWidth >= TAB_WIDTH_MEDIUM;
+        boolean shouldShowCloseButton = mCachedTabWidthSupplier.get() >= TAB_WIDTH_MEDIUM;
         tab.setCanShowCloseButton(shouldShowCloseButton, false);
         tab.setHeight(mHeight);
     }
@@ -3430,7 +3427,8 @@ public class StripLayoutHelper
         float optimalTabWidth = (stripWidth + overlapWidth) / numTabs;
 
         // 4. Calculate the realistic tab width.
-        mCachedTabWidth = MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP);
+        mCachedTabWidthSupplier.set(
+                MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP));
 
         // 5. Prepare animations and propagate width to all tabs.
         finishAnimationsAndPushTabUpdates();
@@ -3440,8 +3438,9 @@ public class StripLayoutHelper
             StripLayoutTab tab = mStripTabs[i];
             if (tab.isClosed()) tab.setWidth(TAB_OVERLAP_WIDTH_DP);
             if (tab.isDying() || tab.isCollapsed()) continue;
+            Float cachedTabWidth = mCachedTabWidthSupplier.get();
             if (resizeAnimationList != null) {
-                if (mCachedTabWidth > 0f && tab.getWidth() == mCachedTabWidth) {
+                if (cachedTabWidth > 0f && tab.getWidth() == cachedTabWidth) {
                     // No need to create an animator to animate to the width we're already at.
                     continue;
                 }
@@ -3451,11 +3450,11 @@ public class StripLayoutHelper
                                 tab,
                                 StripLayoutTab.WIDTH,
                                 tab.getWidth(),
-                                mCachedTabWidth,
+                                cachedTabWidth,
                                 ANIM_TAB_RESIZE_MS);
                 resizeAnimationList.add(animator);
             } else {
-                mStripTabs[i].setWidth(mCachedTabWidth);
+                mStripTabs[i].setWidth(cachedTabWidth);
             }
         }
 
@@ -3554,7 +3553,7 @@ public class StripLayoutHelper
                 getVisibleLeftBound(),
                 stripWidth,
                 mMultiStepTabCloseAnimRunning,
-                mCachedTabWidth);
+                mCachedTabWidthSupplier.get());
 
         // 4. Create render list.
         createRenderList();
@@ -3585,7 +3584,7 @@ public class StripLayoutHelper
                     + mScrollDelegate.getReorderStartMargin();
         } else {
             return mWidth
-                    - mCachedTabWidth
+                    - mCachedTabWidthSupplier.get()
                     - mScrollDelegate.getScrollOffset()
                     - mRightMargin
                     - mScrollDelegate.getReorderStartMargin();
@@ -3614,7 +3613,7 @@ public class StripLayoutHelper
                 float drawXOffset = mGroupTitleDrawXOffset;
                 // Adjust for RTL.
                 if (LocalizationUtils.isLayoutRtl()) {
-                    drawXOffset = mCachedTabWidth - view.getWidth() - drawXOffset;
+                    drawXOffset = mCachedTabWidthSupplier.get() - view.getWidth() - drawXOffset;
                 }
 
                 view.setIdealX(startX + drawXOffset);
@@ -3679,7 +3678,7 @@ public class StripLayoutHelper
 
         boolean rtl = LocalizationUtils.isLayoutRtl();
         float offset = getStartPositionForStripViews() + MathUtils.flipSignIf(viewsWidth, rtl);
-        if (rtl) offset += mCachedTabWidth - mNewTabButtonWidth;
+        if (rtl) offset += mCachedTabWidthSupplier.get() - mNewTabButtonWidth;
         offset = adjustNewTabButtonOffsetIfFull(offset);
 
         CompositorAnimator animator =
@@ -3749,7 +3748,7 @@ public class StripLayoutHelper
 
         final float optimalStart = startOffset - tabPosition;
         // Also account for mCachedTabWidth to allocate space to show tab at the end.
-        final float optimalEnd = mWidth - endOffset - tabPosition - mCachedTabWidth;
+        final float optimalEnd = mWidth - endOffset - tabPosition - mCachedTabWidthSupplier.get();
 
         // 2. Return the scroll delta to make the given tab fully visible with the least scrolling.
         // This will result in the tab being at either the start or end of the strip.
@@ -3780,7 +3779,7 @@ public class StripLayoutHelper
     }
 
     int getTabIndexForTabDrop(float x) {
-        float halfTabWidth = mCachedTabWidth / 2;
+        float halfTabWidth = mCachedTabWidthSupplier.get() / 2;
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab stripTab = mStripTabs[i];
 
@@ -3836,32 +3835,7 @@ public class StripLayoutHelper
         if (mTabAtPositionForTesting != null) {
             return mTabAtPositionForTesting;
         }
-
-        for (int i = 0; i < mStripViews.length; ++i) {
-            final StripLayoutView view = mStripViews[i];
-
-            float leftEdge;
-            float rightEdge;
-            if (view instanceof StripLayoutTab tab) {
-                leftEdge = tab.getTouchTargetLeft();
-                rightEdge = tab.getTouchTargetRight();
-                if (LocalizationUtils.isLayoutRtl()) {
-                    leftEdge -= tab.getTrailingMargin();
-                } else {
-                    rightEdge += tab.getTrailingMargin();
-                }
-            } else {
-                if (!includeGroupTitles) continue;
-                leftEdge = view.getDrawX();
-                rightEdge = leftEdge + view.getWidth();
-            }
-
-            if (view.isVisible() && leftEdge <= x && x <= rightEdge) {
-                return view;
-            }
-        }
-
-        return null;
+        return StripLayoutUtils.findViewAtPositionX(mStripViews, x, includeGroupTitles);
     }
 
     public boolean getInReorderModeForTesting() {
@@ -3961,9 +3935,9 @@ public class StripLayoutHelper
 
     private float adjustXForTabDrop(float x) {
         if (LocalizationUtils.isLayoutRtl()) {
-            return x + (mCachedTabWidth / 2);
+            return x + (mCachedTabWidthSupplier.get() / 2);
         } else {
-            return x - (mCachedTabWidth / 2);
+            return x - (mCachedTabWidthSupplier.get() / 2);
         }
     }
 
@@ -4048,7 +4022,7 @@ public class StripLayoutHelper
         // moved that way.
         final float width =
                 mReorderDelegate.getReorderingForTabDrop()
-                        ? mCachedTabWidth
+                        ? mCachedTabWidthSupplier.get()
                         : mReorderDelegate.getInteractingView().getWidth();
         float dragSpeedRatio = 0.f;
         if (mReorderDelegate.canReorderScrollLeft() && x < leftMinX) {
@@ -4322,7 +4296,7 @@ public class StripLayoutHelper
      * @return The width of a tab.
      */
     float getCachedTabWidthForTesting() {
-        return mCachedTabWidth;
+        return mCachedTabWidthSupplier.get();
     }
 
     /**

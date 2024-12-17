@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_SLIDE_OUT_MS;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -24,6 +25,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -91,8 +93,8 @@ public class ReorderDelegate {
     /** The last x-position we processed for reorder. */
     private float mLastReorderX;
 
-    /** The effective tab width (accounting for overlap) at the time that we started reordering. */
-    private float mEffectiveTabWidth;
+    /** Supplier for current tab width. */
+    private Supplier<Float> mTabWidthSupplier;
 
     // TODO(crbug.com/376065034): Move ownership to relevant strategies. For context, this is
     // unneeded for group reorder.
@@ -202,6 +204,7 @@ public class ReorderDelegate {
      *     delete and ungroup.
      * @param tabDragSource The drag-drop manager {@link TabDragSource} for triggering Android
      *     drag-drop and listen to drag events. Builds and manages the drag shadow.
+     * @param tabWidthSupplier The {@link Supplier} for tab width for reorder computations.
      * @param groupIdToHideSupplier The {@link ObservableSupplierImpl} for the group ID to hide.
      * @param containerView The tab strip container {@link View}.
      */
@@ -210,11 +213,13 @@ public class ReorderDelegate {
             TabGroupModelFilter tabGroupModelFilter,
             ScrollDelegate scrollDelegate,
             TabDragSource tabDragSource,
+            Supplier<Float> tabWidthSupplier,
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
             View containerView) {
         mAnimationHost = animationHost;
         mTabGroupModelFilter = tabGroupModelFilter;
         mScrollDelegate = scrollDelegate;
+        mTabWidthSupplier = tabWidthSupplier;
         mGroupIdToHideSupplier = groupIdToHideSupplier;
         mContainerView = containerView;
 
@@ -240,18 +245,12 @@ public class ReorderDelegate {
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle[] stripGroupTitles,
             @NonNull StripLayoutView interactingView,
-            float effectiveTabWidth,
             PointF startPoint,
             @ReorderType int reorderType) {
         assert mInitialized && mActiveStrategy == null && !getInReorderMode();
         mActiveStrategy = getReorderStrategy(interactingView, reorderType);
         mActiveStrategy.startReorderMode(
-                stripTabs,
-                stripGroupTitles,
-                interactingView,
-                effectiveTabWidth,
-                startPoint,
-                reorderType);
+                stripTabs, stripGroupTitles, interactingView, startPoint, reorderType);
     }
 
     /** See {@link ReorderStrategy#updateReorderPosition} */
@@ -362,7 +361,7 @@ public class ReorderDelegate {
                                     groupTitle,
                                     StripLayoutUtils.getNumOfTabsInGroup(
                                             mTabGroupModelFilter, groupTitle),
-                                    mEffectiveTabWidth)
+                                    getEffectiveTabWidth())
                             + trailingMargin;
 
             animationList.add(
@@ -429,7 +428,6 @@ public class ReorderDelegate {
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 StripLayoutView interactingTab,
-                float effectiveTabWidth,
                 PointF startPoint,
                 @ReorderType int reorderType) {
             RecordUserAction.record("MobileToolbarStartReorderTab");
@@ -444,7 +442,7 @@ public class ReorderDelegate {
                     mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getTabId()));
 
             // 3. Set initial state and add edge margins.
-            prepareStripForReorder(effectiveTabWidth, startPoint.x);
+            prepareStripForReorder(startPoint.x);
             setEdgeMarginsForReorder(stripTabs[0], stripTabs[stripTabs.length - 1]);
 
             // 4. Lift the container off the toolbar and perform haptic feedback.
@@ -560,11 +558,10 @@ public class ReorderDelegate {
         mAnimationHost.startAnimations(animationList, /* listener= */ null);
     }
 
-    void prepareStripForReorder(float effectiveTabWidth, float startX) {
+    void prepareStripForReorder(float startX) {
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         mLastReorderScrollTime = INVALID_TIME;
         mReorderScrollState = REORDER_SCROLL_NONE;
-        mEffectiveTabWidth = effectiveTabWidth;
         mLastReorderX = startX;
     }
 
@@ -731,7 +728,7 @@ public class ReorderDelegate {
     private boolean maybeSwapTab(StripLayoutTab[] stripTabs, float offset, int curIndex) {
         // TODO(crbug.com/372546700): Migrate to the pattern we use for the other reorder cases.
         //  i.e. check if we've reached the drag threshold in #reorderTabIfThresholdReached.
-        final float moveThreshold = REORDER_OVERLAP_SWITCH_PERCENTAGE * mEffectiveTabWidth;
+        final float moveThreshold = REORDER_OVERLAP_SWITCH_PERCENTAGE * getEffectiveTabWidth();
         boolean pastLeftThreshold = offset < -moveThreshold;
         boolean pastRightThreshold = offset > moveThreshold;
         boolean isNotRightMost = curIndex < stripTabs.length - 1;
@@ -779,7 +776,14 @@ public class ReorderDelegate {
      * @return Half of mEffectiveTabWidth.
      */
     private float getHalfTabWidth() {
-        return mEffectiveTabWidth / 2;
+        return getEffectiveTabWidth() / 2;
+    }
+
+    /**
+     * @return Current effective tab width (accounting for overlap).
+     */
+    private float getEffectiveTabWidth() {
+        return (mTabWidthSupplier.get() - TAB_OVERLAP_WIDTH_DP);
     }
 
     // ============================================================================================
@@ -796,7 +800,6 @@ public class ReorderDelegate {
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
-                float effectiveTabWidth,
                 PointF startPoint,
                 @ReorderType int reorderType) {
             // Store the relevant interacting views. We'll update their offsets as we drag.
@@ -807,7 +810,7 @@ public class ReorderDelegate {
                             mModel, stripTabs, mInteractingGroupTitle.getRootId()));
 
             setInReorderMode(true);
-            prepareStripForReorder(effectiveTabWidth, startPoint.x);
+            prepareStripForReorder(startPoint.x);
             StripLayoutUtils.performHapticFeedback(mContainerView);
 
             // If the selected tab is part of the group, lift its container off the toolbar.
@@ -897,7 +900,6 @@ public class ReorderDelegate {
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
-                float effectiveTabWidth,
                 PointF startPoint,
                 @ReorderType int reorderType) {
             Tab tab = mModel.getTabById(((StripLayoutTab) interactingView).getTabId());
@@ -926,7 +928,6 @@ public class ReorderDelegate {
                         stripTabs,
                         stripGroupTitles,
                         interactingView,
-                        effectiveTabWidth,
                         startPoint,
                         ReorderType.VIEW_IN_STRIP);
             }
@@ -969,13 +970,12 @@ public class ReorderDelegate {
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
-                float effectiveTabWidth,
                 PointF startPoint,
                 @ReorderType int reorderType) {
             // 1. Set initial state and add edge margins.
             setInteractingTab((StripLayoutTab) interactingView);
             setInReorderMode(true);
-            prepareStripForReorder(effectiveTabWidth, startPoint.x);
+            prepareStripForReorder(startPoint.x);
             setEdgeMarginsForReorder(stripTabs[0], stripTabs[stripTabs.length - 1]);
 
             // 2. Add a trailing margin to the interacting tab to indicate where the tab will be
@@ -1088,12 +1088,13 @@ public class ReorderDelegate {
             boolean isMovingOutOfGroup,
             boolean throughGroupTitle,
             @NonNull List<Animator> animators) {
+        float effectiveTabWidth = getEffectiveTabWidth();
         float endWidth =
                 StripLayoutUtils.calculateBottomIndicatorWidth(
                         groupTitle,
                         StripLayoutUtils.getNumOfTabsInGroup(modelFilter, groupTitle),
-                        mEffectiveTabWidth);
-        float startWidth = endWidth + MathUtils.flipSignIf(mEffectiveTabWidth, !isMovingOutOfGroup);
+                        effectiveTabWidth);
+        float startWidth = endWidth + MathUtils.flipSignIf(effectiveTabWidth, !isMovingOutOfGroup);
 
         animators.add(
                 CompositorAnimator.ofFloatProperty(

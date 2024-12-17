@@ -15,7 +15,6 @@ interface ReorderStrategy {
      * @param stripTabs The list of {@link StripLayoutTab}.
      * @param stripGroupTitles The list of {@link StripLayoutGroupTitle}.
      * @param interactingView The interacting {@link StripLayoutView}.
-     * @param effectiveTabWidth The width of a tab, accounting for overlap.
      * @param startPoint The (x,y) coordinate that the reorder action began at.
      * @param reorderType The {@link ReorderDelegate.ReorderType} for this reorder.
      */
@@ -23,7 +22,6 @@ interface ReorderStrategy {
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle[] stripGroupTitles,
             @NonNull StripLayoutView interactingView,
-            float effectiveTabWidth,
             PointF startPoint,
             int reorderType);
 
