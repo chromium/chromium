@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/metrics/dwa/dwa_recorder.h"
@@ -24,7 +23,7 @@ namespace metrics::dwa {
 
 // The DwaService is responsible for collecting and uploading deindentified web
 // analytics events.
-class COMPONENT_EXPORT(DWA) DwaService {
+class DwaService {
  public:
   DwaService(MetricsServiceClient* client, PrefService* pref_service);
   DwaService(const DwaService&) = delete;
