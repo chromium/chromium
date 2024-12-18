@@ -1165,3 +1165,18 @@ backported. This can happen for several reasons, for example: because they
 depend upon architectural changes (e.g. breaking API changes); because the
 security improvement is a significant new feature; or because the security
 improvement is the removal of a broken feature.
+
+<a name="TOC-How-can-I-appeal-a-Safe-Browsing-warning-"></a>
+### How can I appeal a Safe Browsing warning?
+To request a review of phishing warnings relating to your own website, use the
+[Security Issues report](https://support.google.com/webmasters/answer/9044101)
+page in your Google Search Console. If the warning applies to another site, you
+may be able to use
+[https://safebrowsing.google.com/safebrowsing/report_error/](https://safebrowsing.google.com/safebrowsing/report_error/),
+though you are likely better off contacting the site owner.
+
+If your concern relates to download warnings, you may find the warning in your
+Security Issues report and request a review from there. There is no separate
+appeal form or process at this time. Please follow these
+[guidelines](https://developers.google.com/search/docs/monitor-debug/security/malware#guidelines)
+to avoid having your binary show warnings from Safe Browsing.
