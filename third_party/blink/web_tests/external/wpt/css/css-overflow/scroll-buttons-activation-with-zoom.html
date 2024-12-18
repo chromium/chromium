@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Overflow Test: ::scroll-button() activation with column scroll markers</title>
+<title>CSS Test: ::scroll-button(inline-end) activation scrolls the same amount with zoom is the same as without zoom</title>
 <link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-buttons">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -18,9 +18,6 @@
     width: 600px;
     height: 300px;
     overflow: auto;
-    columns: 1;
-    gap: 0;
-    column-fill: auto;
     scroll-marker-group: after;
     white-space: nowrap;
   }
@@ -44,19 +41,17 @@
     width: 40px;
   }
 
-  #scroller::scroll-button(right) {
+  #scroller::scroll-button(inline-end) {
     content: ">";
     background: blue;
+    position: absolute;
+    top: 0;
     display: flex;
     height: 20px;
     width: 20px;
-    top: 0px;
-    left: 0px;
-    position: absolute;
-    z-index: 99;
   }
 
-  #scroller::column::scroll-marker {
+  #scroller div::scroll-marker {
     content: "";
     width: 10px;
     height: 10px;
@@ -67,25 +62,34 @@
 </style>
 <div id="scroller">
   <div></div>
-  <br>
+  <div></div>
   <div></div>
 </div>
 <script>
-  /*
-    Double click as recommended scroll amount is 85% of the page, so
-    to make sure all browsers reach the end.
-  */
   promise_test(async t => {
+    await waitForCompositorReady();
     let scroll_promise = waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
     let actions_promise = new test_driver.Actions()
     .pointerMove(5, 5)
     .pointerDown()
     .pointerUp()
+    .send();
+    await actions_promise;
+    await scroll_promise;
+    let no_zoom_scroll_amount = scroller.scrollLeft;
+
+    scroller.scrollLeft = 0;
+    await waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
+    assert_equals(scroller.scrollLeft, 0);
+    document.documentElement.style.zoom = 10;
+    scroll_promise = waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
+    actions_promise = new test_driver.Actions()
+    .pointerMove(5, 5)
     .pointerDown()
     .pointerUp()
     .send();
     await actions_promise;
     await scroll_promise;
-    assert_equals(scroller.scrollLeft, 600);
-  });
+    assert_equals(scroller.scrollLeft, no_zoom_scroll_amount);
+  }, "::scroll-button(inline-end) activation should scroll the same amount with zoom is the same as without zoom");
 </script>

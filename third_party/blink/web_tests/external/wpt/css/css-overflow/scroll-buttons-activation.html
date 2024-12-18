@@ -7,6 +7,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <style>
   * {
     margin: 0;
@@ -69,7 +70,8 @@
     to make sure all browsers reach the end.
   */
   promise_test(async t => {
-    actions_promise = new test_driver.Actions()
+    let scroll_promise = waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
+    let actions_promise = new test_driver.Actions()
     .pointerMove(5, 5)
     .pointerDown()
     .pointerUp()
@@ -77,6 +79,7 @@
     .pointerUp()
     .send();
     await actions_promise;
+    await scroll_promise;
     assert_equals(scroller.scrollLeft, 604);
   });
 </script>

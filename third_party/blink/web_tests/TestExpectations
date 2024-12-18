@@ -380,6 +380,9 @@ crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-upda
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-response-code.js [ Failure ]
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-service-worker-allowed-header.js [ Failure ]
 
+# ScrollManager::BubblingScroll scrolls wrong with some device scale factors
+crbug.com/384870261 external/wpt/css/css-overflow/scroll-buttons-activation-with-zoom.html [ Failure Pass ]
+
 # Looks like a failure to get a paint on time. Test could be changed to use runAfterLayoutAndPaint
 # instead of a timeout, which may fix things.
 crbug.com/713049 images/color-profile-reflection.html [ Failure Pass ]
