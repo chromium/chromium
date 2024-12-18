@@ -84,7 +84,7 @@ public class SafetyHubHatsHelperTest {
         mJniMocker.mock(SafetyHubHatsBridgeJni.TEST_HOOKS, mSafetyHubHatsBridgeNatives);
         doReturn(true)
                 .when(mSafetyHubHatsBridgeNatives)
-                .triggerHatsSurveyIfEnabled(any(), any(), any(), anyBoolean(), any());
+                .triggerHatsSurveyIfEnabled(any(), any(), any(), anyBoolean(), anyBoolean(), any());
 
         SafetyHubFetchServiceFactory.setSafetyHubFetchServiceForTesting(mSafetyHubFetchService);
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
@@ -162,6 +162,7 @@ public class SafetyHubHatsHelperTest {
                         any(WebContents.class),
                         eq(MagicStackEntry.ModuleType.PASSWORDS),
                         eq(true),
+                        eq(false),
                         any());
 
         // If another survey is attempted to be shown after the a tap has occurred, we should not
@@ -178,6 +179,7 @@ public class SafetyHubHatsHelperTest {
                         eq(mProfile),
                         any(WebContents.class),
                         eq(MagicStackEntry.ModuleType.PASSWORDS),
+                        eq(false),
                         eq(false),
                         any());
     }
@@ -202,6 +204,7 @@ public class SafetyHubHatsHelperTest {
                         any(WebContents.class),
                         eq(moduleType),
                         eq(hasTappedCard),
+                        eq(false),
                         any());
 
         // Verify that the survey is NOT triggered on an Incognito tab.
@@ -216,6 +219,7 @@ public class SafetyHubHatsHelperTest {
                         any(WebContents.class),
                         eq(moduleType),
                         eq(hasTappedCard),
+                        eq(false),
                         any());
 
         // Verify that the survey is triggered on next page load on a regular tab.
@@ -230,6 +234,7 @@ public class SafetyHubHatsHelperTest {
                         any(WebContents.class),
                         eq(moduleType),
                         eq(hasTappedCard),
+                        eq(false),
                         any());
 
         // Verify that there are no more attempts to trigger the survey.
@@ -244,6 +249,7 @@ public class SafetyHubHatsHelperTest {
                         any(WebContents.class),
                         eq(moduleType),
                         eq(hasTappedCard),
+                        eq(false),
                         any());
     }
 }

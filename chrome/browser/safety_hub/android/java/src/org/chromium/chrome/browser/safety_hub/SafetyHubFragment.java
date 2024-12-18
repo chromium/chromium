@@ -21,6 +21,7 @@ import android.provider.Browser;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -761,6 +762,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     private void triggerOrganicHatsSurvey() {
         Activity activity = getActivity();
+        ViewStub hatsSurveyViewStub = activity.findViewById(R.id.hats_survey_container_stub);
+        if (hatsSurveyViewStub != null && hatsSurveyViewStub.getParent() != null) {
+            hatsSurveyViewStub.inflate();
+        }
         SafetyHubHatsHelper safetyHubHatsHelper = SafetyHubHatsHelper.getForProfile(getProfile());
         assert safetyHubHatsHelper != null && activity != null;
         safetyHubHatsHelper.triggerOrganicHatsSurvey(activity);
