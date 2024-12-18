@@ -365,19 +365,8 @@ class MetricsService {
     // samples (the deltas) as logged.
     void SnapshotStatisticsRecorderDeltas();
 
-    // Snapshots the unlogged samples of histograms known by the
-    // StatisticsRecorder and writes them to the log passed in the constructor.
-    // Note that unlike SnapshotStatisticsRecorderDeltas(), this does not mark
-    // the samples as logged. To do so, a call to MarkUnloggedSamplesAsLogged()
-    // (in |histogram_snapshot_manager_|) should be made.
-    void SnapshotStatisticsRecorderUnloggedSamples();
-
     base::HistogramSnapshotManager* histogram_snapshot_manager() {
       return histogram_snapshot_manager_.get();
-    }
-
-    base::StatisticsRecorder::SnapshotTransactionId snapshot_transaction_id() {
-      return snapshot_transaction_id_;
     }
 
     // Notifies the histogram writer that the `log` passed in through the
@@ -386,8 +375,7 @@ class MetricsService {
 
    private:
     // Used to select which histograms to record when calling
-    // SnapshotStatisticsRecorderHistograms() or
-    // SnapshotStatisticsRecorderUnloggedSamples().
+    // SnapshotStatisticsRecorderHistograms().
     const base::HistogramBase::Flags required_flags_;
 
     // Used to write histograms to the log passed in the constructor. Null after
@@ -396,11 +384,6 @@ class MetricsService {
 
     // Used to snapshot histograms.
     std::unique_ptr<base::HistogramSnapshotManager> histogram_snapshot_manager_;
-
-    // The snapshot transaction ID of a call to either
-    // SnapshotStatisticsRecorderDeltas() or
-    // SnapshotStatisticsRecorderUnloggedSamples().
-    base::StatisticsRecorder::SnapshotTransactionId snapshot_transaction_id_;
   };
 
   // Loads "independent" metrics from a metrics provider and executes a
@@ -499,11 +482,7 @@ class MetricsService {
   // Closes out the current log after adding any last information. |async|
   // determines whether finalizing the log will be done in a background thread.
   // |log_stored_callback| will be run (on the main thread) after the finalized
-  // log is stored. Note that when |async| is true, the closed log could end up
-  // not being stored (see MaybeCleanUpAndStoreFinalizedLog()). Regardless,
-  // |log_stored_callback| is still run. Note that currently, there is only
-  // support to close one log asynchronously at a time (this should be enforced
-  // by the caller).
+  // log is stored.
   void CloseCurrentLog(
       bool async,
       MetricsLogsEventManager::CreateReason reason,
@@ -514,18 +493,6 @@ class MetricsService {
                          MetricsLogsEventManager::CreateReason reason,
                          base::OnceClosure done_callback,
                          FinalizedLog finalized_log);
-
-  // Calls MarkUnloggedSamplesAsLogged() on |log_histogram_writer| and stores
-  // the |finalized_log| (see StoreFinalizedLog()), but only if the
-  // StatisticRecorder's last transaction ID is the same as the one from
-  // |log_histogram_writer| at the time of calling. See comments in the
-  // implementation for more details.
-  void MaybeCleanUpAndStoreFinalizedLog(
-      std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
-      MetricsLog::LogType log_type,
-      MetricsLogsEventManager::CreateReason reason,
-      base::OnceClosure done_callback,
-      FinalizedLog finalized_log);
 
   // Pushes the text of the current and staged logs into persistent storage.
   void PushPendingLogsToPersistentStorage(
@@ -588,24 +555,8 @@ class MetricsService {
   // Snapshots histogram deltas using the passed |log_histogram_writer| and then
   // finalizes |log| by calling FinalizeLog(). |log|, |current_app_version| and
   // |signing_key| are used to finalize the log (see FinalizeLog()).
-  // Semantically, this is equivalent to SnapshotUnloggedSamplesAndFinalizeLog()
-  // followed by MarkUnloggedSamplesAsLogged().
   static FinalizedLog SnapshotDeltasAndFinalizeLog(
       std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
-      std::unique_ptr<MetricsLog> log,
-      bool truncate_events,
-      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
-      std::string&& current_app_version,
-      std::string&& signing_key);
-
-  // Snapshots unlogged histogram samples using the passed
-  // |log_histogram_writer| and then finalizes |log| by calling FinalizeLog().
-  // |log|, |current_app_version| and |signing_key| are used to finalize the log
-  // (see FinalizeLog()). Note that unlike SnapshotDeltasAndFinalizeLog(), this
-  // does not own the passed |log_histogram_writer|, because it should be
-  // available to eventually mark the unlogged samples as logged.
-  static FinalizedLog SnapshotUnloggedSamplesAndFinalizeLog(
-      MetricsLogHistogramWriter* log_histogram_writer,
       std::unique_ptr<MetricsLog> log,
       bool truncate_events,
       std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
@@ -677,10 +628,6 @@ class MetricsService {
   // Indicates whether or not there is currently a periodic ongoing log being
   // finalized (or is scheduled to be finalized).
   bool pending_ongoing_log_ = false;
-
-  // Stores the time when we last posted a task to finalize a periodic ongoing
-  // log asynchronously.
-  base::TimeTicks async_ongoing_log_posted_time_;
 
   // Logs event manager to keep track of the various logs that the metrics
   // service interacts with. An unowned pointer of this instance is passed down

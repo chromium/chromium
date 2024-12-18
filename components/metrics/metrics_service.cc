@@ -963,8 +963,7 @@ MetricsService::MetricsLogHistogramWriter::MetricsLogHistogramWriter(
     : required_flags_(required_flags),
       flattener_(std::make_unique<IndependentFlattener>(log)),
       histogram_snapshot_manager_(
-          std::make_unique<base::HistogramSnapshotManager>(flattener_.get())),
-      snapshot_transaction_id_(0) {}
+          std::make_unique<base::HistogramSnapshotManager>(flattener_.get())) {}
 
 MetricsService::MetricsLogHistogramWriter::~MetricsLogHistogramWriter() =
     default;
@@ -972,16 +971,10 @@ MetricsService::MetricsLogHistogramWriter::~MetricsLogHistogramWriter() =
 void MetricsService::MetricsLogHistogramWriter::
     SnapshotStatisticsRecorderDeltas() {
   SCOPED_UMA_HISTOGRAM_TIMER("UMA.MetricsService.SnapshotDeltasTime");
-  snapshot_transaction_id_ = base::StatisticsRecorder::PrepareDeltas(
+  base::StatisticsRecorder::PrepareDeltas(
       /*include_persistent=*/true,
       /*flags_to_set=*/base::Histogram::kNoFlags, required_flags_,
       histogram_snapshot_manager_.get());
-}
-
-void MetricsService::MetricsLogHistogramWriter::
-    SnapshotStatisticsRecorderUnloggedSamples() {
-  snapshot_transaction_id_ = base::StatisticsRecorder::SnapshotUnloggedSamples(
-      required_flags_, histogram_snapshot_manager_.get());
 }
 
 void MetricsService::MetricsLogHistogramWriter::NotifyLogBeingFinalized() {
@@ -1164,49 +1157,6 @@ void MetricsService::StoreFinalizedLog(
                             finalized_log.uncompressed_log_size, log_type,
                             reason);
   std::move(done_callback).Run();
-}
-
-void MetricsService::MaybeCleanUpAndStoreFinalizedLog(
-    std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
-    MetricsLog::LogType log_type,
-    MetricsLogsEventManager::CreateReason reason,
-    base::OnceClosure done_callback,
-    FinalizedLog finalized_log) {
-  UMA_HISTOGRAM_TIMES("UMA.MetricsService.PeriodicOngoingLog.ReplyTime",
-                      base::TimeTicks::Now() - async_ongoing_log_posted_time_);
-
-  // Store the finalized log only if the StatisticRecorder's last transaction ID
-  // is the same as the one from |log_histogram_writer|. If they are not the
-  // same, then it indicates that another log was created while creating
-  // |finalized_log| (that log would be a superset of |finalized_log| in terms
-  // of histograms, so we discard |finalized_log| by not storing it).
-  //
-  // TODO(crbug.com/40119012): Find a way to save the other data such as user
-  // actions and omnibox events when we discard |finalized_log|.
-  //
-  // Note that the call to StatisticsRecorder::GetLastSnapshotTransactionId()
-  // here should not have to wait for a lock since there should not be any async
-  // logs being created (|rotation_scheduler_| is only re-scheduled at the end
-  // of this method).
-  bool should_store_log =
-      (base::StatisticsRecorder::GetLastSnapshotTransactionId() ==
-       log_histogram_writer->snapshot_transaction_id());
-  base::UmaHistogramBoolean("UMA.MetricsService.ShouldStoreAsyncLog",
-                            should_store_log);
-
-  if (!should_store_log) {
-    // We still need to run |done_callback| even if we do not store the log.
-    std::move(done_callback).Run();
-    return;
-  }
-
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "UMA.MetricsService.MaybeCleanUpAndStoreFinalizedLog.Time");
-
-  log_histogram_writer->histogram_snapshot_manager()
-      ->MarkUnloggedSamplesAsLogged();
-  StoreFinalizedLog(log_type, reason, std::move(done_callback),
-                    std::move(finalized_log));
 }
 
 void MetricsService::PushPendingLogsToPersistentStorage(
@@ -1604,21 +1554,6 @@ MetricsService::FinalizedLog MetricsService::SnapshotDeltasAndFinalizeLog(
     std::string&& current_app_version,
     std::string&& signing_key) {
   log_histogram_writer->SnapshotStatisticsRecorderDeltas();
-  log_histogram_writer->NotifyLogBeingFinalized();
-  return FinalizeLog(std::move(log), truncate_events, std::move(close_time),
-                     current_app_version, signing_key);
-}
-
-// static
-MetricsService::FinalizedLog
-MetricsService::SnapshotUnloggedSamplesAndFinalizeLog(
-    MetricsLogHistogramWriter* log_histogram_writer,
-    std::unique_ptr<MetricsLog> log,
-    bool truncate_events,
-    std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
-    std::string&& current_app_version,
-    std::string&& signing_key) {
-  log_histogram_writer->SnapshotStatisticsRecorderUnloggedSamples();
   log_histogram_writer->NotifyLogBeingFinalized();
   return FinalizeLog(std::move(log), truncate_events, std::move(close_time),
                      current_app_version, signing_key);

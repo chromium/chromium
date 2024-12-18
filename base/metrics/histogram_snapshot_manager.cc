@@ -35,32 +35,6 @@ void HistogramSnapshotManager::PrepareDeltas(
   }
 }
 
-void HistogramSnapshotManager::SnapshotUnloggedSamples(
-    const std::vector<HistogramBase*>& histograms,
-    HistogramBase::Flags required_flags) {
-  DCHECK(!unlogged_samples_snapshot_taken_);
-  unlogged_samples_snapshot_taken_ = true;
-  for (HistogramBase* const histogram : histograms) {
-    if (histogram->HasFlags(required_flags)) {
-      const HistogramSnapshotPair& histogram_snapshot_pair =
-          histograms_and_snapshots_.emplace_back(
-              histogram, histogram->SnapshotUnloggedSamples());
-      PrepareSamples(histogram_snapshot_pair.first,
-                     *histogram_snapshot_pair.second);
-    }
-  }
-}
-
-void HistogramSnapshotManager::MarkUnloggedSamplesAsLogged() {
-  DCHECK(unlogged_samples_snapshot_taken_);
-  unlogged_samples_snapshot_taken_ = false;
-  std::vector<HistogramSnapshotPair> histograms_and_snapshots;
-  histograms_and_snapshots.swap(histograms_and_snapshots_);
-  for (auto& [histogram, snapshot] : histograms_and_snapshots) {
-    histogram->MarkSamplesAsLogged(*snapshot);
-  }
-}
-
 void HistogramSnapshotManager::PrepareDelta(HistogramBase* histogram) {
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotDelta();
   PrepareSamples(histogram, *samples);
