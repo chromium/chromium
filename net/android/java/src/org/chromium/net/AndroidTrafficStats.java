@@ -10,8 +10,11 @@ import android.os.Process;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class interacts with TrafficStats API provided by Android. */
 @JNINamespace("net::android::traffic_stats")
+@NullMarked
 public class AndroidTrafficStats {
     private AndroidTrafficStats() {}
 

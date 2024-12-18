@@ -15,6 +15,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -29,6 +31,7 @@ import java.util.ArrayList;
  * WARNING: This class is not thread-safe.
  */
 @JNINamespace("net")
+@NullMarked
 public class NetworkChangeNotifier {
     /**
      * Alerted when the connection type of the network changes.
@@ -40,14 +43,14 @@ public class NetworkChangeNotifier {
 
     private final ArrayList<Long> mNativeChangeNotifiers;
     private final ObserverList<ConnectionTypeObserver> mConnectionTypeObservers;
-    private NetworkChangeNotifierAutoDetect mAutoDetector;
+    private @Nullable NetworkChangeNotifierAutoDetect mAutoDetector;
     // Last value broadcast via ConnectionTypeChange signal.
     private int mCurrentConnectionType = ConnectionType.CONNECTION_UNKNOWN;
     // Last value broadcast via ConnectionCostChange signal.
     private int mCurrentConnectionCost = ConnectionCost.UNKNOWN;
 
     @SuppressLint("StaticFieldLeak")
-    private static NetworkChangeNotifier sInstance;
+    private static @Nullable NetworkChangeNotifier sInstance;
 
     @VisibleForTesting
     protected NetworkChangeNotifier() {
@@ -461,7 +464,7 @@ public class NetworkChangeNotifier {
     }
 
     // For testing only.
-    public static NetworkChangeNotifierAutoDetect getAutoDetectorForTest() {
+    public static @Nullable NetworkChangeNotifierAutoDetect getAutoDetectorForTest() {
         return getInstance().mAutoDetector;
     }
 

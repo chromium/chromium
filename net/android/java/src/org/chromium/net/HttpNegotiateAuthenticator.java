@@ -32,6 +32,8 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -60,9 +62,10 @@ import java.io.IOException;
  * ================================================================================================
  */
 @JNINamespace("net::android")
+@NullMarked
 public class HttpNegotiateAuthenticator {
     private static final String TAG = "net_auth";
-    private Bundle mSpnegoContext;
+    private @Nullable Bundle mSpnegoContext;
     private final String mAccountType;
 
     /**
@@ -74,16 +77,17 @@ public class HttpNegotiateAuthenticator {
         public long nativeResultObject;
 
         /** Reference to the account manager to use for the various requests. */
+        @SuppressWarnings("NullAway.Init")
         public AccountManager accountManager;
 
         /** Authenticator-specific options for the request, used for AccountManager#getAuthToken. */
-        public Bundle options;
+        public @Nullable Bundle options;
 
         /** Desired token type, used for AccountManager#getAuthToken. */
-        public String authTokenType;
+        public @Nullable String authTokenType;
 
         /** Account to fetch an auth token for. */
-        public Account account;
+        public @Nullable Account account;
     }
 
     /**
@@ -449,6 +453,6 @@ public class HttpNegotiateAuthenticator {
                 long nativeJavaNegotiateResultWrapper,
                 HttpNegotiateAuthenticator caller,
                 int status,
-                String authToken);
+                @Nullable String authToken);
     }
 }
