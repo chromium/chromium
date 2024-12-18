@@ -85,16 +85,20 @@ def get_loader(test_paths: wptcommandline.TestPaths,
     include = kwargs["include"]
     if kwargs["include_file"]:
         include = include or []
-        include.extend(testloader.read_include_from_file(kwargs["include_file"]))
+        include.extend(testloader.read_test_prefixes_from_file(kwargs["include_file"]))
+    exclude = kwargs["exclude"]
+    if kwargs["exclude_file"]:
+        exclude = exclude or []
+        exclude.extend(testloader.read_test_prefixes_from_file(kwargs["exclude_file"]))
     if test_groups:
         include = testloader.update_include_for_groups(test_groups, include)
 
     if kwargs["tags"] or kwargs["exclude_tags"]:
         test_filters.append(testloader.TagFilter(kwargs["tags"], kwargs["exclude_tags"]))
 
-    if include or kwargs["exclude"] or kwargs["include_manifest"] or kwargs["default_exclude"]:
+    if include or exclude or kwargs["include_manifest"] or kwargs["default_exclude"]:
         manifest_filters.append(testloader.TestFilter(include=include,
-                                                      exclude=kwargs["exclude"],
+                                                      exclude=exclude,
                                                       manifest_path=kwargs["include_manifest"],
                                                       test_manifests=test_manifests,
                                                       explicit=kwargs["default_exclude"]))
@@ -295,6 +299,7 @@ def run_test_iteration(test_status, test_loader, test_queue_builder,
                             test_loader.subsuites,
                             kwargs["run_by_dir"])
 
+        test_environment.reset()
         with ManagerGroup("web-platform-tests",
                           test_queue_builder,
                           test_implementations,
