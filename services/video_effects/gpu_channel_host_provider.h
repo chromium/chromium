@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIDEO_EFFECTS_GPU_CHANNEL_HOST_PROVIDER_H_
 #define SERVICES_VIDEO_EFFECTS_GPU_CHANNEL_HOST_PROVIDER_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace gpu {
@@ -23,10 +24,8 @@ namespace video_effects {
 // instances of `gpu::GpuChannelHost`. Those are then going to be used to
 // create context providers over which the communication to GPU service will
 // happen.
-class GpuChannelHostProvider {
+class GpuChannelHostProvider : public base::RefCounted<GpuChannelHostProvider> {
  public:
-  virtual ~GpuChannelHostProvider() = default;
-
   // Returns the context provider for WebGPU.
   virtual scoped_refptr<viz::ContextProviderCommandBuffer>
   GetWebGpuContextProvider() = 0;
@@ -40,10 +39,15 @@ class GpuChannelHostProvider {
   GetSharedImageInterface() = 0;
 
  protected:
+  virtual ~GpuChannelHostProvider() = default;
+
   // Return a connected `gpu::GpuChannelHost`. Implementations should expect
   // this method to be called somewhat frequently when a new Video Effects
   // Service is created.
   virtual scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() = 0;
+
+ private:
+  friend class base::RefCounted<GpuChannelHostProvider>;
 };
 
 }  // namespace video_effects

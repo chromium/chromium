@@ -46,50 +46,43 @@ void VideoEffectsServiceImpl::CreateEffectsProcessor(
     return;
   }
 
-  auto gpu = viz::Gpu::Create(std::move(gpu_remote), io_task_runner_);
-  auto gpu_channel_host_provider =
-      std::make_unique<VizGpuChannelHostProvider>(std::move(gpu));
+  // If this is the first request, create the context objects.
+  if (!gpu_channel_host_provider_) {
+    auto gpu = viz::Gpu::Create(std::move(gpu_remote), io_task_runner_);
+    gpu_channel_host_provider_ = new VizGpuChannelHostProvider(std::move(gpu));
+  }
 
   if (device_) {
     // We already have a wgpu::Device.  Go ahead and create the processor.
     FinishCreatingEffectsProcessor(device_id, std::move(manager_remote),
-                                   std::move(processor_receiver),
-                                   std::move(gpu_channel_host_provider));
+                                   std::move(processor_receiver));
     return;
-  }
-
-  VizGpuChannelHostProvider* provider_ptr = nullptr;
-  if (!webgpu_device_) {
-    provider_ptr = gpu_channel_host_provider.get();
   }
 
   // Store the pending request.
   PendingEffectsProcessor pending;
   pending.manager_remote = std::move(manager_remote);
   pending.processor_receiver = std::move(processor_receiver);
-  pending.gpu_channel_host_provider = std::move(gpu_channel_host_provider);
   auto [_, inserted] =
       pending_processors_.insert(std::make_pair(device_id, std::move(pending)));
   CHECK(inserted);
 
   if (!webgpu_device_) {
-    CreateWebGpuDeviceAndEffectsProcessors(
-        provider_ptr->GetWebGpuContextProvider());
+    CreateWebGpuDeviceAndEffectsProcessors();
     return;
   }
   // A wgpu::Device is already being created.  We don't need to do anything as
   // pending processors will be created when it is ready.
 }
 
-void VideoEffectsServiceImpl::CreateWebGpuDeviceAndEffectsProcessors(
-    scoped_refptr<viz::ContextProviderCommandBuffer> context_provider) {
+void VideoEffectsServiceImpl::CreateWebGpuDeviceAndEffectsProcessors() {
   CHECK(!webgpu_device_);
-  CHECK(context_provider);
-
+  CHECK(gpu_channel_host_provider_);
   WebGpuDevice::DeviceLostCallback device_lost_cb = base::BindOnce(
       &VideoEffectsServiceImpl::OnDeviceLost, weak_ptr_factory_.GetWeakPtr());
-  webgpu_device_ = std::make_unique<WebGpuDevice>(std::move(context_provider),
-                                                  std::move(device_lost_cb));
+  webgpu_device_ = std::make_unique<WebGpuDevice>(
+      gpu_channel_host_provider_->GetWebGpuContextProvider(),
+      std::move(device_lost_cb));
 
   WebGpuDevice::DeviceCallback device_cb =
       base::BindOnce(&VideoEffectsServiceImpl::OnDeviceCreated,
@@ -137,10 +130,9 @@ void VideoEffectsServiceImpl::OnDeviceLost(wgpu::DeviceLostReason reason,
 void VideoEffectsServiceImpl::FinishCreatingEffectsProcessors() {
   // Called in-sequence by OnDeviceCreated().
   for (auto& it : pending_processors_) {
-    FinishCreatingEffectsProcessor(
-        it.first, std::move(it.second.manager_remote),
-        std::move(it.second.processor_receiver),
-        std::move(it.second.gpu_channel_host_provider));
+    FinishCreatingEffectsProcessor(it.first,
+                                   std::move(it.second.manager_remote),
+                                   std::move(it.second.processor_receiver));
   }
   pending_processors_.clear();
 }
@@ -148,8 +140,7 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessors() {
 void VideoEffectsServiceImpl::FinishCreatingEffectsProcessor(
     const std::string& device_id,
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
-    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider) {
+    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
   // Called in-sequence.
   if (!device_) {
     // Lost the wgpu::Device before the processor could be constructed. We could
@@ -163,8 +154,7 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessor(
 
   auto effects_processor = std::make_unique<VideoEffectsProcessorImpl>(
       device_, std::move(manager_remote), std::move(processor_receiver),
-      std::move(gpu_channel_host_provider),
-      std::move(on_unrecoverable_processor_error));
+      gpu_channel_host_provider_, std::move(on_unrecoverable_processor_error));
 
   if (!effects_processor->Initialize()) {
     return;

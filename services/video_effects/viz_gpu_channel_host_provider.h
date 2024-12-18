@@ -19,7 +19,6 @@ namespace video_effects {
 class VizGpuChannelHostProvider : public GpuChannelHostProvider {
  public:
   explicit VizGpuChannelHostProvider(std::unique_ptr<viz::Gpu> viz_gpu);
-  ~VizGpuChannelHostProvider() override;
 
   // GpuChannelHostProvider:
   scoped_refptr<viz::ContextProviderCommandBuffer> GetWebGpuContextProvider()
@@ -30,6 +29,7 @@ class VizGpuChannelHostProvider : public GpuChannelHostProvider {
       override;
 
  protected:
+  ~VizGpuChannelHostProvider() override;
   scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() override;
 
  private:

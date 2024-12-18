@@ -26,6 +26,7 @@ class TestGpuChannelHostProvider : public GpuChannelHostProvider {
       override;
 
  protected:
+  ~TestGpuChannelHostProvider() override;
   scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() override;
 
  private:

@@ -78,8 +78,6 @@ VizGpuChannelHostProvider::VizGpuChannelHostProvider(
   CHECK(viz_gpu_);
 }
 
-VizGpuChannelHostProvider::~VizGpuChannelHostProvider() = default;
-
 scoped_refptr<viz::ContextProviderCommandBuffer>
 VizGpuChannelHostProvider::GetWebGpuContextProvider() {
   if (webgpu_context_provider_) {
@@ -109,6 +107,8 @@ VizGpuChannelHostProvider::GetSharedImageInterface() {
       GetGpuChannelHost()->CreateClientSharedImageInterface();
   return shared_image_interface_;
 }
+
+VizGpuChannelHostProvider::~VizGpuChannelHostProvider() = default;
 
 scoped_refptr<gpu::GpuChannelHost>
 VizGpuChannelHostProvider::GetGpuChannelHost() {

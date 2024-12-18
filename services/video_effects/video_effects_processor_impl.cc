@@ -36,13 +36,14 @@ VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
     wgpu::Device device,
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider,
+    scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider,
     base::OnceClosure on_unrecoverable_error)
     : device_(device),
       manager_remote_(std::move(manager_remote)),
       processor_receiver_(this, std::move(processor_receiver)),
-      gpu_channel_host_provider_(std::move(gpu_channel_host_provider)),
+      gpu_channel_host_provider_(gpu_channel_host_provider),
       on_unrecoverable_error_(std::move(on_unrecoverable_error)) {
+  CHECK(gpu_channel_host_provider_);
   processor_receiver_.set_disconnect_handler(
       base::BindOnce(&VideoEffectsProcessorImpl::OnMojoDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));

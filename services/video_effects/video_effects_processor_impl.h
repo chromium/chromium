@@ -40,7 +40,7 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
       wgpu::Device device,
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-      std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider,
+      scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider,
       base::OnceClosure on_unrecoverable_error);
 
   ~VideoEffectsProcessorImpl() override;
@@ -84,7 +84,7 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   mojo::Remote<media::mojom::VideoEffectsManager> manager_remote_;
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;
 
-  std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider_;
+  scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider_;
 
   // Called when this processor enters a defunct state.
   base::OnceClosure on_unrecoverable_error_;
