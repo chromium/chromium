@@ -59,10 +59,6 @@ class NavigationPredictor
 
   void SetModelScoreCallbackForTesting(ModelScoreCallbackForTesting callback);
 
-  void SetTaskRunnerForTesting(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      const base::TickClock* clock);
-
   static void DisableRendererMetricSendingDelayForTesting();
 
  private:
