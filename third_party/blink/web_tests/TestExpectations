@@ -4121,7 +4121,7 @@ crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
 crbug.com/1244145 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/v8-code-cache.html [ Failure ]
 
 # ShadowRealm tests that crash in Modulator::From
-crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/* [ Crash Timeout ]
+crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/* [ Crash Timeout Skip ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/compression-bad-chunks.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/compression-bad-chunks.tentative.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/compression-constructor-error.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
