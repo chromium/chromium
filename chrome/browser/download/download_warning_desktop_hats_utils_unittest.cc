@@ -118,6 +118,11 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
         .WillByDefault(ReturnRefOfCopy(GURL(kReferrerUrl)));
     ON_CALL(*item, GetFileNameToReportUser())
         .WillByDefault(Return(base::FilePath(kFilename)));
+    ON_CALL(*item, IsDangerous()).WillByDefault(Return(true));
+    ON_CALL(*item, GetDangerType())
+        .WillByDefault(
+            Return(download::DownloadDangerType::
+                       DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE));
 
     // Set up the time since download started.
     base::Time start_time = base::Time::Now();
@@ -138,11 +143,6 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
         DownloadItemWarningData::WarningAction::CLOSE);
 
     ON_CALL(*item, IsDone()).WillByDefault(Return(false));
-    ON_CALL(*item, IsDangerous()).WillByDefault(Return(true));
-    ON_CALL(*item, GetDangerType())
-        .WillByDefault(
-            Return(download::DownloadDangerType::
-                       DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE));
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     // Set tailored verdict for cookie theft with account info.

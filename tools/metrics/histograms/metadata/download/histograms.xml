@@ -1190,13 +1190,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.WarningData.AddWarningActionEventOutcome"
+<histogram name="Download.WarningData.AddWarningActionEventOutcome2"
     enum="DownloadAddWarningActionEventOutcome" expires_after="2025-05-04">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether a download warning action event was sent, or if not, then
     why not. Logged each time an action is taken on the download warning.
+    Version 2 was introduced to log NOT_ADDED_DOWNLOAD_NOT_DANGEROUS.
   </summary>
 </histogram>
 

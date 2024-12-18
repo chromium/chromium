@@ -148,6 +148,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="NOT_ADDED_EXCEED_MAX_LENGTH"/>
   <int value="4" label="ADDED_WARNING_FIRST_SHOWN"/>
   <int value="5" label="ADDED_WARNING_ACTION"/>
+  <int value="6" label="NOT_ADDED_DOWNLOAD_NOT_DANGEROUS"/>
 </enum>
 
 <enum name="DownloadARModelState">

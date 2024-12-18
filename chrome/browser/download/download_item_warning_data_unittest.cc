@@ -14,10 +14,13 @@ using WarningSurface = DownloadItemWarningData::WarningSurface;
 using WarningAction = DownloadItemWarningData::WarningAction;
 using WarningActionEvent = DownloadItemWarningData::WarningActionEvent;
 using DeepScanTrigger = DownloadItemWarningData::DeepScanTrigger;
+using ::testing::Return;
 
 class DownloadItemWarningDataTest : public testing::Test {
  public:
-  DownloadItemWarningDataTest() = default;
+  DownloadItemWarningDataTest() {
+    ON_CALL(download_, IsDangerous()).WillByDefault(Return(true));
+  }
 
  protected:
   void FastForwardAndAddEvent(base::TimeDelta time_delta,
@@ -118,6 +121,19 @@ TEST_F(DownloadItemWarningDataTest, GetEvents_WarningShownNotLogged) {
 
   // The events are not logged because the SHOWN event is not logged, so there
   // is no anchor event to calculate the latency.
+  EXPECT_EQ(0u, events.size());
+}
+
+TEST_F(DownloadItemWarningDataTest, GetEvents_NotDangerous) {
+  ON_CALL(download_, IsDangerous()).WillByDefault(Return(false));
+  FastForwardAndAddEvent(base::Seconds(0), WarningSurface::BUBBLE_MAINPAGE,
+                         WarningAction::SHOWN);
+  FastForwardAndAddEvent(base::Seconds(5), WarningSurface::BUBBLE_SUBPAGE,
+                         WarningAction::PROCEED);
+
+  std::vector<WarningActionEvent> events = GetEvents();
+
+  // The events are not logged because download is not dangerous.
   EXPECT_EQ(0u, events.size());
 }
 

@@ -147,8 +147,8 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
       const download::DownloadItem* download);
 
   // Adds an `action` triggered on `surface` for `download`. It may not be
-  // added if `download` is null or the length of events associated with this
-  // `download` exceeds the limit.
+  // added if `download` is not dangerous, null or the length of events
+  // associated with this `download` exceeds the limit.
   static void AddWarningActionEvent(download::DownloadItem* download,
                                     WarningSurface surface,
                                     WarningAction action);
