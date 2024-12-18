@@ -38,7 +38,7 @@ enum class RestoreOption {
 // which is used to set `WindowInfo.activation_index` if it has value.
 // Otherwise, `WindowInfo.activation_index` will be calculated from
 // `mru_windows`.
-std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
+std::unique_ptr<::app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
     std::optional<int> activation_index,
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& mru_windows);

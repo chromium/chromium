@@ -16,7 +16,6 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
-#include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/shell.h"
@@ -67,7 +66,6 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -120,39 +118,6 @@ void MaybeInitiateAdminTemplateAutoLaunch() {
   if (auto* saved_desk_controller = ash::SavedDeskController::Get()) {
     saved_desk_controller->InitiateAdminTemplateAutoLaunch(base::DoNothing());
   }
-}
-
-// Collects window id and app id of normal browser windows.
-std::vector<LoginUnlockThroughputRecorder::RestoreWindowID>
-CollectRestoreIDsForNormalBrowserWindows(
-    ::app_restore::RestoreData* restore_data) {
-  if (!restore_data || restore_data->app_id_to_launch_list().empty()) {
-    return {};
-  }
-
-  std::vector<LoginUnlockThroughputRecorder::RestoreWindowID> app_restore_ids;
-  for (const auto& [app_id, launch_list] :
-       restore_data->app_id_to_launch_list()) {
-    const bool is_browser = app_id == app_constants::kChromeAppId;
-    // We are only interested in Ash browsers.
-    if (!is_browser) {
-      continue;
-    }
-
-    for (const auto& [window_id, app_restore_data] : launch_list) {
-      if (app_id == app_constants::kChromeAppId) {
-        // Ignore app type browsers.
-        const bool app_type_browser =
-            app_restore_data->browser_extra_info.app_type_browser.value_or(
-                false);
-        if (app_type_browser) {
-          continue;
-        }
-      }
-      app_restore_ids.emplace_back(window_id, app_id);
-    }
-  }
-  return app_restore_ids;
 }
 
 }  // namespace
@@ -332,11 +297,6 @@ void FullRestoreService::Init(bool& show_notification) {
     return;
   }
 
-  const bool is_primary_user = ProfileHelper::IsPrimaryProfile(profile_);
-  const RestoreOption restore_pref = static_cast<RestoreOption>(
-      prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
-  const bool restore_automatically = restore_pref == RestoreOption::kAlways;
-
   // If either OS pref setting nor Chrome pref setting exist, that means we
   // don't have restore data, so we don't need to consider restoration, and call
   // NewUserRestorePrefHandler to set OS pref setting.
@@ -345,28 +305,11 @@ void FullRestoreService::Init(bool& show_notification) {
         std::make_unique<NewUserRestorePrefHandler>(profile_);
     ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
     MaybeInitiateAdminTemplateAutoLaunch();
-
-    if (session_manager::SessionManager::Get() &&
-        session_manager::SessionManager::Get()->session_state() ==
-            session_manager::SessionState::RMA) {
-      // RMA browser tests load stub user profile and get here. In production,
-      // RMA should run with the sign-in profile and `FullRestoreService` should
-      // be not be created.
-      CHECK_IS_TEST();
-    } else {
-      // Notifies `LoginUnlockThroughputRecorder` so that it does not wait for
-      // restore data and can start deferred post-login tasks when shelf icon
-      // animation finishes and the login metrics concludes.
-      if (is_primary_user && Shell::HasInstance() &&
-          Shell::Get()->login_unlock_throughput_recorder()) {
-        Shell::Get()
-            ->login_unlock_throughput_recorder()
-            ->FullSessionRestoreDataLoaded({}, restore_automatically);
-      }
-    }
     return;
   }
 
+  const RestoreOption restore_pref = static_cast<RestoreOption>(
+      prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
 
   ::app_restore::RestoreData* restore_data =
@@ -383,17 +326,6 @@ void FullRestoreService::Init(bool& show_notification) {
       base::UmaHistogramCounts100(kFullRestoreWindowCountHistogramName,
                                   window_count);
     }
-  }
-
-  // LoginUnlockThroughputRecorder needs to track when session
-  // restore is done. Here we notify it of the set of normal browser windows.
-  if (is_primary_user && Shell::HasInstance() &&
-      Shell::Get()->login_unlock_throughput_recorder()) {
-    Shell::Get()
-        ->login_unlock_throughput_recorder()
-        ->FullSessionRestoreDataLoaded(
-            CollectRestoreIDsForNormalBrowserWindows(restore_data),
-            restore_automatically);
   }
 
   switch (restore_pref) {
