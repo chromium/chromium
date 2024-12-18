@@ -242,6 +242,14 @@ class CONTENT_EXPORT InterestGroupAuction
     mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
         bid_finalizer;
 
+    // Set to true when BeginGenerateBid() has been called on the BidderWorklet,
+    // or when the BidderWorklet has failed to load. Once it's true for all
+    // BidStates, `bidding_signals_handle->StartFetch()` is invoked on all of
+    // the bidder's BidStates. This is done to only send fetches over the
+    // network once all of a bidder's requests have been passed to the
+    // TrustedSignalsCacheImpl, to maximize request batching.
+    bool begin_generate_bid_called = false;
+
     // True when OnBiddingSignalsReceived() has been invoked. Needed to
     // correctly handle the case the bidder worklet pipe is closed before
     // OnBiddingSignalsReceived() is invoked.

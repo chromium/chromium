@@ -1780,7 +1780,8 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
       : TrustedSignalsCacheImpl(
             /*url_loader_factory=*/nullptr,
             base::BindRepeating(
-                &MockTrustedSignalsCacheImpl::GetCoordinatorKeyCallback)) {}
+                &MockTrustedSignalsCacheImpl::GetCoordinatorKeyCallback,
+                base::Unretained(this))) {}
 
   ~MockTrustedSignalsCacheImpl() override {
     // All expected bidder requests should have been observed. Seller requests,
@@ -1813,10 +1814,26 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
                     .second);
   }
 
+  // When called, callback passed to GetCoordinatorKeyCallback() will be stored
+  // until InvokeCoordinatorKeyCallback() is called, instead of being
+  // immediately invoked. Only one pending coordinator key callback is expected
+  // to be pending at a time. There's no API to wait for the callback, since the
+  // one test that uses this has to use RunUntilIdle().
+  void set_defer_coordinator_key_callback() {
+    defer_coordinator_key_callback_ = true;
+  }
+
+  // Runs the pending coordinator key callback (which must be non-null).
+  void InvokeCoordinatorKeyCallback() {
+    CHECK(coordinator_key_callback_);
+    std::move(coordinator_key_callback_)
+        .Run(BiddingAndAuctionServerKey{"key whose value does not matter",
+                                        /*id=*/42});
+  }
+
  private:
-  // Expects only to see requests for `kCoordinatorOrigin`. Immediately invoked
-  // callback with a bogus key that will be ignore.
-  static void GetCoordinatorKeyCallback(
+  // Expects only to see requests for `kCoordinatorOrigin`.
+  void GetCoordinatorKeyCallback(
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
@@ -1827,9 +1844,13 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
       std::move(callback).Run(base::unexpected("Wrong coordinator origin"));
       return;
     }
-    std::move(callback).Run(
-        BiddingAndAuctionServerKey{"key whose value does not matter",
-                                   /*id=*/42});
+
+    CHECK(!coordinator_key_callback_);
+    coordinator_key_callback_ = std::move(callback);
+    if (defer_coordinator_key_callback_) {
+      return;
+    }
+    InvokeCoordinatorKeyCallback();
   }
 
   // Mock fetcher that returns results added to the parent
@@ -1926,6 +1947,11 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
   std::unique_ptr<TrustedSignalsFetcher> CreateFetcher() override {
     return std::make_unique<MockTrustedSignalsFetcher>(this);
   }
+
+  bool defer_coordinator_key_callback_ = false;
+  base::OnceCallback<void(
+      base::expected<BiddingAndAuctionServerKey, std::string>)>
+      coordinator_key_callback_;
 
   std::map<BidderRequestInfo, TrustedSignalsFetcher::SignalsFetchResult>
       bidder_responses_;
@@ -27333,6 +27359,171 @@ function reportResult(auctionConfig, browserSignals) {
   auction_run_loop_->Run();
 
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+}
+
+// Test that KVv2 trusted bidding signals requests are batched together even
+// when there are more than AuctionWorkletManager::kBatchSize interest groups.
+TEST_P(AuctionRunnerTrustedSignalsTest, TrustedBiddingSignalsKVv2Batching) {
+  // Don't bother to test the KVv1 case, as batching is tested separately for
+  // that.
+  if (!UsingKVv2Signals()) {
+    return;
+  }
+
+  // Basic bidding script that checks that `trustedBiddingSignals` is received,
+  // and uses the interest group name as the bid. Names are increasing integers,
+  // so the last interest group should win the auction.
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         R"(
+function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                     trustedBiddingSignals, browserSignals) {
+  if (trustedBiddingSignals["k1"] != "a") {
+    throw "bad trustedBiddingSignals: " + JSON.stringify(trustedBiddingSignals);
+  }
+  return {bid: interestGroup.name, render: interestGroup.ads[0].renderURL};
+}
+
+function reportWin() {}
+                                         )");
+
+  // Minimal top-level scoring script.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      std::string(kMinimumDecisionScript) + kBasicReportResult);
+
+  // Add a bunch of bidders. Use group-by-origin mode so all their requests are
+  // merged into a single partition. Since interest group names are sorted
+  // alphabetically within a partition, a shared partition means the structure
+  // of the request does not depend on the order signals for each interest group
+  // are requested from the cache.
+  //
+  // Use the same key for all interest groups, for simplicity. Other tests cover
+  // joining of requests with different keys.
+  std::vector<StorageInterestGroup> bidders;
+  std::vector<MockTrustedSignalsCacheImpl::BiddingPartitionInfo> partitions;
+  partitions.emplace_back(MockTrustedSignalsCacheImpl::BiddingPartitionInfo{
+      /*partition_id=*/0,
+      {},
+      /*keys=*/{"k1"},
+      /*additional_params=*/base::Value::Dict()});
+  for (size_t i = 0; i < 3 * AuctionWorkletManager::kBatchSize; ++i) {
+    std::string interest_group_name = base::NumberToString(i);
+    partitions[0].interest_group_names.emplace(interest_group_name);
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, interest_group_name, kBidder1Url, kBidder1TrustedSignalsUrl,
+        {"k1"}, GURL("https://ad1.com"), /*ad_component_urls=*/std::nullopt,
+        coordinator_origin_));
+    bidders.back().interest_group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  }
+
+  std::map<int, std::vector<MockTrustedSignalsCacheImpl::BiddingPartitionInfo>>
+      compression_groups;
+  compression_groups.try_emplace(0, std::move(partitions));
+  AddBiddingSignalsCacheResult(
+      MockTrustedSignalsCacheImpl::BidderRequestInfo{
+          top_frame_origin_, kBidder1, kBidder1TrustedSignalsUrl,
+          std::move(compression_groups)},
+      MakeBidder1CompressionGroupMap());
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+  EXPECT_EQ((InterestGroupKey{kBidder1,
+                              base::NumberToString(
+                                  3 * AuctionWorkletManager::kBatchSize - 1)}),
+            result_.winning_group_id);
+}
+
+// Test that when a BiddingWorklet fails to load, the failed loads are correctly
+// taken into account when determining when to send batched KVv2 requests that
+// were merged between the failing BidderWorklet and other BidderWorklets that
+// were same-origin to it.
+TEST_P(AuctionRunnerTrustedSignalsTest,
+       TrustedBiddingSignalsKVv2BatchingWorkletLoadError) {
+  // Don't bother to test the KVv1 case, as batching is tested separately for
+  // that.
+  if (!UsingKVv2Signals()) {
+    return;
+  }
+
+  // Basic bidding script that successfully loads.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a"));
+  AddDefaultBidder1SignalsResult();
+
+  // `kBidder1UrlAlt` fails to load.
+  url_loader_factory_.AddResponse(kBidder1UrlAlt.spec(), "",
+                                  net::HTTP_NOT_FOUND);
+
+  // Scoring script.
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  // Add bidder that should successfully load and bid.
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+      {"k1", "k2"}, GURL("https://ad1.com"), /*ad_component_urls=*/std::nullopt,
+      coordinator_origin_));
+  // Give this bidder a higher priority, so it calls into the cache first, and
+  // thus any other requests will be merged with it, and there will be a single
+  // coordinator request. If the other requests were started first, and then
+  // failed before this IG started its request to the cache, there might be
+  // multiple coordinator key requests, which the test fixture isn't designed
+  // to handle.
+  bidders.back().interest_group.priority = 2;
+
+  // Add a bunch of bidders that use `kBidder1UrlAlt` and the same trusted
+  // signals URL as the successfully loaded bidder. Use a different joining
+  // origin so that different compression groups will be used, since on
+  // cancellation, different compression groups can be stripped from the
+  // original request.
+  url::Origin other_joining_origin =
+      url::Origin::Create(GURL("https://other.test/"));
+  // 15 may seem too large, but the test does make through to the 5th batch, so
+  // it needs to be at least 6. Add some batches on top of that to protect
+  // against behavior changes and races.
+  for (size_t i = 0; i < 15 * AuctionWorkletManager::kBatchSize; ++i) {
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, /*interest_group_name=*/base::NumberToString(i),
+        kBidder1UrlAlt, kBidder1TrustedSignalsUrl, {"l1"},
+        GURL("https://ad2.com"), /*ad_component_urls=*/std::nullopt,
+        coordinator_origin_));
+    bidders.back().joining_origin = other_joining_origin;
+    bidders.back().interest_group.priority = 1;
+  }
+
+  // Defer the coordinator key callback, so that all bidders have been informed
+  // of the failure before the TrustedSignalsFetcher has been started. This is
+  // needed to make sure that all the bidders associated with the failed URL
+  // load have been fully cleaned up and cancelled their signals requests before
+  // the fetch starts, so the contents of the fetch are predictable, and don't
+  // depend on the details of the error notification order.
+  trusted_signals_cache_impl_->set_defer_coordinator_key_callback();
+
+  // Back up pointer, since ownership is passed to the
+  // InterestGroupAuctionManager when starting an auction.
+  auto* trusted_signals_cache_impl = trusted_signals_cache_impl_.get();
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  task_environment()->RunUntilIdle();
+  trusted_signals_cache_impl->InvokeCoordinatorKeyCallback();
+  auction_run_loop_->Run();
+
+  // Erase expected load errors, before checking for any other unexpected
+  // errors.
+  std::erase_if(result_.errors, [](const auto& error) {
+    return error ==
+           "Failed to load https://adplatform.com/offers_alt.js HTTP status = "
+           "404 Not Found.";
+  });
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 }
 

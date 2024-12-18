@@ -1512,6 +1512,7 @@ class InterestGroupAuction::BuyerHelper
     DCHECK(!bid_states_.empty());
     DCHECK_EQ(0, num_outstanding_bids_);
     num_outstanding_bids_ = bid_states_.size();
+    num_outstanding_begin_generate_bid_calls_ = num_outstanding_bids_;
     num_outstanding_bidding_signals_received_calls_ = num_outstanding_bids_;
     start_generating_bids_time_ = base::TimeTicks::Now();
 
@@ -2121,6 +2122,20 @@ class InterestGroupAuction::BuyerHelper
                              std::make_move_iterator(errors.begin()),
                              std::make_move_iterator(errors.end()));
 
+    // If BeginGenerateBid() has yet to be called for the worklet, act as if it
+    // has been.
+    if (!bid_state->begin_generate_bid_called) {
+      // Cancel the KVv2 bidding signals request if there is one. It's not
+      // strictly necessary, and will be done later, when closing all the pipes
+      // for the bidder, anyways. However, in the unlikely case a fatal error
+      // occurs early enough, this potentially reduces the amount of data to be
+      // sent/requested when fetching bidding signals, and may even prevent
+      // bidding signals from being requested entirely.
+      bid_state->bidding_signals_handle.reset();
+
+      OnBeginGenerateBidCalled(bid_state);
+    }
+
     // If waiting on bidding signals, the bidder needs to be removed in the same
     // way as if it had a new negative priority value, so reuse that logic. The
     // bidder needs to be removed, and the remaining bidders potentially need to
@@ -2151,6 +2166,27 @@ class InterestGroupAuction::BuyerHelper
         /*real_time_contributions=*/{},
         /*reject_reason=*/auction_worklet::mojom::RejectReason::kNotAvailable,
         /*errors=*/{});
+  }
+
+  void OnBeginGenerateBidCalled(BidState* bid_state) {
+    DCHECK(!bid_state->begin_generate_bid_called);
+    bid_state->begin_generate_bid_called = true;
+
+    DCHECK_GT(num_outstanding_begin_generate_bid_calls_, 0);
+    --num_outstanding_begin_generate_bid_calls_;
+    if (num_outstanding_begin_generate_bid_calls_ > 0) {
+      return;
+    }
+
+    // Start pending KVv2 signals fetches for any requests that have them.
+    for (auto& other_bid_state : bid_states_) {
+      // `num_outstanding_begin_generate_bid_calls_` should be true for all
+      // bidders, since `num_outstanding_begin_generate_bid_calls_` should is 0.
+      DCHECK(other_bid_state->begin_generate_bid_called);
+      if (other_bid_state->bidding_signals_handle) {
+        other_bid_state->bidding_signals_handle->StartFetch();
+      }
+    }
   }
 
   base::flat_set<std::string> ComputeKAnon(
@@ -2232,6 +2268,8 @@ class InterestGroupAuction::BuyerHelper
           ->SendPendingSignalsRequests();
     }
 
+    OnBeginGenerateBidCalled(bid_state);
+
     FinishGenerateBidIfReady(bid_state);
   }
 
@@ -2276,7 +2314,6 @@ class InterestGroupAuction::BuyerHelper
                 *interest_group.trusted_bidding_signals_coordinator,
                 interest_group.trusted_bidding_signals_keys,
                 std::move(additional_params), partition_id);
-    bid_state.bidding_signals_handle->StartFetch();
     return auction_worklet::mojom::TrustedSignalsCacheKey::New(
         bid_state.bidding_signals_handle->compression_group_token(),
         partition_id);
@@ -2925,6 +2962,7 @@ class InterestGroupAuction::BuyerHelper
   base::OneShotTimer cumulative_buyer_timeout_timer_;
 
   int num_outstanding_bidding_signals_received_calls_ = 0;
+  int num_outstanding_begin_generate_bid_calls_ = 0;
   int num_outstanding_bids_ = 0;
 
   // How many IGs had their execution cancelled by cumulative timeout.
