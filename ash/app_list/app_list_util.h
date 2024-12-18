@@ -83,6 +83,10 @@ ASH_EXPORT void SetViewIgnoredForAccessibility(views::View* view, bool ignored);
 // Get the scale factor for the cardified apps grid and app icons.
 ASH_EXPORT float GetAppsGridCardifiedScale();
 
+// Sets the user pref for how many times the Sunfish launcher nudge was shown
+// (if the user is signed into an active session).
+ASH_EXPORT void SetSunfishLauncherNudgeShownCount(int count);
+
 }  // namespace ash
 
 #endif  // ASH_APP_LIST_APP_LIST_UTIL_H_

@@ -1711,9 +1711,15 @@ TEST_F(SunfishTest, PanelBounds) {
 }
 
 // Tests that the sunfish launcher nudge appears and closes properly in
-// clamshell mode.
+// clamshell mode, and that the prefs are updated properly.
 TEST_F(SunfishTest, ClamshellLauncherNudge) {
   AppListControllerImpl::SetSunfishNudgeDisabledForTest(false);
+
+  // The nudge shown count should start at zero.
+  auto* pref_service = capture_mode_util::GetActiveUserPrefService();
+  EXPECT_EQ(pref_service->GetInteger(prefs::kSunfishLauncherNudgeShownCount),
+            0);
+
   // Advance clock so we aren't at zero time.
   task_environment()->AdvanceClock(base::Hours(25));
 
@@ -1731,6 +1737,8 @@ TEST_F(SunfishTest, ClamshellLauncherNudge) {
       nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId);
   ASSERT_TRUE(nudge);
   EXPECT_TRUE(nudge->GetVisible());
+  EXPECT_EQ(pref_service->GetInteger(prefs::kSunfishLauncherNudgeShownCount),
+            1);
 
   // Start the sunfish session using the launcher button. The nudge should
   // close.
@@ -1738,12 +1746,22 @@ TEST_F(SunfishTest, ClamshellLauncherNudge) {
   VerifyActiveBehavior(BehaviorType::kSunfish);
   EXPECT_FALSE(
       nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId));
+
+  // Using the launcher button should set the nudge shown count to its limit.
+  EXPECT_EQ(pref_service->GetInteger(prefs::kSunfishLauncherNudgeShownCount),
+            capture_mode::kSunfishNudgeMaxShownCount);
 }
 
 // Tests that the sunfish launcher nudge appears and closes properly in
-// tablet mode.
+// tablet mode, and that the prefs are updated properly.
 TEST_F(SunfishTest, TabletLauncherNudge) {
   AppListControllerImpl::SetSunfishNudgeDisabledForTest(false);
+
+  // The nudge shown count should start at zero.
+  auto* pref_service = capture_mode_util::GetActiveUserPrefService();
+  EXPECT_EQ(pref_service->GetInteger(prefs::kSunfishLauncherNudgeShownCount),
+            0);
+
   // Advance clock so we aren't at zero time.
   task_environment()->AdvanceClock(base::Hours(25));
 
@@ -1762,6 +1780,8 @@ TEST_F(SunfishTest, TabletLauncherNudge) {
       nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId);
   ASSERT_TRUE(nudge);
   EXPECT_TRUE(nudge->GetVisible());
+  EXPECT_EQ(pref_service->GetInteger(prefs::kSunfishLauncherNudgeShownCount),
+            1);
 
   // Start the sunfish session using the launcher button. The nudge should
   // close.
@@ -1769,6 +1789,10 @@ TEST_F(SunfishTest, TabletLauncherNudge) {
   VerifyActiveBehavior(BehaviorType::kSunfish);
   EXPECT_FALSE(
       nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId));
+
+  // Using the launcher button should set the nudge shown count to its limit.
+  EXPECT_EQ(pref_service->GetInteger(prefs::kSunfishLauncherNudgeShownCount),
+            capture_mode::kSunfishNudgeMaxShownCount);
 }
 
 // Tests that the sunfish nudge only appears three times at most, with at least

@@ -25,6 +25,7 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -1248,6 +1249,11 @@ void SearchBoxView::SunfishButtonPressed() {
     // Only hide the launcher bubble in clamshell mode.
     view_delegate_->DismissAppList();
   }
+
+  // If the user presses the button, there is no need to show the nudge anymore,
+  // so set the pref to its limit.
+  SetSunfishLauncherNudgeShownCount(capture_mode::kSunfishNudgeMaxShownCount);
+
   CaptureModeController::Get()->StartSunfishSession();
 }
 
