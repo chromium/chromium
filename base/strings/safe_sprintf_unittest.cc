@@ -21,6 +21,7 @@
 #include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Death tests on Android are currently very flaky. No need to add more flaky
@@ -770,6 +771,14 @@ TEST(SafeSPrintfTest, PointerSize) {
   EXPECT_EQ("0x80000000", std::string(buf));
   EXPECT_EQ(10, SafeSPrintf(buf, "%p", ptr));
   EXPECT_EQ("0x80000000", std::string(buf));
+}
+
+TEST(SafeSPrintfTest, SpanForms) {
+  std::vector<char> buf(6);
+  EXPECT_EQ(5, SafeSPrintf(buf, "abcde"));
+  EXPECT_THAT(buf, testing::ElementsAre('a', 'b', 'c', 'd', 'e', '\0'));
+  EXPECT_EQ(5, SafeSPrintf(buf, "%c=%d\n", 'x', 42));
+  EXPECT_THAT(buf, testing::ElementsAre('x', '=', '4', '2', '\n', '\0'));
 }
 
 }  // namespace strings
