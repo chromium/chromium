@@ -15,6 +15,7 @@ source_set("regular") {
     "//base",
     "//components/collaboration/public",
     "//components/sessions",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/collaboration/model/messaging",

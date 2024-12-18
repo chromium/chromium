@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_view.h"
 
+#import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -13,7 +14,7 @@ const CGFloat kNewActivityLabelMinHeight = 30;
 // Maximum height of the new activity label.
 const CGFloat kNewActivityLabelMaxHeight = 59;
 // Minimum width of the new activity label.
-const CGFloat kNewActivityLabelMinWidth = 86;
+const CGFloat kNewActivityLabelMinWidth = 76;
 // Maximum width of the new activity label.
 const CGFloat kNewActivityLabelMaxWidth = 170;
 // Shadow opacity for the new activity label.
@@ -48,6 +49,37 @@ const CGFloat kSpaceBetweenItem = 6;
   return self;
 }
 
+- (void)setLabelText:(NSString*)text {
+  CHECK(_activityTitleLabel);
+  _activityTitleLabel.text = text;
+}
+
+- (void)setUserIcon:(UIView*)iconView {
+  CHECK(_activityIconView);
+  if (_activityIconView.subviews.firstObject == iconView) {
+    return;
+  }
+
+  for (UIView* subview in _activityIconView.subviews) {
+    [subview removeFromSuperview];
+  }
+
+  // Hide the view if `iconView` is nil.
+  if (!iconView) {
+    _activityIconView.hidden = YES;
+    return;
+  }
+
+  [_activityIconView addSubview:iconView];
+  [NSLayoutConstraint activateConstraints:@[
+    [iconView.centerXAnchor
+        constraintEqualToAnchor:_activityIconView.centerXAnchor],
+    [iconView.centerYAnchor
+        constraintEqualToAnchor:_activityIconView.centerYAnchor],
+  ]];
+  _activityIconView.hidden = NO;
+}
+
 - (void)layoutSubviews {
   [super layoutSubviews];
   // Update the corner radius based on the view's size.
@@ -74,7 +106,6 @@ const CGFloat kSpaceBetweenItem = 6;
   [self addSubview:_backgroundView];
 
   _activityIconView = [[UIView alloc] init];
-  // TODO(crbug.com/375594684): Update the visibility when the icon view is set.
   _activityIconView.hidden = YES;
 
   _activityTitleLabel = [[UILabel alloc] init];
@@ -84,9 +115,6 @@ const CGFloat kSpaceBetweenItem = 6;
   _activityTitleLabel.adjustsFontSizeToFitWidth = YES;
   _activityTitleLabel.adjustsFontForContentSizeCategory = YES;
   _activityTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  // TODO(crbug.com/375594684): Update the title text depending on the type of
-  // cell (GroupGridCell or GridCell) and the result of the messaging backend.
-  _activityTitleLabel.text = @"New Activity";
   _activityTitleLabel.textColor = UIColor.whiteColor;
   _activityTitleLabel.numberOfLines = 1;
 

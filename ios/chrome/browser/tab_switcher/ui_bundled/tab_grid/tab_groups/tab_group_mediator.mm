@@ -43,8 +43,10 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
@@ -325,12 +327,12 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
       _dirtyTabs[webStateID.identifier()];
   switch (message.collaboration_event) {
     case collaboration::messaging::CollaborationEvent::TAB_ADDED:
-      // TODO(crbug.com/371113934): Set the string "Added" to the
-      // data.labelString.
+      data.labelString = l10n_util::GetNSString(
+          IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_ADDED_TEXT);
       break;
     case collaboration::messaging::CollaborationEvent::TAB_UPDATED:
-      // TODO(crbug.com/371113934): Set the string "Changed" to the
-      // data.labelString.
+      data.labelString = l10n_util::GetNSString(
+          IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_CHANGED_TEXT);
       break;
     default:
       // Do not show any labels for other activities.

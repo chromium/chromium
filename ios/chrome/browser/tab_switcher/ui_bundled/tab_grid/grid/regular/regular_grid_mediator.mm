@@ -36,7 +36,9 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 // TODO(crbug.com/40273478): Needed for `TabPresentationDelegate`, should be
 // refactored.
@@ -291,7 +293,8 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     return nil;
   }
   ActivityLabelData* data = [[ActivityLabelData alloc] init];
-  // TODO(crbug.com/371113934): Set the string "New activity" to the data.
+  data.labelString =
+      l10n_util::GetNSString(IDS_IOS_TAB_GROUP_NEW_ACTIVITY_LABEL_TEXT);
   return data;
 }
 

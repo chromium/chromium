@@ -316,7 +316,10 @@ source_set("activity_label_view") {
     "activity_label_view.h",
     "activity_label_view.mm",
   ]
-  deps = [ "//ios/chrome/common/ui/colors" ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/colors",
+  ]
 }
 
 source_set("unit_tests") {

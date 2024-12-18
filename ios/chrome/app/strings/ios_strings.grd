@@ -5879,6 +5879,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that revert the close all action recently taken by the user. [iOS only]">
         Undo
       </message>
+      <message name="IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_ADDED_TEXT" desc="Text in the label that indicates a user added a tab in a shared tab group.">
+        Added
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_CHANGED_TEXT" desc="Text in the label that indicates a user changed a tab in a shared tab group.">
+        Changed
+      </message>
       <message name="IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_BUTTON" desc="Title of the button in the activity summary in a shared tab group.">
         Activity
       </message>
@@ -5926,6 +5932,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TAB_GROUP_INDICATOR_ACCESSIBILITY_TITLE" desc="Accessibility label for the tab group indicator view. This is spoken by VoiceOver.">
         Tab group, <ph name="GROUP_TITLE">$1<ex>Group name</ex></ph>, Menu.
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_NEW_ACTIVITY_LABEL_TEXT" desc="Text in the new activity label on a shared tab group cell in the tab grid.">
+        New activity
       </message>
       <message name="IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_TITLE" desc="Title of a half sheet for recent activity logs in a shared tab group.">
         Recent activity
