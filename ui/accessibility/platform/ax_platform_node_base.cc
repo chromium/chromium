@@ -2119,10 +2119,25 @@ void AXPlatformNodeBase::GetSelectionOffsets(const AXSelection* selection,
   GetSelectionOffsetsFromTree(selection, selection_start, selection_end);
 }
 
+int AXPlatformNodeBase::GetCaretOffset() {
+  if (IsAtomicTextField()) {
+    return GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd);
+  }
+
+  // If the unignored selection has not been computed yet, compute it now.
+  AXSelection unignored_selection = delegate_->GetUnignoredSelection();
+  int selection_start, selection_end;
+  GetSelectionOffsetsFromTree(&unignored_selection, &selection_start,
+                              &selection_end, /*caret_only*/ true);
+
+  return selection_end;
+}
+
 void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
     const AXSelection* selection,
     int* selection_start,
-    int* selection_end) {
+    int* selection_end,
+    bool caret_only) {
   DCHECK(selection_start && selection_end);
 
   *selection_start = GetSelectionAnchor(selection);
@@ -2145,6 +2160,13 @@ void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
   if (*selection_start == *selection_end && !HasVisibleCaretOrSelection()) {
     *selection_start = -1;
     *selection_end = -1;
+    return;
+  }
+
+  if (caret_only) {
+    // Just return the offsets, skipping the below computation that returns
+    // and end offset after an embedded object character when the selection
+    // ends wihin the descendant subtree.
     return;
   }
 

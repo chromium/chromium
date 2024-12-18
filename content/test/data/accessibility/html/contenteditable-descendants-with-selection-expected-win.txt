@@ -1,4 +1,4 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' caret_offset=1 n_selections=1 selection_start=0 selection_end=1
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' caret_offset=0 n_selections=1 selection_start=0 selection_end=1
 ++IA2_ROLE_SECTION value='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.' FOCUSABLE IA2_STATE_EDITABLE IA2_STATE_MULTI_LINE ia2_hypertext='<obj0><obj1><obj2>' caret_offset=3 n_selections=1 selection_start=0 selection_end=3
 ++++IA2_ROLE_PARAGRAPH IA2_STATE_EDITABLE ia2_hypertext='A contenteditable with a <obj1> and an <obj3> and a <obj5>.' n_selections=1 selection_start=0 selection_end=44
 ++++++ROLE_SYSTEM_STATICTEXT name='A contenteditable with a ' IA2_STATE_EDITABLE ia2_hypertext='A contenteditable with a ' n_selections=1 selection_start=0 selection_end=25

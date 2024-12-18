@@ -2245,7 +2245,7 @@ TEST_F(BrowserAccessibilityWinTest, TestSelectionInContentEditables) {
   // The caret should be at the focus (the end) of the selection.
   hr = div_editable_accessible->GetCOM()->get_caretOffset(&caret_offset);
   EXPECT_EQ(S_OK, hr);
-  EXPECT_EQ(7, caret_offset);
+  EXPECT_EQ(6, caret_offset);
 
   // Move the focus to the content editable.
   AXTreeData data = manager->GetTreeData();
@@ -2257,7 +2257,7 @@ TEST_F(BrowserAccessibilityWinTest, TestSelectionInContentEditables) {
   // The caret should not have moved.
   hr = div_editable_accessible->GetCOM()->get_caretOffset(&caret_offset);
   EXPECT_EQ(S_OK, hr);
-  EXPECT_EQ(7, caret_offset);
+  EXPECT_EQ(6, caret_offset);
 
   // The caret offset should reflect the position of the selection's focus in
   // any given object.

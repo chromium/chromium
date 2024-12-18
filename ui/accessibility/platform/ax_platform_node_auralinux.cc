@@ -4615,7 +4615,15 @@ int AXPlatformNodeAuraLinux::GetCaretOffset() {
     return -1;
   }
 
-  std::pair<int, int> selection = GetSelectionOffsetsForAtk();
+  std::pair<int, int> selection;
+  if (GetDelegate()->IsWebContent()) {
+    AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
+    GetSelectionOffsetsFromTree(&unignored_selection, &selection.first,
+                                &selection.second, /*caret_only*/ true);
+  } else {
+    GetSelectionOffsets(&selection.first, &selection.second);
+  }
+
   return UTF16ToUnicodeOffsetInText(selection.second);
 }
 
