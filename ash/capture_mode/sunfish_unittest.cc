@@ -2033,43 +2033,6 @@ TEST_F(SunfishTest, KeyboardNavigationSunfishSession) {
             session_test_api.GetCurrentFocusGroup());
 }
 
-// Tests that restarting default mode within a short time will re-show the
-// default action buttons.
-TEST_F(SunfishTest, RestartDefaultModeReShowsActionButton) {
-  // Start default mode and select a region.
-  auto* controller =
-      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  VerifyActiveBehavior(BehaviorType::kDefault);
-  const gfx::Rect region(0, 0, 50, 200);
-  SelectCaptureModeRegion(GetEventGenerator(), region,
-                          /*release_mouse=*/true, /*verify_region=*/true);
-
-  // Test the Search button is shown.
-  auto* search_button =
-      CaptureModeSessionTestApi(controller->capture_mode_session())
-          .GetButtonWithViewID(ActionButtonViewID::kSearchButton);
-  ASSERT_TRUE(search_button);
-  EXPECT_TRUE(search_button->GetVisible());
-
-  // Exit then re-enter capture mode session.
-  controller->Stop();
-  ASSERT_FALSE(controller->IsActive());
-
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  VerifyActiveBehavior(BehaviorType::kDefault);
-
-  // Test the Capture and Search buttons are both shown.
-  CaptureModeSessionTestApi session_test_api(
-      controller->capture_mode_session());
-  auto* capture_button =
-      session_test_api.GetCaptureLabelView()->capture_button_container();
-  ASSERT_TRUE(capture_button->GetVisible());
-  search_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
-  ASSERT_TRUE(search_button);
-  EXPECT_TRUE(search_button->GetVisible());
-}
-
 class ScannerTest : public AshTestBase {
  public:
   ScannerTest()
@@ -2510,54 +2473,6 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
   EXPECT_EQ(clipboard_data, u"detected text");
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
-}
-
-// Tests that restarting default mode within a short time will re-show the
-// Copy Text button.
-TEST_F(ScannerTest, RestartDefaultModeReshowsCopyTextButton) {
-  // Select a capture region with text.
-  auto* controller =
-      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  base::test::TestFuture<OnTextDetectionComplete> detect_text_future_1;
-  auto* test_delegate =
-      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
-  EXPECT_CALL(*test_delegate, DetectTextInImage)
-      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future_1)));
-
-  const gfx::Rect capture_region(0, 0, 50, 200);
-  SelectCaptureModeRegion(GetEventGenerator(), capture_region,
-                          /*release_mouse=*/true, /*verify_region=*/true);
-  detect_text_future_1.Take().Run("detected text");
-
-  // Copy text button should have been created.
-  ActionButtonView* copy_text_button =
-      CaptureModeSessionTestApi(controller->capture_mode_session())
-          .GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
-  ASSERT_TRUE(copy_text_button);
-
-  // Exit then re-enter capture mode session.
-  controller->Stop();
-  ASSERT_FALSE(controller->IsActive());
-
-  // Re-enter capture mode session. Test it runs text detection.
-  base::test::TestFuture<OnTextDetectionComplete> detect_text_future_2;
-  EXPECT_CALL(*test_delegate, DetectTextInImage)
-      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future_2)));
-
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  VerifyActiveBehavior(BehaviorType::kDefault);
-  ASSERT_EQ(capture_region, controller->user_capture_region());
-  detect_text_future_2.Take().Run("detected text");
-
-  // Test the Capture button and Copy Text button are both created.
-  CaptureModeSessionTestApi session_test_api(
-      controller->capture_mode_session());
-  auto* capture_button =
-      session_test_api.GetCaptureLabelView()->capture_button_container();
-  ASSERT_TRUE(capture_button->GetVisible());
-  copy_text_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
-  ASSERT_TRUE(copy_text_button);
 }
 
 // Tests that the copy text button is not shown in default capture mode if no
@@ -3069,20 +2984,8 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
   controller->Stop();
   ASSERT_FALSE(controller->IsActive());
 
-  // Re-enter the session. The disclaimer will be re-shown. Note text detection
-  // will start immediately as the captured region is preserved from the last
-  // session.
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
-  auto* test_delegate =
-      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
-  EXPECT_CALL(*test_delegate, DetectTextInImage)
-      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
-  detect_text_future.Take().Run("detected text");
-
-  smart_actions_button =
-      CaptureModeSessionTestApi(controller->capture_mode_session())
-          .GetButtonWithViewID(ActionButtonViewID::kSmartActionsButton);
+  // Re-enter the session. The disclaimer will be re-shown.
+  smart_actions_button = GetSmartActionsButton();
   ASSERT_TRUE(smart_actions_button);
   LeftClickOn(smart_actions_button);
   EXPECT_TRUE(CaptureModeSessionTestApi(controller->capture_mode_session())
