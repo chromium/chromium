@@ -490,7 +490,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       most_visited_page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
-      tab_(tabs::TabInterface::GetFromContents(web_ui->GetWebContents())),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
       ntp_custom_background_service_(
           NtpCustomBackgroundServiceFactory::GetForProfile(profile_)),
@@ -570,9 +569,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   OnColorProviderChanged();
   OnCustomBackgroundImageUpdated();
   OnLoad();
-
-  tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
-      &NewTabPageUI::TabWillDetach, weak_ptr_factory_.GetWeakPtr())));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
@@ -739,8 +735,6 @@ void NewTabPageUI::CreatePageHandler(
         pending_page_handler) {
   DCHECK(pending_page.is_valid());
 
-  auto* side_panel_controller =
-      tab_->GetTabFeatures()->customize_chrome_side_panel_controller();
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       ntp_custom_background_service_, theme_service_,
@@ -749,7 +743,7 @@ void NewTabPageUI::CreatePageHandler(
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile_),
       web_contents(), std::make_unique<NewTabPageFeaturePromoHelper>(),
-      navigation_start_time_, &module_id_details_, side_panel_controller);
+      navigation_start_time_, &module_id_details_);
 }
 
 void NewTabPageUI::CreateBrowserCommandHandler(
@@ -875,16 +869,6 @@ void NewTabPageUI::OnLoad() {
                              IdentityManagerFactory::GetForProfile(profile_)));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
-}
-
-void NewTabPageUI::TabWillDetach(tabs::TabInterface* tab,
-                                 tabs::TabInterface::DetachReason reason) {
-  if (reason == tabs::TabInterface::DetachReason::kDelete) {
-    tab_ = nullptr;
-    if (page_handler_) {
-      page_handler_->TabWillDelete();
-    }
-  }
 }
 
 // static
