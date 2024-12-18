@@ -381,4 +381,7 @@ public class MockWebContents implements WebContents {
     public void notifyControlsConstraintsChanged(
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
+
+    @Override
+    public void disconnectFileSelectListenerIfAny() {}
 }

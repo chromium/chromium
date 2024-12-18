@@ -1019,6 +1019,21 @@ class TabImpl implements Tab {
     public final void hide(@TabHidingType int type) {
         try {
             TraceEvent.begin("Tab.hide");
+
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList
+                            .ANDROID_DISCONNECT_FILE_CHOOSER_ON_TAB_DEACTIVATE_KILL_SWITCH)) {
+                WebContents webContents = getWebContents();
+                // File select related dialogs typical does not have indication on which origin or
+                // tab made the request. So to avoid security issues from user confusion, if a tab
+                // changes makes this no longer the active tab, then disconnect any file select
+                // dialogs. Notably only want to do this for tab change, but not (as an example)
+                // for hiding the activity.
+                if (type == TabHidingType.CHANGED_TABS && webContents != null) {
+                    webContents.disconnectFileSelectListenerIfAny();
+                }
+            }
+
             if (isHidden()) return;
             mIsHidden = true;
             updateInteractableState();

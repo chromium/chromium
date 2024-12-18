@@ -25,6 +25,13 @@ BASE_FEATURE(kActivityReportingSessionType,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+// Kill switch for disconnecting file select dialog when tab is deactivated.
+BASE_FEATURE(kAndroidDisconnectFileChooserOnTabDeactivateKillSwitch,
+             "AndroidDisconnectFileChooserOnTabDeactivateKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppPreloadService,
              "AppPreloadService",
