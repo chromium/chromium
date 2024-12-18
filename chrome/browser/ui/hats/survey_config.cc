@@ -122,6 +122,8 @@ constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 constexpr char kHatsSurveyTriggerQuickDelete[] = "quick_delete_survey";
 constexpr char kHatsSurveyTriggerSafetyHubAndroid[] =
     "safety_hub_android_survey";
+constexpr char kHatsSurveyOrganicTriggerSafetyHubAndroid[] =
+    "safety_hub_android_organic_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -604,13 +606,19 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerQuickDelete,
       chrome::android::kQuickDeleteAndroidSurveyTriggerId.Get());
 
+  std::vector<std::string> product_specific_bits_data_fields =
+      std::vector<std::string>{"Tapped card", "Has visited"};
+  std::vector<std::string> product_specific_string_data =
+      std::vector<std::string>{"Notification module type", "Global state"};
   survey_configs.emplace_back(
       &features::kSafetyHubAndroidSurvey, kHatsSurveyTriggerSafetyHubAndroid,
       features::kSafetyHubAndroidTriggerId.Get(),
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{"Tapped card"},
-      /*product_specific_string_data=*/
-      std::vector<std::string>{"Notification module type", "Global state"});
+      product_specific_bits_data_fields, product_specific_string_data);
+  survey_configs.emplace_back(&features::kSafetyHubAndroidOrganicSurvey,
+                              kHatsSurveyOrganicTriggerSafetyHubAndroid,
+                              features::kSafetyHubAndroidOrganicTriggerId.Get(),
+                              product_specific_bits_data_fields,
+                              product_specific_string_data);
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
   return survey_configs;

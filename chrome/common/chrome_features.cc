@@ -1048,6 +1048,17 @@ BASE_FEATURE(kSafetyHubFollowup,
              "SafetyHubFollowup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Safety Hub organic HaTS survey on Android.
+BASE_FEATURE(kSafetyHubAndroidOrganicSurvey,
+             "SafetyHubAndroidOrganicSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<std::string> kSafetyHubAndroidOrganicTriggerId(
+    &kSafetyHubAndroidOrganicSurvey,
+    "trigger_id",
+    /*default_value=*/
+    "");
+
 // Enables Safety Hub HaTS survey on Android.
 BASE_FEATURE(kSafetyHubAndroidSurvey,
              "SafetyHubAndroidSurvey",

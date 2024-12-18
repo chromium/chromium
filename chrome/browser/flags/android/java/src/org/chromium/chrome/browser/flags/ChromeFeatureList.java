@@ -448,6 +448,7 @@ public abstract class ChromeFeatureList {
     public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
             "ReplaceSyncPromosWithSignInPromos";
     public static final String SAFETY_HUB = "SafetyHub";
+    public static final String SAFETY_HUB_ANDROID_ORGANIC_SURVEY = "SafetyHubAndroidOrganicSurvey";
     public static final String SAFETY_HUB_ANDROID_SURVEY = "SafetyHubAndroidSurvey";
     public static final String SAFETY_HUB_ANDROID_SURVEY_V2 = "SafetyHubAndroidSurveyV2";
     public static final String SAFETY_HUB_FOLLOWUP = "SafetyHubFollowup";
@@ -882,6 +883,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sSafetyHub =
             newMutableFlagWithSafeDefault(SAFETY_HUB, false);
+    public static final MutableFlagWithSafeDefault sSafetyHubAndroidOrganicSurvey =
+            newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_ORGANIC_SURVEY, false);
     public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurvey =
             newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurveyV2 =
