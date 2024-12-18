@@ -631,14 +631,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method readAsBinaryString
 [Worker]     method readAsDataURL
 [Worker]     method readAsText
-[Worker] interface FileSystemChangeRecord
-[Worker]     attribute @@toStringTag
-[Worker]     getter changedHandle
-[Worker]     getter relativePathComponents
-[Worker]     getter relativePathMovedFrom
-[Worker]     getter root
-[Worker]     getter type
-[Worker]     method constructor
 [Worker] interface FileSystemDirectoryHandle : FileSystemHandle
 [Worker]     attribute @@toStringTag
 [Worker]     method @@asyncIterator
