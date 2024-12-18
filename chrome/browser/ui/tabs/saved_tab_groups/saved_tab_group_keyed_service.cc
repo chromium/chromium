@@ -477,9 +477,6 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
   tabs_in_group = tab_group->tab_count();
   CHECK(tabs_in_group == tabs_in_saved_group);
 
-  UpdateWebContentsToMatchSavedTabGroupTabs(tab_strip_model, saved_group,
-                                            tab_group->ListTabs());
-
   model_->OnGroupOpenedInTabStrip(saved_guid, local_group_id);
   UpdateGroupVisualData(saved_guid, local_group_id);
 
@@ -487,6 +484,9 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
       *model_->Get(saved_guid),
       GetTabToGuidMappingForSavedGroup(tab_strip_model, saved_group,
                                        tab_group->ListTabs()));
+
+  UpdateWebContentsToMatchSavedTabGroupTabs(tab_strip_model, saved_group,
+                                            tab_group->ListTabs());
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
