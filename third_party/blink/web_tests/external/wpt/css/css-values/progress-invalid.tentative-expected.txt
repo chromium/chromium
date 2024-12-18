@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] e.style['opacity'] = "progress(0 from 10 to 200)" should not set the property value
+  assert_equals: expected "" but got "calc(-0.0526316)"
+Harness: the test ran to completion.

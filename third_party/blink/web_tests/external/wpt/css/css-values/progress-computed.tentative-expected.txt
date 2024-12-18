@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+[FAIL] progress(1, 0, 1) should be used-value-equivalent to 1
+  assert_not_equals: progress(1, 0, 1) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(progress(1, 0, 1), progress(0px, 0px, 1px), progress(1deg, 0deg, 1deg)) should be used-value-equivalent to 1
+  assert_not_equals: progress(progress(1, 0, 1), progress(0px, 0px, 1px), progress(1deg, 0deg, 1deg)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(sign(-10px) * 10px, (10px - 10px), 10px * progress(1deg, 0deg, 1deg)) should be used-value-equivalent to -1
+  assert_not_equals: progress(sign(-10px) * 10px, (10px - 10px), 10px * progress(1deg, 0deg, 1deg)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(progress(100px, 0px, 50px) * 10px + 100px) should be used-value-equivalent to 120px
+  assert_not_equals: calc(progress(100px, 0px, 50px) * 10px + 100px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(progress(100, 0, sign(50px))) should be used-value-equivalent to 100
+  assert_not_equals: calc(progress(100, 0, sign(50px))) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(progress(abs(5%), hypot(3%, 4%), 10%)) should be used-value-equivalent to 0
+  assert_not_equals: calc(progress(abs(5%), hypot(3%, 4%), 10%)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] progress(1000em, 10em, 110em) should be used-value-equivalent to 9.9
+  assert_not_equals: progress(1000em, 10em, 110em) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] scale(progress(1000em, 10rem, 110em)) should be used-value-equivalent to scale(9.9)
+  assert_not_equals: scale(progress(1000em, 10rem, 110em)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] scale(progress(0em, 0rem, 0em)) should be used-value-equivalent to scale(0)
+  assert_not_equals: scale(progress(0em, 0rem, 0em)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] scale(progress(sign(1em - 1rem) * 1ex, 0rem, 0em)) should be used-value-equivalent to scale(0)
+  assert_not_equals: scale(progress(sign(1em - 1rem) * 1ex, 0rem, 0em)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+[FAIL] calc(progress(1, 0, 1) * 10px) should be used-value-equivalent to 10px
+  assert_not_equals: calc(progress(1, 0, 1) * 10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(progress(1, 0, 1) * 1s) should be used-value-equivalent to 1s
+  assert_not_equals: calc(progress(1, 0, 1) * 1s) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+[FAIL] calc(progress(1, 0, 1) * 1deg) should be used-value-equivalent to 1deg
+  assert_not_equals: calc(progress(1, 0, 1) * 1deg) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
+[FAIL] calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 10em, 2rem, 12em) / 2) should be used-value-equivalent to 0.4
+  assert_not_equals: calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 10em, 2rem, 12em) / 2) isn't valid in 'opacity'; got the default value instead. got disallowed value "1"
+[FAIL] calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) * 10) should be used-value-equivalent to 18
+  assert_not_equals: calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) * 10) isn't valid in 'order'; got the default value instead. got disallowed value "0"
+[FAIL] calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) * 30) should be used-value-equivalent to 54
+  assert_not_equals: calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) * 30) isn't valid in 'flex-grow'; got the default value instead. got disallowed value "0"
+[FAIL] calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) / 4) should be used-value-equivalent to 0.45
+  assert_not_equals: calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) / 4) isn't valid in 'flex-grow'; got the default value instead. got disallowed value "0"
+[FAIL] calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) * 4) should be used-value-equivalent to 7
+  assert_not_equals: calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) * 4) isn't valid in 'column-count'; got the default value instead. got disallowed value "auto"
+[FAIL] calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) * 2) should be used-value-equivalent to 3.6
+  assert_not_equals: calc(progress(sign(1001em - 10lh * progress(100px, 2rex, 10ex)) * 20em, 2rem, 12em) * 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] rotate3d(progress(21em, 1rem, 11em), progress(21em, 1rem, 11em), progress(21em, 1rem, 11em), calc(progress(11em, 1rem, 11em) * 2deg)) should be used-value-equivalent to rotate3d(2, 2, 2, 2deg)
+  assert_not_equals: rotate3d(progress(21em, 1rem, 11em), progress(21em, 1rem, 11em), progress(21em, 1rem, 11em), calc(progress(11em, 1rem, 11em) * 2deg)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+Harness: the test ran to completion.

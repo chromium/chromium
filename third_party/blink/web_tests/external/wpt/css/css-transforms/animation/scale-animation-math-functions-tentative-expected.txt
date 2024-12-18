@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+[FAIL] CSS Transitions: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (-1) should be [20]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0) should be [100]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0.125) should be [110]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0.875) should be [170]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (1) should be [180]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (2) should be [260]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (-1) should be [20]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0) should be [100]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0.125) should be [110]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0.875) should be [170]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (1) should be [180]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (2) should be [260]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (-1) should be [20]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0) should be [100]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0.125) should be [110]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0.875) should be [170]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (1) should be [180]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (2) should be [260]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (-1) should be [20]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0) should be [100]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0.125) should be [110]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (0.875) should be [170]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (1) should be [180]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (2) should be [260]
+  assert_true: 'to' value should be supported expected true got false
+Harness: the test ran to completion.

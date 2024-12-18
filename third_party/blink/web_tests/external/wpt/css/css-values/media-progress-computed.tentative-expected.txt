@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+[FAIL] media-progress() identity check
+  assert_not_equals: media-progress(height, 0px, 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] media-progress(height, media-progress(height, 0px, 1px) * 1px, media-progress(height, 0px, 1px) * 1px) should be used-value-equivalent to 0
+  assert_not_equals: media-progress(height, media-progress(height, 0px, 1px) * 1px, media-progress(height, 0px, 1px) * 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] media-progress(height, media-progress(height, 0px, 1px) * 0.5px, media-progress(height, 0px, 1px) * 1px) should be used-value-equivalent to 1
+  assert_not_equals: media-progress(height, media-progress(height, 0px, 1px) * 0.5px, media-progress(height, 0px, 1px) * 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] media-progress() with length product
+  assert_not_equals: calc(media-progress(width, 0px, 50px) * 10px + 100px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] media-progress with complex, calculation
+  assert_not_equals: calc(media-progress(height, 10px, sign(50px - 500em) * 10px)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] media-progress() as length
+  assert_not_equals: calc(media-progress(width, 0px, 1px) * 1px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] media-progress() as time
+  assert_not_equals: calc(media-progress(height, 0px, 1px) * 1s) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+[FAIL] media-progress() as angle
+  assert_not_equals: calc(media-progress(width, 0px, 1px) * 1deg) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
+Harness: the test ran to completion.

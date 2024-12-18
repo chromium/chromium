@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+[FAIL] container-progress(height, 0px, 1px) should be used-value-equivalent to 322
+  assert_not_equals: container-progress(height, 0px, 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] container-progress(width of my-container, 0px, 1px) should be used-value-equivalent to 322
+  assert_not_equals: container-progress(width of my-container, 0px, 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] container-progress(height, container-progress(height, 0px, 1px) * 1px, container-progress(height, 0px, 1px) * 1px) should be used-value-equivalent to 0
+  assert_not_equals: container-progress(height, container-progress(height, 0px, 1px) * 1px, container-progress(height, 0px, 1px) * 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] container-progress(height, container-progress(height, 0px, 1px) * 0.5px, container-progress(height, 0px, 1px) * 1px) should be used-value-equivalent to 1
+  assert_not_equals: container-progress(height, container-progress(height, 0px, 1px) * 0.5px, container-progress(height, 0px, 1px) * 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] container-progress(height, container-progress(width of my-container, 0px, 1px) * 1px, container-progress(height of my-container-2, 0px, 1px) * 1px) should be used-value-equivalent to 0
+  assert_not_equals: container-progress(height, container-progress(width of my-container, 0px, 1px) * 1px, container-progress(height of my-container-2, 0px, 1px) * 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(container-progress(width, 0px, 50px) * 10px + 100px) should be used-value-equivalent to 145.6px
+  assert_not_equals: calc(container-progress(width, 0px, 50px) * 10px + 100px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(container-progress(height, 10px, sign(50px - 500em) * 10px)) should be used-value-equivalent to -15.6
+  assert_not_equals: calc(container-progress(height, 10px, sign(50px - 500em) * 10px)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(container-progress(width of my-container, 0px, 50px) * 10px + 100px) should be used-value-equivalent to 164.4px
+  assert_not_equals: calc(container-progress(width of my-container, 0px, 50px) * 10px + 100px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(container-progress(height of my-container, 10px, sign(50px - 500em) * 10px)) should be used-value-equivalent to -10.9
+  assert_not_equals: calc(container-progress(height of my-container, 10px, sign(50px - 500em) * 10px)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] container-progress() width fallback for non-existing container name
+  assert_not_equals: container-progress(width of non-existing-container, 0px, 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] container-progress() height fallback for non-existing container names
+  assert_not_equals: container-progress(height of non-existing-container, 0px, 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] container-progress() width fallback for out of scope container
+  assert_not_equals: container-progress(width of out-of-scope-container, 0px, 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] container-progress() height fallback for out of scope container
+  assert_not_equals: container-progress(height of out-of-scope-container, 0px, 1px) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(container-progress(width, 0px, 1px) * 1px) should be used-value-equivalent to 228px
+  assert_not_equals: calc(container-progress(width, 0px, 1px) * 1px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(container-progress(height of my-container, 0px, 1px) * 1s) should be used-value-equivalent to 228s
+  assert_not_equals: calc(container-progress(height of my-container, 0px, 1px) * 1s) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+[FAIL] calc(container-progress(width of my-container-2, 0px, 1px) * 1deg) should be used-value-equivalent to 5051deg
+  assert_not_equals: calc(container-progress(width of my-container-2, 0px, 1px) * 1deg) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
+Harness: the test ran to completion.
