@@ -950,6 +950,15 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.131 -> 1.0.134"
 notes = "No code changes in the delta."
 
+[[audits.cxxbridge-cmd]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.134 -> 1.0.135"
+notes = """
+Minimal change in `syntax/parse.rs`
+(coming from my https://github.com/dtolnay/cxx/pull/1414)
+"""
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

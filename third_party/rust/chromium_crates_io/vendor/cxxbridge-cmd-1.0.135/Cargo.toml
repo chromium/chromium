@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.73"
 name = "cxxbridge-cmd"
-version = "1.0.134"
+version = "1.0.135"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = ["build.rs"]
@@ -35,6 +35,9 @@ repository = "https://github.com/dtolnay/cxx"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
+
+[features]
+experimental-async-fn = []
 
 [[bin]]
 name = "cxxbridge"
@@ -72,6 +75,3 @@ features = [
     "printing",
 ]
 default-features = false
-
-[features]
-experimental-async-fn = []
