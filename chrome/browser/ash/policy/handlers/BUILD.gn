@@ -32,8 +32,6 @@ static_library("handlers") {
     "device_wifi_allowed_handler.h",
     "help_me_read_policy_handler.cc",
     "help_me_read_policy_handler.h",
-    "lacros_selection_policy_handler.cc",
-    "lacros_selection_policy_handler.h",
     "lock_to_single_user_manager.cc",
     "lock_to_single_user_manager.h",
     "minimum_version_policy_handler.cc",

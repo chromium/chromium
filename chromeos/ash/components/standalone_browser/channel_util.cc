@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/version.h"
 #include "chromeos/ash/components/channel/channel_info.h"
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/component_updater/component_updater_service.h"
 
 namespace ash::standalone_browser {
@@ -60,23 +59,6 @@ ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel) {
 
 ComponentInfo GetLacrosComponentInfo() {
   return GetLacrosComponentInfoForChannel(GetStatefulLacrosChannel());
-}
-
-version_info::Channel GetLacrosSelectionUpdateChannel(
-    standalone_browser::LacrosSelection selection) {
-  switch (selection) {
-    case standalone_browser::LacrosSelection::kRootfs:
-      // For 'rootfs' Lacros use the same channel as ash/OS. Obtained from
-      // the LSB's release track property.
-      return GetChannel();
-    case standalone_browser::LacrosSelection::kStateful:
-      // For 'stateful' Lacros directly check the channel of stateful-lacros
-      // that the user is on.
-      return GetStatefulLacrosChannel();
-    case standalone_browser::LacrosSelection::kDeployedLocally:
-      // For locally deployed Lacros there is no channel so return unknown.
-      return version_info::Channel::UNKNOWN;
-  }
 }
 
 base::Version GetInstalledLacrosComponentVersion(

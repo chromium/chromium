@@ -212,7 +212,6 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -654,17 +653,6 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
       std::move(pref_validation_delegate), GetIOTaskRunner(), key_.get(), path_,
       async_prefs);
   key_->SetPrefs(prefs_.get());
-#if BUILDFLAG(IS_CHROMEOS)
-  // When Chrome crash or gets restarted for other reasons, it loads the policy
-  // immediately. We need to cache the LacrosLaunchSwitch now, as the value is
-  // needed later, while the profile is not fully initialized.
-  if (force_immediate_policy_load &&
-      ash::ProfileHelper::IsPrimaryProfile(this)) {
-    auto& map = profile_policy_connector_->policy_service()->GetPolicies(
-        policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-    ash::standalone_browser::CacheLacrosSelection(map);
-  }
-#endif
 }
 
 void ProfileImpl::DoFinalInit(CreateMode create_mode) {
@@ -1201,13 +1189,6 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
       OnLocaleReady(create_mode);
       break;
     case CreateMode::kAsynchronous:
-      if (ash::ProfileHelper::IsPrimaryProfile(this)) {
-        auto& map = profile_policy_connector_->policy_service()->GetPolicies(
-            policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
-                                    std::string()));
-        ash::standalone_browser::CacheLacrosSelection(map);
-      }
-
       ash::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(
           this, base::BindOnce(&ProfileImpl::OnLocaleReady,
                                base::Unretained(this), create_mode));

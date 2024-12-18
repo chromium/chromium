@@ -23762,7 +23762,6 @@ from previous Chrome versions.
   <int value="1335052342" label="AccessibilityDeprecateTypeAnnounce:disabled"/>
   <int value="1335454908" label="ShoppingCollection:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
-  <int value="1338510325" label="lacros-selection"/>
   <int value="1338606926" label="BatterySaverModeAvailable:enabled"/>
   <int value="1338745937" label="NotificationWidthIncrease:disabled"/>
   <int value="1338864675" label="EnableTouchableAppContextMenu:disabled"/>
@@ -24859,6 +24858,7 @@ from previous Chrome versions.
   <int value="1771548551" label="DisableKeepaliveFetch:enabled"/>
   <int value="1772248386" label="SeedAccountsRevamp:enabled"/>
   <int value="1772277480" label="DefaultBrowserPromptRefresh:enabled"/>
+  <int value="1772341349" label="(Obsolete) lacros-selection"/>
   <int value="1772454319" label="enable-storage-manager"/>
   <int value="1772618273"
       label="WebAuthenticationFilterGooglePasskeys:disabled"/>

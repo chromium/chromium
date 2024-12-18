@@ -1170,6 +1170,7 @@ const char kCryptAuthEnrollmentUserPrivateKey[] =
     "cryptauth.enrollment.user_private_key";
 const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
 const char kLacrosLaunchSwitch[] = "lacros_launch_switch";
+const char kLacrosSelection[] = "lacros_selection";
 #endif
 
 // Deprecated 12/2024.
@@ -1289,6 +1290,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Deprecated 12/2024.
   registry->RegisterIntegerPref(kLacrosLaunchSwitch, 0);
+  registry->RegisterIntegerPref(kLacrosSelection, 0);
 #endif
 }
 
@@ -2600,6 +2602,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 12/2024
 #if BUILDFLAG(IS_CHROMEOS)
   local_state->ClearPref(kLacrosLaunchSwitch);
+  local_state->ClearPref(kLacrosSelection);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

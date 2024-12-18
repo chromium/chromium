@@ -782,9 +782,6 @@ const char kKioskSplashScreenMinTimeSeconds[] =
 // path should be to a directory that contains a binary named 'chrome'.
 const char kLacrosChromePath[] = "lacros-chrome-path";
 
-// When this flag is set, the lacros-selection policy is ignored.
-const char kLacrosSelectionPolicyIgnore[] = "lacros-selection-policy-ignore";
-
 // If set, it passes the ids of additional extensions allowed to run in
 // both ash and lacros when lacros is enabled. The ids are separated by ",".
 // This should only used for testing.

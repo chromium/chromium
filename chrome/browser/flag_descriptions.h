@@ -4060,14 +4060,6 @@ extern const char kCrosComponentsDescription[];
 extern const char kLacrosStabilityName[];
 extern const char kLacrosStabilityDescription[];
 
-extern const char kLacrosSelectionName[];
-extern const char kLacrosSelectionDescription[];
-extern const char kLacrosSelectionRootfsDescription[];
-extern const char kLacrosSelectionStatefulDescription[];
-
-extern const char kLacrosSelectionPolicyIgnoreName[];
-extern const char kLacrosSelectionPolicyIgnoreDescription[];
-
 extern const char kLacrosWaylandLoggingName[];
 extern const char kLacrosWaylandLoggingDescription[];
 

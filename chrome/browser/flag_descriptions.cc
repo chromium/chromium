@@ -6977,19 +6977,6 @@ const char kCrosComponentsDescription[] =
 const char kLacrosStabilityName[] = "Lacros stability";
 const char kLacrosStabilityDescription[] = "Lacros update channel.";
 
-const char kLacrosSelectionName[] = "Lacros selection";
-const char kLacrosSelectionDescription[] =
-    "Choosing between rootfs or stateful Lacros.";
-
-const char kLacrosSelectionRootfsDescription[] = "Rootfs";
-const char kLacrosSelectionStatefulDescription[] = "Stateful";
-
-const char kLacrosSelectionPolicyIgnoreName[] =
-    "Ignore lacros-selection policy";
-const char kLacrosSelectionPolicyIgnoreDescription[] =
-    "Makes the lacros-selection policy have no effect. Instead Lacros "
-    "selection will be controlled by experiment and/or user flags.";
-
 const char kLacrosWaylandLoggingName[] = "Lacros Wayland logging";
 const char kLacrosWaylandLoggingDescription[] =
     "Enables Wayland logging for Lacros. This generates a significant amount "

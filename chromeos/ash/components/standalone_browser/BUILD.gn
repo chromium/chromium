@@ -13,8 +13,6 @@ component("standalone_browser") {
   sources = [
     "channel_util.cc",
     "channel_util.h",
-    "lacros_selection.cc",
-    "lacros_selection.h",
     "standalone_browser_features.cc",
     "standalone_browser_features.h",
   ]
@@ -31,27 +29,5 @@ component("standalone_browser") {
     "//components/prefs",
     "//components/user_manager:user_manager",
     "//google_apis:google_apis",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [
-    "channel_util_unittest.cc",
-    "lacros_selection_unittest.cc",
-  ]
-
-  deps = [
-    ":standalone_browser",
-    "//ash/constants:constants",
-    "//base/test:test_support",
-    "//components/account_id",
-    "//components/policy:generated",
-    "//components/policy/core/common",
-    "//components/prefs:test_support",
-    "//components/user_manager:test_support",
-    "//content/test:test_support",
-    "//testing/gtest:gtest",
   ]
 }

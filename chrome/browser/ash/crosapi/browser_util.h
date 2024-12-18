@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
-
 namespace aura {
 class Window;
 }  // namespace aura
@@ -46,10 +44,6 @@ bool IsLacrosWindow(const aura::Window* window);
 // file in the correct format.
 base::Version GetRootfsLacrosVersionMayBlock(
     const base::FilePath& version_file_path);
-
-// Returns the update channel associated with the given loaded lacros selection.
-version_info::Channel GetLacrosSelectionUpdateChannel(
-    ash::standalone_browser::LacrosSelection selection);
 
 // Returns the currently installed version of lacros-chrome managed by the
 // component updater. Will return an empty / invalid version if no lacros

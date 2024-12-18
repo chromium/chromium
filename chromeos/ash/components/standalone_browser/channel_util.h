@@ -17,7 +17,6 @@ class ComponentUpdateService;
 }  // namespace component_updater
 
 namespace ash::standalone_browser {
-enum class LacrosSelection;
 
 // The default update channel to leverage for Lacros when the channel is
 // unknown.
@@ -59,11 +58,6 @@ ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel);
 // Returns the ComponentInfo associated with the stateful lacros instance.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 ComponentInfo GetLacrosComponentInfo();
-
-// Returns the update channel associated with the given loaded lacros selection.
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
-version_info::Channel GetLacrosSelectionUpdateChannel(
-    standalone_browser::LacrosSelection selection);
 
 // Returns the currently installed version of lacros-chrome managed by the
 // component updater. Will return an empty / invalid version if no lacros

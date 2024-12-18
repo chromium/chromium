@@ -308,7 +308,6 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -1025,22 +1024,8 @@ const char kLacrosWaylandLoggingInternalName[] = "lacros-wayland-logging";
 const char kArcEnableVirtioBlkForDataInternalName[] =
     "arc-enable-virtio-blk-for-data";
 
-const char kLacrosSelectionInternalName[] = "lacros-selection";
 const char kProjectorServerSideSpeechRecognition[] =
     "enable-projector-server-side-speech-recognition";
-
-const FeatureEntry::Choice kLacrosSelectionChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flag_descriptions::kLacrosSelectionStatefulDescription,
-     ash::standalone_browser::kLacrosSelectionSwitch,
-     ash::standalone_browser::kLacrosSelectionStateful},
-    {flag_descriptions::kLacrosSelectionRootfsDescription,
-     ash::standalone_browser::kLacrosSelectionSwitch,
-     ash::standalone_browser::kLacrosSelectionRootfs},
-};
-
-const char kLacrosSelectionPolicyIgnoreInternalName[] =
-    "lacros-selection-ignore";
 
 const char kArcEnableAttestationFlag[] = "arc-enable-attestation";
 
@@ -4803,13 +4788,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosProfileBackwardMigrationName,
      flag_descriptions::kLacrosProfileBackwardMigrationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLacrosProfileBackwardMigration)},
-    {kLacrosSelectionInternalName, flag_descriptions::kLacrosSelectionName,
-     flag_descriptions::kLacrosSelectionDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kLacrosSelectionChoices)},
-    {kLacrosSelectionPolicyIgnoreInternalName,
-     flag_descriptions::kLacrosSelectionPolicyIgnoreName,
-     flag_descriptions::kLacrosSelectionPolicyIgnoreDescription, kOsCrOS,
-     SINGLE_VALUE_TYPE(ash::switches::kLacrosSelectionPolicyIgnore)},
     {"list-all-display-modes", flag_descriptions::kListAllDisplayModesName,
      flag_descriptions::kListAllDisplayModesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kListAllDisplayModes)},
@@ -12010,12 +11988,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(ui_devtools::switches::kEnableUiDevTools, entry.internal_name) &&
       channel == version_info::Channel::STABLE) {
     return true;
-  }
-
-  // Skip lacros-selection if it is controlled by LacrosSelection policy.
-  if (!strcmp(kLacrosSelectionInternalName, entry.internal_name)) {
-    return ash::standalone_browser::GetCachedLacrosSelectionPolicy() !=
-           ash::standalone_browser::LacrosSelectionPolicy::kUserChoice;
   }
 
   // Skip arc-enable-attestation if it is enabled by ash switch.

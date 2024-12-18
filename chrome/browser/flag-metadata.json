@@ -5582,16 +5582,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lacros-selection",
-    "owners": [ "kimjae@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "lacros-selection-ignore",
-    "owners": [ "asumaneev@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lacros-stability",
     "owners": [ "jamescook@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this

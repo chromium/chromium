@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 
 namespace component_updater {
 class ComponentManagerAsh;
@@ -27,7 +26,6 @@ namespace crosapi {
 
 class LacrosSelectionLoader;
 class LacrosSelectionLoaderFactory;
-using ash::standalone_browser::LacrosSelection;
 
 // Manages download of the lacros-chrome binary.
 // This class is a part of ash-chrome.

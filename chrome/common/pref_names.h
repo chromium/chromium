@@ -3957,16 +3957,6 @@ inline constexpr char kShowCaretBrowsingDialog[] =
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enum pref indicating which Lacros browser to launch: rootfs or stateful. It
-// is managed by LacrosSelection policy and can have one of the following
-// values:
-// 0: User choice (default value).
-// 1: Always load rootfs Lacros.
-// 2: Always load stateful Lacros.
-inline constexpr char kLacrosSelection[] = "lacros_selection";
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // String enum pref determining what should happen when a user who authenticates
 // via a security token is removing this token. "IGNORE" - nothing happens
 // (default). "LOGOUT" - The user is logged out. "LOCK" - The session is locked.

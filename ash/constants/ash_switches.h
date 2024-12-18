@@ -253,8 +253,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kKioskSplashScreenMinTimeSeconds[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromePath[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kLacrosSelectionPolicyIgnore[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kExtensionsRunInBothAshAndLacros[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kExtensionAppsRunInBothAshAndLacros[];

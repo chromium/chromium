@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -38,7 +37,6 @@ namespace crosapi {
 
 class BrowserLoader;
 
-using ash::standalone_browser::LacrosSelection;
 using component_updater::ComponentUpdateService;
 
 // Manages the lifetime of lacros-chrome, and its loading status. Observes the
