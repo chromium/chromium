@@ -83,13 +83,14 @@
   [self.whatsNewInstructionsCoordinator stop];
   self.whatsNewInstructionsCoordinator = nil;
 
+  [self logTimeSpentOnDetailView];
+
   if ([self.baseNavigationController.viewControllers
           containsObject:self.whatsNewScreenshotViewController]) {
     [self.baseNavigationController
         popToViewController:self.whatsNewScreenshotViewController
                    animated:NO];
     [self.baseNavigationController popViewControllerAnimated:NO];
-    [self logTimeSpentOnDetailView];
   }
 
   self.whatsNewScreenshotViewController = nil;
