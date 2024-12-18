@@ -19,6 +19,9 @@ class ExecutionContext;
 CORE_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation(
     ExecutionContext*);
 
+CORE_EXPORT std::unique_ptr<SourceLocation>
+CapturePartialSourceLocationFromStack(v8::Isolate* isolate);
+
 // Shortcut when location is unknown. Tries to capture call stack or parsing
 // location using message if available.
 CORE_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation(

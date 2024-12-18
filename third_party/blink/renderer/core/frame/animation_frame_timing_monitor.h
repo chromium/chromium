@@ -75,7 +75,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
                          bool resolving,
                          const char* class_like,
                          std::variant<const char*, String> property_like,
-                         const String& script_url);
+                         SourceLocation* location);
   void Will(const probe::EvaluateScriptBlock&);
   void Did(const probe::EvaluateScriptBlock& probe_data) {
     PopScriptEntryPoint(&probe_data.script_state, &probe_data);

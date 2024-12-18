@@ -619,7 +619,7 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
     bool resolving,
     const char* class_like_name,
     std::variant<const char*, String> property_like_name,
-    const String& script_url) {
+    SourceLocation* location) {
   // Unlike other script entry points, promise resolvers don't have a "Did"
   // probe, so we keep its depth at 1 and reset only at task end.
   if (entry_point_depth_) {
@@ -645,7 +645,8 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
       .execution_start_time = now,
       .class_like_name = class_like_name,
       .property_like_name = property_like_name,
-      .source_location = {.url = script_url}};
+      .source_location = {.url = location->Url(),
+                          .char_position = location->CharPosition()}};
 }
 
 void AnimationFrameTimingMonitor::Will(

@@ -2577,6 +2577,12 @@
       public: true,
     },
     {
+      // Enable sourceCharPosition for the invoke-type resolve-promise
+      // https://issues.chromium.org/issues/381529126
+      name: "LongAnimationFrameSourceCharPosition",
+      status: "experimental",
+    },
+    {
       // Long press on a link selects the link text instead of bringing up
       // context menu. Enabled only on Android AuthView.
       name: "LongPressLinkSelectText",
