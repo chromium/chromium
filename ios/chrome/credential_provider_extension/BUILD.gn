@@ -33,6 +33,7 @@ source_set("credential_provider") {
     ":font_provider",
     ":metrics_util",
     ":passkey_keychain_provider_bridge",
+    ":passkey_request_details",
     ":passkey_util",
     ":reauthentication_handler",
     ":system_strings",
@@ -164,6 +165,22 @@ source_set("metrics_util") {
     "//ios/chrome/common/app_group",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_request_details") {
+  sources = [
+    "passkey_request_details.h",
+    "passkey_request_details.mm",
+  ]
+  deps = [
+    ":passkey_util",
+    "//base",
+    "//components/webauthn/core/browser:passkey_model",
+  ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
 }
 
 source_set("font_provider") {

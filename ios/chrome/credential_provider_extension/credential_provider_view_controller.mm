@@ -29,6 +29,7 @@
 #import "ios/chrome/credential_provider_extension/font_provider.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider_bridge.h"
+#import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
@@ -104,17 +105,11 @@ UIColor* BackgroundColor() {
 
 @implementation CredentialProviderViewController {
   // Information about a passkey credential request.
-  ASPasskeyCredentialRequestParameters* _requestParameters
-      API_AVAILABLE(ios(17.0));
+  PasskeyRequestDetails* _passkeyRequestDetails;
 
   // Stores whether or not user verification should be performed for passkey
   // creation or assertion.
   BOOL _userVerificationRequired;
-
-  // Stores whether or not the credential list is about to be shown for
-  // passkeys. Used to determine which reauthentication reason to provide to the
-  // user.
-  BOOL _nextCredentialListIsForPasskeys;
 }
 
 + (void)initialize {
@@ -143,8 +138,7 @@ UIColor* BackgroundColor() {
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers =
         self.serviceIdentifiers;
     self.serviceIdentifiers = nil;
-    BOOL isAccessingPasskeys = _nextCredentialListIsForPasskeys;
-    _nextCredentialListIsForPasskeys = NO;
+    BOOL isAccessingPasskeys = _passkeyRequestDetails != nil;
 
     __weak __typeof__(self) weakSelf = self;
     [self validateUserWithCompletion:^(BOOL userIsValid) {
@@ -180,7 +174,7 @@ UIColor* BackgroundColor() {
   // authenticating and showing the credentials, store the list of
   // identifiers and authenticate once the extension is visible.
   self.serviceIdentifiers = serviceIdentifiers;
-  _nextCredentialListIsForPasskeys = NO;
+  _passkeyRequestDetails = nil;
 }
 
 // Only available in iOS 17.0+.
@@ -193,8 +187,8 @@ UIColor* BackgroundColor() {
                                          requestParameters
     API_AVAILABLE(ios(17.0)) {
   self.serviceIdentifiers = serviceIdentifiers;
-  _requestParameters = requestParameters;
-  _nextCredentialListIsForPasskeys = _requestParameters != nil;
+  _passkeyRequestDetails =
+      [self passkeyDetailsFromParameters:requestParameters];
 }
 
 // Deprecated in iOS 17.0+.
@@ -217,11 +211,8 @@ UIColor* BackgroundColor() {
     // the credential request is for a passkey, first evaluate if a device auth
     // is needed or not. If auth is needed, then the "with user interaction"
     // path needs to be taken.
-    ASPasskeyCredentialRequest* passkeyCredentialRequest =
-        base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
-            credentialRequest);
-    if ([self shouldPerformUserVerificationForPreference:
-                  passkeyCredentialRequest.userVerificationPreference]) {
+    if ([self passkeyDetailsFromRequest:credentialRequest]
+            .userVerificationRequired) {
       [self exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
       return;
     }
@@ -455,15 +446,11 @@ UIColor* BackgroundColor() {
 }
 
 - (void)userSelectedPasskey:(id<Credential>)credential
-              clientDataHash:(NSData*)clientDataHash
-          allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-    userVerificationRequired:(BOOL)userVerificationRequired
-    API_AVAILABLE(ios(17.0)) {
+      passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
   __weak __typeof(self) weakSelf = self;
   auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
     [weakSelf passkeyAssertionWithCredential:credential
-                              clientDataHash:clientDataHash
-                          allowedCredentials:allowedCredentials
+                       passkeyRequestDetails:passkeyRequestDetails
                        securityDomainSecrets:securityDomainSecrets];
   };
 
@@ -471,7 +458,8 @@ UIColor* BackgroundColor() {
                               credential:credential
                                  purpose:PasskeyKeychainProvider::
                                              ReauthenticatePurpose::kDecrypt
-                userVerificationRequired:userVerificationRequired
+                userVerificationRequired:passkeyRequestDetails
+                                             .userVerificationRequired
                               completion:completion];
 }
 
@@ -582,6 +570,33 @@ UIColor* BackgroundColor() {
 
 #pragma mark - Private
 
+// Returns a PasskeyRequestDetails object created from ASCredentialRequest if
+// possible. May return nil.
+- (PasskeyRequestDetails*)passkeyDetailsFromRequest:
+    (id<ASCredentialRequest>)credentialRequest API_AVAILABLE(ios(17.0)) {
+  if (!credentialRequest) {
+    return nil;
+  }
+
+  return [[PasskeyRequestDetails alloc]
+                       initWithRequest:credentialRequest
+      isBiometricAuthenticationEnabled:[self isBiometricAuthenticationEnabled]];
+}
+
+// Returns a PasskeyRequestDetails object created from
+// ASPasskeyCredentialRequestParameters if possible. May return nil.
+- (PasskeyRequestDetails*)passkeyDetailsFromParameters:
+    (ASPasskeyCredentialRequestParameters*)requestParameters
+    API_AVAILABLE(ios(17.0)) {
+  if (!requestParameters) {
+    return nil;
+  }
+
+  return [[PasskeyRequestDetails alloc]
+                    initWithParameters:requestParameters
+      isBiometricAuthenticationEnabled:[self isBiometricAuthenticationEnabled]];
+}
+
 // Asks user for hardware reauthentication if needed. `forPasskeys` indicates
 // whether the reauthentication is guarding an access to passkeys (when `YES`)
 // or an access to passwords (when `NO`).
@@ -594,13 +609,9 @@ UIColor* BackgroundColor() {
                            presentReminderOnViewController:self];
 }
 
-// Returns whether or not the user should be asked to re-authenticate depending
-// on the provided `userVerificationPreference`.
-- (BOOL)shouldPerformUserVerificationForPreference:
-    (NSString*)userVerificationPreference {
-  return ShouldPerformUserVerificationForPreference(
-      userVerificationPreference,
-      [self.reauthenticationModule canAttemptReauthWithBiometrics]);
+// Returns whether biometric authentication is enabled for the device.
+- (BOOL)isBiometricAuthenticationEnabled {
+  return [self.reauthenticationModule canAttemptReauthWithBiometrics];
 }
 
 - (void)provideCredentialWithoutUserInteractionForIdentifier:
@@ -671,16 +682,10 @@ UIColor* BackgroundColor() {
         [self.credentialStore credentialWithRecordIdentifier:identifier];
     if (credential) {
       UpdateUMACountForKey(app_group::kCredentialExtensionQuickPasskeyUseCount);
-      ASPasskeyCredentialRequest* passkeyCredentialRequest =
-          base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
-              credentialRequest);
 
       [self userSelectedPasskey:credential
-                    clientDataHash:passkeyCredentialRequest.clientDataHash
-                allowedCredentials:nil
-          userVerificationRequired:
-              [self shouldPerformUserVerificationForPreference:
-                        passkeyCredentialRequest.userVerificationPreference]];
+          passkeyRequestDetails:
+              [self passkeyDetailsFromRequest:credentialRequest]];
       return;
     }
   }
@@ -690,36 +695,15 @@ UIColor* BackgroundColor() {
 // Creates a passkey for the provided gaia ID.
 - (void)createPasskeyForRequest:(id<ASCredentialRequest>)registrationRequest
                            gaia:(NSString*)gaia API_AVAILABLE(ios(17.0)) {
-  ASPasskeyCredentialRequest* passkeyCredentialRequest =
-      base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
-          registrationRequest);
+  PasskeyRequestDetails* passkeyRequestDetails =
+      [self passkeyDetailsFromRequest:registrationRequest];
 
-  NSArray<NSNumber*>* supportedAlgorithms =
-      [passkeyCredentialRequest.supportedAlgorithms
-          filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
-                                                       NSNumber* algorithm,
-                                                       NSDictionary* bindings) {
-            return webauthn::passkey_model_utils::IsSupportedAlgorithm(
-                algorithm.intValue);
-          }]];
-
-  if (supportedAlgorithms.count == 0) {
+  if (!passkeyRequestDetails.algorithmIsSupported) {
     [self exitWithErrorCode:ASExtensionErrorCodeFailed];
     return;
   }
 
-  ASPasskeyCredentialIdentity* identity =
-      base::apple::ObjCCastStrict<ASPasskeyCredentialIdentity>(
-          passkeyCredentialRequest.credentialIdentity);
-
-  [self createPasskeyForClient:passkeyCredentialRequest.clientDataHash
-        relyingPartyIdentifier:identity.relyingPartyIdentifier
-                      username:identity.userName
-                    userHandle:identity.userHandle
-                          gaia:gaia
-      userVerificationRequired:[self shouldPerformUserVerificationForPreference:
-                                         passkeyCredentialRequest
-                                             .userVerificationPreference]];
+  [self createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
 }
 
 // Shows a loading indicator,
@@ -800,9 +784,7 @@ UIColor* BackgroundColor() {
               serviceIdentifiers:serviceIdentifiers
          reauthenticationHandler:self.reauthenticationHandler
        credentialResponseHandler:self];
-  if (@available(iOS 17.0, *)) {
-    self.listCoordinator.requestParameters = _requestParameters;
-  }
+  self.listCoordinator.passkeyRequestDetails = _passkeyRequestDetails;
   [self.listCoordinator start];
   UpdateUMACountForKey(app_group::kCredentialExtensionDisplayCount);
 }
@@ -907,16 +889,16 @@ UIColor* BackgroundColor() {
 }
 
 // Attempts to create a passkey.
-- (void)createPasskeyForClient:(NSData*)clientDataHash
-        relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
-                      username:(NSString*)username
-                    userHandle:(NSData*)userHandle
-                          gaia:(NSString*)gaia
-         securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+- (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
+                            gaia:(NSString*)gaia
+           securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
     API_AVAILABLE(ios(17.0)) {
   ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
-      PerformPasskeyCreation(clientDataHash, relyingPartyIdentifier, username,
-                             userHandle, gaia, securityDomainSecrets);
+      PerformPasskeyCreation(passkeyRequestDetails.clientDataHash,
+                             passkeyRequestDetails.relyingPartyIdentifier,
+                             passkeyRequestDetails.userName,
+                             passkeyRequestDetails.userHandle, gaia,
+                             securityDomainSecrets);
   if (passkeyRegistrationCredential) {
     [self completeRegistrationRequestWithSelectedPasskeyCredential:
               passkeyRegistrationCredential];
@@ -927,40 +909,35 @@ UIColor* BackgroundColor() {
 
 // Fetches the security domain secret in order to use it in the passkey creation
 // process.
-- (void)createPasskeyForClient:(NSData*)clientDataHash
-        relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
-                      username:(NSString*)username
-                    userHandle:(NSData*)userHandle
-                          gaia:(NSString*)gaia
-      userVerificationRequired:(BOOL)userVerificationRequired
-    API_AVAILABLE(ios(17.0)) {
+- (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
+                            gaia:(NSString*)gaia API_AVAILABLE(ios(17.0)) {
   __weak __typeof(self) weakSelf = self;
   auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
-    [weakSelf createPasskeyForClient:clientDataHash
-              relyingPartyIdentifier:relyingPartyIdentifier
-                            username:username
-                          userHandle:userHandle
-                                gaia:gaia
-               securityDomainSecrets:securityDomainSecrets];
+    [weakSelf createPasskeyWithDetails:passkeyRequestDetails
+                                  gaia:gaia
+                 securityDomainSecrets:securityDomainSecrets];
   };
 
   [self fetchSecurityDomainSecretForGaia:gaia
                               credential:nil
                                  purpose:PasskeyKeychainProvider::
                                              ReauthenticatePurpose::kEncrypt
-                userVerificationRequired:userVerificationRequired
+                userVerificationRequired:passkeyRequestDetails
+                                             .userVerificationRequired
                               completion:completion];
 }
 
 // Attempts to perform passkey assertion and retry on failure if allowed.
-- (void)passkeyAssertionWithCredential:(id<Credential>)credential
-                        clientDataHash:(NSData*)clientDataHash
-                    allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                 securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
-    API_AVAILABLE(ios(17.0)) {
-  ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
-      credential, clientDataHash, allowedCredentials, securityDomainSecrets);
-  [self userSelectedPasskey:passkeyCredential];
+- (void)
+    passkeyAssertionWithCredential:(id<Credential>)credential
+             passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails
+             securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
+  if (@available(iOS 17.0, *)) {
+    ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
+        credential, passkeyRequestDetails.clientDataHash,
+        passkeyRequestDetails.allowedCredentials, securityDomainSecrets);
+    [self userSelectedPasskey:passkeyCredential];
+  }
 }
 
 // Triggers the process to fetch the security domain secret and calls the
