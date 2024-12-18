@@ -6980,11 +6980,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpChromeCartModuleVariations,
                                     "DesktopNtpModules")},
 
-    {"chrome-cart-dom-based-heuristics",
-     commerce::flag_descriptions::kChromeCartDomBasedHeuristicsName,
-     commerce::flag_descriptions::kChromeCartDomBasedHeuristicsDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(commerce::kChromeCartDomBasedHeuristics)},
-
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpDriveModule,

@@ -109,9 +109,6 @@ BASE_DECLARE_FEATURE(kCommerceHintAndroid);
 // Feature flag for Code-based RBD.
 BASE_DECLARE_FEATURE(kCodeBasedRBD);
 
-// Feature flag for DOM-based heuristics for ChromeCart.
-BASE_DECLARE_FEATURE(kChromeCartDomBasedHeuristics);
-
 // Feature flag for parcel tracking.
 BASE_DECLARE_FEATURE(kParcelTracking);
 BASE_DECLARE_FEATURE(kParcelTrackingRegionLaunched);
@@ -216,38 +213,6 @@ constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
       // Empty JSON string.
       ""
 };
-
-// The following are Feature parameters for DOM-based heuristics for ChromeCart.
-constexpr base::FeatureParam<std::string> kAddToCartButtonTextPattern{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-text-pattern",
-    "(add(ed|ing)?( \\w+)* (to (shopping )?(cart|bag|basket))|(for "
-    "shipping))|(^add$)|(buy now)"};
-
-constexpr base::FeatureParam<std::string> kAddToCartButtonTagPattern{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-tag-pattern",
-    "BUTTON, INPUT, A, SPAN"};
-
-constexpr base::FeatureParam<int> kAddToCartButtonWidthLimit{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-button-width", 700};
-
-constexpr base::FeatureParam<int> kAddToCartButtonHeightLimit{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-button-height", 100};
-
-constexpr base::FeatureParam<base::TimeDelta> kAddToCartButtonActiveTime{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-button-active-time",
-    base::Seconds(5)};
-
-constexpr base::FeatureParam<bool> kAddToCartProductImage{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-product-image", true};
-
-constexpr base::FeatureParam<std::string> kSkipHeuristicsDomainPattern{
-    &kChromeCartDomBasedHeuristics, "skip-heuristics-domain-pattern",
-    // This regex does not match anything.
-    "\\b\\B"};
-
-constexpr base::FeatureParam<base::TimeDelta> kHeuristicsExecutionGapTime{
-    &kChromeCartDomBasedHeuristics, "heuristics-execution-gap-time",
-    base::Seconds(1)};
 
 // The following are Feature params for Discount user consent v2.
 // This indicates the Discount Consent v2 variation on the NTP Cart module.

@@ -1416,11 +1416,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "chrome-cart-dom-based-heuristics",
-    "owners": [ "yuezhanggg@chromium.org", "wychen@chromium.org"],
-    "expiry_milestone": 122
-  },
-  {
     "name": "chrome-labs",
     "owners": ["elainechien@chromium.org", "robliao@chromium.org"],
     // Never expires. The Chrome Labs features is rolled out to 99% of

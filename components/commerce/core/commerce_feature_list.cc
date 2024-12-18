@@ -387,10 +387,6 @@ BASE_FEATURE(kCommerceHintAndroid,
 
 BASE_FEATURE(kCodeBasedRBD, "CodeBasedRBD", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kChromeCartDomBasedHeuristics,
-             "ChromeCartDomBasedHeuristics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kParcelTracking,
              "ParcelTracking",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -204,21 +204,6 @@ source_set("heuristics_provider") {
   ]
 }
 
-source_set("heuristics_provider_unittests") {
-  testonly = true
-  sources = [ "heuristics/commerce_heuristics_provider_unittest.cc" ]
-  deps = [
-    ":feature_list",
-    ":heuristics_provider",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs:test_support",
-    "//testing/gtest",
-    "//third_party/re2:re2",
-    "//url:url",
-  ]
-}
-
 static_library("shopping_service") {
   sources = [
     "bookmark_update_manager.cc",
