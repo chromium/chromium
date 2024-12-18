@@ -167,6 +167,7 @@ declare global {
         isDoubleClick?: boolean;
         isTripleClick?: boolean;
         useRewriters?: boolean;
+        forceNotSynthetic?: boolean;
       }
 
       export enum SelectToSpeakState {

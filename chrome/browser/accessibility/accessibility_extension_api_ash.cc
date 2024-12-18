@@ -680,7 +680,16 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
 
   int changed_button_flags = flags;
 
-  flags |= ui::EF_IS_SYNTHESIZED;
+  // If the optional parameter for force_not_synthetic is set, then do not mark
+  // the mouse event as synthetic. This should only occur for FaceGaze, which
+  // sends mouse events that need to be treated by the system as "real" mouse
+  // events in order to interact with layers such as the screen capture layer.
+  bool force_not_synthetic = mouse_data->force_not_synthetic.has_value() &&
+                             mouse_data->force_not_synthetic.value();
+  if (!force_not_synthetic) {
+    flags |= ui::EF_IS_SYNTHESIZED;
+  }
+
   if (mouse_data->touch_accessibility && *(mouse_data->touch_accessibility)) {
     flags |= ui::EF_TOUCH_ACCESSIBILITY;
   }

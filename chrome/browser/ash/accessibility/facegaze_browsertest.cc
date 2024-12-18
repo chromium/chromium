@@ -73,11 +73,7 @@ class MockEventHandler : public ui::EventHandler {
   }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (!event->IsSynthesized() ||
-        event->source_device_id() != ui::EventDeviceId::ED_UNKNOWN_DEVICE) {
-      // FaceGaze will only send synthesized events. Since this class is meant
-      // to verify events sent by FaceGaze, we can ignore all non-synthesized
-      // events.
+    if (event->source_device_id() != ui::EventDeviceId::ED_UNKNOWN_DEVICE) {
       return;
     }
 
@@ -153,8 +149,6 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
     ASSERT_EQ(num_events, mouse_events.size());
     ASSERT_EQ(type, mouse_events[0].type());
     ASSERT_EQ(root_location, mouse_events[0].root_location());
-    // All FaceGaze mouse events should be synthesized.
-    ASSERT_TRUE(mouse_events[0].IsSynthesized());
   }
 
   MockEventHandler& event_handler() { return event_handler_; }
@@ -178,12 +172,14 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
 
   // We expect two mouse move events to be received because the FaceGaze
   // extension calls two APIs to update the cursor position.
+  // EventGenerator generates a non-synthetic event. 'setCursorPosition'
+  // generates a synthetic event.
   const std::vector<ui::MouseEvent> mouse_events =
       event_handler().mouse_events();
   ASSERT_EQ(2u, mouse_events.size());
   ASSERT_EQ(ui::EventType::kMouseMoved, mouse_events[0].type());
   ASSERT_EQ(kDefaultCursorLocation, mouse_events[0].root_location());
-  ASSERT_TRUE(mouse_events[0].IsSynthesized());
+  ASSERT_FALSE(mouse_events[0].IsSynthesized());
   ASSERT_EQ(ui::EventType::kMouseMoved, mouse_events[1].type());
   ASSERT_EQ(kDefaultCursorLocation, mouse_events[1].root_location());
   ASSERT_TRUE(mouse_events[1].IsSynthesized());
@@ -212,7 +208,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
   utils()->AssertCursorAt(kCenter);
 
   // We expect one mouse move event to be received because the FaceGaze
-  // extension only calls one API to reset the cursor position.
+  // extension only calls one API to reset the cursor position, which sends a
+  // synthesized event.
   const std::vector<ui::MouseEvent> mouse_events =
       event_handler().mouse_events();
   ASSERT_EQ(1u, mouse_events.size());
@@ -410,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MouseLongClick) {
   ASSERT_EQ(ui::EventType::kMousePressed, mouse_events.back().type());
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
   ASSERT_EQ(kCenter, mouse_events.back().root_location());
-  ASSERT_TRUE(mouse_events.back().IsSynthesized());
+  ASSERT_FALSE(mouse_events.back().IsSynthesized());
   ASSERT_TRUE(drag_event_rewriter->IsEnabled());
 
   // Move forehead to trigger a kMouseDragged event.
@@ -424,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MouseLongClick) {
   ASSERT_EQ(ui::EventType::kMouseDragged, mouse_events.back().type());
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
   ASSERT_NE(kCenter, mouse_events.back().root_location());
-  ASSERT_TRUE(mouse_events.back().IsSynthesized());
+  ASSERT_FALSE(mouse_events.back().IsSynthesized());
   ASSERT_TRUE(drag_event_rewriter->IsEnabled());
 
   // Move mouth right again to trigger mouse release event.
@@ -436,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MouseLongClick) {
   ASSERT_EQ(ui::EventType::kMouseReleased, mouse_events.back().type());
   ASSERT_TRUE(mouse_events.back().IsOnlyLeftMouseButton());
   ASSERT_NE(kCenter, mouse_events.back().root_location());
-  ASSERT_TRUE(mouse_events.back().IsSynthesized());
+  ASSERT_FALSE(mouse_events.back().IsSynthesized());
   ASSERT_FALSE(drag_event_rewriter->IsEnabled());
 }
 
