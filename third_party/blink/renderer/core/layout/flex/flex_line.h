@@ -20,6 +20,7 @@ struct FlexItemData {
   FlexItemData(BlockNode block_node,
                wtf_size_t item_index,
                LogicalOffset offset,
+               ItemPosition alignment,
                LayoutUnit main_axis_final_size,
                LayoutUnit margin_block_end,
                LayoutUnit total_remaining_block_size,
@@ -29,15 +30,14 @@ struct FlexItemData {
       : block_node(block_node),
         item_index(item_index),
         offset(offset),
+        alignment(alignment),
         main_axis_final_size(main_axis_final_size),
         margin_block_end(margin_block_end),
         total_remaining_block_size(total_remaining_block_size),
         is_initial_block_size_indefinite(is_initial_block_size_indefinite),
         is_used_flex_basis_indefinite(is_used_flex_basis_indefinite),
         has_descendant_that_depends_on_percentage_block_size(
-            has_descendant_that_depends_on_percentage_block_size)
-
-  {}
+            has_descendant_that_depends_on_percentage_block_size) {}
 
   const ComputedStyle& Style() const { return block_node.Style(); }
 
@@ -46,6 +46,7 @@ struct FlexItemData {
   BlockNode block_node;
   wtf_size_t item_index;
   LogicalOffset offset;
+  ItemPosition alignment;
   LayoutUnit main_axis_final_size;
   LayoutUnit margin_block_end;
   // This will originally be set to the total block size of the item before

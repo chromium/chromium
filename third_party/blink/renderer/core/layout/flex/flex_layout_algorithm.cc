@@ -612,13 +612,12 @@ bool FlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
   return ChildAvailableSize().block_size != kIndefiniteSize;
 }
 
-bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child) const {
+bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child,
+                                          ItemPosition alignment) const {
   // Note: Unresolvable % cross size doesn't count as auto for stretchability.
   // As discussed in https://github.com/w3c/csswg-drafts/issues/4312.
-  if (!DoesItemComputedCrossSizeHaveAuto(child)) {
-    return false;
-  }
-  return ResolvedAlignSelf(child.Style()) == ItemPosition::kStretch;
+  return alignment == ItemPosition::kStretch &&
+         DoesItemComputedCrossSizeHaveAuto(child);
 }
 
 bool FlexLayoutAlgorithm::DoesItemComputedCrossSizeHaveAuto(
@@ -631,25 +630,30 @@ bool FlexLayoutAlgorithm::DoesItemComputedCrossSizeHaveAuto(
 }
 
 bool FlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
-    const BlockNode& child) const {
-  return !is_multi_line_ && is_cross_size_definite_ && DoesItemStretch(child);
+    const BlockNode& child,
+    ItemPosition alignment) const {
+  return !is_multi_line_ && is_cross_size_definite_ &&
+         DoesItemStretch(child, alignment);
 }
 
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
-    const BlockNode& child) const {
+    const BlockNode& child,
+    ItemPosition alignment) const {
   MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
                                        /* is_new_fc */ true);
   builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
   builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
   builder.SetReplacedPercentageResolutionBlockSize(
       child_percentage_size_.block_size);
-  if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child))
+  if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child, alignment)) {
     builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+  }
   return builder.ToConstraintSpace();
 }
 
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     const BlockNode& flex_item,
+    ItemPosition alignment,
     std::optional<LayoutUnit> override_inline_size) const {
   const ComputedStyle& child_style = flex_item.Style();
   ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
@@ -659,7 +663,7 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   space_builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
   space_builder.SetIsPaintedAtomically(true);
 
-  if (WillChildCrossSizeBeContainerCrossSize(flex_item)) {
+  if (WillChildCrossSizeBeContainerCrossSize(flex_item, alignment)) {
     if (is_column_)
       space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
     else
@@ -705,6 +709,7 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
 
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     const BlockNode& flex_item_node,
+    ItemPosition alignment,
     LayoutUnit item_main_axis_final_size,
     bool is_initial_block_size_indefinite,
     std::optional<LayoutUnit> override_inline_size,
@@ -736,8 +741,9 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     available_size.block_size = item_main_axis_final_size;
     space_builder.SetIsFixedBlockSize(true);
     if (line_cross_size_for_stretch ||
-        WillChildCrossSizeBeContainerCrossSize(flex_item_node))
+        WillChildCrossSizeBeContainerCrossSize(flex_item_node, alignment)) {
       space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    }
   } else {
     DCHECK(!override_inline_size.has_value());
     available_size.inline_size = item_main_axis_final_size;
@@ -746,13 +752,15 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
                                     : ChildAvailableSize().block_size;
     space_builder.SetIsFixedInlineSize(true);
     if (line_cross_size_for_stretch ||
-        WillChildCrossSizeBeContainerCrossSize(flex_item_node))
+        WillChildCrossSizeBeContainerCrossSize(flex_item_node, alignment)) {
       space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    }
   }
   if (is_initial_block_size_indefinite) {
     space_builder.SetIsInitialBlockSizeIndefinite(true);
   }
-  if (!line_cross_size_for_stretch && DoesItemStretch(flex_item_node)) {
+  if (!line_cross_size_for_stretch &&
+      DoesItemStretch(flex_item_node, alignment)) {
     // For the first layout pass of stretched items, the goal is to determine
     // the post-flexed, pre-stretched cross-axis size. Stretched items will
     // later get a final layout with a potentially different cross size so use
@@ -796,9 +804,12 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       continue;
     }
 
+    const ComputedStyle& child_style = child.Style();
+    const ItemPosition alignment = ResolvedAlignSelf(child_style);
+
     std::optional<LayoutUnit> max_content_contribution;
     if (phase == Phase::kColumnWrapIntrinsicSize) {
-      auto space = BuildSpaceForIntrinsicInlineSize(child);
+      auto space = BuildSpaceForIntrinsicInlineSize(child, alignment);
       MinMaxSizesResult child_contributions =
           ComputeMinAndMaxContentContribution(Style(), child, space);
       max_content_contribution = child_contributions.sizes.max_size;
@@ -811,7 +822,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                    largest_min_content_contribution_);
     }
 
-    const ComputedStyle& child_style = child.Style();
     const auto child_writing_mode = child_style.GetWritingMode();
     const bool is_main_axis_inline_axis =
         IsHorizontalWritingMode(child_writing_mode) == is_horizontal_flow_;
@@ -837,6 +847,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const LayoutUnit main_axis_border_padding =
         is_horizontal_flow_ ? physical_border_padding.HorizontalSum()
                             : physical_border_padding.VerticalSum();
+    const auto child_space = BuildSpaceForIntrinsicBlockSize(
+        child, alignment, max_content_contribution);
 
     bool depends_on_min_max_sizes = false;
     auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
@@ -844,14 +856,10 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       // We want the child's intrinsic inline sizes in its writing mode, so
       // pass child's writing mode as the first parameter, which is nominally
       // |container_writing_mode|.
-      const auto child_space =
-          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
       return child.ComputeMinMaxSizes(child_writing_mode, type, child_space);
     };
 
     auto InlineSizeFunc = [&]() -> LayoutUnit {
-      const ConstraintSpace child_space =
-          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
       return CalculateInitialFragmentGeometry(child_space, child,
                                               /* break_token */ nullptr)
           .border_box_size.inline_size;
@@ -860,8 +868,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const LayoutResult* layout_result = nullptr;
     auto BlockSizeFunc = [&](SizeType type) -> LayoutUnit {
       // This function mirrors the logic within `BlockNode::ComputeMinMaxSizes`.
-      const ConstraintSpace child_space =
-          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
 
       // Don't apply any special aspect-ratio treatment for replaced elements.
       if (child.IsReplaced()) {
@@ -995,9 +1001,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         // 3. If the block-size resolved, add the caption block-size so that
         //    the forced block-size works correctly.
         if (const auto* table_child = DynamicTo<TableNode>(&child)) {
-          main_size += table_child->ComputeCaptionBlockSize(
-              BuildSpaceForIntrinsicBlockSize(*table_child,
-                                              max_content_contribution));
+          main_size += table_child->ComputeCaptionBlockSize(child_space);
         }
       }
 
@@ -1109,7 +1113,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const auto container_writing_direction =
         GetConstraintSpace().GetWritingDirection();
-    const ItemPosition alignment = ResolvedAlignSelf(child_style);
     const auto baseline_writing_mode = DetermineBaselineWritingMode(
         container_writing_direction, child_writing_mode,
         /* is_parallel_context */ !is_column_);
@@ -1347,10 +1350,11 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count;
 
       const LayoutUnit cross_axis_size = ([&]() {
-        const ConstraintSpace space = BuildSpaceForLayout(
-            flex_item.block_node, flex_item.FlexedBorderBoxSize(),
-            flex_item.is_initial_block_size_indefinite,
-            flex_item.max_content_contribution);
+        const ConstraintSpace space =
+            BuildSpaceForLayout(flex_item.block_node, flex_item.alignment,
+                                flex_item.FlexedBorderBoxSize(),
+                                flex_item.is_initial_block_size_indefinite,
+                                flex_item.max_content_contribution);
 
         // We need to get the item's cross-axis size given its new main size.
         //
@@ -1362,7 +1366,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
         // Even when we only need inline-size, we have to lay out the item if:
         //  * This is the item's last chance to layout (i.e. doesn't stretch).
         //  * The item has not yet been laid out.
-        if (DoesItemStretch(flex_item.block_node) && flex_item.layout_result) {
+        if (DoesItemStretch(flex_item.block_node, flex_item.alignment) &&
+            flex_item.layout_result) {
           const auto& item_style = flex_item.block_node.Style();
           DCHECK_NE(is_horizontal_flow_, item_style.IsHorizontalWritingMode());
           const BoxStrut border_padding =
@@ -1673,9 +1678,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       const FlexItem& item = flex_items_[item_index];
 
       const LayoutResult* layout_result = nullptr;
-      if (DoesItemStretch(item.block_node)) {
+      if (DoesItemStretch(item.block_node, item.alignment)) {
         ConstraintSpace child_space = BuildSpaceForLayout(
-            item.block_node, item.FlexedBorderBoxSize(),
+            item.block_node, item.alignment, item.FlexedBorderBoxSize(),
             item.is_initial_block_size_indefinite,
             /* override_inline_size */ std::nullopt, flex_line.line_cross_size);
         layout_result = item.block_node.Layout(child_space);
@@ -1826,7 +1831,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       } else {
         // Store the information we need for later if we have fragmentation.
         flex_line.line_items_data.emplace_back(
-            item.block_node, item.item_index, offset,
+            item.block_node, item.item_index, offset, item.alignment,
             item.FlexedBorderBoxSize(), logical_margins.block_end,
             fragment.BlockSize(), item.is_initial_block_size_indefinite,
             item.is_used_flex_basis_indefinite,
@@ -2097,7 +2102,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     std::optional<LayoutUnit> line_cross_size_for_stretch =
-        DoesItemStretch(flex_item->block_node)
+        DoesItemStretch(flex_item->block_node, flex_item->alignment)
             ? std::optional<LayoutUnit>(flex_line.line_cross_size)
             : std::nullopt;
 
@@ -2119,7 +2124,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     const bool min_block_size_should_encompass_intrinsic_size =
         MinBlockSizeShouldEncompassIntrinsicSize(*flex_item);
     ConstraintSpace child_space = BuildSpaceForLayout(
-        flex_item->block_node, flex_item->main_axis_final_size,
+        flex_item->block_node, flex_item->alignment,
+        flex_item->main_axis_final_size,
         flex_item->is_initial_block_size_indefinite,
         /* override_inline_size */ std::nullopt, line_cross_size_for_stretch,
         offset.block_offset, min_block_size_should_encompass_intrinsic_size);
@@ -2493,7 +2499,8 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
   for (const FlexItem& item : flex_items_) {
     const BlockNode& child = item.block_node;
 
-    const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
+    const ConstraintSpace space =
+        BuildSpaceForIntrinsicInlineSize(child, item.alignment);
     MinMaxSizesResult min_max_content_contributions =
         ComputeMinAndMaxContentContribution(Style(), child, space);
     depends_on_block_constraints |=
@@ -2603,7 +2610,8 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
     number_of_items++;
 
-    const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
+    const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(
+        child, ResolvedAlignSelf(child.Style()));
     MinMaxSizesResult child_result =
         ComputeMinAndMaxContentContribution(Style(), child, space);
     BoxStrut child_margins =
@@ -2868,7 +2876,8 @@ bool FlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
     }
   } else {
     // Don't grow if the item's block-size should be the same as its container.
-    if (WillChildCrossSizeBeContainerCrossSize(item.block_node) &&
+    if (WillChildCrossSizeBeContainerCrossSize(item.block_node,
+                                               item.alignment) &&
         !Style().LogicalHeight().HasAutoOrContentOrIntrinsic()) {
       return false;
     }

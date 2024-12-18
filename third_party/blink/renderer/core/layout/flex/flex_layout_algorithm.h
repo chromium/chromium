@@ -41,20 +41,23 @@ class CORE_EXPORT FlexLayoutAlgorithm
       bool is_computing_multiline_column_intrinsic_size = false);
 
   bool DoesItemComputedCrossSizeHaveAuto(const BlockNode& child) const;
-  bool DoesItemStretch(const BlockNode& child) const;
+  bool DoesItemStretch(const BlockNode& child, ItemPosition alignment) const;
   // This checks for one of the scenarios where a flex-item box has a definite
   // size that would be indefinite if the box weren't a flex item.
   // See https://drafts.csswg.org/css-flexbox/#definite-sizes
-  bool WillChildCrossSizeBeContainerCrossSize(const BlockNode& child) const;
+  bool WillChildCrossSizeBeContainerCrossSize(const BlockNode& child,
+                                              ItemPosition alignment) const;
 
   bool IsContainerCrossSizeDefinite() const;
 
   enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
   ConstraintSpace BuildSpaceForIntrinsicInlineSize(
-      const BlockNode& flex_item) const;
+      const BlockNode& flex_item,
+      ItemPosition alignment) const;
   ConstraintSpace BuildSpaceForFlexBasis(const BlockNode& flex_item) const;
   ConstraintSpace BuildSpaceForIntrinsicBlockSize(
       const BlockNode& flex_item,
+      ItemPosition alignment,
       std::optional<LayoutUnit> override_inline_size) const;
   // |line_cross_size_for_stretch| should only be set when running the final
   // layout pass for stretch, when the line cross size is definite.
@@ -62,6 +65,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // layout pass for fragmentation. Both may be set at the same time.
   ConstraintSpace BuildSpaceForLayout(
       const BlockNode& flex_item_node,
+      ItemPosition alignment,
       LayoutUnit item_main_axis_final_size,
       bool is_initial_block_size_indefinite,
       std::optional<LayoutUnit> override_inline_size = std::nullopt,
