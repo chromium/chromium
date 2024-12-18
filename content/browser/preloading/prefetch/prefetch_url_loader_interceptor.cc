@@ -112,7 +112,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
       }
     } else {
       OnGotPrefetchToServe(
-          frame_tree_node_id_, tentative_resource_request,
+          frame_tree_node_id_, tentative_resource_request.url,
           base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
                          weak_factory_.GetWeakPtr()),
           std::move(redirect_reader_));
@@ -184,11 +184,13 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     CHECK(!serving_page_metrics_container_);
   }
 
+  const GURL tentative_resource_request_url = tentative_resource_request.url;
   auto callback = base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
-                                 tentative_resource_request,
+                                 tentative_resource_request_url,
                                  std::move(get_prefetch_callback));
   auto key = PrefetchContainer::Key(initiator_document_token_,
-                                    tentative_resource_request.url);
+                                    tentative_resource_request_url);
+
   if (UseNewWaitLoop()) {
     const bool is_nav_prerender = [&]() -> bool {
       auto* frame_tree_node =

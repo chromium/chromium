@@ -13,11 +13,12 @@
 
 namespace content {
 
-// Checks if `prefetch_container` can be used for `tentative_resource_request`,
-// and starts checking `PrefetchOriginProber` if needed.
+// Checks if `prefetch_container` can be used for the url of intercepted
+// `tentative_resource_request`, and starts checking `PrefetchOriginProber` if
+// needed.
 void CONTENT_EXPORT OnGotPrefetchToServe(
     FrameTreeNodeId frame_tree_node_id,
-    const network::ResourceRequest& tentative_resource_request,
+    const GURL& tentative_resource_request_url,
     base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback,
     PrefetchContainer::Reader reader);
 
