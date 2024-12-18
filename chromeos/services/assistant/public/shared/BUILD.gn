@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 
 # C++ headers and sources that can be shared by assistant internal and
 # external directories.
@@ -16,7 +17,7 @@ component("shared") {
     "utils.h",
   ]
 
-  if (is_chromeos && is_chrome_branded) {
+  if (enable_cros_libassistant) {
     sources += [ "//chromeos/assistant/internal/constants.cc" ]
   } else {
     sources += [ "constants.cc" ]
@@ -26,7 +27,7 @@ component("shared") {
 }
 
 source_set("new_entry_point_constants") {
-  if (is_chromeos && is_chrome_branded) {
+  if (enable_cros_libassistant) {
     deps = [ "//chromeos/assistant/internal:new_entry_point_constants" ]
   } else {
     deps = [ ":new_entry_point_constants_placeholder" ]
