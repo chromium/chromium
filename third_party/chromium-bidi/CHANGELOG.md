@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.11.0...chromium-bidi-v0.11.1) (2024-12-18)
+
+
+### Features
+
+* throw a proper error if the browsing context was destroyed during action dispatching ([#2908](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2908)) ([62c3005](https://github.com/GoogleChromeLabs/chromium-bidi/commit/62c300595b9adab713a4af8c226b293eded3968a))
+
 ## [0.11.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.10.2...chromium-bidi-v0.11.0) (2024-12-17)
 
 
