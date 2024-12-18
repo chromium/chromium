@@ -34,6 +34,12 @@ const iwaDevUpdateManifestDialog =
 const iwaSwitchChannelDialog =
     getRequiredElement('iwa-switch-channel-input-dialog') as HTMLDialogElement;
 
+const switchChannelButton =
+    getRequiredElement('iwa-switch-channel-dialog-switch') as HTMLButtonElement;
+
+const closeSwitchChannelDialogButton =
+    getRequiredElement('iwa-switch-channel-dialog-close') as HTMLButtonElement;
+
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
  * @param origin Origin to convert
@@ -95,10 +101,16 @@ function updateDevProxyInstallButtonState() {
   iwaDevProxyInstallButton.disabled = iwaDevProxyInstallUrl.value.length === 0;
 }
 
+async function setDevInstallMessageText(
+    message: string,
+) {
+  setTimeout(() => {
+    getRequiredElement('iwa-dev-install-message').innerText = message;
+  }, 0);
+}
+
 async function iwaDevProxyInstall() {
   iwaDevProxyInstallButton.disabled = true;
-
-  const iwaInstallMessageDiv = getRequiredElement('iwa-dev-install-message');
 
   // Validate the provided URL.
   let valid = false;
@@ -113,14 +125,13 @@ async function iwaDevProxyInstall() {
     // Fall-through.
   }
   if (!valid) {
-    iwaInstallMessageDiv.innerText =
-        `Installing IWA: ${iwaDevProxyInstallUrl.value} is not a valid URL`;
+    setDevInstallMessageText(
+        `Installing IWA: ${iwaDevProxyInstallUrl.value} is not a valid URL`);
     updateDevProxyInstallButtonState();
     return;
   }
 
-  iwaInstallMessageDiv.innerText =
-      `Installing IWA: ${iwaDevProxyInstallUrl.value}...`;
+  setDevInstallMessageText(`Installing IWA: ${iwaDevProxyInstallUrl.value}...`);
 
   const location: Url = {url: iwaDevProxyInstallUrl.value};
 
@@ -128,18 +139,19 @@ async function iwaDevProxyInstall() {
       (await webAppInternalsHandler.installIsolatedWebAppFromDevProxy(location))
           .result;
   if (result.success) {
-    iwaInstallMessageDiv.innerText = `Installing IWA: ${
-        iwaDevProxyInstallUrl.value} successfully installed.`;
+    setDevInstallMessageText(`Installing IWA: ${
+        iwaDevProxyInstallUrl.value} successfully installed.`);
     iwaDevProxyInstallUrl.value = '';
     updateDevProxyInstallButtonState();
     refreshDevModeAppList();
     return;
   }
 
-  iwaInstallMessageDiv.innerText = `Installing IWA: ${
-      iwaDevProxyInstallUrl.value} failed to install: ${result.error}`;
+  setDevInstallMessageText(`Installing IWA: ${
+      iwaDevProxyInstallUrl.value} failed to install: ${result.error}`);
   updateDevProxyInstallButtonState();
 }
+
 iwaDevProxyInstallUrl.addEventListener('enter', iwaDevProxyInstall);
 iwaDevProxyInstallButton.addEventListener('click', iwaDevProxyInstall);
 
@@ -155,43 +167,38 @@ updateDevProxyInstallButtonState();
 
 getRequiredElement('iwa-dev-install-bundle-selector')
     .addEventListener('click', async () => {
-      const iwaInstallMessageDiv =
-          getRequiredElement('iwa-dev-install-message');
-
-      iwaInstallMessageDiv.innerText = `Installing IWA from bundle...`;
+      setDevInstallMessageText(`Installing IWA from bundle...`);
 
       const result: InstallIsolatedWebAppResult =
           (await webAppInternalsHandler
                .selectFileAndInstallIsolatedWebAppFromDevBundle())
               .result;
       if (result.success) {
-        iwaInstallMessageDiv.innerText =
+        setDevInstallMessageText(
             `Installing IWA: successfully installed (Web Bundle ID: ${
-                result.success.webBundleId}).`;
+                result.success.webBundleId}).`);
         refreshDevModeAppList();
         return;
       }
 
-      iwaInstallMessageDiv.innerText =
-          `Installing IWA: failed to install: ${result.error}`;
+      setDevInstallMessageText(
+          `Installing IWA: failed to install: ${result.error}`);
     });
 
 async function iwaDevFetchUpdateManifest() {
-  const iwaInstallMessageDiv = getRequiredElement('iwa-dev-install-message');
-
   // Validate the provided URL.
   try {
     // We don't need the result of this, only to verify it doesn't throw an
     // exception.
     new URL(iwaDevUpdateManifestUrl.value);
   } catch (_) {
-    iwaInstallMessageDiv.innerText = `Fetching the update manifest: ${
-        iwaDevUpdateManifestUrl.value} is not a valid URL`;
+    setDevInstallMessageText(`Fetching the update manifest: ${
+        iwaDevUpdateManifestUrl.value} is not a valid URL`);
     return;
   }
 
-  iwaInstallMessageDiv.innerText =
-      `Fetching the update manifest at ${iwaDevUpdateManifestUrl.value}...`;
+  setDevInstallMessageText(
+      `Fetching the update manifest at ${iwaDevUpdateManifestUrl.value}...`);
 
   const updateManifestUrl: Url = {url: iwaDevUpdateManifestUrl.value};
 
@@ -200,8 +207,8 @@ async function iwaDevFetchUpdateManifest() {
            updateManifestUrl))
           .result;
   if (result.error) {
-    iwaInstallMessageDiv.innerText = `Installing IWA from update manifest: ${
-        iwaDevUpdateManifestUrl.value} failed to install: ${result.error}`;
+    setDevInstallMessageText(`Installing IWA from update manifest: ${
+        iwaDevUpdateManifestUrl.value} failed to install: ${result.error}`);
     return;
   }
 
@@ -231,17 +238,16 @@ async function iwaDevFetchUpdateManifest() {
     const selectedVersion = select.value;
     iwaDevUpdateManifestDialog.close();
 
-    iwaInstallMessageDiv.innerText = `Installing version ${
-        selectedVersion} from ${updateManifestUrl.url}...`;
+    setDevInstallMessageText(`Installing version ${selectedVersion} from ${
+        updateManifestUrl.url}...`);
     const selectedVersionEntry: VersionEntry|null =
         versions.find(
             versionEntry => versionEntry.version === selectedVersion) ||
         null;
 
     if (!selectedVersionEntry) {
-      iwaInstallMessageDiv.innerText =
-          `Installing version ${selectedVersion} from ${
-              updateManifestUrl.url} failed: no such version`;
+      setDevInstallMessageText(`Installing version ${selectedVersion} from ${
+          updateManifestUrl.url} failed: no such version`);
       return;
     }
 
@@ -255,12 +261,11 @@ async function iwaDevFetchUpdateManifest() {
           },
         })).result;
     if (installResult.success) {
-      iwaInstallMessageDiv.innerText = `Installing version ${
-          selectedVersion} from ${updateManifestUrl.url}: success!`;
+      setDevInstallMessageText(`Installing version ${selectedVersion} from ${
+          updateManifestUrl.url}: success!`);
     } else {
-      iwaInstallMessageDiv.innerText =
-          `Installing version ${selectedVersion} from ${
-              updateManifestUrl.url} failed: ${installResult.error}`;
+      setDevInstallMessageText(`Installing version ${selectedVersion} from ${
+          updateManifestUrl.url} failed: ${installResult.error}`);
     }
 
     refreshDevModeAppList();
@@ -271,54 +276,49 @@ async function iwaDevFetchUpdateManifest() {
   iwaDevUpdateManifestDialog.showModal();
 }
 
-getRequiredElement('iwa-update-manifest-dialog-close')
-    .addEventListener('click', () => {
-      getRequiredElement('iwa-dev-install-message').innerText = '';
-      iwaDevUpdateManifestDialog.close();
-    });
+// Logic for handling the channel switching dialog for IWAs.
+async function showSwitchChannelDialog(appId: string, name: string) {
+  switchChannelButton.addEventListener('click', async () => {
+    const updateChannel =
+        getRequiredElement('iwa-update-channel') as HTMLInputElement;
 
-async function showSwitchChannelDialog(
-    appId: string, name: string, messageDiv: HTMLDivElement) {
-  const switchButton = getRequiredElement('iwa-switch-channel-dialog-switch') as
-      HTMLButtonElement;
-
-  const updateChannel =
-      getRequiredElement('iwa-update-channel') as HTMLInputElement;
-
-  switchButton.addEventListener('click', async () => {
     iwaSwitchChannelDialog.close();
 
-    const channel = updateChannel.value;
-    messageDiv.innerText =
-        `Switching update channel for ${name} to ${channel}...`;
-    const {success}: {success: boolean} =
-        await webAppInternalsHandler.setUpdateChannelForIsolatedWebApp(
-            appId,
-            channel,
-        );
+    try {
+      setDevInstallMessageText(
+          `Switching channel to ${updateChannel.value} for ${name}...`);
+
+      const {success} =
+          await webAppInternalsHandler.setUpdateChannelForIsolatedWebApp(
+              appId,
+              updateChannel.value,
+          );
+
+      setDevInstallMessageText(
+          success ? `Successful channel switch to ${updateChannel.value} for ${
+                        name}.` :
+                    `Failed to switch channel to ${updateChannel.value} for ${
+                        name}.`);
+
+      if (success) {
+        refreshDevModeAppList();
+      }
+
+    } catch (error) {
+      setDevInstallMessageText(
+          `An error occurred while switching the update channel of ${name}.`);
+      console.error(error);
+    }
 
     updateChannel.value = '';
-    if (success) {
-      messageDiv.innerText = `Successfully switched the update channel of ${
-          name} to ${channel}; refreshing the apps...`;
-      setTimeout(async () => {
-        refreshDevModeAppList(/*showPlaceholder*/ false);
-      }, 2000);
-    } else {
-      messageDiv.innerText =
-          `Something went wrong while switching the update channel of ${
-              name} to ${channel}.`;
-    }
   }, {once: true});
 
   iwaSwitchChannelDialog.showModal();
 }
 
-getRequiredElement('iwa-switch-channel-dialog-close')
-    .addEventListener('click', () => {
-      getRequiredElement('iwa-dev-install-message').innerText = '';
-      iwaSwitchChannelDialog.close();
-    });
+closeSwitchChannelDialogButton.addEventListener('click', () => {
+  iwaSwitchChannelDialog.close();
+});
 
 iwaDevUpdateManifestUrl.addEventListener('enter', iwaDevFetchUpdateManifest);
 getRequiredElement('iwa-dev-update-manifest-fetch-button')
@@ -386,7 +386,7 @@ iwaRotateKeyButton.addEventListener('click', async () => {
   }, 1000);
 });
 
-function formatDevModeLocation(location: IwaDevModeLocation): string {
+function formatDevModeLocation(location: IwaDevModeLocation): string|void {
   if (location.proxyOrigin) {
     return originToText(location.proxyOrigin);
   }
@@ -411,14 +411,14 @@ function showIwaSection(containerId: string) {
   getRequiredElement('iwa-container').style.display = '';
 }
 
-async function refreshDevModeAppList(showPlaceholder: boolean = true) {
+async function refreshDevModeAppList() {
   const devModeUpdatesMessage = getRequiredElement('iwa-dev-updates-message');
-  if (showPlaceholder) {
-    devModeUpdatesMessage.innerText = 'Loading...';
-  }
+  devModeUpdatesMessage.innerText = 'Loading IWAs list...';
+
   const devModeApps: IwaDevModeAppInfo[] =
       (await webAppInternalsHandler.getIsolatedWebAppDevModeAppInfo()).apps;
   const devModeAppList = getRequiredElement('iwa-dev-updates-app-list');
+
   devModeAppList.replaceChildren();
   if (devModeApps.length === 0) {
     devModeUpdatesMessage.innerText = 'None';
@@ -429,75 +429,99 @@ async function refreshDevModeAppList(showPlaceholder: boolean = true) {
       const li = document.createElement('li');
       li.innerText =
           describeIsolatedWebApp(name, installedVersion, location, updateInfo);
+      li.className = 'iwa-dev-mode-list-item';
 
-      const updateMsg = document.createElement('p');
+      const {updateMsg, updateBtn, switchChannelBtn} =
+          prepareAppButtons(appId, name, location, updateInfo);
 
-      const updateBtn = document.createElement('button');
-      updateBtn.className = 'iwa-dev-update-button';
-
-      updateBtn.innerText = 'Perform update now';
-      updateBtn.onclick = async () => {
-        const oldText = updateBtn.innerText;
-        try {
-          updateBtn.disabled = true;
-          updateBtn.innerText =
-              'Performing update... (close the IWA if it is currently open!)';
-
-          if (updateInfo) {
-            const {result}: {result: string} =
-                await webAppInternalsHandler
-                    .updateManifestInstalledIsolatedWebApp(appId);
-            updateMsg.innerText = result;
-          } else if (location.bundlePath) {
-            const {result}: {result: string} =
-                await webAppInternalsHandler
-                    .selectFileAndUpdateIsolatedWebAppFromDevBundle(appId);
-            updateMsg.innerText = result;
-          } else if (location.proxyOrigin) {
-            const {result}: {result: string} =
-                await webAppInternalsHandler.updateDevProxyIsolatedWebApp(
-                    appId);
-            updateMsg.innerText = result;
-          } else {
-            assertNotReached();
-          }
-        } finally {
-          updateBtn.innerText = oldText;
-          updateBtn.disabled = false;
-        }
-      };
-
-      if (updateInfo) {
-        const switchChannelBtn = document.createElement('button');
-        switchChannelBtn.className = 'iwa-dev-switch-channel-button';
-        switchChannelBtn.innerText = 'Switch channel';
-        switchChannelBtn.onclick = async () => {
-          showSwitchChannelDialog(appId, name, updateMsg);
-        };
+      li.appendChild(updateMsg);
+      li.appendChild(updateBtn);
+      if (switchChannelBtn) {
         li.appendChild(switchChannelBtn);
       }
-
-      li.appendChild(updateBtn);
-      li.appendChild(updateMsg);
 
       devModeAppList.appendChild(li);
     }
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  getRequiredElement('json').innerText = await debugInfoAsJsonString;
+function prepareAppButtons(
+    appId: string,
+    name: string,
+    location: IwaDevModeLocation,
+    updateInfo: UpdateInfo|null,
+    ): {
+  updateMsg: HTMLParagraphElement,
+  updateBtn: HTMLButtonElement,
+  switchChannelBtn?: HTMLButtonElement,
+} {
+  const updateMsg = document.createElement('p');
 
+  const updateBtn = document.createElement('button');
+  updateBtn.className = 'iwa-dev-update-button';
+
+  updateBtn.innerText = 'Perform update now';
+  updateBtn.onclick = async () => {
+    const oldText = updateBtn.innerText;
+    try {
+      updateBtn.disabled = true;
+      updateBtn.innerText =
+          'Performing update... (close the IWA if it is currently open!)';
+
+      if (updateInfo) {
+        const {result}: {result: string} =
+            await webAppInternalsHandler.updateManifestInstalledIsolatedWebApp(
+                appId);
+        updateMsg.innerText = result;
+      } else if (location.bundlePath) {
+        const {result}: {result: string} =
+            await webAppInternalsHandler
+                .selectFileAndUpdateIsolatedWebAppFromDevBundle(appId);
+        updateMsg.innerText = result;
+      } else if (location.proxyOrigin) {
+        const {result}: {result: string} =
+            await webAppInternalsHandler.updateDevProxyIsolatedWebApp(appId);
+        updateMsg.innerText = result;
+      } else {
+        assertNotReached();
+      }
+    } finally {
+      updateBtn.innerText = oldText;
+      updateBtn.disabled = false;
+    }
+  };
+
+  let switchChannelBtn;
+  if (updateInfo) {
+    switchChannelBtn = document.createElement('button');
+    switchChannelBtn.className = 'iwa-dev-switch-channel-button';
+    switchChannelBtn.innerText = 'Switch channel';
+    switchChannelBtn.onclick = async () => {
+      showSwitchChannelDialog(appId, name);
+    };
+  }
+
+  return {updateMsg, updateBtn, switchChannelBtn};
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   if (loadTimeData.getBoolean('isIwaPolicyInstallEnabled')) {
     showIwaSection('iwa-updates-container');
   }
 
   if (loadTimeData.getBoolean('isIwaDevModeEnabled')) {
-    // Unhide the IWA dev mode UI.
     if (loadTimeData.getBoolean('isIwaKeyDistributionDevModeEnabled')) {
       showIwaSection('iwa-kr-container');
     }
+
     showIwaSection('iwa-dev-container');
+    const devModeUpdatesMessage = getRequiredElement('iwa-dev-updates-message');
+    devModeUpdatesMessage.innerText = 'Loading...';
+
     refreshDevModeAppList();
   }
+
+  setTimeout(async () => {
+    getRequiredElement('json').innerText = await debugInfoAsJsonString;
+  }, 0);
 });
