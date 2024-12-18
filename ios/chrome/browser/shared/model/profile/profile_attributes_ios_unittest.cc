@@ -15,6 +15,9 @@ const char kGaiaId1[] = "Gaia1";
 const char kGaiaId2[] = "Gaia2";
 const char kUserName[] = "email@example.com";
 
+const char kFakeNotificationClient1[] = "CLIENT_1";
+const char kFakeNotificationClient2[] = "CLIENT_2";
+
 }  // namespace
 
 using ProfileAttributesIOSTest = PlatformTest;
@@ -107,4 +110,23 @@ TEST_F(ProfileAttributesIOSTest, GetStorage) {
     attributes.SetHasAuthenticationError(true);
     EXPECT_EQ(std::move(attributes).GetStorage().size(), 4u);
   }
+}
+
+// Tests setting and reading the notification permissions.
+TEST_F(ProfileAttributesIOSTest, GetNotificationPermissions) {
+  ProfileAttributesIOS attributes =
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
+  EXPECT_EQ(attributes.GetNotificationPermissions(), nullptr);
+
+  base::Value::Dict permissions;
+  permissions.Set(kFakeNotificationClient1, true);
+  permissions.Set(kFakeNotificationClient2, false);
+  attributes.SetNotificationPermissions(permissions.Clone());
+  EXPECT_NE(attributes.GetNotificationPermissions(), nullptr);
+  EXPECT_EQ(attributes.GetNotificationPermissions()->FindBool(
+                kFakeNotificationClient1),
+            true);
+  EXPECT_EQ(attributes.GetNotificationPermissions()->FindBool(
+                kFakeNotificationClient2),
+            false);
 }
