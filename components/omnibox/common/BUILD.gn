@@ -4,6 +4,8 @@
 
 source_set("common") {
   sources = [
+    "omnibox_feature_configs.cc",
+    "omnibox_feature_configs.h",
     "omnibox_features.cc",
     "omnibox_features.h",
     "omnibox_focus_state.h",

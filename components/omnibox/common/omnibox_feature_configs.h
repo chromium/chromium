@@ -1,11 +1,14 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_FEATURE_CONFIGS_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_FEATURE_CONFIGS_H_
+#ifndef COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
+#define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
 
 #include "base/feature_list.h"
+#include "base/values.h"
+
+class EnterpriseSearchManagerProviderInjectionTest;
 
 namespace omnibox_feature_configs {
 
@@ -150,22 +153,66 @@ struct RealboxContextualAndTrendingSuggestions
   size_t trending_suggestions_limit;
 };
 
+// If enabled, injects a mock search engine using the same format as policy
+// `EnterpriseSearchAggregatorSettings` to be applied. Ignored if feature
+// policy is set.
+class SearchAggregatorProvider : public Config<SearchAggregatorProvider> {
+  DECLARE_FEATURE(kSearchAggregatorProvider);
+
+ public:
+  SearchAggregatorProvider();
+  SearchAggregatorProvider(const SearchAggregatorProvider&);
+  SearchAggregatorProvider& operator=(const SearchAggregatorProvider&);
+  ~SearchAggregatorProvider();
+
+  bool enabled() const { return enabled_; }
+  bool valid_search_engine() const { return valid_search_engine_; }
+  std::vector<base::Value> GetSearchEngines() const;
+  bool trigger_omnibox_blending() const { return trigger_omnibox_blending_; }
+
+ private:
+  friend ::EnterpriseSearchManagerProviderInjectionTest;
+
+  // Makes it easier for tests to set a config.
+  void Init(bool enabled,
+            const std::string& name,
+            const std::string& shortcut,
+            const std::string& search_url,
+            const std::string& suggest_url,
+            const std::string& icon_url,
+            bool trigger_omnibox_blending);
+  // Same as `Init(,,,,,,)` setting all string arguments as empty.
+  void Init(bool enabled, bool trigger_omnibox_blending);
+
+  // Returns a dictionary corresponding to the search engine
+  base::Value::Dict CreateMockSearchAggregator(bool featured_by_policy) const;
+
+  // If true, injects mock search aggregator in the Omnibox.
+  bool enabled_ = false;
+  // If true, the data passes soft validation that prevents crashes downstream.
+  // Only set as true is `enabled_` is true.
+  bool valid_search_engine_ = false;
+  // The search engine name, shown in the Omnibox.
+  std::string name_;
+  // The shortcut the user enters to trigger the search.
+  std::string shortcut_;
+  // The URL on which to perform a search.
+  std::string search_url_;
+  // The URL that provides search suggestions.
+  std::string suggest_url_;
+  // The URL to an imanage that will be used on search suggestions.
+  std::string icon_url_;
+  // If enabled, Chrome will blend search suggestions with other Omnibox
+  // suggestions without requiring keyword mode.
+  bool trigger_omnibox_blending_ = false;
+};
+
 // If enabled, uses RichAnswerTemplate instead of SuggestionAnswer to display
 // answers.
 struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
   DECLARE_FEATURE(kOmniboxSuggestionAnswerMigration);
   SuggestionAnswerMigration();
   bool enabled;
-};
-
-// If enabled, EnterpriseSearchAggregatorSettings are applied.
-struct SparkSearch : Config<SparkSearch> {
-  DECLARE_FEATURE(kSparkSearch);
-  SparkSearch();
-  bool enabled;
-  // If enabled, users can perform a scoped search using the policy set
-  // keywords in the omnibox.
-  bool scoped;
 };
 
 // If enabled, affects autocompleted keywords (e.g. input 'youtu Ispiryan' ->
@@ -192,4 +239,4 @@ struct VitalizeAutocompletedKeywords : Config<VitalizeAutocompletedKeywords> {
 
 }  // namespace omnibox_feature_configs
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_FEATURE_CONFIGS_H_
+#endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
