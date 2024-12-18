@@ -187,6 +187,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kClipboardCustomFormat},
           {WebFeature::kClipboardSvgRead, WebDXFeature::kClipboardSvg},
           {WebFeature::kClipboardSvgWrite, WebDXFeature::kClipboardSvg},
+          {WebFeature::kV8ClipboardItem_Supports_Method,
+           WebDXFeature::kClipboardSupports},
           {WebFeature::kV8AbortController_Constructor, WebDXFeature::kAborting},
           {WebFeature::kV8AbortSignal_Abort_Method, WebDXFeature::kAborting},
           {WebFeature::kAbortSignalTimeout, WebDXFeature::kAborting},

@@ -34281,6 +34281,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="270" label="DRAFT_ErrorIsError"/>
   <int value="271" label="ClipboardCustomFormat"/>
   <int value="272" label="ClipboardSvg"/>
+  <int value="273" label="ClipboardSupports"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
