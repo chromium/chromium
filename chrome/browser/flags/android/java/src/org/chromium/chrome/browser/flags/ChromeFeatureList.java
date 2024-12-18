@@ -660,7 +660,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDownloadsMigrateToJobsAPI =
             newCachedFlag(DOWNLOADS_MIGRATE_TO_JOBS_API, false);
     public static final CachedFlag sDrawKeyNativeEdgeToEdge =
-            newCachedFlag(DRAW_KEY_NATIVE_EDGE_TO_EDGE, false);
+            newCachedFlag(
+                    DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDrawNativeEdgeToEdge =
             newCachedFlag(DRAW_NATIVE_EDGE_TO_EDGE, false);
     public static final CachedFlag sEdgeToEdgeBottomChin =

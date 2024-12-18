@@ -55,7 +55,6 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sCctFeatureUsage,
                     ChromeFeatureList.sCctGoogleBottomBar,
                     ChromeFeatureList.sDownloadsMigrateToJobsAPI,
-                    ChromeFeatureList.sDrawKeyNativeEdgeToEdge,
                     ChromeFeatureList.sEdgeToEdgeBottomChin,
                     ChromeFeatureList.sEdgeToEdgeWebOptIn,
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
