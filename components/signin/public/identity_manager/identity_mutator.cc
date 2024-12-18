@@ -62,21 +62,6 @@ void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, jint source_metric) {
       static_cast<signin_metrics::ProfileSignout>(source_metric));
 }
 
-void JniIdentityMutator::ReloadAllAccountsFromSystemWithPrimaryAccount(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_primary_account_id) {
-  DeviceAccountsSynchronizer* device_accounts_synchronizer =
-      identity_mutator_->GetDeviceAccountsSynchronizer();
-  DCHECK(device_accounts_synchronizer);
-  std::optional<CoreAccountId> primary_account_id;
-  if (j_primary_account_id) {
-    primary_account_id =
-        ConvertFromJavaCoreAccountId(env, j_primary_account_id);
-  }
-  device_accounts_synchronizer->ReloadAllAccountsFromSystemWithPrimaryAccount(
-      primary_account_id);
-}
-
 void JniIdentityMutator::SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& j_core_account_infos,

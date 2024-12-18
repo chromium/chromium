@@ -71,15 +71,6 @@ public class IdentityMutator {
         IdentityMutatorJni.get().revokeSyncConsent(mNativeIdentityMutator, sourceMetric);
     }
 
-    /**
-     * Reloads the accounts in the token service from the system accounts. This API calls
-     * ProfileOAuth2TokenServiceDelegate::ReloadAllAccountsFromSystemWithPrimaryAccount.
-     */
-    public void reloadAllAccountsFromSystemWithPrimaryAccount(@Nullable CoreAccountId accountId) {
-        IdentityMutatorJni.get()
-                .reloadAllAccountsFromSystemWithPrimaryAccount(mNativeIdentityMutator, accountId);
-    }
-
     public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
             List<CoreAccountInfo> coreAccountInfos, @Nullable CoreAccountId primaryAccountId) {
         IdentityMutatorJni.get()
@@ -103,9 +94,6 @@ public class IdentityMutator {
 
         public void revokeSyncConsent(
                 long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
-
-        public void reloadAllAccountsFromSystemWithPrimaryAccount(
-                long nativeJniIdentityMutator, @Nullable CoreAccountId accountId);
 
         public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                 long nativeJniIdentityMutator,
