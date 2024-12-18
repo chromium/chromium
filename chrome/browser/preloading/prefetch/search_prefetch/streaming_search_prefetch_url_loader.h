@@ -357,9 +357,6 @@ class StreamingSearchPrefetchURLLoader
   // Forwards all queued events to |forwarding_client_|.
   void RunEventQueue();
 
-  // Marks the parent prefetch request as servable. Called as delayed task.
-  void MarkPrefetchAsServable();
-
   // Called on `this` receives servable response.
   void OnServableResponseCodeReceived();
 
@@ -444,10 +441,6 @@ class StreamingSearchPrefetchURLLoader
   // Whenever an error is reported, it needs to be reported to the service via
   // this callback.
   base::OnceCallback<void(bool)> report_error_callback_;
-
-  // Track if the request has already been marked as servable, and if so, don't
-  // report it again.
-  bool marked_as_servable_ = false;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

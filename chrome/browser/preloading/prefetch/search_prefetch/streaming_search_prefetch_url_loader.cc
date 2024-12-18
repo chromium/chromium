@@ -280,8 +280,8 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
       report_error_callback_(std::move(report_error_callback)),
       network_traffic_annotation_(network_traffic_annotation),
       navigation_prefetch_(navigation_prefetch) {
-  DCHECK(streaming_prefetch_request_);
-  MarkPrefetchAsServable();
+  CHECK(streaming_prefetch_request_);
+  streaming_prefetch_request_->MarkPrefetchAsServable();
   prefetch_url_ = resource_request->url;
 
   // Maybe proxies the prefetch URL loader via the Extension Web Request API, so
@@ -358,15 +358,6 @@ StreamingSearchPrefetchURLLoader::GetServingResponseHandler(
   return base::BindOnce(
       &StreamingSearchPrefetchURLLoader::SetUpForwardingClient,
       std::move(loader));
-}
-
-void StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable() {
-  if (marked_as_servable_) {
-    return;
-  }
-  DCHECK(streaming_prefetch_request_);
-  marked_as_servable_ = true;
-  streaming_prefetch_request_->MarkPrefetchAsServable();
 }
 
 void StreamingSearchPrefetchURLLoader::OnServableResponseCodeReceived() {
@@ -537,8 +528,6 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
                                           std::nullopt);
     return;
   }
-
-  MarkPrefetchAsServable();
 
   // Store head and pause new messages until the forwarding client is set up.
   resource_response_ = std::move(head);
