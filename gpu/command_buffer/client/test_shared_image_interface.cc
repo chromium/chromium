@@ -314,7 +314,17 @@ TestSharedImageInterface::CreateSharedImage(
 scoped_refptr<ClientSharedImage>
 TestSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {
-  NOTREACHED();
+  base::WritableSharedMemoryMapping mapping;
+  gfx::GpuMemoryBufferHandle handle;
+  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
+
+  auto mailbox = Mailbox::Generate();
+  shared_images_.insert(mailbox);
+  most_recent_size_ = si_info.meta.size;
+
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
+                                                 GenUnverifiedSyncToken(),
+                                                 holder_, std::move(mapping));
 }
 
 void TestSharedImageInterface::UpdateSharedImage(
