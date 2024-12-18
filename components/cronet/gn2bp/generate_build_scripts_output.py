@@ -109,9 +109,8 @@ def _get_target_name_from_file(file_name: str) -> str:
   return f"//{build_gn_path}:{target_name}"
 
 
-def _generate_build_script_outputs_for_host(
-        targets: List[str]) -> Dict[str, List[str]]:
-  return _generate_build_script_outputs_for_arch("x64", targets)
+def _generate_build_script_outputs_for_host() -> Dict[str, List[str]]:
+  return _generate_build_script_outputs_for_arch("x64", True)
 
 
 def _generate_build_script_outputs_for_arch(arch: str,
@@ -154,7 +153,7 @@ def _generate_build_scripts_outputs(
       build_scripts_output_per_arch[target_name][arch] = output
 
   # Generate host-specific build script outputs
-  build_script_output = _generate_build_script_outputs_for_host(targets)
+  build_script_output = _generate_build_script_outputs_for_host()
   for (target_name, output) in build_script_output.items():
     if targets and target_name not in targets:
       continue
