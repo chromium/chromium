@@ -153,6 +153,20 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return size_.block_size;
   }
 
+  LogicalSize SizeForAnchorQueries() const {
+    // TODO(layout-dev): This isn't great. But sometimes anchor queries are
+    // evaluated in the middle of layout of an OOF container. This happens when
+    // the OOF container is a multicol container, and column layout gets
+    // interrupted by a column spanner. We should probably provide the multicol
+    // block size we have at the point of being interrupted by the spanner,
+    // rather than using 0.
+    LogicalSize logical_size(InlineSize(), LayoutUnit());
+    if (HasBlockSize()) {
+      logical_size.block_size = FragmentBlockSize();
+    }
+    return logical_size;
+  }
+
   void SetIntrinsicBlockSize(LayoutUnit intrinsic_block_size) {
     intrinsic_block_size_ = intrinsic_block_size;
   }

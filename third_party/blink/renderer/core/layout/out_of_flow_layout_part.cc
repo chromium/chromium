@@ -1732,31 +1732,31 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     }
   }
 
-  LogicalSize container_content_size = container_info.rect.size;
   PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_content_size, GetConstraintSpace().GetWritingMode());
+      container_info.rect.size, GetConstraintSpace().GetWritingMode());
   const WritingModeConverter container_converter(
-      container_info.writing_direction, container_physical_content_size);
+      container_info.writing_direction,
+      container_builder_->SizeForAnchorQueries());
+  PhysicalOffset offset_to_padding_box =
+      container_converter.ToPhysical(container_info.rect).offset;
   if (anchor_queries) {
     // When the containing block is block-fragmented, the |container_builder_|
     // is the fragmentainer, not the containing block, and the coordinate system
     // is stitched. Use the given |anchor_query|.
     const LayoutObject* css_containing_block = candidate_layout_box.Container();
     CHECK(css_containing_block);
-    return AnchorEvaluatorImpl(
-        candidate_layout_box, *anchor_queries, implicit_anchor,
-        *css_containing_block, container_converter,
-        container_converter.ToPhysical(container_info.rect).offset,
-        container_physical_content_size);
+    return AnchorEvaluatorImpl(candidate_layout_box, *anchor_queries,
+                               implicit_anchor, *css_containing_block,
+                               container_converter, offset_to_padding_box,
+                               container_physical_content_size);
   }
   if (const LogicalAnchorQuery* anchor_query =
           container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
-    return AnchorEvaluatorImpl(
-        candidate_layout_box, *anchor_query, implicit_anchor,
-        container_converter,
-        container_converter.ToPhysical(container_info.rect).offset,
-        container_physical_content_size);
+    return AnchorEvaluatorImpl(candidate_layout_box, *anchor_query,
+                               implicit_anchor, container_converter,
+                               offset_to_padding_box,
+                               container_physical_content_size);
   }
   return AnchorEvaluatorImpl();
 }
