@@ -116,7 +116,7 @@ BASE_FEATURE(kWebViewSupervisedUserSiteDetection,
 // on WebViews running on supervised user accounts.
 BASE_FEATURE(kWebViewSupervisedUserSiteBlock,
              "WebViewSupervisedUserSiteBlock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
