@@ -194,7 +194,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
                 base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+        personalization_app::GetTimeOfDayFeatures(), {});
   }
   PersonalizationAppAmbientProviderImplTest(
       const PersonalizationAppAmbientProviderImplTest&) = delete;

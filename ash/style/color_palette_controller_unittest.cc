@@ -164,8 +164,8 @@ TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
 TEST_F(ColorPaletteControllerTest,
        ExpectedColorScheme_TimeOfDay_UsesDefaultScheme) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      personalization_app::GetTimeOfDayEnabledFeatures(), {});
+  feature_list.InitWithFeatures(personalization_app::GetTimeOfDayFeatures(),
+                                {});
   EXPECT_EQ(kDefaultColorScheme,
             color_palette_controller()->GetColorScheme(kAccountId));
 }
@@ -769,8 +769,8 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 // color scheme is Neutral instead of TonalSpot in local_state.
 TEST_F(ColorPaletteControllerLocalPrefTest, NoLocalAccount_TimeOfDayScheme) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      personalization_app::GetTimeOfDayEnabledFeatures(), {});
+  feature_list.InitWithFeatures(personalization_app::GetTimeOfDayFeatures(),
+                                {});
   // Sets the current wallpaper to be ToD.
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.ShowWallpaperImage(CreateTimeOfDayWallpaperInfo(),

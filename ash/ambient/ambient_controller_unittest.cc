@@ -196,7 +196,7 @@ class AmbientControllerTest : public AmbientAshTestBase {
   // AmbientAshTestBase:
   void SetUp() override {
     std::vector<base::test::FeatureRef> features_to_enable =
-        personalization_app::GetTimeOfDayEnabledFeatures();
+        personalization_app::GetTimeOfDayFeatures();
     feature_list_.InitWithFeatures(features_to_enable, {});
     AmbientAshTestBase::SetUp();
     GetSessionControllerClient()->set_show_lock_screen_views(true);

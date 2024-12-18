@@ -45,7 +45,7 @@ TEST_F(AmbientUiSettingsTest, DefaultConstructor) {
 TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {}, personalization_app::GetTimeOfDayDisabledFeatures());
+      {}, personalization_app::GetTimeOfDayFeatures());
 
   ASSERT_FALSE(features::IsTimeOfDayScreenSaverEnabled());
 
@@ -59,7 +59,7 @@ TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
 
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
-      personalization_app::GetTimeOfDayEnabledFeatures(), {});
+      personalization_app::GetTimeOfDayFeatures(), {});
   ASSERT_TRUE(features::IsTimeOfDayScreenSaverEnabled());
   // No prior set up for kAmbientUiSettings prefs. With TOD features, kVideo is
   // set as default.

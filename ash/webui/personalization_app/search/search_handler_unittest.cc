@@ -165,7 +165,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
  protected:
   PersonalizationAppSearchHandlerTest() {
     scoped_feature_list_.InitWithFeatures(
-        {}, personalization_app::GetTimeOfDayDisabledFeatures());
+        {}, personalization_app::GetTimeOfDayFeatures());
   }
 
   ~PersonalizationAppSearchHandlerTest() override = default;
@@ -527,7 +527,7 @@ class PersonalizationAppSearchHandlerTimeOfDayTest
  public:
   PersonalizationAppSearchHandlerTimeOfDayTest() {
     scoped_feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+        personalization_app::GetTimeOfDayFeatures(), {});
   }
 
  private:

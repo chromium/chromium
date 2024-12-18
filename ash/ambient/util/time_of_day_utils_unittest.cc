@@ -30,8 +30,8 @@ constexpr base::FilePath::CharType kTestDlcRootPath[] =
 class TimeOfDayUtilsTest : public testing::Test {
  protected:
   TimeOfDayUtilsTest() {
-    feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+    feature_list_.InitWithFeatures(personalization_app::GetTimeOfDayFeatures(),
+                                   {});
     dlcservice_client_.set_install_root_path(kTestDlcRootPath);
   }
 

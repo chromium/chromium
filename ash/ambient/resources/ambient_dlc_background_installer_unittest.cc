@@ -24,8 +24,8 @@ namespace {
 class AmbientDlcBackgroundInstallerTest : public ::testing::Test {
  protected:
   AmbientDlcBackgroundInstallerTest() {
-    feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+    feature_list_.InitWithFeatures(personalization_app::GetTimeOfDayFeatures(),
+                                   {});
     wifi_device_path_ =
         cros_network_config_helper_.network_state_helper().ConfigureWiFi(
             shill::kStateIdle);

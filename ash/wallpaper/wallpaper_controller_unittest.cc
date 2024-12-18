@@ -948,10 +948,10 @@ class WallpaperControllerTest
     std::vector<base::test::FeatureRef> disabled_features;
     switch (GetParam()) {
       case TimeOfDayFeatureCombination::kDisabled:
-        disabled_features = personalization_app::GetTimeOfDayDisabledFeatures();
+        disabled_features = personalization_app::GetTimeOfDayFeatures();
         break;
       case TimeOfDayFeatureCombination::kTimeOfDay:
-        enabled_features = personalization_app::GetTimeOfDayEnabledFeatures();
+        enabled_features = personalization_app::GetTimeOfDayFeatures();
         break;
     }
     enabled_features.push_back(features::kSeaPen);
@@ -4430,7 +4430,7 @@ class WallpaperControllerPrefTest : public AshTestBase {
  public:
   WallpaperControllerPrefTest() {
     scoped_feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+        personalization_app::GetTimeOfDayFeatures(), {});
     base::Value::Dict property;
     property.Set("rotation", static_cast<int>(display::Display::ROTATE_90));
     property.Set("width", 800);
