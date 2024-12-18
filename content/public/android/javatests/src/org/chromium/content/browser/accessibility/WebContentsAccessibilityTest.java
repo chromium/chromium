@@ -743,7 +743,7 @@ public class WebContentsAccessibilityTest {
         int paragraphId = waitForNodeMatching(sTextMatcher, "This is a test");
         mNodeInfo = createAccessibilityNodeInfo(paragraphId);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertEquals(NODE_TIMEOUT_ERROR, "This is a test", mNodeInfo.getText());
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "This is a test", mNodeInfo.getText().toString());
 
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
@@ -781,7 +781,7 @@ public class WebContentsAccessibilityTest {
         int divId = waitForNodeMatching(sTextMatcher, "Generic node");
         mNodeInfo = createAccessibilityNodeInfo(paragraphId);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertEquals(NODE_TIMEOUT_ERROR, "This is a test", mNodeInfo.getText());
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "This is a test", mNodeInfo.getText().toString());
 
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
@@ -822,7 +822,7 @@ public class WebContentsAccessibilityTest {
         int paragraphId = waitForNodeMatching(sTextMatcher, "This is a test");
         mNodeInfo = createAccessibilityNodeInfo(paragraphId);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertEquals(NODE_TIMEOUT_ERROR, "This is a test", mNodeInfo.getText());
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "This is a test", mNodeInfo.getText().toString());
 
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
@@ -1017,7 +1017,7 @@ public class WebContentsAccessibilityTest {
         int vvIdDiv = waitForNodeMatching(sViewIdResourceNameMatcher, "test");
         mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Example text 1", mNodeInfo.getText());
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Example text 1", mNodeInfo.getText().toString());
 
         // Focus the encompassing node.
         focusNode(vvIdDiv);
@@ -1030,12 +1030,12 @@ public class WebContentsAccessibilityTest {
 
         // Check whether the text of the encompassing node has been updated.
         mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
-        Assert.assertEquals(CACHING_ERROR, "Example text 2", mNodeInfo.getText());
+        Assert.assertEquals(CACHING_ERROR, "Example text 2", mNodeInfo.getText().toString());
     }
 
     /**
-     * Test our internal cache of |AccessibilityNodeInfo| objects for updates to the
-     * bounding boxes of nodes during window resizes.
+     * Test our internal cache of |AccessibilityNodeInfo| objects for updates to the bounding boxes
+     * of nodes during window resizes.
      */
     @Test
     @SmallTest
@@ -1056,7 +1056,7 @@ public class WebContentsAccessibilityTest {
         int buttonvvId = waitForNodeMatching(sClassNameMatcher, "android.widget.Button");
         mNodeInfo = createAccessibilityNodeInfo(buttonvvId);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Next", mNodeInfo.getText());
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Next", mNodeInfo.getText().toString());
 
         Rect beforeBounds = new Rect();
         mNodeInfo.getBoundsInScreen(beforeBounds);
