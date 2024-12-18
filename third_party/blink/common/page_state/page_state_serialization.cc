@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -996,6 +997,13 @@ int DecodePageStateInternal(const std::string& encoded,
 
   SerializeObject obj(base::as_byte_span(encoded));
   ReadPageState(&obj, exploded);
+
+  if (obj.version < kCurrentVersion) {
+    // Record when a PageState with an earlier version number is decoded, to
+    // estimate how long older version support should be retained.
+    base::UmaHistogramSparse("SessionRestore.PageStateOldVersions",
+                             obj.version);
+  }
   return obj.parse_error ? -1 : obj.version;
 }
 

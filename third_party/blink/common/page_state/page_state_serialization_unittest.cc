@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
+
 #include <stddef.h>
 
 #include <cmath>
@@ -13,10 +15,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
-#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 namespace blink {
 namespace {
@@ -273,6 +275,15 @@ class PageStateSerializationTest : public testing::Test {
     PopulateFrameStateForBackwardsCompatTest(&page_state->top, false, version);
   }
 
+  int GetCurrentVersion() {
+    // Because the kCurrentVersion is an internal value not accessible to this
+    // test, find it by pulling it out of a newly generated PageState.
+    std::string encoded;
+    ExplodedPageState page_state;
+    EncodePageState(page_state, &encoded);
+    return DecodePageStateForTesting(encoded, &page_state);
+  }
+
   void ReadBackwardsCompatPageState(const std::string& suffix,
                                     int version,
                                     ExplodedPageState* page_state) {
@@ -324,7 +335,14 @@ class PageStateSerializationTest : public testing::Test {
     ExplodedPageState decoded_state;
     ExplodedPageState expected_state;
     PopulatePageStateForBackwardsCompatTest(&expected_state, version);
+
+    base::HistogramTester histogram_tester;
     ReadBackwardsCompatPageState(suffix, version, &decoded_state);
+    if (version < GetCurrentVersion()) {
+      // Older versions should generate a histogram value when decoded.
+      histogram_tester.ExpectBucketCount("SessionRestore.PageStateOldVersions",
+                                         version, 1);
+    }
 
     ExpectEquality(expected_state, decoded_state);
   }
