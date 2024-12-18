@@ -48,16 +48,6 @@ BASE_FEATURE(kFeatureOffByDefault,
              "OffByDefaultName",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// All feature flags set to pass FeatureAccessChecker::Check()
-FeatureAccessConfig DefaultConfig() {
-  return {
-      .settings_toggle_pref = kSettingsTogglePref,
-      .consent_accepted_pref = kConsentAcceptedPref,
-      .feature_flag = raw_ref(kFeatureOnByDefault),
-      .feature_management_flag = raw_ref(kFeatureOnByDefault),
-  };
-}
-
 void RegisterAndEnableAllPrefs(TestingPrefServiceSimple& pref) {
   pref.registry()->RegisterBooleanPref(kSettingsTogglePref, true);
   pref.registry()->RegisterBooleanPref(kConsentAcceptedPref, true);
@@ -102,37 +92,76 @@ class FeatureAccessCheckerTest : public testing::Test {
   std::unique_ptr<variations::TestVariationsService> variations_service_;
 };
 
-TEST_F(FeatureAccessCheckerTest, AllPrefAndFeatureChecksPass) {
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
+TEST_F(FeatureAccessCheckerTest, AllPrefAndFeatureChecksPassIfUnset) {
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(/* config= */ {}, pref_,
                                                   *GetIdentityManager(),
                                                   *variations_service_)
                                  .Check()),
               IsEmpty());
 }
 
+TEST_F(FeatureAccessCheckerTest, CheckSettingsPrefCheckPass) {
+  FeatureAccessConfig config;
+  config.settings_toggle_pref = kSettingsTogglePref;
+  pref_.SetBoolean(kSettingsTogglePref, true);
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      IsEmpty());
+}
+
 TEST_F(FeatureAccessCheckerTest, CheckSettingsPrefCheckFail) {
+  FeatureAccessConfig config;
+  config.settings_toggle_pref = kSettingsTogglePref;
   pref_.SetBoolean(kSettingsTogglePref, false);
 
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
-                                                  *GetIdentityManager(),
-                                                  *variations_service_)
-                                 .Check()),
-              ElementsAre(kDisabledInSettings));
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      ElementsAre(kDisabledInSettings));
+}
+
+TEST_F(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckPass) {
+  FeatureAccessConfig config;
+  config.consent_accepted_pref = kConsentAcceptedPref;
+  pref_.SetBoolean(kConsentAcceptedPref, true);
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      IsEmpty());
 }
 
 TEST_F(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckFail) {
+  FeatureAccessConfig config;
+  config.consent_accepted_pref = kConsentAcceptedPref;
   pref_.SetBoolean(kConsentAcceptedPref, false);
 
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
-                                                  *GetIdentityManager(),
-                                                  *variations_service_)
-                                 .Check()),
-              ElementsAre(kConsentNotAccepted));
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      ElementsAre(kConsentNotAccepted));
+}
+
+TEST_F(FeatureAccessCheckerTest, FeatureFlagPass) {
+  FeatureAccessConfig config;
+  config.feature_flag = &kFeatureOnByDefault;
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      IsEmpty());
 }
 
 TEST_F(FeatureAccessCheckerTest, FeatureFlagFail) {
-  FeatureAccessConfig config = DefaultConfig();
-  config.feature_flag = kFeatureOffByDefault;
+  FeatureAccessConfig config;
+  config.feature_flag = &kFeatureOffByDefault;
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
@@ -141,9 +170,20 @@ TEST_F(FeatureAccessCheckerTest, FeatureFlagFail) {
       ElementsAre(kFeatureFlagDisabled));
 }
 
+TEST_F(FeatureAccessCheckerTest, FeatureManagementFlagPass) {
+  FeatureAccessConfig config;
+  config.feature_management_flag = &kFeatureOnByDefault;
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      IsEmpty());
+}
+
 TEST_F(FeatureAccessCheckerTest, FeatureManagementFlagFail) {
-  FeatureAccessConfig config = DefaultConfig();
-  config.feature_management_flag = kFeatureOffByDefault;
+  FeatureAccessConfig config;
+  config.feature_management_flag = &kFeatureOffByDefault;
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
@@ -156,7 +196,7 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckPass) {
   std::string key_val = "hunter2";
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             key_val);
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString(key_val);
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
 
@@ -170,7 +210,7 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckPass) {
 TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFail) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
 
@@ -187,7 +227,7 @@ TEST_F(FeatureAccessCheckerTest,
       "someone@google.com", signin::ConsentLevel::kSignin);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
 
@@ -204,7 +244,7 @@ TEST_F(FeatureAccessCheckerTest,
       "someone@gmail.com", signin::ConsentLevel::kSignin);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
   config.allow_google_accounts_skip_secret_key = true;
@@ -223,7 +263,7 @@ TEST_F(
       "someone@google.com", signin::ConsentLevel::kSignin);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
   config.allow_google_accounts_skip_secret_key = true;
@@ -242,7 +282,7 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckPass) {
   mutator.set_can_use_manta_service(true);
   signin::UpdateAccountInfoForAccount(
       identity_test_environment_.identity_manager(), account);
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   config.requires_manta_account_capabilities = true;
 
   EXPECT_THAT(
@@ -257,7 +297,7 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfFalse) {
       "someone@gmail.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account.capabilities);
   mutator.set_can_use_manta_service(false);
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   config.requires_manta_account_capabilities = true;
 
   EXPECT_THAT(
@@ -270,7 +310,7 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfFalse) {
 TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfUnset) {
   identity_test_environment_.MakePrimaryAccountAvailable(
       "someone@gmail.com", signin::ConsentLevel::kSignin);
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   config.requires_manta_account_capabilities = true;
 
   EXPECT_THAT(
@@ -281,7 +321,7 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfUnset) {
 }
 
 TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfNothingInList) {
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "fr");
   std::vector<std::string_view> country_codes;
@@ -297,7 +337,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfNothingInList) {
 TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfExactMatch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "us");
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   std::string_view country_codes[] = {"us"};
   config.country_codes = country_codes;
 
@@ -311,7 +351,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfExactMatch) {
 TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassOneOfMany) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "jp");
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   std::string_view country_codes[] = {"us", "fr", "jp"};
   config.country_codes = country_codes;
 
@@ -323,7 +363,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassOneOfMany) {
 }
 
 TEST_F(FeatureAccessCheckerTest, CountryCodeCheckFailCountryNotInList) {
-  FeatureAccessConfig config = DefaultConfig();
+  FeatureAccessConfig config;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "fr");
   std::string_view country_codes[] = {"us"};

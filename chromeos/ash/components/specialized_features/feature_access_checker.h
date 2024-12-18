@@ -52,23 +52,25 @@ struct COMPONENT_EXPORT(
 // specialized feature checks.
 struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
     FeatureAccessConfig {
+  FeatureAccessConfig();
+  ~FeatureAccessConfig();
   // The preference that determines whether the feature is enabled via settings.
   // The FeatureAccessChecker::Check() verifies if its value is true in the
   // given prefs, and returns kDisabledInSettings if not.
-  std::string_view settings_toggle_pref;
+  std::optional<std::string_view> settings_toggle_pref;
   // The preference that deterimines whether the features legal consent
   // disclaimer has been accepted. The FeatureAccessChecker::Check() verifies
   // if its value is true in the given prefs, and returns kConsentNotAccepted if
   // not.
-  std::string_view consent_accepted_pref;
+  std::optional<std::string_view> consent_accepted_pref;
   // The main feature flag that is used to enable/disable the feature itself.
   // The FeatureAccessChecker::Check() verifies if its value is true and returns
   // kFeatureFlagDisabled if not.
-  raw_ref<const base::Feature> feature_flag;
+  raw_ptr<const base::Feature> feature_flag = nullptr;
   // This is for the feature flag that is related to the ChromeOS feature
   // management system. The FeatureAccessChecker::Check() verifies if its value
   // is true and returns kFeatureManagementCheckFailed if not.
-  raw_ref<const base::Feature> feature_management_flag;
+  raw_ptr<const base::Feature> feature_management_flag = nullptr;
   // Only these country codes are allowed. If empty, allows all country codes.
   base::raw_span<std::string_view> country_codes;
   // Special key used to guard users from accessing the feature.
@@ -78,14 +80,14 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // value is set and the secret key check fails.
   std::optional<SecretKey> secret_key;
   // Allow googlers to override the secret_key check.
-  bool allow_google_accounts_skip_secret_key;
+  bool allow_google_accounts_skip_secret_key = false;
   // If set to true, will check if the account has manta account capabilities.
   // This is used as a proxy to check user capability requirements such as
   // whether the user is NOT inferred to be a minor.
   // FeatureAccessChecker::Check() will return
   // kMantaAccountCapabilitiesCheckFailed if this value is set and the secret
   // key check fails.
-  bool requires_manta_account_capabilities;
+  bool requires_manta_account_capabilities = false;
 };
 
 // Creates a class to check different dependencies for specialized features.
