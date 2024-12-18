@@ -373,7 +373,14 @@ BASE_FEATURE(kSkiaGraphitePrecompilation,
 
 BASE_FEATURE(kConditionallySkipGpuChannelFlush,
              "ConditionallySkipGpuChannelFlush",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// To enable on ChromeOS, test failures must be investigated
+// (crrev.com/c/5435673).
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Whether the Dawn "skip_validation" toggle is enabled for Skia Graphite.
 const base::FeatureParam<bool> kSkiaGraphiteDawnSkipValidation{
