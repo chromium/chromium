@@ -348,9 +348,6 @@ bool IsStateless() {
   NSArray<FormSuggestion*>* suggestionsCopy =
       [self copyAndAdjustSuggestions:suggestions];
 
-  // TODO(crbug.com/3407699): Make sure the provider is wrapped in the
-  // suggestions when the statless controller is used.
-  //
   // Cache the provider and state for the stateful controller. Those should not
   // be used when the provider is stateless.
   _provider = provider;
