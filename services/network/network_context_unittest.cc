@@ -1483,12 +1483,17 @@ TEST_F(DiskCacheSizeTest, DiskCacheSize) {
 
   int64_t max_file_size_scaled = VerifyDiskCacheSize(200);
 
-  // After scaling to 200%, the size will in most cases be twice of
-  // |max_file_size| but it is dependent on the available size, and since we
-  // cannot guarantee available size to be the same between the 2 runs to
-  // VerifyDiskCacheSize(), only checking for the scaled size to be >=
-  // max_file_size.
+#if BUILDFLAG(IS_WIN)
+  // In most cases, the scaled size will be 2x the non-scaled size. However,
+  // this is dependent on available disk space and we cannot guarantee that it
+  // will remain constant between 2 calls to VerifyDiskCacheSize(), so we only
+  // check that the scaled size is larger than the non-scaled size.
   EXPECT_GE(max_file_size_scaled, max_file_size);
+#else
+  // On non-Windows, a 400% scaling factor is applied by default. Therefore,
+  // applying a 200% scaling factor results in a smaller size than the default.
+  EXPECT_LE(max_file_size_scaled, max_file_size);
+#endif
 }
 
 // This makes sure that network_session_configurator::ChooseCacheType is
