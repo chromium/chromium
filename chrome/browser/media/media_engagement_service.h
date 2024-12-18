@@ -60,7 +60,10 @@ class MediaEngagementService : public KeyedService,
   // Returns the engagement score of |origin|.
   double GetEngagementScore(const url::Origin& origin) const;
 
-  // Returns true if |origin| has an engagement score considered high.
+  // Returns true if `origin` has an engagement score considered high.
+  // Otherwise, check the global data (`MediaEngagementPreloadedList`) if the
+  // `kPreloadMediaEngagementData` feature flag is enabled and the number of
+  // visits is less than the number of visits required to have an MEI score.
   virtual bool HasHighEngagement(const url::Origin& origin) const;
 
   // Returns a map of all stored origins and their engagement levels.

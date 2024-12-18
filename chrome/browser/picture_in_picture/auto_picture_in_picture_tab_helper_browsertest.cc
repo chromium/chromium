@@ -845,9 +845,15 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotVideoAutopip_LowEngagementScore) {
-  // Load a page that registers for autopip and start video playback.
-  LoadAutoVideoPipPage(browser());
+  // Load a page, with HTTPS scheme, that registers for autopip and start video
+  // playback.
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "a.com", "/media/picture-in-picture/autopip-video.html")));
+
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents->GetLastCommittedURL().SchemeIs(url::kHttpsScheme));
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
@@ -855,6 +861,24 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForWasRecentlyAudible(web_contents);
 
   SwitchToNewTabAndDontExpectAutopip();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureWithVideoPlaybackBrowserTest,
+    DoesVideoAutopip_LowEngagementScoreAndUrlWithFileScheme) {
+  // Load a page, with file scheme, that registers for autopip and start video
+  // playback.
+  LoadAutoVideoPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents->GetLastCommittedURL().SchemeIsFile());
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(false);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(

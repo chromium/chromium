@@ -253,14 +253,14 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() {
     return false;
   }
 
-  // The tab must either have playback or be using camera/microphone to autopip.
-  if (!MeetsVideoPlaybackConditions() && !IsUsingCameraOrMicrophone()) {
-    return false;
-  }
-
   // Only https:// or file:// may autopip.
   const GURL url = web_contents()->GetLastCommittedURL();
   if (!url.SchemeIs(url::kHttpsScheme) && !url.SchemeIsFile()) {
+    return false;
+  }
+
+  // The tab must either have playback or be using camera/microphone to autopip.
+  if (!MeetsVideoPlaybackConditions() && !IsUsingCameraOrMicrophone()) {
     return false;
   }
 
@@ -333,17 +333,21 @@ bool AutoPictureInPictureTabHelper::MeetsMediaEngagementConditions() const {
     return true;
   }
 
-  if (!media_engagement_service_) {
-    return false;
-  }
-
   std::optional<content::RenderFrameHost*> rfh = GetPrimaryMainRoutedFrame();
   if (!rfh) {
     return false;
   }
 
-  return media_engagement_service_->HasHighEngagement(
-      rfh.value()->GetLastCommittedOrigin());
+  const url::Origin origin = rfh.value()->GetLastCommittedOrigin();
+  if (origin.GetURL().SchemeIsFile()) {
+    return true;
+  }
+
+  if (!media_engagement_service_) {
+    return false;
+  }
+
+  return media_engagement_service_->HasHighEngagement(origin);
 }
 
 ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
