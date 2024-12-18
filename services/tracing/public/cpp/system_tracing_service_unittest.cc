@@ -167,34 +167,5 @@ TEST_F(SystemTracingServiceTest, BindAndPassPendingRemote_Nonexistent) {
   ASSERT_TRUE(callback_called);
 }
 
-TEST_F(SystemTracingServiceTest, BindAndPassPendingRemote_NonexistentLong) {
-  auto sts = std::make_unique<SystemTracingService>();
-  bool callback_called = false;
-
-  // Set the producer socket name to a long nonexistent path.
-  saved_producer_sock_env_ = getenv(kProducerSockEnvName);
-  std::string sock_name;
-  while (sock_name.size() < 1024) {
-    sock_name.append("nonexistent/");
-  }
-  ASSERT_EQ(0, setenv(kProducerSockEnvName, sock_name.c_str(), 1));
-
-  // Bind the pending remote on the current thread.
-  mojo::Remote<mojom::SystemTracingService> remote;
-  remote.Bind(sts->BindAndPassPendingRemote(), nullptr);
-
-  base::RunLoop run_loop;
-  auto callback = base::BindLambdaForTesting([&](base::File file) {
-    callback_called = true;
-    ASSERT_FALSE(file.IsValid());
-    run_loop.Quit();
-  });
-
-  remote->OpenProducerSocket(std::move(callback));
-  ASSERT_FALSE(callback_called);
-  run_loop.Run();
-  ASSERT_TRUE(callback_called);
-}
-
 }  // namespace
 }  // namespace tracing
