@@ -38,7 +38,6 @@ enum class AccidentalClickType {
 constexpr int kButtonGapNoBackground = 14;
 constexpr int kSeparatorBorderRadius = 2;
 constexpr int kSeparatorWidth = 2;
-constexpr int kSeparatorWidthNoBackground = 2;
 constexpr int kSeparatorHeight = 16;
 constexpr base::TimeDelta kAccidentalClickThreshold = base::Seconds(1);
 constexpr char kNewTabButtonAccidentalClickName[] =
@@ -98,10 +97,7 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
                            : kColorTabStripComboButtonSeparatorOnHeader;
   separator->SetColorId(color_id);
   separator->SetBorderRadius(kSeparatorBorderRadius);
-  const int separator_width = features::HasTabstripComboButtonWithBackground()
-                                  ? kSeparatorWidth
-                                  : kSeparatorWidthNoBackground;
-  separator->SetPreferredSize(gfx::Size(separator_width, kSeparatorHeight));
+  separator->SetPreferredSize(gfx::Size(kSeparatorWidth, kSeparatorHeight));
 
   std::unique_ptr<TabSearchContainer> tab_search_container =
       std::make_unique<TabSearchContainer>(

@@ -657,8 +657,13 @@ void TabStyleViewsImpl::HideHover(TabStyle::HideHoverStyle style) {
 
 TabStyle::SeparatorBounds TabStyleViewsImpl::GetSeparatorBounds(
     float scale) const {
+  const gfx::Rect original_bounds = tab_->bounds();
+  // Factor out the amount of the tab strip that is overlapped by the toolbar.
+  const gfx::Rect visible_bounds = gfx::Rect(
+      original_bounds.x(), original_bounds.y(), original_bounds.width(),
+      original_bounds.height() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
   const gfx::RectF aligned_bounds =
-      ScaleAndAlignBounds(tab_->bounds(), scale, GetStrokeThickness());
+      ScaleAndAlignBounds(visible_bounds, scale, GetStrokeThickness());
   const int corner_radius = tab_style()->GetBottomCornerRadius() * scale;
   gfx::SizeF separator_size(tab_style()->GetSeparatorSize());
   separator_size.Scale(scale);
