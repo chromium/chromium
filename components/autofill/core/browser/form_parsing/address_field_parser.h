@@ -88,6 +88,9 @@ class AddressFieldParser : public FormFieldParser {
 
   bool ParseOverflow(ParsingContext& context, AutofillScanner* scanner);
 
+  bool ParseBetweenStreetsFields(ParsingContext& context,
+                                 AutofillScanner* scanner);
+
   // Parses the current field pointed to by `scanner`, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
   // dependent locality, city, state, country, zip, landmark, between streets,

@@ -278,13 +278,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   // arbitrary order the parsing is considered successful.
   const size_t saved_cursor_position = scanner->CursorPosition();
 
-  base::span<const MatchPatternRef> between_streets_patterns =
-      GetMatchPatterns("BETWEEN_STREETS", context);
-  base::span<const MatchPatternRef> between_streets_line_1_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_LINE_1", context);
-  base::span<const MatchPatternRef> between_streets_line_2_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_LINE_2", context);
-
   std::optional<FieldAndMatchInfo> old_street_location = street_location_;
   std::optional<FieldAndMatchInfo> old_street_name = street_name_;
   std::optional<FieldAndMatchInfo> old_overflow = overflow_;
@@ -355,26 +348,8 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
-    if (i18n_model_definition::IsTypeEnabledForCountry(
-            ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
-      if (!between_streets_ && !between_streets_line_1_ &&
-          ParseField(context, scanner, between_streets_patterns,
-                     &between_streets_, "BETWEEN_STREETS")) {
-        continue;
-      }
-
-      if (!between_streets_line_1_ &&
-          ParseField(context, scanner, between_streets_line_1_patterns,
-                     &between_streets_line_1_, "BETWEEN_STREETS_LINE_1")) {
-        continue;
-      }
-
-      if ((between_streets_ || between_streets_line_1_) &&
-          !between_streets_line_2_ &&
-          ParseField(context, scanner, between_streets_line_2_patterns,
-                     &between_streets_line_2_, "BETWEEN_STREETS_LINE_2")) {
-        continue;
-      }
+    if (ParseBetweenStreetsFields(context, scanner)) {
+      continue;
     }
 
     break;
@@ -682,6 +657,42 @@ bool AddressFieldParser::ParseOverflow(ParsingContext& context,
       GetMatchPatterns("OVERFLOW", context);
   return ParseField(context, scanner, overflow_patterns, &overflow_,
                     "OVERFLOW");
+}
+
+bool AddressFieldParser::ParseBetweenStreetsFields(ParsingContext& context,
+                                                   AutofillScanner* scanner) {
+  AddressCountryCode country_code(context.client_country.value());
+  if (!i18n_model_definition::IsTypeEnabledForCountry(
+          ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> between_streets_patterns =
+      GetMatchPatterns("BETWEEN_STREETS", context);
+  base::span<const MatchPatternRef> between_streets_line_1_patterns =
+      GetMatchPatterns("BETWEEN_STREETS_LINE_1", context);
+  base::span<const MatchPatternRef> between_streets_line_2_patterns =
+      GetMatchPatterns("BETWEEN_STREETS_LINE_2", context);
+
+  if (!between_streets_ && !between_streets_line_1_ &&
+      ParseField(context, scanner, between_streets_patterns, &between_streets_,
+                 "BETWEEN_STREETS")) {
+    return true;
+  }
+
+  if (!between_streets_line_1_ &&
+      ParseField(context, scanner, between_streets_line_1_patterns,
+                 &between_streets_line_1_, "BETWEEN_STREETS_LINE_1")) {
+    return true;
+  }
+
+  if (!between_streets_line_2_ &&
+      (between_streets_ || between_streets_line_1_) &&
+      ParseField(context, scanner, between_streets_line_2_patterns,
+                 &between_streets_line_2_, "BETWEEN_STREETS_LINE_2")) {
+    return true;
+  }
+  return false;
 }
 
 // static
