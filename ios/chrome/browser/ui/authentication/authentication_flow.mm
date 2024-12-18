@@ -479,11 +479,7 @@ BOOL IsIdentityInCoreAccountInfos(
 }
 
 - (void)multiProfileSignIn {
-  if (self.userDecisionCompletion) {
-    self.userDecisionCompletion();
-  }
   ProfileIOS* profile = [self originalProfile];
-
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
