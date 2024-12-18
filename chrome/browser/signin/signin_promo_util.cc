@@ -161,7 +161,7 @@ bool ShouldShowPromoBasedOnImpressionCount(Profile& profile,
   switch (type) {
     case AutofillSignInPromoType::kAddress:
       show_count =
-          account.IsEmpty()
+          account.gaia.empty()
               ? profile.GetPrefs()->GetInteger(
                     prefs::kAddressSignInPromoShownCountPerProfile)
               : SigninPrefs(*profile.GetPrefs())
@@ -169,7 +169,7 @@ bool ShouldShowPromoBasedOnImpressionCount(Profile& profile,
       break;
     case AutofillSignInPromoType::kPassword:
       show_count =
-          account.IsEmpty()
+          account.gaia.empty()
               ? profile.GetPrefs()->GetInteger(
                     prefs::kPasswordSignInPromoShownCountPerProfile)
               : SigninPrefs(*profile.GetPrefs())
