@@ -1884,4 +1884,10 @@ bool ContentBrowserClient::ShouldDispatchPagehideDuringCommit(
   return true;
 }
 
+std::unique_ptr<WebUIController> ContentBrowserClient::OverrideForInternalWebUI(
+    WebUI* web_ui,
+    const GURL& url) {
+  return nullptr;
+}
+
 }  // namespace content

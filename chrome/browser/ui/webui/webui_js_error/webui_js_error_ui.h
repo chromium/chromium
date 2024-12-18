@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_JS_ERROR_WEBUI_JS_ERROR_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_JS_ERROR_WEBUI_JS_ERROR_UI_H_
 
-#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
 
 class WebUIJsErrorUI;
 
 class WebUIJsErrorUIConfig
-    : public webui::DefaultInternalWebUIConfig<WebUIJsErrorUI> {
+    : public content::DefaultInternalWebUIConfig<WebUIJsErrorUI> {
  public:
   WebUIJsErrorUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUIWebUIJsErrorHost) {}

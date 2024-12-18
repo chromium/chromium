@@ -10,7 +10,6 @@ source_set("safe_browsing") {
     "chrome_safe_browsing_ui.h",
   ]
   public_deps = [
-    "//chrome/browser/ui/webui:internal_webui_config",
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/common",
     "//content/public/browser",

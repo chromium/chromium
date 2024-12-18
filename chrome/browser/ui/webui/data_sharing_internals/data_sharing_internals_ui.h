@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_UI_H_
 
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals.mojom.h"
-#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "components/data_sharing/public/protocol/group_data.mojom.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -15,7 +15,7 @@ class DataSharingInternalsPageHandlerImpl;
 class DataSharingInternalsUI;
 
 class DataSharingInternalsUIConfig
-    : public webui::DefaultInternalWebUIConfig<DataSharingInternalsUI> {
+    : public content::DefaultInternalWebUIConfig<DataSharingInternalsUI> {
  public:
   DataSharingInternalsUIConfig();
   ~DataSharingInternalsUIConfig() override;

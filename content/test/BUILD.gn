@@ -2903,6 +2903,7 @@ test("content_unittests") {
     "../browser/webrtc/webrtc_internals_message_handler_unittest.cc",
     "../browser/webrtc/webrtc_internals_unittest.cc",
     "../browser/webtransport/web_transport_throttle_context_unittest.cc",
+    "../browser/webui/internal_webui_config_unittest.cc",
     "../browser/webui/url_data_manager_backend_unittest.cc",
     "../browser/webui/web_ui_data_source_unittest.cc",
     "../browser/webui/web_ui_impl_unittest.cc",

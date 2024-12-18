@@ -1134,6 +1134,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnTracingServiceStopped() override;
 #endif
 
+  std::unique_ptr<content::WebUIController> OverrideForInternalWebUI(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
 

@@ -195,6 +195,7 @@
 #include "chrome/browser/ui/web_applications/navigation_capturing_redirection_throttle.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/ui/webui/internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "chrome/browser/universal_web_contents_observers.h"
@@ -8790,3 +8791,20 @@ void ChromeContentBrowserClient::OnTracingServiceStopped() {
   windows_system_tracing_client_.reset();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+std::unique_ptr<content::WebUIController>
+ChromeContentBrowserClient::OverrideForInternalWebUI(content::WebUI* web_ui,
+                                                     const GURL& url) {
+  if (!base::FeatureList::IsEnabled(features::kInternalOnlyUisPref)) {
+    return nullptr;
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  DCHECK(local_state->FindPreference(prefs::kInternalOnlyUisEnabled));
+  if (local_state->GetBoolean(prefs::kInternalOnlyUisEnabled)) {
+    return nullptr;
+  }
+
+  return std::make_unique<InternalDebugPagesDisabledUI>(web_ui, url.host());
+}

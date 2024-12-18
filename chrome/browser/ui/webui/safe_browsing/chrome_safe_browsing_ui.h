@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SAFE_BROWSING_CHROME_SAFE_BROWSING_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SAFE_BROWSING_CHROME_SAFE_BROWSING_UI_H_
 
-#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
 
@@ -16,7 +16,7 @@ namespace safe_browsing {
 class ChromeSafeBrowsingUI;
 
 class ChromeSafeBrowsingUIConfig
-    : public webui::DefaultInternalWebUIConfig<ChromeSafeBrowsingUI> {
+    : public content::DefaultInternalWebUIConfig<ChromeSafeBrowsingUI> {
  public:
   ChromeSafeBrowsingUIConfig()
       : DefaultInternalWebUIConfig(safe_browsing::kChromeUISafeBrowsingHost) {}

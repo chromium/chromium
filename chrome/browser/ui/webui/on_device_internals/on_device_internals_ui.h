@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_UI_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -17,7 +17,7 @@ class OnDeviceInternalsUI;
 
 // WebUIConfig for chrome://on-device-internals
 class OnDeviceInternalsUIConfig
-    : public webui::DefaultInternalWebUIConfig<OnDeviceInternalsUI> {
+    : public content::DefaultInternalWebUIConfig<OnDeviceInternalsUI> {
  public:
   OnDeviceInternalsUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUIOnDeviceInternalsHost) {}

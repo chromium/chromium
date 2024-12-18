@@ -63,30 +63,6 @@ source_set("configs") {
   }
 }
 
-source_set("internal_webui_config") {
-  sources = [
-    "internal_debug_pages_disabled/internal_debug_pages_disabled_ui.cc",
-    "internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h",
-    "internal_webui_config.cc",
-    "internal_webui_config.h",
-  ]
-
-  public_deps = [ "//base" ]
-
-  deps = [
-    "//chrome/app:branded_strings",
-    "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources:dev_ui_resources",
-    "//chrome/common",
-    "//components/prefs",
-    "//content/public/browser",
-    "//content/public/common",
-    "//url",
-  ]
-}
-
 source_set("webui_util") {
   sources = [ "webui_util.h" ]
 

@@ -232,6 +232,8 @@ source_set("browser_sources") {
     "installed_payment_apps_finder.h",
     "interest_group_api_operation.h",
     "interest_group_manager.h",
+    "internal_webui_config.cc",
+    "internal_webui_config.h",
     "invalidate_type.h",
     "isolated_context_util.cc",
     "isolated_context_util.h",

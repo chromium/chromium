@@ -70,11 +70,13 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "crypto/crypto_buildflags.h"
 #include "media/media_buildflags.h"
@@ -1772,4 +1774,64 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GrantCookieAccessDueToHeuristicTest,
+                         testing::Bool());
+
+const char kTestWebUIURL[] = "chrome://test";
+
+class ChromeContentBrowserClientOverrideForInternalWebUITest
+    : public ChromeRenderViewHostTestHarness,
+      public testing::WithParamInterface<bool> {
+ protected:
+  ChromeContentBrowserClientOverrideForInternalWebUITest() {
+    testing_local_state_.Get()->SetBoolean(prefs::kInternalOnlyUisEnabled,
+                                           GetParam());
+  }
+
+  ChromeContentBrowserClient& client() { return client_; }
+
+ protected:
+  ScopedTestingLocalState testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+
+ private:
+  ChromeContentBrowserClient client_;
+};
+
+TEST_P(ChromeContentBrowserClientOverrideForInternalWebUITest, FeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kInternalOnlyUisPref);
+
+  // When the feature flag is off, OverrideForInternalWebUI should return
+  // null regardless of the state of the pref.
+  std::unique_ptr<TestingProfile> profile = CreateTestingProfile();
+  content::TestWebUI test_webui;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile.get(), nullptr);
+  test_webui.set_web_contents(web_contents.get());
+  std::unique_ptr<content::WebUIController> webui_controller =
+      client().OverrideForInternalWebUI(&test_webui, GURL(kTestWebUIURL));
+
+  EXPECT_EQ(nullptr, webui_controller);
+}
+
+TEST_P(ChromeContentBrowserClientOverrideForInternalWebUITest, FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kInternalOnlyUisPref);
+
+  // When the feature flag is on, OverrideForInternalWebUI should return
+  // non-null if kInternalOnlyUisEnabled pref is turned off, and null
+  // otherwise.
+  std::unique_ptr<TestingProfile> profile = CreateTestingProfile();
+  content::TestWebUI test_webui;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile.get(), nullptr);
+  test_webui.set_web_contents(web_contents.get());
+  std::unique_ptr<content::WebUIController> webui_controller =
+      client().OverrideForInternalWebUI(&test_webui, GURL(kTestWebUIURL));
+
+  EXPECT_EQ(GetParam(), webui_controller == nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeContentBrowserClientOverrideForInternalWebUITest,
                          testing::Bool());

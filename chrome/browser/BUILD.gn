@@ -1991,6 +1991,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
+    "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updater:scheduler",
     "//chrome/browser/updates/announcement_notification",

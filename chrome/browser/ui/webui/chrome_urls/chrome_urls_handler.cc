@@ -9,12 +9,12 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
@@ -91,7 +91,7 @@ void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
         chrome_urls::mojom::WebuiUrlInfo::New());
     url_info->url = config_info.origin.GetURL();
     url_info->enabled = config_info.enabled;
-    url_info->internal = webui::IsInternalWebUI(config_info.origin.GetURL());
+    url_info->internal = content::IsInternalWebUI(config_info.origin.GetURL());
     webui_urls.push_back(std::move(url_info));
   }
   // Sort the URLs.

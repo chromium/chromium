@@ -422,7 +422,6 @@ static_library("ui") {
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui:internal_webui_config",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/zoom",

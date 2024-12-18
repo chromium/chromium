@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_INTERNALS_UI_H_
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/webui/resource_path.h"
@@ -21,7 +21,7 @@ class WebUI;
 }  // namespace content
 
 class OptimizationGuideInternalsUIConfig
-    : public webui::DefaultInternalWebUIConfig<OptimizationGuideInternalsUI> {
+    : public content::DefaultInternalWebUIConfig<OptimizationGuideInternalsUI> {
  public:
   OptimizationGuideInternalsUIConfig()
       : DefaultInternalWebUIConfig(

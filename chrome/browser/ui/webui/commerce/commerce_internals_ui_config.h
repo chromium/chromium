@@ -5,17 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_COMMERCE_COMMERCE_INTERNALS_UI_CONFIG_H_
 #define CHROME_BROWSER_UI_WEBUI_COMMERCE_COMMERCE_INTERNALS_UI_CONFIG_H_
 
-#include "chrome/browser/ui/webui/internal_webui_config.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/common/url_constants.h"
 
 namespace commerce {
 
-class CommerceInternalsUIConfig : public webui::InternalWebUIConfig {
+class CommerceInternalsUIConfig : public content::InternalWebUIConfig {
  public:
   CommerceInternalsUIConfig();
   ~CommerceInternalsUIConfig() override;
 
-  // webui::InternalWebUIConfig:
+  // content::InternalWebUIConfig:
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;

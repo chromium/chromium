@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_LOCATION_INTERNALS_LOCATION_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_LOCATION_INTERNALS_LOCATION_INTERNALS_UI_H_
 
-#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/browser/ui/webui/location_internals/location_internals.mojom-forward.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -16,7 +16,7 @@ class LocationInternalsUI;
 
 // WebUIConfig for chrome://location-internals
 class LocationInternalsUIConfig
-    : public webui::DefaultInternalWebUIConfig<LocationInternalsUI> {
+    : public content::DefaultInternalWebUIConfig<LocationInternalsUI> {
  public:
   LocationInternalsUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUILocationInternalsHost) {}
