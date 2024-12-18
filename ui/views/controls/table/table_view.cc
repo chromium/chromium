@@ -1563,12 +1563,14 @@ GroupRange TableView::GetGroupRange(size_t model_index) const {
 void TableView::RebuildVirtualAccessibilityChildren() {
   ClearVirtualAccessibilityChildren();
 
-  if (!GetRowCount()) {
+  // If a header exists, it should always be added when rebuilding the virtual
+  // accessibility tree. Otherwise, bounds CHECKs will be hit when modifying
+  // entries in the table later on.
+  if (header_) {
+    GetViewAccessibility().AddVirtualChildView(CreateHeaderAccessibilityView());
+  } else if (!GetRowCount()) {
     return;
   }
-
-  if (header_)
-    GetViewAccessibility().AddVirtualChildView(CreateHeaderAccessibilityView());
 
   // Create a virtual accessibility view for each row. At this point on, the
   // table has no sort behavior, hence the view index is the same as the model

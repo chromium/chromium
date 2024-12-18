@@ -755,6 +755,21 @@ TEST_P(TableViewTest, RebuildVirtualAccessibilityChildren) {
   }
 }
 
+// Regression test for crbug.com/384944872
+TEST_P(TableViewTest, RebuildingAXTreeShouldAlwaysAddHeader) {
+  // The number of virtual_children() should be 1 header + 4 rows.
+  EXPECT_EQ(table_->GetViewAccessibility().virtual_children().size(), 5U);
+
+  // Remove all table entries.
+  model_->RemoveRows(0, model_->RowCount());
+
+  // Trigger a rebuild.
+  table_->OnModelChanged();
+
+  // Header should be included in the ax-tree, even if there are no rows.
+  EXPECT_EQ(table_->GetViewAccessibility().virtual_children().size(), 1U);
+}
+
 // Verifies the bounding rect of each virtual accessibility child of the
 // TableView (rows and cells) is updated appropriately as the table changes. For
 // example, verifies that if a column is resized or hidden, the bounds are
