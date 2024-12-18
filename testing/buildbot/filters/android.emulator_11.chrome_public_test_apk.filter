@@ -9,7 +9,6 @@
 
 # crbug.com/1289810
 -org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testMhtmlLoadResultFromRendererWithNamespace
--org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testSharePublicOfflinePage
 
 # crbug.com/1287572
 -org.chromium.chrome.browser.webapps.WebappLaunchCauseMetricsTest.testHomescreenLaunch

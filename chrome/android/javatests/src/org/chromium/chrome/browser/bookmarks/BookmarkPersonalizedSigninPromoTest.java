@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.activeInRecyclerView;
 
 import android.app.Activity;
+import android.os.Build;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
@@ -176,6 +177,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/362215887
     public void testSigninButtonNewAccount() {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
@@ -221,6 +223,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     })
     // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
     public void shouldShowBookmarksSigninPromoIfBookmarksIsNotManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -256,6 +259,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     })
     // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
     public void shouldShowBookmarksSigninPromoIfBookmarkNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -273,6 +277,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     })
     // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
     public void shouldShowBookmarksSigninPromoIfReadingListNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);

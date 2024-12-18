@@ -17,6 +17,8 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.activeInRecyclerView;
 
+import android.os.Build;
+
 import androidx.annotation.IdRes;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.MediumTest;
@@ -32,6 +34,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -139,6 +142,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40262804")
     public void testPromoImpressionCountIncrementAfterDisplayingSigninPromo() {
         Assert.assertEquals(
                 0,
