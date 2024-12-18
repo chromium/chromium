@@ -3496,7 +3496,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   NavigateFrameTo(dest_url);
   ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
-  // Cause the frame to navigate itself via a same-origin redirect.
+  // Cause the frame to navigate itself via a cross-origin redirect.
   EXPECT_TRUE(
       content::NavigateToURLFromRenderer(GetFrame(),
                                          /*url=*/
