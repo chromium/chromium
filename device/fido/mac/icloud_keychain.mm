@@ -226,7 +226,6 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
             {}, FidoRequestHandlerBase::RecognizedCredential::kUnknown);
         return;
       case SystemInterface::kAuthAuthorized:
-        FIDO_LOG(DEBUG) << "iCKC: querying credentials for " << request.rp_id;
         break;
     }
 
@@ -240,7 +239,6 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         NSArray<ASAuthorizationWebBrowserPlatformPublicKeyCredential*>*
             credentials) {
       std::vector<DiscoverableCredentialMetadata> ret;
-      FIDO_LOG(DEBUG) << "iCKC: got " << credentials.count << " results";
       for (NSUInteger i = 0; i < credentials.count; i++) {
         const auto& cred = credentials[i];
         std::vector<uint8_t> cred_id = ToVector(cred.credentialID);
@@ -259,9 +257,6 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                                 a displayName for passkeys */
                              std::nullopt));
       }
-      FIDO_LOG(DEBUG) << "iCKC: have " << ret.size()
-                      << " results after filtering";
-
       const auto has_credentials =
           ret.empty() ? FidoRequestHandlerBase::RecognizedCredential::
                             kNoRecognizedCredential
@@ -535,10 +530,8 @@ bool IsSupported() {
   // 13.3 and 13.4 so that we can updated to require 13.5 in the future without
   // removing functionality for anyone.
   if (@available(macOS 13.5, *)) {
-    FIDO_LOG(DEBUG) << "iCKC: supported on this version of macOS";
     return GetSystemInterface()->IsAvailable();
   }
-  FIDO_LOG(DEBUG) << "iCKC: NOT supported on this version of macOS";
   return false;
 }
 
