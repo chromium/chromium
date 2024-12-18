@@ -303,11 +303,6 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDownloadedPDFOpeningName[];
 extern const char kDownloadedPDFOpeningDescription[];
 
-// Title and description for the flag to enable the color Lens and voice icons
-// in the home screen widget.
-extern const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetName[];
-extern const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription[];
-
 // Title and description for the flag to enable the muting of compromised
 // passwords in the Password Manager.
 extern const char kEnableCompromisedPasswordsMutingName[];

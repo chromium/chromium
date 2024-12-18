@@ -64,6 +64,11 @@ namespace {
 // results page.
 static const double kLensWebPageTransitionLoadingProgressThreshold = 0.5;
 
+// The key of a preference containing whether the home screen widget should show
+// the color Lens and voice icons if Lens is shown. Usage removed in v133.
+NSString* const kLensEnableColorLensAndVoiceIconsInWidgetKey =
+    @"enableColorLensAndVoiceIconsInWidget";
+
 }  // namespace
 
 @interface LensCoordinator () <ChromeLensControllerDelegate,
@@ -561,16 +566,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
   [sharedDefaults setBool:enableLensInWidget forKey:enableLensInWidgetKey];
 
-  // If the Lens entrypoint is shown, determine whether to show the color or
-  // monochrome icons.
-  NSString* enableColorLensAndVoiceIconsInHomeScreenWidgetKey =
-      base::SysUTF8ToNSString(
-          app_group::kChromeAppGroupEnableColorLensAndVoiceIconsInWidget);
-  const bool enableColorLensAndVoiceIconsInHomeScreenWidget =
-      base::FeatureList::IsEnabled(
-          kEnableColorLensAndVoiceIconsInHomeScreenWidget);
-  [sharedDefaults setBool:enableColorLensAndVoiceIconsInHomeScreenWidget
-                   forKey:enableColorLensAndVoiceIconsInHomeScreenWidgetKey];
+  // TODO(crbug.com/383167907): Clean up old key. Usage removed in v133.
+  [sharedDefaults
+      removeObjectForKey:kLensEnableColorLensAndVoiceIconsInWidgetKey];
 }
 
 // Sets the app shortcut item for either the QR code scanner or Lens.

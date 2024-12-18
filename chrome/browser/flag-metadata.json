@@ -2596,11 +2596,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "enable-color-lens-and-voice-icons-in-home-screen-widget",
-    "owners": [ "cmyang@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-command-line-on-non-rooted-devices",
     "owners": [ "clank-app-team@google.com" ],
     // This flag is used for debugging on Android; it causes Android Chromium

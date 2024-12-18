@@ -295,10 +295,6 @@ BASE_DECLARE_FEATURE(kIOSLensUseDirectUpload);
 // Feature flag to enable the Lens entrypoint in the home screen widget.
 BASE_DECLARE_FEATURE(kEnableLensInHomeScreenWidget);
 
-// Feature flag to enable the color Lens and voice icons in the home screen
-// widget.
-BASE_DECLARE_FEATURE(kEnableColorLensAndVoiceIconsInHomeScreenWidget);
-
 // Feature flag to enable the Lens entrypoint in the keyboard.
 BASE_DECLARE_FEATURE(kEnableLensInKeyboard);
 

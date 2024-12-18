@@ -371,11 +371,6 @@ const char kDownloadedPDFOpeningName[] = "Enables downloaded PDF opening";
 const char kDownloadedPDFOpeningDescription[] =
     "Enables the direct opening of downloaded PDF files in Chrome";
 
-const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetName[] =
-    "Enable color Lens and voice icons in home screen widget.";
-const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription[] =
-    "Shows the color icons, rather than the monochrome icons.";
-
 const char kEnableFeedHeaderSettingsName[] =
     "Enables the feed header settings.";
 const char kEnableFeedHeaderSettingsDescription[] =
