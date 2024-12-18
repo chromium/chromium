@@ -12,6 +12,7 @@
 
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/unicodestring.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -190,10 +191,10 @@ int32_t NormalizingIterator::GetNextChar() {
   return iter_.get();
 }
 
-// This function changes all Katakana characters occurring in the
-// `alternative_full_name` to Hiragana using the ICU library. Characters other
-// than Katakana will remain unchanged.
-std::u16string NormalizeAlternativeNameForComparison(
+// This function transliterates the `alternative_full_name` using the ICU
+// library. It is currently used with Katakana->Hiragana transliteration.
+// Characters other than Katakana will remain unchanged.
+std::u16string TransliterateAlternativeName(
     const std::u16string& alternative_full_name) {
   if (alternative_full_name.empty()) {
     return alternative_full_name;
@@ -204,14 +205,21 @@ std::u16string NormalizeAlternativeNameForComparison(
       icu::Transliterator::createInstance("Katakana-Hiragana", UTRANS_FORWARD,
                                           err));
   if (U_FAILURE(err)) {
-    // TODO(crbug.com/383668248): Record transliteration failure metric.
-    LOG(ERROR) << "Error creating transliterator: " << u_errorName(err);
+    // TODO(crbug.com/359768803): Remove the metric recording once we confirm
+    // that transliteration initialization never fails.
+    // This metric records the status of the transliterator initialization. It
+    // is set to false if the initialization fails.
+    base::UmaHistogramBoolean(
+      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", false);
     return alternative_full_name;
   }
   icu::UnicodeString normalized_alternative_full_name(
       alternative_full_name.c_str());
-  // Change Katakana to equivalent Hiragana characters.
   transliterator->transliterate(normalized_alternative_full_name);
+  // The metric is set to true if the transliterator initialization was
+  // successful.
+    base::UmaHistogramBoolean(
+      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", true);
   return base::i18n::UnicodeStringToString16(normalized_alternative_full_name);
 }
 
@@ -827,9 +835,9 @@ bool AutofillProfileComparator::HaveMergeableAlternativeNames(
     return true;
   }
 
-  return AreNamesMergeable(NormalizeAlternativeNameForComparison(
+  return AreNamesMergeable(TransliterateAlternativeName(
                                p1.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_)),
-                           NormalizeAlternativeNameForComparison(
+                           TransliterateAlternativeName(
                                p2.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_)));
 }
 

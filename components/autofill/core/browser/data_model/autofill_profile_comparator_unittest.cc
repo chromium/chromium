@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -550,6 +551,7 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableNames) {
 }
 
 TEST_F(AutofillProfileComparatorTest, HaveMergeableAlternativeNames) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillSupportPhoneticNameForJP};
 
@@ -634,6 +636,10 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAlternativeNames) {
       comparator_.HaveMergeableAlternativeNames(p2_katakana, p4_katakana));
   EXPECT_TRUE(
       comparator_.HaveMergeableAlternativeNames(p4_katakana, p2_katakana));
+
+  // Check that the transliterator initialization status is recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", true, 44);
 
   // Mergeable profiles where one is using Katakana and the other Hiragana.
   EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p3_katakana));

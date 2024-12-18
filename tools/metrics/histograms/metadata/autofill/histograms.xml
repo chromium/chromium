@@ -2716,6 +2716,18 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Filling.AlternativeNameTransliteratorInitStatus"
+    enum="BooleanSuccess" expires_after="2025-12-13">
+  <owner>aayazhan@google.com</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the status of the transliterator initialization. It will be equal to
+    true if there were no errors and false otherwise. Recorded during the
+    merging of alternative names.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.WithBenefits.{CardIssuerId}"
     enum="AutofillFormEvent" expires_after="2025-07-01">
   <owner>alexandertekle@google.com</owner>
