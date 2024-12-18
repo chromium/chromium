@@ -385,6 +385,14 @@ bool IsMacAccessibilityAPIMigrationEnabled() {
       ::features::kMacAccessibilityAPIMigration);
 }
 
+BASE_FEATURE(kMacAccessibilityOptimizeChildrenChanged,
+             "MacAccessibilityOptimizeChildrenChanged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsMacAccessibilityOptimizeChildrenChangedEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kMacAccessibilityOptimizeChildrenChanged);
+}
+
 BASE_FEATURE(kAccessibilityRemoteUIApp,
              "AccessibilityRemoteUIApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
