@@ -103,6 +103,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -1275,7 +1276,8 @@ class AppListClientNewUserTest : public InProcessBrowserTest,
 
   // Sets up profile and user manager. Should be called only once on test setup.
   void SetUpEnvironment() {
-    account_id_ = AccountId::FromUserEmailGaiaId("test@test-user", "gaia-id");
+    account_id_ =
+        AccountId::FromUserEmailGaiaId("test@test-user", GaiaId("gaia-id"));
 
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(

@@ -41,6 +41,7 @@
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -382,7 +383,7 @@ void ArcAppTest::SetUpIntentHelper() {
 
 const user_manager::User* ArcAppTest::CreateUserAndLogin() {
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
-      profile_->GetProfileUserName(), "1234567890"));
+      profile_->GetProfileUserName(), GaiaId("1234567890")));
   const user_manager::User* user = fake_user_manager_->AddUser(account_id);
   fake_user_manager_->LoginUser(account_id);
   return user;
