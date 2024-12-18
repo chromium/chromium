@@ -31,12 +31,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+constexpr char16_t kEmail[] = u"user@email.com";
+
 bool Equals(content::NavigationThrottle::ThrottleCheckResult& expected,
             content::NavigationThrottle::ThrottleCheckResult&& actual) {
   return expected.action() == actual.action() &&
          expected.net_error_code() == actual.net_error_code() &&
          expected.error_page_content() == actual.error_page_content();
 }
+
 }  // namespace
 
 class ManagedProfileRequiredNavigationThrottleFeatureDisabledTest
@@ -74,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileRequiredNavigationThrottleTest,
   content::MockNavigationHandle mock_nav_handle(web_contents);
 
   auto managed_profile_required = std::make_unique<ManagedProfileRequiredPage>(
-      mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL(),
+      mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL(), kEmail,
       std::make_unique<ManagedProfileRequiredControllerClient>(
           mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL()));
   std::string error_page_content = managed_profile_required->GetHTMLContents();
@@ -88,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileRequiredNavigationThrottleTest,
   ASSERT_FALSE(throttle);
 
   auto enable_navigations = ManagedProfileRequiredNavigationThrottle::
-      BlockNavigationUntilEnterpriseActionTaken(browser()->profile(),
-                                                web_contents);
+      BlockNavigationUntilEnterpriseActionTaken(
+          browser()->profile(), web_contents, nullptr, kEmail, );
   throttle = ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
       &mock_nav_handle);
   ASSERT_TRUE(throttle);
@@ -116,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(
   content::MockNavigationHandle mock_nav_handle(web_contents);
 
   auto managed_profile_required = std::make_unique<ManagedProfileRequiredPage>(
-      mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL(),
+      mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL(), kEmail,
       std::make_unique<ManagedProfileRequiredControllerClient>(
           mock_nav_handle.GetWebContents(), mock_nav_handle.GetURL()));
   std::string error_page_content = managed_profile_required->GetHTMLContents();
@@ -131,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(
 
   auto enable_navigations = ManagedProfileRequiredNavigationThrottle::
       BlockNavigationUntilEnterpriseActionTaken(browser()->profile(),
-                                                web_contents);
+                                                web_contents, nullptr, kEmail);
   throttle = ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
       &mock_nav_handle);
   ASSERT_TRUE(throttle);

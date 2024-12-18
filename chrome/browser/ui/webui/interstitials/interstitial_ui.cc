@@ -363,7 +363,7 @@ std::unique_ptr<ManagedProfileRequiredPage> CreateManagedProfileRequiredPage(
     content::WebContents* web_contents) {
   const GURL kRequestUrl("https://example.com");
   return std::make_unique<ManagedProfileRequiredPage>(
-      web_contents, kRequestUrl,
+      web_contents, kRequestUrl, u"user@example.com",
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents,
                                                                kRequestUrl));
 }

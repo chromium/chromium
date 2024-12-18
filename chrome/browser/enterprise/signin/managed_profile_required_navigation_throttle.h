@@ -60,7 +60,8 @@ class ManagedProfileRequiredNavigationThrottle
   BlockNavigationUntilEnterpriseActionTaken(
       content::BrowserContext* browser_context,
       content::WebContents* enterprise_action_web_contents,
-      content::WebContents* allowed_web_contents = nullptr);
+      content::WebContents* allowed_web_contents,
+      const std::u16string& intercepted_email);
 
   static void ShowBlockedWindow(content::BrowserContext* browser_context);
   static void SetReloadRequired(

@@ -1027,7 +1027,7 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <!-- Managed profile required interstitial -->
       <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH" desc="The main text of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
-        You can sign in to get your stuff, or use Chrome without an account
+        To continue, you'll need to sign in to Chrome with <ph name="EMAIL">$1<ex>user@example.com</ex></ph>. This ensures compliance with your organization's policies.
       </message>
 
       <!-- Extension requests sign in to Chrome through chrome.identity API -->

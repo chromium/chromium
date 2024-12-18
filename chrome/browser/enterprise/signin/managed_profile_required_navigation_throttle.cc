@@ -26,10 +26,12 @@ namespace {
 class BlockingInfo : public base::SupportsUserData::Data {
  public:
   explicit BlockingInfo(content::WebContents* enterprise_action_web_contents,
-                        content::WebContents* allowed_web_contents)
+                        content::WebContents* allowed_web_contents,
+                        const std::u16string& intercepted_email)
       : enterprise_action_web_contents_(
             enterprise_action_web_contents->GetWeakPtr()),
-        allowed_web_contents_(allowed_web_contents) {}
+        allowed_web_contents_(allowed_web_contents),
+        intercepted_email_(intercepted_email) {}
 
   BlockingInfo(const BlockingInfo&) = delete;
   BlockingInfo& operator=(const BlockingInfo&) = delete;
@@ -61,10 +63,13 @@ class BlockingInfo : public base::SupportsUserData::Data {
     return allowed_web_contents_.get();
   }
 
+  const std::u16string& intercepted_email() const { return intercepted_email_; }
+
  private:
   const base::WeakPtr<content::WebContents> enterprise_action_web_contents_;
   const raw_ptr<content::WebContents> allowed_web_contents_;
   bool reload_required_ = false;
+  std::u16string intercepted_email_;
   base::OnceCallback<void(content::NavigationHandle&)> on_reload_triggered_ =
       base::DoNothing();
 };
@@ -154,6 +159,7 @@ ManagedProfileRequiredNavigationThrottle::ProcessThrottleEvent() {
 
   auto managed_profile_required = std::make_unique<ManagedProfileRequiredPage>(
       navigation_handle()->GetWebContents(), navigation_handle()->GetURL(),
+      blocking_info->intercepted_email(),
       std::make_unique<ManagedProfileRequiredControllerClient>(
           navigation_handle()->GetWebContents(),
           navigation_handle()->GetURL()));
@@ -174,11 +180,12 @@ base::ScopedClosureRunner ManagedProfileRequiredNavigationThrottle::
     BlockNavigationUntilEnterpriseActionTaken(
         content::BrowserContext* browser_context,
         content::WebContents* enterprise_action_web_contents,
-        content::WebContents* allowed_web_contents) {
+        content::WebContents* allowed_web_contents,
+        const std::u16string& intercepted_email) {
   browser_context->SetUserData(
       kNavigationBlockedForManagedProfileCreationInfo,
       std::make_unique<BlockingInfo>(enterprise_action_web_contents,
-                                     allowed_web_contents));
+                                     allowed_web_contents, intercepted_email));
   return base::ScopedClosureRunner(base::BindOnce(
       &content::BrowserContext::RemoveUserData, browser_context->GetWeakPtr(),
       kNavigationBlockedForManagedProfileCreationInfo));
