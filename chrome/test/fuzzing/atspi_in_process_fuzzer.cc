@@ -734,7 +734,9 @@ void UiNode::ScanAttributes() const {
     }
   }
   g_clear_error(&error);
-  g_hash_table_unref(attributes);
+  if (attributes) {
+    g_hash_table_unref(attributes);
+  }
 }
 
 void UiNode::RescanAndFindNewChildren(
