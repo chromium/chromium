@@ -16,9 +16,6 @@ namespace specialized_features {
 
 using enum FeatureAccessFailure;
 
-FeatureAccessConfig::FeatureAccessConfig() = default;
-FeatureAccessConfig::~FeatureAccessConfig() = default;
-
 FeatureAccessChecker::FeatureAccessChecker(
     FeatureAccessConfig config,
     const PrefService& prefs,
@@ -32,23 +29,19 @@ FeatureAccessChecker::FeatureAccessChecker(
 FeatureAccessFailureSet FeatureAccessChecker::Check() {
   FeatureAccessFailureSet failures;
 
-  if (config_.settings_toggle_pref.has_value() &&
-      !prefs_->GetBoolean(*config_.settings_toggle_pref)) {
+  if (!prefs_->GetBoolean(config_.settings_toggle_pref)) {
     failures.Put(kDisabledInSettings);
   }
 
-  if (config_.consent_accepted_pref.has_value() &&
-      !prefs_->GetBoolean(*config_.consent_accepted_pref)) {
+  if (!prefs_->GetBoolean(config_.consent_accepted_pref)) {
     failures.Put(kConsentNotAccepted);
   };
 
-  if (config_.feature_flag != nullptr &&
-      !base::FeatureList::IsEnabled(*config_.feature_flag)) {
+  if (!base::FeatureList::IsEnabled(*config_.feature_flag)) {
     failures.Put(kFeatureFlagDisabled);
   }
 
-  if (config_.feature_management_flag != nullptr &&
-      !base::FeatureList::IsEnabled(*config_.feature_management_flag)) {
+  if (!base::FeatureList::IsEnabled(*config_.feature_management_flag)) {
     failures.Put(kFeatureManagementCheckFailed);
   }
 
