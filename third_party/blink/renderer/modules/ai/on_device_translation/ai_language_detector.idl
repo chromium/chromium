@@ -1,3 +1,8 @@
+dictionary LanguageDetectionResult {
+  DOMString? detectedLanguage; // null represents unknown language
+  double confidence;
+};
+
 [
     RuntimeEnabled=LanguageDetectionAPI,
     Exposed=(Window),

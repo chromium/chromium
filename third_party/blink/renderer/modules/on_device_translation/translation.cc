@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translation_language_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
-#include "third_party/blink/renderer/modules/on_device_translation/language_detector.h"
 #include "third_party/blink/renderer/modules/on_device_translation/language_translator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -259,62 +258,4 @@ ScriptPromise<LanguageTranslator> Translation::createTranslator(
   return promise;
 }
 
-// TODO(crbug.com/349927087): The new version is
-// AILanguageDetectorCapabilities::languageAvailable(). Delete this old version.
-ScriptPromise<V8TranslationAvailability> Translation::canDetect(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return ScriptPromise<V8TranslationAvailability>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8TranslationAvailability>>(
-          script_state);
-  auto promise = resolver->Promise();
-
-  resolver->Resolve(
-      V8TranslationAvailability(V8TranslationAvailability::Enum::kReadily));
-
-  return promise;
-}
-
-namespace {
-void HandleCreateDetectorCallback(
-    ScriptPromiseResolver<blink::LanguageDetector>* resolver,
-    base::expected<LanguageDetectionModel*, DetectLanguageError> maybe_model) {
-  if (maybe_model.has_value()) {
-    resolver->Resolve(
-        MakeGarbageCollected<LanguageDetector>(maybe_model.value()));
-  } else {
-    switch (maybe_model.error()) {
-      case DetectLanguageError::kUnavailable:
-        resolver->Reject("Model not available");
-    }
-  }
-}
-}  // namespace
-
-// TODO(crbug.com/349927087): The new version is
-// AILanguageDetectorFactory::create(). Delete this old version.
-ScriptPromise<LanguageDetector> Translation::createDetector(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return ScriptPromise<LanguageDetector>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
-          script_state);
-  LanguageDetectionModel::Create(
-      GetExecutionContext()->GetBrowserInterfaceBroker(),
-      WTF::BindOnce(&HandleCreateDetectorCallback, WrapPersistent(resolver)));
-
-  return resolver->Promise();
-}
 }  // namespace blink

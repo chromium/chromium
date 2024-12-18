@@ -2448,8 +2448,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_keyboard_layout_map.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_khr_parallel_shader_compile.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_khr_parallel_shader_compile.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detector.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detector.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_translator.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_translator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_launch_params.cc",
