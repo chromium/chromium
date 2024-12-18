@@ -20,6 +20,8 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityActionHandler;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -607,6 +609,13 @@ public class DataSharingTabManager {
                         @Override
                         public void onGroupCreated(
                                 org.chromium.components.sync.protocol.GroupData result) {
+                            onGroupCreatedWithWait(result, null);
+                        }
+
+                        @Override
+                        public void onGroupCreatedWithWait(
+                                org.chromium.components.sync.protocol.GroupData result,
+                                Callback<Boolean> onCreateFinished) {
                             tabGroupService.makeTabGroupShared(
                                     localTabGroupId, result.getGroupId());
                             createGroupFinishedCallback.onResult(true);
@@ -619,6 +628,14 @@ public class DataSharingTabManager {
                                             result.getDisplayName(),
                                             /* members= */ null,
                                             result.getAccessToken()));
+
+                            PostTask.postTask(
+                                    TaskTraits.UI_DEFAULT,
+                                    () -> {
+                                        if (onCreateFinished != null) {
+                                            onCreateFinished.onResult(true);
+                                        }
+                                    });
                         }
 
                         @Override
@@ -753,6 +770,12 @@ public class DataSharingTabManager {
                 new DataSharingManageUiConfig.ManageCallback() {
                     @Override
                     public void onShareInviteLinkClicked(GroupToken groupToken) {
+                        onShareInviteLinkClickedWithWait(groupToken, null);
+                    }
+
+                    @Override
+                    public void onShareInviteLinkClickedWithWait(
+                            GroupToken groupToken, Callback<Boolean> onCreateFinished) {
                         // TODO(ssid): Pass in the title and refactor showShareSheet to depend on
                         // GroupToken instead.
                         showShareSheet(
@@ -761,6 +784,14 @@ public class DataSharingTabManager {
                                         "Tab Group",
                                         /* members= */ null,
                                         groupToken.accessToken));
+
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    if (onCreateFinished != null) {
+                                        onCreateFinished.onResult(true);
+                                    }
+                                });
                     }
                 };
         DataSharingManageUiConfig manageConfig =

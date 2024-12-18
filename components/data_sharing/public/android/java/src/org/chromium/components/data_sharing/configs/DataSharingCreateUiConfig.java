@@ -22,6 +22,9 @@ public class DataSharingCreateUiConfig {
     public interface CreateCallback {
         default void onGroupCreated(GroupData groupData) {}
 
+        default void onGroupCreatedWithWait(
+                GroupData groupData, Callback<Boolean> onCreateFinished) {}
+
         default void onCancelClicked() {}
 
         default void getDataSharingUrl(GroupToken tokenSecret, Callback<String> url) {}
