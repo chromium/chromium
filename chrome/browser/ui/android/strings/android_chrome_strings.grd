@@ -6932,30 +6932,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" desc="Accessibility string that describes that the recent activity bottom sheet has closed.">
         Recent activity bottom sheet closed
       </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_USER_SELF" desc="Text on a recent activity bottom sheet row that indicates that the user themselves took an action, e.g. user themselves changed the tab as opposed to another user changing the tab. Used as the first part of another string.">
-        You
-      </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_ADDED" desc="Text on a recent activity bottom sheet row that says user added a tab.">
-        <ph name="USER_DISPLAY_NAME">%1$s<ex>User 1</ex></ph> added a tab
-      </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_REMOVED" desc="Text on a recent activity bottom sheet row that says user removed a tab.">
-        <ph name="USER_DISPLAY_NAME">%1$s<ex>User 1</ex></ph> removed a tab
-      </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_UPDATED" desc="Text on a recent activity bottom sheet row that says user updated a tab.">
-        <ph name="USER_DISPLAY_NAME">%1$s<ex>User 1</ex></ph> changed a tab
-      </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_GROUP_NAME_UPDATED" desc="Text on a recent activity bottom sheet row that says user updated the tab group name.">
-        <ph name="USER_DISPLAY_NAME">%1$s<ex>User 1</ex></ph> changed the group name
-      </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_GROUP_COLOR_UPDATED" desc="Text on a recent activity bottom sheet row that says user updated the tab group color.">
-        <ph name="USER_DISPLAY_NAME">%1$s<ex>User 1</ex></ph> changed the group color
-      </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_USER_JOINED_GROUP" desc="Text on a recent activity bottom sheet row that says user joined the group.">
-        <ph name="USER_DISPLAY_NAME">%1$s<ex>User 1</ex></ph> joined the group
-      </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_USER_LEFT_GROUP" desc="Text on a recent activity bottom sheet row that says user left the group.">
-        <ph name="USER_DISPLAY_NAME">%1$s<ex>User 1</ex></ph> left the group
-      </message>
       <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_DESCRIPTION_FULL" desc="The description text on a recent activity bottom sheet row that has two halfs: an URL or email or group name on first half, and a relative time duration on the second half.">
         <ph name="DESCRIPTION_FIRST_HALF">%1$s<ex>google.com</ex></ph> \u2022 <ph name="TIMESTMAP">%2$s<ex>8h ago</ex></ph>
       </message>
