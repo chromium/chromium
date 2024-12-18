@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_page_handler_impl.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/dev_ui_browser_resources.h"
 #include "chrome/grit/user_education_internals_resources.h"
@@ -20,6 +19,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/webui/webui_util.h"
 
 UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,

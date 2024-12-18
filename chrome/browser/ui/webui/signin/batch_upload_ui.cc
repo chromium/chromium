@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/signin/batch_upload_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/batch_upload_resources.h"
 #include "chrome/grit/batch_upload_resources_map.h"
@@ -23,6 +22,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/data_type.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 

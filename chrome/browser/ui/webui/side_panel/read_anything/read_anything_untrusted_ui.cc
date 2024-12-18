@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_read_anything_resources.h"
@@ -27,6 +26,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/webui/webui_util.h"
 
 ReadAnythingUIUntrustedConfig::ReadAnythingUIUntrustedConfig()
     : DefaultTopChromeWebUIConfig(

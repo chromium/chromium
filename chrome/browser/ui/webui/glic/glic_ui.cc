@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/guest_util.h"
 #include "chrome/browser/ui/webui/glic/glic_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/webui_allowlist.h"
+#include "ui/webui/webui_util.h"
 
 namespace glic {
 

@@ -6,11 +6,11 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/suggest_internals_resources.h"
 #include "chrome/grit/suggest_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 SuggestInternalsUI::SuggestInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/false) {

@@ -6,12 +6,12 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/on_device_translation_internals_resources.h"
 #include "chrome/grit/on_device_translation_internals_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 OnDeviceTranslationInternalsUIConfig::OnDeviceTranslationInternalsUIConfig()
     : WebUIConfig(content::kChromeUIScheme,

@@ -16,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/privacy_sandbox_internals_resources.h"
 #include "chrome/grit/privacy_sandbox_internals_resources_map.h"
@@ -28,6 +27,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "privacy_sandbox_internals_ui.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace privacy_sandbox_internals {
 

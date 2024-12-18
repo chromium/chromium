@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/webui/discards/site_data.mojom-forward.h"
 #include "chrome/browser/ui/webui/discards/site_data_provider_impl.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/discards_resources.h"
 #include "chrome/grit/discards_resources_map.h"
@@ -55,6 +54,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/resources/grit/ui_resources_map.h"
+#include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

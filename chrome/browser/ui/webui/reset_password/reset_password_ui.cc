@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/reset_password/reset_password.mojom.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
@@ -32,6 +31,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/webui_util.h"
 
 using safe_browsing::LoginReputationClientResponse;
 using safe_browsing::RequestOutcome;

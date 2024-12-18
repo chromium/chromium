@@ -7,17 +7,15 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/webui/internals/sessions/session_service_internals_handler.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
-
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/base/interaction/element_identifier.h"
-
-#include "chrome/browser/ui/webui/internals/sessions/session_service_internals_handler.h"
+#include "ui/webui/webui_util.h"
 
 InternalsUIConfig::InternalsUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
