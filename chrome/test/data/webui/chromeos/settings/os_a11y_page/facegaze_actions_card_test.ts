@@ -573,6 +573,27 @@ suite('<facegaze-actions-card>', () => {
     assertEquals(2, commandPairs.length);
   });
 
+  test(
+      'actions does not change UI when gesture threshold chip is clicked',
+      async () => {
+        await initPage();
+
+        const commandPair = new FaceGazeCommandPair(
+            MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+        await openAddDialogAndFireCommandPairAddedEvent(commandPair);
+        assertTrue(isGestureToMacroPrefSet(commandPair));
+        const actionRow = assertActionSettingsRow(commandPair);
+
+        const gestureChip = actionRow.querySelector('cros-chip');
+        assertTrue(!!gestureChip);
+        await openDialogAndFireCommandPairAddedEvent(gestureChip, commandPair);
+        assertTrue(isGestureToMacroPrefSet(commandPair));
+        assertActionSettingsRow(commandPair);
+
+        const commandPairs = faceGazeActionsCard.get('commandPairs_');
+        assertEquals(1, commandPairs.length);
+      });
+
   test('actions update prefs based on removed command pair', async () => {
     await initPage();
 
