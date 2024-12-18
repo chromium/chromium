@@ -104,7 +104,10 @@ bool SafetyConfig::CanCheckPartialOutput(
     return true;
   }
   if (!proto_->has_partial_output_checks()) {
-    return false;
+    // TODO(crbug.com/379429927): Temporary fix before rolling out the partial
+    // output checks. Change the return value to false after fully landing the
+    // new configs.
+    return true;
   }
   if (num_output_tokens < proto_->partial_output_checks().minimum_tokens()) {
     return false;

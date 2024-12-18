@@ -415,7 +415,7 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
   const std::string expected_response = "Input: execute:foo\n";
   EXPECT_EQ(*response_.value(), expected_response);
   EXPECT_TRUE(*response_.provided_by_on_device());
-  EXPECT_THAT(response_.partials(), IsEmpty());
+  EXPECT_THAT(response_.partials(), ElementsAre(expected_response));
   EXPECT_TRUE(response_.log_entry());
   auto logged_on_device_model_execution_info =
       response_.log_entry()
@@ -1584,21 +1584,27 @@ TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
   ASSERT_TRUE(response_.GetFinalStatus());
   // Make sure T&S logged.
   ASSERT_TRUE(response_.log_entry());
-  EXPECT_THAT(response_.logged_executions(),
-              ElementsAre(testing::_,  // Base Model Execution
-                          ResultOf("check text", &GetCheckText,
-                                   "request_check: unsafe_url"),
-                          ResultOf("check text", &GetCheckText,
-                                   "raw_output_check: unsafe_output")));
+  EXPECT_THAT(
+      response_.logged_executions(),
+      ElementsAre(
+          testing::_,  // Base Model Execution
+          ResultOf("check text", &GetCheckText, "request_check: unsafe_url"),
+          ResultOf("check text", &GetCheckText,  // partial check
+                   "raw_output_check: unsafe_output"),
+          ResultOf("check text", &GetCheckText,  // complete check
+                   "raw_output_check: unsafe_output")));
   ASSERT_TRUE(response_.model_execution_info());
-  EXPECT_THAT(response_.model_execution_info()
-                  ->on_device_model_execution_info()
-                  .execution_infos(),
-              ElementsAre(testing::_,  // Base Model Execution
-                          ResultOf("check text", &GetCheckText,
-                                   "request_check: unsafe_url"),
-                          ResultOf("check text", &GetCheckText,
-                                   "raw_output_check: unsafe_output")));
+  EXPECT_THAT(
+      response_.model_execution_info()
+          ->on_device_model_execution_info()
+          .execution_infos(),
+      ElementsAre(
+          testing::_,  // Base Model Execution
+          ResultOf("check text", &GetCheckText, "request_check: unsafe_url"),
+          ResultOf("check text", &GetCheckText,  // partial check
+                   "raw_output_check: unsafe_output"),
+          ResultOf("check text", &GetCheckText,  // complete check
+                   "raw_output_check: unsafe_output")));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
@@ -3014,7 +3020,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
   const std::string expected_response =
       "Input: execute:foo\nTopK: 4, Temp: 1.5\n";
   EXPECT_EQ(*response_.value(), expected_response);
-  EXPECT_THAT(response_.partials(), IsEmpty());
+  EXPECT_THAT(response_.partials(), ElementsAre(expected_response));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
@@ -3044,7 +3050,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   const std::string expected_response =
       "Input: execute:foo\nTopK: 3, Temp: 2\n";
   EXPECT_EQ(*response_.value(), expected_response);
-  EXPECT_THAT(response_.partials(), IsEmpty());
+  EXPECT_THAT(response_.partials(), ElementsAre(expected_response));
 }
 
 // Validate that a missing partial output config suppresses partial output.
@@ -3071,7 +3077,11 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
   const std::vector<std::string> expected_responses = {
       "token1 token2 token3 token4"};
   EXPECT_EQ(*response_.value(), expected_responses.back());
-  EXPECT_THAT(response_.partials(), IsEmpty());
+  const std::vector<std::string> partial_expected_responses = {
+      "token1", "token1 token2", "token1 token2 token3",
+      "token1 token2 token3 token4"};
+  EXPECT_THAT(response_.partials(),
+              ElementsAreArray(partial_expected_responses));
 }
 
 // Validate that token interval 1 evaluates all partial output.
