@@ -86,11 +86,13 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  // `dismissViewControllerAnimated` will release the mediator, so grab this
+  // value first.
+  BOOL keepBrowsingDataSeparate = _mediator.keepBrowsingDataSeparate;
   [self dismissViewControllerAnimated:YES];
-  [self.delegate
-      managedProfileCreationCoordinator:self
-                              didAccept:YES
-               keepBrowsingDataSeparate:_mediator.keepBrowsingDataSeparate];
+  [self.delegate managedProfileCreationCoordinator:self
+                                         didAccept:YES
+                          keepBrowsingDataSeparate:keepBrowsingDataSeparate];
 }
 
 - (void)didTapSecondaryActionButton {
