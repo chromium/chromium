@@ -885,7 +885,8 @@ void CompleteSigninFlow() {
 
 // Tests that the forced sign-in prompt, when there are multiple windows
 // opened, can be shown on dynamic policy update when on the tab switcher.
-- (void)testSignInScreenOnTabSwitcherWithMultiWindows {
+// TODO(crbug.com/384874382): Flaky test.
+- (void)DISABLED_testSignInScreenOnTabSwitcherWithMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
