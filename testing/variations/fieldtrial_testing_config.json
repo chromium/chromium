@@ -11795,7 +11795,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_8",
+                    "params": {
+                        "brp-extra-extras-size": "8"
+                    },
+                    "enable_features": [
+                        "PartitionAllocBackupRefPtr"
+                    ]
+                },
+                {
+                    "name": "Enabled_24",
+                    "params": {
+                        "brp-extra-extras-size": "24"
+                    },
                     "enable_features": [
                         "PartitionAllocBackupRefPtr"
                     ]
