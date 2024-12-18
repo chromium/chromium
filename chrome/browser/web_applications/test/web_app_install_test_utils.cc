@@ -96,9 +96,6 @@ webapps::AppId InstallWebApp(Profile* profile,
                              std::unique_ptr<WebAppInstallInfo> web_app_info,
                              bool overwrite_existing_manifest_fields,
                              webapps::WebappInstallSource install_source) {
-  // Use InstallShortcut for Create Shortcut install source.
-  CHECK_NE(install_source, webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
-
   // The sync system requires that sync entity name is never empty.
   if (web_app_info->title.empty())
     web_app_info->title = u"WebAppInstallInfo App Name";

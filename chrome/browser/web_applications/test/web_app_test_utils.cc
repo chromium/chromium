@@ -1114,6 +1114,28 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   return app;
 }
 
+void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app) {
+  if (!base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
+    return;
+  }
+  bool is_shortcut = app.scope().is_empty() ||
+                     (app.latest_install_source().has_value() &&
+                      app.latest_install_source() ==
+                          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+  if (is_shortcut) {
+    app.SetIsDiyApp(true);
+    // Shortcut apps are separated from other web apps based on the fact that
+    // they have an empty scope. DIY apps do not have that distinction, so
+    // populate the scope from the start_url of the web app.
+    if (!app.scope().is_valid() || app.scope().is_empty()) {
+      CHECK(app.start_url().is_valid());
+      GURL scope(app.start_url().GetWithoutFilename());
+      app.SetScope(scope);
+    }
+    app.SetWasShortcutApp(true);
+  }
+}
+
 void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,

@@ -266,6 +266,9 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
   void OnDatabaseOpened(base::OnceClosure callback,
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+
+  void EnsureShortcutAppToDiyAppMigration();
+
   // Update apps that don't have a UserDisplayMode set for the current platform.
   void EnsureAppsHaveUserDisplayModeForCurrentPlatform();
   void EnsurePartiallyInstalledAppsHaveCorrectStatus();
@@ -319,6 +322,8 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
 
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
 };
+
+BASE_DECLARE_FEATURE(kMigrateShortcutsToDiy);
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app);
 

@@ -126,6 +126,11 @@ BASE_FEATURE(kDeleteBadWebAppSyncEntitites,
              "DeleteBadWebAppSyncEntitites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// A feature to enable the migration from shortcut apps to diy apps.
+BASE_FEATURE(kMigrateShortcutsToDiy,
+             "MigrateShortcutsToDiy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
   DCHECK(!app.untranslated_name().empty());
@@ -575,6 +580,9 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   // Do database migrations to ensure apps are valid before notifying anything
   // else that the sync bridge is ready.
+  if (base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
+    EnsureShortcutAppToDiyAppMigration();
+  }
   EnsureAppsHaveUserDisplayModeForCurrentPlatform();
   EnsurePartiallyInstalledAppsHaveCorrectStatus();
 
@@ -602,6 +610,30 @@ void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
           ResolvePlatformSpecificUserDisplayMode(app.sync_proto());
       update->UpdateApp(app.app_id())
           ->SetUserDisplayMode(ToMojomUserDisplayMode(udm));
+    }
+  }
+}
+
+void WebAppSyncBridge::EnsureShortcutAppToDiyAppMigration() {
+  web_app::ScopedRegistryUpdate update = BeginUpdate();
+  for (const webapps::AppId& app_id : registrar().GetAppIds()) {
+    WebApp* app_to_update = update->UpdateApp(app_id);
+    bool is_shortcut = app_to_update->scope().is_empty() ||
+                       (app_to_update->latest_install_source().has_value() &&
+                        app_to_update->latest_install_source() ==
+                            webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+    if (is_shortcut) {
+      app_to_update->SetIsDiyApp(true);
+      // Shortcut apps are separated from other web apps based on the fact that
+      // they have an empty scope. DIY apps do not have that distinction, so
+      // populate the scope from the start_url of the web app.
+      if (!app_to_update->scope().is_valid() ||
+          app_to_update->scope().is_empty()) {
+        CHECK(app_to_update->start_url().is_valid());
+        GURL scope(app_to_update->start_url().GetWithoutFilename());
+        app_to_update->SetScope(scope);
+      }
+      app_to_update->SetWasShortcutApp(true);
     }
   }
 }
