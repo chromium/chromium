@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -171,9 +172,13 @@ class HistoryEmbeddingsService : public KeyedService,
   bool IsEligible(const GURL& url);
 
   // Called by `HistoryEmbeddingsTabHelper` when passage extraction completes.
-  void OnPassagesRetrieved(std::optional<UrlData> existing_url_data,
-                           UrlData url_passages,
-                           std::vector<std::string> passages);
+  // Retrieves existing passages and embeddings for `url_id` from the database
+  // before calling
+  // `ComputeAndStorePassageEmbeddingsWithExistingData()`.
+  void ComputeAndStorePassageEmbeddings(history::URLID url_id,
+                                        history::VisitID visit_id,
+                                        base::Time visit_time,
+                                        std::vector<std::string> passages);
 
   // Find top `count` URL visit info entries nearest given `query`. Pass results
   // to given `callback` when search completes. Search will be narrowed to a
@@ -312,7 +317,17 @@ class HistoryEmbeddingsService : public KeyedService,
   // with data and sent on destruction. Default implementation returns null.
   virtual QualityLogEntry PrepareQualityLogEntry();
 
-  // Invoked after the embeddings for `passages` has been computed.
+  // Called by `ComputeAndStorePassageEmbeddings()` after retrieving existing
+  // passages and embeddings for `url_data.url_id` from the database.
+  // `existing_url_data` may be nullopt if no existing data was found.
+  void ComputeAndStorePassageEmbeddingsWithExistingData(
+      UrlData url_data,
+      std::vector<std::string> passages,
+      std::optional<base::ElapsedTimer> database_access_timer,
+      std::optional<UrlData> existing_url_data);
+
+  // Invoked after the embeddings for `passages` has been computed. Stores the
+  // passages along with their embeddings in the database.
   void OnPassagesEmbeddingsComputed(
       std::unordered_map<std::string, Embedding> embedding_cache,
       UrlData url_passages,

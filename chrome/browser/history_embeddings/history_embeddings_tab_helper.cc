@@ -23,7 +23,6 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
-#include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -50,7 +49,7 @@ enum class ExtractionCancelled {
   TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_TIME = 5,
   TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_GUID = 6,
   SERVICE_RETRIEVE_PASSAGES = 7,
-  SERVICE_RETRIEVE_PASSAGES_WITH_URL_DATA = 8,
+  DEPRECATED_SERVICE_RETRIEVE_PASSAGES_WITH_URL_DATA = 8,
 
   // These enum values are logged in UMA. Do not reuse or skip any values.
   // The order doesn't need to be chronological, but keep identities stable.
@@ -78,7 +77,6 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
     base::UmaHistogramTimes("History.Embeddings.Passages.ExtractionTime",
                             passage_extraction_timer.Elapsed());
   }
-  // Save passages
   const size_t total_text_size =
       std::accumulate(valid_passages.cbegin(), valid_passages.cend(), 0u,
                       [](size_t acc, const std::string& passage) {
@@ -274,12 +272,6 @@ void HistoryEmbeddingsTabHelper::RetrievePassages(
     history::VisitID visit_id,
     base::Time visit_time,
     content::WeakDocumentPtr weak_render_frame_host) {
-  const history_embeddings::HistoryEmbeddingsService* embeddings_service =
-      GetHistoryEmbeddingsService();
-  if (!embeddings_service) {
-    return;
-  }
-
   content::RenderFrameHost* render_frame_host =
       weak_render_frame_host.AsRenderFrameHostIfValid();
   if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
@@ -287,43 +279,6 @@ void HistoryEmbeddingsTabHelper::RetrievePassages(
     return;
   }
 
-  if (history_embeddings::GetFeatureParameters().use_database_before_embedder) {
-    base::ElapsedTimer database_access_timer;
-    embeddings_service->GetUrlData(
-        url_id,
-        base::BindOnce(&HistoryEmbeddingsTabHelper::RetrievePassagesWithUrlData,
-                       weak_ptr_factory_.GetWeakPtr(), url_id, visit_id,
-                       visit_time, std::move(weak_render_frame_host),
-                       std::move(database_access_timer)));
-  } else {
-    RetrievePassagesWithUrlData(url_id, visit_id, visit_time,
-                                std::move(weak_render_frame_host), std::nullopt,
-                                std::nullopt);
-  }
-}
-
-void HistoryEmbeddingsTabHelper::RetrievePassagesWithUrlData(
-    history::URLID url_id,
-    history::VisitID visit_id,
-    base::Time visit_time,
-    content::WeakDocumentPtr weak_render_frame_host,
-    std::optional<base::ElapsedTimer> database_access_timer,
-    std::optional<history_embeddings::UrlData> existing_url_data) {
-  content::RenderFrameHost* render_frame_host =
-      weak_render_frame_host.AsRenderFrameHostIfValid();
-  if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
-    RecordExtractionCancelled(
-        ExtractionCancelled::SERVICE_RETRIEVE_PASSAGES_WITH_URL_DATA);
-    return;
-  }
-
-  if (database_access_timer.has_value()) {
-    base::UmaHistogramTimes(
-        "History.Embeddings.DatabaseAsCacheAccessTime.TotalWait",
-        database_access_timer.value().Elapsed());
-  }
-
-  base::ElapsedTimer passage_extraction_timer;
   mojo::Remote<blink::mojom::InnerTextAgent> agent;
   render_frame_host->GetRemoteInterfaces()->GetInterface(
       agent.BindNewPipeAndPassReceiver());
@@ -340,14 +295,11 @@ void HistoryEmbeddingsTabHelper::RetrievePassagesWithUrlData(
       std::move(params),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
-              &OnGotInnerText, std::move(agent),
-              std::move(passage_extraction_timer),
-              base::BindOnce(
-                  &history_embeddings::HistoryEmbeddingsService::
-                      OnPassagesRetrieved,
-                  GetHistoryEmbeddingsService()->AsWeakPtr(),
-                  std::move(existing_url_data),
-                  history_embeddings::UrlData(url_id, visit_id, visit_time))),
+              &OnGotInnerText, std::move(agent), base::ElapsedTimer(),
+              base::BindOnce(&history_embeddings::HistoryEmbeddingsService::
+                                 ComputeAndStorePassageEmbeddings,
+                             GetHistoryEmbeddingsService()->AsWeakPtr(), url_id,
+                             visit_id, visit_time)),
           nullptr));
 }
 

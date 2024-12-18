@@ -289,81 +289,23 @@ bool HistoryEmbeddingsService::IsEligible(const GURL& url) {
   return eligible;
 }
 
-void HistoryEmbeddingsService::OnPassagesRetrieved(
-    std::optional<UrlData> existing_url_data,
-    UrlData url_passages,
+void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddings(
+    history::URLID url_id,
+    history::VisitID visit_id,
+    base::Time visit_time,
     std::vector<std::string> passages) {
-  VLOG(4) << "All " << passages.size() << " passages for url_id "
-          << url_passages.url_id << ":";
-  for (size_t i = 0; i < passages.size(); i++) {
-    VLOG(4) << i << ": \"" << passages[i] << '"';
+  if (history_embeddings::GetFeatureParameters().use_database_before_embedder) {
+    GetUrlData(url_id, base::BindOnce(
+                           &HistoryEmbeddingsService::
+                               ComputeAndStorePassageEmbeddingsWithExistingData,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           UrlData(url_id, visit_id, visit_time),
+                           std::move(passages), base::ElapsedTimer()));
+  } else {
+    ComputeAndStorePassageEmbeddingsWithExistingData(
+        UrlData(url_id, visit_id, visit_time), std::move(passages),
+        std::nullopt, std::nullopt);
   }
-
-  // Move existing passages and associated embeddings into map for quick
-  // hash-based lookup instead of many string comparisons.
-  std::unordered_map<std::string, Embedding> embedding_cache;
-  if (existing_url_data.has_value()) {
-    size_t n = existing_url_data.value().passages.passages_size();
-    // It's possible to get passages but no embeddings if the model version
-    // changed and caused embeddings to be deleted, and they're not rebuilt yet.
-    if (n == existing_url_data.value().embeddings.size()) {
-      auto passages_iter =
-          existing_url_data.value().passages.passages().begin();
-      auto embeddings_iter = existing_url_data.value().embeddings.begin();
-      for (size_t i = 0; i < n; i++) {
-        embedding_cache.emplace(std::move(*passages_iter),
-                                std::move(*embeddings_iter));
-        passages_iter++;
-        embeddings_iter++;
-      }
-    }
-  }
-
-  // Check the map for identical passages, which can reuse stored embeddings
-  // instead of recomputing them with the embedder. Preserve the structure
-  // in `url_passages` and remove already-embedded passages from the `passages`
-  // that get sent to the embedder. Then piece them all together in
-  // `OnPassagesEmbeddingsComputed` using the cache plus new embeddings.
-  for (std::string& passage : passages) {
-    if (embedding_cache.contains(passage)) {
-      VLOG(5) << "Cached passage: " << passage;
-      url_passages.passages.add_passages(std::move(passage));
-      passage.clear();
-    } else {
-      VLOG(5) << "Noncached passage: " << passage;
-      url_passages.passages.add_passages(passage);
-    }
-  }
-  size_t old_size = passages.size();
-  if (old_size > 0 && GetFeatureParameters().use_database_before_embedder) {
-    // Erase all the blanks that were cleared by cache check above.
-    std::erase(passages, "");
-    size_t new_size = passages.size();
-    base::UmaHistogramPercentage(
-        "History.Embeddings.DatabaseCachedPassageRatio",
-        100 * (old_size - new_size) / old_size);
-    base::UmaHistogramCounts100(
-        "History.Embeddings.DatabaseCachedPassageHitCount",
-        old_size - new_size);
-    base::UmaHistogramCounts100(
-        "History.Embeddings.DatabaseCachedPassageTryCount", old_size);
-    for (size_t i = 0; i < old_size; i++) {
-      base::UmaHistogramBoolean("History.Embeddings.DatabaseCacheHit",
-                                i >= new_size);
-    }
-
-    VLOG(4) << "All " << passages.size() << " non-cached passages for url_id "
-            << url_passages.url_id << ":";
-    for (size_t i = 0; i < passages.size(); i++) {
-      VLOG(5) << i << ": \"" << passages[i] << '"';
-    }
-  }
-
-  embedder_->ComputePassagesEmbeddings(
-      PassageKind::PAGE_VISIT_PASSAGE, std::move(passages),
-      base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(embedding_cache),
-                     std::move(url_passages)));
 }
 
 void HistoryEmbeddingsService::OnEmbedderMetadataReady(
@@ -836,6 +778,90 @@ QualityLogEntry HistoryEmbeddingsService::PrepareQualityLogEntry() {
   // This requires some Chrome machinery to upload the log entry, so it's
   // implemented in ChromeHistoryEmbeddingsService.
   return nullptr;
+}
+
+void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
+    UrlData url_data,
+    std::vector<std::string> passages,
+    std::optional<base::ElapsedTimer> database_access_timer,
+    std::optional<UrlData> existing_url_data) {
+  VLOG(4) << "All " << passages.size() << " passages for url_id "
+          << url_data.url_id << ":";
+  for (size_t i = 0; i < passages.size(); i++) {
+    VLOG(4) << i << ": \"" << passages[i] << '"';
+  }
+
+  if (database_access_timer.has_value()) {
+    base::UmaHistogramTimes(
+        "History.Embeddings.DatabaseAsCacheAccessTime.TotalWait",
+        database_access_timer.value().Elapsed());
+  }
+
+  // Move existing passages and associated embeddings into map for quick
+  // hash-based lookup instead of many string comparisons.
+  std::unordered_map<std::string, Embedding> embedding_cache;
+  if (existing_url_data.has_value()) {
+    size_t n = existing_url_data.value().passages.passages_size();
+    // It's possible to get passages but no embeddings if the model version
+    // changed and caused embeddings to be deleted, and they're not rebuilt yet.
+    if (n == existing_url_data.value().embeddings.size()) {
+      auto passages_iter =
+          existing_url_data.value().passages.passages().begin();
+      auto embeddings_iter = existing_url_data.value().embeddings.begin();
+      for (size_t i = 0; i < n; i++) {
+        embedding_cache.emplace(std::move(*passages_iter),
+                                std::move(*embeddings_iter));
+        passages_iter++;
+        embeddings_iter++;
+      }
+    }
+  }
+
+  // Check the map for identical passages, which can reuse stored embeddings
+  // instead of recomputing them with the embedder. Preserve the structure
+  // in `url_data` and remove already-embedded passages from the `passages`
+  // that get sent to the embedder. Then piece them all together in
+  // `OnPassagesEmbeddingsComputed` using the cache plus new embeddings.
+  for (std::string& passage : passages) {
+    if (embedding_cache.contains(passage)) {
+      VLOG(5) << "Cached passage: " << passage;
+      url_data.passages.add_passages(std::move(passage));
+      passage.clear();
+    } else {
+      VLOG(5) << "Noncached passage: " << passage;
+      url_data.passages.add_passages(passage);
+    }
+  }
+  size_t old_size = passages.size();
+  if (old_size > 0 && GetFeatureParameters().use_database_before_embedder) {
+    // Erase all the blanks that were cleared by cache check above.
+    std::erase(passages, "");
+    size_t new_size = passages.size();
+    base::UmaHistogramPercentage(
+        "History.Embeddings.DatabaseCachedPassageRatio",
+        100 * (old_size - new_size) / old_size);
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseCachedPassageHitCount",
+        old_size - new_size);
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseCachedPassageTryCount", old_size);
+    for (size_t i = 0; i < old_size; i++) {
+      base::UmaHistogramBoolean("History.Embeddings.DatabaseCacheHit",
+                                i >= new_size);
+    }
+
+    VLOG(4) << "All " << passages.size() << " non-cached passages for url_id "
+            << url_data.url_id << ":";
+    for (size_t i = 0; i < passages.size(); i++) {
+      VLOG(5) << i << ": \"" << passages[i] << '"';
+    }
+  }
+
+  embedder_->ComputePassagesEmbeddings(
+      PassageKind::PAGE_VISIT_PASSAGE, std::move(passages),
+      base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(embedding_cache),
+                     std::move(url_data)));
 }
 
 void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
