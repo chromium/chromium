@@ -29,6 +29,12 @@ class PLATFORM_EXPORT RTCVideoDecoderFactory
   explicit RTCVideoDecoderFactory(
       media::GpuVideoAcceleratorFactories* gpu_factories,
       const gfx::ColorSpace& render_color_space);
+  // Temporary constructor that is used to log codecs that potentially can be HW
+  // accelerated regardless of the state of feature flags. Please note that this
+  // constructor must only be used for the purpose of logging.
+  RTCVideoDecoderFactory(media::GpuVideoAcceleratorFactories* gpu_factories,
+                         const gfx::ColorSpace& render_color_space,
+                         bool override_disabled_profiles);
   RTCVideoDecoderFactory(const RTCVideoDecoderFactory&) = delete;
   RTCVideoDecoderFactory& operator=(const RTCVideoDecoderFactory&) = delete;
   ~RTCVideoDecoderFactory() override;
@@ -52,6 +58,11 @@ class PLATFORM_EXPORT RTCVideoDecoderFactory
   gfx::ColorSpace render_color_space_;
 
   std::unique_ptr<GpuCodecSupportWaiter> gpu_codec_support_waiter_;
+
+  // Temporary variable to enable logging of codecs that potentially can be HW
+  // accelerated. If set to true, H265 will be reported as supported regardless
+  // of the state of the feature flag.
+  const bool override_disabled_profiles_ = false;
 };
 
 }  // namespace blink
