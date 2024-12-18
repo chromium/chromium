@@ -2240,6 +2240,78 @@ TEST_F(IntegrationTestDeviceManagementBase,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+TEST_F(IntegrationTestDeviceManagementBase, PolicyFetchFailedNoAppInstall) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+  DMPushEnrollmentToken(kEnrollmentToken);
+
+  // Policy fetch errors.
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           OmahaSettingsClientProto());
+  ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+
+  // Verify that policy fetch failure blocks the app installation.
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+#if BUILDFLAG(IS_MAC)
+  // Mac has an out-of-process fallback fetcher.
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+#endif  // BUILDFLAG(IS_MAC)
+  ExpectAppsUpdateSequence(UpdaterScope::kSystem, test_server_.get(),
+                           /*request_attributes=*/{}, {});
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestDeviceManagementBase, PolicyFetchFailedNoAppUpdate) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+
+  ASSERT_NO_FATAL_FAILURE(Install(/*switches=*/{}));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
+  ExpectAppInstalled(kApp1.appid, kApp1.v1);
+
+  // Policy fetch failure should block app update. There's still an update
+  // check request for updater itself.
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+#if BUILDFLAG(IS_MAC)
+  // Mac has an out-of-process fallback fetcher.
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+#endif  // BUILDFLAG(IS_MAC)
+  ExpectUpdateCheckRequest(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ExpectAppInstalled(kApp1.appid, kApp1.v1);
+
+  // Update should perform normally if subsequent policy fetch succeeds.
+  ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Hours(9)))
+      << "Failed to set last-checked to force next update check.";
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           OmahaSettingsClientProto());
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
+      {AppUpdateExpectation(
+          kApp1.GetInstallCommandLineArgs(/*install_v1=*/false), kApp1.appid,
+          kApp1.v1, kApp1.v2,
+          /*is_install=*/false,
+          /*should_update=*/true, false, "", "",
+          GetInstallerPath(kApp1.v2_crx))});
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kApp1.appid, kApp1.v2));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_P(IntegrationTestDeviceManagement, AppInstall) {
   const base::Version kApp1Version = base::Version("1.0.0.0");
   OmahaSettingsClientProto omaha_settings;

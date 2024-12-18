@@ -92,6 +92,12 @@ class UpdateServiceImplImpl : public UpdateService {
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback);
 
+  bool IsAppPolicyLoadedOK(const std::string& app_id) const;
+  void HandlePolicyLoadError(
+      const std::string& app_id,
+      base::RepeatingCallback<void(const UpdateState&)> state_update,
+      base::OnceCallback<void(Result)> callback);
+
   bool IsUpdateDisabledByPolicy(const std::string& app_id,
                                 Priority priority,
                                 bool is_install,

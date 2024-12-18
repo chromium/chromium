@@ -844,6 +844,13 @@ void UpdateServiceImplImpl::ForceInstall(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (config_->GetPolicyService()->LastFetchResult().value_or(kErrorOk) !=
+      kErrorOk) {
+    VLOG(1) << "Force install apps skipped because of policy refresh error.";
+    base::BindPostTask(main_task_runner_, std::move(callback))
+        .Run(UpdateService::Result::kInstallFailed);
+    return;
+  }
   PolicyStatus<std::vector<std::string>> force_install_apps_status =
       config_->GetPolicyService()->GetForceInstallApps();
   if (!force_install_apps_status) {
@@ -898,6 +905,11 @@ void UpdateServiceImplImpl::CheckForUpdate(
     return;
   }
 
+  if (!IsAppPolicyLoadedOK(app_id)) {
+    HandlePolicyLoadError(app_id, state_update, std::move(callback));
+    return;
+  }
+
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(app_id, priority, false, policy)) {
     HandleUpdateDisabledByPolicy(app_id, policy, false, state_update,
@@ -929,6 +941,11 @@ void UpdateServiceImplImpl::Update(
     return;
   }
 
+  if (!IsAppPolicyLoadedOK(app_id)) {
+    HandlePolicyLoadError(app_id, state_update, std::move(callback));
+    return;
+  }
+
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(app_id, priority, false, policy)) {
     HandleUpdateDisabledByPolicy(app_id, policy, false, state_update,
@@ -952,7 +969,12 @@ void UpdateServiceImplImpl::UpdateAll(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto app_ids = config_->GetUpdaterPersistedData()->GetAppIds();
+  auto app_ids = config_->GetUpdaterPersistedData()->GetAppIds();
+  std::erase_if(app_ids, [this](const std::string& app_id) {
+    return !IsAppPolicyLoadedOK(app_id);
+  });
+  VLOG(1) << "Apps to update: " << base::JoinString(app_ids, ", ");
+
   CHECK(base::Contains(
       app_ids, base::ToLowerASCII(kUpdaterAppId),
       static_cast<std::string (*)(std::string_view)>(&base::ToLowerASCII)));
@@ -986,6 +1008,12 @@ void UpdateServiceImplImpl::Install(
     base::OnceCallback<void(Result)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsAppPolicyLoadedOK(registration.app_id)) {
+    HandlePolicyLoadError(registration.app_id, state_update,
+                          std::move(callback));
+    return;
+  }
 
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(registration.app_id, priority, true, policy)) {
@@ -1056,6 +1084,11 @@ void UpdateServiceImplImpl::RunInstaller(
   VLOG(1) << __func__ << ": " << app_id << ": " << installer_path << ": "
           << install_args << ": " << install_data << ": " << install_settings;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsAppPolicyLoadedOK(app_id)) {
+    HandlePolicyLoadError(app_id, state_update, std::move(callback));
+    return;
+  }
 
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(app_id, Priority::kForeground, true, policy)) {
@@ -1223,6 +1256,31 @@ void UpdateServiceImplImpl::RunInstaller(
           config_, config_->GetUpdaterPersistedData(), update_client_,
           installer_version, state_update, app_info.app_id, app_info.ap,
           app_info.brand, std::move(callback)));
+}
+
+bool UpdateServiceImplImpl::IsAppPolicyLoadedOK(
+    const std::string& app_id) const {
+  return IsUpdaterOrCompanionApp(app_id) || app_id == kQualificationAppId ||
+         config_->GetPolicyService()->LastFetchResult().value_or(kErrorOk) ==
+             kErrorOk;
+}
+
+void UpdateServiceImplImpl::HandlePolicyLoadError(
+    const std::string& app_id,
+    base::RepeatingCallback<void(const UpdateState&)> state_update,
+    base::OnceCallback<void(Result)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+
+  UpdateState update_state;
+  update_state.app_id = app_id;
+  update_state.state = UpdateService::UpdateState::State::kUpdateError;
+  update_state.error_category = UpdateService::ErrorCategory::kInstaller;
+  update_state.error_code = kErrorPolicyFetchFailed;
+  update_state.extra_code1 = 0;
+  base::BindPostTask(main_task_runner_, state_update).Run(update_state);
+  base::BindPostTask(main_task_runner_, std::move(callback))
+      .Run(UpdateService::Result::kUpdateCheckFailed);
 }
 
 bool UpdateServiceImplImpl::IsUpdateDisabledByPolicy(const std::string& app_id,

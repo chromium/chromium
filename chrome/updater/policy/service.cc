@@ -215,7 +215,7 @@ void PolicyService::FetchPoliciesDone(
     int result,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << __func__;
+  VLOG(1) << __func__ << ": " << result;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
@@ -239,8 +239,14 @@ void PolicyService::PolicyManagerLoaded(
     int result,
     std::vector<scoped_refptr<PolicyManagerInterface>> managers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  policy_managers_ = SortManagers(std::move(managers));
-  VLOG(1) << "Policies after refresh:" << std::endl << GetAllPoliciesAsString();
+  if (result == kErrorOk) {
+    policy_managers_ = SortManagers(std::move(managers));
+    VLOG(1) << "Policies after refresh:" << std::endl
+            << GetAllPoliciesAsString();
+  } else {
+    VLOG(1) << "Failed to refresh policies: " << result;
+  }
+  last_fetch_result_ = result;
   std::move(fetch_policies_callback_).Run(result);
 }
 
