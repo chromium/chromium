@@ -64,7 +64,7 @@ struct ModelExecutorImpl::ExecutionState {
   SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
   proto::ModelSource model_source = proto::ModelSource::DEFAULT_MODEL_SOURCE;
   int64_t model_version = 0;
-  raw_ptr<ModelProvider, AcrossTasksDanglingUntriaged> model_provider = nullptr;
+  raw_ptr<ModelProvider> model_provider = nullptr;
   bool record_metrics_for_default = false;
   ModelExecutionCallback callback;
   ModelProvider::Request input_tensor;
