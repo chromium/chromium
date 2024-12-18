@@ -33,7 +33,6 @@ import optparse
 import posixpath
 import re
 import traceback
-import os
 from typing import List, Optional
 
 from blinkpy.common import exit_codes
@@ -62,18 +61,8 @@ def _capture_parse_error(failures):
                         if not exclude_pattern.fullmatch(message))
 
 
-def lint(host, options):
-    # The checks and list of expectation files are generally not
-    # platform-dependent. Still, we need a port to identify test types and
-    # manipulate virtual test paths.
-    finder = PathFinder(host.filesystem)
-    # Add all extra expectation files to be linted.
-    options.additional_expectations.extend([
-        finder.path_from_web_tests('MobileTestExpectations'),
-        finder.path_from_web_tests('WebGPUExpectations'),
-    ])
-    port = host.port_factory.get(options=options)
-
+def lint(port):
+    host = port.host
     failures = []
     warnings = []
     all_system_specifiers = set()
@@ -98,7 +87,7 @@ def lint(host, options):
                 port, expectations_dict={path: content})
             # Check each expectation for issues
             f, w = _check_expectations(host, port, path, test_expectations,
-                                       options, all_test_expectations)
+                                       all_test_expectations)
             failures += f
             warnings += w
 
@@ -281,7 +270,7 @@ def _check_skip_in_test_expectations(host, path, expectations):
     return failures
 
 
-def _check_expectations(host, port, path, test_expectations, options,
+def _check_expectations(host, port, path, test_expectations,
                         all_test_expectations):
     # Check for original expectation lines (from get_updated_lines) instead of
     # expectations filtered for the current port (test_expectations).
@@ -320,8 +309,8 @@ def _check_stable_webexposed_not_disabled(host, path, expectations):
     return failures
 
 
-def check_virtual_test_suites(host, options):
-    port = host.port_factory.get(options=options)
+def check_virtual_test_suites(port):
+    host = port.host
     fs = host.filesystem
     web_tests_dir = port.web_tests_dir()
     virtual_suites = port.virtual_test_suites()
@@ -415,8 +404,8 @@ def check_virtual_test_suites(host, options):
     return failures
 
 
-def check_test_lists(host, options):
-    port = host.port_factory.get(options=options)
+def check_test_lists(port):
+    host = port.host
     path = host.filesystem.join(port.web_tests_dir(), 'TestLists')
     test_lists_files = host.filesystem.listdir(path)
     failures = []
@@ -450,16 +439,22 @@ def check_test_lists(host, options):
 
 
 def run_checks(host, options):
-    failures = []
-    warnings = []
-    if os.getcwd().startswith('/google/cog/cloud'):
+    if host.filesystem.getcwd().startswith('/google/cog/cloud'):
         _log.info('Skipping run_checks for cog workspace')
         return 0
-    f, w = lint(host, options)
-    failures += f
-    warnings += w
-    failures.extend(check_virtual_test_suites(host, options))
-    failures.extend(check_test_lists(host, options))
+    finder = PathFinder(host.filesystem)
+    # Add all extra expectation files to be linted.
+    options.additional_expectations.extend([
+        finder.path_from_web_tests('MobileTestExpectations'),
+        finder.path_from_web_tests('WebGPUExpectations'),
+    ])
+    # The checks and list of expectation files are generally not
+    # platform-dependent. Still, we need a port to identify test types and
+    # manipulate virtual test paths.
+    port = host.port_factory.get(options=options)
+    failures, warnings = lint(port)
+    failures.extend(check_virtual_test_suites(port))
+    failures.extend(check_test_lists(port))
 
     if options.json:
         with open(options.json, 'w') as f:
