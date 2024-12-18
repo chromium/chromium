@@ -46,6 +46,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const base::FilePath& path,
       uint64_t file_size,
       bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -58,6 +59,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const std::string& metadata,
       BinaryUploadService::Result get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -76,6 +78,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const base::FilePath& file,
       uint64_t file_size,
       bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ResumableUploadRequest::Callback callback);
 
@@ -85,6 +88,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const std::string& metadata,
       BinaryUploadService::Result get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ResumableUploadRequest::Callback callback);
 

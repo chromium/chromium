@@ -474,35 +474,38 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     url = GetUploadUrl(IsConsumerScanRequest(*request));
   net::NetworkTrafficAnnotationTag traffic_annotation =
       GetTrafficAnnotationTag(IsConsumerScanRequest(*request));
+  std::string histogram_suffix =
+      IsConsumerScanRequest(*request) ? "ConsumerUpload" : "EnterpriseUpload";
   auto callback = base::BindOnce(&CloudBinaryUploadService::OnUploadComplete,
                                  weakptr_factory_.GetWeakPtr(), request_id);
   std::unique_ptr<ConnectorUploadRequest> upload_request;
   if (request->IsAuthRequest() || !data.contents.empty()) {
     upload_request = MultipartUploadRequest::CreateStringRequest(
-        url_loader_factory_, url, metadata, data.contents,
+        url_loader_factory_, url, metadata, data.contents, histogram_suffix,
         std::move(traffic_annotation), std::move(callback));
   } else if (!data.path.empty()) {
     upload_request =
         enterprise_connectors::IsResumableUpload(*request)
             ? ResumableUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, result, data.path,
-                  data.size, data.is_obfuscated, std::move(traffic_annotation),
-                  std::move(callback))
+                  data.size, data.is_obfuscated, histogram_suffix,
+                  std::move(traffic_annotation), std::move(callback))
             : MultipartUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, data.path, data.size,
-                  data.is_obfuscated, std::move(traffic_annotation),
-                  std::move(callback));
+                  data.is_obfuscated, histogram_suffix,
+                  std::move(traffic_annotation), std::move(callback));
 
   } else if (data.page.IsValid()) {
     upload_request =
         enterprise_connectors::IsResumableUpload(*request)
             ? ResumableUploadRequest::CreatePageRequest(
                   url_loader_factory_, url, metadata, result,
-                  std::move(data.page), std::move(traffic_annotation),
-                  std::move(callback))
+                  std::move(data.page), histogram_suffix,
+                  std::move(traffic_annotation), std::move(callback))
             : MultipartUploadRequest::CreatePageRequest(
                   url_loader_factory_, url, metadata, std::move(data.page),
-                  std::move(traffic_annotation), std::move(callback));
+                  histogram_suffix, std::move(traffic_annotation),
+                  std::move(callback));
   } else {
     NOTREACHED();
   }

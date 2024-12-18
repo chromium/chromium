@@ -1973,6 +1973,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.MultipartUploader.NetworkResult.{UploaderConsumer}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-13">
+  <owner>drubery@chromium.org</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The net error or HTTP response code returned when a multipart uploader
+    response is received for {UploaderConsumer}.
+  </summary>
+  <token key="UploaderConsumer">
+    <variant name="ConsumerUpload" summary="consumer uploads"/>
+    <variant name="DownloadFeedback" summary="download feedback"/>
+    <variant name="EnterpriseUpload" summary="enterprise uploads"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.NavigationIdMatchedInUnsafeResource"
     enum="BooleanMatched" expires_after="2025-04-13">
   <owner>xinghuilu@chromium.org</owner>
@@ -2288,6 +2305,17 @@ chromium-metrics-reviews@google.com.
     Logs the request destination of the URL that is checked by the renderer URL
     loader throttle, and whether the URL check was requested. Logged each time
     WillStartRequest is called.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ResumableUploader.NetworkResult.EnterpriseUpload"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-13">
+  <owner>drubery@chromium.org</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The net error or HTTP response code returned when a resumable uploader
+    response is received. This only applies to enterprise uploads.
   </summary>
 </histogram>
 

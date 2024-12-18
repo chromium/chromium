@@ -46,6 +46,7 @@ class ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -58,6 +59,7 @@ class ConnectorUploadRequest {
       const base::FilePath& path,
       uint64_t file_size,
       bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -68,6 +70,7 @@ class ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -121,6 +124,9 @@ class ConnectorUploadRequest {
   // corresponding requests.
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter_;
 
+  // Suffix to be used for common histograms broken out by consumer.
+  std::string histogram_suffix_;
+
   Callback callback_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -140,6 +146,7 @@ class ConnectorUploadRequestFactory {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) = 0;
   virtual std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
@@ -150,6 +157,7 @@ class ConnectorUploadRequestFactory {
       const base::FilePath& path,
       uint64_t file_size,
       bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) = 0;
   virtual std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
@@ -158,6 +166,7 @@ class ConnectorUploadRequestFactory {
       const std::string& metadata,
       BinaryUploadService::Result get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) = 0;
 };

@@ -21,12 +21,14 @@ ConnectorUploadRequest::ConnectorUploadRequest(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : base_url_(base_url),
       metadata_(metadata),
       data_source_(STRING),
       data_(data),
+      histogram_suffix_(histogram_suffix),
       callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {
@@ -40,6 +42,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
     const base::FilePath& path,
     uint64_t file_size,
     bool is_obfuscated,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : base_url_(base_url),
@@ -48,6 +51,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
       path_(path),
       data_size_(file_size),
       is_obfuscated_(is_obfuscated),
+      histogram_suffix_(histogram_suffix),
       callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {
@@ -59,6 +63,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
     const GURL& base_url,
     const std::string& metadata,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : base_url_(base_url),
@@ -66,6 +71,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
       data_source_(PAGE),
       page_region_(std::move(page_region)),
       data_size_(page_region_.GetSize()),
+      histogram_suffix_(histogram_suffix),
       callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {
