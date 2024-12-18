@@ -10977,13 +10977,8 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "allow_unsigned_user": "true",
-                        "enable_feature_when_main_toggle_on": "false"
-                    },
                     "enable_features": [
-                        "FeatureManagementHistoryEmbedding",
-                        "HistorySearchSettingsVisibility"
+                        "FeatureManagementHistoryEmbedding"
                     ]
                 }
             ]
