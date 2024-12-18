@@ -5,7 +5,10 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace signin {
@@ -489,7 +492,8 @@ void AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
 AccountManagedStatusFinder::AccountManagedStatusFinder(
     signin::IdentityManager* identity_manager,
     const CoreAccountInfo& account,
-    base::OnceClosure async_callback)
+    base::OnceClosure async_callback,
+    base::TimeDelta timeout)
     : identity_manager_(identity_manager), account_(account) {
   if (!identity_manager_->AreRefreshTokensLoaded()) {
     // We want to make sure that `account` exists in the IdentityManager but
@@ -505,7 +509,10 @@ AccountManagedStatusFinder::AccountManagedStatusFinder(
     // Wait until the account information becomes available.
     identity_manager_observation_.Observe(identity_manager_.get());
     callback_ = std::move(async_callback);
-    // TODO(crbug.com/40243973): Add a timeout mechanism.
+    if (!timeout.is_max()) {
+      timeout_timer_.Start(FROM_HERE, timeout, this,
+                           &AccountManagedStatusFinder::OnTimeoutReached);
+    }
   }
 
   // Result is known synchronously, ignore `async_callback`.
@@ -565,6 +572,12 @@ void AccountManagedStatusFinder::OnIdentityManagerShutdown(
   OutcomeDeterminedAsync(Outcome::kError);
 }
 
+void AccountManagedStatusFinder::OnTimeoutReached() {
+  DCHECK_EQ(outcome_, Outcome::kPending);
+
+  OutcomeDeterminedAsync(Outcome::kTimeout);
+}
+
 AccountManagedStatusFinder::Outcome
 AccountManagedStatusFinder::DetermineOutcome() const {
   // This must be called only after refresh tokens have been loaded.
@@ -614,6 +627,8 @@ void AccountManagedStatusFinder::OutcomeDeterminedAsync(Outcome type) {
   // The type of an account can't change, so no need to observe any longer.
   identity_manager_observation_.Reset();
   identity_manager_ = nullptr;
+
+  timeout_timer_.Stop();
 
   // Let the client know the type was determined.
   std::move(callback_).Run();

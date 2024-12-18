@@ -10,6 +10,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -55,18 +57,25 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
     kEnterpriseGoogleDotCom = 5,
     // The account is an enterprise account but *not* an @google.com one.
     kEnterprise = 6,
+    // The timeout was reached before the management status could be decided.
+    kTimeout = 7,
 
-    kMaxValue = kEnterprise
+    kMaxValue = kTimeout
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountManagedStatusFinderOutcome)
 
   // After an AccountManagedStatusFinder is instantiated, the account type may
   // or may not be known immediately. The `async_callback` will only be run if
   // the account type was *not* known immediately, i.e. if `GetOutcome()` was
-  // still `kPending` when the constructor returned.
+  // still `kPending` when the constructor returned. If the supplied `timeout`
+  // value is equal to `base::TimeDelta::Max()` - `AccountManagedStatusFinder`
+  // will wait for the managed status indefinitely (or until `IdentityManager`
+  // is shut down); otherwise the management status will be set to `kTimeout`
+  // after `timeout` time delay.
   AccountManagedStatusFinder(signin::IdentityManager* identity_manager,
                              const CoreAccountInfo& account,
-                             base::OnceClosure async_callback);
+                             base::OnceClosure async_callback,
+                             base::TimeDelta timeout = base::TimeDelta::Max());
   ~AccountManagedStatusFinder() override;
 
   const CoreAccountInfo& GetAccountInfo() const { return account_; }
@@ -82,6 +91,8 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
       signin::IdentityManager* identity_manager) override;
 
  private:
+  void OnTimeoutReached();
+
   Outcome DetermineOutcome() const;
 
   void OutcomeDeterminedAsync(Outcome type);
@@ -92,6 +103,7 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+  base::OneShotTimer timeout_timer_;
 
   base::OnceClosure callback_;
 

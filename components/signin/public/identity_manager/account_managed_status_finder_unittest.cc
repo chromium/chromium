@@ -6,6 +6,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -81,7 +82,8 @@ class AccountManagedStatusFinderTest : public testing::Test {
   AccountManagedStatusFinderTest() = default;
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_env_;
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_env_;
 };
 
@@ -418,6 +420,97 @@ TEST_F(AccountManagedStatusFinderTest,
       /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kEnterprise);
+}
+
+TEST_F(AccountManagedStatusFinderTest, TimeoutTriggered) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+
+  // Account email doesn't match any known patterns, need to wait for the
+  // account info fetch.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  base::TimeDelta timeout(base::Seconds(30));
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get(), timeout);
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // Fast-forwarding the time past the timeout deadline should trigger the
+  // callback and set the outcome to `kTimeout`.
+  EXPECT_CALL(outcome_determined, Run);
+  task_env_.FastForwardBy(timeout);
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kTimeout);
+}
+
+TEST_F(AccountManagedStatusFinderTest,
+       TimeoutNotTriggeredIfAvailabeImmediately) {
+  AccountInfo account = identity_env_.MakeAccountAvailable("account@gmail.com");
+
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  base::TimeDelta timeout(base::Seconds(30));
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get(), timeout);
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kConsumerGmail);
+
+  // The callback shouldn't be invoked (the outcome was known immediately).
+  EXPECT_CALL(outcome_determined, Run).Times(0);
+  task_env_.FastForwardBy(timeout);
+  // The outcome shouldn't change even after the timeout period passes.
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kConsumerGmail);
+}
+
+TEST_F(AccountManagedStatusFinderTest,
+       TimeoutNotTriggeredAfterSuccessfulFetch) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@not-an-enterprise.com");
+
+  // An account from an unknown domain can not be identified immediately, so the
+  // outcome is pending.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  base::TimeDelta timeout(base::Seconds(30));
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get(), timeout);
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // Once the extended account info becomes available, the outcome should be
+  // decided.
+  EXPECT_CALL(outcome_determined, Run);
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
+
+  // The outcome shouldn't change even after the timeout period passes.
+  task_env_.FastForwardBy(timeout);
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
+}
+
+TEST_F(AccountManagedStatusFinderTest,
+       AccountManagedStatusFinderDeletedBeforeOutcomeDecided) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@not-an-enterprise.com");
+
+  // Account email doesn't match any known patterns, need to wait for the
+  // account info fetch.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  base::TimeDelta timeout(base::Seconds(30));
+
+  // `AccountManagedStatusFinder` will be deleted before the outcome can be
+  // determined, so the callback should never be called.
+  EXPECT_CALL(outcome_determined, Run).Times(0);
+  {
+    AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                      outcome_determined.Get(), timeout);
+    EXPECT_EQ(finder.GetOutcome(),
+              AccountManagedStatusFinder::Outcome::kPending);
+  }
+  // Fast-forwarding the time after the object is destroyed shouldn't trigger
+  // the callback.
+  task_env_.FastForwardBy(timeout);
 }
 
 }  // namespace signin

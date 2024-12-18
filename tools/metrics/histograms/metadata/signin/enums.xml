@@ -150,6 +150,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Consumer, non-well-known domain"/>
   <int value="5" label="Enterprise, google.com"/>
   <int value="6" label="Enterprise, other domain"/>
+  <int value="7" label="Timeout"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/account_managed_status_finder.h:AccountManagedStatusFinderOutcome) -->
