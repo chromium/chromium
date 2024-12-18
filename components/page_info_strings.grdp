@@ -844,6 +844,9 @@
                     =1 {View 1 review}
                     other {View all # reviews}}
   </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_REVIEWS_SUMMARY_TITLE" desc="The title of the reviews summary section of the merchant trust feature in the page info" translateable="false">
+    What customers say
+  </message>
 
   <!-- History strings -->
   <if expr="is_ios">

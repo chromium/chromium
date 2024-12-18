@@ -97,8 +97,9 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSeparator(
 
 // static
 std::unique_ptr<views::View> PageInfoViewFactory::CreateLabelWrapper() {
+  // Using the same constant as RichHoverButton so the labels are aligned.
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+      DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL);
   auto label_wrapper = std::make_unique<views::View>();
   label_wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);

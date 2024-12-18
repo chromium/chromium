@@ -28,11 +28,17 @@ class PageInfoMerchantTrustContentView : public views::FlexLayoutView {
   base::CallbackListSubscription RegisterViewReviewsButtonPressedCallback(
       base::RepeatingClosureList::CallbackType callback);
 
+  void SetReviewsSummary(std::u16string summary);
   void SetRating(double rating);
   void SetReviewCount(int count);
 
+  // views::View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
  private:
   [[nodiscard]] std::unique_ptr<views::View> CreateDescriptionLabel();
+  [[nodiscard]] std::unique_ptr<views::View> CreateReviewsSummarySection();
   [[nodiscard]] std::unique_ptr<RichHoverButton> CreateViewReviewsButton();
 
   void NotifyLearnMoreLinkPressed(const ui::Event& event);
@@ -40,6 +46,7 @@ class PageInfoMerchantTrustContentView : public views::FlexLayoutView {
 
   raw_ptr<StarRatingView> star_rating_view_;
   raw_ptr<RichHoverButton> view_reviews_button_;
+  raw_ptr<views::Label> summary_label_;
 
   base::RepeatingCallbackList<void(const ui::Event&)>
       learn_more_link_callback_list_;
