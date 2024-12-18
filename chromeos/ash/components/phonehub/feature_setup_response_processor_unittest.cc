@@ -57,8 +57,8 @@ class FeatureSetupResponseProcessorTest : public testing::Test {
     fake_multidevice_feature_access_manager_
         ->SetFeatureSetupRequestSupportedInternal(true);
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubCameraRoll,
-                              features::kPhoneHubFeatureSetupErrorHandling},
+        /*enabled_features=*/{features::kEcheSWA,
+                              features::kPhoneHubCameraRoll},
         /*disabled_features=*/{});
   }
 
