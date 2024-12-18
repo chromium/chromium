@@ -514,7 +514,7 @@ void AiDataKeyedService::GetAiData(int dom_node_id,
                                    AiDataCallback callback) {
   TRACE_EVENT0("browser", "AiDataKeyedService::GetAiData");
   GetAiDataWithSpecifiers(10, dom_node_id, web_contents, user_input,
-                            std::move(callback));
+                          std::move(callback));
 }
 
 void AiDataKeyedService::GetAiDataWithSpecifiers(
@@ -536,7 +536,9 @@ std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
       // https://issues.chromium.org/373645534
       "hpkopmikdojpadgmioifjjodbmnjjjca",
       // https://issues.chromium.org/377129777
-      "bgbpcgpcobgjpnpiginpidndjpggappi"};
+      "bgbpcgpcobgjpnpiginpidndjpggappi",
+      // https://issues.chromium.org/376699519
+      "eefninhhiifgcimjkmkongegpoaikmhm"};
   allowlisted_extensions.insert(allowlisted_extensions.end(),
                                 kHardcodedAllowlistedExtensions.begin(),
                                 kHardcodedAllowlistedExtensions.end());

@@ -127,7 +127,8 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
                        AllowlistedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi"};
+      "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
+      "eefninhhiifgcimjkmkongegpoaikmhm"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -354,7 +355,7 @@ class AiDataKeyedServiceBrowserTestWithBlocklistedExtensions
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithBlocklistedExtensions,
                        BlockedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "bgbpcgpcobgjpnpiginpidndjpggappi"};
+      "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -379,10 +380,8 @@ IN_PROC_BROWSER_TEST_F(
     AiDataKeyedServiceBrowserTestWithRemotelyAllowlistedExtensions,
     RemotelyAllowlistedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "1234",
-      "hpkopmikdojpadgmioifjjodbmnjjjca",
-      "bgbpcgpcobgjpnpiginpidndjpggappi",
-  };
+      "1234", "hpkopmikdojpadgmioifjjodbmnjjjca",
+      "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -406,7 +405,8 @@ class AiDataKeyedServiceBrowserTestWithAllowAndBlock
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithAllowAndBlock,
                        AllowAndBlock) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi"};
+      "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
+      "eefninhhiifgcimjkmkongegpoaikmhm"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
