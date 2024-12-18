@@ -537,7 +537,7 @@ BASE_DECLARE_FEATURE(kOverridePrefetchOnSingleton);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kParentAccessCodeForOnlineLogin);
+BASE_DECLARE_FEATURE(kSkipParentAccessCodeForReauth);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -941,7 +941,7 @@ BASE_DECLARE_FEATURE(kWriteBasicSystemProfileToPersistentHistogramsFile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
-bool IsParentAccessCodeForOnlineLoginEnabled();
+bool IsParentAccessCodeForReauthEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

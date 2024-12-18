@@ -899,11 +899,10 @@ BASE_FEATURE(kOverridePrefetchOnSingleton,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables usage of Parent Access Code in the login flow for reauth and add
-// user. Requires |kParentAccessCode| to be enabled.
-BASE_FEATURE(kParentAccessCodeForOnlineLogin,
-             "ParentAccessCodeForOnlineLogin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Skips requesting the Parent Access Code for reauth.
+BASE_FEATURE(kSkipParentAccessCodeForReauth,
+             "SkipParentAccessCodeForReauth",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1544,8 +1543,8 @@ BASE_FEATURE(kWriteBasicSystemProfileToPersistentHistogramsFile,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsParentAccessCodeForOnlineLoginEnabled() {
-  return base::FeatureList::IsEnabled(kParentAccessCodeForOnlineLogin);
+bool IsParentAccessCodeForReauthEnabled() {
+  return !base::FeatureList::IsEnabled(kSkipParentAccessCodeForReauth);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
