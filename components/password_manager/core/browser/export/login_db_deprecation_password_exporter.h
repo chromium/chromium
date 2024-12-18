@@ -16,6 +16,20 @@
 
 namespace password_manager {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LoginDbDeprecationExportResult)
+enum class LoginDbDeprecationExportResult {
+  kSuccess = 0,
+  kNoPasswords = 1,
+  kErrorFetchingPasswords = 2,
+  kFileWriteError = 3,
+
+  kMaxValue = kFileWriteError,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:LoginDbDeprecationExportResult)
+
 // Directs exporting the passwords from the `LoginDatabase` to a CSV stored
 // in the same place to allow for database deprecation.
 class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
@@ -53,6 +67,10 @@ class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
   // irrespective of whether the export succeeded.
   void OnExportComplete();
 
+  // Called when the export finishes (from `OnExportComplete`),
+  // or before it starts if the passwords to export could not be fetched.
+  void OnExportCompleteWithResult(LoginDbDeprecationExportResult result);
+
   // Callback to invoke when ALL the export operations finished. It will clean
   // up `this`.
   base::OnceClosure export_cleanup_callback_;
@@ -72,6 +90,8 @@ class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
 
   // The last reported status of the export flow.
   ExportProgressStatus export_status_{ExportProgressStatus::kNotStarted};
+
+  base::Time start_time_;
 
   base::WeakPtrFactory<LoginDbDeprecationPasswordExporter> weak_factory_{this};
 };

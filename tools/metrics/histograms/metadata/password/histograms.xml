@@ -4349,6 +4349,30 @@ chromium-metrics-reviews@google.com.
   <summary>Why was the update password UI (bubble or infobar) closed?</summary>
 </histogram>
 
+<histogram name="PasswordManager.UPM.LoginDbDeprecationExport.Latency"
+    units="ms" expires_after="2025-04-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the latency of the auto-export preceeding the login database
+    deprecation on Android. The export is performed on start-up, for clients who
+    didn't migrate to UPM. Recorded only when the export completes successfully.
+    It includes the time required to fetch passwords from the database.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UPM.LoginDbDeprecationExport.Result"
+    enum="LoginDbDeprecationExportResult" expires_after="2025-04-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the result of the auto-export preceeding the login database
+    deprecation on Android. The export is performed on start-up, for clients who
+    didn't migrate to UPM. Recorded when the export completes, or before it
+    starts if there has been an issue fetching passwords. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"
     enum="Boolean" expires_after="2025-04-13">
   <owner>izuzic@google.com</owner>

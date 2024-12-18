@@ -481,6 +481,17 @@ chromium-metrics-reviews@google.com.
              policy"/>
 </enum>
 
+<!-- LINT.IfChange(LoginDbDeprecationExportResult) -->
+
+<enum name="LoginDbDeprecationExportResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No passwords"/>
+  <int value="2" label="Error fetching paswords"/>
+  <int value="3" label="File write error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h:LoginDbDeprecationExportResult) -->
+
 <enum name="LoginsChangedTrigger">
   <summary>
     Triggers that may indirectly cause PasswordStore observers notifications

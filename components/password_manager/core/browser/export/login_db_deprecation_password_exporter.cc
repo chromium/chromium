@@ -6,6 +6,9 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -16,6 +19,17 @@ namespace password_manager {
 
 namespace {
 constexpr std::string_view kExportedPasswordsFileName = "ChromePasswords.csv";
+
+void LogExportResult(LoginDbDeprecationExportResult result) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.UPM.LoginDbDeprecationExport.Result", result);
+}
+
+void LogExportLatency(base::TimeDelta latency) {
+  base::UmaHistogramMediumTimes(
+      "PasswordManager.UPM.LoginDbDeprecationExport.Latency", latency);
+}
+
 }  // namespace
 
 LoginDbDeprecationPasswordExporter::LoginDbDeprecationPasswordExporter(
@@ -38,6 +52,7 @@ void LoginDbDeprecationPasswordExporter::Start(
     scoped_refptr<PasswordStoreInterface> password_store,
     base::OnceClosure export_cleanup_calback) {
   export_cleanup_callback_ = std::move(export_cleanup_calback);
+  start_time_ = base::Time::Now();
   password_store->GetAutofillableLogins(weak_factory_.GetWeakPtr());
 }
 
@@ -56,7 +71,8 @@ void LoginDbDeprecationPasswordExporter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError logins_or_error) {
   if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
-    OnExportComplete();
+    OnExportCompleteWithResult(
+        LoginDbDeprecationExportResult::kErrorFetchingPasswords);
     return;
   }
 
@@ -68,7 +84,7 @@ void LoginDbDeprecationPasswordExporter::OnGetPasswordStoreResultsOrErrorFrom(
     passwords_.emplace_back(password_form);
   }
   if (passwords_.empty()) {
-    OnExportComplete();
+    OnExportCompleteWithResult(LoginDbDeprecationExportResult::kNoPasswords);
     return;
   }
 
@@ -83,9 +99,36 @@ void LoginDbDeprecationPasswordExporter::OnExportProgress(
 }
 
 void LoginDbDeprecationPasswordExporter::OnExportComplete() {
+  LoginDbDeprecationExportResult result;
+  switch (export_status_) {
+    case ExportProgressStatus::kNotStarted:
+    case ExportProgressStatus::kInProgress: {
+      // `OnExportComplete` should only be called for completed export flows.
+      NOTREACHED();
+    }
+    case ExportProgressStatus::kSucceeded: {
+      result = LoginDbDeprecationExportResult::kSuccess;
+      break;
+    }
+    case ExportProgressStatus::kFailedCancelled: {
+      // There is no option that cancels this export flow.
+      NOTREACHED();
+    }
+    case ExportProgressStatus::kFailedWrite: {
+      result = LoginDbDeprecationExportResult::kFileWriteError;
+      break;
+    }
+  };
+  OnExportCompleteWithResult(result);
+}
+
+void LoginDbDeprecationPasswordExporter::OnExportCompleteWithResult(
+    LoginDbDeprecationExportResult result) {
+  LogExportResult(result);
   // If the export wasn't successful and there are passwords to export,
   // it will be re-attempted on the next startup.
-  if (export_status_ == ExportProgressStatus::kSucceeded) {
+  if (result == LoginDbDeprecationExportResult::kSuccess) {
+    LogExportLatency(base::Time::Now() - start_time_);
     pref_service_->SetBoolean(prefs::kUpmUnmigratedPasswordsExported, true);
   }
   std::move(export_cleanup_callback_).Run();
