@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -388,7 +389,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // so we won't even compile in strings such as "Media.TimeToPlayReady.All"
   // if it's not specified.
   template <uint32_t Flags, typename... T>
-  void WriteSplitHistogram(void (*UmaFunction)(const std::string&, T...),
+  void WriteSplitHistogram(void (*UmaFunction)(std::string_view, T...),
                            SplitHistogramName key,
                            const T&... value);
 

@@ -61,7 +61,7 @@ enum class Status {
 
 template <typename T>
 void NetworkHistogram(std::string_view suffix,
-                      void (*hist_func)(const std::string&, T value),
+                      void (*hist_func)(std::string_view, T value),
                       bool is_debug_report,
                       std::optional<bool> has_trigger_context_id,
                       T value) {

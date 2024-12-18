@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -365,8 +366,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     // - "Bubble.{bubble_name}.{histogram_name}" for a specific bubble
     //   subclass, if `bubble_name` is set.
     template <typename Value>
-    void LogMetric(void (*uma_func)(const std::string&, Value),
-                   const std::string& histogram_name,
+    void LogMetric(void (*uma_func)(std::string_view, Value),
+                   std::string_view histogram_name,
                    Value value) const;
 
    private:

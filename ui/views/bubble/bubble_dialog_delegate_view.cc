@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -902,8 +903,8 @@ BubbleDialogDelegate::BubbleUmaLogger::GetBubbleName() const {
 
 template <typename Value>
 void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
-    void (*uma_func)(const std::string&, Value),
-    const std::string& histogram_name,
+    void (*uma_func)(std::string_view, Value),
+    std::string_view histogram_name,
     Value value) const {
   if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
     return;
@@ -931,8 +932,8 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
 
 // Instantiate template function to be able to use in views_unittests.
 template VIEWS_EXPORT void BubbleDialogDelegate::BubbleUmaLogger::LogMetric<
-    base::TimeDelta>(void (*uma_func)(const std::string&, base::TimeDelta),
-                     const std::string& histogram_name,
+    base::TimeDelta>(void (*uma_func)(std::string_view, base::TimeDelta),
+                     std::string_view histogram_name,
                      base::TimeDelta value) const;
 
 gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
