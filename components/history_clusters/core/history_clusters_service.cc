@@ -106,8 +106,7 @@ HistoryClustersService::HistoryClustersService(
     TemplateURLService* template_url_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     PrefService* prefs)
-    : persist_caches_to_prefs_(GetConfig().persist_caches_to_prefs),
-      is_journeys_feature_flag_enabled_(
+    : is_journeys_feature_flag_enabled_(
           GetConfig().is_journeys_enabled_no_locale_check &&
           IsApplicationLocaleSupportedByJourneys(application_locale)),
       history_service_(history_service),
@@ -552,7 +551,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
 }
 
 void HistoryClustersService::LoadCachesFromPrefs() {
-  if (!pref_service_ || !persist_caches_to_prefs_) {
+  if (!pref_service_) {
     return;
   }
 
@@ -587,7 +586,7 @@ void HistoryClustersService::LoadCachesFromPrefs() {
 }
 
 void HistoryClustersService::WriteShortCacheToPrefs() {
-  if (!pref_service_ || !persist_caches_to_prefs_) {
+  if (!pref_service_) {
     return;
   }
 
@@ -605,7 +604,7 @@ void HistoryClustersService::WriteShortCacheToPrefs() {
 }
 
 void HistoryClustersService::WriteAllCacheToPrefs() {
-  if (!pref_service_ || !persist_caches_to_prefs_) {
+  if (!pref_service_) {
     return;
   }
 
