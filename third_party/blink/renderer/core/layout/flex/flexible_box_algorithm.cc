@@ -37,24 +37,6 @@
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
-namespace {
-
-ItemPosition BoxAlignmentToItemPosition(EBoxAlignment alignment) {
-  switch (alignment) {
-    case EBoxAlignment::kBaseline:
-      return ItemPosition::kBaseline;
-    case EBoxAlignment::kCenter:
-      return ItemPosition::kCenter;
-    case EBoxAlignment::kStretch:
-      return ItemPosition::kStretch;
-    case EBoxAlignment::kStart:
-      return ItemPosition::kFlexStart;
-    case EBoxAlignment::kEnd:
-      return ItemPosition::kFlexEnd;
-  }
-}
-
-}  // namespace
 
 // static
 bool FlexibleBoxAlgorithm::IsHorizontalFlow(const ComputedStyle& style) {
@@ -67,14 +49,43 @@ bool FlexibleBoxAlgorithm::IsHorizontalFlow(const ComputedStyle& style) {
 ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
     const ComputedStyle& flexbox_style,
     const ComputedStyle& child_style) {
-  ItemPosition align =
-      flexbox_style.IsDeprecatedWebkitBox()
-          ? BoxAlignmentToItemPosition(flexbox_style.BoxAlign())
-          : child_style
-                .ResolvedAlignSelf(
-                    {ItemPosition::kStretch, OverflowAlignment::kDefault},
-                    &flexbox_style)
-                .GetPosition();
+  // Any auto-margins coerce the alignment to flex-start.
+  if (!child_style.HasOutOfFlowPosition()) {
+    if (IsHorizontalFlow(flexbox_style)) {
+      if (child_style.MarginTop().IsAuto() ||
+          child_style.MarginBottom().IsAuto()) {
+        return ItemPosition::kFlexStart;
+      }
+    } else {
+      if (child_style.MarginLeft().IsAuto() ||
+          child_style.MarginRight().IsAuto()) {
+        return ItemPosition::kFlexStart;
+      }
+    }
+  }
+
+  // -webkit-box has a relatively simple alignment mapping (no need to coerce
+  // "self-start", etc).
+  if (flexbox_style.IsDeprecatedWebkitBox()) {
+    switch (flexbox_style.BoxAlign()) {
+      case EBoxAlignment::kBaseline:
+        return ItemPosition::kBaseline;
+      case EBoxAlignment::kCenter:
+        return ItemPosition::kCenter;
+      case EBoxAlignment::kStretch:
+        return ItemPosition::kStretch;
+      case EBoxAlignment::kStart:
+        return ItemPosition::kFlexStart;
+      case EBoxAlignment::kEnd:
+        return ItemPosition::kFlexEnd;
+    }
+  }
+
+  ItemPosition align = child_style
+                           .ResolvedAlignSelf({ItemPosition::kStretch,
+                                               OverflowAlignment::kDefault},
+                                              &flexbox_style)
+                           .GetPosition();
   DCHECK_NE(align, ItemPosition::kAuto);
   DCHECK_NE(align, ItemPosition::kNormal);
   DCHECK_NE(align, ItemPosition::kLeft) << "left, right are only for justify";
@@ -104,20 +115,6 @@ ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
       align = ItemPosition::kFlexEnd;
     } else if (align == ItemPosition::kFlexEnd) {
       align = ItemPosition::kFlexStart;
-    }
-  }
-
-  if (!child_style.HasOutOfFlowPosition()) {
-    if (IsHorizontalFlow(flexbox_style)) {
-      if (child_style.MarginTop().IsAuto() ||
-          child_style.MarginBottom().IsAuto()) {
-        align = ItemPosition::kFlexStart;
-      }
-    } else {
-      if (child_style.MarginLeft().IsAuto() ||
-          child_style.MarginRight().IsAuto()) {
-        align = ItemPosition::kFlexStart;
-      }
     }
   }
 
