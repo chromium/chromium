@@ -1139,10 +1139,16 @@
         Hide View tabs in your app list
       </message>
       <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT" desc="Content of the auxiliary search module on NTP for a device with this feature enabled by default..">
-        Chrome now shares your recent tabs with your device. You can quickly access them in your device's app list and search results. You can turn this off anytime in Chrome settings.
+        Chrome now shares your recent tabs with your device. You’ll see them in your device’s app list and search results. You can turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_SHORT" desc="Content of the auxiliary search module on NTP for a device with this feature enabled by default..">
+        Chrome now shows your recent tabs in your device's app list and search results. You can turn this off anytime in Chrome settings.
       </message>
       <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_DEFAULT_OFF" desc="Content of the auxiliary search module on NTP for a device with this feature disabled by default.">
-        Let Chrome share your recent tabs with your device to see them in your device's app list and search results. You can turn this on or off anytime in Chrome settings.
+        Let Chrome share your recent tabs with your device to see them in your device's app list and search results. You can turn this on or off in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_DEFAULT_OFF_SHORT" desc="Content of the auxiliary search module on NTP for a device with this feature disabled by default.">
+        Let Chrome show your recent tabs in your device’s app list and search results. You can turn this off anytime in Chrome settings.
       </message>
       <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GO_TO_SETTINGS" desc="The text shown on the Go to settings button on the auxiliary search module on NTP.">
         Go to settings
