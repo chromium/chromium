@@ -805,6 +805,7 @@ void AddressDataManager::LogStoredDataMetrics() const {
 
   autofill_metrics::LogStoredProfileMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profile_pointers);
+  autofill_metrics::LogStoredProfileCountWithAlternativeName(profile_pointers);
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillLogDeduplicationMetrics)) {

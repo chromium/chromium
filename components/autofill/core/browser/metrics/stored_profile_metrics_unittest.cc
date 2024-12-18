@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -106,6 +107,25 @@ TEST(StoredProfileMetricsTest, LocalProfileSupersetMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup", 1,
       1);
+}
+
+// Tests that if profiles contain an alternative name, the metrics are emitted.
+TEST_P(StoredProfileMetricsTestByCategory, StoredProfilesWithAlternativeName) {
+  // Create profiles with alternative names.
+  AutofillProfile profile0 = test::GetFullProfile(AddressCountryCode("JP"));
+  profile0.SetInfo(ALTERNATIVE_FULL_NAME, u"あおい", "ja");
+
+  AutofillProfile profile1 = test::GetFullProfile2(AddressCountryCode("JP"));
+  profile1.SetInfo(ALTERNATIVE_FULL_NAME, u"やまもと·あおい", "ja");
+
+  // Create a profile without the alternative name set.
+  AutofillProfile profile2 = test::GetFullProfile();
+
+  // Log the metrics and verify expectations.
+  base::HistogramTester histogram_tester;
+  LogStoredProfileCountWithAlternativeName({&profile0, &profile1, &profile2});
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCount.WithAlternativeName", 2, 1);
 }
 
 }  // namespace autofill::autofill_metrics

@@ -5593,6 +5593,17 @@ AutofillSaveCreditCardPromptDestination.
   <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
+<histogram name="Autofill.StoredProfileCount.WithAlternativeName"
+    units="Profiles" expires_after="2025-07-01">
+  <owner>jsobiech@google.com</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of Autofill addresses with an alternative name set, measured at
+    launch time.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.StoredProfileCount.{Suffix}" units="Profiles"
     expires_after="2025-04-13">
   <owner>battre@chromium.org</owner>
