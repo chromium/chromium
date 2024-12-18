@@ -276,7 +276,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   Node* insertBefore(Node* new_child, Node* ref_child, ExceptionState&);
   Node* insertBefore(Node* new_child, Node* ref_child);
-  Node* moveBefore(Node* new_child, Node* ref_child, ExceptionState&);
+  void moveBefore(Node* new_child, Node* ref_child, ExceptionState&);
   Node* replaceChild(Node* new_child, Node* old_child, ExceptionState&);
   Node* replaceChild(Node* new_child, Node* old_child);
   Node* removeChild(Node* child, ExceptionState&);

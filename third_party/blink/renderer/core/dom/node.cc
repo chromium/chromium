@@ -841,9 +841,9 @@ Node* Node::insertBefore(Node* new_child, Node* ref_child) {
   return insertBefore(new_child, ref_child, ASSERT_NO_EXCEPTION);
 }
 
-Node* Node::moveBefore(Node* new_child,
-                       Node* ref_child,
-                       ExceptionState& exception_state) {
+void Node::moveBefore(Node* new_child,
+                      Node* ref_child,
+                      ExceptionState& exception_state) {
   DCHECK(new_child);
 
   // Only perform a state-preserving atomic move if the new parent and the child
@@ -876,7 +876,7 @@ Node* Node::moveBefore(Node* new_child,
         DOMExceptionCode::kHierarchyRequestError,
         "State-preserving atomic move cannot be performed on nodes "
         "participating in an invalid hierarchy.");
-    return nullptr;
+    return;
   }
 
   // No script can run synchronously during the move. That means it is
@@ -890,14 +890,9 @@ Node* Node::moveBefore(Node* new_child,
 
   ContainerNode* old_parent = new_child->parentNode();
 
-  Node* return_node = insertBefore(new_child, ref_child, exception_state);
+  insertBefore(new_child, ref_child, exception_state);
   GetDocument().SetStatePreservingAtomicMoveInProgress(false);
   new_child->MovedFrom(*old_parent);
-
-  // We don't need to conditionally return `nullptr` if `exception_state` had an
-  // exception. `insertBefore()` already handles this for us, so we can just
-  // unconditionally return its value.
-  return return_node;
 }
 
 Node* Node::replaceChild(Node* new_child,
