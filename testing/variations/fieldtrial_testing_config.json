@@ -4846,14 +4846,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Holdback",
                     "enable_features": [
-                        "WelcomeTourV3"
+                        "WelcomeTourHoldbackArm"
                     ],
                     "disable_features": [
                         "WelcomeTourCounterfactualArm",
-                        "WelcomeTourHoldbackArm",
-                        "WelcomeTourV2"
+                        "WelcomeTourV2",
+                        "WelcomeTourV3"
                     ]
                 }
             ]
