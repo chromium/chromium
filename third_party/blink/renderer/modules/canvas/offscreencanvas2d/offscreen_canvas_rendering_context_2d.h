@@ -62,7 +62,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     BaseRenderingContext2D::clearRect(x, y, width, height);
   }
   SkColorInfo CanvasRenderingContextSkColorInfo() const override {
-    return color_params_.GetSkColorInfo();
+    return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
   }
   SkAlphaType GetAlphaType() const override {
     return color_params_.GetAlphaType();

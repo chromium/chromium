@@ -192,7 +192,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                 CanvasPerformanceMonitor::DrawType) final;
 
   SkColorInfo CanvasRenderingContextSkColorInfo() const override {
-    return color_params_.GetSkColorInfo();
+    return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
   }
   SkAlphaType GetAlphaType() const override {
     return color_params_.GetAlphaType();
