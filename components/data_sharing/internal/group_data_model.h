@@ -102,6 +102,9 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   // `collaboration_group_sync_bridge_`.
   void ProcessGroupChanges(bool is_initial_load);
 
+  void DoPeriodicPollingAndScheduleNext();
+  void ScheduleNextPeriodicPolling();
+
   // Asynchronously fetches data from the SDK.
   void FetchGroupsFromSDK(const std::vector<GroupId>& added_or_updated_groups);
   void OnGroupsFetchedFromSDK(
@@ -135,6 +138,8 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   // Used only for tests to notify that GroupDataStore has been loaded (either
   // successfully or unsuccessfully).
   base::OnceClosure db_loaded_callback_;
+
+  base::OneShotTimer next_periodic_polling_timer_;
 
   base::ObserverList<Observer> observers_;
 

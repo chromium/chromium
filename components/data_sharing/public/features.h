@@ -24,6 +24,12 @@ BASE_DECLARE_FEATURE(kDataSharingAndroidV2);
 
 extern const base::FeatureParam<std::string> kDataSharingURL;
 
+// Controls how often the group data should be polled from the server in the
+// absence of any other updates (such as upon receiving a CollaboratioGroup
+// changes).
+extern const base::FeatureParam<base::TimeDelta>
+    kDataSharingGroupDataPeriodicPollingInterval;
+
 }  // namespace data_sharing::features
 
 #endif  // COMPONENTS_DATA_SHARING_PUBLIC_FEATURES_H_

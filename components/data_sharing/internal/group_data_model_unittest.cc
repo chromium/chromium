@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
+#include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/fake_data_sharing_sdk_delegate.h"
 #include "components/sync/model/entity_change.h"
@@ -302,8 +303,13 @@ class GroupDataModelTest : public testing::Test {
     model_->AddObserver(&observer_);
   }
 
+  void FastForwardBy(const base::TimeDelta& time_delta) {
+    task_environment_.FastForwardBy(time_delta);
+  }
+
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::ScopedTempDir data_sharing_dir_;
 
@@ -636,6 +642,55 @@ TEST_F(GroupDataModelTest, ShouldRecordGroupEvents) {
                                member_gaia_id),
                   GroupEventIs(group_id, GroupEvent::EventType::kGroupRemoved,
                                std::nullopt)));
+}
+
+TEST_F(GroupDataModelTest, ShouldDoPeriodicPolling) {
+  WaitForModelLoaded();
+
+  const GroupId group_id = MimicGroupAddedServerSide("group1");
+  WaitForGroupAdded(group_id);
+
+  const GaiaId member_gaia_id("gaia_id");
+  MimicMemberAddedServerSide(group_id, member_gaia_id);
+  WaitForGroupUpdated(group_id);
+
+  {
+    std::optional<GroupData> group_data = model().GetGroup(group_id);
+    ASSERT_TRUE(group_data.has_value());
+    ASSERT_THAT(*group_data, HasMemberWithGaiaId(member_gaia_id));
+  }
+
+  // Mimic that member was removed from the group without updating
+  // CollaborationGroup (thus model doesn't know about it).
+  sdk_delegate().RemoveMember(group_id, member_gaia_id);
+  FastForwardBy(base::Hours(1));
+  {
+    // One hour is not long enough to trigger periodic polling, so the group
+    // member should still be present.
+    std::optional<GroupData> group_data = model().GetGroup(group_id);
+    ASSERT_TRUE(group_data.has_value());
+    ASSERT_THAT(*group_data, HasMemberWithGaiaId(member_gaia_id));
+  }
+  // There will be extra OnGroupUpdated() call after periodic polling, so to
+  // avoid unexpected call errors, verify and clear expectations.
+  testing::Mock::VerifyAndClearExpectations(&model_observer());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(model_observer(),
+              OnMemberRemoved(group_id, member_gaia_id, NotNullTime()))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  // Periodic polling is attempted once per hour and only effective for groups
+  // that were updated more that kDataSharingGroupDataPeriodicPollingInterval
+  // ago, so advance time by the sum of both.
+  FastForwardBy(features::kDataSharingGroupDataPeriodicPollingInterval.Get() +
+                base::Hours(1));
+  run_loop.Run();
+  {
+    // Now model should be aware of the member removal.
+    std::optional<GroupData> group_data = model().GetGroup(group_id);
+    ASSERT_TRUE(group_data.has_value());
+    EXPECT_TRUE(group_data->members.empty());
+  }
 }
 
 }  // namespace

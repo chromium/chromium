@@ -5,6 +5,7 @@
 #include "components/data_sharing/public/features.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 
 namespace data_sharing::features {
 namespace {
@@ -28,5 +29,11 @@ constexpr base::FeatureParam<std::string> kDataSharingURL(
     &kDataSharingFeature,
     "data_sharing_url",
     kDataSharingDefaultUrl);
+
+constexpr base::FeatureParam<base::TimeDelta>
+    kDataSharingGroupDataPeriodicPollingInterval(
+        &kDataSharingFeature,
+        "data_sharing_group_data_periodic_polling_interval",
+        base::Days(1));
 
 }  // namespace data_sharing::features
