@@ -42,9 +42,6 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
 
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 
-  SkColorInfo CanvasRenderingContextSkColorInfo() const final {
-    return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
-  }
   SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
   SkColorType GetSkColorType() const override { return kN32_SkColorType; }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {

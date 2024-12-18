@@ -5619,11 +5619,6 @@ gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
   return GetTextureSourceSize(image);
 }
 
-SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
-    const {
-  return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
-}
-
 SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
   // This selection of alpha type disregards whether or not the drawing buffer
   // is premultiplied. This is to match historical behavior that may or may not

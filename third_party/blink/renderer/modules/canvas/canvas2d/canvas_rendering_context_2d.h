@@ -191,9 +191,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
 
-  SkColorInfo CanvasRenderingContextSkColorInfo() const override {
-    return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
-  }
   SkAlphaType GetAlphaType() const override {
     return color_params_.GetAlphaType();
   }

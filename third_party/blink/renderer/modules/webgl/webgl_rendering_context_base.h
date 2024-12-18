@@ -632,9 +632,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     void Trace(Visitor*) const;
   };
 
-  // TODO(https://crbug.com/1208480): This function applies only to 2D rendering
-  // contexts, and should be removed.
-  SkColorInfo CanvasRenderingContextSkColorInfo() const override;
   SkAlphaType GetAlphaType() const override;
   SkColorType GetSkColorType() const override;
   sk_sp<SkColorSpace> GetSkColorSpace() const override;

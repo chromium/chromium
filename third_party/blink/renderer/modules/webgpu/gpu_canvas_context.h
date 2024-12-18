@@ -62,7 +62,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // CanvasRenderingContext implementation
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
-  SkColorInfo CanvasRenderingContextSkColorInfo() const override;
   SkAlphaType GetAlphaType() const override;
   SkColorType GetSkColorType() const override;
   sk_sp<SkColorSpace> GetSkColorSpace() const override;
