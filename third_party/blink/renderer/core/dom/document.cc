@@ -8884,8 +8884,10 @@ bool Document::IsFocusAllowed() const {
   CountUse(uma_type);
   if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled())
     return true;
-  return GetExecutionContext()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kFocusWithoutUserActivation);
+  return GetFrame()->AllowFocusDuringFocusAdvance() ||
+         GetExecutionContext()->IsFeatureEnabled(
+             mojom::blink::PermissionsPolicyFeature::
+                 kFocusWithoutUserActivation);
 }
 
 LazyLoadImageObserver& Document::EnsureLazyLoadImageObserver() {

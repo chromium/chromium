@@ -273,6 +273,14 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return had_sticky_user_activation_before_nav_;
   }
 
+  void SetAllowFocusDuringFocusAdvance(bool value) {
+    allow_focus_during_focus_advance_ = value;
+  }
+
+  bool AllowFocusDuringFocusAdvance() const {
+    return allow_focus_during_focus_advance_;
+  }
+
   bool IsAttached() const {
     return lifecycle_.GetState() == FrameLifecycle::kAttached;
   }
@@ -591,6 +599,10 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // The sticky user activation state of the current frame before eTLD+1
   // navigation.  This is used in autoplay.
   bool had_sticky_user_activation_before_nav_ = false;
+
+  // This is used in focus delegation scenario when
+  // focus-without-user-activation permission policy is set.
+  bool allow_focus_during_focus_advance_ = false;
 
   // This identifier represents the stable identifier between a
   // LocalFrame  <--> RenderFrameHostImpl or a
