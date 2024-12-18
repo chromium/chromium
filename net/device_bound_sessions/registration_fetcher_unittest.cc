@@ -1129,6 +1129,35 @@ TEST_F(RegistrationTest, NetLogResultLogged) {
       1u);
 }
 
+TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+
+  auto* container = new UnauthorizedThenSuccessResponseContainer(100);
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&UnauthorizedThenSuccessResponseContainer::Return,
+                          base::Owned(container)));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto isolation_info = IsolationInfo::CreateTransient();
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      server_.base_url(), kSessionIdentifier, kChallenge);
+  CreateKeyAndRunCallback(base::BindOnce(
+      &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
+      std::ref(unexportable_key_service()), context_.get(),
+      std::ref(isolation_info), /*net_log_source=*/std::nullopt,
+      callback.callback()));
+  callback.WaitForCall();
+
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
+  ASSERT_TRUE(out_params);
+  const SessionTerminationParams* session_params =
+      std::get_if<SessionTerminationParams>(&out_params->params);
+  ASSERT_TRUE(session_params);
+  EXPECT_EQ(session_params->session_id, kSessionIdentifier);
+}
+
 class RegistrationTokenHelperTest : public testing::Test {
  public:
   RegistrationTokenHelperTest() : unexportable_key_service_(task_manager_) {}

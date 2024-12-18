@@ -229,8 +229,20 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     current_authorization_ = std::move(authorization);
 
     if (current_challenge_.has_value()) {
-      AttemptChallengeSigning();
-      return;
+      number_of_challenges_++;
+      if (number_of_challenges_ < kMaxChallenges) {
+        AttemptChallengeSigning();
+        return;
+      } else if (session_identifier_.has_value()) {
+        SessionTerminationParams params{*session_identifier_};
+        RunCallbackAndDeleteSelf(
+            std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
+                std::move(params), key_id_, fetcher_endpoint_));
+        return;
+      } else {
+        RunCallbackAndDeleteSelf(std::nullopt);
+        return;
+      }
     }
 
     // Start a request to get a challenge with the session identifier.
@@ -244,6 +256,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
  private:
   static constexpr size_t kMaxSigningFailures = 2;
+  static constexpr size_t kMaxChallenges = 5;
 
   void AttemptChallengeSigning() {
     SignChallengeWithKey(
@@ -377,6 +390,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   std::optional<std::string> current_challenge_;
   std::optional<std::string> current_authorization_;
   size_t number_of_signing_failures_ = 0;
+  size_t number_of_challenges_ = 0;
 };
 
 RegistrationFetcher::FetcherType g_mock_fetcher = nullptr;
