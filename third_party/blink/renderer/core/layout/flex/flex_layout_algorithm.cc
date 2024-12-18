@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/layout/flex/flex_item_iterator.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_line_breaker.h"
-#include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/flex/line_flexer.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
@@ -186,7 +185,8 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
       is_wrap_reverse_(Style().FlexWrap() == EFlexWrap::kWrapReverse),
       is_reverse_direction_(Style().ResolvedIsReverseFlexDirection()),
       is_multi_line_(Style().FlexWrap() != EFlexWrap::kNowrap),
-      is_horizontal_flow_(FlexibleBoxAlgorithm::IsHorizontalFlow(Style())),
+      is_horizontal_flow_(Style().IsHorizontalWritingMode() ? !is_column_
+                                                            : is_column_),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()),
       child_percentage_size_(
           CalculateChildPercentageSize(GetConstraintSpace(),

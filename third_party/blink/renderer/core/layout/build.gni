@@ -119,8 +119,6 @@ blink_core_sources_layout = [
   "flex/flex_line.h",
   "flex/flex_line_breaker.h",
   "flex/flex_line_breaker.cc",
-  "flex/flexible_box_algorithm.cc",
-  "flex/flexible_box_algorithm.h",
   "flex/layout_flexible_box.cc",
   "flex/layout_flexible_box.h",
   "flex/line_flexer.h",
