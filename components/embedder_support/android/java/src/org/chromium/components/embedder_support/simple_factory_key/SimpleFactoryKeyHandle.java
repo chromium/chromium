@@ -7,10 +7,15 @@ package org.chromium.components.embedder_support.simple_factory_key;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An interface that provides access to a native SimpleFactoryKey. */
 @JNINamespace("simple_factory_key")
+@NullMarked
 public interface SimpleFactoryKeyHandle {
-    /** @return A pointer to the native SimpleFactoryKey that this object wraps. */
+    /**
+     * @return A pointer to the native SimpleFactoryKey that this object wraps.
+     */
     @CalledByNative
     long getNativeSimpleFactoryKeyPointer();
 }
