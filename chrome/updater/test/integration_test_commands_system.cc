@@ -109,32 +109,29 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
         {Param("switches", StringFromValue(base::Value(switches.Clone())))});
   }
 
-  void InstallUpdaterAndApp(
-      const std::string& app_id,
-      const bool is_silent_install,
-      const std::string& tag,
-      const std::string& child_window_text_to_find,
-      const bool always_launch_cmd,
-      const bool verify_app_logo_loaded,
-      const bool expect_success,
-      const bool wait_for_the_installer,
-      const base::Value::List& additional_switches) const override {
+  void InstallUpdaterAndApp(const std::string& app_id,
+                            const bool is_silent_install,
+                            const std::string& tag,
+                            const std::string& child_window_text_to_find,
+                            const bool always_launch_cmd,
+                            const bool verify_app_logo_loaded,
+                            const bool expect_success,
+                            const bool wait_for_the_installer,
+                            const base::Value::List& additional_switches,
+                            const base::FilePath& updater_path) const override {
     RunCommand(
         "install_updater_and_app",
-        {
-            Param("app_id", app_id),
-            Param("is_silent_install", BoolToString(is_silent_install)),
-            Param("tag", tag),
-            Param("child_window_text_to_find", child_window_text_to_find),
-            Param("always_launch_cmd", BoolToString(always_launch_cmd)),
-            Param("verify_app_logo_loaded",
-                  BoolToString(verify_app_logo_loaded)),
-            Param("expect_success", BoolToString(expect_success)),
-            Param("wait_for_the_installer",
-                  BoolToString(wait_for_the_installer)),
-            Param("additional_switches",
-                  StringFromValue(base::Value(additional_switches.Clone()))),
-        });
+        {Param("app_id", app_id),
+         Param("is_silent_install", BoolToString(is_silent_install)),
+         Param("tag", tag),
+         Param("child_window_text_to_find", child_window_text_to_find),
+         Param("always_launch_cmd", BoolToString(always_launch_cmd)),
+         Param("verify_app_logo_loaded", BoolToString(verify_app_logo_loaded)),
+         Param("expect_success", BoolToString(expect_success)),
+         Param("wait_for_the_installer", BoolToString(wait_for_the_installer)),
+         Param("additional_switches",
+               StringFromValue(base::Value(additional_switches.Clone()))),
+         Param("updater_path", updater_path.MaybeAsASCII())});
   }
 
   void ExpectInstalled() const override { RunCommand("expect_installed"); }

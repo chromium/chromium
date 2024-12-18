@@ -306,11 +306,12 @@ class IntegrationTest : public ::testing::Test {
       const bool expect_success = true,
       const bool wait_for_the_installer = true,
       const base::Value::List& additional_switches =
-          base::Value::List().Append(kEnableCecaExperimentSwitch)) {
+          base::Value::List().Append(kEnableCecaExperimentSwitch),
+      const base::FilePath& updater_path = GetSetupExecutablePath()) {
     test_commands_->InstallUpdaterAndApp(
         app_id, is_silent_install, tag, child_window_text_to_find,
         always_launch_cmd, verify_app_logo_loaded, expect_success,
-        wait_for_the_installer, additional_switches);
+        wait_for_the_installer, additional_switches, updater_path);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -1578,18 +1579,44 @@ TEST_F(IntegrationTest, SetTagRoundTrip) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, InstallId) {
+class IntegrationInstallIdTest
+    : public ::testing::WithParamInterface<TestUpdaterVersion>,
+      public IntegrationTest {};
+
+INSTANTIATE_TEST_SUITE_P(IntegrationInstallIdTestCases,
+                         IntegrationInstallIdTest,
+                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+
+TEST_P(IntegrationInstallIdTest, Test) {
+  if (!GetParam().version.IsValid()) {
+    GTEST_SKIP() << "Skipping test since the version for "
+                 << GetParam().updater_setup_path << " is not valid";
+  }
+
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
   const base::Version v1("1");
+
+  // r1395118 `Updater: Transmit install ID over IPC (Windows)` landed in
+  // version `133.0.6891.0`.
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
-      base::Version({0, 0, 0, 0}), v1, false, false,
-      base::Version(kUpdaterVersion), "\"iid\":\"my_install_id\""));
+      base::Version({0, 0, 0, 0}), v1, false, false, GetParam().version,
+      GetParam().version >= base::Version("133.0.6891.0")
+          ? "\"iid\":\"my_install_id\""
+          : ".*"));
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
       kAppId, /*is_silent_install=*/true,
-      base::StrCat({"appguid=", kAppId, "&iid=my_install_id"})));
+      base::StrCat({"appguid=", kAppId, "&iid=my_install_id"}),
+      /*child_window_text_to_find=*/{}, /*always_launch_cmd=*/false,
+      /*verify_app_logo_loaded=*/false, /*expect_success=*/true,
+      /*wait_for_the_installer=*/true, /*additional_switches=*/{},
+      GetParam().updater_setup_path));
+
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+
+  // Cleanup by overinstalling the current version and uninstalling.
+  ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
@@ -3184,7 +3211,7 @@ class IntegrationTestUserInSystem : public IntegrationTest {
         app_id, is_silent_install, tag, child_window_text_to_find,
         always_launch_cmd, verify_app_logo_loaded,
         /*expect_success=*/true, /*wait_for_the_installer=*/true,
-        /*additional_switches=*/{});
+        /*additional_switches=*/{}, /*updater_path=*/GetSetupExecutablePath());
   }
 
   scoped_refptr<IntegrationTestCommands> user_test_commands_ =

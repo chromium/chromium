@@ -58,7 +58,8 @@ class IntegrationTestCommands
       bool verify_app_logo_loaded,
       bool expect_success,
       bool wait_for_the_installer,
-      const base::Value::List& additional_switches) const = 0;
+      const base::Value::List& additional_switches,
+      const base::FilePath& updater_path) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;

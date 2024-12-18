@@ -566,10 +566,10 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const bool verify_app_logo_loaded,
                           const bool expect_success,
                           const bool wait_for_the_installer,
-                          const base::Value::List& additional_switches) {
-  const base::FilePath path = GetSetupExecutablePath();
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
+                          const base::Value::List& additional_switches,
+                          const base::FilePath& updater_path) {
+  ASSERT_FALSE(updater_path.empty());
+  base::CommandLine command_line(updater_path);
   command_line.AppendSwitchASCII(kInstallSwitch, tag);
   if (!app_id.empty()) {
     command_line.AppendSwitchASCII(kAppIdSwitch, app_id);
