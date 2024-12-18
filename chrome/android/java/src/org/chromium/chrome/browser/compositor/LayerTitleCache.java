@@ -83,16 +83,6 @@ public class LayerTitleCache {
                 res.getDimensionPixelSize(R.dimen.tab_title_favicon_end_padding);
         mSharedGroupAvatarPaddingPx =
                 res.getDimensionPixelSize(R.dimen.tablet_shared_group_avatar_padding);
-        mNativeLayerTitleCache =
-                LayerTitleCacheJni.get()
-                        .init(
-                                LayerTitleCache.this,
-                                fadeWidthPx,
-                                faviconStartPaddingPx,
-                                faviconEndPaddingPx,
-                                R.drawable.spinner,
-                                R.drawable.spinner_white,
-                                mResourceManager);
         mFaviconSize = res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_size);
         mStandardTitleBitmapFactory = new TitleBitmapFactory(context, false);
         mDarkTitleBitmapFactory = new TitleBitmapFactory(context, true);
@@ -104,8 +94,24 @@ public class LayerTitleCache {
         mBubbleOffset =
                 res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_bubble_offset);
         mBubbleBorderColor =
-                TabUiThemeUtil.getTabStripBackgroundColorForActivityState(context, false, false);
+                TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
+                        context, /* isIncognito= */ false, /* isActivityFocused= */ true);
         mBubbleFillColor = TabUiThemeProvider.getTabBubbleFillColor(context);
+        mNativeLayerTitleCache =
+                LayerTitleCacheJni.get()
+                        .init(
+                                LayerTitleCache.this,
+                                fadeWidthPx,
+                                faviconStartPaddingPx,
+                                faviconEndPaddingPx,
+                                R.drawable.spinner,
+                                R.drawable.spinner_white,
+                                mBubbleInnerCircleSize,
+                                mBubbleOuterCircleSize,
+                                mBubbleOffset,
+                                mBubbleFillColor,
+                                mBubbleBorderColor,
+                                mResourceManager);
     }
 
     /** Destroys the native reference. */
@@ -196,12 +202,7 @@ public class LayerTitleCache {
                             title.getFaviconResId(),
                             isDarkTheme,
                             isRtl,
-                            showBubble,
-                            mBubbleInnerCircleSize,
-                            mBubbleOuterCircleSize,
-                            mBubbleOffset,
-                            mBubbleFillColor,
-                            mBubbleBorderColor);
+                            showBubble);
         }
         return titleString;
     }
@@ -390,12 +391,7 @@ public class LayerTitleCache {
                         ResourcesCompat.ID_NULL,
                         false,
                         false,
-                        false,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0);
+                        false);
     }
 
     public void removeGroupTitle(int rootId) {
@@ -498,6 +494,11 @@ public class LayerTitleCache {
                 int faviconEndPadding,
                 int spinnerResId,
                 int spinnerIncognitoResId,
+                int tabBubbleInnerDimension,
+                int tabBubbleOuterDimension,
+                int bubbleOffset,
+                @ColorInt int tabBubbleInnerColor,
+                @ColorInt int tabBubbleOuterColor,
                 ResourceManager resourceManager);
 
         void destroy(long nativeLayerTitleCache);
@@ -510,12 +511,7 @@ public class LayerTitleCache {
                 int faviconResId,
                 boolean isIncognito,
                 boolean isRtl,
-                boolean showBubble,
-                int tabBubbleInnerDimension,
-                int tabBubbleOuterDimension,
-                int bubbleOffset,
-                @ColorInt int tabBubbleInnerColor,
-                @ColorInt int tabBubbleOuterColor);
+                boolean showBubble);
 
         void updateGroupLayer(
                 long nativeLayerTitleCache,

@@ -421,9 +421,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     /**
      * @param tabBubbler The {@link TabBubbler} that responsible for managing shared group
-     *     notification bubbles.
+     *     notification bubbles. The current {@link TabBubbler} is destroyed if set null.
      */
     public void setTabBubbler(TabBubbler tabBubbler) {
+        if (mTabBubbler != null && tabBubbler == null) {
+            mTabBubbler.destroy();
+        }
         mTabBubbler = tabBubbler;
     }
 

@@ -44,6 +44,11 @@ class LayerTitleCache {
                   jint icon_end_padding,
                   jint spinner_resource_id,
                   jint spinner_incognito_resource_id,
+                  jint bubble_inner_dimension,
+                  jint bubble_outer_dimension,
+                  jint bubble_offset,
+                  jint bubble_inner_tint,
+                  jint bubble_outer_tint,
                   ui::ResourceManager* resource_manager);
 
   LayerTitleCache(const LayerTitleCache&) = delete;
@@ -60,12 +65,7 @@ class LayerTitleCache {
                    jint icon_resource_id,
                    bool is_incognito,
                    bool is_rtl,
-                   bool show_bubble,
-                   int bubble_inner_dimension,
-                   int bubble_outer_dimension,
-                   int bubble_offset,
-                   int bubble_inner_tint,
-                   int bubble_outer_tint);
+                   bool show_bubble);
 
   // Called from Java, updates a native cc::slim::Layer based on the new texture
   // information.
@@ -115,6 +115,12 @@ class LayerTitleCache {
 
   int spinner_resource_id_;
   int spinner_incognito_resource_id_;
+
+  int bubble_inner_dimension_;
+  int bubble_outer_dimension_;
+  int bubble_offset_;
+  int bubble_inner_tint_;
+  int bubble_outer_tint_;
 
   raw_ptr<ui::ResourceManager> resource_manager_;
 };

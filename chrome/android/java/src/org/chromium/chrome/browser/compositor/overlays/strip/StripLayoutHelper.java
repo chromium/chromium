@@ -119,6 +119,7 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -328,11 +329,6 @@ public class StripLayoutHelper
                         @Nullable Token oldTabGroupId,
                         @DidRemoveTabGroupReason int removalReason) {
                     releaseResourcesForGroupTitle(oldRootId);
-                    StripLayoutGroupTitle groupTitle = findGroupTitle(oldRootId);
-                    if (groupTitle != null && groupTitle.getTabBubbler() != null) {
-                        groupTitle.getTabBubbler().destroy();
-                        groupTitle.setTabBubbler(null);
-                    }
                     if (mGroupIdToHideSupplier.get() == oldRootId) {
                         // Clear the hidden group ID if the group has been removed from the model.
                         mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
@@ -3277,6 +3273,14 @@ public class StripLayoutHelper
         assert viewIndex == mStripViews.length - 1 : "Did not find all tab groups.";
         mStripViews[viewIndex] = mStripTabs[mStripTabs.length - 1];
 
+        // Destroy TabBubbler for removed group titles.
+        List<StripLayoutGroupTitle> newGroupTitles = new ArrayList<>(Arrays.asList(groupTitles));
+        for (StripLayoutGroupTitle groupTitle : mStripGroupTitles) {
+            if (!newGroupTitles.contains(groupTitle)) {
+                groupTitle.setTabBubbler(null);
+            }
+        }
+
         int oldGroupCount = mStripGroupTitles.length;
         mStripGroupTitles = groupTitles;
         if (mStripGroupTitles.length != oldGroupCount) {
@@ -4093,10 +4097,16 @@ public class StripLayoutHelper
         if (requestUpdate) mUpdateHost.requestUpdate();
     }
 
+    /**
+     * Updates the notification bubble for a set of tabs and group title if collapsed. Tabs passed
+     * in this call all belong to same group.
+     *
+     * @param tabIdsToBeUpdated The set of tab IDs to update the notification bubble for.
+     * @param hasUpdate Whether there is an update to the notification bubble.
+     */
     @Override
     public void updateTabStripNotificationBubble(
-            Set<Integer> tabIdsToBeUpdated, boolean hasUpdate) {
-        if (tabIdsToBeUpdated == null || tabIdsToBeUpdated.isEmpty()) return;
+            @NonNull Set<Integer> tabIdsToBeUpdated, boolean hasUpdate) {
         int rootId = Tab.INVALID_TAB_ID;
 
         for (int tabId : tabIdsToBeUpdated) {
@@ -4104,7 +4114,7 @@ public class StripLayoutHelper
             StripLayoutTab stripTab = findTabById(tabId);
 
             // Skip invalid tabs or selected tabs when showing updates.
-            if (tab == null || stripTab == null || (isSelectedTab(tabId) && hasUpdate)) continue;
+            if (stripTab == null || (isSelectedTab(tabId) && hasUpdate)) continue;
 
             // Show bubble on collapsed group title.
             if (stripTab.isCollapsed() && rootId == Tab.INVALID_TAB_ID) {
