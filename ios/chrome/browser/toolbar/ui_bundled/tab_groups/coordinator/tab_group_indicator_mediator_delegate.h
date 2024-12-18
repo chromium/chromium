@@ -34,8 +34,9 @@ enum class TabGroupActionType;
 // active.
 - (void)showIPHForSharedTabGroupForegrounded;
 
-// Shares the `tabGroup`.
-- (void)shareTabGroup:(const TabGroup*)tabGroup;
+// Shows the "share" or "manage" screen for the `tabGroup`. The choice is
+// automatically made based on whether the group is already shared or not.
+- (void)shareOrManageTabGroup:(const TabGroup*)tabGroup;
 
 @end
 

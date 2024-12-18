@@ -363,30 +363,6 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 #pragma mark - TabGroupPresentationCommands
 
 - (void)showShareKitFlow {
-  tab_groups::TabGroupSyncService* syncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          self.browser->GetProfile());
-
-  tab_groups::CollaborationId savedCollabID =
-      tab_groups::utils::GetTabGroupCollabID(_tabGroup, syncService);
-  if (!savedCollabID.value().empty()) {
-    [self manageGroup:savedCollabID];
-  }
-  [self shareGroup];
-}
-
-#pragma mark - SharedTabGroupUserEducationCoordinatorDelegate
-
-- (void)userEducationCoordinatorDidDismiss:
-    (SharedTabGroupUserEducationCoordinator*)coordinator {
-  [_userEducationCoordinator stop];
-  _userEducationCoordinator = nil;
-}
-
-#pragma mark - Private
-
-// Share the current group.
-- (void)shareGroup {
   Browser* browser = self.browser;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
@@ -406,24 +382,15 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                                                _tabGroup->tab_group_id());
 }
 
-// Manage the group with `collabID`.
-- (void)manageGroup:(tab_groups::CollaborationId)collabID {
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (collabID.value().empty() || !shareKitService) {
-    return;
-  }
+#pragma mark - SharedTabGroupUserEducationCoordinatorDelegate
 
-  NSString* collabIDString = base::SysUTF8ToNSString(collabID.value());
-
-  ShareKitManageConfiguration* config =
-      [[ShareKitManageConfiguration alloc] init];
-  config.baseViewController = self.baseViewController;
-  config.collabID = collabIDString;
-  config.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ManageTabGroup(config);
+- (void)userEducationCoordinatorDidDismiss:
+    (SharedTabGroupUserEducationCoordinator*)coordinator {
+  [_userEducationCoordinator stop];
+  _userEducationCoordinator = nil;
 }
+
+#pragma mark - Private
 
 // Sets up the `_viewController`.
 - (void)setUpViewController {

@@ -789,6 +789,29 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 }
 
+// Shows the "share" or "manage" screen for the `group`. The choice is
+// automatically made based on whether the group is already shared or not.
+- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group {
+  Browser* browser = self.regularBrowser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
+  const TabGroup* tabGroup = group.get();
+
+  if (!tabGroup || !collaborationService) {
+    return;
+  }
+
+  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController,
+          std::make_unique<
+              collaboration::CollaborationFlowConfigurationShareOrManage>(
+              tabGroup->GetWeakPtr()));
+  collaborationService->StartShareOrManageFlow(std::move(delegate),
+                                               tabGroup->tab_group_id());
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -1571,44 +1594,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
-  ProfileIOS* profile = self.regularBrowser->GetProfile();
-  tab_groups::TabGroupSyncService* syncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(profile);
-  tab_groups::CollaborationId collabID =
-      tab_groups::utils::GetTabGroupCollabID(group.get(), syncService);
-  if (!shareKitService || collabID.value().empty()) {
-    return;
-  }
-  ShareKitManageConfiguration* config =
-      [[ShareKitManageConfiguration alloc] init];
-  config.baseViewController = self.baseViewController;
-  config.collabID = base::SysUTF8ToNSString(collabID.value());
-  config.applicationHandler = HandlerForProtocol(
-      self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ManageTabGroup(config);
+  [self showShareOrManageForGroup:group];
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
-  Browser* browser = self.regularBrowser;
-  collaboration::CollaborationService* collaborationService =
-      collaboration::CollaborationServiceFactory::GetForProfile(
-          browser->GetProfile());
-  const TabGroup* tabGroup = group.get();
-
-  if (!tabGroup || !collaborationService) {
-    return;
-  }
-
-  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
-      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController,
-          std::make_unique<
-              collaboration::CollaborationFlowConfigurationShareOrManage>(
-              tabGroup->GetWeakPtr()));
-  collaborationService->StartShareOrManageFlow(std::move(delegate),
-                                               tabGroup->tab_group_id());
+  [self showShareOrManageForGroup:group];
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {

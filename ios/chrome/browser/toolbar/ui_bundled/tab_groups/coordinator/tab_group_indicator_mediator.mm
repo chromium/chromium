@@ -151,7 +151,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 #pragma mark - TabGroupIndicatorMutator
 
 - (void)shareGroup {
-  [self.delegate shareTabGroup:[self currentTabGroup]];
+  [self.delegate shareOrManageTabGroup:[self currentTabGroup]];
 }
 
 - (void)showRecentActivity {
@@ -163,19 +163,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 }
 
 - (void)manageGroup {
-  const TabGroup* tabGroup = [self currentTabGroup];
-  tab_groups::CollaborationId collabID =
-      tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
-  if (!_shareKitService || collabID.value().empty()) {
-    return;
-  }
-
-  ShareKitManageConfiguration* config =
-      [[ShareKitManageConfiguration alloc] init];
-  config.baseViewController = self.baseViewController;
-  config.collabID = base::SysUTF8ToNSString(collabID.value());
-  config.applicationHandler = self.applicationHandler;
-  _shareKitService->ManageTabGroup(config);
+  [self.delegate shareOrManageTabGroup:[self currentTabGroup]];
 }
 
 - (void)showTabGroupEdition {

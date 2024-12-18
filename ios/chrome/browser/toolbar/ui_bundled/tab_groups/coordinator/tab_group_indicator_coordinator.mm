@@ -215,7 +215,7 @@
                          anchorPoint:anchorPoint];
 }
 
-- (void)shareTabGroup:(const TabGroup*)tabGroup {
+- (void)shareOrManageTabGroup:(const TabGroup*)tabGroup {
   Browser* browser = self.browser;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
