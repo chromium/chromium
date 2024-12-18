@@ -28,7 +28,7 @@ enum Alignment {
 
 struct Text {
   // Information regarding the layout and position of text.
-  TextLayout text_layout;
+  TextLayout? text_layout;
 
   // Dominant content language of the text. Language code is CLDR/BCP-47.
   string? content_language;
