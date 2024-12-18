@@ -133,7 +133,9 @@ void FirmwareUpdateAppUI::BindInterface(
 
 void FirmwareUpdateAppUI::BindInterface(
     mojo::PendingReceiver<firmware_update::mojom::SystemUtils> receiver) {
-  FirmwareUpdateManager::Get()->BindInterface(std::move(receiver));
+  if (FirmwareUpdateManager::IsInitialized()) {
+    FirmwareUpdateManager::Get()->BindInterface(std::move(receiver));
+  }
 }
 
 void FirmwareUpdateAppUI::BindInterface(
