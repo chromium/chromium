@@ -220,7 +220,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   // aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override;
-  gfx::Size GetMaximumSize() const override;
+  std::optional<gfx::Size> GetMaximumSize() const override;
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
   gfx::NativeCursor GetCursor(const gfx::Point& point) override;

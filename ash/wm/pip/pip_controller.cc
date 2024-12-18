@@ -38,7 +38,8 @@ constexpr float kDefaultPipSizeFromWorkAreaPercent = 0.20f;
 // ratio of the PiP window.
 gfx::Size PreserveAspectRatio(aura::Window* pip_window,
                               const gfx::Size& buffer_size) {
-  gfx::Size max_size = pip_window->delegate()->GetMaximumSize();
+  gfx::Size max_size =
+      pip_window->delegate()->GetMaximumSize().value_or(gfx::Size());
   gfx::Size min_size = pip_window->delegate()->GetMinimumSize();
   gfx::Size buffer_size_clone = buffer_size;
 
@@ -59,7 +60,9 @@ gfx::Size PreserveAspectRatio(aura::Window* pip_window,
 
 gfx::Size GetMaxSize(WindowState* pip_window_state) {
   // Calculates the max size of the PiP window preserving the aspect ratio.
-  gfx::Size max_size = pip_window_state->window()->delegate()->GetMaximumSize();
+  gfx::Size max_size =
+      pip_window_state->window()->delegate()->GetMaximumSize().value_or(
+          gfx::Size());
   return PreserveAspectRatio(pip_window_state->window(), max_size);
 }
 
@@ -195,7 +198,8 @@ bool PipController::CanResizePip() {
   if (!pip_window_) {
     return false;
   }
-  gfx::Size max_size = pip_window_->delegate()->GetMaximumSize();
+  gfx::Size max_size =
+      pip_window_->delegate()->GetMaximumSize().value_or(gfx::Size());
   gfx::Size min_size = pip_window_->delegate()->GetMinimumSize();
   return !max_size.IsEmpty() && !min_size.IsEmpty() &&
          max_size.width() > min_size.width() &&

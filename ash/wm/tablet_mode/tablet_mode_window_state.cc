@@ -70,9 +70,11 @@ gfx::Size GetMaximumSizeOfWindow(WindowState* window_state) {
       screen_util::GetMaximizedWindowBoundsInParent(window_state->window())
           .size();
 
-  gfx::Size size = window_state->window()->delegate()
-                       ? window_state->window()->delegate()->GetMaximumSize()
-                       : gfx::Size();
+  gfx::Size size =
+      window_state->window()->delegate()
+          ? window_state->window()->delegate()->GetMaximumSize().value_or(
+                gfx::Size())
+          : gfx::Size();
   if (size.IsEmpty())
     return workspace_size;
 

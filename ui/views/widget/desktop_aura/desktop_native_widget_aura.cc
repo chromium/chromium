@@ -1199,7 +1199,7 @@ gfx::Size DesktopNativeWidgetAura::GetMinimumSize() const {
                                  : gfx::Size();
 }
 
-gfx::Size DesktopNativeWidgetAura::GetMaximumSize() const {
+std::optional<gfx::Size> DesktopNativeWidgetAura::GetMaximumSize() const {
   return native_widget_delegate_ ? native_widget_delegate_->GetMaximumSize()
                                  : gfx::Size();
 }

@@ -453,9 +453,10 @@ int WindowResizer::GetWidthForDrag(int min_width, int* delta_x) const {
                         ->GetDisplayNearestWindow(GetTarget())
                         .bounds()
                         .width();
-    gfx::Size max_size = GetTarget()->delegate()
-                             ? GetTarget()->delegate()->GetMaximumSize()
-                             : gfx::Size();
+    gfx::Size max_size =
+        GetTarget()->delegate()
+            ? GetTarget()->delegate()->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size();
     if (max_size.width() != 0)
       max_width = std::min(max_width, max_size.width());
     if (width > max_width) {
@@ -487,9 +488,10 @@ int WindowResizer::GetHeightForDrag(int min_height, int* delta_y) const {
                          ->GetDisplayNearestWindow(GetTarget())
                          .bounds()
                          .height();
-    gfx::Size max_size = GetTarget()->delegate()
-                             ? GetTarget()->delegate()->GetMaximumSize()
-                             : gfx::Size();
+    gfx::Size max_size =
+        GetTarget()->delegate()
+            ? GetTarget()->delegate()->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size();
     if (max_size.height() != 0)
       max_height = std::min(max_height, max_size.height());
     if (height > max_height) {
@@ -506,9 +508,10 @@ void WindowResizer::CalculateBoundsWithAspectRatio(float aspect_ratio,
   gfx::Size min_size = GetTarget()->delegate()
                            ? GetTarget()->delegate()->GetMinimumSize()
                            : gfx::Size();
-  gfx::Size max_size = GetTarget()->delegate()
-                           ? GetTarget()->delegate()->GetMaximumSize()
-                           : gfx::Size();
+  gfx::Size max_size =
+      GetTarget()->delegate()
+          ? GetTarget()->delegate()->GetMaximumSize().value_or(gfx::Size())
+          : gfx::Size();
   DCHECK(!min_size.IsEmpty());
 
   // gfx::SizeRectToAspectRatio expects std::nullopt when there is no limit, but

@@ -151,7 +151,9 @@ void WorkspaceEventHandler::HandleResizeDoubleClick(WindowState* target_state,
         // it would be rather inappropriate to end overview as below, and of
         // course it would be blatantly inappropriate to make the following call
         // to |OverviewSession::SetWindowListNotAnimatedWhenExiting|.
-        DCHECK_EQ(gfx::Size(), target->delegate()->GetMaximumSize());
+        std::optional<gfx::Size> max_size =
+            target->delegate()->GetMaximumSize();
+        DCHECK(!max_size.has_value() || max_size.value() == gfx::Size());
         overview_controller->overview_session()
             ->SetWindowListNotAnimatedWhenExiting(target->GetRootWindow());
         overview_controller->EndOverview(OverviewEndAction::kSplitView);

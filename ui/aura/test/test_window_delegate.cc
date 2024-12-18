@@ -43,7 +43,7 @@ gfx::Size TestWindowDelegate::GetMinimumSize() const {
   return minimum_size_;
 }
 
-gfx::Size TestWindowDelegate::GetMaximumSize() const {
+std::optional<gfx::Size> TestWindowDelegate::GetMaximumSize() const {
   return maximum_size_;
 }
 

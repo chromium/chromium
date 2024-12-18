@@ -997,9 +997,10 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds_in_parent) {
     gfx::Size min_size = window_->delegate()
                              ? window_->delegate()->GetMinimumSize()
                              : gfx::Size();
-    gfx::Size max_size = window_->delegate()
-                             ? window_->delegate()->GetMaximumSize()
-                             : gfx::Size();
+    gfx::Size max_size =
+        window_->delegate()
+            ? window_->delegate()->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size();
     const display::Display display =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
     min_size.SetToMin(display.work_area().size());

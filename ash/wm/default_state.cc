@@ -53,8 +53,9 @@ constexpr char kSnapWindowDeviceOrientationHistogramName[] =
     "Ash.Window.Snap.DeviceOrientation";
 
 gfx::Size GetWindowMaximumSize(aura::Window* window) {
-  return window->delegate() ? window->delegate()->GetMaximumSize()
-                            : gfx::Size();
+  return window->delegate()
+             ? window->delegate()->GetMaximumSize().value_or(gfx::Size())
+             : gfx::Size();
 }
 
 // Moves the window to the specified display if necessary.

@@ -1301,7 +1301,9 @@ void WorkspaceWindowResizer::CreateBucketsForAttached(
     int min = PrimaryAxisSize(
         window_delegate ? window_delegate->GetMinimumSize() : gfx::Size());
     int max = PrimaryAxisSize(
-        window_delegate ? window_delegate->GetMaximumSize() : gfx::Size());
+        window_delegate
+            ? window_delegate->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size());
 
     sizes->push_back(WindowSize(initial_size, min, max));
   }

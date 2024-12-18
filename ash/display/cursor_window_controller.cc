@@ -159,7 +159,7 @@ class CursorWindowDelegate : public aura::WindowDelegate {
 
   // aura::WindowDelegate overrides:
   gfx::Size GetMinimumSize() const override { return size_; }
-  gfx::Size GetMaximumSize() const override { return size_; }
+  std::optional<gfx::Size> GetMaximumSize() const override { return size_; }
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
   gfx::NativeCursor GetCursor(const gfx::Point& point) override {

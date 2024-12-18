@@ -1230,7 +1230,7 @@ gfx::Size WebContentsViewAura::GetMinimumSize() const {
   return gfx::Size();
 }
 
-gfx::Size WebContentsViewAura::GetMaximumSize() const {
+std::optional<gfx::Size> WebContentsViewAura::GetMaximumSize() const {
   return gfx::Size();
 }
 

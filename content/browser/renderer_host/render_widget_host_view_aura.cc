@@ -2101,7 +2101,7 @@ gfx::Size RenderWidgetHostViewAura::GetMinimumSize() const {
   return gfx::Size();
 }
 
-gfx::Size RenderWidgetHostViewAura::GetMaximumSize() const {
+std::optional<gfx::Size> RenderWidgetHostViewAura::GetMaximumSize() const {
   return gfx::Size();
 }
 
