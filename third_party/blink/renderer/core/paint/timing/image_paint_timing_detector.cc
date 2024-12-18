@@ -590,8 +590,7 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
        largest_painted_image_->recorded_size > visual_size)) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP) &&
-      bpp < features::kMinimumEntropyForLCP.Get()) {
+  if (bpp < kMinimumEntropyForLCP) {
     return false;
   }
 

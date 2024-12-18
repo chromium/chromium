@@ -43,6 +43,8 @@ class PaintTimingCallbackManager;
 class StyleImage;
 struct DOMPaintTimingInfo;
 
+static constexpr double kMinimumEntropyForLCP = 0.05;
+
 // TODO(crbug/960502): we should limit the access of these properties.
 // TODO(yoav): Rename all mentions of "image" to "media"
 class ImageRecord : public GarbageCollected<ImageRecord> {

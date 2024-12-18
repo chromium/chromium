@@ -101,11 +101,10 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   uint64_t size = largest_image->recorded_size;
   double bpp = largest_image->EntropyForLCP();
 
-  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
-    if (bpp < features::kMinimumEntropyForLCP.Get()) {
-      return;
-    }
+  if (bpp < kMinimumEntropyForLCP) {
+    return;
   }
+
   largest_image_bpp_ = bpp;
   largest_reported_size_ = size;
   const KURL& url = media_timing->Url();
@@ -207,11 +206,10 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
     std::optional<WebURLRequest::Priority> priority) {
   // (Experimental) Images with insufficient entropy are not considered
   // candidates for LCP
-  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
-    if (image_bpp < features::kMinimumEntropyForLCP.Get()) {
-      return false;
-    }
+  if (image_bpp < kMinimumEntropyForLCP) {
+    return false;
   }
+
   if (!HasLargestImagePaintChangedForMetrics(image_paint_time,
                                              image_paint_size)) {
     return false;

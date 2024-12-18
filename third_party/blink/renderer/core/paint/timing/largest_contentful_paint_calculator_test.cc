@@ -337,15 +337,13 @@ TEST_F(LargestContentfulPaintCalculatorTest, NoPaint) {
 
 TEST_F(LargestContentfulPaintCalculatorTest, SingleImageExcludedForEntropy) {
   base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      blink::features::kExcludeLowEntropyImagesFromLCP, {{"min_bpp", "2.0"}});
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <img id='target'/>
   )HTML");
-  // 600 bytes will cause a calculated entropy of 0.32bpp, which is below the
+  // 600 bytes will cause a calculated entropy of 0.032bpp, which is below the
   // 2bpp threshold.
-  SetImage("target", 100, 150, 600);
+  SetImage("target", 100, 150, 60);
   UpdateAllLifecyclePhasesForTest();
   UpdateLargestContentfulPaintCandidate();
 
@@ -356,17 +354,15 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleImageExcludedForEntropy) {
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargerImageExcludedForEntropy) {
   base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      blink::features::kExcludeLowEntropyImagesFromLCP, {{"min_bpp", "2.0"}});
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <img id='small'/>
     <img id='large'/>
   )HTML");
-  // Smaller image has 16 bpp of entropy, enough to be considered for LCP.
-  // Larger image has only 0.32 bpp, which is below the 2bpp threshold.
+  // Smaller image has 1.6 bpp of entropy, enough to be considered for LCP.
+  // Larger image has only 0.032 bpp, which is below the 2bpp threshold.
   SetImage("small", 3, 3, 18);
-  SetImage("large", 100, 200, 800);
+  SetImage("large", 100, 200, 80);
   UpdateAllLifecyclePhasesForTest();
   SimulateImagePresentationPromise();
 
@@ -379,8 +375,6 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargerImageExcludedForEntropy) {
 TEST_F(LargestContentfulPaintCalculatorTest,
        LowEntropyImageNotExcludedAtLowerThreshold) {
   base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      blink::features::kExcludeLowEntropyImagesFromLCP, {{"min_bpp", "0.02"}});
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <img id='small'/>

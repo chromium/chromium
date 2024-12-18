@@ -788,21 +788,6 @@ BASE_FEATURE(kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource,
              "EventTimingIgnorePresentationTimeFromUnexpectedFrameSource",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether LCP calculations should exclude low-entropy images. If
-// enabled, then the associated parameter sets the cutoff, expressed as the
-// minimum number of bits of encoded image data used to encode each rendered
-// pixel. Note that this is not just pixels of decoded image data; the rendered
-// size includes any scaling applied by the rendering engine to display the
-// content.
-BASE_FEATURE(kExcludeLowEntropyImagesFromLCP,
-             "ExcludeLowEntropyImagesFromLCP",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kMinimumEntropyForLCP,
-                   &kExcludeLowEntropyImagesFromLCP,
-                   "min_bpp",
-                   0.05);
-
 BASE_FEATURE(kExemptSpeculationRulesHeaderFromCSP,
              "ExemptSpeculationRulesHeaderFromCSP",
              base::FEATURE_ENABLED_BY_DEFAULT);
