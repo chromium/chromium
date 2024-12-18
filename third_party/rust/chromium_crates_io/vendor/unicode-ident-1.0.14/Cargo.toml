@@ -13,9 +13,10 @@
 edition = "2018"
 rust-version = "1.31"
 name = "unicode-ident"
-version = "1.0.13"
+version = "1.0.14"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -32,7 +33,7 @@ categories = [
     "no-std",
     "no-std::no-alloc",
 ]
-license = "(MIT OR Apache-2.0) AND Unicode-DFS-2016"
+license = "(MIT OR Apache-2.0) AND Unicode-3.0"
 repository = "https://github.com/dtolnay/unicode-ident"
 
 [package.metadata.docs.rs]
@@ -76,4 +77,4 @@ version = "0.1"
 default-features = false
 
 [dev-dependencies.unicode-xid]
-version = "0.2.4"
+version = "0.2.6"
