@@ -8875,3 +8875,4 @@ crbug.com/384549646 virtual/threaded/external/wpt/css/css-view-transitions/navig
 
 # Gardener 2024-12-18
 crbug.com/352331034 [ Debug Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-svg-only-for-print.html [ Failure Pass ]
+crbug.com/384875218 external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Timeout Pass ]
