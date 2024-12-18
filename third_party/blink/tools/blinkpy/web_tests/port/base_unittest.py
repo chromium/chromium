@@ -1996,6 +1996,65 @@ class PortTest(LoggingTestCase):
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/b2/test2.html'))
 
+    def test_virtual_exclusive_tests_with_real_virtual_files(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'VirtualTestSuites'),
+            json.dumps([{
+                'prefix': 'v0',
+                'platforms': ['Linux'],
+                'bases': [],
+                'exclusive_tests': [],
+                'args': ['-a'],
+                'expires': 'never',
+            }, {
+                'prefix': 'v1',
+                'platforms': ['Linux'],
+                'bases': ['virtual/v0'],
+                'exclusive_tests': 'ALL',
+                'args': ['-a'],
+                'expires': 'never',
+            }, {
+                'prefix': 'v2',
+                'platforms': ['Linux'],
+                'bases': ['virtual/v0/a'],
+                'exclusive_tests': ['virtual/v0/a/c.html'],
+                'args': ['-a'],
+                'expires': 'never',
+            }]))
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'virtual', 'v0', 'a', 'b.html'), '')
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'virtual', 'v0', 'a', 'c.html'), '')
+
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v0'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v0/a/b.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests('virtual/v0/a/c.html'))
+
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/virtual/v0'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/virtual/v0/a/b.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/virtual/v0/a/c.html'))
+
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/virtual/v0'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/virtual/v0/a/b.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/virtual/v0/a/c.html'))
+
     def test_virtual_exclusive_tests_with_generated_tests(self):
         port = self.make_port()
         fs = port.host.filesystem
