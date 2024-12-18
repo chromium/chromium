@@ -175,10 +175,10 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // simplicity, we do not move fields from |form|'s root back to the former
   // children. Instead, we rely on the forms in descendant frames being
   // re-extracted when they become visible again.
-  std::vector<FormFieldData> form_fields = std::move(form->fields());
+  std::vector<FormFieldData> form_fields = form->ExtractFields();
   bool child_frames_changed;
   if (FormData* old_form = GetFormData(form->global_id(), frame)) {
-    form->set_fields(std::move(old_form->fields()));
+    form->set_fields(old_form->ExtractFields());
     child_frames_changed = old_form->child_frames() != form->child_frames();
     for_each_in_set_difference(
         old_form->child_frames(), form->child_frames(),
