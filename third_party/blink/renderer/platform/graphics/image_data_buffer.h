@@ -63,9 +63,6 @@ class PLATFORM_EXPORT ImageDataBuffer {
   size_t ComputeByteSize() const { return pixmap_.computeByteSize(); }
 
  private:
-  ImageDataBuffer(const gfx::Size&,
-                  const unsigned char*,
-                  const CanvasColorParams&);
   ImageDataBuffer(const SkPixmap&);
   ImageDataBuffer(scoped_refptr<StaticBitmapImage>);
 

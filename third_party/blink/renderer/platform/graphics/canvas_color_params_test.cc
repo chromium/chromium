@@ -29,7 +29,7 @@ TEST(CanvasColorParamsTest, MatchSkColorSpaceWithGfxColorSpace) {
     sk_sp<SkColorSpace> canvas_drawing_color_space =
         color_params.GetSkColorSpace();
     sk_sp<SkColorSpace> canvas_media_color_space =
-        color_params.GetStorageGfxColorSpace().ToSkColorSpace();
+        color_params.GetSkColorSpace();
     ASSERT_TRUE(ColorCorrectionTestUtils::MatchColorSpace(
         canvas_drawing_color_space, canvas_media_color_space));
   }

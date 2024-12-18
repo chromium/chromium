@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -1555,7 +1556,7 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
   ImageDataSettings* color_setting = ImageDataSettings::Create();
   color_setting->setStorageFormat(
       ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
-  color_setting->setColorSpace(PredefinedColorSpaceName(color_space));
+  color_setting->setColorSpace(PredefinedColorSpaceToV8(color_space));
   for (auto interlace : interlace_status) {
     for (auto color_profile : color_profiles) {
       for (auto alpha : alpha_status) {
@@ -1692,7 +1693,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
       ImageDataSettings* canvas_color_setting = ImageDataSettings::Create();
       canvas_color_setting->setColorSpace(
-          PredefinedColorSpaceName(predefined_color_spaces[k]));
+          PredefinedColorSpaceToV8(predefined_color_spaces[k]));
       switch (canvas_pixel_formats[k]) {
         case CanvasPixelFormat::kUint8:
           canvas_color_setting->setStorageFormat(

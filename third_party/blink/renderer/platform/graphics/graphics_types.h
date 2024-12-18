@@ -372,10 +372,6 @@ PLATFORM_EXPORT bool ParseTextAlign(const WTF::String&, TextAlign&);
 PLATFORM_EXPORT WTF::String TextBaselineName(TextBaseline);
 PLATFORM_EXPORT bool ParseTextBaseline(const WTF::String&, TextBaseline&);
 
-PLATFORM_EXPORT WTF::String PredefinedColorSpaceName(PredefinedColorSpace);
-
-PLATFORM_EXPORT WTF::String CanvasPixelFormatName(CanvasPixelFormat);
-
 PLATFORM_EXPORT WTF::String ImageDataStorageFormatName(ImageDataStorageFormat);
 
 }  // namespace blink

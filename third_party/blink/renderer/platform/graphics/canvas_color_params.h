@@ -16,61 +16,42 @@ namespace gfx {
 class ColorSpace;
 }
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
-// Return the gfx::ColorSpace for the specified `predefined_color_space`.
+// Return the gfx::ColorSpace for the specified PredefinedColorSpace.
 gfx::ColorSpace PLATFORM_EXPORT
 PredefinedColorSpaceToGfxColorSpace(PredefinedColorSpace color_space);
 
-// Return the SkColorSpace for the specified |color_space|.
+// Return the SkColorSpace for the specified PredefinedColorSpace.
 sk_sp<SkColorSpace> PLATFORM_EXPORT
 PredefinedColorSpaceToSkColorSpace(PredefinedColorSpace color_space);
 
-// Return the named PredefinedColorSpace that best matches |sk_color_space|.
-PredefinedColorSpace PLATFORM_EXPORT
-PredefinedColorSpaceFromSkColorSpace(const SkColorSpace* sk_color_space);
-
-// Return the SkColorType that best matches the specified CanvasPixelFormat.
-SkColorType PLATFORM_EXPORT
-CanvasPixelFormatToSkColorType(CanvasPixelFormat pixel_format);
-
+// Parameters used by CanvasRenderingContext2D and
+// OffscreenCanvasRenderingContext2D.
 class PLATFORM_EXPORT CanvasColorParams {
   DISALLOW_NEW();
 
  public:
   // The default constructor will create an output-blended 8-bit surface.
   CanvasColorParams();
-  CanvasColorParams(PredefinedColorSpace, CanvasPixelFormat, OpacityMode);
   CanvasColorParams(PredefinedColorSpace, CanvasPixelFormat, bool has_alpha);
 
   PredefinedColorSpace ColorSpace() const { return color_space_; }
   CanvasPixelFormat PixelFormat() const { return pixel_format_; }
   SkAlphaType GetAlphaType() const {
-    return opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
+    return has_alpha_ ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
   }
 
-  WTF::String GetColorSpaceAsString() const;
-  WTF::String GetPixelFormatAsString() const;
-
-  SkColorInfo GetSkColorInfo() const;
-
-  // The pixel format to use for allocating SkSurfaces.
+  SkColorInfo GetSkColorInfo() const {
+    return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
+  }
   SkColorType GetSkColorType() const;
-
-  // Return the color space of the underlying data for the canvas.
-  gfx::ColorSpace GetStorageGfxColorSpace() const;
   sk_sp<SkColorSpace> GetSkColorSpace() const;
-
-  uint8_t BytesPerPixel() const;
 
  private:
   PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
   CanvasPixelFormat pixel_format_ = CanvasPixelFormat::kUint8;
-  OpacityMode opacity_mode_ = kNonOpaque;
+  bool has_alpha_ = true;
 };
 
 }  // namespace blink

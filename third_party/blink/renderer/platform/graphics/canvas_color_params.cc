@@ -64,56 +64,23 @@ PredefinedColorSpace PredefinedColorSpaceFromSkColorSpace(
   return PredefinedColorSpace::kSRGB;
 }
 
-SkColorType CanvasPixelFormatToSkColorType(CanvasPixelFormat pixel_format) {
-  switch (pixel_format) {
-    case CanvasPixelFormat::kF16:
-      return kRGBA_F16_SkColorType;
-    case CanvasPixelFormat::kUint8:
-      return kN32_SkColorType;
-  }
-  NOTREACHED();
-}
-
 CanvasColorParams::CanvasColorParams() = default;
-
-CanvasColorParams::CanvasColorParams(PredefinedColorSpace color_space,
-                                     CanvasPixelFormat pixel_format,
-                                     OpacityMode opacity_mode)
-    : color_space_(color_space),
-      pixel_format_(pixel_format),
-      opacity_mode_(opacity_mode) {}
 
 CanvasColorParams::CanvasColorParams(PredefinedColorSpace color_space,
                                      CanvasPixelFormat pixel_format,
                                      bool has_alpha)
     : color_space_(color_space),
       pixel_format_(pixel_format),
-      opacity_mode_(has_alpha ? OpacityMode::kNonOpaque
-                              : OpacityMode::kOpaque) {}
-
-SkColorInfo CanvasColorParams::GetSkColorInfo() const {
-  return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
-}
-
-String CanvasColorParams::GetColorSpaceAsString() const {
-  return PredefinedColorSpaceName(color_space_);
-}
-
-String CanvasColorParams::GetPixelFormatAsString() const {
-  return CanvasPixelFormatName(pixel_format_);
-}
+      has_alpha_(has_alpha) {}
 
 SkColorType CanvasColorParams::GetSkColorType() const {
-  return CanvasPixelFormatToSkColorType(pixel_format_);
-}
-
-
-uint8_t CanvasColorParams::BytesPerPixel() const {
-  return SkColorTypeBytesPerPixel(GetSkColorType());
-}
-
-gfx::ColorSpace CanvasColorParams::GetStorageGfxColorSpace() const {
-  return PredefinedColorSpaceToGfxColorSpace(color_space_);
+  switch (pixel_format_) {
+    case CanvasPixelFormat::kF16:
+      return kRGBA_F16_SkColorType;
+    case CanvasPixelFormat::kUint8:
+      return kN32_SkColorType;
+  }
+  NOTREACHED();
 }
 
 sk_sp<SkColorSpace> CanvasColorParams::GetSkColorSpace() const {

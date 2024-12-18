@@ -335,7 +335,6 @@ class CORE_EXPORT CanvasRenderingContext
 
  private:
   Member<CanvasRenderingContextHost> host_;
-  CanvasColorParams color_params_;
   CanvasContextCreationAttributesCore creation_attributes_;
 
   void RenderTaskEnded();

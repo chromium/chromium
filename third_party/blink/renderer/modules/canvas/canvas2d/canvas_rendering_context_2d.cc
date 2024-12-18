@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -160,6 +161,17 @@ namespace {
 BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
              "AdjustCanCreateCanvas2dResourceProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Convert from a PredefinedColorSpace to a V8PredefinedColorSpace.
+V8CanvasPixelFormat CanvasPixelFormatToV8(CanvasPixelFormat pixel_format) {
+  switch (pixel_format) {
+    case CanvasPixelFormat::kF16:
+      return V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kFloat16);
+    case CanvasPixelFormat::kUint8:
+      return V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kUint8);
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -963,9 +975,11 @@ CanvasRenderingContext2D::getContextAttributes() const {
   CanvasRenderingContext2DSettings* settings =
       CanvasRenderingContext2DSettings::Create();
   settings->setAlpha(CreationAttributes().alpha);
-  settings->setColorSpace(color_params_.GetColorSpaceAsString());
-  if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled())
-    settings->setPixelFormat(color_params_.GetPixelFormatAsString());
+  settings->setColorSpace(PredefinedColorSpaceToV8(color_params_.ColorSpace()));
+  if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled()) {
+    settings->setPixelFormat(
+        CanvasPixelFormatToV8(color_params_.PixelFormat()));
+  }
   settings->setDesynchronized(Host()->LowLatencyEnabled());
   switch (CreationAttributes().will_read_frequently) {
     case CanvasContextCreationAttributesCore::WillReadFrequently::kTrue:

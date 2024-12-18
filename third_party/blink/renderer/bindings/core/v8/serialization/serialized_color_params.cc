@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 
 namespace blink {
@@ -95,7 +96,7 @@ ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
 
 ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
   ImageDataSettings* settings = ImageDataSettings::Create();
-  settings->setColorSpace(PredefinedColorSpaceName(GetColorSpace()));
+  settings->setColorSpace(PredefinedColorSpaceToV8(GetColorSpace()));
   settings->setStorageFormat(ImageDataStorageFormatName(GetStorageFormat()));
   return settings;
 }
