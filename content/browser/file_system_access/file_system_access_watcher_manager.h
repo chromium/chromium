@@ -25,6 +25,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
@@ -82,10 +83,12 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // error if the given file or directory cannot be watched as requested.
   void GetFileObservation(const blink::StorageKey& storage_key,
                           const storage::FileSystemURL& file_url,
+                          ukm::SourceId ukm_source_id,
                           GetObservationCallback get_observation_callback);
   void GetDirectoryObservation(const blink::StorageKey& storage_key,
                                const storage::FileSystemURL& directory_url,
                                bool is_recursive,
+                               ukm::SourceId ukm_source_id,
                                GetObservationCallback get_observation_callback);
 
   // Subscribe this instance to raw changes from `source`.
@@ -162,16 +165,19 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
       blink::mojom::FileSystemAccessErrorPtr result);
 
   scoped_refptr<FileSystemAccessObserverQuotaManager> GetOrCreateQuotaManager(
-      blink::StorageKey storage_key);
+      blink::StorageKey storage_key,
+      ukm::SourceId ukm_source_id);
 
   base::optional_ref<FileSystemAccessObservationGroup>
   GetOrCreateObservationGroup(blink::StorageKey storage_key,
                               FileSystemAccessWatchScope scope,
-                              size_t source_current_usage);
+                              size_t source_current_usage,
+                              ukm::SourceId ukm_source_id);
 
   void PrepareObservationForScope(
       blink::StorageKey storage_key,
       FileSystemAccessWatchScope scope,
+      ukm::SourceId ukm_source_id,
       GetObservationCallback callback,
       blink::mojom::FileSystemAccessErrorPtr source_initialization_result,
       size_t source_current_usage);

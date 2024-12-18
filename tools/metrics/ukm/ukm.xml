@@ -8427,6 +8427,35 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FileSystemObserver.Usage">
+  <owner>dslee@chromium.org</owner>
+  <owner>memmott@chromium.org</owner>
+  <summary>
+    Quota usage of FileSystemObserver OS resource, collected when usage changes.
+    Recorded when FileSystemAccessObserverQuotaManager is destroyed.
+  </summary>
+  <metric name="HighWaterMark">
+    <summary>
+      High water mark of OS-specific observer resource usage. The unit used
+      depends on OS. On inotify-based OS (Linux, Android), it is the count of
+      inotify watches. On Mac, it is the count of FSEventsCreate calls. On
+      Windows, it is the number of bytes used for buffer memory. This is rounded
+      down to the nearest exponential bucket, with bucket spacing of 1.1.
+    </summary>
+  </metric>
+  <metric name="HighWaterMarkPercentage">
+    <summary>
+      High water mark of OS-specific observer resource usage over quota limit in
+      percentage, rounded down to the nearest integer.
+    </summary>
+  </metric>
+  <metric name="QuotaExceeded" enum="Boolean">
+    <summary>
+      Whether FileSystemObserver usage change caused quota to be exceeded.
+    </summary>
+  </metric>
+</event>
+
 <event name="FingerprintingProtection" singular="True">
   <owner>rizvis@google.com</owner>
   <owner>theslasa@google.com</owner>

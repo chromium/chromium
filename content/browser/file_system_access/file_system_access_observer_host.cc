@@ -17,8 +17,10 @@
 #include "content/browser/file_system_access/file_system_access_observer_observation.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
@@ -194,17 +196,23 @@ void FileSystemAccessObserverHost::DidCheckItemExists(
     return;
   }
 
+  // TODO(crbug.com/384635679): Support getting UKM source ID for web workers.
+  RenderFrameHostImpl* rfh =
+      RenderFrameHostImpl::FromID(binding_context_.frame_id);
+  ukm::SourceId source_id =
+      rfh ? rfh->GetPageUkmSourceId() : ukm::kInvalidSourceId;
+
   switch (handle.index()) {
     case 0u:
       watcher_manager()->GetDirectoryObservation(
-          binding_context_.storage_key, std::move(url), is_recursive,
+          binding_context_.storage_key, std::move(url), is_recursive, source_id,
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
                          weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));
       break;
     case 1u:
       watcher_manager()->GetFileObservation(
-          binding_context_.storage_key, std::move(url),
+          binding_context_.storage_key, std::move(url), source_id,
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
                          weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));

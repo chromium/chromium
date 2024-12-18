@@ -6,28 +6,49 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
 
 FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
     const blink::StorageKey& storage_key,
+    ukm::SourceId ukm_source_id,
     FileSystemAccessWatcherManager& watcher_manager)
     : base::RefCountedDeleteOnSequence<FileSystemAccessObserverQuotaManager>(
           base::SequencedTaskRunner::GetCurrentDefault()),
       storage_key_(storage_key),
+      ukm_source_id_(ukm_source_id),
       watcher_manager_(watcher_manager) {}
 
 FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
   CHECK(quota_limit_ > 0);
+  // The percentile value, rounded down to the nearest integer.
+  size_t usage_rate = 100 * high_water_mark_usage_ / quota_limit_;
+
+  // UMA logging.
   if (high_water_mark_usage_ > 0) {
     base::UmaHistogramCounts100000("Storage.FileSystemAccess.ObserverUsage",
                                    high_water_mark_usage_);
     base::UmaHistogramPercentage("Storage.FileSystemAccess.ObserverUsageRate",
-                                 100 * high_water_mark_usage_ / quota_limit_);
+                                 usage_rate);
   }
   base::UmaHistogramBoolean(
       "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
       reached_quota_limit_);
+
+  // UKM logging.
+  if (ukm_source_id_ != ukm::kInvalidSourceId) {
+    auto ukm_builder = ukm::builders::FileSystemObserver_Usage(ukm_source_id_);
+    if (high_water_mark_usage_ > 0) {
+      ukm_builder
+          .SetHighWaterMark(ukm::GetExponentialBucketMin(
+              high_water_mark_usage_, kHighWaterMarkBucketSpacing))
+          .SetHighWaterMarkPercentage(usage_rate);
+    }
+    ukm_builder.SetQuotaExceeded(reached_quota_limit_)
+        .Record(ukm::UkmRecorder::Get());
+  }
 
   watcher_manager_->RemoveQuotaManager(storage_key_);
 }

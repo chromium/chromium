@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/common/content_export.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -28,6 +29,7 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
 
   explicit FileSystemAccessObserverQuotaManager(
       const blink::StorageKey& storage_key,
+      ukm::SourceId ukm_source_id,
       FileSystemAccessWatcherManager& watcher_manager);
 
   // Updates the total usage if the quota is available.
@@ -45,6 +47,16 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
 
   size_t GetTotalUsageForTesting() { return total_usage_; }
 
+  // Since what OS resource represents differs by platform, the bucket sizing
+  // would result in different # of buckets. The bucket spacing of 1.1 is
+  // chosen to give minimum of ~50 bucket size on all platforms (i.e. the lowest
+  // number of buckets 49 on Mac): x^(1/n) = 1.1, where x is the expected max
+  // quota limit, and n is the number of buckets.
+  //   Windows: 211, where x is 1/2 GiB
+  //   Mac: 49, where x is 512*0.2
+  //   Linux: 145, where x is 1,000,000
+  static constexpr double kHighWaterMarkBucketSpacing = 1.1;
+
  private:
   friend class base::RefCountedDeleteOnSequence<
       FileSystemAccessObserverQuotaManager>;
@@ -52,6 +64,7 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
   ~FileSystemAccessObserverQuotaManager();
 
   const blink::StorageKey storage_key_;
+  ukm::SourceId ukm_source_id_;
 
   const raw_ref<FileSystemAccessWatcherManager> watcher_manager_;
   // OS-specific quota limit. Must be greater than 0.

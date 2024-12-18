@@ -8,10 +8,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -24,9 +27,96 @@ namespace content {
 using UsageChangeResult =
     FileSystemAccessObserverQuotaManager::UsageChangeResult;
 
+using FileSystemObserver_Usage = ukm::builders::FileSystemObserver_Usage;
+
 class FileSystemAccessObserverQuotaManagerTest : public testing::Test {
  public:
   FileSystemAccessObserverQuotaManagerTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  void SetUp() override {
+    ASSERT_TRUE(dir_.CreateUniqueTempDir());
+    chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
+    chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
+                                               base::FilePath(), nullptr);
+    manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
+        storage::CreateFileSystemContextForTesting(
+            /*quota_manager_proxy=*/nullptr, dir_.GetPath()),
+        chrome_blob_context_,
+        /*permission_context=*/nullptr,
+        /*off_the_record=*/false);
+    observer_quota_manager_ =
+        base::MakeRefCounted<FileSystemAccessObserverQuotaManager>(
+            blink::StorageKey::CreateFromStringForTesting(
+                "https://example.com/test"),
+            ukm::AssignNewSourceId(), manager_->watcher_manager());
+  }
+
+  void TearDown() override {
+    observer_quota_manager_.reset();
+    manager_.reset();
+    chrome_blob_context_.reset();
+    EXPECT_TRUE(dir_.Delete());
+  }
+
+  void ExpectHistogramsOnQuotaManagerDestruction(
+      size_t highmark_usage,
+      size_t highmark_usage_percentage,
+      bool quota_exceeded) {
+    // Histogram logging is expected to occur after the destruction of the
+    // observer quota manager.
+    auto entries = test_ukm_recorder_.GetEntriesByName(
+        FileSystemObserver_Usage::kEntryName);
+    EXPECT_EQ(entries.size(), 1u);
+    if (highmark_usage == 0) {
+      EXPECT_FALSE(test_ukm_recorder_.EntryHasMetric(
+          entries[0], FileSystemObserver_Usage::kHighWaterMarkName));
+      EXPECT_FALSE(test_ukm_recorder_.EntryHasMetric(
+          entries[0], FileSystemObserver_Usage::kHighWaterMarkPercentageName));
+      histogram_tester_.ExpectUniqueSample(
+          "Storage.FileSystemAccess.ObserverUsage", highmark_usage, 0);
+      histogram_tester_.ExpectUniqueSample(
+          "Storage.FileSystemAccess.ObserverUsageRate",
+          highmark_usage_percentage, 0);
+    } else {
+      test_ukm_recorder_.ExpectEntryMetric(
+          entries[0], FileSystemObserver_Usage::kHighWaterMarkName,
+          ukm::GetExponentialBucketMin(highmark_usage,
+                                       FileSystemAccessObserverQuotaManager::
+                                           kHighWaterMarkBucketSpacing));
+      test_ukm_recorder_.ExpectEntryMetric(
+          entries[0], FileSystemObserver_Usage::kHighWaterMarkPercentageName,
+          highmark_usage_percentage);
+      histogram_tester_.ExpectUniqueSample(
+          "Storage.FileSystemAccess.ObserverUsage", highmark_usage, 1);
+      histogram_tester_.ExpectUniqueSample(
+          "Storage.FileSystemAccess.ObserverUsageRate",
+          highmark_usage_percentage, 1);
+    }
+    test_ukm_recorder_.ExpectEntryMetric(
+        entries[0], FileSystemObserver_Usage::kQuotaExceededName,
+        quota_exceeded);
+    histogram_tester_.ExpectUniqueSample(
+        "Storage.FileSystemAccess.ObserverUsageQuotaExceeded", quota_exceeded,
+        1);
+  }
+
+ protected:
+  BrowserTaskEnvironment task_environment_;
+  base::ScopedTempDir dir_;
+  base::HistogramTester histogram_tester_;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
+  scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
+  scoped_refptr<FileSystemAccessManagerImpl> manager_;
+  scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager_;
+};
+
+// Test set up for checking lifecycle management between
+// `FileSystemAccessObserverQuotaManager` and `FileSystemAccessWatcherManager`
+class FileSystemAccessObserverQuotaManagerWithWatcherManagerTest
+    : public testing::Test {
+ public:
+  FileSystemAccessObserverQuotaManagerWithWatcherManagerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
@@ -61,41 +151,20 @@ class FileSystemAccessObserverQuotaManagerTest : public testing::Test {
     EXPECT_TRUE(dir_.Delete());
   }
 
-  void ExpectHistogramsOnQuotaManagerDestruction(
-      size_t highmark_usage,
-      size_t highmark_usage_percentage,
-      bool quota_exceeded) {
-    histogram_tester_.ExpectUniqueSample(
-        "Storage.FileSystemAccess.ObserverUsage", highmark_usage,
-        highmark_usage > 0 ? 1 : 0);
-    histogram_tester_.ExpectUniqueSample(
-        "Storage.FileSystemAccess.ObserverUsageRate", highmark_usage_percentage,
-        highmark_usage_percentage > 0 ? 1 : 0);
-    histogram_tester_.ExpectUniqueSample(
-        "Storage.FileSystemAccess.ObserverUsageQuotaExceeded", quota_exceeded,
-        1);
-  }
-
  protected:
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
 
+  BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir dir_;
-  base::HistogramTester histogram_tester_;
-  size_t expected_highmark_usage_histogram_ = 0;
-  size_t expected_highmark_usage_percentage_histogram_ = 0;
-  bool expect_quota_exceeded_histogram_ = false;
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
-  BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, OnUsageChange) {
-  scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager_ =
-      watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey);
   observer_quota_manager_->SetQuotaLimitForTesting(10);
 
   // There are two observation groups under the same storage key calling
@@ -133,8 +202,6 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, OnUsageChange) {
 }
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaExceeded) {
-  scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager_ =
-      watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey);
   observer_quota_manager_->SetQuotaLimitForTesting(10);
 
   EXPECT_EQ(
@@ -149,8 +216,6 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaExceeded) {
 }
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaNotExceeded) {
-  scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager_ =
-      watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey);
   observer_quota_manager_->SetQuotaLimitForTesting(10);
 
   EXPECT_EQ(
@@ -164,7 +229,7 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaNotExceeded) {
                                             /*quota_exceeded=*/false);
 }
 
-TEST_F(FileSystemAccessObserverQuotaManagerTest,
+TEST_F(FileSystemAccessObserverQuotaManagerWithWatcherManagerTest,
        QuotaManagerRemovedFromWatcherManagerOnDestruction) {
   scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager_ =
       watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey);
@@ -180,11 +245,6 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest,
   observer_quota_manager_.reset();
   EXPECT_EQ(watcher_manager().GetQuotaManagerForTesting(kTestStorageKey),
             nullptr);
-
-  // 1 usage out of 10 quota limit = 10%
-  ExpectHistogramsOnQuotaManagerDestruction(/*highmark_usage=*/1,
-                                            /*highmark_usage_percentage=*/10,
-                                            /*quota_exceeded=*/false);
 }
 
 }  // namespace content

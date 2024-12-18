@@ -404,6 +404,7 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
         std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
         get_observation_future;
     watcher_manager().GetFileObservation(storage_key, file_url,
+                                         ukm::kInvalidSourceId,
                                          get_observation_future.GetCallback());
 
     CheckObserveResult(get_observation_future);
@@ -426,7 +427,7 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
         std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
         get_observation_future;
     watcher_manager().GetDirectoryObservation(
-        storage_key, dir_url, is_recursive,
+        storage_key, dir_url, is_recursive, ukm::kInvalidSourceId,
         get_observation_future.GetCallback());
 
     CheckObserveResult(get_observation_future);
@@ -496,8 +497,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
         std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
         get_observation_future;
     watcher_manager().GetDirectoryObservation(
-        kTestStorageKey, dir_url,
-        /*is_recursive=*/false, get_observation_future.GetCallback());
+        kTestStorageKey, dir_url, /*is_recursive=*/false, ukm::kInvalidSourceId,
+        get_observation_future.GetCallback());
     ASSERT_TRUE(get_observation_future.Get().has_value());
 
     // An observation should have been created.
