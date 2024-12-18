@@ -187,6 +187,7 @@ fn expand_struct(strct: &Struct) -> TokenStream {
         #[repr(C)]
         #struct_def
 
+        #[automatically_derived]
         unsafe impl #generics ::cxx::ExternType for #ident #generics {
             #[allow(unused_attributes)] // incorrect lint
             #[doc(hidden)]
@@ -312,6 +313,7 @@ fn expand_struct_forbid_drop(strct: &Struct) -> TokenStream {
     let impl_token = Token![impl](strct.visibility.span);
 
     quote_spanned! {span=>
+        #[automatically_derived]
         #impl_token #generics self::Drop for super::#ident #generics {}
     }
 }
@@ -358,11 +360,13 @@ fn expand_enum(enm: &Enum) -> TokenStream {
         #[repr(transparent)]
         #enum_def
 
+        #[automatically_derived]
         #[allow(non_upper_case_globals)]
         impl #ident {
             #(#variants)*
         }
 
+        #[automatically_derived]
         unsafe impl ::cxx::ExternType for #ident {
             #[allow(unused_attributes)] // incorrect lint
             #[doc(hidden)]
@@ -405,6 +409,7 @@ fn expand_cxx_type(ety: &ExternType) -> TokenStream {
         #[repr(C)]
         #extern_type_def
 
+        #[automatically_derived]
         unsafe impl #generics ::cxx::ExternType for #ident #generics {
             #[allow(unused_attributes)] // incorrect lint
             #[doc(hidden)]
@@ -428,6 +433,7 @@ fn expand_cxx_type_assert_pinned(ety: &ExternType, types: &Types) -> TokenStream
                 fn infer() {}
             }
 
+            #[automatically_derived]
             impl<T> __AmbiguousIfImpl<()> for T
             where
                 T: ?::cxx::core::marker::Sized
@@ -436,6 +442,7 @@ fn expand_cxx_type_assert_pinned(ety: &ExternType, types: &Types) -> TokenStream
             #[allow(dead_code)]
             struct __Invalid;
 
+            #[automatically_derived]
             impl<T> __AmbiguousIfImpl<__Invalid> for T
             where
                 T: ?::cxx::core::marker::Sized + ::cxx::core::marker::Unpin,
@@ -766,6 +773,7 @@ fn expand_cxx_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
                 &elided_generics
             };
             quote_spanned! {ident.span()=>
+                #[automatically_derived]
                 impl #generics #receiver_ident #receiver_generics {
                     #doc
                     #attrs
@@ -831,6 +839,7 @@ fn expand_rust_type_impl(ety: &ExternType) -> TokenStream {
     let unsafe_impl = quote_spanned!(ety.type_token.span=> unsafe impl);
 
     let mut impls = quote_spanned! {span=>
+        #[automatically_derived]
         #[doc(hidden)]
         #unsafe_impl #generics ::cxx::private::RustType for #ident #generics {}
     };
@@ -840,6 +849,7 @@ fn expand_rust_type_impl(ety: &ExternType) -> TokenStream {
             let type_id = type_id(&ety.name);
             let span = derive.span;
             impls.extend(quote_spanned! {span=>
+                #[automatically_derived]
                 unsafe impl #generics ::cxx::ExternType for #ident #generics {
                     #[allow(unused_attributes)] // incorrect lint
                     #[doc(hidden)]
@@ -920,6 +930,7 @@ fn expand_forbid(impls: TokenStream) -> TokenStream {
     quote! {
         mod forbid {
             pub trait Drop {}
+            #[automatically_derived]
             #[allow(drop_bounds)]
             impl<T: ?::cxx::core::marker::Sized + ::cxx::core::ops::Drop> self::Drop for T {}
             #impls
@@ -1220,11 +1231,14 @@ fn expand_rust_function_shim_super(
     };
 
     let mut body = quote_spanned!(span=> #call(#(#vars,)*));
+    let mut allow_unused_unsafe = None;
     if unsafety.is_some() {
         body = quote_spanned!(span=> unsafe { #body });
+        allow_unused_unsafe = Some(quote_spanned!(span=> #[allow(unused_unsafe)]));
     }
 
     quote_spanned! {span=>
+        #allow_unused_unsafe
         #unsafety fn #local_name #generics(#(#all_args,)*) #ret {
             #body
         }
@@ -1301,6 +1315,7 @@ fn expand_rust_box(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
     let prevent_unwind_drop_label = format!("::{} as Drop>::drop", ident);
 
     quote_spanned! {end_span=>
+        #[automatically_derived]
         #[doc(hidden)]
         #unsafe_token impl #impl_generics ::cxx::private::ImplBox for #ident #ty_generics {}
         #[doc(hidden)]
@@ -1359,6 +1374,7 @@ fn expand_rust_vec(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
     let prevent_unwind_drop_label = format!("::{} as Drop>::drop", elem);
 
     quote_spanned! {end_span=>
+        #[automatically_derived]
         #[doc(hidden)]
         #unsafe_token impl #impl_generics ::cxx::private::ImplVec for #elem #ty_generics {}
         #[doc(hidden)]
@@ -1466,6 +1482,7 @@ fn expand_unique_ptr(
     let unsafe_token = format_ident!("unsafe", span = begin_span);
 
     quote_spanned! {end_span=>
+        #[automatically_derived]
         #unsafe_token impl #impl_generics ::cxx::private::UniquePtrTarget for #ident #ty_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)
@@ -1559,6 +1576,7 @@ fn expand_shared_ptr(
     let unsafe_token = format_ident!("unsafe", span = begin_span);
 
     quote_spanned! {end_span=>
+        #[automatically_derived]
         #unsafe_token impl #impl_generics ::cxx::private::SharedPtrTarget for #ident #ty_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)
@@ -1620,6 +1638,7 @@ fn expand_weak_ptr(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
     let unsafe_token = format_ident!("unsafe", span = begin_span);
 
     quote_spanned! {end_span=>
+        #[automatically_derived]
         #unsafe_token impl #impl_generics ::cxx::private::WeakPtrTarget for #ident #ty_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)
@@ -1748,6 +1767,7 @@ fn expand_cxx_vector(
     };
 
     quote_spanned! {end_span=>
+        #[automatically_derived]
         #unsafe_token impl #impl_generics ::cxx::private::VectorElement for #elem #ty_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)

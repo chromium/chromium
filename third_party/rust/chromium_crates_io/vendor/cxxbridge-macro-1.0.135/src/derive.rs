@@ -102,6 +102,7 @@ fn struct_copy(strct: &Struct, span: Span) -> TokenStream {
     let generics = &strct.generics;
 
     quote_spanned! {span=>
+        #[automatically_derived]
         impl #generics ::cxx::core::marker::Copy for #ident #generics {}
     }
 }
@@ -126,6 +127,7 @@ fn struct_clone(strct: &Struct, span: Span) -> TokenStream {
     };
 
     quote_spanned! {span=>
+        #[automatically_derived]
         #[allow(clippy::expl_impl_clone_on_copy)]
         impl #generics ::cxx::core::clone::Clone for #ident #generics {
             fn clone(&self) -> Self {
@@ -143,6 +145,7 @@ fn struct_debug(strct: &Struct, span: Span) -> TokenStream {
     let field_names = fields.clone().map(Ident::to_string);
 
     quote_spanned! {span=>
+        #[automatically_derived]
         impl #generics ::cxx::core::fmt::Debug for #ident #generics {
             fn fmt(&self, formatter: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 formatter.debug_struct(#struct_name)
@@ -159,6 +162,7 @@ fn struct_default(strct: &Struct, span: Span) -> TokenStream {
     let fields = strct.fields.iter().map(|field| &field.name.rust);
 
     quote_spanned! {span=>
+        #[automatically_derived]
         #[allow(clippy::derivable_impls)] // different spans than the derived impl
         impl #generics ::cxx::core::default::Default for #ident #generics {
             fn default() -> Self {
@@ -178,6 +182,7 @@ fn struct_ord(strct: &Struct, span: Span) -> TokenStream {
     let fields = strct.fields.iter().map(|field| &field.name.rust);
 
     quote_spanned! {span=>
+        #[automatically_derived]
         impl #generics ::cxx::core::cmp::Ord for #ident #generics {
             fn cmp(&self, other: &Self) -> ::cxx::core::cmp::Ordering {
                 #(
@@ -214,6 +219,7 @@ fn struct_partial_ord(strct: &Struct, span: Span) -> TokenStream {
     };
 
     quote_spanned! {span=>
+        #[automatically_derived]
         impl #generics ::cxx::core::cmp::PartialOrd for #ident #generics {
             #[allow(clippy::non_canonical_partial_ord_impl)]
             #[allow(renamed_and_removed_lints, clippy::incorrect_partial_ord_impl_on_ord_type)] // Rust 1.73 and older
@@ -228,6 +234,7 @@ fn enum_copy(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
 
     quote_spanned! {span=>
+        #[automatically_derived]
         impl ::cxx::core::marker::Copy for #ident {}
     }
 }
@@ -236,6 +243,7 @@ fn enum_clone(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
 
     quote_spanned! {span=>
+        #[automatically_derived]
         #[allow(clippy::expl_impl_clone_on_copy)]
         impl ::cxx::core::clone::Clone for #ident {
             fn clone(&self) -> Self {
@@ -257,6 +265,7 @@ fn enum_debug(enm: &Enum, span: Span) -> TokenStream {
     let fallback = format!("{}({{}})", ident);
 
     quote_spanned! {span=>
+        #[automatically_derived]
         impl ::cxx::core::fmt::Debug for #ident {
             fn fmt(&self, formatter: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 match *self {
@@ -272,6 +281,7 @@ fn enum_ord(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
 
     quote_spanned! {span=>
+        #[automatically_derived]
         impl ::cxx::core::cmp::Ord for #ident {
             fn cmp(&self, other: &Self) -> ::cxx::core::cmp::Ordering {
                 ::cxx::core::cmp::Ord::cmp(&self.repr, &other.repr)
@@ -284,6 +294,7 @@ fn enum_partial_ord(enm: &Enum, span: Span) -> TokenStream {
     let ident = &enm.name.rust;
 
     quote_spanned! {span=>
+        #[automatically_derived]
         impl ::cxx::core::cmp::PartialOrd for #ident {
             #[allow(clippy::non_canonical_partial_ord_impl)]
             #[allow(renamed_and_removed_lints, clippy::incorrect_partial_ord_impl_on_ord_type)] // Rust 1.73 and older

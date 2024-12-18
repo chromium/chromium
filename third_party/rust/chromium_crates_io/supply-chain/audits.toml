@@ -1013,6 +1013,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.130 -> 1.0.131"
 notes = "no grep hits for cipher, crypto, fs, net, or unsafe"
 
+[[audits.cxxbridge-flags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.131 -> 1.0.135"
+notes = "No code changes in the delta"
+
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
 criteria = "does-not-implement-crypto"

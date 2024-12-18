@@ -13,45 +13,45 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/cxx_string.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/cxx_vector.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/exception.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/extern_type.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/fmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/function.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/hash.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/lossy.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/macros/assert.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/macros/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/memory.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/opaque.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/result.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/rust_slice.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/rust_str.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/rust_string.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/rust_type.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/rust_vec.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/shared_ptr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/symbols/exception.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/symbols/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/symbols/rust_slice.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/symbols/rust_str.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/symbols/rust_string.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/symbols/rust_vec.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/type_id.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/unique_ptr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/unwind.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/vector.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src/weak_ptr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/cxx_string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/cxx_vector.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/exception.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/extern_type.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/function.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/hash.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/lossy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/macros/assert.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/macros/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/memory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/opaque.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/result.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/rust_slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/rust_str.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/rust_string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/rust_type.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/rust_vec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/shared_ptr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/symbols/exception.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/symbols/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/symbols/rust_slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/symbols/rust_str.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/symbols/rust_string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/symbols/rust_vec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/type_id.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/unique_ptr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/unwind.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/vector.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src/weak_ptr.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.131"
+  cargo_pkg_version = "1.0.135"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxx"
   cargo_pkg_description = "Safe interop between Rust and C++"

@@ -658,11 +658,11 @@ third_party/rust/chromium_crates_io/vendor/clap_builder-4.5.23/src/parser 1 1
 third_party/rust/chromium_crates_io/vendor/codespan-reporting-0.11.1 2 1
 third_party/rust/chromium_crates_io/vendor/codespan-reporting-0.11.1/examples 1 1
 third_party/rust/chromium_crates_io/vendor/crc32fast-1.4.2/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.131 1 1
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/book 1 1
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/book/src 3 1
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/.github/workflows 4 3
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.131/src 4 1
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.135 1 1
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/book 1 1
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/book/src 3 1
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/.github/workflows 4 3
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.135/src 4 1
 third_party/rust/chromium_crates_io/vendor/either-1.13.0/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/flate2-1.0.35 33 2
 third_party/rust/chromium_crates_io/vendor/getrandom-0.2.15 5 1
