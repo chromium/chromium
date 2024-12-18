@@ -69,7 +69,7 @@ const size_t kMaxQueryLength = 200;
 // numeric values should never be reused.
 //
 // Keep up to date with DocumentProviderAllowedReason in
-// //tools/metrics/histograms/enums.xml.
+// //tools/metrics/histograms/metadata/omnibox/enums.xml.
 enum class DocumentProviderAllowedReason : int {
   kAllowed = 0,
   kUnknown = 1,
@@ -84,7 +84,8 @@ enum class DocumentProviderAllowedReason : int {
   kInputOnFocusOrEmpty = 10,
   kInputTooShort = 11,
   kInputLooksLikeUrl = 12,
-  kMaxValue = kInputLooksLikeUrl
+  kNotEnterpriseEligible = 13,
+  kMaxValue = kNotEnterpriseEligible
 };
 
 void LogOmniboxDocumentRequest(RemoteRequestEvent request_event) {
@@ -361,7 +362,7 @@ bool DocumentProvider::IsDocumentProviderAllowed(
     return false;
   }
 
-  // Must be logged in.
+  // Must be authenticated.
   const bool is_authenticated =
       base::FeatureList::IsEnabled(
           omnibox::kDocumentProviderPrimaryAccountRequirement)
@@ -370,6 +371,26 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   if (!is_authenticated) {
     base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
                                   DocumentProviderAllowedReason::kNotLoggedIn);
+    return false;
+  }
+
+  // Must be enterprise eligibile (if the feature is enabled).
+  bool is_enterprise_eligible = true;
+  if (base::FeatureList::IsEnabled(
+          omnibox::kDocumentProviderEnterpriseEligibility)) {
+    const auto& entrprise_account_state =
+        client_->GetDocumentSuggestionsService()
+            ->account_is_subject_to_enterprise_policies();
+    is_enterprise_eligible =
+        base::FeatureList::IsEnabled(
+            omnibox::kDocumentProviderEnterpriseEligibilityWhenUnknown)
+            ? entrprise_account_state != signin::Tribool::kFalse
+            : entrprise_account_state == signin::Tribool::kTrue;
+  }
+  if (!is_enterprise_eligible) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DocumentSuggest.ProviderAllowed",
+        DocumentProviderAllowedReason::kNotEnterpriseEligible);
     return false;
   }
 
