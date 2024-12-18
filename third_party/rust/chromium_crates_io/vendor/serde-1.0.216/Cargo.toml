@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.31"
 name = "serde"
-version = "1.0.215"
+version = "1.0.216"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -77,4 +77,4 @@ std = []
 unstable = []
 
 [target."cfg(any())".dependencies.serde_derive]
-version = "=1.0.215"
+version = "=1.0.216"

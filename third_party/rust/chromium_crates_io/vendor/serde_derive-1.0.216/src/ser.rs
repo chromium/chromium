@@ -29,6 +29,7 @@ pub fn expand_derive_serialize(input: &mut syn::DeriveInput) -> syn::Result<Toke
         let vis = &input.vis;
         let used = pretend::pretend_used(&cont, params.is_packed);
         quote! {
+            #[automatically_derived]
             impl #impl_generics #ident #ty_generics #where_clause {
                 #vis fn serialize<__S>(__self: &#remote #ty_generics, __serializer: __S) -> #serde::__private::Result<__S::Ok, __S::Error>
                 where
@@ -733,6 +734,7 @@ fn serialize_adjacently_tagged_variant(
             phantom: _serde::__private::PhantomData<#this_type #ty_generics>,
         }
 
+        #[automatically_derived]
         impl #wrapper_impl_generics _serde::Serialize for __AdjacentlyTagged #wrapper_ty_generics #where_clause {
             fn serialize<__S>(&self, __serializer: __S) -> _serde::__private::Result<__S::Ok, __S::Error>
             where
@@ -997,6 +999,7 @@ fn serialize_struct_variant_with_flatten(
                     phantom: _serde::__private::PhantomData<#this_type #ty_generics>,
                 }
 
+                #[automatically_derived]
                 impl #wrapper_impl_generics _serde::Serialize for __EnumFlatten #wrapper_ty_generics #where_clause {
                     fn serialize<__S>(&self, __serializer: __S) -> _serde::__private::Result<__S::Ok, __S::Error>
                     where
@@ -1239,6 +1242,7 @@ fn wrap_serialize_with(
             phantom: _serde::__private::PhantomData<#this_type #ty_generics>,
         }
 
+        #[automatically_derived]
         impl #wrapper_impl_generics _serde::Serialize for __SerializeWith #wrapper_ty_generics #where_clause {
             fn serialize<__S>(&#self_var, #serializer_var: __S) -> _serde::__private::Result<__S::Ok, __S::Error>
             where
