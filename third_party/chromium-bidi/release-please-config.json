@@ -1,8 +1,5 @@
 {
   "last-release-sha": "971f2218262b3c5b18c13ec275dbfc3d4ce54fba",
-  "bump-minor-pre-major": true,
-  "bump-patch-for-minor-pre-major": true,
-  "prerelease": true,
   "packages": {
     ".": {}
   }
