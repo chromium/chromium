@@ -585,7 +585,8 @@ public class FullscreenManagerTest {
     @LargeTest
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
     })
     public void testHidingBrowserControlsPreservesScrollOffsetLegacy() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -635,6 +636,7 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testHidingBrowserControlsPreservesScrollOffset() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(SCROLL_OFFSET_TEST_PAGE);

@@ -670,11 +670,17 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDrawNativeEdgeToEdge =
             newCachedFlag(DRAW_NATIVE_EDGE_TO_EDGE, false);
     public static final CachedFlag sEdgeToEdgeBottomChin =
-            newCachedFlag(EDGE_TO_EDGE_BOTTOM_CHIN, false);
+            newCachedFlag(
+                    EDGE_TO_EDGE_BOTTOM_CHIN,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sEdgeToEdgeEverywhere =
             newCachedFlag(EDGE_TO_EDGE_EVERYWHERE, false);
     public static final CachedFlag sEdgeToEdgeWebOptIn =
-            newCachedFlag(EDGE_TO_EDGE_WEB_OPT_IN, false);
+            newCachedFlag(
+                    EDGE_TO_EDGE_WEB_OPT_IN,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sEducationalTipModule =
             newCachedFlag(EDUCATIONAL_TIP_MODULE, false);
     public static final CachedFlag sEnableDiscountInfoApi =
