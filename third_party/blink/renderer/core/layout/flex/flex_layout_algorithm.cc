@@ -222,7 +222,9 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent() const {
       // -webkit-box row-reverse currently flips the start/end (e.g. it always
       // uses "start" rather than "flex-start"). Firefox doesn't have this
       // quirk, we should attempt to remove it.
-      const bool is_row_reverse = Style().ResolvedIsRowReverseFlexDirection();
+      const bool is_row_reverse =
+          !RuntimeEnabledFeatures::LayoutDisableWebkitBoxQuirksEnabled() &&
+          Style().ResolvedIsRowReverseFlexDirection();
       switch (box_pack) {
         case EBoxPack::kCenter:
           return ContentPosition::kCenter;
@@ -238,8 +240,11 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent() const {
     const ContentDistributionType distribution =
         box_pack == EBoxPack::kJustify ? ContentDistributionType::kSpaceBetween
                                        : ContentDistributionType::kDefault;
-    return StyleContentAlignmentData(position, distribution,
-                                     OverflowAlignment::kSafe);
+    return StyleContentAlignmentData(
+        position, distribution,
+        RuntimeEnabledFeatures::LayoutDisableWebkitBoxQuirksEnabled()
+            ? OverflowAlignment::kDefault
+            : OverflowAlignment::kSafe);
   }
 
   const auto writing_direction = GetConstraintSpace().GetWritingDirection();
@@ -1619,7 +1624,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   // -webkit-box has a weird quirk - an RTL box will overflow as if it was LTR.
   // NOTE: We should attempt to remove this in the future.
   const ContentPosition safe_justify_position =
-      is_webkit_box_ && !is_column_ && style.Direction() == TextDirection::kRtl
+      !RuntimeEnabledFeatures::LayoutDisableWebkitBoxQuirksEnabled() &&
+              is_webkit_box_ && !is_column_ &&
+              style.Direction() == TextDirection::kRtl
           ? ContentPosition::kEnd
           : ContentPosition::kStart;
 

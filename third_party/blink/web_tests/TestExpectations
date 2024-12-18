@@ -1080,6 +1080,12 @@ crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-003.h
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse-line-wrapping.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html [ Failure ]
 
+# Temporary failures while we remove some -webkit-box quirks.
+crbug.com/384765587 external/wpt/compat/webkit-box-horizontal-reverse-variants.html [ Failure ]
+crbug.com/384765587 external/wpt/compat/webkit-box-horizontal-rtl-variants.html [ Failure ]
+crbug.com/384765587 external/wpt/compat/webkit-box-ignore-box-pack.html [ Failure ]
+crbug.com/384765587 fast/deprecated-flexbox/017.html [ Failure ]
+
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item.html [ Failure ]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
