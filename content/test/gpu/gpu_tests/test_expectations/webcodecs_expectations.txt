@@ -153,9 +153,6 @@ crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_cam
 # Same with prefer-hardware
 crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/379673339 [ win amd-0x7340 angle-d3d11 ] WebCodecs_Encode_offscreen_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/379673339 [ win amd-0x7340 angle-d3d11 ] WebCodecs_Encode_offscreen_avc1.64001E_prefer-hardware [ Failure ]
-crbug.com/379673339 [ win amd-0x7340 angle-d3d11 ] WebCodecs_Encode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
