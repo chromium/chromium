@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -592,9 +593,20 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self preventUserInteraction];
   id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
+  // Prepare the signout snackbar before account switching.
   // The snackbar message might be nil if the snackbar is not needed.
   MDCSnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
+
   __weak __typeof(self) weakSelf = self;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    signin::MultiProfileSignOut(self.browser, _signout_source_metric,
+                                forceClearData, _forceSnackbarOverToolbar,
+                                snackbarMessage, ^{
+                                  [weakSelf signOutDidFinish];
+                                });
+    return;
+  }
+
   BOOL forceSnackbarOverToolbar = _forceSnackbarOverToolbar;
   self.authenticationService->SignOut(_signout_source_metric, forceClearData, ^{
     // The snackbar should be displayed even if self has been deallocated.

@@ -12,6 +12,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -86,6 +87,14 @@ class AccountMenuCoordinatorTest : public PlatformTest,
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+
+    stub_browser_interface_provider_ =
+        [[StubBrowserProviderInterface alloc] init];
+    stub_browser_interface_provider_.mainBrowserProvider.browser =
+        browser_.get();
+    scene_state_mock_ = OCMPartialMock(scene_state_);
+    OCMStub([scene_state_mock_ browserProviderInterface])
+        .andReturn(stub_browser_interface_provider_);
 
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
@@ -182,6 +191,9 @@ class AccountMenuCoordinatorTest : public PlatformTest,
   id<SettingsCommands> mock_settings_commands_handler_;
   id<BrowserCommands> mock_browser_commands_handler_;
   SceneState* scene_state_;
+  // Partial mock for stubbing scene_state_'s methods
+  id scene_state_mock_;
+  StubBrowserProviderInterface* stub_browser_interface_provider_;
   id<BrowserCoordinatorCommands> mock_browser_coordinator_commands_handler_;
   AccountMenuViewController* view_controller_;
   AccountMenuMediator* mediator_;

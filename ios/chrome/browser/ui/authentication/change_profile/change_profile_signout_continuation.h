@@ -22,8 +22,8 @@ enum class ProfileSignout;
                     (signin_metrics::ProfileSignout)signoutSourceMetric
                              forceClearData:(BOOL)forceClearData
                    forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
-                            snackbarMessage:
-                                (MDCSnackbarMessage*)snackbarMessage;
+                            snackbarMessage:(MDCSnackbarMessage*)snackbarMessage
+                          signoutCompletion:(ProceduralBlock)signoutCompletion;
 
 @end
 

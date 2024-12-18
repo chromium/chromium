@@ -19,7 +19,8 @@ source_set("change_profile") {
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
   ]
 }

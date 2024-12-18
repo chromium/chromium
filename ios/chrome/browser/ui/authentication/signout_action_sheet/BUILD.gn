@@ -31,6 +31,7 @@ source_set("signout_action_sheet") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]

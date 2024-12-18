@@ -382,7 +382,8 @@ void MultiProfileSignOut(Browser* browser,
                                           signout_source
                        forceClearData:force_clear_data
              forceSnackbarOverToolbar:force_snackbar_over_toolbar
-                      snackbarMessage:snackbar_message];
+                      snackbarMessage:snackbar_message
+                    signoutCompletion:signout_completion];
 
   BOOL should_switch_profile_at_signout =
       AreSeparateProfilesForManagedAccountsEnabled() &&
@@ -392,7 +393,6 @@ void MultiProfileSignOut(Browser* browser,
   SceneState* scene_state = browser->GetSceneState();
 
   if (!should_switch_profile_at_signout) {
-    // TODO(crbug.com/375605174): Pass signout_completion to the continuation.
     [signout_continuation executeWithSceneState:scene_state completion:nil];
     return;
   }
