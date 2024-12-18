@@ -15,7 +15,11 @@
 @interface ShareKitReadGroupParamConfiguration : NSObject
 
 // The ID of the group to be read.
+// TODO(crbug.com/384512074): Remove this once all clients switched to collabID.
 @property(nonatomic, copy) NSString* groupID;
+
+// The collab ID of the group to be read, also sometimes called groupID.
+@property(nonatomic, copy) NSString* collabID;
 
 // As an optimization, sending a consistency token will allow for reading groups
 // with bounded staleness. Without a consistency token, we'll always read the
