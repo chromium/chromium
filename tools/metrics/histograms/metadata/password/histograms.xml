@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordGeneration.EditsInGeneratedPassword.AlteredLengthIncreased"
     enum="GeneratedPasswordAlteredLengthIncreased" expires_after="2025-04-13">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Measures difference in length between generated password and submitted
     password. False if length decreased, true if length increased. Uploaded once
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordGeneration.EditsInGeneratedPassword.AttributesMask"
     enum="EditsInGeneratedPasswordMask" expires_after="2025-04-13">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Measures types of user editing of generated passwords. Mask tracks if there
     are several types of changes simultaneously happening on generated password.
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordGeneration.EditsInGeneratedPassword.{CharacterClass}"
     enum="CharacterClassPresenceChange" expires_after="2025-05-04">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Measures difference in {CharacterClass} between generated password and
     submitted password. Uploaded once per modified generated password
@@ -401,7 +401,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordGeneration.GeneratedPasswordWasEdited"
     enum="BooleanGeneratedPasswordWasEdited" expires_after="2025-05-11">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Measures the frequency of user editing of generated passwords. Uploaded once
     per generated password save. Applicable to automatic and manual generations.
@@ -469,7 +469,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordGeneration.SubmissionAvailableEvent"
     enum="PasswordSubmissionEvent" expires_after="M137">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     Measures the frequency of submission events for passwords that could have
@@ -481,7 +481,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordGeneration.SubmissionEvent"
     enum="PasswordSubmissionEvent" expires_after="2025-05-11">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Measures the frequency of submission events for generated passwords. This is
     similar to PasswordManager.ActionsTakenWithPsl but only tracks events which
@@ -1646,7 +1646,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.FillingAutomationRate" units="%"
     expires_after="2025-04-20">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Records the percentage of input text field characters that were autofilled.
     This function measures text input as a number of UTF-16 code points.
@@ -1765,7 +1765,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.GeneratedFormHasNoFormManager"
     enum="BooleanFormManager" expires_after="2025-04-13">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     When the generation state of a password was changed, records whether an
     existing form corresponding to the password was found.
@@ -2451,7 +2451,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.ParserDetectedOtpFieldWithRegex"
     enum="Boolean" expires_after="2025-06-08">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Reports whether the form parser has detected an OTP field with regex.
     Reported any time when the parser processes a form. Used to compare how
@@ -3842,7 +3842,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.SingleUsername.ForgotPasswordServerPredictionUsed"
     enum="Boolean" expires_after="2025-05-11">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Recorded when a single username form is detected using server predictions.
     Records whether the prediction is SINGLE_USERNAME_FORGOT_PASSWORD.
@@ -3852,7 +3852,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.SingleUsername.PasswordFormHadUsernameField"
     enum="PasswordFormHadUsernameField" expires_after="2025-04-13">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Single username vote is sent after user is signed in (i.e. entered password
     in password form). This means that there are actually 2 forms in username
@@ -3873,7 +3873,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.SingleUsername.VoteDataAvailability"
     enum="SingleUsernameVoteDataAvailability" expires_after="2025-05-11">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     This metric records whether username first and forgot password form voting
     data is available, and whether it contains information about the same form.
@@ -3928,7 +3928,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.SubmittedFormType2" enum="PasswordFormType2"
     expires_after="2025-05-11">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     The presumed type (e.g. signup, login, change password) of all submitted
@@ -3940,7 +3940,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.SuccessfulLoginHappened"
     enum="BooleanSuccessfulLoginHappenedOnHttps" expires_after="2025-04-13">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     For a successful login, whether the origin is HTTPS or HTTP. A succesful
     login is detected by local heuristics. The heuristics can misclassify
@@ -4364,7 +4364,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.UsernameDetectionMethod"
     enum="UsernameDetectionMethod" expires_after="2025-05-11">
   <owner>kazinova@google.com</owner>
-  <owner>shaikhitdin@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Measures what method was used for username field detection in the renderer
     code. The metric may be recorded several times for page visit because it is
