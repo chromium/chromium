@@ -702,6 +702,13 @@ void TaskManagerView::EndSelectedProcess() {
   for (int index : base::Reversed(selection)) {
     table_model_->KillTask(index);
   }
+
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  if (end_process_count_ < 5) {
+    task_manager::RecordEndProcessEvent(latest_end_process_time_, current_time,
+                                        ++end_process_count_);
+  }
+  latest_end_process_time_ = current_time;
 }
 
 bool TaskManagerView::IsEndProcessButtonEnabled() const {

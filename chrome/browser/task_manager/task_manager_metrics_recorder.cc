@@ -5,6 +5,7 @@
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 
 namespace task_manager {
 
@@ -21,6 +22,25 @@ void RecordCloseEvent(const base::TimeTicks& start_time,
                       const base::TimeTicks& end_time) {
   UMA_HISTOGRAM_LONG_TIMES_100(kClosedElapsedTimeHistogram,
                                end_time - start_time);
+}
+
+void RecordEndProcessEvent(const base::TimeTicks& start_time,
+                           const base::TimeTicks& end_time,
+                           size_t end_process_count) {
+  constexpr static std::array<std::string, 5> kEndProcessCountToString = {
+      "First", "Second", "Third", "Fourth", "Fifth"};
+
+  // Only record the first five end process events per task manager session.
+  if (end_process_count > 0 &&
+      end_process_count <= kEndProcessCountToString.size()) {
+    // Build the histogram name.
+    const auto histogram_name = base::StringPrintf(
+        kTimeToEndProcessHistogram,
+        kEndProcessCountToString[end_process_count - 1].c_str());
+
+    // Record the event.
+    UMA_HISTOGRAM_LONG_TIMES_100(histogram_name, end_time - start_time);
+  }
 }
 
 }  // namespace task_manager

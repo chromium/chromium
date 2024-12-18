@@ -208,6 +208,12 @@ class TaskManagerView : public TableViewDelegate,
   // The first time this instance of the task manager was initialized.
   const base::TimeTicks start_time_ = base::TimeTicks::Now();
 
+  // The last time a process was ended by the user.
+  base::TimeTicks latest_end_process_time_ = base::TimeTicks::Now();
+
+  // The number of times a process has been ended in this session.
+  size_t end_process_count_ = 0;
+
   // True when the Task Manager window should be shown on top of other windows.
   bool is_always_on_top_;
 
