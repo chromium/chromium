@@ -10,7 +10,7 @@
 #import "testing/platform_test.h"
 
 class MiniMapInterstitialViewControllerTest : public PlatformTest {
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -29,9 +29,10 @@ TEST_F(MiniMapInterstitialViewControllerTest, TestScreen) {
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
         return mini_map_interstial_view_controller.beingPresented;
       }));
-  [base_view_controller dismissViewControllerAnimated:NO completion:nil];
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^bool() {
-        return !mini_map_interstial_view_controller.beingPresented;
-      }));
+  base::RepeatingClosure quit_closure = task_environment_.QuitClosure();
+  [base_view_controller dismissViewControllerAnimated:NO
+                                           completion:^{
+                                             quit_closure.Run();
+                                           }];
+  task_environment_.RunUntilQuit();
 }
