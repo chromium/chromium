@@ -953,9 +953,9 @@
     {
       // CSS attr() function that accepts not only string types
       // and can be used in all properties.
-      // https://drafts.csswg.org/css-values-4/#attr-notation
+      // https://drafts.csswg.org/css-values-5/#attr-notation
       name: "CSSAdvancedAttrFunction",
-      status: "test",
+      status: "stable",
     },
     {
       // Let the visual position of the default anchor affect IMCB for
