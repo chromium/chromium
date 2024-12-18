@@ -57,21 +57,9 @@ BASE_FEATURE(kModelExecutionCapabilityDisable,
              "ModelExecutionCapabilityDisable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kModelAdaptationCompose,
-             "ModelAdaptationCompose",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOnDeviceModelTestFeature,
              "OnDeviceModelTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kModelAdaptationHistorySearch,
-             "ModelAdaptationHistorySearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kModelAdaptationSummarize,
-             "ModelAdaptationHistorySearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
   bool is_graduated = false;

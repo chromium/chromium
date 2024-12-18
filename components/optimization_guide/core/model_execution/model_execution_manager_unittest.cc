@@ -114,9 +114,8 @@ class FakeModelProvider : public TestOptimizationGuideModelProvider {
 class ModelExecutionManagerTest : public testing::Test {
  public:
   ModelExecutionManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kTextSafetyClassifier,
-             features::internal::kModelAdaptationCompose});
+    scoped_feature_list_.InitWithFeatures({},
+                                          {features::kTextSafetyClassifier});
   }
   ~ModelExecutionManagerTest() override = default;
 
@@ -632,9 +631,8 @@ class ModelExecutionManagerSafetyEnabledTest
     : public ModelExecutionManagerTest {
  public:
   ModelExecutionManagerSafetyEnabledTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTextSafetyClassifier},
-        {features::internal::kModelAdaptationCompose});
+    scoped_feature_list_.InitWithFeatures({features::kTextSafetyClassifier},
+                                          {});
   }
 
  private:

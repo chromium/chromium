@@ -219,7 +219,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
          {features::kTextSafetyClassifier, {}},
          {features::kOnDeviceModelValidation,
           {{"on_device_model_validation_delay", "0"}}}},
-        {features::internal::kModelAdaptationCompose});
+        {});
     model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
     model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
@@ -498,10 +498,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
        MultipleModelAdaptationExecutionSuccess) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kModelAdaptationCompose, {}},
-       {features::internal::kOnDeviceModelTestFeature,
-        {{"enable_adaptation", "true"}}}},
-      {});
+      {{features::internal::kOnDeviceModelTestFeature, {}}}, {});
 
   FakeAdaptationAsset compose_asset({
       .config = SimpleComposeConfig(),
