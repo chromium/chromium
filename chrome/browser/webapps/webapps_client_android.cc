@@ -6,6 +6,8 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
@@ -21,12 +23,18 @@
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/webapps_utils.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 namespace webapps {
+namespace {
+bool IsWebApkInstalled(const GURL& start_url) {
+  return WebappsUtils::IsWebApkInstalled(start_url);
+}
+}  // namespace
 
 // static
 void WebappsClientAndroid::CreateSingleton() {
@@ -68,15 +76,30 @@ AppBannerManager* WebappsClientAndroid::GetAppBannerManager(
   return AppBannerManagerAndroid::FromWebContents(web_contents);
 }
 
-bool WebappsClientAndroid::DoesNewWebAppConflictWithExistingInstallation(
-    content::BrowserContext* browsing_context,
+void WebappsClientAndroid::DoesNewWebAppConflictWithExistingInstallation(
+    content::BrowserContext* browser_context,
     const GURL& start_url,
-    const ManifestId& manifest_id) const {
+    const ManifestId& manifest_id,
+    WebAppInstallationConflictCallback callback) const {
   // Also check if a WebAPK is currently being installed. Installation may take
   // some time, so ensure we don't accidentally allow a new installation whilst
   // one is in flight for the current site.
-  return WebappsUtils::IsWebApkInstalled(browsing_context, start_url) ||
-         IsInstallationInProgress(browsing_context, manifest_id);
+  const bool is_installation_in_progress =
+      IsInstallationInProgress(browser_context, manifest_id);
+  if (is_installation_in_progress) {
+    std::move(callback).Run(/* does_conflict= */ true);
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          webapps::features::kCheckWebAppExistenceAsync)) {
+    std::move(callback).Run(
+        /* does_conflict= */ WebappsUtils::IsWebApkInstalled(start_url));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&IsWebApkInstalled, start_url), std::move(callback));
 }
 
 bool WebappsClientAndroid::IsInAppBrowsingContext(

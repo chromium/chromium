@@ -19,7 +19,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -474,17 +476,6 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   }
   OnWebAppInstallableCheckedNoErrors(data.manifest->id);
 
-  WebappsClient* client = WebappsClient::Get();
-  if (client->DoesNewWebAppConflictWithExistingInstallation(
-          web_contents()->GetBrowserContext(),
-          web_app_data_->manifest().start_url, web_app_data_->manifest_id)) {
-    TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
-    SetInstallableWebAppCheckResult(
-        InstallableWebAppCheckResult::kNo_AlreadyInstalled);
-    Stop(InstallableStatusCode::ALREADY_INSTALLED);
-    return;
-  }
-
   // This must be true because `is_installable` is true (no errors).
   DCHECK(data.installable_check_passed);
   DCHECK(!data.primary_icon_url->is_empty());
@@ -494,6 +485,26 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   web_app_data_->primary_icon = *data.primary_icon;
   web_app_data_->has_maskable_primary_icon = data.has_maskable_primary_icon;
   web_app_data_->screenshots = *(data.screenshots);
+
+  WebappsClient* client = WebappsClient::Get();
+  auto callback =
+      base::BindOnce(&AppBannerManager::PostInstallableWebAppCheckValidation,
+                     weak_factory_for_this_navigation_.GetWeakPtr());
+
+  client->DoesNewWebAppConflictWithExistingInstallation(
+      web_contents()->GetBrowserContext(), web_app_data_->manifest().start_url,
+      web_app_data_->manifest_id, std::move(callback));
+}
+
+void AppBannerManager::PostInstallableWebAppCheckValidation(
+    const bool does_conflict) {
+  if (does_conflict) {
+    TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
+    SetInstallableWebAppCheckResult(
+        InstallableWebAppCheckResult::kNo_AlreadyInstalled);
+    Stop(InstallableStatusCode::ALREADY_INSTALLED);
+    return;
+  }
 
   if (ShouldDeferToRelatedNonWebApp(web_app_data_->manifest())) {
     SetInstallableWebAppCheckResult(

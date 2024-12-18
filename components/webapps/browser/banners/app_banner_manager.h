@@ -306,6 +306,8 @@ class AppBannerManager : public content::WebContentsObserver,
   // TODO(http://crbug.com/322342499): Remove virtual and make private.
   virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
 
+  void PostInstallableWebAppCheckValidation(const bool does_conflict);
+
   // TODO(http://crbug.com/322342499): Make this private.
   enum class UrlType {
     // This url & page should be considered for installability & promotability.

@@ -256,9 +256,12 @@ enum class SiteEngagementStates {
   kMaxValue = kBypassed
 };
 
+enum class CheckWebAppExistence { kAsync = 0, kSync = 1, kMaxValue = kSync };
+
 class AppBannerManagerBrowserTest
     : public AppBannerManagerBrowserTestBase,
-      public ::testing::WithParamInterface<SiteEngagementStates> {
+      public ::testing::WithParamInterface<
+          std::tuple<SiteEngagementStates, CheckWebAppExistence>> {
  public:
   AppBannerManagerBrowserTest()
       : disable_banner_trigger_(&test::g_disable_banner_triggering_for_testing,
@@ -271,13 +274,19 @@ class AppBannerManagerBrowserTest
       delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam() == SiteEngagementStates::kBypassed) {
-      feature_list_.InitAndEnableFeature(
-          features::kBypassAppBannerEngagementChecks);
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (std::get<0>(GetParam()) == SiteEngagementStates::kBypassed) {
+      enabled_features.push_back(features::kBypassAppBannerEngagementChecks);
     } else {
-      feature_list_.InitAndDisableFeature(
-          features::kBypassAppBannerEngagementChecks);
+      disabled_features.push_back(features::kBypassAppBannerEngagementChecks);
     }
+    if (std::get<1>(GetParam()) == CheckWebAppExistence::kAsync) {
+      enabled_features.push_back(features::kCheckWebAppExistenceAsync);
+    } else {
+      disabled_features.push_back(features::kCheckWebAppExistenceAsync);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUpOnMainThread() override {
@@ -565,7 +574,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, DoesNotShowInIncognito) {
 
 IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
                        WebAppBannerInsufficientEngagement) {
-  if (GetParam() == SiteEngagementStates::kBypassed) {
+  if (std::get<0>(GetParam()) == SiteEngagementStates::kBypassed) {
     GTEST_SKIP()
         << "This tests the install banner behavior with site engagement";
   }
@@ -681,7 +690,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
                        MAYBE_WebAppBannerNeedsEngagement) {
-  if (GetParam() == SiteEngagementStates::kBypassed) {
+  if (std::get<0>(GetParam()) == SiteEngagementStates::kBypassed) {
     GTEST_SKIP()
         << "This tests the install banner behavior with site engagement";
   }
@@ -1440,10 +1449,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppBannerManagerBrowserTest,
-                         ::testing::Values(SiteEngagementStates::kEnabled,
-                                           SiteEngagementStates::kBypassed));
-
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppBannerManagerBrowserTest,
+    ::testing::Combine(::testing::Values(SiteEngagementStates::kEnabled,
+                                         SiteEngagementStates::kBypassed),
+                       ::testing::Values(CheckWebAppExistence::kAsync,
+                                         CheckWebAppExistence::kSync)));
 }  // namespace
 }  // namespace webapps
