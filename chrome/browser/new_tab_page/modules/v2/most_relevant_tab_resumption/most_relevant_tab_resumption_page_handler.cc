@@ -196,6 +196,7 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
           ntp::most_relevant_tab_resumption::mojom::VisitSource::kTab;
       url_visit_mojom->url = GURL("https://www.google.com");
       url_visit_mojom->url_key = "https://www.google.com";
+      url_visit_mojom->relative_time = base::Minutes(5);
       url_visit_mojom->training_request_id = 0;
       url_visit_mojom->decoration =
           ntp::most_relevant_tab_resumption::mojom::Decoration::New();
@@ -413,6 +414,8 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
       }
 
       url_visit_mojom->timestamp = url_visit_aggregate.GetLastVisitTime();
+      url_visit_mojom->relative_time =
+          base::Time::Now() - url_visit_aggregate.GetLastVisitTime();
       if (IsNewURL(url_visit_aggregate.url_key,
                    url_visit_aggregate.GetLastVisitTime())) {
         url_visits_mojom.push_back(std::move(url_visit_mojom));
@@ -455,6 +458,8 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
 
         history_url_visit_mojom->timestamp =
             url_visit_aggregate.GetLastVisitTime();
+        history_url_visit_mojom->relative_time =
+            base::Time::Now() - url_visit_aggregate.GetLastVisitTime();
         if (IsNewURL(url_visit_aggregate.url_key,
                      url_visit_aggregate.GetLastVisitTime())) {
           url_visits_mojom.push_back(std::move(history_url_visit_mojom));
