@@ -9,6 +9,7 @@ import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasHost;
+import static androidx.test.espresso.intent.matcher.UriMatchers.hasParamWithValue;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasPath;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -84,6 +85,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     private static final String LEARN_MORE_LINK = "learn-more-link";
     private static final String SUPPORT_CENTER_HOST = "support.google.com";
     private static final String SUPPORT_CENTER_PATH = "/families";
+    private static final String SUPPORT_CENTER_PLINK = "content_blocked_webview";
 
     private static String makeTestPage(String title, @Nullable String iFrameUrl) {
         StringBuilder sb = new StringBuilder();
@@ -285,7 +287,8 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                     allOf(
                             hasAction(Intent.ACTION_VIEW),
                             hasData(hasHost(SUPPORT_CENTER_HOST)),
-                            hasData(hasPath(SUPPORT_CENTER_PATH))));
+                            hasData(hasPath(SUPPORT_CENTER_PATH)),
+                            hasData(hasParamWithValue("p", SUPPORT_CENTER_PLINK))));
         } finally {
             Intents.release();
         }
