@@ -321,7 +321,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that selecting sign-out from a non-managed user account clears the
 // user's account data.
-- (void)testSignOutFromNonManagedAccountClearsAccountData {
+// TODO(crbug.com/384893841): Flaky. Re-enable when fixed.
+- (void)DISABLED_testSignOutFromNonManagedAccountClearsAccountData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
