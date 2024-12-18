@@ -2042,7 +2042,8 @@ def nadc_parameter_v8_type_and_symbol_node(cg_context, argument, v8_arg_name,
                                        error_exit_return_statement="return;",
                                        cg_context=cg_context))
     else:
-        return (blink_type_info(argument.idl_type).value_t,
+        return ("v8::Local<v8::Value>" if unwrapped_idl_type.is_any else
+                blink_type_info(argument.idl_type).value_t,
                 SymbolNode(
                     blink_arg_name,
                     "auto&& {} = {};".format(blink_arg_name, v8_arg_name)))
@@ -2082,14 +2083,36 @@ def make_attribute_set_nadc_callback_def(cg_context):
         SymbolNode("blink_receiver", (_format(
             "{}* ${blink_receiver} = "
             "${class_name}::ToWrappableUnsafe(${isolate}, v8_arg0_receiver);",
-            blink_class_name(cg_context.interface)))), param_symbol
+            blink_class_name(cg_context.interface)))), param_symbol,
+        SymbolNode("handle_scope", "v8::HandleScope handle_scope(${isolate});")
     ])
+
     bind_callback_local_vars(body, cg_context)
 
+    # If [CallWith=Isolate] is specified, make sure ${isolate} is passed first.
+    blink_arguments = list()
+    if "Isolate" in cg_context.attribute.extended_attributes.values_of(
+            "SetterCallWith"):
+        blink_arguments.append("${isolate}")
+
+    # If the value is of type Local<>, then open a HandleScope.
+    u = cg_context.attribute.idl_type.unwrap()
+    if (not u.is_numeric) and (not u.is_boolean):
+        body.append(TextNode("<% handle_scope.request_symbol_definition() %>"))
+
+    # Append the method arguments next.
+    blink_arguments.append("${blink_value}")
+
+    # Pass ${exception_state} after the method arguments.
+    if cg_context.may_throw_exception:
+        body.append(TextNode("<% handle_scope.request_symbol_definition() %>"))
+        blink_arguments.append("${exception_state}")
+
     body.append(
-        FormatNode("${blink_receiver}->{member_func}(${blink_value});",
+        FormatNode("${blink_receiver}->{member_func}({blink_arguments});",
                    member_func=name_style.api_func(
-                       "set", cg_context.attribute.identifier)))
+                       "set", cg_context.attribute.identifier),
+                   blink_arguments=", ".join(blink_arguments)))
     return func_name, func_def
 
 

@@ -42,7 +42,7 @@ interface mixin BaseRenderingContext2D {
     [MeasureAs=Canvas2DImageSmoothingQuality2] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
 
     // colors and styles (see also the CanvasDrawingStyles interface)
-    [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any strokeStyle; // (default black)
+    [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState, NoAllocDirectCall=Setter] attribute any strokeStyle; // (default black)
     [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any fillStyle; // (default black)
     CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
     [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
