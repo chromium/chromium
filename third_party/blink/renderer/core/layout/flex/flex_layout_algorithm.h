@@ -91,6 +91,9 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   StyleContentAlignmentData ResolvedJustifyContent() const;
 
+  ItemPosition ResolvedAlignSelf(const ComputedStyle& child_style,
+                                 bool is_out_of_flow = false) const;
+
   // This is same method as FlexItem but we need that logic before FlexItem is
   // constructed.
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;

@@ -272,6 +272,80 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent() const {
                                    justify_content.Overflow());
 }
 
+ItemPosition FlexLayoutAlgorithm::ResolvedAlignSelf(
+    const ComputedStyle& child_style,
+    bool is_out_of_flow) const {
+  // Any auto-margins coerce the alignment to flex-start.
+  if (!is_out_of_flow) {
+    if (is_horizontal_flow_) {
+      if (child_style.MarginTop().IsAuto() ||
+          child_style.MarginBottom().IsAuto()) {
+        return ItemPosition::kFlexStart;
+      }
+    } else {
+      if (child_style.MarginLeft().IsAuto() ||
+          child_style.MarginRight().IsAuto()) {
+        return ItemPosition::kFlexStart;
+      }
+    }
+  }
+
+  // -webkit-box has a relatively simple alignment mapping (no need to coerce
+  // "self-start", etc).
+  if (is_webkit_box_) {
+    switch (Style().BoxAlign()) {
+      case EBoxAlignment::kBaseline:
+        return ItemPosition::kBaseline;
+      case EBoxAlignment::kCenter:
+        return ItemPosition::kCenter;
+      case EBoxAlignment::kStretch:
+        return ItemPosition::kStretch;
+      case EBoxAlignment::kStart:
+        return ItemPosition::kFlexStart;
+      case EBoxAlignment::kEnd:
+        return ItemPosition::kFlexEnd;
+    }
+  }
+
+  ItemPosition align =
+      child_style
+          .ResolvedAlignSelf(
+              {ItemPosition::kStretch, OverflowAlignment::kDefault}, &Style())
+          .GetPosition();
+  DCHECK_NE(align, ItemPosition::kAuto);
+  DCHECK_NE(align, ItemPosition::kNormal);
+  DCHECK_NE(align, ItemPosition::kLeft) << "left, right are only for justify";
+  DCHECK_NE(align, ItemPosition::kRight) << "left, right are only for justify";
+
+  if (align == ItemPosition::kStart) {
+    return ItemPosition::kFlexStart;
+  }
+  if (align == ItemPosition::kEnd) {
+    return ItemPosition::kFlexEnd;
+  }
+
+  LogicalToLogical<ItemPosition> logical(
+      child_style.GetWritingDirection(),
+      GetConstraintSpace().GetWritingDirection(), ItemPosition::kFlexStart,
+      ItemPosition::kFlexEnd, ItemPosition::kFlexStart, ItemPosition::kFlexEnd);
+  if (align == ItemPosition::kSelfStart) {
+    return is_column_ ? logical.InlineStart() : logical.BlockStart();
+  }
+  if (align == ItemPosition::kSelfEnd) {
+    return is_column_ ? logical.InlineEnd() : logical.BlockEnd();
+  }
+
+  if (is_wrap_reverse_) {
+    if (align == ItemPosition::kFlexStart) {
+      align = ItemPosition::kFlexEnd;
+    } else if (align == ItemPosition::kFlexEnd) {
+      align = ItemPosition::kFlexStart;
+    }
+  }
+
+  return align;
+}
+
 LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
     LayoutUnit sum_hypothetical_main_size) const {
   if (is_column_) {
@@ -367,14 +441,11 @@ AxisEdge MainAxisStaticPositionEdge(
 }
 
 // Maps the resolved alignment value to a static-position edge.
-AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
-                                     const ComputedStyle& child_style) {
-  ItemPosition alignment =
-      FlexibleBoxAlgorithm::AlignmentForChild(style, child_style);
+AxisEdge CrossAxisStaticPositionEdge(const ItemPosition alignment,
+                                     bool is_wrap_reverse) {
   // AlignmentForChild already accounted for wrap-reverse for kFlexStart and
   // kFlexEnd, but not kStretch. kStretch is supposed to act like kFlexStart.
-  if (style.FlexWrap() == EFlexWrap::kWrapReverse &&
-      alignment == ItemPosition::kStretch) {
+  if (is_wrap_reverse && alignment == ItemPosition::kStretch) {
     return AxisEdge::kEnd;
   }
 
@@ -443,8 +514,10 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   for (LayoutBox* oof_child : oofs) {
     BlockNode child(oof_child);
 
+    const ItemPosition position =
+        ResolvedAlignSelf(child.Style(), /* is_out_of_flow */ true);
     AxisEdge cross_axis_edge =
-        CrossAxisStaticPositionEdge(Style(), child.Style());
+        CrossAxisStaticPositionEdge(position, is_wrap_reverse_);
 
     AxisEdge inline_axis_edge = is_column_ ? cross_axis_edge : main_axis_edge;
     AxisEdge block_axis_edge = is_column_ ? main_axis_edge : cross_axis_edge;
@@ -545,8 +618,7 @@ bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child) const {
   if (!DoesItemComputedCrossSizeHaveAuto(child)) {
     return false;
   }
-  return FlexibleBoxAlgorithm::AlignmentForChild(Style(), child.Style()) ==
-         ItemPosition::kStretch;
+  return ResolvedAlignSelf(child.Style()) == ItemPosition::kStretch;
 }
 
 bool FlexLayoutAlgorithm::DoesItemComputedCrossSizeHaveAuto(
@@ -1037,8 +1109,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const auto container_writing_direction =
         GetConstraintSpace().GetWritingDirection();
-    const ItemPosition alignment =
-        FlexibleBoxAlgorithm::AlignmentForChild(Style(), child_style);
+    const ItemPosition alignment = ResolvedAlignSelf(child_style);
     const auto baseline_writing_mode = DetermineBaselineWritingMode(
         container_writing_direction, child_writing_mode,
         /* is_parallel_context */ !is_column_);
@@ -1696,15 +1767,15 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
       // Determine the cross-axis offset based on the item alignment.
       const LayoutUnit cross_axis_offset = ([&]() {
-        LayoutUnit space = cross_axis_space;
-        if (!is_webkit_box_ &&
+        const bool is_safe =
+            !is_webkit_box_ &&
             item_style
                     .ResolvedAlignSelf(
                         {ItemPosition::kStretch, OverflowAlignment::kDefault},
                         &Style())
-                    .Overflow() == OverflowAlignment::kSafe) {
-          space = space.ClampNegativeToZero();
-        }
+                    .Overflow() == OverflowAlignment::kSafe;
+        const LayoutUnit space =
+            is_safe ? cross_axis_space.ClampNegativeToZero() : cross_axis_space;
 
         LayoutUnit offset;
         switch (item.alignment) {
