@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -405,6 +406,14 @@ class TrustedSignalsFetcherTest : public testing::Test {
     ValidateFetchResult(result, expected_result);
   }
 
+  // Sets response headers (other than Content-Type) for responses.
+  void SetResponseHeaders(
+      const std::vector<std::pair<std::string, std::string>>&
+          response_headers) {
+    base::AutoLock auto_lock(lock_);
+    response_headers_ = response_headers;
+  }
+
  protected:
   std::unique_ptr<net::test_server::HttpResponse> HandleSignalsRequest(
       const net::test_server::HttpRequest& request) {
@@ -510,6 +519,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
       response->set_content_type(response_mime_type_);
       response->set_code(response_status_code_);
       response->set_content(response_body);
+
+      for (const auto& pair : response_headers_) {
+        response->AddCustomHeader(pair.first, pair.second);
+      }
+
       return response;
     }
     return nullptr;
@@ -580,6 +594,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
   // error.
   bool use_cleartext_response_body_ GUARDED_BY(lock_) = false;
 
+  // Header values to include in the response. Default value is needed to allow
+  // response to be used at all.
+  std::vector<std::pair<std::string, std::string>> response_headers_
+      GUARDED_BY(lock_){{"Ad-Auction-Allowed", "true"}};
+
   net::test_server::EmbeddedTestServer embedded_test_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -595,12 +614,43 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignals404) {
   response_status_code_ = net::HTTP_NOT_FOUND;
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      result.error(),
-      base::StringPrintf(
-          "Failed to load %s error = net::ERR_HTTP_RESPONSE_CODE_FAILURE.",
-          TrustedBiddingSignalsUrl().spec().c_str()));
+  EXPECT_EQ(result.error(),
+            base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
+                               TrustedBiddingSignalsUrl().spec().c_str()));
   ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
+}
+
+// Test various permutations of the "Ad-Auction-Allowed" and "X-Allow-FLEDGE"
+// header being present and absent.
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdAuctionAllowed) {
+  const struct {
+    std::vector<std::pair<std::string, std::string>> headers;
+    bool expect_success;
+  } kTestCases[] = {
+      {{{"Ad-Auction-Allowed", "true"}}, true},
+      {{{"X-Allow-FLEDGE", "true"}}, true},
+      {{}, false},
+      {{{"Ad-Auction-Allowed", "false"}}, false},
+      {{{"X-Allow-FLEDGE", "false"}}, false},
+  };
+
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+  for (const auto& test_case : kTestCases) {
+    SetResponseHeaders(test_case.headers);
+
+    auto result =
+        RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
+    EXPECT_EQ(result.has_value(), test_case.expect_success);
+
+    if (!result.has_value()) {
+      EXPECT_EQ(result.error(),
+                base::StringPrintf(
+                    "Rejecting load of %s due to lack of Ad-Auction-Allowed: "
+                    "true (or the deprecated X-Allow-FLEDGE: true).",
+                    TrustedBiddingSignalsUrl().spec().c_str()));
+    }
+  }
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRedirect) {
@@ -640,11 +690,14 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCanSetNoCookies) {
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request,
                                                       set_cookie_url);
 
-  // Request should have failed due to a missing MIME type.
-  EXPECT_EQ(
-      result.error(),
-      base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
-                         set_cookie_url.spec().c_str()));
+  // Specific failure reason doesn't really matter for this test, or even that
+  // it failed. What does matter is the fetch response was successfully
+  // received, so best to test the request completed in the expected manner.
+  EXPECT_EQ(result.error(),
+            base::StringPrintf(
+                "Rejecting load of %s due to lack of Ad-Auction-Allowed: true "
+                "(or the deprecated X-Allow-FLEDGE: true).",
+                set_cookie_url.spec().c_str()));
 
   // Make sure no cookie was set.
   base::RunLoop run_loop;

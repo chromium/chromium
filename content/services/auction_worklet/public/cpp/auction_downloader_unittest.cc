@@ -43,6 +43,16 @@ const char kUtf8Charset[] = "utf-8";
 const char kCachedTrustedBiddingSignalsAge[] =
     "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge";
 
+// Creates a URLResponseHeadPtr that the AuctionDownloader will accept as a
+// valid set of headers for a response.
+network::mojom::URLResponseHeadPtr CreateResponseHead() {
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\r\n"
+      "Ad-Auction-Allowed: true\r\n");
+  return response_head;
+}
+
 class AuctionDownloaderTest
     : public testing::TestWithParam<AuctionDownloader::DownloadMode> {
  public:
@@ -837,7 +847,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge_Cached) {
   is_trusted_bidding_signals_kvv1_download_ = true;
 
   base::HistogramTester histogram_tester;
-  auto response_head = network::mojom::URLResponseHead::New();
+  auto response_head = CreateResponseHead();
   response_head->was_fetched_via_cache = true;
   response_head->request_time = base::Time::Now();
   response_head->original_response_time = base::Time::Now() - base::Minutes(2);
@@ -853,7 +863,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge_Stale) {
   is_trusted_bidding_signals_kvv1_download_ = true;
 
   base::HistogramTester histogram_tester;
-  auto response_head = network::mojom::URLResponseHead::New();
+  auto response_head = CreateResponseHead();
   response_head->was_fetched_via_cache = false;
   response_head->request_time = base::Time::Now();
   response_head->response_time = base::Time::Now() + base::Minutes(2);
@@ -870,7 +880,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge_NotCached) {
   is_trusted_bidding_signals_kvv1_download_ = true;
 
   base::HistogramTester histogram_tester;
-  auto response_head = network::mojom::URLResponseHead::New();
+  auto response_head = CreateResponseHead();
   url_loader_factory_.AddResponse(url_, std::move(response_head),
                                   kAsciiResponseBody, status);
   std::unique_ptr<std::string> body = RunRequest();
@@ -882,7 +892,7 @@ TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge_NotKVV1) {
   is_trusted_bidding_signals_kvv1_download_ = false;
 
   base::HistogramTester histogram_tester;
-  auto response_head = network::mojom::URLResponseHead::New();
+  auto response_head = CreateResponseHead();
   response_head->was_fetched_via_cache = true;
   response_head->request_time = base::Time::Now();
   response_head->original_response_time = base::Time::Now() - base::Minutes(2);

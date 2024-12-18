@@ -30,6 +30,7 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
@@ -42,6 +43,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_loader_completion_status.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -437,10 +439,25 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   // TrustedSignalsFetcher.
   ohttp_context_ = std::make_unique<quiche::ObliviousHttpRequest::Context>(
       std::move(maybe_ciphertext_request_body).value().ReleaseContext());
+  simple_url_loader_->SetOnResponseStartedCallback(base::BindOnce(
+      &TrustedSignalsFetcher::OnResponseStarted, base::Unretained(this)));
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,
       base::BindOnce(&TrustedSignalsFetcher::OnRequestComplete,
                      base::Unretained(this)));
+}
+
+void TrustedSignalsFetcher::OnResponseStarted(
+    const GURL& final_url,
+    const network::mojom::URLResponseHead& response_head) {
+  network::URLLoaderCompletionStatus status;
+  std::optional<std::string> error =
+      auction_worklet::AuctionDownloader::CheckResponseAllowed(
+          trusted_signals_url_, response_head, status);
+  if (error) {
+    simple_url_loader_.reset();
+    std::move(callback_).Run(base::unexpected(std::move(error).value()));
+  }
 }
 
 void TrustedSignalsFetcher::OnRequestComplete(
