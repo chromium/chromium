@@ -15,7 +15,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -52,7 +51,7 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
               IDS_TASK_MANAGER_SEARCH_ACCESSIBILITY_NAME))
           .SetController(this)
           .SetBorder(nullptr)
-          .SetBackgroundColor(kColorTaskManagerSearchBarBackground)
+          .SetBackgroundColor(kColorTaskManagerSearchBarTransparent)
           .SetProperty(views::kElementIdentifierKey, kInputField)
           // Set margins to remove duplicate space between search
           // icon and textfield.
@@ -80,23 +79,13 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
 
   AddChildView(std::move(search_icon));
   input_ = AddChildView(std::move(input));
-
+  // Search bar has its own hover on/off behavior, so remove hover effect for
+  // textfield.
+  input_->RemoveHoverEffect();
   input_changed_subscription_ =
       input_->AddTextChangedCallback(base::BindRepeating(
           &TaskManagerSearchBarView::OnInputChanged, base::Unretained(this)));
 
-  if (views::InkDrop::Get(input_)) {
-    views::InkDrop::Get(input_)->SetBaseColorCallback(base::BindRepeating(
-        [](views::Textfield* host) {
-          const auto* color_provider = host->GetColorProvider();
-          return color_provider && host->HasFocus()
-                     ? color_provider->GetColor(
-                           kColorTaskManagerSearchBarTransparent)
-                     : color_provider->GetColor(
-                           kColorTaskManagerSearchBarBackground);
-        },
-        input_));
-  }
   clear_ = AddChildView(std::move(clear_btn));
   views::InstallCircleHighlightPathGenerator(clear_);
   // Only visible when users type in search keywords.
@@ -112,11 +101,27 @@ void TaskManagerSearchBarView::OnThemeChanged() {
   UpdateTextfield();
 }
 
+void TaskManagerSearchBarView::OnMouseEntered(const ui::MouseEvent& event) {
+  if (!input_->HasFocus()) {
+    // Hover on effect only when text field is not in focus.
+    delegate_->SearchBarOnHoverChange(true);
+  }
+}
+void TaskManagerSearchBarView::OnMouseExited(const ui::MouseEvent& event) {
+  delegate_->SearchBarOnHoverChange(false);
+}
+
 bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* sender,
                                               const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::EventType::kKeyPressed &&
-      !input_->GetText().empty() && !clear_->GetVisible()) {
-    clear_->SetVisible(true);
+  // Clear button should be visible only if input text is not empty.
+  // Early return if visibility is consistent with the input text.
+  // Case 1 : clear button is visible and input text is not empty.
+  // Case 2 : clear button is invisible and input text is empty.
+  if (clear_->GetVisible() != input_->GetText().empty()) {
+    return false;
+  }
+  if (key_event.type() == ui::EventType::kKeyReleased) {
+    clear_->SetVisible(!input_->GetText().empty());
   }
   return false;
 }

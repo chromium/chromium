@@ -471,7 +471,8 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
   right_aligned_container->SetLayoutManager(
       std::move(right_aligned_container_layout));
 
-  right_aligned_container->AddChildView(std::move(search_bar_container));
+  search_bar_ =
+      right_aligned_container->AddChildView(std::move(search_bar_container));
   end_process_btn_ =
       right_aligned_container->AddChildView(std::move(end_process_btn));
 
@@ -539,6 +540,18 @@ std::unique_ptr<views::Separator> TaskManagerView::CreateSeparator(
 
 void TaskManagerView::SearchBarOnInputChanged(const std::u16string& query) {
   tabs_->SetEnabled(query.empty());
+}
+
+void TaskManagerView::SearchBarOnHoverChange(const bool is_hover_on) {
+  // Only show the hover effect when search bar is in unfocused steady state.
+  auto background_color_id = is_hover_on && !search_bar_->HasFocus()
+                                 ? kColorTaskManagerSearchBarHoverOn
+                                 : kColorTaskManagerSearchBarBackground;
+  const int search_bar_container_radius =
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kOmniboxExpandedRadius);
+  search_bar_->SetBackground(views::CreateThemedRoundedRectBackground(
+      background_color_id, search_bar_container_radius));
 }
 
 std::unique_ptr<views::ScrollView> TaskManagerView::CreateProcessView(

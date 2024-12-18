@@ -33,6 +33,9 @@ class TaskManagerSearchBarView : public views::View,
     // Called when text in the textfield changes. Calls are throttled with
     // a delay of kInputChangeCallbackDelay to avoid excessive triggering.
     virtual void SearchBarOnInputChanged(const std::u16string& text) = 0;
+    // Called when the controls (textfield and clear button) hover status
+    // changes.
+    virtual void SearchBarOnHoverChange(const bool is_focus_on) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -54,6 +57,10 @@ class TaskManagerSearchBarView : public views::View,
 
   // views::View:
   void OnThemeChanged() override;
+
+  // views::View:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,

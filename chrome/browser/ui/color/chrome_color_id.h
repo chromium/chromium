@@ -785,6 +785,7 @@
   /* Task Manager colors. */ \
   E_CPONLY(kColorTaskManagerBackground) \
   E_CPONLY(kColorTaskManagerSearchBarBackground) \
+  E_CPONLY(kColorTaskManagerSearchBarHoverOn) \
   E_CPONLY(kColorTaskManagerSearchBarTransparent) \
   E_CPONLY(kColorTaskManagerSearchBarPlaceholderText) \
   /* Thumbnail tab colors. */ \
