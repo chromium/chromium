@@ -18,6 +18,7 @@ import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
@@ -189,7 +190,9 @@ public final class BaseSuggestionViewBinder<T extends View>
                                 View host, int accessibilityAction, Bundle arguments) {
                             if (accessibilityAction == AccessibilityNodeInfo.ACTION_CLICK
                                     && action.onClickAnnouncement != null) {
-                                actionView.announceForAccessibility(action.onClickAnnouncement);
+                                actionView.setContentDescription(action.onClickAnnouncement);
+                                actionView.sendAccessibilityEvent(
+                                        AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
                             }
                             return super.performAccessibilityAction(
                                     host, accessibilityAction, arguments);
