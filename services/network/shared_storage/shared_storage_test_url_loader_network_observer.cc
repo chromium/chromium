@@ -23,6 +23,24 @@
 
 namespace network {
 
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult::HeaderResult(
+    const url::Origin& request_origin,
+    std::vector<SharedStorageMethodWrapper> methods,
+    const std::optional<std::string>& with_lock)
+    : request_origin(request_origin),
+      methods(std::move(methods)),
+      with_lock(with_lock) {}
+
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult::HeaderResult(
+    HeaderResult&& other) = default;
+
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult&
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult::operator=(
+    HeaderResult&& other) = default;
+
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult::~HeaderResult() =
+    default;
+
 SharedStorageTestURLLoaderNetworkObserver::
     SharedStorageTestURLLoaderNetworkObserver() = default;
 SharedStorageTestURLLoaderNetworkObserver::
@@ -32,13 +50,15 @@ void SharedStorageTestURLLoaderNetworkObserver::OnSharedStorageHeaderReceived(
     const url::Origin& request_origin,
     std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
         methods_with_options,
+    const std::optional<std::string>& with_lock,
     OnSharedStorageHeaderReceivedCallback callback) {
   std::vector<SharedStorageMethodWrapper> transformed =
       base::ToVector(methods_with_options, [](auto& methods_with_options) {
         return SharedStorageMethodWrapper(std::move(methods_with_options));
       });
 
-  headers_received_.emplace_back(request_origin, std::move(transformed));
+  headers_received_.emplace_back(request_origin, std::move(transformed),
+                                 with_lock);
   if (loop_ && loop_->running() &&
       headers_received_.size() >= expected_total_) {
     loop_->Quit();

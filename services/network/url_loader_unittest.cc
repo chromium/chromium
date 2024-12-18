@@ -7722,8 +7722,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, SimpleRequest) {
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, kTestOrigin);
-  EXPECT_THAT(observer_->headers_received().front().second,
+  EXPECT_EQ(observer_->headers_received().front().request_origin, kTestOrigin);
+  EXPECT_THAT(observer_->headers_received().front().methods,
               ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
                           SharedStorageMethodWrapper(
                               MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
@@ -7752,8 +7752,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, SimpleRedirect) {
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, kTestOrigin);
-  EXPECT_THAT(observer_->headers_received().front().second,
+  EXPECT_EQ(observer_->headers_received().front().request_origin, kTestOrigin);
+  EXPECT_THAT(observer_->headers_received().front().methods,
               ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
                           SharedStorageMethodWrapper(
                               MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
@@ -7792,8 +7792,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, MultipleRedirects) {
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, kTestOrigin);
-  EXPECT_THAT(observer_->headers_received().front().second,
+  EXPECT_EQ(observer_->headers_received().front().request_origin, kTestOrigin);
+  EXPECT_THAT(observer_->headers_received().front().methods,
               ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
                           SharedStorageMethodWrapper(
                               MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
@@ -7823,9 +7823,9 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, MultipleRedirects) {
   WaitForHeadersReceived(2);
 
   EXPECT_EQ(observer_->headers_received().size(), 2u);
-  EXPECT_EQ(observer_->headers_received().back().first, kTestOrigin);
+  EXPECT_EQ(observer_->headers_received().back().request_origin, kTestOrigin);
   EXPECT_THAT(
-      observer_->headers_received().back().second,
+      observer_->headers_received().back().methods,
       ElementsAre(SharedStorageMethodWrapper(
                       MojomAppendMethod(/*key=*/u"b", /*value=*/u"a")),
                   SharedStorageMethodWrapper(MojomDeleteMethod(/*key=*/u"k"))));
@@ -7869,9 +7869,9 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, CrossSiteRedirect) {
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, kCrossOrigin);
+  EXPECT_EQ(observer_->headers_received().front().request_origin, kCrossOrigin);
   EXPECT_THAT(
-      observer_->headers_received().front().second,
+      observer_->headers_received().front().methods,
       ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
                   SharedStorageMethodWrapper(MojomSetMethod(
                       /*key=*/u"k", u"v", /*ignore_if_present=*/false))));
@@ -7955,8 +7955,8 @@ TEST_F(SharedStorageRequestHelperURLLoaderTest, RedirectBecomesEligible) {
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, kTestOrigin);
-  EXPECT_THAT(observer_->headers_received().front().second,
+  EXPECT_EQ(observer_->headers_received().front().request_origin, kTestOrigin);
+  EXPECT_THAT(observer_->headers_received().front().methods,
               ElementsAre(SharedStorageMethodWrapper(MojomClearMethod()),
                           SharedStorageMethodWrapper(
                               MojomSetMethod(/*key=*/u"k", /*value=*/u"v",

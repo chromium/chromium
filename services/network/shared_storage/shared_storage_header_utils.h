@@ -39,6 +39,10 @@ enum class SharedStorageHeaderParamType {
 std::optional<SharedStorageModifierMethodType>
 StringToSharedStorageModifierMethodType(std::string_view method_str);
 
+// Returns whether `item_str` is a valid "options" structured header item. This
+// item is used to specify options for a batch of shared storage methods.
+bool IsHeaderItemBatchOptions(std::string_view item_str);
+
 std::optional<SharedStorageHeaderParamType>
 StringToSharedStorageHeaderParamType(std::string_view param_str);
 

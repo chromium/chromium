@@ -24,12 +24,28 @@ namespace network {
 class SharedStorageTestURLLoaderNetworkObserver
     : public TestURLLoaderNetworkObserver {
  public:
+  struct HeaderResult {
+    HeaderResult(const url::Origin& request_origin,
+                 std::vector<SharedStorageMethodWrapper> methods,
+                 const std::optional<std::string>& with_lock);
+
+    HeaderResult(const HeaderResult& other) = delete;
+    HeaderResult& operator=(const HeaderResult& other) = delete;
+
+    HeaderResult(HeaderResult&& other);
+    HeaderResult& operator=(HeaderResult&& other);
+
+    ~HeaderResult();
+
+    url::Origin request_origin;
+    std::vector<SharedStorageMethodWrapper> methods;
+    std::optional<std::string> with_lock;
+  };
+
   SharedStorageTestURLLoaderNetworkObserver();
   ~SharedStorageTestURLLoaderNetworkObserver() override;
 
-  const std::vector<
-      std::pair<url::Origin, std::vector<SharedStorageMethodWrapper>>>&
-  headers_received() const {
+  const std::vector<HeaderResult>& headers_received() const {
     return headers_received_;
   }
 
@@ -38,6 +54,7 @@ class SharedStorageTestURLLoaderNetworkObserver
       const url::Origin& request_origin,
       std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
           methods_with_options,
+      const std::optional<std::string>& with_lock,
       OnSharedStorageHeaderReceivedCallback callback) override;
 
   void WaitForHeadersReceived(size_t expected_total);
@@ -45,8 +62,7 @@ class SharedStorageTestURLLoaderNetworkObserver
  private:
   std::unique_ptr<base::RunLoop> loop_;
   size_t expected_total_ = 0;
-  std::vector<std::pair<url::Origin, std::vector<SharedStorageMethodWrapper>>>
-      headers_received_;
+  std::vector<HeaderResult> headers_received_;
 };
 
 }  // namespace network

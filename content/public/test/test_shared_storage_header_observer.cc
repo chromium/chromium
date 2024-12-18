@@ -45,10 +45,11 @@ void TestSharedStorageHeaderObserver::OnHeaderProcessed(
 void TestSharedStorageHeaderObserver::OnBatchUpdateFinished(
     const url::Origin& request_origin,
     std::vector<MethodWithOptionsPtr> methods_with_options,
+    const std::optional<std::string>& with_lock,
     const std::string& error_message) {
   bool success = error_message.empty();
   operations_.emplace_back(request_origin, std::move(methods_with_options),
-                           success);
+                           with_lock, success);
 
   if (loop_ && loop_->running() && operations_.size() >= expected_total_) {
     loop_->Quit();

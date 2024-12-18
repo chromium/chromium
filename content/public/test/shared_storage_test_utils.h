@@ -76,12 +76,13 @@ size_t GetKeepAliveSharedStorageWorkletHostsCount(
 RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
                                    const FencedFrameNavigationTarget& target);
 
-// Bundles the request (`request_origin` and `with_lock`) with the result
-// `success`.
+// Bundles the request (`request_origin`, `methods_with_options`, and
+// `with_lock`) with the result `success`.
 struct SharedStorageWriteOperationAndResult {
   SharedStorageWriteOperationAndResult(
       const url::Origin& request_origin,
       std::vector<MethodWithOptionsPtr> methods_with_options,
+      const std::optional<std::string>& with_lock,
       bool success);
 
   SharedStorageWriteOperationAndResult(
@@ -102,6 +103,7 @@ struct SharedStorageWriteOperationAndResult {
 
   url::Origin request_origin;
   std::vector<MethodWithOptionsPtr> methods_with_options;
+  std::optional<std::string> with_lock;
   bool success;
 };
 

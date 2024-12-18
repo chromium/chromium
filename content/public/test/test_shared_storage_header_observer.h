@@ -52,6 +52,7 @@ class TestSharedStorageHeaderObserver : public SharedStorageHeaderObserver {
   void OnBatchUpdateFinished(
       const url::Origin& request_origin,
       std::vector<MethodWithOptionsPtr> methods_with_options,
+      const std::optional<std::string>& with_lock,
       const std::string& error_message) override;
 
   std::unique_ptr<base::RunLoop> loop_;

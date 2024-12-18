@@ -446,8 +446,9 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest, EmptyHeader) {
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
-  EXPECT_TRUE(observer_->headers_received().front().second.empty());
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+  EXPECT_TRUE(observer_->headers_received().front().methods.empty());
 }
 
 TEST_F(SharedStorageRequestHelperProcessHeaderTest,
@@ -462,9 +463,10 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest,
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
   EXPECT_THAT(
-      observer_->headers_received().front().second,
+      observer_->headers_received().front().methods,
       ElementsAre(
           SharedStorageMethodWrapper(MojomClearMethod()),
           SharedStorageMethodWrapper(MojomSetMethod(
@@ -493,9 +495,10 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest,
   // The `SharedStorageRequestHelper` skips over it and sends the valid methods
   // it finds.
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
 
-  EXPECT_THAT(observer_->headers_received().front().second,
+  EXPECT_THAT(observer_->headers_received().front().methods,
               ElementsAre(
                   // The superfluous parameter `key` is omitted.
                   SharedStorageMethodWrapper(MojomClearMethod()),
@@ -523,15 +526,16 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest,
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
 
-  EXPECT_THAT(observer_->headers_received().front().second,
+  EXPECT_THAT(observer_->headers_received().front().methods,
               ElementsAre(SharedStorageMethodWrapper(
                   MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
                                  /*ignore_if_present=*/false))));
 }
 
-TEST_F(SharedStorageRequestHelperProcessHeaderTest, WithLockOption) {
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, IndividualMethodWithLock) {
   const std::string kHeader =
       "set;key=k;value=v;with_lock=lock1, append;key=k;value=v;with_lock=\"\", "
       "delete;key=k, clear;with_lock=lock2";
@@ -543,10 +547,11 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest, WithLockOption) {
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
 
   EXPECT_THAT(
-      observer_->headers_received().front().second,
+      observer_->headers_received().front().methods,
       ElementsAre(
           SharedStorageMethodWrapper(MojomSetMethod(
               /*key=*/u"k", /*value=*/u"v",
@@ -555,6 +560,89 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest, WithLockOption) {
               /*key=*/u"k", /*value=*/u"v", /*with_lock=*/"")),
           SharedStorageMethodWrapper(MojomDeleteMethod(/*key=*/u"k")),
           SharedStorageMethodWrapper(MojomClearMethod(/*with_lock=*/"lock2"))));
+
+  // Expect no with_lock option for the batch.
+  EXPECT_EQ(observer_->headers_received().front().with_lock, std::nullopt);
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, BatchOptionsWithLock) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, append;key=k;value=v, "
+      "options;with_lock=lock2";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v"))));
+
+  EXPECT_EQ(observer_->headers_received().front().with_lock, "lock2");
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest,
+       BatchOptionsWithLock_OverridePreviousOptions) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, append;key=k;value=v, "
+      "options;with_lock=lock2, options;abc=def";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v"))));
+
+  EXPECT_EQ(observer_->headers_received().front().with_lock, std::nullopt);
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest,
+       BatchOptionsWithLock_InTheMiddle) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, options;abc=def;with_lock=lock2, "
+      "append;key=k;value=v";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v"))));
+
+  EXPECT_EQ(observer_->headers_received().front().with_lock, "lock2");
 }
 
 namespace {
@@ -619,10 +707,10 @@ TEST_F(SharedStorageRequestHelperProcessHeaderMultiConnectionTest,
     WaitForHeadersReceived(i + 1);
 
     EXPECT_EQ(observer_->headers_received().size(), i + 1);
-    EXPECT_EQ(observer_->headers_received()[i].first, request_origin_);
+    EXPECT_EQ(observer_->headers_received()[i].request_origin, request_origin_);
 
     EXPECT_THAT(
-        observer_->headers_received()[i].second,
+        observer_->headers_received()[i].methods,
         ElementsAre(
             SharedStorageMethodWrapper(MojomSetMethod(
                 /*key=*/u"x", /*value=*/u"y", /*ignore_if_present=*/false)),

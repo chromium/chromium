@@ -412,9 +412,9 @@ class SharedStorageHeaderObserverTest
         .get();
   }
 
-  void RunHeaderReceived(
-      const url::Origin& request_origin,
-      std::vector<MethodWithOptionsPtr> methods_with_options) {
+  void RunHeaderReceived(const url::Origin& request_origin,
+                         std::vector<MethodWithOptionsPtr> methods_with_options,
+                         const std::optional<std::string>& with_lock) {
     base::RunLoop loop;
     base::OnceCallback<void(std::string_view error)> bad_message_callback =
         base::BindLambdaForTesting([&](std::string_view error) {
@@ -425,8 +425,8 @@ class SharedStorageHeaderObserverTest
         GetNavigationOrDocumentHandle(request_origin);
     observer_->HeaderReceived(
         request_origin, GetContextType(), navigation_or_document_handle,
-        std::move(methods_with_options), loop.QuitClosure(),
-        std::move(bad_message_callback),
+        CloneSharedStorageMethods(methods_with_options), with_lock,
+        loop.QuitClosure(), std::move(bad_message_callback),
         /*can_defer=*/true);
     loop.Run();
 
@@ -585,7 +585,8 @@ TEST_P(SharedStorageHeaderObserverTest, SharedStorageNotAllowed) {
 
   // No operations are invoked because we've simulated shared storage being
   // disabled in user preferences.
-  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options),
+                    /*with_lock=*/std::nullopt);
   EXPECT_TRUE(observer_->header_results().empty());
   EXPECT_TRUE(observer_->operations().empty());
   EXPECT_EQ(Length(kOrigin1), 0);
@@ -614,7 +615,8 @@ TEST_P(SharedStorageHeaderObserverTest, Append_NoCapacity) {
 
   methods_with_options.push_back(MojomAppendMethod(key, /*value=*/u"a"));
 
-  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options),
+                    /*with_lock=*/std::nullopt);
 
   if (!ExpectSuccess()) {
     EXPECT_TRUE(observer_->header_results().empty());
@@ -632,6 +634,7 @@ TEST_P(SharedStorageHeaderObserverTest, Append_NoCapacity) {
   EXPECT_EQ(observer_->operations()[0],
             OperationAndResult(kOrigin1,
                                CloneSharedStorageMethods(methods_with_options),
+                               /*with_lock=*/std::nullopt,
                                /*success=*/false));
 
   EXPECT_EQ(GetExistingValue(kOrigin1, base::UTF16ToUTF8(key)),
@@ -658,7 +661,8 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
                                                 /*ignore_if_present=*/false));
   methods_with_options.push_back(MojomDeleteMethod(/*key=*/u"key2"));
 
-  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options),
+                    /*with_lock=*/std::nullopt);
 
   if (!ExpectSuccess()) {
     EXPECT_TRUE(observer_->header_results().empty());
@@ -674,6 +678,7 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
   EXPECT_EQ(observer_->operations()[0],
             OperationAndResult(kOrigin1,
                                CloneSharedStorageMethods(methods_with_options),
+                               /*with_lock=*/std::nullopt,
                                /*success=*/true));
 
   EXPECT_EQ(GetExistingValue(kOrigin1, "key1"), "value1value1");
@@ -699,13 +704,16 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   std::vector<MethodWithOptionsPtr> methods_with_options3;
   methods_with_options3.push_back(MojomDeleteMethod(/*key=*/u"a"));
 
-  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options1));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options1),
+                    /*with_lock=*/"lock1");
 
   if (!ExpectSuccess()) {
     RunHeaderReceived(kOrigin2,
-                      CloneSharedStorageMethods(methods_with_options2));
+                      CloneSharedStorageMethods(methods_with_options2),
+                      /*with_lock=*/std::nullopt);
     RunHeaderReceived(kOrigin3,
-                      CloneSharedStorageMethods(methods_with_options3));
+                      CloneSharedStorageMethods(methods_with_options3),
+                      /*with_lock=*/std::nullopt);
     EXPECT_TRUE(observer_->header_results().empty());
     EXPECT_TRUE(observer_->operations().empty());
     EXPECT_EQ(Length(kOrigin1), 0);
@@ -717,11 +725,13 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   ASSERT_EQ(observer_->header_results().size(), 1u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin1);
 
-  RunHeaderReceived(kOrigin2, CloneSharedStorageMethods(methods_with_options2));
+  RunHeaderReceived(kOrigin2, CloneSharedStorageMethods(methods_with_options2),
+                    /*with_lock=*/std::nullopt);
   ASSERT_EQ(observer_->header_results().size(), 2u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin2);
 
-  RunHeaderReceived(kOrigin3, CloneSharedStorageMethods(methods_with_options3));
+  RunHeaderReceived(kOrigin3, CloneSharedStorageMethods(methods_with_options3),
+                    /*with_lock=*/std::nullopt);
   ASSERT_EQ(observer_->header_results().size(), 3u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin3);
 
@@ -729,14 +739,17 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   EXPECT_EQ(observer_->operations()[0],
             OperationAndResult(kOrigin1,
                                CloneSharedStorageMethods(methods_with_options1),
+                               /*with_lock=*/"lock1",
                                /*success=*/true));
   EXPECT_EQ(observer_->operations()[1],
             OperationAndResult(kOrigin2,
                                CloneSharedStorageMethods(methods_with_options2),
+                               /*with_lock=*/std::nullopt,
                                /*success=*/true));
   EXPECT_EQ(observer_->operations()[2],
             OperationAndResult(kOrigin3,
                                CloneSharedStorageMethods(methods_with_options3),
+                               /*with_lock=*/std::nullopt,
                                /*success=*/true));
 
   // Operations on different origins don't affect each other.
