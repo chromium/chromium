@@ -58,10 +58,8 @@ IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithContext) {
 
   content::WebContents* contents = LaunchApp(ash::SystemWebAppType::MALL);
 
-  EXPECT_THAT(
-      GetMallEmbedUrl(contents),
-      testing::StartsWith(
-          "https://discover.apps.chrome/?chrome%3A%2F%2Fmall&context="));
+  EXPECT_THAT(GetMallEmbedUrl(contents),
+              testing::StartsWith("https://discover.apps.chrome/?context="));
 }
 
 IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithDeepLink) {
@@ -73,9 +71,9 @@ IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithDeepLink) {
 
   content::WebContents* contents = LaunchApp(std::move(params));
 
-  EXPECT_THAT(GetMallEmbedUrl(contents),
-              testing::StartsWith("https://discover.apps.chrome/apps/"
-                                  "list?chrome%3A%2F%2Fmall&context="));
+  EXPECT_THAT(
+      GetMallEmbedUrl(contents),
+      testing::StartsWith("https://discover.apps.chrome/apps/list?context="));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
