@@ -322,131 +322,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenAndCloseWithoutAnimation) {
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
   Init();
-  // Set side panel to left-aligned so positive resize increments mean an
-  // increase in side panel width.
-  browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kSidePanelHorizontalAlignment, false);
-  coordinator()->DisableAnimationsForTesting();
-
-  const int min_side_panel_width = browser()
-                                       ->GetBrowserView()
-                                       .unified_side_panel()
-                                       ->GetMinimumSize()
-                                       .width();
-
-  // Set the browser width so that two thirds of the browser would be larger
-  // than the minimum side panel width.
-  gfx::Rect original_browser_bounds(browser()->GetBrowserView().GetBounds());
-  gfx::Rect new_bounds(original_browser_bounds);
-  new_bounds.set_width(min_side_panel_width * 3);
-  // Explicitly restore the browser window on ChromeOS, as it would otherwise
-  // be maximized and the SetBounds call would be a no-op.
-#if BUILDFLAG(IS_CHROMEOS)
-  browser()->GetBrowserView().Restore();
-#endif
-  browser()->GetBrowserView().SetBounds(new_bounds);
-
-  coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
-                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  int browser_width = browser()->GetBrowserView().GetLocalBounds().width();
-  int two_thirds_browser_width = browser_width * 2 / 3;
-  // Select a starting width less than the min width.
-  const int starting_width = min_side_panel_width - 1;
-  browser()->GetBrowserView().unified_side_panel()->SetPanelWidth(
-      starting_width);
-  views::test::RunScheduledLayout(&browser()->GetBrowserView());
-  // Verify the side panel will is at the min width.
-  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
-            min_side_panel_width);
-
-  // Increment the side panel width so that it is larger than the min width but
-  // less than two thirds of the browser width.
-  int increment = (two_thirds_browser_width - min_side_panel_width) / 2;
-  browser()->GetBrowserView().unified_side_panel()->OnResize(increment, true);
-  views::test::RunScheduledLayout(&browser()->GetBrowserView());
-  // Verify the side panel is at its preferred width.
-  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
-            browser()
-                ->GetBrowserView()
-                .unified_side_panel()
-                ->GetPreferredSize()
-                .width());
-
-  // Increment the side panel width so that it is larger than two thirds of the
-  // browser width.
-  increment = (two_thirds_browser_width + 1) -
-              browser()->GetBrowserView().unified_side_panel()->width();
-  browser()->GetBrowserView().unified_side_panel()->OnResize(increment, true);
-  views::test::RunScheduledLayout(&browser()->GetBrowserView());
-  // Verify the side panel width is capped at two thirds of the browser width.
-  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
-            two_thirds_browser_width);
-}
-
-// TODO(crbug.com/384507412): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ChangeSidePanelWidthNarrowWindow \
-  DISABLED_ChangeSidePanelWidthNarrowWindow
-#else
-#define MAYBE_ChangeSidePanelWidthNarrowWindow ChangeSidePanelWidthNarrowWindow
-#endif
-
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
-                       MAYBE_ChangeSidePanelWidthNarrowWindow) {
-  Init();
-  // Set side panel to left-aligned so positive resize increments mean an
-  // increase in side panel width.
-  browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kSidePanelHorizontalAlignment, false);
-  coordinator()->DisableAnimationsForTesting();
-
-  const int min_side_panel_width = browser()
-                                       ->GetBrowserView()
-                                       .unified_side_panel()
-                                       ->GetMinimumSize()
-                                       .width();
-
-  // Set the browser width so that two thirds of the browser would be larger
-  // than the minimum side panel width.
-  gfx::Rect original_browser_bounds(browser()->GetBrowserView().GetBounds());
-  gfx::Rect new_bounds(original_browser_bounds);
-  new_bounds.set_width((min_side_panel_width - 3) * 3 / 2);
-  // Explicitly restore the browser window on ChromeOS, as it would otherwise
-  // be maximized and the SetBounds call would be a no-op.
-#if BUILDFLAG(IS_CHROMEOS)
-  browser()->GetBrowserView().Restore();
-#endif
-  browser()->GetBrowserView().SetBounds(new_bounds);
-
-  coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
-                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  int browser_width = browser()->GetBrowserView().GetLocalBounds().width();
-  int two_thirds_browser_width = browser_width * 2 / 3;
-  EXPECT_GT(min_side_panel_width, two_thirds_browser_width);
-
-  // Set the side panel width to be less than the min side panel width.
-  browser()->GetBrowserView().unified_side_panel()->SetPanelWidth(
-      min_side_panel_width - 1);
-  views::test::RunScheduledLayout(&browser()->GetBrowserView());
-  // Verify the side panel width is the minimum width and is greater than two
-  // thirds of the browser width.
-  EXPECT_GT(browser()->GetBrowserView().unified_side_panel()->width(),
-            two_thirds_browser_width);
-  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
-            min_side_panel_width);
-
-  // Set the side panel width to be larger than the min side panel width.
-  browser()->GetBrowserView().unified_side_panel()->SetPanelWidth(
-      min_side_panel_width + 1);
-  views::test::RunScheduledLayout(&browser()->GetBrowserView());
-  // Verify the side panel width is is the minimum width.
-  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
-            min_side_panel_width);
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
-                       ChangeSidePanelWidthRightAlign) {
-  Init();
   // Set side panel to right-aligned
   browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, true);
@@ -462,17 +337,26 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   const int increment = 50;
   browser()->GetBrowserView().unified_side_panel()->OnResize(increment, true);
   views::test::RunScheduledLayout(&browser()->GetBrowserView());
-  // Verify positive increments reduce the side panel width
   EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
             starting_width - increment);
+
+  // Set side panel to left-aligned
+  browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, false);
+  browser()->GetBrowserView().unified_side_panel()->SetPanelWidth(
+      starting_width);
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
+  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
+            starting_width);
+
+  browser()->GetBrowserView().unified_side_panel()->OnResize(increment, true);
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
+  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
+            starting_width + increment);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
   Init();
-  // Set side panel to left-aligned so positive resize increments mean an
-  // increase in side panel width.
-  browser()->GetBrowserView().GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kSidePanelHorizontalAlignment, false);
   coordinator()->DisableAnimationsForTesting();
 
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -490,27 +374,22 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
   browser()->GetBrowserView().unified_side_panel()->OnResize(large_increment,
                                                              true);
   views::test::RunScheduledLayout(&browser()->GetBrowserView());
-
-  const int browser_width =
-      browser()->GetBrowserView().GetLocalBounds().width();
-  const int two_thirds_browser_width = browser_width * 2 / 3;
   EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->width(),
-            std::max(browser()
-                         ->GetBrowserView()
-                         .unified_side_panel()
-                         ->GetMinimumSize()
-                         .width(),
-                     two_thirds_browser_width));
+            browser()
+                ->GetBrowserView()
+                .unified_side_panel()
+                ->GetMinimumSize()
+                .width());
 
+  browser()->GetBrowserView().unified_side_panel()->OnResize(-large_increment,
+                                                             true);
+  views::test::RunScheduledLayout(&browser()->GetBrowserView());
   BrowserViewLayout* layout_manager = static_cast<BrowserViewLayout*>(
       browser()->GetBrowserView().GetLayoutManager());
-  // the web contents width will either be it's min width or 1/3 the browser
-  // width minus the side panel separator width.
-  const int web_contents_width =
-      std::max(layout_manager->GetMinWebContentsWidthForTesting(),
-               (browser_width - two_thirds_browser_width - 1));
+  const int min_web_contents_width =
+      layout_manager->GetMinWebContentsWidthForTesting();
   EXPECT_EQ(browser()->GetBrowserView().contents_web_view()->width(),
-            web_contents_width);
+            min_web_contents_width);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
