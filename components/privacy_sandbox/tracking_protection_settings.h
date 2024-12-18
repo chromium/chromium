@@ -48,6 +48,9 @@ class TrackingProtectionSettings : public KeyedService {
   // Returns whether IP protection is enabled.
   bool IsIpProtectionEnabled() const;
 
+  // Returns whether fingerprinting protection is enabled.
+  bool IsFpProtectionEnabled() const;
+
   // Adds a site-scoped TRACKING_PROTECTION content setting equal to ALLOW for
   // `first_party_url`.
   void AddTrackingProtectionException(const GURL& first_party_url);
