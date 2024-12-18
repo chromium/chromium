@@ -13069,6 +13069,21 @@
             ]
         }
     ],
+    "LargeCapacityInSnapshotLRUCache": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LargeCapacityInSnapshotLRUCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "LauncherGameSearchStudy": [
         {
             "platforms": [
