@@ -247,3 +247,24 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
       IsChipFullyCollapsed(true));
 }
+
+IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+                       MerchantTrustSubpageViewReviews) {
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      // Open the subpage directly.
+      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
+      PressButton(MerchantTrustChipButtonController::kElementIdForTesting),
+      WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting),
+      CheckView(
+          PageInfoMerchantTrustContentView::kViewReviewsId,
+          [](RichHoverButton* button) {
+            return button->GetTitleViewForTesting()->GetText();
+          },
+          u"View all 23 reviews"),
+      // Press the "View all reviews" button.
+      PressButton(PageInfoMerchantTrustContentView::kViewReviewsId),
+      // Wait for the side panel to show.
+      WaitForShow(kSidePanelElementId));
+}

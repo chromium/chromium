@@ -184,8 +184,7 @@ PageInfoBubbleView::PageInfoBubbleView(
 
   if (page_info::IsMerchantTrustFeatureEnabled()) {
     merchant_trust_coordinator_ =
-        std::make_unique<PageInfoMerchantTrustCoordinator>(ui_delegate_.get(),
-                                                           view_factory_.get());
+        std::make_unique<PageInfoMerchantTrustCoordinator>(web_contents());
   }
 
   views::BubbleDialogDelegateView::CreateBubble(this);
@@ -287,9 +286,12 @@ void PageInfoBubbleView::OpenCookiesPage() {
 void PageInfoBubbleView::OpenMerchantTrustPage() {
   // TODO(crbug.com/378854730): Record open action.
   CHECK(merchant_trust_coordinator_);
-  page_container_->SwitchToPage(merchant_trust_coordinator_->CreatePage());
-  AnnouncePageOpened(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER));
+  auto title = l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER);
+  auto page_view = view_factory_->CreatePageView(
+      title, merchant_trust_coordinator_->CreatePageContent());
+  page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(page_view));
+  AnnouncePageOpened(title);
 }
 
 void PageInfoBubbleView::CloseBubble() {

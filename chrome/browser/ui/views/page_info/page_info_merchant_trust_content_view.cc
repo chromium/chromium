@@ -15,6 +15,8 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kElementIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
+                                      kViewReviewsId);
 
 PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
   SetProperty(views::kElementIdentifierKey, kElementIdForTesting);
@@ -26,6 +28,18 @@ PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
 }
 
 PageInfoMerchantTrustContentView::~PageInfoMerchantTrustContentView() = default;
+
+base::CallbackListSubscription
+PageInfoMerchantTrustContentView::RegisterLearnMoreLinkPressedCallback(
+    base::RepeatingCallback<void(const ui::Event&)> callback) {
+  return learn_more_link_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+PageInfoMerchantTrustContentView::RegisterViewReviewsButtonPressedCallback(
+    base::RepeatingClosureList::CallbackType callback) {
+  return view_reviews_button_callback_list_.Add(std::move(callback));
+}
 
 void PageInfoMerchantTrustContentView::SetRating(double rating) {
   star_rating_view_->SetRating(rating);
@@ -60,7 +74,7 @@ PageInfoMerchantTrustContentView::CreateDescriptionLabel() {
   gfx::Range link_range(offset, offset + text_for_link.length());
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &PageInfoMerchantTrustContentView::LearnMoreLinkClicked,
+          &PageInfoMerchantTrustContentView::NotifyLearnMoreLinkPressed,
           base::Unretained(this)));
   // TODO(crbug.com/378854730): Add STYLE_LINK_4 and change the label text style
   // to STYLE_BODY_4.
@@ -74,22 +88,24 @@ PageInfoMerchantTrustContentView::CreateViewReviewsButton() {
   // TODO(crbug.com/383361518): Add proper icons.
   auto merchant_trust_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(
-          &PageInfoMerchantTrustContentView::OpenReviewsInSidePanel,
+          &PageInfoMerchantTrustContentView::NotifyViewReviewsPressed,
           base::Unretained(this)),
       PageInfoViewFactory::GetMerchantTrustIcon(), std::u16string(),
       std::u16string(), PageInfoViewFactory::GetLaunchIcon());
   merchant_trust_button->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
+  merchant_trust_button->SetProperty(views::kElementIdentifierKey,
+                                     kViewReviewsId);
   star_rating_view_ = merchant_trust_button->AddCustomSubtitle(
       std::make_unique<StarRatingView>());
   return merchant_trust_button;
 }
 
-void PageInfoMerchantTrustContentView::LearnMoreLinkClicked(
+void PageInfoMerchantTrustContentView::NotifyLearnMoreLinkPressed(
     const ui::Event& event) {
-  // TODO(crbug.com/381405880): Open learn more link.
+  learn_more_link_callback_list_.Notify(event);
 }
 
-void PageInfoMerchantTrustContentView::OpenReviewsInSidePanel() {
-  // TODO(crbug.com/378854730): Open side panel.
+void PageInfoMerchantTrustContentView::NotifyViewReviewsPressed() {
+  view_reviews_button_callback_list_.Notify();
 }

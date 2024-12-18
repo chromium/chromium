@@ -8,27 +8,24 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/views/view_observer.h"
 
 class PageInfoMerchantTrustContentView;
 class PageInfoMerchantTrustController;
-class ChromePageInfoUiDelegate;
-class PageInfoViewFactory;
 
-class PageInfoMerchantTrustCoordinator : public views::ViewObserver {
+class PageInfoMerchantTrustCoordinator : public views::ViewObserver,
+                                         public content::WebContentsObserver {
  public:
-  PageInfoMerchantTrustCoordinator(ChromePageInfoUiDelegate* ui_delegate,
-                                   PageInfoViewFactory* view_factory);
+  explicit PageInfoMerchantTrustCoordinator(content::WebContents* web_contents);
   ~PageInfoMerchantTrustCoordinator() override;
 
-  std::unique_ptr<views::View> CreatePage();
+  std::unique_ptr<PageInfoMerchantTrustContentView> CreatePageContent();
 
  private:
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;
 
-  raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
-  raw_ptr<PageInfoViewFactory> view_factory_;
 
   std::unique_ptr<PageInfoMerchantTrustController> controller_;
   raw_ptr<PageInfoMerchantTrustContentView> content_view_;
