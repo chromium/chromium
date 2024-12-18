@@ -475,15 +475,18 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     return https_server().GetURL(host, "/echoheader?cookie");
   }
 
+  std::string ServerRedirectPath(const GURL& url) {
+    return base::StrCat(
+        {"/server-redirect?",
+         base::EscapeQueryParamValue(url.spec(), /*use_plus=*/true)});
+  }
+
   GURL RedirectViaHosts(const std::vector<std::string_view>& hosts,
                         const GURL& destination) {
     GURL url = destination;
 
     for (const auto& host : base::Reversed(hosts)) {
-      url = https_server().GetURL(
-          host, base::StrCat(
-                    {"/server-redirect?", base::EscapeQueryParamValue(
-                                              url.spec(), /*use_plus=*/true)}));
+      url = https_server().GetURL(host, ServerRedirectPath(url));
     }
     return url;
   }
@@ -3445,6 +3448,69 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
               Contains(Pair(kRetryPath,
                             Contains(Pair(kSecFetchStorageAccess, "active"))))
                   .Times(2));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RequestHeaderSameOriginRedirect) {
+  SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostB);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  // Header will be 'none' first time we navigate to `kHostB` since the
+  // permission grant does not exist yet.
+  GURL dest_url = GetURL(kHostB);
+  NavigateFrameTo(dest_url);
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // Cause the frame to navigate itself via a same-origin redirect.
+  EXPECT_TRUE(
+      content::NavigateToURLFromRenderer(GetFrame(),
+                                         /*url=*/
+                                         RedirectViaHosts({kHostB}, dest_url),
+                                         /*expected_commit_url=*/dest_url));
+  // Since the frame navigated via a same-origin redirect, expect
+  // `Sec-Fetch-Storage-Access` to reflect a preserved `active` storage access
+  // status.
+  EXPECT_THAT(ObservedRequestHeaders(),
+              IsSupersetOf<PathAndHeaderMapMatchers>({
+                  Pair("/", Contains(Pair(kSecFetchStorageAccess, "none"))),
+                  Pair(ServerRedirectPath(dest_url),
+                       Contains(Pair(kSecFetchStorageAccess, "active"))),
+                  Pair("/", Contains(Pair(kSecFetchStorageAccess, "active"))),
+              }));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RequestHeaderCrossOriginRedirect) {
+  SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostB);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  // Header will be 'none' first time we navigate to `kHostB` since the
+  // permission grant does not exist yet.
+  GURL dest_url = GetURL(kHostB);
+  NavigateFrameTo(dest_url);
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // Cause the frame to navigate itself via a same-origin redirect.
+  EXPECT_TRUE(
+      content::NavigateToURLFromRenderer(GetFrame(),
+                                         /*url=*/
+                                         RedirectViaHosts({kHostA}, dest_url),
+                                         /*expected_commit_url=*/dest_url));
+  // Since the frame navigated via a cross-origin redirect, expect
+  // `Sec-Fetch-Storage-Access` to no longer be `active`.
+  EXPECT_THAT(ObservedRequestHeaders(),
+              IsSupersetOf<PathAndHeaderMapMatchers>({
+                  Pair("/", Contains(Pair(kSecFetchStorageAccess, "none"))),
+                  Pair(ServerRedirectPath(dest_url),
+                       Not(Contains(Key(kSecFetchStorageAccess)))),
+                  Pair("/", Contains(Pair(kSecFetchStorageAccess, "inactive"))),
+              }));
 }
 
 class StorageAccessHeadersWithThirdPartyCookiesBrowserTest
