@@ -41,7 +41,7 @@ inline constexpr char kJoinTachyonGroupUrlTemplate[] =
 
 inline constexpr char kJoinSessionUrlTemplate[] = "v1/students/$1/session:join";
 
-inline constexpr char kVewScreenUrlTemplate[] =
+inline constexpr char kViewScreenUrlTemplate[] =
     "v1/sessions/$1/viewScreen:initiate";
 
 inline constexpr char kSessionId[] = "sessionId";

@@ -11,11 +11,9 @@
 #include <string>
 
 #include "base/json/json_writer.h"
-#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
-#include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 
@@ -49,7 +47,7 @@ ViewScreenParam::~ViewScreenParam() = default;
 ViewScreenRequest::ViewScreenRequest(google_apis::RequestSender* sender,
                                      std::string session_id,
                                      ViewScreenParam view_screen_param,
-                                     UpdateStudentActivitiesCallback callback)
+                                     ViewScreenRequestCallback callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
@@ -62,7 +60,7 @@ ViewScreenRequest ::~ViewScreenRequest() = default;
 
 GURL ViewScreenRequest::GetURL() const {
   auto url = GURL(url_base_).Resolve(
-      base::ReplaceStringPlaceholders(kVewScreenUrlTemplate, {session_id_},
+      base::ReplaceStringPlaceholders(kViewScreenUrlTemplate, {session_id_},
                                       /*=offsets*/ nullptr));
   return url;
 }
