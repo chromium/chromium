@@ -32,9 +32,11 @@ class GlicView : public views::View {
 
   // Creates a menu widget that contains a `GlicView`, configured with the
   // given `initial_bounds`.
-  static std::pair<views::UniqueWidgetPtr, GlicView*> CreateWidget(
-      Profile* profile,
-      const gfx::Rect& initial_bounds);
+  static views::UniqueWidgetPtr CreateWidget(Profile* profile,
+                                             const gfx::Rect& initial_bounds);
+  // Returns the `GlicView` from the widget returned by
+  // `GlicView::CreateWidget()`.
+  static GlicView* FromWidget(views::Widget& widget);
 
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 

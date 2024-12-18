@@ -36,9 +36,8 @@ GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
 GlicView::~GlicView() = default;
 
 // static
-std::pair<views::UniqueWidgetPtr, GlicView*> GlicView::CreateWidget(
-    Profile* profile,
-    const gfx::Rect& initial_bounds) {
+views::UniqueWidgetPtr GlicView::CreateWidget(Profile* profile,
+                                              const gfx::Rect& initial_bounds) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -50,11 +49,14 @@ std::pair<views::UniqueWidgetPtr, GlicView*> GlicView::CreateWidget(
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
 
-  auto glic_view = std::make_unique<GlicView>(profile, initial_bounds.size());
-  GlicView* raw_glic_view = glic_view.get();
-  widget->SetContentsView(std::move(glic_view));
+  widget->SetContentsView(
+      std::make_unique<GlicView>(profile, initial_bounds.size()));
 
-  return {std::move(widget), raw_glic_view};
+  return widget;
+}
+
+GlicView* GlicView::FromWidget(views::Widget& widget) {
+  return static_cast<GlicView*>(widget.GetContentsView());
 }
 
 void GlicView::SetDraggableAreas(

@@ -112,7 +112,7 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     padding = GetLayoutConstant(TAB_STRIP_PADDING);
   }
 
-  std::tie(widget_, glic_view_) = glic::GlicView::CreateWidget(
+  widget_ = glic::GlicView::CreateWidget(
       profile_, {top_right_point.x() - kWidgetWidth - padding,
                  top_right_point.y() + padding, kWidgetWidth, kWidgetHeight});
   widget_->AddObserver(this);
@@ -120,9 +120,16 @@ void GlicWindowController::Show(views::View* glic_button_view) {
       std::make_unique<GlicWidgetObserver>(this, widget_.get());
   widget_->Show();
   window_event_observer_ =
-      std::make_unique<WindowEventObserver>(this, glic_view_);
+      std::make_unique<WindowEventObserver>(this, GetGlicView());
   // Set the draggable area to the top bar of the window, by default.
-  glic_view_->SetDraggableAreas({{0, 0, kWidgetWidth, kWidgetTopBarHeight}});
+  GetGlicView()->SetDraggableAreas({{0, 0, kWidgetWidth, kWidgetTopBarHeight}});
+}
+
+GlicView* GlicWindowController::GetGlicView() {
+  if (!widget_) {
+    return nullptr;
+  }
+  return GlicView::FromWidget(*widget_);
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForAttachedWindow(
@@ -168,7 +175,7 @@ bool GlicWindowController::Resize(const gfx::Size& size) {
   }
 
   widget_->SetSize(size);
-  glic_view_->web_view()->SetSize(size);
+  GetGlicView()->web_view()->SetSize(size);
   return true;
 }
 
@@ -182,22 +189,22 @@ gfx::Size GlicWindowController::GetSize() {
 
 void GlicWindowController::SetDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
-  if (!glic_view_) {
+  GlicView* glic_view = GetGlicView();
+  if (!glic_view) {
     return;
   }
 
-  glic_view_->SetDraggableAreas(draggable_areas);
+  glic_view->SetDraggableAreas(draggable_areas);
 }
 
 void GlicWindowController::Close() {
   if (!widget_) {
     return;
   }
-
   widget_->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
   glic_widget_observer_.reset();
+  window_event_observer_.reset();
   widget_.reset();
-  glic_view_ = nullptr;
   NotifyIfPanelStateChanged();
 }
 
@@ -231,7 +238,7 @@ void GlicWindowController::HandleBrowserPinning(gfx::Vector2d mouse_location) {
     if (browser->profile()->IsOffTheRecord() ||
         !browser->window()->IsVisible() || window_widget == widget_.get() ||
         browser->GetWebView()->GetBrowserContext() !=
-            glic_view_->web_view()->GetBrowserContext()) {
+            GetGlicView()->web_view()->GetBrowserContext()) {
       continue;
     }
     auto* tab_strip_region_view =

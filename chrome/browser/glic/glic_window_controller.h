@@ -85,6 +85,7 @@ class GlicWindowController : public views::WidgetObserver {
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
  private:
+  GlicView* GetGlicView();
   // Determines the correct position for the glic window when attached to a
   // browser.
   gfx::Point GetTopRightPositionForAttachedWindow(
@@ -114,7 +115,6 @@ class GlicWindowController : public views::WidgetObserver {
 
    private:
     raw_ptr<glic::GlicWindowController> glic_window_controller_;
-    raw_ptr<glic::GlicView> glic_view_;
     raw_ptr<views::Widget> pinned_target_widget_;
   };
 
@@ -164,9 +164,6 @@ class GlicWindowController : public views::WidgetObserver {
   const raw_ptr<Profile> profile_;
   views::UniqueWidgetPtr widget_;
   bool widget_visible_ = false;
-
-  // Owned by widget_.
-  raw_ptr<glic::GlicView> glic_view_ = nullptr;
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
