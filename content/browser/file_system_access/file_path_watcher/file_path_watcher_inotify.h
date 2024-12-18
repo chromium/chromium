@@ -22,6 +22,9 @@ class CONTENT_EXPORT ScopedMaxNumberOfInotifyWatchesOverrideForTest {
   ~ScopedMaxNumberOfInotifyWatchesOverrideForTest();
 };
 
+CONTENT_EXPORT size_t
+GetQuotaLimitFromSystemLimitForTesting(size_t system_limit);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_PATH_WATCHER_FILE_PATH_WATCHER_INOTIFY_H_

@@ -21,11 +21,13 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
@@ -33,6 +35,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1868,6 +1871,53 @@ TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
 
     // There should be no outstanding watchers.
     ASSERT_FALSE(FilePathWatcher::HasWatchesForTest());
+  }
+}
+
+TEST_F(FilePathWatcherTest, InotifyQuotaLimit) {
+  size_t quota_bucket_size = 100000;
+  size_t quota_min = 8192;
+  double quota_percent = 0.8;
+
+  base::FieldTrialParams params;
+  params["file_system_observer_quota_limit_linux_bucket_size"] =
+      base::ToString(quota_bucket_size);
+  params["file_system_observer_quota_limit_linux_min"] =
+      base::ToString(quota_min);
+  params["file_system_observer_quota_limit_linux_percent"] =
+      base::ToString(quota_percent);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFileSystemAccessObserverQuotaLimit, params);
+
+  // The quota limit is always set to the `quota_percent` of a "effective system
+  // limit" which is the system limit we choose and is less than or equal to the
+  // actual system limit.
+
+  // The first bucket's effective system limit is the `quota_min`.
+  size_t expected_min_quota_limit = quota_min * quota_percent;
+
+  // The first bucket should have a quota limit of `expected_min_quota_limit`.
+  EXPECT_EQ(GetQuotaLimitFromSystemLimitForTesting(0),
+            expected_min_quota_limit);
+  EXPECT_EQ(GetQuotaLimitFromSystemLimitForTesting(quota_bucket_size / 2),
+            expected_min_quota_limit);
+  EXPECT_EQ(GetQuotaLimitFromSystemLimitForTesting(quota_bucket_size - 1),
+            expected_min_quota_limit);
+
+  // Every other bucket should have an effective system limit of the bucket's
+  // minimum value.
+  for (size_t bucket = quota_bucket_size; bucket < 10 * quota_bucket_size;
+       bucket += quota_bucket_size) {
+    size_t expected_quota_limit = bucket * quota_percent;
+    EXPECT_EQ(GetQuotaLimitFromSystemLimitForTesting(bucket),
+              expected_quota_limit);
+    EXPECT_EQ(
+        GetQuotaLimitFromSystemLimitForTesting(bucket + quota_bucket_size / 2),
+        expected_quota_limit);
+    EXPECT_EQ(
+        GetQuotaLimitFromSystemLimitForTesting(bucket + quota_bucket_size - 1),
+        expected_quota_limit);
   }
 }
 

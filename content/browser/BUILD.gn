@@ -1022,6 +1022,7 @@ source_set("browser") {
     "file_system_access/file_path_watcher/file_path_watcher.h",
     "file_system_access/file_path_watcher/file_path_watcher_histogram.cc",
     "file_system_access/file_path_watcher/file_path_watcher_histogram.h",
+    "file_system_access/file_path_watcher/file_path_watcher_stub.cc",
     "file_system_access/file_system_access_access_handle_host_impl.cc",
     "file_system_access/file_system_access_access_handle_host_impl.h",
     "file_system_access/file_system_access_bucket_path_watcher.cc",
@@ -2474,6 +2475,9 @@ source_set("browser") {
   }
 
   if (is_linux || is_chromeos) {
+    sources -=
+        [ "file_system_access/file_path_watcher/file_path_watcher_stub.cc" ]
+
     sources += [
       "child_process_launcher_helper_linux.cc",
       "child_thread_type_switcher_linux.cc",
@@ -2595,8 +2599,6 @@ source_set("browser") {
       "accessibility/accessibility_tree_formatter_fuchsia.cc",
       "accessibility/accessibility_tree_formatter_fuchsia.h",
       "child_process_launcher_helper_fuchsia.cc",
-      "file_system_access/file_path_watcher/file_path_watcher_stub.cc",  # See
-                                                                         # crbug.com/42050618
       "font_access/font_enumeration_data_source_fuchsia.cc",
       "font_access/font_enumeration_data_source_fuchsia.h",
       "memory/swap_metrics_driver_impl_fuchsia.cc",
@@ -2646,6 +2648,9 @@ source_set("browser") {
   }
 
   if (is_mac) {
+    sources -=
+        [ "file_system_access/file_path_watcher/file_path_watcher_stub.cc" ]
+
     sources += [
       "../app_shim_remote_cocoa/ns_view_bridge_factory_impl.mm",
       "../app_shim_remote_cocoa/popup_window_mac.h",
@@ -2864,6 +2869,9 @@ source_set("browser") {
   }
 
   if (is_win) {
+    sources -=
+        [ "file_system_access/file_path_watcher/file_path_watcher_stub.cc" ]
+
     sources += [
       "accessibility/browser_accessibility_state_impl_win.cc",
       "child_process_launcher_helper_win.cc",
