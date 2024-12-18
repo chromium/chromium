@@ -76,10 +76,17 @@ _target_platform = enums.enum(
     FUCHSIA = "fuchsia",
 )
 
+_host_platform = enums.enum(
+    LINUX = "linux",
+    WIN = "win",
+    MAC = "mac",
+)
+
 def _chromium_config(
         *,
         config,
         target_platform,
+        host_platform = None,
         apply_configs = None,
         build_config = None,
         target_arch = None,
@@ -117,6 +124,8 @@ def _chromium_config(
         fail("unknown target_arch: {}".format(target_arch))
     if target_bits != None and target_bits not in (32, 64):
         fail("unknown target_bits: {}".format(target_bits))
+    if host_platform != None and host_platform not in _host_platform.values:
+        fail("unknown host_platform: {}".format(host_platform))
     if target_platform not in _target_platform.values:
         fail("unknown target_platform: {}".format(target_platform))
     if ((target_cros_boards or cros_boards_with_qemu_images) and
@@ -131,6 +140,7 @@ def _chromium_config(
         target_arch = target_arch,
         target_bits = target_bits,
         target_platform = target_platform,
+        host_platform = host_platform,
         target_cros_boards = args.listify(target_cros_boards),
         cros_boards_with_qemu_images = args.listify(cros_boards_with_qemu_images),
     )
@@ -406,6 +416,7 @@ builder_config = struct(
     build_config = _build_config,
     target_arch = _target_arch,
     target_platform = _target_platform,
+    host_platform = _host_platform,
 
     # Function for defining android recipe module config
     android_config = _android_config,
