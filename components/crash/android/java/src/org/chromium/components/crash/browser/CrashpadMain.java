@@ -9,9 +9,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.DoNotInline;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.UsedByReflection;
 
 @JNINamespace("crashpad")
+@NullMarked
 final class CrashpadMain {
     @UsedByReflection("crashpad_linux.cc")
     public static void main(String[] argv) {
