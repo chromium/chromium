@@ -16,7 +16,7 @@
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
