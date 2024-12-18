@@ -352,7 +352,12 @@ bool IsStateless() {
   // Cache the provider and state for the stateful controller. Those should not
   // be used when the provider is stateless.
   _provider = provider;
-  _suggestionState->suggestions = [self copyAndAdjustSuggestions:suggestions];
+  if (_suggestionState) {
+    // This case is only reached when using the stateless suggestion controller
+    // where the `_suggestionState` isn't required, so updating the suggestions
+    // can be skipped when no `_suggestionState`.
+    _suggestionState->suggestions = [self copyAndAdjustSuggestions:suggestions];
+  }
 
   if (IsStateless() && completion) {
     // Use the stateless way for passing suggestions when the feature is
