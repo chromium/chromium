@@ -11,6 +11,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -18,9 +20,10 @@ import java.io.IOException;
 // Note "OutputPort" is named in the Web MIDI manner. It corresponds to MidiInputPort class in the
 // Android API.
 @JNINamespace("midi")
+@NullMarked
 class MidiOutputPortAndroid {
     /** The underlying port. */
-    private MidiInputPort mPort;
+    private @Nullable MidiInputPort mPort;
 
     /** The device this port belongs to. */
     private final MidiDevice mDevice;

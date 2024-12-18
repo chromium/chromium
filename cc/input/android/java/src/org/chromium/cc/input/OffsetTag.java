@@ -9,9 +9,11 @@ import com.google.errorprone.annotations.DoNotMock;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java counterpart to the native viz::OffsetTag. */
 @DoNotMock("This is a simple value object.")
+@NullMarked
 public final class OffsetTag {
     private final Token mToken;
 

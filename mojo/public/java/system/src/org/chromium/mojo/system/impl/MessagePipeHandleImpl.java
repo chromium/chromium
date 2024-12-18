@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.system.impl;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.MessagePipeHandle;
@@ -13,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /** Implementation of {@link MessagePipeHandle}. */
+@NullMarked
 class MessagePipeHandleImpl extends HandleBase implements MessagePipeHandle {
     /**
      * @see HandleBase#HandleBase(CoreImpl, long)

@@ -22,6 +22,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -33,17 +35,18 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 /**
- * A wrapper around android.media.MediaPlayer that allows the native code to use it.
- * See media/base/android/media_player_bridge.cc for the corresponding native code.
+ * A wrapper around android.media.MediaPlayer that allows the native code to use it. See
+ * media/base/android/media_player_bridge.cc for the corresponding native code.
  */
 @JNINamespace("media")
+@NullMarked
 public class MediaPlayerBridge {
     private static final String TAG = "media";
 
     // Local player to forward this to. We don't initialize it here since the subclass might not
     // want it.
-    private LoadDataUriTask mLoadDataUriTask;
-    private MediaPlayer mPlayer;
+    private @Nullable LoadDataUriTask mLoadDataUriTask;
+    private @Nullable MediaPlayer mPlayer;
     private long mNativeMediaPlayerBridge;
 
     @CalledByNative
@@ -70,7 +73,7 @@ public class MediaPlayerBridge {
         return mPlayer;
     }
 
-    protected MediaPlayer getLocalPlayerWithoutCreation() {
+    protected @Nullable MediaPlayer getLocalPlayerWithoutCreation() {
         return mPlayer;
     }
 
@@ -201,7 +204,7 @@ public class MediaPlayerBridge {
         final String data = url.substring(headerStop + 1);
 
         String headerContent = header.substring(5);
-        String headerInfo[] = headerContent.split(";");
+        String[] headerInfo = headerContent.split(";");
         if (headerInfo.length != 2) return false;
         if (!"base64".equals(headerInfo[1])) return false;
 
@@ -212,7 +215,7 @@ public class MediaPlayerBridge {
 
     private class LoadDataUriTask extends AsyncTask<Boolean> {
         private final String mData;
-        private File mTempFile;
+        private @Nullable File mTempFile;
 
         public LoadDataUriTask(String data) {
             mData = data;

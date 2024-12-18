@@ -4,6 +4,8 @@
 
 package org.chromium.device.gamepad;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.CombinedVibration;
@@ -17,12 +19,16 @@ import android.view.MotionEvent;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
 /** Manages information related to each connected gamepad device. */
 @SuppressLint("NewApi") // VibratorManager requires API level 31.
+@NullMarked
 class GamepadDevice {
     // Axis ids are used as indices which are empirically always smaller than 256 so this allows
     // us to create cheap associative arrays.
@@ -42,7 +48,7 @@ class GamepadDevice {
 
     /** Keycodes which might be mapped by {@link GamepadMappings}. Keep sorted by keycode. */
     @VisibleForTesting
-    static final int RELEVANT_KEYCODES[] = {
+    static final int[] RELEVANT_KEYCODES = {
         KeyEvent.KEYCODE_DPAD_UP, // 0x13
         KeyEvent.KEYCODE_DPAD_DOWN, // 0x14
         KeyEvent.KEYCODE_DPAD_LEFT, // 0x15
@@ -121,7 +127,7 @@ class GamepadDevice {
 
     // True if the gamepad supports "dual-rumble" vibration effects.
     private boolean mSupportsDualRumble;
-    private VibratorManager mVibratorManager;
+    private @Nullable VibratorManager mVibratorManager;
 
     GamepadDevice(int index, InputDevice inputDevice) {
         mDeviceIndex = index;
@@ -279,7 +285,7 @@ class GamepadDevice {
                     FF_WEAK_MAGNITUDE_CHANNEL_IDX,
                     VibrationEffect.createOneShot(VIBRATION_DEFAULT_DURATION_MILLIS, weak));
         }
-        mVibratorManager.vibrate(effect.combine());
+        assumeNonNull(mVibratorManager).vibrate(effect.combine());
     }
 
     private int scaleMagnitude(double magnitude) {
@@ -289,7 +295,7 @@ class GamepadDevice {
 
     /** Stop all vibration for this gamepad. */
     public void cancelVibration() {
-        mVibratorManager.cancel();
+        assumeNonNull(mVibratorManager).cancel();
     }
 
     /**

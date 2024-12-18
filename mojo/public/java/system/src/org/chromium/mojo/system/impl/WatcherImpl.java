@@ -4,19 +4,24 @@
 
 package org.chromium.mojo.system.impl;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.MojoResult;
 import org.chromium.mojo.system.Watcher;
 
 @JNINamespace("mojo::android")
+@NullMarked
 class WatcherImpl implements Watcher {
     private long mImplPtr = WatcherImplJni.get().createWatcher(WatcherImpl.this);
-    private Callback mCallback;
+    private @Nullable Callback mCallback;
 
     @Override
     public int start(Handle handle, Core.HandleSignals signals, Callback callback) {
@@ -57,7 +62,7 @@ class WatcherImpl implements Watcher {
 
     @CalledByNative
     private void onHandleReady(int result) {
-        mCallback.onResult(result);
+        assumeNonNull(mCallback).onResult(result);
     }
 
     @NativeMethods

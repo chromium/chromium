@@ -12,15 +12,19 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.io.IOException;
 
 // Note "InputPort" is named in the Web MIDI manner. It corresponds to MidiOutputPort class in the
 // Android API.
 /** A MidiInputPortAndroid provides data to the associated midi::MidiInputPortAndroid object. */
 @JNINamespace("midi")
+@NullMarked
 class MidiInputPortAndroid {
     /** The underlying port. */
-    private MidiOutputPort mPort;
+    private @Nullable MidiOutputPort mPort;
 
     /** A pointer to a midi::MidiInputPortAndroid object. */
     private long mNativeReceiverPointer;

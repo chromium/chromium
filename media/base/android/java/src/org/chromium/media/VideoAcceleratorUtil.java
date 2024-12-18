@@ -16,6 +16,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,11 +29,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A collection of SDK based helper functions for retrieving supported profiles
- * for accelerated encoders and decoders from MediaCodecInfo. Only called from
- * the GPU process, so doesn't need to be tagged with MainDex.
+ * A collection of SDK based helper functions for retrieving supported profiles for accelerated
+ * encoders and decoders from MediaCodecInfo. Only called from the GPU process, so doesn't need to
+ * be tagged with MainDex.
  */
 @JNINamespace("media")
+@NullMarked
 class VideoAcceleratorUtil {
     private static final String TAG = "VAUtil";
 
@@ -97,7 +100,7 @@ class VideoAcceleratorUtil {
         public int maxFramerateDenominator;
         public boolean supportsCbr;
         public boolean supportsVbr;
-        public String name;
+        public @Nullable String name;
         public boolean isSoftwareCodec;
         public boolean supportsSecurePlayback;
         public boolean requiresSecurePlayback;
@@ -154,7 +157,7 @@ class VideoAcceleratorUtil {
         }
 
         @CalledByNative("SupportedProfileAdapter")
-        public String getName() {
+        public @Nullable String getName() {
             return this.name;
         }
 
@@ -230,12 +233,12 @@ class VideoAcceleratorUtil {
     }
 
     /**
-     * Returns an array of SupportedProfileAdapter entries since the NDK
-     * doesn't provide this functionality :/
+     * Returns an array of SupportedProfileAdapter entries since the NDK doesn't provide this
+     * functionality :/
      */
     @CalledByNative
     @RequiresApi(Build.VERSION_CODES.Q)
-    private static SupportedProfileAdapter[] getSupportedEncoderProfiles() {
+    private static SupportedProfileAdapter @Nullable [] getSupportedEncoderProfiles() {
         MediaCodecInfo[] codecList;
         try {
             codecList = new MediaCodecList(MediaCodecList.REGULAR_CODECS).getCodecInfos();
@@ -407,11 +410,11 @@ class VideoAcceleratorUtil {
     }
 
     /**
-     * Returns an array of SupportedProfileAdapter entries since the NDK
-     * doesn't provide this functionality :/
+     * Returns an array of SupportedProfileAdapter entries since the NDK doesn't provide this
+     * functionality :/
      */
     @CalledByNative
-    private static SupportedProfileAdapter[] getSupportedDecoderProfiles() {
+    private static SupportedProfileAdapter @Nullable [] getSupportedDecoderProfiles() {
         MediaCodecInfo[] codecList;
         try {
             codecList = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();

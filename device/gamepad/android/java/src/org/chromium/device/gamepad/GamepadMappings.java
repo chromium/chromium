@@ -13,10 +13,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.BitSet;
 
 /** Class to manage mapping information related to each supported gamepad controller device. */
 @JNINamespace("content")
+@NullMarked
 abstract class GamepadMappings {
     @VisibleForTesting
     static final String NVIDIA_SHIELD_DEVICE_NAME_PREFIX = "NVIDIA Corporation NVIDIA Controller";
@@ -60,7 +64,7 @@ abstract class GamepadMappings {
     }
 
     @VisibleForTesting
-    static GamepadMappings getMappings(int vendorId, int productId, int[] axes) {
+    static @Nullable GamepadMappings getMappings(int vendorId, int productId, int[] axes) {
         if (vendorId == SONY_VENDOR_ID) {
             if (productId == PS_DUALSHOCK_4_PRODUCT_ID
                     || productId == PS_DUALSHOCK_4_SLIM_PRODUCT_ID
@@ -104,7 +108,7 @@ abstract class GamepadMappings {
     }
 
     @VisibleForTesting
-    static GamepadMappings getMappings(String deviceName) {
+    static @Nullable GamepadMappings getMappings(String deviceName) {
         if (deviceName.startsWith(NVIDIA_SHIELD_DEVICE_NAME_PREFIX)
                 || deviceName.equals(MICROSOFT_XBOX_PAD_DEVICE_NAME)) {
             return new XboxCompatibleGamepadMappings();

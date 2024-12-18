@@ -7,12 +7,16 @@ package org.chromium.device.nfc;
 import android.app.Activity;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
-/** Interface that allows the NFC implementation to access the Activity associated with a given
+/**
+ * Interface that allows the NFC implementation to access the Activity associated with a given
  * client. |hostId| is the same ID passed in NFCProvider::GetNFCForHost().
  */
+@NullMarked
 public interface NfcDelegate {
-    /** Calls |callback| with the Activity associated with |hostId|, and subsequently calls
+    /**
+     * Calls |callback| with the Activity associated with |hostId|, and subsequently calls
      * |callback| again whenever the Activity associated with |hostId| changes.
      */
     void trackActivityForHost(int hostId, Callback<Activity> callback);

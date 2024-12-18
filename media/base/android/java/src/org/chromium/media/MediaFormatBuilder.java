@@ -4,22 +4,27 @@
 
 package org.chromium.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.os.Build;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.media.MediaCodecUtil.MimeTypes;
 
 import java.nio.ByteBuffer;
 
+@NullMarked
 class MediaFormatBuilder {
-    public static MediaFormat createVideoDecoderFormat(
+    public static @Nullable MediaFormat createVideoDecoderFormat(
             String mime,
             int width,
             int height,
             byte[][] csds,
-            HdrMetadata hdrMetadata,
+            @Nullable HdrMetadata hdrMetadata,
             boolean allowAdaptivePlayback,
             int profile) {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
@@ -116,7 +121,7 @@ class MediaFormatBuilder {
         }
         int maxPixels;
         int minCompressionRatio;
-        switch (format.getString(MediaFormat.KEY_MIME)) {
+        switch (assumeNonNull(format.getString(MediaFormat.KEY_MIME))) {
             case MimeTypes.VIDEO_H264:
                 if ("BRAVIA 4K 2015".equals(Build.MODEL)) {
                     // The Sony BRAVIA 4k TV has input buffers that are too small for the calculated
@@ -149,7 +154,7 @@ class MediaFormatBuilder {
     }
 
     private static void addProfileInfoToFormat(MediaFormat format, int profile) {
-        if (format.getString(MediaFormat.KEY_MIME).equals(MimeTypes.VIDEO_DV)) {
+        if (MimeTypes.VIDEO_DV.equals(format.getString(MediaFormat.KEY_MIME))) {
             if (profile == VideoCodecProfile.DOLBYVISION_PROFILE5) {
                 format.setInteger(
                         MediaFormat.KEY_PROFILE,

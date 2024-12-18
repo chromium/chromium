@@ -37,6 +37,9 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -46,13 +49,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This class implements Video Capture using Camera2 API, introduced in Android
- * API 21 (L Release). Capture takes place in the current Looper, while pixel
- * download takes place in another thread used by ImageReader. A number of
- * static methods are provided to retrieve information on current system cameras
- * and their capabilities, using android.hardware.camera2.CameraManager.
- **/
+ * This class implements Video Capture using Camera2 API, introduced in Android API 21 (L Release).
+ * Capture takes place in the current Looper, while pixel download takes place in another thread
+ * used by ImageReader. A number of static methods are provided to retrieve information on current
+ * system cameras and their capabilities, using android.hardware.camera2.CameraManager.
+ */
 @JNINamespace("media")
+@NullMarked
 public class VideoCaptureCamera2 extends VideoCapture {
     // Inner class to extend a CameraDevice state change listener.
     private class CrStateListener extends CameraDevice.StateCallback {
@@ -384,6 +387,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mCallbackId = callbackId;
         }
 
+        @NullUnmarked
         @Override
         public void run() {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
@@ -812,6 +816,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mOptions = options;
         }
 
+        @NullUnmarked
         @Override
         public void run() {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
@@ -966,6 +971,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mCallbackId = callbackId;
         }
 
+        @NullUnmarked
         @Override
         public void run() {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
@@ -1100,11 +1106,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     private final Object mCameraStateLock = new Object();
 
-    private CameraDevice mCameraDevice;
-    private CameraCaptureSession mPreviewSession;
-    private CaptureRequest mPreviewRequest;
-    private CaptureRequest.Builder mPreviewRequestBuilder;
-    private ImageReader mImageReader;
+    private @Nullable CameraDevice mCameraDevice;
+    private @Nullable CameraCaptureSession mPreviewSession;
+    private @Nullable CaptureRequest mPreviewRequest;
+    private CaptureRequest.@Nullable Builder mPreviewRequestBuilder;
+    private @Nullable ImageReader mImageReader;
     // We create a dedicated HandlerThread for operating the camera on. This
     // is needed, because the camera APIs requires a Looper for posting
     // asynchronous callbacks to. The native thread that calls the constructor
@@ -1113,7 +1119,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
     private Handler mCameraThreadHandler;
     private ConditionVariable mWaitForDeviceClosedConditionVariable = new ConditionVariable();
 
-    private Range<Integer> mAeFpsRange;
+    private @Nullable Range<Integer> mAeFpsRange;
     private @CameraState int mCameraState = CameraState.STOPPED;
     private float mMaxZoom = 1.0f;
     private Rect mCropRect = new Rect();
@@ -1123,7 +1129,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
     private float mCurrentFocusDistance = 1.0f;
     private int mExposureMode = AndroidMeteringMode.CONTINUOUS;
     private long mLastExposureTimeNs;
-    private MeteringRectangle mAreaOfInterest;
+    private @Nullable MeteringRectangle mAreaOfInterest;
     private int mExposureCompensation;
     private int mWhiteBalanceMode = AndroidMeteringMode.CONTINUOUS;
     private int mColorTemperature = -1;
@@ -1134,7 +1140,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
     private boolean mEnableFaceDetection;
 
     // Service function to grab CameraCharacteristics and handle exceptions.
-    private static CameraCharacteristics getCameraCharacteristics(int id) {
+    private static @Nullable CameraCharacteristics getCameraCharacteristics(int id) {
         final CameraManager manager =
                 (CameraManager)
                         ContextUtils.getApplicationContext()
@@ -1164,6 +1170,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 "Error starting or restarting preview");
     }
 
+    @NullUnmarked
     private boolean createPreviewObjectsAndStartPreview() {
         assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
         if (mCameraDevice == null) return false;
@@ -1252,6 +1259,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
+    @NullUnmarked
     private void configureCommonCaptureSettings(CaptureRequest.Builder requestBuilder) {
         assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
         try (TraceEvent trace_event =
@@ -1411,7 +1419,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     // Finds the closest Size to (|width|x|height|) in |sizes|, and returns it or null.
     // Ignores |width| or |height| if either is zero (== don't care).
-    private static Size findClosestSizeInArray(Size[] sizes, int width, int height) {
+    private static @Nullable Size findClosestSizeInArray(Size[] sizes, int width, int height) {
         if (sizes == null) return null;
         Size closestSize = null;
         int minDiff = Integer.MAX_VALUE;
@@ -1431,14 +1439,16 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return closestSize;
     }
 
-    private static int findInIntArray(int[] hayStack, int needle) {
+    @NullUnmarked
+    private static int findInIntArray(int @Nullable [] hayStack, int needle) {
         for (int i = 0; i < hayStack.length; ++i) {
             if (needle == hayStack[i]) return i;
         }
         return -1;
     }
 
-    private static int getClosestWhiteBalance(int colorTemperature, int[] supportedTemperatures) {
+    private static int getClosestWhiteBalance(
+            int colorTemperature, int @Nullable [] supportedTemperatures) {
         int minDiff = Integer.MAX_VALUE;
         int matchedTemperature = -1;
 
@@ -1454,6 +1464,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return matchedTemperature;
     }
 
+    @NullUnmarked
     public static boolean isLegacyDevice(int id) {
         final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
         return cameraCharacteristics != null
@@ -1482,6 +1493,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
+    @NullUnmarked
     public static int getCaptureApiType(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
@@ -1521,6 +1533,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
+    @NullUnmarked
     public static boolean isZoomSupported(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
@@ -1534,6 +1547,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         return isZoomSupported;
     }
 
+    @NullUnmarked
     public static int getFacingMode(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
@@ -1552,7 +1566,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static String getName(int index) {
+    @NullUnmarked
+    public static @Nullable String getName(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
         if (cameraCharacteristics == null) return null;
@@ -1621,7 +1636,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    static String getDeviceId(int index) {
+    static @Nullable String getDeviceId(int index) {
         final CameraManager manager =
                 (CameraManager)
                         ContextUtils.getApplicationContext()
@@ -1639,7 +1654,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static VideoCaptureFormat[] getDeviceSupportedFormats(int index) {
+    @NullUnmarked
+    public static VideoCaptureFormat @Nullable [] getDeviceSupportedFormats(int index) {
         final CameraCharacteristics cameraCharacteristics =
                 getCameraCharacteristics(getDeviceIdInt(index));
         if (cameraCharacteristics == null) return null;
@@ -1691,6 +1707,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
+    @NullUnmarked
     VideoCaptureCamera2(int id, long nativeVideoCaptureDeviceAndroid) {
         super(id, nativeVideoCaptureDeviceAndroid);
 
@@ -1717,6 +1734,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         mCameraThreadHandler.getLooper().quit();
     }
 
+    @NullUnmarked
     @Override
     public boolean allocate(int width, int height, int frameRate, boolean enableFaceDetection) {
         Log.d(TAG, "allocate: requested (%d x %d) @%dfps", width, height, frameRate);

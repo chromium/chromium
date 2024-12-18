@@ -20,6 +20,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,10 +29,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Owned by its native counterpart declared in
- * usb_midi_device_factory_android.h. Refer to that class for general comments.
+ * Owned by its native counterpart declared in usb_midi_device_factory_android.h. Refer to that
+ * class for general comments.
  */
 @JNINamespace("midi")
+@NullMarked
 class UsbMidiDeviceFactoryAndroid {
     /** The UsbManager of this system. */
     private UsbManager mUsbManager;
@@ -79,6 +81,7 @@ class UsbMidiDeviceFactoryAndroid {
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        assert device != null;
                         if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
                             requestDevicePermissionIfNecessary(device);
                         }

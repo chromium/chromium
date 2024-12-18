@@ -14,6 +14,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * This class listens to camera availability changes and notifies the native
@@ -21,6 +22,7 @@ import org.chromium.base.ContextUtils;
  * time.
  */
 @JNINamespace("media")
+@NullMarked
 class CameraAvailabilityObserver extends CameraManager.AvailabilityCallback {
     /**
      * Creates a new CameraAvailabilityObserver object.

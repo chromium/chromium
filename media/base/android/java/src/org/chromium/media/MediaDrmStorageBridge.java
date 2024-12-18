@@ -9,12 +9,15 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Origin isolated media drm scope id storage. Isolated origin is guaranteed by native
  * implementation. Thus no origin information is stored here.
  */
 @JNINamespace("media")
+@NullMarked
 class MediaDrmStorageBridge {
     private static final long INVALID_NATIVE_MEDIA_DRM_STORAGE_BRIDGE = -1;
 
@@ -84,7 +87,7 @@ class MediaDrmStorageBridge {
     }
 
     /** Load |emeId|'s storage into memory. */
-    void loadInfo(byte[] emeId, Callback<PersistentInfo> cb) {
+    void loadInfo(byte[] emeId, Callback<@Nullable PersistentInfo> cb) {
         if (isNativeMediaDrmStorageValid()) {
             MediaDrmStorageBridgeJni.get()
                     .onLoadInfo(
