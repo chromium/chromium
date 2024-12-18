@@ -53,6 +53,7 @@ public class ToolbarLongPressMenuHandler {
     private final int mAppMenuShadowLength;
     private final int mEdgeToTextDistance;
     private final int mUrlBarMargin;
+    private final int mMenuOmniboxOverlap;
     @NonNull private final Context mContext;
     @NonNull private final ObservableSupplier<Profile> mProfileSupplier;
     @NonNull private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
@@ -120,6 +121,9 @@ public class ToolbarLongPressMenuHandler {
                                 .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
         mUrlBarMargin =
                 mContext.getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_margin);
+        mMenuOmniboxOverlap =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_longpress_menu_overlap);
     }
 
     /**
@@ -209,8 +213,7 @@ public class ToolbarLongPressMenuHandler {
     @VisibleForTesting
     int[] calculateShowLocation(boolean onTop, boolean isRtl, BasicListMenu listMenu) {
         ViewRectProvider viewRectProvider = mUrlBarViewRectProviderSupplier.get();
-        viewRectProvider.setIncludePadding(true);
-        viewRectProvider.setMarginPx(0, mUrlBarMargin, 0, mUrlBarMargin);
+        viewRectProvider.setInsetPx(0, mUrlBarMargin, 0, mUrlBarMargin);
         Rect urlBarRect = viewRectProvider.getRect();
 
         int[] menuDimensions = listMenu.getMenuDimensions();
@@ -224,11 +227,11 @@ public class ToolbarLongPressMenuHandler {
         int y;
         if (onTop) {
             // The long press menu will appear below the toolbar.
-            y = urlBarRect.bottom;
+            y = urlBarRect.bottom - mMenuOmniboxOverlap;
         } else {
             // The long press menu will appear above the toolbar.
 
-            y = urlBarRect.top - menuHeight;
+            y = urlBarRect.top - menuHeight + mMenuOmniboxOverlap;
         }
         return new int[] {x, y};
     }
