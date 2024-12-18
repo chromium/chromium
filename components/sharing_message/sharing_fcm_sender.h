@@ -19,6 +19,7 @@
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_send_message_result.h"
 #include "components/sharing_message/web_push/web_push_sender.h"
+#include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info.h"
@@ -62,7 +63,8 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
       gcm::GCMDriver* gcm_driver,
       const syncer::DeviceInfoTracker* device_info_tracker,
       const syncer::LocalDeviceInfoProvider* local_device_info_provider,
-      syncer::SyncService* sync_service);
+      syncer::SyncService* sync_service,
+      syncer::SyncableService::StartSyncFlare start_sync_flare);
   SharingFCMSender(const SharingFCMSender&) = delete;
   SharingFCMSender& operator=(const SharingFCMSender&) = delete;
   ~SharingFCMSender() override;
@@ -168,6 +170,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
   const raw_ptr<const syncer::LocalDeviceInfoProvider>
       local_device_info_provider_;
   const raw_ptr<syncer::SyncService> sync_service_;
+  syncer::SyncableService::StartSyncFlare start_sync_flare_;
   base::ScopedObservation<syncer::SyncService, SharingFCMSender>
       sync_service_observation_{this};
 

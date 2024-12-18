@@ -34,6 +34,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/common",
     "//ios/web/public/thread",
   ]

@@ -188,7 +188,8 @@ class SharingFCMSenderTest : public testing::Test {
             &fake_gcm_driver_,
             fake_device_info_sync_service_.GetDeviceInfoTracker(),
             &fake_local_device_info_provider_,
-            &test_sync_service_) {
+            &test_sync_service_,
+            mock_sync_flare_.Get()) {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
   }
 
@@ -201,6 +202,7 @@ class SharingFCMSenderTest : public testing::Test {
   FakeGCMDriver fake_gcm_driver_;
   syncer::FakeLocalDeviceInfoProvider fake_local_device_info_provider_;
   syncer::TestSyncService test_sync_service_;
+  base::MockCallback<syncer::SyncableService::StartSyncFlare> mock_sync_flare_;
 
   SharingFCMSender sharing_fcm_sender_;
 };
@@ -564,6 +566,9 @@ TEST_F(SharingFCMSenderTest, ShouldPostponeSendingMessageViaSync) {
       SharingMessageSender::SendMessageDelegate::SendMessageCallback>
       callback;
   EXPECT_CALL(callback, Run).Times(0);
+
+  // Sync flare should be called to speed up sync start.
+  EXPECT_CALL(mock_sync_flare_, Run(syncer::SHARING_MESSAGE));
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(

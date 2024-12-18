@@ -43,7 +43,8 @@ SharingFCMSender::SharingFCMSender(
     gcm::GCMDriver* gcm_driver,
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::LocalDeviceInfoProvider* local_device_info_provider,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    syncer::SyncableService::StartSyncFlare start_sync_flare)
     : web_push_sender_(std::move(web_push_sender)),
       sharing_message_bridge_(sharing_message_bridge),
       sync_preference_(sync_preference),
@@ -51,7 +52,8 @@ SharingFCMSender::SharingFCMSender(
       gcm_driver_(gcm_driver),
       device_info_tracker_(device_info_tracker),
       local_device_info_provider_(local_device_info_provider),
-      sync_service_(sync_service) {
+      sync_service_(sync_service),
+      start_sync_flare_(std::move(start_sync_flare)) {
   // `sync_service_` can be null in tests.
   if (sync_service_) {
     sync_service_observation_.Observe(sync_service_);
@@ -130,6 +132,10 @@ void SharingFCMSender::SendMessageToFcmTarget(
     // TODO(crbug.com/40253551): delete pending messages by TTL.
     pending_messages_.emplace_back(fcm_configuration, time_to_live,
                                    std::move(message), std::move(callback));
+    if (start_sync_flare_) {
+      start_sync_flare_.Run(syncer::SHARING_MESSAGE);
+      start_sync_flare_.Reset();
+    }
     return;
   }
 

@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_handler_registry_impl.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/glue/sync_start_util.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -131,7 +132,8 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   auto fcm_sender = std::make_unique<SharingFCMSender>(
       /*web_push_sender=*/nullptr, message_bridge, sync_prefs.get(),
       vapid_key_manager.get(), gcm_driver, device_info_tracker,
-      local_device_info_provider, sync_service);
+      local_device_info_provider, sync_service,
+      ios::sync_start_util::GetFlareForSyncableService(profile));
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
