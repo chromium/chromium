@@ -299,8 +299,9 @@ bool IsStateless() {
 
   // Once a provider is found, use it to retrieve suggestions.
   PipelineCompletionBlock completion = ^(NSUInteger providerIndex) {
-    // Ignore outdated results.
-    if (weakSelf.requestIdentifier != requestIdentifier) {
+    // Ignore outdated results. As `_requestIdentifier` is useless when the
+    // suggestion controller is stateless, complete all requests.
+    if (weakSelf.requestIdentifier != requestIdentifier && !IsStateless()) {
       return;
     }
     if (providerIndex == NSNotFound) {
