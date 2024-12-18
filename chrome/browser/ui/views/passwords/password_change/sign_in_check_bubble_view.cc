@@ -47,8 +47,7 @@ SignInCheckBubbleView::SignInCheckBubbleView(
                               DISTANCE_CONTROL_LIST_VERTICAL),
                           0));
 
-  // TODO(crbug.com/381053962): Get the current origit from controller.
-  AddChildView(CreateBodyText(u"demo.com"));
+  AddChildView(CreateBodyText(controller_.GetDisplayOrigin()));
   AddChildView(CreateBodyText(l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_DETAILS)));
 

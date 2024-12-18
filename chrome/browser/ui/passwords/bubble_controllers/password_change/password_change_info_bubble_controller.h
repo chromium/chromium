@@ -31,6 +31,8 @@ class PasswordChangeInfoBubbleController : public PasswordBubbleControllerBase,
   void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
 
   void CancelPasswordChange();
+  // Get the change password origin to be displayed in UI.
+  std::u16string GetDisplayOrigin();
 
  private:
   PasswordChangeDelegate::State state_;

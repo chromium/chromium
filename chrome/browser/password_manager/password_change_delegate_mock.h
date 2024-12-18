@@ -35,6 +35,7 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
               (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
+  MOCK_METHOD(const GURL&, GetChangePasswordUrl, (), (const override));
 
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
 

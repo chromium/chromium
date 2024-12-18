@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DELEGATE_H_
 
+#include <string>
+
 #include "base/observer_list_types.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -62,6 +65,9 @@ class PasswordChangeDelegate {
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Returns the change password url.
+  virtual const GURL& GetChangePasswordUrl() const = 0;
 
   virtual base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() = 0;
 };

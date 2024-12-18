@@ -148,6 +148,10 @@ void PasswordChangeDelegateImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+const GURL& PasswordChangeDelegateImpl::GetChangePasswordUrl() const {
+  return change_password_url_;
+}
+
 void PasswordChangeDelegateImpl::UpdateState(
     PasswordChangeDelegate::State new_state) {
   if (new_state != current_state_) {
