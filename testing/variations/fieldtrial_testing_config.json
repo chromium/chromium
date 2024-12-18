@@ -15736,6 +15736,15 @@
                     "enable_features": [
                         "PwaNavigationCapturing"
                     ]
+                },
+                {
+                    "name": "EnabledSettingOnForClientModes",
+                    "params": {
+                        "link_capturing_state": "reimpl_on_via_client_mode"
+                    },
+                    "enable_features": [
+                        "PwaNavigationCapturing"
+                    ]
                 }
             ]
         }

@@ -320,7 +320,8 @@ enum class CapturingState {
   kDefaultOn = 0,
   kDefaultOff = 1,
   kReimplDefaultOn = 2,
-  kReimplDefaultOff = 3
+  kReimplDefaultOff = 3,
+  kReimplOnViaClientMode = 4,
 };
 // If links should be captured by apps by default.
 CONTENT_EXPORT extern const base::FeatureParam<CapturingState>

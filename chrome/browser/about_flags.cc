@@ -3620,16 +3620,22 @@ const flags_ui::FeatureEntry::FeatureParam
 const flags_ui::FeatureEntry::FeatureParam
     kPwaNavigationCapturingReimplDefaultOff[] = {
         {"link_capturing_state", "reimpl_default_off"}};
+const flags_ui::FeatureEntry::FeatureParam
+    kPwaNavigationCapturingReimplOnViaClientMode[] = {
+        {"link_capturing_state", "reimpl_on_via_client_mode"}};
 const flags_ui::FeatureEntry::FeatureVariation
     kPwaNavigationCapturingVariations[] = {
-        {"On by default", kPwaNavigationCapturingDefaultOn,
+        {"V1, On by default", kPwaNavigationCapturingDefaultOn,
          std::size(kPwaNavigationCapturingDefaultOn), nullptr},
-        {"Off by default", kPwaNavigationCapturingDefaultOff,
+        {"V1, Off by default", kPwaNavigationCapturingDefaultOff,
          std::size(kPwaNavigationCapturingDefaultOff), nullptr},
-        {"(Reimpl) On by default", kPwaNavigationCapturingReimplDefaultOn,
+        {"V2, On by default", kPwaNavigationCapturingReimplDefaultOn,
          std::size(kPwaNavigationCapturingReimplDefaultOn), nullptr},
-        {"(Reimpl) Off by default", kPwaNavigationCapturingReimplDefaultOff,
-         std::size(kPwaNavigationCapturingReimplDefaultOff), nullptr}};
+        {"V2, Off by default", kPwaNavigationCapturingReimplDefaultOff,
+         std::size(kPwaNavigationCapturingReimplDefaultOff), nullptr},
+        {"V2, On by app client_mode",
+         kPwaNavigationCapturingReimplOnViaClientMode,
+         std::size(kPwaNavigationCapturingReimplOnViaClientMode), nullptr}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 

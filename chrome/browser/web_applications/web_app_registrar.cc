@@ -74,6 +74,8 @@ BASE_FEATURE(kDiyAppsDefaultCaptureForcedOff,
 struct AppStateForNavigationCapturing {
   bool is_diy_app = false;
   bool is_preinstalled_browser_tab_app = false;
+  blink::Manifest::LaunchHandler::ClientMode client_mode =
+      blink::Manifest::LaunchHandler::ClientMode::kAuto;
 };
 
 bool IsNavigationCapturingSettingOffByDefault(
@@ -96,10 +98,17 @@ bool IsNavigationCapturingSettingOffByDefault(
     return false;
   }
 
-  return features::kNavigationCapturingDefaultState.Get() ==
-             features::CapturingState::kDefaultOff ||
-         features::kNavigationCapturingDefaultState.Get() ==
-             features::CapturingState::kReimplDefaultOff;
+  switch (features::kNavigationCapturingDefaultState.Get()) {
+    case features::CapturingState::kDefaultOff:
+    case features::CapturingState::kReimplDefaultOff:
+      return true;
+    case features::CapturingState::kDefaultOn:
+    case features::CapturingState::kReimplDefaultOn:
+      return false;
+    case features::CapturingState::kReimplOnViaClientMode:
+      return app_state.client_mode ==
+             blink::Manifest::LaunchHandler::ClientMode::kAuto;
+  }
 }
 
 bool IsAppCapturingSettingForcedOff(const webapps::AppId& app_id) {
@@ -1141,7 +1150,10 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
       if (IsNavigationCapturingSettingOffByDefault(
               {.is_diy_app = web_app->is_diy_app(),
                .is_preinstalled_browser_tab_app =
-                   is_preinstalled_browser_tab_app})) {
+                   is_preinstalled_browser_tab_app,
+               .client_mode = web_app->launch_handler()
+                                  .value_or(LaunchHandler())
+                                  .client_mode})) {
         return false;
       }
       break;
