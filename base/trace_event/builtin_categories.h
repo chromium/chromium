@@ -233,6 +233,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("cppgc"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"))                     \
+  X(TRACE_DISABLED_BY_DEFAULT("crypto.dpapi"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))                \
