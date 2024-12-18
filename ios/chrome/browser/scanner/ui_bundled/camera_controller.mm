@@ -241,13 +241,12 @@
                           [camera isTorchModeSupported:AVCaptureTorchModeOff]];
 
   [previewLayer setSession:_captureSession];
-  [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
   __weak CameraController* weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf
-        captureSessionConnected:(AVCaptureVideoPreviewLayer*)previewLayer];
+    [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+    [weakSelf captureSessionConnected:previewLayer];
+    [weakSelf startReceivingNotifications];
   });
-  [self startReceivingNotifications];
 }
 
 - (void)captureSessionConnected:(AVCaptureVideoPreviewLayer*)previewLayer {
