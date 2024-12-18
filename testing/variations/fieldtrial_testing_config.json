@@ -14517,6 +14517,27 @@
             ]
         }
     ],
+    "NewOSCryptAlgorithmForPasswords": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EncryptAllPasswordsWithOSCryptAsync",
+                        "UseNewEncryptionMethod"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoPasswordSuggestionFiltering": [
         {
             "platforms": [
@@ -14689,27 +14710,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NotificationsIgnoreRequireInteraction"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OScryptForPasswords": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EncryptAllPasswordsWithOSCryptAsync",
-                        "UseNewEncryptionMethod"
                     ]
                 }
             ]
