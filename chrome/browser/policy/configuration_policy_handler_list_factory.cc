@@ -1783,6 +1783,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kArcOpenLinksInBrowserByDefault,
     arc::prefs::kArcOpenLinksInBrowserByDefault,
     base::Value::Type::BOOLEAN },
+  { key::kGenAIPhotoEditingSettings,
+    ash::prefs::kGenAIPhotoEditingSettings,
+    base::Value::Type::INTEGER},
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
@@ -3264,6 +3267,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                        ash::prefs::kGenAIVcBackgroundSettings);
   gen_ai_default_policies.emplace_back(key::kHelpMeReadSettings,
                                        ash::prefs::kHmrManagedSettings);
+  gen_ai_default_policies.emplace_back(key::kGenAIPhotoEditingSettings,
+                                       ash::prefs::kGenAIPhotoEditingSettings);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));

@@ -313,6 +313,7 @@ void MediaAppGuestUI::IsMantisAvailable(IsMantisAvailableCallback callback) {
         std::make_unique<MantisUntrustedServiceManager>();
   }
   mantis_untrusted_service_manager_->IsAvailable(
+      delegate_->GetPrefService(web_ui()),
       base::BindOnce(&MediaAppGuestUI::OnMantisAvailableDone,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

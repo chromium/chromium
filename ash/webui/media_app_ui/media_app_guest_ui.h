@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/gfx/native_widget_types.h"
@@ -33,6 +34,7 @@ class MediaAppGuestUIDelegate {
   // Takes a WebUI and WebUIDataSource, and populates its load-time data.
   virtual void PopulateLoadTimeData(content::WebUI* web_ui,
                                     content::WebUIDataSource* source) = 0;
+  virtual PrefService* GetPrefService(content::WebUI* web_ui) = 0;
   virtual void CreateAndBindOcrUntrustedService(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,

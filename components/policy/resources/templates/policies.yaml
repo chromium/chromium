@@ -1323,6 +1323,7 @@ policies:
   1322: DeviceFlexArcPreloadEnabled
   1323: AllowedInputMethodsForceEnabled
   1324: WebRtcIPHandlingUrl
+  1325: GenAIPhotoEditingSettings
 
 
 atomic_groups:

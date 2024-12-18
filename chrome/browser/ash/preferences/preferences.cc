@@ -597,6 +597,8 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(prefs::kHMRConsentWindowDismissCount, 0);
 
+  registry->RegisterIntegerPref(prefs::kGenAIPhotoEditingSettings, 0);
+
   registry->RegisterBooleanPref(
       prefs::kLauncherResultEverLaunched, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);

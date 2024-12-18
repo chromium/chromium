@@ -2196,6 +2196,7 @@ chromium-metrics-reviews@google.com.
   <int value="1322" label="DeviceFlexArcPreloadEnabled"/>
   <int value="1323" label="AllowedInputMethodsForceEnabled"/>
   <int value="1324" label="WebRtcIPHandlingUrl"/>
+  <int value="1325" label="GenAIPhotoEditingSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

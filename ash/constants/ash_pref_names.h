@@ -87,6 +87,11 @@ inline constexpr char kHMRConsentStatus[] = "settings.hmr.consent_status";
 inline constexpr char kHMRConsentWindowDismissCount[] =
     "settings.hmr.consent_window_dismiss_count";
 
+// An integer pref used by an admin policy to control the settings of
+// Gen AI Photo Editing. See the policy at GenAIPhotoEditingSettings.yaml.
+inline constexpr char kGenAIPhotoEditingSettings[] =
+    "ash.gen_ai_photo_editing_settings";
+
 // A boolean pref of whether Lobster is enabled.
 inline constexpr char kLobsterEnabled[] = "settings.lobster_enabled";
 

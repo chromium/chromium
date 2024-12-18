@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -24,6 +25,12 @@ namespace {
 
 using ::ash::media_app_ui::mojom::MantisUntrustedPage;
 using ::mantis::mojom::PlatformModelProgressObserver;
+
+enum class GenAIPhotoEditingSettings {
+  kAllowed = 0,                // Allow and improve AI models
+  kAllowedWithoutLogging = 1,  // Allow without improving AI models
+  kDisabled = 2,               // Do not allow
+};
 
 // A helper class that wraps `MantisUntrustedPage::ReportMantisProgress()` as
 // `PlatformModelProgressObserver::Progress()`.
@@ -70,14 +77,19 @@ void MantisUntrustedServiceManager::OnQueryDone(
 }
 
 void MantisUntrustedServiceManager::IsAvailable(
+    PrefService* pref_service,
     base::OnceCallback<void(bool)> callback) {
   if (switches::IsMantisSecretKeyMatched()) {
     std::move(callback).Run(true);
     return;
   }
 
-  // TODO(crbug.com/362993438): Check admin console policy, age restriction, and
-  // region restriction.
+  // TODO(crbug.com/362993438): Check age restriction and region restriction.
+  if (pref_service->GetInteger(ash::prefs::kGenAIPhotoEditingSettings) ==
+      static_cast<int>(GenAIPhotoEditingSettings::kDisabled)) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   // Query kCrosMantisService first since it might not be available on every
   // devices.
