@@ -16661,7 +16661,6 @@
                     "enable_features": [
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
-                        "PumpFastToSleepAndroid",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
                         "SqlWALModeOnSegmentationDatabase"
@@ -16679,7 +16678,6 @@
                     "enable_features": [
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
-                        "PumpFastToSleepAndroid",
                         "ReduceCpuUtilization2",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
