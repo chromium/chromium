@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import android.app.Activity;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -48,6 +50,10 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
     @VisibleForTesting
     SafetyHubHatsHelper(Profile profile) {
         mProfile = profile;
+    }
+
+    void triggerOrganicHatsSurvey(Activity activity) {
+        // TODO(crbug.com/376287858): Implement triggering the survey without invitation UI.
     }
 
     void triggerControlHatsSurvey(TabModelSelector tabModelSelector) {
