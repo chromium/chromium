@@ -911,6 +911,9 @@ void ChromeAuthenticatorRequestDelegate::OnRetryUserVerification(int attempts) {
 void ChromeAuthenticatorRequestDelegate::OnStartOver() {
   DCHECK(start_over_callback_);
   dialog_model_->generation++;
+  if (g_observer) {
+    g_observer->PreStartOver();
+  }
   start_over_callback_.Run();
 }
 

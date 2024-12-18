@@ -102,6 +102,9 @@ class ChromeAuthenticatorRequestDelegate
 
     virtual void HintsSet(
         const AuthenticatorRequestClientDelegate::Hints& hints) {}
+
+    // Called right before `start_over_callback_` is invoked.
+    virtual void PreStartOver() {}
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
