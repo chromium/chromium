@@ -21,6 +21,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -40,6 +41,12 @@ enum class TriggerOutcome {
   kMaxValue = kTimedOut,
 };
 
+constexpr base::TimeDelta kExpansionInDuration = base::Milliseconds(500);
+constexpr base::TimeDelta kExpansionOutDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kOpacityInDuration = base::Milliseconds(300);
+constexpr base::TimeDelta kOpacityOutDuration = base::Milliseconds(100);
+constexpr base::TimeDelta kOpacityDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kShowDuration = base::Seconds(16);
 constexpr char kDeclutterTriggerOutcomeName[] =
     "Tab.Organization.Declutter.Trigger.Outcome";
 constexpr char kDeclutterTriggerBucketedCTRName[] =
@@ -47,10 +54,126 @@ constexpr char kDeclutterTriggerBucketedCTRName[] =
 constexpr int kLargeSpaceBetweenButtons = 4;
 
 }  // namespace
+
+TabGlicContainer::TabStripNudgeAnimationSession::TabStripNudgeAnimationSession(
+    TabStripNudgeButton* button,
+    TabGlicContainer* container,
+    AnimationSessionType session_type,
+    base::OnceCallback<void()> on_animation_ended)
+    : button_(button),
+      container_(container),
+      expansion_animation_(container),
+      opacity_animation_(container),
+      session_type_(session_type),
+      on_animation_ended_(std::move(on_animation_ended)) {
+  if (session_type_ == AnimationSessionType::HIDE) {
+    expansion_animation_.Reset(1);
+    opacity_animation_.Reset(1);
+  }
+}
+
+TabGlicContainer::TabStripNudgeAnimationSession::
+    ~TabStripNudgeAnimationSession() = default;
+
+void TabGlicContainer::TabStripNudgeAnimationSession::Start() {
+  if (session_type_ ==
+      TabStripNudgeAnimationSession::AnimationSessionType::SHOW) {
+    Show();
+  } else {
+    Hide();
+  }
+}
+
+void TabGlicContainer::TabStripNudgeAnimationSession::ResetAnimationForTesting(
+    double value) {
+  if (opacity_animation_delay_timer_.IsRunning()) {
+    opacity_animation_delay_timer_.FireNow();
+  }
+
+  expansion_animation_.Reset(value);
+  opacity_animation_.Reset(value);
+}
+
+void TabGlicContainer::TabStripNudgeAnimationSession::Show() {
+  expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
+  opacity_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
+
+  expansion_animation_.SetSlideDuration(
+      GetAnimationDuration(kExpansionInDuration));
+  opacity_animation_.SetSlideDuration(GetAnimationDuration(kOpacityInDuration));
+
+  expansion_animation_.Show();
+
+  const base::TimeDelta delay = GetAnimationDuration(kOpacityDelay);
+  opacity_animation_delay_timer_.Start(
+      FROM_HERE, delay, this,
+      &TabGlicContainer::TabStripNudgeAnimationSession::ShowOpacityAnimation);
+}
+
+void TabGlicContainer::TabStripNudgeAnimationSession::Hide() {
+  // Animate and hide existing chip.
+  if (session_type_ ==
+      TabStripNudgeAnimationSession::AnimationSessionType::SHOW) {
+    if (opacity_animation_delay_timer_.IsRunning()) {
+      opacity_animation_delay_timer_.FireNow();
+    }
+    session_type_ = TabStripNudgeAnimationSession::AnimationSessionType::HIDE;
+  }
+
+  expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
+  opacity_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
+
+  expansion_animation_.SetSlideDuration(
+      GetAnimationDuration(kExpansionOutDuration));
+
+  opacity_animation_.SetSlideDuration(
+      GetAnimationDuration(kOpacityOutDuration));
+
+  expansion_animation_.Hide();
+  opacity_animation_.Hide();
+}
+
+base::TimeDelta
+TabGlicContainer::TabStripNudgeAnimationSession::GetAnimationDuration(
+    base::TimeDelta duration) {
+  return gfx::Animation::ShouldRenderRichAnimation() ? duration
+                                                     : base::TimeDelta();
+}
+
+void TabGlicContainer::TabStripNudgeAnimationSession::ShowOpacityAnimation() {
+  opacity_animation_.Show();
+}
+
+void TabGlicContainer::TabStripNudgeAnimationSession::ApplyAnimationValue(
+    const gfx::Animation* animation) {
+  float value = animation->GetCurrentValue();
+  if (animation == &expansion_animation_) {
+    button_->SetWidthFactor(value);
+  } else if (animation == &opacity_animation_) {
+    button_->SetOpacity(value);
+  }
+}
+
+void TabGlicContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
+    const gfx::Animation* animation) {
+  if (animation == &expansion_animation_) {
+    expansion_animation_done_ = true;
+  } else {
+    opacity_animation_done_ = true;
+  }
+
+  if (expansion_animation_done_ && opacity_animation_done_) {
+    if (on_animation_ended_) {
+      std::move(on_animation_ended_).Run();
+    }
+  }
+}
+
 TabGlicContainer::TabGlicContainer(
     TabStripController* tab_strip_controller,
     tabs::TabDeclutterController* tab_declutter_controller)
-    : tab_declutter_controller_(tab_declutter_controller) {
+    : AnimationDelegateViews(this),
+      tab_declutter_controller_(tab_declutter_controller) {
   // `tab_declutter_controller_` will be null for some profile types and if
   // feature is not enabled.
   if (tab_declutter_controller_) {
@@ -192,13 +315,59 @@ void TabGlicContainer::HideTabStripNudge(TabStripNudgeButton* button) {
 }
 
 void TabGlicContainer::ExecuteShowTabStripNudge(TabStripNudgeButton* button) {
-  return;
   // TODO(crbug.com/384554420) add modal support.
-  // TODO(crbug.com/384565280) add animation support.
+  animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
+      button, this, TabStripNudgeAnimationSession::AnimationSessionType::SHOW,
+      base::BindOnce(&TabGlicContainer::OnAnimationSessionEnded,
+                     base::Unretained(this)));
+  animation_session_->Start();
+
+  hide_tab_strip_nudge_timer_.Start(
+      FROM_HERE, kShowDuration,
+      base::BindOnce(&TabGlicContainer::OnTabStripNudgeButtonTimeout,
+                     base::Unretained(this), button));
+
+  if (button == tab_declutter_button_) {
+    LogDeclutterTriggerBucket(false);
+  }
 }
 
 void TabGlicContainer::ExecuteHideTabStripNudge(TabStripNudgeButton* button) {
-  // TODO(crbug.com/384565280) add animation support.
+  // Hide the current animation if the shown button is the same button. Do not
+  // create a new animation session.
+  if (animation_session_ &&
+      animation_session_->session_type() ==
+          TabStripNudgeAnimationSession::AnimationSessionType::SHOW &&
+      animation_session_->button() == button) {
+    hide_tab_strip_nudge_timer_.Stop();
+    animation_session_->Hide();
+    return;
+  }
+
+  if (!button->GetVisible()) {
+    return;
+  }
+
+  // Stop the timer since the chip might be getting hidden on user actions like
+  // dismissal or click and not timeout.
+  hide_tab_strip_nudge_timer_.Stop();
+  animation_session_ = std::make_unique<TabStripNudgeAnimationSession>(
+      button, this, TabStripNudgeAnimationSession::AnimationSessionType::HIDE,
+      base::BindOnce(&TabGlicContainer::OnAnimationSessionEnded,
+                     base::Unretained(this)));
+  animation_session_->Start();
+}
+
+void TabGlicContainer::OnTabStripNudgeButtonTimeout(
+    TabStripNudgeButton* button) {
+  if (button == tab_declutter_button_) {
+    base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
+                                  TriggerOutcome::kTimedOut);
+  }
+
+  // Hide the button if not pressed. Use locked expansion mode to avoid
+  // disrupting the user.
+  HideTabStripNudge(button);
 }
 
 void TabGlicContainer::SetupButtonProperties(TabStripNudgeButton* button) {
@@ -210,6 +379,25 @@ void TabGlicContainer::SetupButtonProperties(TabStripNudgeButton* button) {
 
   // Set opacity for the button
   button->SetOpacity(0);
+}
+
+void TabGlicContainer::AnimationCanceled(const gfx::Animation* animation) {
+  AnimationEnded(animation);
+}
+
+void TabGlicContainer::AnimationEnded(const gfx::Animation* animation) {
+  animation_session_->ApplyAnimationValue(animation);
+  animation_session_->MarkAnimationDone(animation);
+}
+
+void TabGlicContainer::OnAnimationSessionEnded() {
+  // TODO(crbug.com/384554420) add modal support.
+
+  animation_session_.reset();
+}
+
+void TabGlicContainer::AnimationProgressed(const gfx::Animation* animation) {
+  animation_session_->ApplyAnimationValue(animation);
 }
 
 BEGIN_METADATA(TabGlicContainer)

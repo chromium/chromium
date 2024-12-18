@@ -54,6 +54,65 @@ class TabGlicContainerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest, ShowsDeclutterChip) {
+  ASSERT_FALSE(tab_glic_container()->animation_session_for_testing());
+
+  tab_glic_container()->ShowTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+
+  ASSERT_TRUE(tab_glic_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest,
+                       ShowsAndHidesDeclutterChip) {
+  ASSERT_FALSE(tab_glic_container()->animation_session_for_testing());
+
+  tab_glic_container()->ShowTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+
+  ASSERT_TRUE(tab_glic_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+
+  // Finish showing declutter chip.
+  tab_glic_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_glic_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Hide the declutter chip.
+  tab_glic_container()->HideTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+
+  ASSERT_TRUE(tab_glic_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest,
+                       LogsWhenDeclutterButtonClicked) {
+  base::HistogramTester histogram_tester;
+
+  tab_glic_container()->ShowTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+
+  tab_glic_container()->OnTabDeclutterButtonClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "Tab.Organization.Declutter.Trigger.Outcome", 0, 1);
+  // Bucketed CTR metric should reflect one show and one click, with fewer than
+  // 15 total tabs.
+  histogram_tester.ExpectBucketCount(
+      "Tab.Organization.Declutter.Trigger.BucketedCTR", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Tab.Organization.Declutter.Trigger.BucketedCTR", 10, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest,
                        LogsWhenDeclutterButtonDismissed) {
   base::HistogramTester histogram_tester;
@@ -65,4 +124,18 @@ IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Tab.Organization.Declutter.Trigger.Outcome", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest,
+                       LogsWhenDeclutterButtonTimeout) {
+  base::HistogramTester histogram_tester;
+
+  tab_glic_container()->ShowTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+
+  tab_glic_container()->OnTabStripNudgeButtonTimeout(
+      tab_glic_container()->tab_declutter_button());
+
+  histogram_tester.ExpectUniqueSample(
+      "Tab.Organization.Declutter.Trigger.Outcome", 2, 1);
 }
