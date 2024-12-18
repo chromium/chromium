@@ -282,7 +282,6 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
       navigation_prefetch_(navigation_prefetch) {
   CHECK(streaming_prefetch_request_);
   streaming_prefetch_request_->MarkPrefetchAsServable();
-  prefetch_url_ = resource_request->url;
 
   // Maybe proxies the prefetch URL loader via the Extension Web Request API, so
   // that extensions can be informed of any prefetches.
@@ -369,15 +368,6 @@ void StreamingSearchPrefetchURLLoader::OnServableResponseCodeReceived() {
   streaming_prefetch_request_->OnServableResponseCodeReceived();
 }
 
-void StreamingSearchPrefetchURLLoader::RecordNavigationURLHistogram(
-    const GURL& navigation_url) {
-  if (navigation_prefetch_) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Omnibox.SearchPrefetch.NavigationURLMatches.NavigationPrefetch",
-        (prefetch_url_ == navigation_url));
-  }
-}
-
 void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
@@ -396,8 +386,6 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
   // Copy the navigation request for fallback.
   resource_request_ =
       std::make_unique<network::ResourceRequest>(resource_request);
-
-  RecordNavigationURLHistogram(resource_request_->url);
 
   // Let `this` own itself, so that it can manage its lifetime properly.
   self_pointer_ = WrapRefCounted(this);

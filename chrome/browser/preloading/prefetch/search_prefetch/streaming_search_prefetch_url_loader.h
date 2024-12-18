@@ -243,10 +243,6 @@ class StreamingSearchPrefetchURLLoader
   // on mojo channels closing or other errors occurring.
   void ClearOwnerPointer();
 
-  // Record whether the navigation url and the |prefetch_url_| match. Only
-  // recorded when |navigation_prefetch_| is true.
-  void RecordNavigationURLHistogram(const GURL& navigation_url);
-
   void set_on_destruction_callback_for_testing(
       base::OnceClosure on_destruction_callback_for_testing) {
     on_destruction_callback_for_testing_ =
@@ -448,10 +444,6 @@ class StreamingSearchPrefetchURLLoader
 
   // Whether this loader is created specifically for a navigation prefetch.
   bool navigation_prefetch_;
-
-  // The prefetch URL, used to record whether the prefetch and navigation URLs
-  // match when this is a navigation prefetch.
-  GURL prefetch_url_;
 
   // Whether this url loader was activated via the navigation stack.
   bool is_activated_ = false;
