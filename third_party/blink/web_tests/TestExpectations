@@ -6138,8 +6138,6 @@ crbug.com/362922565 virtual/select-parser-relaxation/external/wpt/html/semantics
 crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 crbug.com/380466909 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Failure Pass ]
 
-# This fails with !owner_->GetDocument().IsSlotAssignmentRecalcForbidden().
-crbug.com/384394713 external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
 
 ### Tests failing with CSSGapDecorations Enabled:
 crbug.com/357648037 virtual/css-gap-decorations/animations/interpolation/webkit-column-rule-color-interpolation.html [ Crash Failure Timeout ]
