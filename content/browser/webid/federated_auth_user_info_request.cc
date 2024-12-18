@@ -144,7 +144,9 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
   }
 
   if (webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-          *render_frame_host_, idp_config_url_, permission_delegate_)) {
+          *render_frame_host_, idp_config_url_, permission_delegate_) &&
+      webid::GetIdpSigninStatusMode(*render_frame_host_, idp_origin) ==
+          FedCmIdpSigninStatusMode::ENABLED) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }
@@ -196,7 +198,10 @@ void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
   does_idp_have_failing_signin_status_ =
       webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
           *render_frame_host_, idp_config_url_, permission_delegate_);
-  if (does_idp_have_failing_signin_status_) {
+  if (does_idp_have_failing_signin_status_ &&
+      webid::GetIdpSigninStatusMode(*render_frame_host_,
+                                    url::Origin::Create(idp_config_url_)) ==
+          FedCmIdpSigninStatusMode::ENABLED) {
     CompleteWithError(FederatedAuthUserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }

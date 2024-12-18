@@ -393,6 +393,13 @@ std::string GetDisconnectConsoleErrorMessage(
   }
 }
 
+FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
+                                                const url::Origin& idp_origin) {
+  // TODO(crbug.com/40283354): Remove this function in favor of
+  // GetFedCmIdpSigninStatusFlag.
+  return GetFedCmIdpSigninStatusFlag();
+}
+
 std::string FormatUrlForDisplay(const GURL& url) {
   // We do not use url_formatter::FormatUrlForSecurityDisplay() directly because
   // our UI intentionally shows only the eTLD+1, as it makes for a shorter text

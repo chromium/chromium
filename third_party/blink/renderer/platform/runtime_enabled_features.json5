@@ -1807,6 +1807,14 @@
       base_feature: "none",
     },
     {
+      name: "FedCmIdpSigninStatus",
+      depends_on: ["FedCm"],
+      public: true,
+      status: "stable",
+      base_feature: "none",
+      browser_process_read_access: true,
+    },
+    {
       name: "FedCmMultipleIdentityProviders",
       depends_on: ["FedCm"],
       base_feature: "none",

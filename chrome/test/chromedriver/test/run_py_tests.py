@@ -8685,7 +8685,8 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
             'enable-experimental-web-platform-features']
     self._driver = self.CreateDriver(
         accept_insecure_certs=True,
-        chrome_switches=self.chrome_switches)
+        chrome_switches=self.chrome_switches +
+            ["--enable-features=FedCmIdpSigninStatusEnabled"])
 
     self._driver.Load(self._url_prefix + "/mark-signed-in")
 
