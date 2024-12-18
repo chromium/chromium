@@ -24,25 +24,26 @@
 namespace history_embeddings {
 
 namespace {
-bool IsEnabledForCountryAndLocale(const base::Feature& launch_feature) {
-  // Launch in the US via client-side code, leaving a Finch hook available just
-  // in case. Note, the variations service may be nullptr in unit tests.
-  if (!g_browser_process || !g_browser_process->variations_service()) {
-    return false;
+
+// Returns the country code from the variations service.
+std::string GetCountryCode(variations::VariationsService* variations_service) {
+  std::string country_code;
+  // The variations service may be nullptr in unit tests.
+  if (variations_service) {
+    country_code = variations_service->GetStoredPermanentCountry();
+    if (country_code.empty()) {
+      country_code = variations_service->GetLatestCountry();
+    }
   }
-  if (!base::FeatureList::IsEnabled(launch_feature)) {
-    return false;
-  }
-  if (g_browser_process->GetApplicationLocale() != "en-US") {
-    return false;
-  }
-  std::string country_code =
-      g_browser_process->variations_service()->GetStoredPermanentCountry();
-  if (country_code.empty()) {
-    country_code = g_browser_process->variations_service()->GetLatestCountry();
-  }
-  return country_code == "us";
+  return country_code;
 }
+
+bool IsCountryAndLocale(const std::string& country, const std::string& locale) {
+  return g_browser_process &&
+         g_browser_process->GetApplicationLocale() == locale &&
+         GetCountryCode(g_browser_process->variations_service()) == country;
+}
+
 }  // namespace
 
 constexpr auto kEnabledByDefaultForDesktopOnly =
@@ -138,32 +139,29 @@ bool IsHistoryEmbeddingsFeatureEnabled() {
     return false;
   }
 #endif
-
-  // Launch but keep bypass if feature is explicitly overridden.
-  if (IsEnabledForCountryAndLocale(kLaunchedHistoryEmbeddings) &&
-      !base::FeatureList::GetStateIfOverridden(kHistoryEmbeddings)
-           .has_value()) {
-    return true;
+  // If the feature is overridden manually or via Finch, return its value.
+  if (base::FeatureList::GetStateIfOverridden(kHistoryEmbeddings).has_value()) {
+    return base::FeatureList::IsEnabled(kHistoryEmbeddings);
   }
-
-  // Gate on server-side Finch config for all other countries/locales.
-  return base::FeatureList::IsEnabled(kHistoryEmbeddings);
+  // Otherwise return true for "us" and "en-US", leaving a Finch hook just in
+  // case.
+  return IsCountryAndLocale("us", "en-US") &&
+         base::FeatureList::IsEnabled(kLaunchedHistoryEmbeddings);
 }
 
 bool IsHistoryEmbeddingsAnswersFeatureEnabled() {
   if (!IsHistoryEmbeddingsFeatureEnabled()) {
     return false;
   }
-
-  // Launch but keep bypass if feature is explicitly overridden.
-  if (IsEnabledForCountryAndLocale(kLaunchedHistoryEmbeddingsAnswers) &&
-      !base::FeatureList::GetStateIfOverridden(kHistoryEmbeddingsAnswers)
-           .has_value()) {
-    return true;
+  // If the feature is overridden manually or via Finch, return its value.
+  if (base::FeatureList::GetStateIfOverridden(kHistoryEmbeddingsAnswers)
+          .has_value()) {
+    return base::FeatureList::IsEnabled(kHistoryEmbeddingsAnswers);
   }
-
-  // Gate on server-side Finch config for all other countries/locales.
-  return base::FeatureList::IsEnabled(kHistoryEmbeddingsAnswers);
+  // Otherwise return true for "us" and "en-US", leaving a Finch hook just in
+  // case.
+  return IsCountryAndLocale("us", "en-US") &&
+         base::FeatureList::IsEnabled(kLaunchedHistoryEmbeddingsAnswers);
 }
 
 }  // namespace history_embeddings
