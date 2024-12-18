@@ -28,6 +28,7 @@ import {
   isSingleGrapheme,
 } from '../../../utils/GraphemeTools.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {ActionOption} from './ActionOption.js';
 import {
@@ -90,19 +91,31 @@ export class ActionDispatcher {
     return result.result.value;
   };
 
+  readonly #browsingContextStorage: BrowsingContextStorage;
+
   #tickStart = 0;
   #tickDuration = 0;
   #inputState: InputState;
-  #context: BrowsingContextImpl;
+  #contextId: string;
   #isMacOS: boolean;
+
   constructor(
     inputState: InputState,
-    context: BrowsingContextImpl,
+    browsingContextStorage: BrowsingContextStorage,
+    contextId: string,
     isMacOS: boolean,
   ) {
+    this.#browsingContextStorage = browsingContextStorage;
     this.#inputState = inputState;
-    this.#context = context;
+    this.#contextId = contextId;
     this.#isMacOS = isMacOS;
+  }
+
+  /**
+   * The context can be disposed between action ticks, so need to get it each time.
+   */
+  get #context() {
+    return this.#browsingContextStorage.getContext(this.#contextId);
   }
 
   async dispatchActions(

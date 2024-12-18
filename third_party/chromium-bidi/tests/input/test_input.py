@@ -16,7 +16,8 @@
 import pytest
 from syrupy.filters import props
 from test_helpers import (AnyExtending, execute_command, goto_url,
-                          send_JSON_command, subscribe, wait_for_event)
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event)
 
 SET_FILES_HTML = """
 <input id=input type=file>
@@ -811,3 +812,63 @@ async def test_input_setFiles_unableToSetFileInput(websocket, context_id, html,
         message = exception.args[0]['error']
 
     assert message == snapshot
+
+
+@pytest.mark.asyncio
+async def test_input_keyDown_closes_browsing_context(websocket, context_id,
+                                                     html):
+    url = html("""
+        <input onkeydown="window.close()">close</input>
+        <script>document.querySelector("input").focus();</script>
+        """)
+
+    await subscribe(websocket, ["browsingContext.load"])
+    on_load = wait_for_event(websocket, "browsingContext.load")
+
+    # Open new window via script. Required for script to be able to close it.
+    resp = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"window.open('{url}')",
+                "awaitPromise": False,
+                "target": {
+                    "context": context_id
+                }
+            }
+        })
+
+    # Wait for the new context to load.
+    await on_load
+
+    new_context = resp['result']['value']['context']
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "input.performActions",
+            "params": {
+                "context": new_context,
+                "actions": [{
+                    "type": "key",
+                    "id": "main_keyboard",
+                    "actions": [{
+                        "type": "keyDown",
+                        "value": "a",
+                    }, {
+                        "type": "pause",
+                        "duration": 250,
+                    }, {
+                        "type": "keyUp",
+                        "value": "a",
+                    }]
+                }]
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        'error': 'no such frame',
+        'id': command_id,
+        'message': f'Context {new_context} not found',
+        'type': 'error',
+    }

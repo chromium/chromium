@@ -48,7 +48,8 @@ export class InputProcessor {
     const actionsByTick = this.#getActionsByTick(params, inputState);
     const dispatcher = new ActionDispatcher(
       inputState,
-      context,
+      this.#browsingContextStorage,
+      params.context,
       await ActionDispatcher.isMacOS(context).catch(() => false),
     );
     await dispatcher.dispatchActions(actionsByTick);
@@ -63,7 +64,8 @@ export class InputProcessor {
     const inputState = this.#inputStateManager.get(topContext);
     const dispatcher = new ActionDispatcher(
       inputState,
-      context,
+      this.#browsingContextStorage,
+      params.context,
       await ActionDispatcher.isMacOS(context).catch(() => false),
     );
     await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
