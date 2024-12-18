@@ -251,24 +251,11 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kInstallLogFastUploadForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kKioskSplashScreenMinTimeSeconds[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromePath[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kExtensionsRunInBothAshAndLacros[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kExtensionAppsRunInBothAshAndLacros[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kExtensionsRunInAshOnly[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kExtensionAppsRunInAshOnly[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kExtensionAppsBlockForAppServiceInAsh[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLaunchRma[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLobsterFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginManager[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginProfile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginUser[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisallowLacros[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDisallowLacros[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSparkyFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSparkyServerUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSunfishFeatureKey[];

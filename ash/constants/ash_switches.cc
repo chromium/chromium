@@ -777,55 +777,6 @@ const char kInstallLogFastUploadForTests[] =
 const char kKioskSplashScreenMinTimeSeconds[] =
     "kiosk-splash-screen-min-time-seconds";
 
-// If this switch is set, then ash-chrome will exec the lacros-chrome binary
-// from the indicated path rather than from component updater. Note that the
-// path should be to a directory that contains a binary named 'chrome'.
-const char kLacrosChromePath[] = "lacros-chrome-path";
-
-// If set, it passes the ids of additional extensions allowed to run in
-// both ash and lacros when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-// Note: The ids passed to this switch and the ids passed to
-// kExtensionsRunInAshOnly should be mutually exclusive, i.e., without overlaps.
-// If any extension passed to this switch are to be published to app service,
-// it must be listed in one of the app service block switches so that
-// it won't be published to app service in both ash and lacros. Currently,
-// we don't have any use case with an extension running in both ash and lacros
-// to be published to app service, therefore, we haven't defined the app service
-// block switch for extensions.
-const char kExtensionsRunInBothAshAndLacros[] =
-    "extensions-run-in-ash-and-lacros";
-
-// If set, it passes the ids of additional extension apps allowed to run in
-// in both ash and lacros when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-// Note: The ids passed to this switch and the ids passed to
-// kExtensionAppsRunInAshOnly should be mutually exclusive, i.e., without
-// overlaps. If any extension app passed to this switch are to be publisedh to
-// app service, it must be listed in one of the app service block switches so
-// that it won't be published to app service in both ash and lacros. Currently,
-// we only have the use case of an extension app running in both ash and lacros
-// to be published to app service in lacros only, therefore, we only add the
-// kExtensionAppsBlockForAppServiceInAsh switch.
-const char kExtensionAppsRunInBothAshAndLacros[] =
-    "extension-apps-run-in-ash-and-lacros";
-
-// If set, it passes the ids of the additional extensions allowed to run in
-// ash only when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-const char kExtensionsRunInAshOnly[] = "extensions-run-in-ash-only";
-
-// If set, it passes the ids of the additional extension apps allowed to run in
-// ash only when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-const char kExtensionAppsRunInAshOnly[] = "extension-apps-run-in-ash-only";
-
-// If set, it passes the ids of the extension apps blocked for app service
-// in ash when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-const char kExtensionAppsBlockForAppServiceInAsh[] =
-    "extension-apps-block-for-app-service-in-ash";
-
 // Start Chrome in RMA mode. Launches RMA app automatically.
 // kRmaNotAllowed switch takes priority over this one.
 const char kLaunchRma[] = "launch-rma";
@@ -845,15 +796,6 @@ const char kLoginProfile[] = "login-profile";
 
 // Specifies the user which is already logged in.
 const char kLoginUser[] = "login-user";
-
-// This flag is set if lacros is not allowed. Specifically this flag is set if
-// there are more than two signed in users i.e. inside multi-user session.
-const char kDisallowLacros[] = "disallow-lacros";
-
-// This flag disables "disallow-lacros" above, if both are set together.
-// I.e., if user flips feature flag, or policy is set, lacros can be
-// used, event if --disallow-lacros is set.
-const char kDisableDisallowLacros[] = "disable-disallow-lacros";
 
 // Supply secret key for the sparky feature.
 const char kSparkyFeatureKey[] = "sparky-feature-key";
