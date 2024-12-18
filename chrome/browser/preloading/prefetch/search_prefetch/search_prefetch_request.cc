@@ -315,11 +315,11 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   }
 
   prefetch_url_ = resource_request->url;
-
   SetSearchPrefetchStatus(SearchPrefetchStatus::kInFlight);
-
-  StartPrefetchRequestInternal(profile, std::move(resource_request),
-                               std::move(report_error_callback_));
+  streaming_url_loader_ =
+      base::MakeRefCounted<StreamingSearchPrefetchURLLoader>(
+          this, profile, navigation_prefetch_, std::move(resource_request),
+          NetworkAnnotationForPrefetch(), std::move(report_error_callback_));
   return true;
 }
 
@@ -445,19 +445,6 @@ SearchPrefetchRequest::CreateResponseReader() {
       this, time_start_prefetch_request_);
   return StreamingSearchPrefetchURLLoader::
       GetCallbackForReadingViaResponseReader(streaming_url_loader_);
-}
-
-void SearchPrefetchRequest::StartPrefetchRequestInternal(
-    Profile* profile,
-    std::unique_ptr<network::ResourceRequest> resource_request,
-    base::OnceCallback<void(bool)> report_error_callback) {
-  TRACE_EVENT0("loading",
-               "SearchPrefetchRequest::StartPrefetchRequestInternal");
-  prefetch_url_ = resource_request->url;
-  streaming_url_loader_ =
-      base::MakeRefCounted<StreamingSearchPrefetchURLLoader>(
-          this, profile, navigation_prefetch_, std::move(resource_request),
-          NetworkAnnotationForPrefetch(), std::move(report_error_callback));
 }
 
 void SearchPrefetchRequest::StopPrefetch() {

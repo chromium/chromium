@@ -94,10 +94,9 @@ class SearchPrefetchRequest {
   // The NTA for any search prefetch request.
   static net::NetworkTrafficAnnotationTag NetworkAnnotationForPrefetch();
 
-  // Starts the network request to prefetch |prefetch_url_|. Sets various fields
-  // on a resource request and calls |StartPrefetchRequestInternal()|. Returns
-  // |false| if the request is not started (i.e., it would be deferred by
-  // throttles).
+  // Starts the network request to prefetch `prefetch_url_`. Sets various fields
+  // on a resource request. Returns `false` if the request is not started (i.e.,
+  // it would be deferred by throttles).
   bool StartPrefetchRequest(Profile* profile);
 
   // Called when SearchPrefetchService receives the hint that this prefetch
@@ -159,12 +158,6 @@ class SearchPrefetchRequest {
       base::OnceClosure streaming_url_loader_destruction_callback);
 
  private:
-  // Starts and begins processing |resource_request|.
-  void StartPrefetchRequestInternal(
-      Profile* profile,
-      std::unique_ptr<network::ResourceRequest> resource_request,
-      base::OnceCallback<void(bool)> report_error_callback);
-
   // Stops the on-going prefetch and should mark |current_status_|
   // appropriately.
   void StopPrefetch();
