@@ -653,6 +653,19 @@ AutofillSaveCreditCardPromptDestination.
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
+    THIS METRIC IS DEPRECRATED BECAUSE THE SHOWN BUCKET IS INFLATED, USE
+    Autocomplete.Events3 INSTEAD. Autocomplete events which are recorded when
+    the user interacts with suggestions served from Autocomplete. The histogram
+    is recorded when an autocomplete suggestion is shown, selected or deleted.
+  </summary>
+</histogram>
+
+<histogram name="Autocomplete.Events3" enum="AutocompleteEvents"
+    expires_after="2025-08-13">
+  <owner>battre@chromium.org</owner>
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
     Autocomplete events which are recorded when the user interacts with
     suggestions served from Autocomplete. The histogram is recorded when an
     autocomplete suggestion is shown, selected or deleted.

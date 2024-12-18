@@ -2344,7 +2344,7 @@ TEST_F(AutofillExternalDelegateTest, AutocompleteShown_MetricsEmitted) {
       SuggestionType::kAutocompleteEntry, u"autocomplete")};
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
   external_delegate().OnSuggestionsShown(suggestions);
-  histogram.ExpectBucketCount("Autocomplete.Events2",
+  histogram.ExpectBucketCount("Autocomplete.Events3",
                               AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
                               1);
 }

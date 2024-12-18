@@ -820,7 +820,7 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
+      "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
@@ -840,7 +840,7 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
+      "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
   // Also no autofill metrics are emitted.
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
@@ -894,7 +894,7 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
+      "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
@@ -914,7 +914,7 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
+      "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
   histogram_tester.ExpectUniqueSample(

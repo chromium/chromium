@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -100,38 +101,6 @@ SuggestionFiltrationResult FilterSuggestions(
   }
 
   return result;
-}
-
-// Returns whether the controller should log the popup interaction shown metric.
-// Some popups can be displayed without a direct user action (i.e. typing into a
-// field or unfocusing a text are with a previous compose suggestion). We do not
-// want to log popup shown interaction logs for them since they defeat the
-// purpose of the metric.
-bool ShouldLogPopupInteractionShown(
-    AutofillSuggestionTriggerSource trigger_source) {
-  switch (trigger_source) {
-    case AutofillSuggestionTriggerSource::kUnspecified:
-    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
-    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
-    case AutofillSuggestionTriggerSource::kContentEditableClicked:
-    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
-    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
-    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
-    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
-    case AutofillSuggestionTriggerSource::kPasswordManager:
-    case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::
-        kShowPromptAfterDialogClosedNonManualFallback:
-    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
-    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
-      return true;
-    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
-    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kAutofillAi:
-    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
-      return false;
-  }
 }
 
 }  // namespace
@@ -303,7 +272,7 @@ void AutofillPopupControllerImpl::Show(
     delegate_->OnSuggestionsShown(non_filtered_suggestions_);
   }
 
-  if (ShouldLogPopupInteractionShown(trigger_source_)) {
+  if (autofill_metrics::ShouldLogAutofillSuggestionShown(trigger_source_)) {
     AutofillMetrics::LogPopupInteraction(suggestions_filling_product_,
                                          GetPopupLevel(),
                                          PopupInteraction::kPopupShown);

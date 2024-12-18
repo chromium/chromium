@@ -1183,7 +1183,7 @@ void AutofillMetrics::OnAutocompleteSuggestionDeleted(
 // static
 void AutofillMetrics::LogAutocompleteEvent(AutocompleteEvent event) {
   DCHECK_LT(event, AutocompleteEvent::NUM_AUTOCOMPLETE_EVENTS);
-  base::UmaHistogramEnumeration("Autocomplete.Events2", event,
+  base::UmaHistogramEnumeration("Autocomplete.Events3", event,
                                 NUM_AUTOCOMPLETE_EVENTS);
 }
 

@@ -5470,7 +5470,7 @@ TEST_F(BrowserAutofillManagerTest,
   // No Autocomplete or credit cards logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms,
-              Not(AnyOf(HasSubstr("Autocomplete.Events2"),
+              Not(AnyOf(HasSubstr("Autocomplete.Events3"),
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
 }
 
@@ -6045,7 +6045,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // No Autocomplete or address logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms, Not(AnyOf(HasSubstr("Autocomplete.Events2"),
+  EXPECT_THAT(histograms, Not(AnyOf(HasSubstr("Autocomplete.Events3"),
                                     HasSubstr("Autofill.FormEvents.Address"))));
 }
 

@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -557,7 +558,8 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     // entries.
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
-    if (shown_suggestion_types.contains(SuggestionType::kAutocompleteEntry)) {
+    if (shown_suggestion_types.contains(SuggestionType::kAutocompleteEntry) &&
+        autofill_metrics::ShouldLogAutofillSuggestionShown(trigger_source_)) {
       AutofillMetrics::OnAutocompleteSuggestionsShown();
     }
   }

@@ -5111,7 +5111,7 @@ TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::OnAutocompleteSuggestionsShown();
   histogram_tester.ExpectBucketCount(
-      "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+      "Autocomplete.Events3", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
       /*expected_count=*/1);
 }
 

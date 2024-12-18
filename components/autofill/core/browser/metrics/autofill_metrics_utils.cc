@@ -182,4 +182,31 @@ DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
   return internal::GetFormTypesForLogging(form, internal::kCreditCardFormTypes);
 }
 
+bool ShouldLogAutofillSuggestionShown(
+    AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::
+        kShowPromptAfterDialogClosedNonManualFallback:
+    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
+      return true;
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kAutofillAi:
+    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
+      return false;
+  }
+}
+
 }  // namespace autofill::autofill_metrics
