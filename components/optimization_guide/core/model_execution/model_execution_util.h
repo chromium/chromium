@@ -72,9 +72,6 @@ model_execution::prefs::GenAILocalFoundationalModelEnterprisePolicySettings
 GetGenAILocalFoundationalModelEnterprisePolicySettings(
     PrefService* local_state);
 
-OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
-    on_device_model::mojom::LoadModelResult result);
-
 // Returns the model execution config read from the `config_path`.
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>
 ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path);

@@ -102,13 +102,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="The model execution feature was not recently used."/>
 </enum>
 
-<enum name="OnDeviceModelLoadResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="GPU blocked"/>
-  <int value="3" label="Failed to load library"/>
-</enum>
-
 <enum name="OnDeviceModelPerformanceClass">
   <int value="0" label="Unknown"/>
   <int value="1" label="Error"/>
