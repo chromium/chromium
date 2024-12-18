@@ -110,8 +110,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
   bool ShouldShowExclusiveAccessBubble() const override;
   void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) override;
-  bool OpenMostSpecificDialog(
-      const offline_items_collection::ContentId& content_id) override;
   IconState GetIconState() const override;
 
   // ToolbarButton:

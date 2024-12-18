@@ -441,28 +441,6 @@ void DownloadToolbarButtonView::ShowDetails() {
   CreateBubbleDialogDelegate();
 }
 
-bool DownloadToolbarButtonView::OpenMostSpecificDialog(
-    const offline_items_collection::ContentId& content_id) {
-  if (!IsShowing()) {
-    Show();
-  }
-
-  if (!bubble_delegate_) {
-    // This should behave similarly to a normal button press on the toolbar
-    // button, so create the main view.
-    is_primary_partial_view_ = false;
-    CreateBubbleDialogDelegate();
-  }
-
-  DownloadBubbleRowView* row = ShowPrimaryDialogRow(content_id);
-
-  // Open the more specific security subpage if it has one.
-  if (row && row->info().has_subpage()) {
-    OpenSecurityDialog(content_id);
-  }
-  return row != nullptr;
-}
-
 void DownloadToolbarButtonView::HideDetails() {
   CloseDialog(views::Widget::ClosedReason::kUnspecified);
 }
