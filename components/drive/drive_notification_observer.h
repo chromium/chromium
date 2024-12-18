@@ -8,11 +8,13 @@
 #include <map>
 #include <string>
 
+#include "components/drive/drive_export.h"
+
 namespace drive {
 
 // Interface for classes which need to know when to check Google Drive for
 // updates.
-class DriveNotificationObserver {
+class COMPONENTS_DRIVE_EXPORT DriveNotificationObserver {
  public:
   // Called when a notification from Google Drive is received. |invalidations|
   // is the map from objects that raised the notification to the changelist,

@@ -13,6 +13,7 @@
 #include <string_view>
 
 #include "base/time/time.h"
+#include "components/drive/drive_export.h"
 #include "google_apis/common/auth_service_interface.h"
 #include "google_apis/drive/drive_api_requests.h"
 #include "google_apis/drive/drive_base_requests.h"
@@ -26,7 +27,7 @@ class Time;
 namespace drive {
 
 // Observer interface for DriveServiceInterface.
-class DriveServiceObserver {
+class COMPONENTS_DRIVE_EXPORT DriveServiceObserver {
  public:
   // Triggered when the service gets ready to send requests.
   virtual void OnReadyToSendRequests() {}
@@ -39,7 +40,7 @@ class DriveServiceObserver {
 };
 
 // Optional parameters for AddNewDirectory().
-struct AddNewDirectoryOptions {
+struct COMPONENTS_DRIVE_EXPORT AddNewDirectoryOptions {
   AddNewDirectoryOptions();
   AddNewDirectoryOptions(const AddNewDirectoryOptions& other);
   ~AddNewDirectoryOptions();
@@ -61,7 +62,7 @@ struct AddNewDirectoryOptions {
 
 // Optional parameters for InitiateUploadNewFile() and
 // MultipartUploadNewFile().
-struct UploadNewFileOptions {
+struct COMPONENTS_DRIVE_EXPORT UploadNewFileOptions {
   UploadNewFileOptions();
   UploadNewFileOptions(const UploadNewFileOptions& other);
   ~UploadNewFileOptions();
@@ -80,7 +81,7 @@ struct UploadNewFileOptions {
 
 // Optional parameters for InitiateUploadExistingFile() and
 // MultipartUploadExistingFile().
-struct UploadExistingFileOptions {
+struct COMPONENTS_DRIVE_EXPORT UploadExistingFileOptions {
   UploadExistingFileOptions();
   UploadExistingFileOptions(const UploadExistingFileOptions& other);
   ~UploadExistingFileOptions();
@@ -112,7 +113,7 @@ struct UploadExistingFileOptions {
 };
 
 // Interface where we define operations that can be sent in batch requests.
-class DriveServiceBatchOperationsInterface {
+class COMPONENTS_DRIVE_EXPORT DriveServiceBatchOperationsInterface {
  public:
   virtual ~DriveServiceBatchOperationsInterface() = default;
 
@@ -151,7 +152,7 @@ class DriveServiceBatchOperationsInterface {
 };
 
 // Builder returned by DriveServiceInterface to build batch request.
-class BatchRequestConfiguratorInterface
+class COMPONENTS_DRIVE_EXPORT BatchRequestConfiguratorInterface
     : public DriveServiceBatchOperationsInterface {
  public:
   ~BatchRequestConfiguratorInterface() override = default;
@@ -165,7 +166,8 @@ class BatchRequestConfiguratorInterface
 //
 // All functions must be called on UI thread. DriveService is built on top of
 // URLFetcher that runs on UI thread.
-class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
+class COMPONENTS_DRIVE_EXPORT DriveServiceInterface
+    : public DriveServiceBatchOperationsInterface {
  public:
   ~DriveServiceInterface() override = default;
 

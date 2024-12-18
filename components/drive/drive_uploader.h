@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "components/drive/drive_export.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "google_apis/common/api_error_codes.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -45,7 +46,7 @@ using UploadCompletionCallback = base::OnceCallback<void(
     const GURL& upload_location,
     std::unique_ptr<google_apis::FileResource> resource_entry)>;
 
-class DriveUploaderInterface {
+class COMPONENTS_DRIVE_EXPORT DriveUploaderInterface {
  public:
   virtual ~DriveUploaderInterface() = default;
 
@@ -123,7 +124,7 @@ class DriveUploaderInterface {
       google_apis::ProgressCallback progress_callback) = 0;
 };
 
-class DriveUploader : public DriveUploaderInterface {
+class COMPONENTS_DRIVE_EXPORT DriveUploader : public DriveUploaderInterface {
  public:
   // In unittest, the |wake_lock_provider| is set as nullptr.
   DriveUploader(

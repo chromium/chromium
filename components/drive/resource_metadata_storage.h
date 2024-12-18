@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "components/drive/drive.pb.h"
+#include "components/drive/drive_export.h"
 #include "components/drive/file_errors.h"
 
 namespace base {
@@ -35,14 +36,14 @@ namespace internal {
 
 // Storage for ResourceMetadata which is responsible to manage resource
 // entries and child-parent relationships between entries.
-class ResourceMetadataStorage {
+class COMPONENTS_DRIVE_EXPORT ResourceMetadataStorage {
  public:
   // This should be incremented when incompatibility change is made to DB
   // format.
   static constexpr int kDBVersion = 19;
 
   // Object to iterate over entries stored in this storage.
-  class Iterator {
+  class COMPONENTS_DRIVE_EXPORT Iterator {
    public:
     explicit Iterator(std::unique_ptr<leveldb::Iterator> it);
 
@@ -73,7 +74,7 @@ class ResourceMetadataStorage {
   };
 
   // Cache information recovered from trashed DB.
-  struct RecoveredCacheInfo {
+  struct COMPONENTS_DRIVE_EXPORT RecoveredCacheInfo {
     RecoveredCacheInfo();
     ~RecoveredCacheInfo();
 
