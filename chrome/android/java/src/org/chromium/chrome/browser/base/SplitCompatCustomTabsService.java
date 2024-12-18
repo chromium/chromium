@@ -158,6 +158,12 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
         return mImpl.setEngagementSignalsCallback(sessionToken, callback, extras);
     }
 
+    @Override
+    @androidx.browser.customtabs.ExperimentalEphemeralBrowsing
+    protected boolean isEphemeralBrowsingSupported(Bundle extras) {
+        return mImpl.isEphemeralBrowsingSupported(extras);
+    }
+
     /**
      * Holds the implementation of service logic. Will be called by {@link
      * SplitCompatCustomTabsService}.
@@ -223,5 +229,7 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
                 CustomTabsSessionToken sessionToken,
                 EngagementSignalsCallback callback,
                 Bundle extras);
+
+        protected abstract boolean isEphemeralBrowsingSupported(Bundle extras);
     }
 }

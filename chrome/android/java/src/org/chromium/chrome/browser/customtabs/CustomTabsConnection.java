@@ -2153,6 +2153,11 @@ public class CustomTabsConnection {
         return mClientManager.getEngagementSignalsCallbackForSession(session) != null;
     }
 
+    /** Whether Ephemeral Browsing is supported. */
+    public boolean isEphemeralBrowsingSupported(Bundle extras) {
+        return ChromeFeatureList.sCctEphemeralMode.isEnabled();
+    }
+
     /** Whether a CustomTabs instance should include interactive Omnibox. */
     public boolean shouldEnableOmniboxForIntent(BrowserServicesIntentDataProvider intentData) {
         return false;

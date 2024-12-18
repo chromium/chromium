@@ -141,6 +141,11 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
         return mConnection.setEngagementSignalsCallback(sessionToken, callback, extras);
     }
 
+    @Override
+    protected boolean isEphemeralBrowsingSupported(Bundle extras) {
+        return mConnection.isEphemeralBrowsingSupported(extras);
+    }
+
     private boolean isFirstRunDone() {
         if (mBindIntent == null) return true;
         boolean firstRunNecessary = FirstRunFlowSequencer.checkIfFirstRunIsNecessary(false, true);

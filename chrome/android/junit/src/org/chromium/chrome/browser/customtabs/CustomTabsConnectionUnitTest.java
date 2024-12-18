@@ -254,6 +254,22 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
+    public void isEphemeralBrowsingSupported_apiEnabled() {
+        initSession();
+        when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
+        assertTrue(mConnection.isEphemeralBrowsingSupported(Bundle.EMPTY));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
+    public void isEphemeralBrowsingSupported_apiDisbled() {
+        initSession();
+        when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
+        assertFalse(mConnection.isEphemeralBrowsingSupported(Bundle.EMPTY));
+    }
+
+    @Test
     public void notifyOpenInBrowser() {
         initSession();
 
