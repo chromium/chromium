@@ -43,12 +43,14 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -465,7 +467,7 @@ public class AmbientBadgeManagerTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"bypass-installable-message-throttle-for-testing"})
+    @Features.DisableFeatures(ChromeFeatureList.INSTALL_MESSAGE_THROTTLE)
     public void testBlockedAmbientBadgeDoesNotAppearAgainForMonths() throws Exception {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder().expectNoRecords(INSTALL_PATH_HISTOGRAM_NAME).build();

@@ -6,9 +6,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -206,6 +208,8 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, Dismiss) {
 // BadgeDismissed method is called and the message is not enqueued
 // because of throttling.
 TEST_F(InstallableAmbientBadgeMessageControllerTest, Throttle) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kInstallMessageThrottle);
   EnqueueMessage();
   EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
   DismissMessage(true);

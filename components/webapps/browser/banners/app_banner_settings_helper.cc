@@ -30,7 +30,6 @@
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/features.h"
-#include "components/webapps/common/switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
