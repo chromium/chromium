@@ -28,7 +28,6 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -84,7 +83,6 @@ public class BundleUtils {
         ResettersForTesting.register(() -> sIsBundle = oldVal);
     }
 
-    @NullUnmarked
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static @Nullable String getSplitApkPath(String splitName) {
         ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
@@ -93,7 +91,7 @@ public class BundleUtils {
             return null;
         }
         int idx = Arrays.binarySearch(splitNames, splitName);
-        return idx < 0 ? null : assumeNonNull(appInfo.splitSourceDirs)[idx];
+        return idx < 0 ? null : appInfo.splitSourceDirs[idx];
     }
 
     /**
@@ -345,7 +343,6 @@ public class BundleUtils {
     private static class SplitCompatClassLoader extends ClassLoader {
         private static final String TAG = "SplitCompatClassLoader";
 
-        @NullUnmarked
         public SplitCompatClassLoader() {
             // The chrome split classloader if the chrome split exists, otherwise
             // the base module class loader.
