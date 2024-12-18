@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -87,14 +88,35 @@ class KioskMixin : public InProcessBrowserTestMixin {
     std::string crx_version;
   };
 
+  // Option for an Isolated Web App served at the given `update_manifest_url`.
+  // When using this option make sure to also create the actual server before
+  // launching the app.
+  struct IsolatedWebAppOption {
+    IsolatedWebAppOption(std::string_view account_id,
+                         const web_package::SignedWebBundleId& web_bundle_id,
+                         GURL update_manifest_url);
+
+    IsolatedWebAppOption(const IsolatedWebAppOption&);
+    IsolatedWebAppOption(IsolatedWebAppOption&&);
+    IsolatedWebAppOption& operator=(const IsolatedWebAppOption&);
+    IsolatedWebAppOption& operator=(IsolatedWebAppOption&&);
+    ~IsolatedWebAppOption();
+
+    std::string account_id;
+    web_package::SignedWebBundleId web_bundle_id;
+    GURL update_manifest_url;
+  };
+
   // The account ID of the app that Kiosk should auto launch, as configured in
   // policies.
   using AutoLaunchAccount =
       base::StrongAlias<class AutoLaunchAccountTag, std::string>;
 
   // The possible options that can be used to configure `KioskMixin`.
-  using Option =
-      std::variant<DefaultServerWebAppOption, WebAppOption, CwsChromeAppOption>;
+  using Option = std::variant<DefaultServerWebAppOption,
+                              WebAppOption,
+                              CwsChromeAppOption,
+                              IsolatedWebAppOption>;
 
   // Encapsulates the data used to configure Kiosk.
   //
