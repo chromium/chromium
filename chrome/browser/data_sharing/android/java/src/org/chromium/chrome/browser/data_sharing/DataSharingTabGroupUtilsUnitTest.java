@@ -194,6 +194,28 @@ public class DataSharingTabGroupUtilsUnitTest {
     }
 
     @Test
+    public void testGetSyncedGroupsDestroyedByTabRemoval_TabGroupClosing() {
+        List<TabGroupData> tabGroups = new ArrayList<>();
+        tabGroups.add(
+                new TabGroupData(
+                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ false));
+        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        // Create a new single tab.
+        tabModel.addTab(TAB_ID_2);
+        // Remove all tabs in the tab group from the model to simulate that it is in the pending
+        // closure state.
+        Tab tab1 = tabModel.getTabAt(0);
+        tab1.setClosing(true);
+        tabModel.removeTab(tab1);
+
+        GroupsPendingDestroy result =
+                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
+                        tabModel, List.of(tabModel.getTabById(TAB_ID_2)));
+        // Group that is already completely closing should not be counted.
+        assertEquals(0, result.syncedGroupsDestroyed.size());
+    }
+
+    @Test
     public void testGetSyncedGroupsDestroyedByTabRemoval_NotAllClosing() {
         List<TabGroupData> tabGroups = new ArrayList<>();
         tabGroups.add(

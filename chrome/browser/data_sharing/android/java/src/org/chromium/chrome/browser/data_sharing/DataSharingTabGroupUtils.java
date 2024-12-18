@@ -190,6 +190,7 @@ public class DataSharingTabGroupUtils {
 
     private static boolean willRemoveAllTabsInGroup(
             TabModel tabModel, List<SavedTabGroupTab> savedTabs, List<Tab> tabsToRemove) {
+        boolean areAllAlreadyClosing = true;
         for (SavedTabGroupTab savedTab : savedTabs) {
             // First check that we have local IDs for the tab. It is possible that we don't if the
             // tab group is open in another window that hasn't been foregrounded yet as the tabs are
@@ -205,6 +206,7 @@ public class DataSharingTabGroupUtils {
             switch (getTabPresence(tabModel, localTabId)) {
                 case TabPresence.IN_WINDOW:
                     // Intentional no-op.
+                    areAllAlreadyClosing = false;
                     break;
                 case TabPresence.IN_WINDOW_CLOSING:
                     // If the tab is closing we should keep checking since all the rest of the tabs
@@ -228,7 +230,8 @@ public class DataSharingTabGroupUtils {
                 return false;
             }
         }
-        return true;
+        // If all the tabs in the group are already closing showing a dialog does not make sense.
+        return !areAllAlreadyClosing;
     }
 
     private static @TabPresence int getTabPresence(TabModel tabModel, int tabId) {
