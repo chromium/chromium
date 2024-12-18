@@ -10948,6 +10948,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5229" label="ClipboardSvgRead"/>
   <int value="5230" label="ClipboardSvgWrite"/>
   <int value="5231" label="VarFallbackValidation"/>
+  <int value="5232" label="LocaleInfoObsoletedGetters"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -430,7 +430,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       webdx_feature = WebDXFeature::kAtomicsWaitAsync;
       break;
     case v8::Isolate::kLocaleInfoObsoletedGetters:
-      webdx_feature = WebDXFeature::kLocaleInfoObsoletedGetters;
+      blink_feature = WebFeature::kLocaleInfoObsoletedGetters;
       break;
     case v8::Isolate::kLocaleInfoFunctions:
       webdx_feature = WebDXFeature::kLocaleInfoFunctions;
