@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
@@ -20,6 +25,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_id.h"
 
 namespace {
 
@@ -29,8 +35,7 @@ constexpr base::TimeDelta kKioskExtensionWaitTime = base::Minutes(2);
 base::TimeDelta g_installation_wait_time = kKioskExtensionWaitTime;
 
 extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
-  extensions::ExtensionSystem* system =
-      extensions::ExtensionSystem::Get(profile);
+  auto* system = extensions::ExtensionSystem::Get(profile);
   DCHECK(system);
 
   extensions::ExtensionService* service = system->extension_service();
@@ -87,16 +92,16 @@ ForceInstallObserver::ForceInstallObserver(Profile* profile,
     return;
   }
 
-  StartObservingAsh(profile);
+  StartObserving(profile);
 }
 
 ForceInstallObserver::~ForceInstallObserver() = default;
 
-void ForceInstallObserver::StartObservingAsh(Profile* profile) {
+void ForceInstallObserver::StartObserving(Profile* profile) {
   extensions::ForceInstalledTracker* tracker =
       GetForceInstalledTracker(profile);
   if (tracker && !tracker->IsReady()) {
-    observation_for_ash_.Observe(tracker);
+    observation_.Observe(tracker);
     StartTimerToWaitForExtensions();
   } else {
     ReportDone();
@@ -110,7 +115,7 @@ void ForceInstallObserver::StartTimerToWaitForExtensions() {
 }
 
 void ForceInstallObserver::OnExtensionWaitTimeOut() {
-  SYSLOG(WARNING) << "OnExtensionWaitTimeout...";
+  SYSLOG(WARNING) << "Timed out waiting for extensions to install";
 
   RecordKioskExtensionInstallDuration(base::Time::Now() -
                                       installation_start_time_);
