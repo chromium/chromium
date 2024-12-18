@@ -39,6 +39,7 @@
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -288,7 +289,7 @@ class DateTrayTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   AccountId account_id_ =
-      AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
+      AccountId::FromUserEmailGaiaId("test_user@gmail.com", GaiaId("123456"));
   std::unique_ptr<TestGlanceablesClassroomClient> glanceables_classroom_client_;
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   bool observering_activation_changes_ = false;
