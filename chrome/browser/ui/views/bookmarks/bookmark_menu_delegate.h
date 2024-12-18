@@ -129,6 +129,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // BookmarkModelObserver methods.
   void BookmarkModelChanged() override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+                         size_t old_index,
+                         const bookmarks::BookmarkNode* new_parent,
+                         size_t new_index) override;
 
   // BookmarkContextMenuObserver methods.
   void WillRemoveBookmarks(
@@ -242,6 +246,15 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   void RemoveBookmarkNode(const bookmarks::BookmarkNode* node,
                           views::MenuItemView* menu);
 
+  // Builds a menu for `node`, inserting it into `new_parent_menu`.
+  // `new_index` is `node`'s position relative to other bookmarks in its parent
+  // folder, and is used to determine where the new menu should be inserted.
+  // This also considers other non-bookmark menu items (e.g. "Bookmarks" title)
+  // when determining where to insert the menu.
+  void AddBookmarkNode(const bookmarks::BookmarkNode* node,
+                       views::MenuItemView* new_parent_menu,
+                       size_t new_index);
+
   // Updates non-bookmark node menu items that are managed by this controller.
   // E.g., removes the separator in the "other" bookmarks folder if there are no
   // more child bookmarks.
@@ -295,6 +308,14 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
 
   // Maps from node to menu.
   NodeToMenuMap node_to_menu_map_;
+
+  // For root menu items created by `CreateMenu`, stores the `start_child_idx`
+  // used when building the menu.
+  std::map<raw_ptr<const bookmarks::BookmarkNode>, size_t>
+      node_start_child_idx_map_;
+
+  // Nodes whose submenus have been built (i.e. `BuildMenu` was called on them).
+  std::set<raw_ptr<const bookmarks::BookmarkNode>> built_nodes_;
 
   // ID of the next menu item.
   int next_menu_id_;

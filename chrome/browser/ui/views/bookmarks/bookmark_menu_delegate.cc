@@ -86,6 +86,12 @@ size_t GetSubmenuChildCount(const MenuItemView* menu) {
   return menu->HasSubmenu() ? menu->GetSubmenu()->children().size() : 0;
 }
 
+size_t SubmenuIndexOf(const MenuItemView* parent, const views::View* child) {
+  std::optional<size_t> index = parent->GetSubmenu()->GetIndexOf(child);
+  CHECK(index.has_value());
+  return index.value();
+}
+
 ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                                  const BookmarkNode* node) {
   const gfx::Image& image = model->GetFavicon(node);
@@ -523,6 +529,50 @@ void BookmarkMenuDelegate::WillShowMenu(MenuItemView* menu) {
 
 void BookmarkMenuDelegate::BookmarkModelChanged() {}
 
+void BookmarkMenuDelegate::BookmarkNodeMoved(const BookmarkNode* old_parent,
+                                             size_t old_index,
+                                             const BookmarkNode* new_parent,
+                                             size_t new_index) {
+  MenuItemView* old_parent_menu = nullptr;
+  const BookmarkNode* moved_node = new_parent->children()[new_index].get();
+  auto node_to_menu = node_to_menu_map_.find(moved_node);
+
+  // The moved node will not have a menu item if it was moved without being
+  // built (e.g., through the bookmark editor).
+  if (node_to_menu != node_to_menu_map_.end()) {
+    MenuItemView* moved_menu = node_to_menu->second;
+    old_parent_menu = moved_menu->GetParentMenuItem();
+    CHECK(old_parent_menu);
+    RemoveBookmarkNode(moved_node, moved_menu);
+  }
+
+  GetAndUpdateStaleMenuArtifacts();
+
+  auto parent_node_to_menu = node_to_menu_map_.find(new_parent);
+  MenuItemView* new_parent_menu = parent_node_to_menu != node_to_menu_map_.end()
+                                      ? parent_node_to_menu->second
+                                      : nullptr;
+  // The new parent's menu might not exist from this controller's perspective.
+  // E.g., the bookmark is moved from a menu controlled by this, to a
+  // different menu controlled by another controller.
+  if (new_parent_menu) {
+    CHECK(new_parent_menu->HasSubmenu());
+    // The parent menu might exist but might not be built yet.
+    // E.g., drag and dropping the bookmark onto an empty folder; the folder
+    // will not have been built yet because it's empty.
+    if (built_nodes_.contains(new_parent)) {
+      AddBookmarkNode(moved_node, new_parent_menu, new_index);
+    }
+  }
+
+  if (old_parent_menu) {
+    old_parent_menu->ChildrenChanged();
+  }
+  if (new_parent_menu && !new_parent->HasAncestor(old_parent)) {
+    new_parent_menu->ChildrenChanged();
+  }
+}
+
 void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
     const BookmarkNode* node) {
   auto menu_pair = node_to_menu_map_.find(node);
@@ -578,6 +628,7 @@ void BookmarkMenuDelegate::RemoveBookmarkNode(const BookmarkNode* node,
       ++i;
       continue;
     }
+    built_nodes_.erase(i->first);
     menu_id_to_node_map_.erase(i->second->GetCommand());
     i = node_to_menu_map_.erase(i);
   }
@@ -586,6 +637,46 @@ void BookmarkMenuDelegate::RemoveBookmarkNode(const BookmarkNode* node,
   if (MenuItemView* parent_menu = menu->GetParentMenuItem()) {
     parent_menu->RemoveMenuItem(menu);
   }
+}
+
+void BookmarkMenuDelegate::AddBookmarkNode(const bookmarks::BookmarkNode* node,
+                                           MenuItemView* new_parent_menu,
+                                           size_t new_index) {
+  const bookmarks::BookmarkNode* new_parent_node = node->parent();
+  size_t insertion_idx = new_index;
+
+  // Menus created by `CreateMenu` might not display some nodes.
+  if (auto node_to_start_child_idx =
+          node_start_child_idx_map_.find(new_parent_node);
+      node_to_start_child_idx != node_start_child_idx_map_.end()) {
+    CHECK_LE(node_to_start_child_idx->second, new_index);
+    insertion_idx -= node_to_start_child_idx->second;
+  }
+
+  // If the bookmark is embedded in a larger menu not controlled by this (e.g.,
+  // App menu), then the bookmark's menu item is inserted relative to the
+  // "Bookmarks" title.
+  if (new_parent_menu == parent_menu_item_) {
+    if (bookmarks_title_) {
+      insertion_idx += SubmenuIndexOf(parent_menu_item_, bookmarks_title_) + 1;
+    }
+    // The managed bookmarks folder is displayed immediately after the
+    // "Bookmarks" title.
+    if (node_to_menu_map_.contains(
+            GetManagedBookmarkService()->managed_node())) {
+      ++insertion_idx;
+    }
+  }
+
+  // The "other" bookmarks folder is built with a header. The new node's menu
+  // is inserted relative to that.
+  if (new_parent_node == GetBookmarkModel()->other_node()) {
+    CHECK(other_node_menu_separator_);
+    insertion_idx +=
+        SubmenuIndexOf(new_parent_menu, other_node_menu_separator_) + 1;
+  }
+
+  BuildNodeMenuItemAt(node, new_parent_menu, insertion_idx);
 }
 
 // TODO(crbug.com/382711086): This should be updated to also remove
@@ -758,6 +849,7 @@ MenuItemView* BookmarkMenuDelegate::CreateMenu(const BookmarkNode* parent,
   MenuItemView* menu = new MenuItemView(real_delegate_);
   menu->SetCommand(GetAndIncrementNextMenuID());
   AddMenuToMaps(menu, parent);
+  node_start_child_idx_map_[parent] = start_child_index;
   BuildMenu(parent, start_child_index, menu);
   return menu;
 }
@@ -855,6 +947,8 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
        i != parent->children().cend(); ++i) {
     BuildNodeMenuItem(i->get(), menu);
   }
+  AddMenuToMaps(menu, parent);
+  built_nodes_.insert(parent);
 }
 
 void BookmarkMenuDelegate::AddMenuToMaps(MenuItemView* menu,
@@ -876,13 +970,30 @@ int BookmarkMenuDelegate::GetAndIncrementNextMenuID() {
 
 MenuItemView* BookmarkMenuDelegate::UpdateBookmarksTitle() {
   CHECK(parent_menu_item_);
-  // If we should have a bookmark title, or there already isn't one, then
-  // there's nothing to remove. Return null since nothing is changed.
-  if (!bookmarks_title_ || ShouldHaveBookmarksTitle()) {
+  // Check if we need to add/remove the bookmarks title. If not, then return
+  // null since the parent menu doesn't need to be updated.
+  const bool should_have_title = ShouldHaveBookmarksTitle();
+  if (!bookmarks_title_ && !should_have_title) {
     return nullptr;
   }
+  if (bookmarks_title_ && should_have_title) {
+    return nullptr;
+  }
+
   if (bookmarks_title_) {
     RemoveBookmarksTitle();
+  } else {
+    // If permanent nodes are already built in `parent_menu_item_`, then add the
+    // title above them. Otherwise, append the title to the parent menu.
+    // E.g., this can happen in the App menu if there are initially no bookmarks
+    // in the bookmarks bar, but there are bookmarks in the "other" bookmarks
+    // folder, which has its own section. The "Bookmarks" title would need
+    // to be inserted above the "other" bookmarks.
+    size_t offset =
+        permanent_nodes_separator_
+            ? SubmenuIndexOf(parent_menu_item_, permanent_nodes_separator_)
+            : GetSubmenuChildCount(parent_menu_item_);
+    BuildBookmarksTitle(offset);
   }
   return parent_menu_item_;
 }
@@ -923,9 +1034,19 @@ void BookmarkMenuDelegate::RemoveBookmarksTitle() {
 
 MenuItemView* BookmarkMenuDelegate::UpdateOtherNodeSeparator() {
   const BookmarkNode* other_node = GetBookmarkModel()->other_node();
-  // If the other node has children, or already doesn't have a separator, then
-  // there's nothing to remove. Return null since nothing is changed.
-  if (!other_node->children().empty() || !other_node_menu_separator_) {
+
+  // The menu hasn't been built yet, so no update required.
+  if (!built_nodes_.contains(other_node)) {
+    return nullptr;
+  }
+
+  const bool should_have_separator = !other_node->children().empty();
+  // Check if we need to add/remove the separator. If not, then return
+  // null since the parent menu doesn't need to be updated.
+  if (!should_have_separator && !other_node_menu_separator_) {
+    return nullptr;
+  }
+  if (should_have_separator && other_node_menu_separator_) {
     return nullptr;
   }
 
@@ -934,6 +1055,9 @@ MenuItemView* BookmarkMenuDelegate::UpdateOtherNodeSeparator() {
     views::View* separator = other_node_menu_separator_.get();
     other_node_menu_separator_ = nullptr;
     other_node_menu->RemoveMenuItem(separator);
+  } else {
+    other_node_menu->RemoveAllMenuItems();
+    BuildOtherNodeMenuHeader(other_node, other_node_menu);
   }
   return other_node_menu;
 }
