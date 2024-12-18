@@ -809,7 +809,7 @@ constexpr int kTraceUuidIndices[] = {1, 2, -1};
 constexpr MessageInfo kTraceUuid = {kTraceUuidIndices, nullptr};
 
 // Proto Message: ChromeTrigger
-constexpr int kChromeTriggerIndices[] = {2, -1};
+constexpr int kChromeTriggerIndices[] = {2, 3, -1};
 constexpr MessageInfo kChromeTrigger = {kChromeTriggerIndices, nullptr};
 
 // Proto Message: TracePacket
