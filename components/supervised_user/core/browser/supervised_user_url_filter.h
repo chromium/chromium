@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -138,13 +139,6 @@ class SupervisedUserURLFilter {
   static bool HostMatchesPattern(const std::string& canonical_host,
                                  const std::string& pattern);
 
-  // Records the metrics on navigation loaded after completing a filtering
-  // event.
-  static void RecordFilterResultEvent(FilteringBehavior behavior,
-                                      FilteringBehaviorReason reason,
-                                      bool is_filtering_behavior_known,
-                                      ui::PageTransition transition_type);
-
   // Returns the filtering behavior for a given URL, based on the default
   // behavior and whether it is on a site list.
   FilteringBehavior GetFilteringBehaviorForURL(const GURL& url);
@@ -167,14 +161,16 @@ class SupervisedUserURLFilter {
       const GURL& url,
       FilteringBehaviorCallback callback,
       bool skip_manual_parent_filter,
-      FilteringContext filtering_context = FilteringContext::kDefault);
+      FilteringContext filtering_context = FilteringContext::kDefault,
+      std::optional<ui::PageTransition> transition_type = std::nullopt);
 
   // Like `GetFilteringBehaviorForURLWithAsyncChecks` but used for subframes.
   bool GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
       const GURL& url,
       const GURL& main_frame_url,
       FilteringBehaviorCallback callback,
-      FilteringContext filtering_context = FilteringContext::kDefault);
+      FilteringContext filtering_context = FilteringContext::kDefault,
+      std::optional<ui::PageTransition> transition_type = std::nullopt);
 
   // Sets the filtering behavior for pages not on a list (default is ALLOW).
   void SetDefaultFilteringBehavior(FilteringBehavior behavior);

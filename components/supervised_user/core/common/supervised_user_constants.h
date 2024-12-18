@@ -75,8 +75,8 @@ enum class FilteringContext : int {
   kNavigationObserver = 2,
   // Use for filtering triggered by changes to Family Link.
   kFamilyLinkSettingsUpdated = 3
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
 
 // LINT.IfChange(top_level_filtering_result)
 // This enum, together with `::FilteringContext`, constitutes value for the

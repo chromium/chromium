@@ -52,10 +52,6 @@ void OnURLFilteringDone(
     decision = CreateSupervisedUserInterstitialErrorDecision();
   }
 
-  supervised_user::SupervisedUserURLFilter::RecordFilterResultEvent(
-      filtering_behavior, reason, /*is_filtering_behavior_known=*/!uncertain,
-      request_info.transition_type);
-
   std::move(policy_decision_callback).Run(decision);
 }
 
@@ -99,7 +95,8 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
       ->GetFilteringBehaviorForURLWithAsyncChecks(
           request_url, std::move(filtering_behavior_callback),
           /*skip_manual_parent_filter=*/false,
-          supervised_user::FilteringContext::kNavigationThrottle);
+          supervised_user::FilteringContext::kNavigationThrottle,
+          request_info.transition_type);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserURLFilterTabHelper)

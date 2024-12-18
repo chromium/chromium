@@ -77,13 +77,15 @@ void SupervisedUserNavigationThrottle::CheckURL() {
         base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
                        weak_ptr_factory_.GetWeakPtr(), url),
         skip_manual_parent_filter,
-        supervised_user::FilteringContext::kNavigationThrottle);
+        supervised_user::FilteringContext::kNavigationThrottle,
+        navigation_handle()->GetPageTransition());
   } else {
     got_result = url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
         url, navigation_handle()->GetWebContents()->GetVisibleURL(),
         base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
                        weak_ptr_factory_.GetWeakPtr(), url),
-        supervised_user::FilteringContext::kNavigationThrottle);
+        supervised_user::FilteringContext::kNavigationThrottle,
+        navigation_handle()->GetPageTransition());
   }
 
   DCHECK_EQ(got_result,
@@ -185,11 +187,6 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
   }
 
   reason_ = reason;
-
-  ui::PageTransition transition = navigation_handle()->GetPageTransition();
-
-  supervised_user::SupervisedUserURLFilter::RecordFilterResultEvent(
-      behavior, reason, /*is_filtering_behavior_known=*/!uncertain, transition);
 
   if (behavior == supervised_user::FilteringBehavior::kBlock) {
     ShowInterstitial(url, reason);

@@ -42,7 +42,7 @@ using net::registry_controlled_domains::GetCanonicalHostRegistryLength;
 namespace supervised_user {
 
 namespace {
-// Lint.IfChange(top_level_filtering_context)
+// LINT.IfChange(top_level_filtering_context)
 std::string GetFilteringContextName(FilteringContext context) {
   switch (context) {
     case FilteringContext::kDefault:
@@ -57,7 +57,7 @@ std::string GetFilteringContextName(FilteringContext context) {
       NOTREACHED();
   }
 }
-// Lint.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
 
 // Converts FilteringBehavior to SupervisedUserSafetyFilterResult histogram
 // value in tools/metrics/histograms/enums.xml.
@@ -109,12 +109,15 @@ SupervisedUserFilterTopLevelResult TopLevelResult(
   NOTREACHED();
 }
 
-// Records ManagedUsers.TopLevelFilteringResult and
-// ManagedUsers.TopLevelFilteringContext metrics after the client's callback
+// Records ManagedUsers.FilteringResult, ManagedUsers.TopLevelFilteringResult
+// and ManagedUsers.TopLevelFilteringResult2 metrics after the client's callback
 // completes.
-void WrappedCallbackWithTopLevelMetrics(
+// Records ManagedUsers.FilteringResult only when `transition_type` is
+// available.
+void WrappedCallbackWithMetrics(
     SupervisedUserURLFilter::FilteringBehaviorCallback callback,
     FilteringContext context,
+    std::optional<ui::PageTransition> transition_type,
     FilteringBehavior behavior,
     FilteringBehaviorReason reason,
     bool uncertain) {
@@ -125,6 +128,17 @@ void WrappedCallbackWithTopLevelMetrics(
     base::UmaHistogramSparse(
         kSupervisedUserTopLevelURLFilteringResultHistogramName,
         static_cast<int>(TopLevelResult(behavior, reason)));
+  }
+
+  // Recorded only when transition type is specified.
+  if (transition_type.has_value()) {
+    int value =
+        GetHistogramValueForFilteringBehavior(behavior, reason, !uncertain) *
+            kHistogramFilteringBehaviorSpacing +
+        GetHistogramValueForTransitionType(*transition_type);
+    DCHECK_LT(value, kSupervisedUserURLFilteringResultHistogramMax);
+    base::UmaHistogramSparse(kSupervisedUserURLFilteringResultHistogramName,
+                             value);
   }
 
   // Aggregated recording
@@ -138,12 +152,12 @@ void WrappedCallbackWithTopLevelMetrics(
       static_cast<int>(TopLevelResult(behavior, reason)));
 }
 
-SupervisedUserURLFilter::FilteringBehaviorCallback
-WrapCallbackWithTopLevelMetrics(
+SupervisedUserURLFilter::FilteringBehaviorCallback WrapCallbackWithMetrics(
     SupervisedUserURLFilter::FilteringBehaviorCallback callback,
-    FilteringContext context) {
-  return base::BindOnce(&WrappedCallbackWithTopLevelMetrics,
-                        std::move(callback), context);
+    FilteringContext context,
+    std::optional<ui::PageTransition> transition_type) {
+  return base::BindOnce(&WrappedCallbackWithMetrics, std::move(callback),
+                        context, transition_type);
 }
 }  // namespace
 
@@ -459,22 +473,6 @@ bool SupervisedUserURLFilter::HostMatchesPattern(
   return trimmed_host == trimmed_pattern;
 }
 
-
-// static
-void SupervisedUserURLFilter::RecordFilterResultEvent(
-    FilteringBehavior behavior,
-    FilteringBehaviorReason reason,
-    bool is_filtering_behavior_known,
-    ui::PageTransition transition_type) {
-  int value = GetHistogramValueForFilteringBehavior(
-                  behavior, reason, is_filtering_behavior_known) *
-                  kHistogramFilteringBehaviorSpacing +
-              GetHistogramValueForTransitionType(transition_type);
-  DCHECK_LT(value, kSupervisedUserURLFilteringResultHistogramMax);
-  base::UmaHistogramSparse(kSupervisedUserURLFilteringResultHistogramName,
-                           value);
-}
-
 supervised_user::FilteringBehavior
 SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) {
   supervised_user::FilteringBehaviorReason reason;
@@ -606,9 +604,10 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
     const GURL& url,
     FilteringBehaviorCallback callback,
     bool skip_manual_parent_filter,
-    FilteringContext filtering_context) {
-  callback =
-      WrapCallbackWithTopLevelMetrics(std::move(callback), filtering_context);
+    FilteringContext filtering_context,
+    std::optional<ui::PageTransition> transition_type) {
+  callback = WrapCallbackWithMetrics(std::move(callback), filtering_context,
+                                     transition_type);
 
   supervised_user::FilteringBehaviorReason reason =
       supervised_user::FilteringBehaviorReason::DEFAULT;
@@ -644,9 +643,10 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
     const GURL& url,
     const GURL& main_frame_url,
     FilteringBehaviorCallback callback,
-    FilteringContext filtering_context) {
-  callback =
-      WrapCallbackWithTopLevelMetrics(std::move(callback), filtering_context);
+    FilteringContext filtering_context,
+    std::optional<ui::PageTransition> transition_type) {
+  callback = WrapCallbackWithMetrics(std::move(callback), filtering_context,
+                                     transition_type);
 
   supervised_user::FilteringBehaviorReason reason =
       supervised_user::FilteringBehaviorReason::DEFAULT;

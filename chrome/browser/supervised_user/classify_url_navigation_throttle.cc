@@ -130,13 +130,15 @@ void ClassifyUrlNavigationThrottle::CheckURL() {
                        weak_ptr_factory_.GetWeakPtr(), key, url),
         supervised_user::ShouldContentSkipParentAllowlistFiltering(
             navigation_handle()->GetWebContents()->GetOutermostWebContents()),
-        FilteringContext::kNavigationThrottle);
+        FilteringContext::kNavigationThrottle,
+        navigation_handle()->GetPageTransition());
   } else {
     url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
         url, navigation_handle()->GetWebContents()->GetVisibleURL(),
         base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
                        weak_ptr_factory_.GetWeakPtr(), key, url),
-        FilteringContext::kNavigationThrottle);
+        FilteringContext::kNavigationThrottle,
+        navigation_handle()->GetPageTransition());
   }
 }
 
@@ -155,10 +157,6 @@ void ClassifyUrlNavigationThrottle::OnURLCheckDone(
 
   // Updates the check results. This invalidates the InPending state.
   list_.UpdateCheck(key, {url, behavior, reason});
-
-  SupervisedUserURLFilter::RecordFilterResultEvent(
-      behavior, reason, /*is_filtering_behavior_known=*/!uncertain,
-      navigation_handle()->GetPageTransition());
 
   if (!list_.IsDecided()) {
     // Stop right here. More checks need to complete to know if navigation
