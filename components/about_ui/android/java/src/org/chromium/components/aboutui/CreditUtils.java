@@ -7,8 +7,11 @@ package org.chromium.components.aboutui;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Credits-related utilities. */
 @JNINamespace("about_ui")
+@NullMarked
 public class CreditUtils {
     private CreditUtils() {}
 
