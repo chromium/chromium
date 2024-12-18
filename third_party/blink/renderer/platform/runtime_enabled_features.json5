@@ -1249,6 +1249,11 @@
       base_feature: "CssSelectorFragmentAnchor",
     },
     {
+      // https://drafts.csswg.org/css-shapes-2/#shape-function
+      name: "CSSShapeFunction",
+      status: "experimental",
+    },
+    {
       // sibling-index() and sibling-count()
       name: "CSSSiblingFunctions",
       status: "experimental",

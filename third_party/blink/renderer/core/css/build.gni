@@ -289,6 +289,8 @@ blink_core_sources_css = [
   "css_selector_watch.h",
   "css_shadow_value.cc",
   "css_shadow_value.h",
+  "css_shape_value.cc",
+  "css_shape_value.h",
   "css_starting_style_rule.cc",
   "css_starting_style_rule.h",
   "css_string_value.cc",

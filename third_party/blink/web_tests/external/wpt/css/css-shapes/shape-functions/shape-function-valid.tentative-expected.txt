@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
-Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, line to 20px 30px)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, line to 20px 30px )" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 0 0, line to 100% 100%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, line by 20px 30px)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, hline to 100px)" should set the property value
