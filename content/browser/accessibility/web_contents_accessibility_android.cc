@@ -22,6 +22,8 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/fixed_array.h"
 #include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
@@ -1262,6 +1264,7 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     jboolean forwards,
     jboolean can_wrap_to_last_element,
     jboolean use_default_predicate) {
+  base::ElapsedTimer timer;
   BrowserAccessibilityAndroid* start_node = GetAXFromUniqueID(start_id);
   if (!start_node) {
     return ui::kInvalidAXNodeID;
@@ -1330,6 +1333,12 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     return proxy_android_node->GetUniqueId();
   }
 
+  // TODO(mschillaci): The current max is set to 1000 microseconda, check scale
+  // after initial data.
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Accessibility.Android.Performance.OneShotTreeSearch",
+      base::Microseconds(timer.Elapsed().InMicrosecondsF()),
+      base::Microseconds(1), base::Microseconds(1000), 80);
   return element_id;
 }
 
