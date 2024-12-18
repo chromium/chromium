@@ -47,7 +47,6 @@
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
-#include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -204,7 +203,17 @@ int AudioDestination::Render(base::TimeDelta delay,
                     glitch_info);
     }
 
-    fifo_->Pull(output_bus_.get(), number_of_frames);
+    const uint32_t frames_after_render = fifo_->GetFramesAvailable();
+    if (frames_after_render < number_of_frames) {
+      // This can happen if the device has stopped or is stopping when
+      // `Render()` is called.
+      output_bus_->Zero();
+      fifo_->Pull(output_bus_.get(), frames_after_render);
+      return frames_after_render;
+    } else {
+      fifo_->Pull(output_bus_.get(), number_of_frames);
+      return number_of_frames;
+    }
 
   } else {
     // Fill the FIFO.
@@ -252,9 +261,9 @@ int AudioDestination::Render(base::TimeDelta delay,
       RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp,
                     glitch_info);
     }
-  }
 
-  return number_of_frames;
+    return number_of_frames;
+  }
 }
 
 void AudioDestination::OnRenderError() {

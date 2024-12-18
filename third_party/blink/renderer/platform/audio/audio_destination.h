@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_destination_uma_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
+#include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -146,6 +147,10 @@ class PLATFORM_EXPORT AudioDestination final
   // RealtimeAudioDestinationHandler::SetSinkDescriptor, which can be invoked
   // from the constructor of AudioContext and AudioContext.setSinkId() method.
   media::OutputDeviceStatus MaybeCreateSinkAndGetStatus();
+
+  const PushPullFIFOStateForTest GetPushPullFIFOStateForTest() {
+    return fifo_->GetStateForTest();
+  }
 
  private:
   explicit AudioDestination(AudioIOCallback&,
