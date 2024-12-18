@@ -240,13 +240,10 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
       result.identity_provider_config_url, result.endpoints.accounts);
   url::Origin idp_origin =
       url::Origin::Create(result.identity_provider_config_url);
-
   bool is_login_url_valid =
-      webid::GetIdpSigninStatusMode(render_frame_host_.get(), idp_origin) !=
-          FedCmIdpSigninStatusMode::ENABLED ||
-      (result.metadata &&
-       webid::IsEndpointSameOrigin(result.identity_provider_config_url,
-                                   result.metadata->idp_login_url));
+      result.metadata &&
+      webid::IsEndpointSameOrigin(result.identity_provider_config_url,
+                                  result.metadata->idp_login_url);
 
   if (!is_token_valid || !is_accounts_valid || !is_login_url_valid) {
     std::string console_message =

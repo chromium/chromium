@@ -24,11 +24,6 @@ bool IsFedCmAuthzFlagEnabled();
 // Whether multiple identity providers are enabled.
 bool IsFedCmMultipleIdentityProvidersEnabled();
 
-// Returns the IdpSigninStatus API mode.
-// Most callers should use webid::GetIdpSigninStatusMode() in webid_utils.h
-// instead, as that version takes origin trial status into account.
-FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag();
-
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();
 

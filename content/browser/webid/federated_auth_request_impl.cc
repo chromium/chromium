@@ -919,9 +919,7 @@ void FederatedAuthRequestImpl::RequestToken(
               permission_delegate_);
 
       url::Origin idp_origin = url::Origin::Create(idp_ptr->config->config_url);
-      if (has_failing_idp_signin_status &&
-          webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
-              FedCmIdpSigninStatusMode::ENABLED) {
+      if (has_failing_idp_signin_status) {
         if (idp_get_params_ptr->mode == blink::mojom::RpMode::kPassive) {
           if (IsFedCmMultipleIdentityProvidersEnabled()) {
             // In the multi IDP case, we do not want to complete the request
@@ -1324,11 +1322,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
         webid::ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
             render_frame_host(), identity_provider_config_url,
             permission_delegate_);
-    if (idp_info->has_failing_idp_signin_status &&
-        webid::GetIdpSigninStatusMode(
-            render_frame_host(),
-            url::Origin::Create(identity_provider_config_url)) ==
-            FedCmIdpSigninStatusMode::ENABLED) {
+    if (idp_info->has_failing_idp_signin_status) {
       // If the user is logged out and we are in a active-mode, allow the user
       // to sign-in to the IdP and return early.
       if (rp_mode_ == blink::mojom::RpMode::kActive) {
@@ -1824,10 +1818,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     std::optional<TokenStatus> token_status) {
   url::Origin idp_origin =
       url::Origin::Create(idp_info->provider->config->config_url);
-  FedCmIdpSigninStatusMode signin_status_mode =
-      webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin);
-  if (!old_idp_signin_status.has_value() ||
-      signin_status_mode == FedCmIdpSigninStatusMode::METRICS_ONLY) {
+  if (!old_idp_signin_status.has_value()) {
     if (rp_mode_ == blink::mojom::RpMode::kActive) {
       MaybeShowActiveModeModalDialog(idp_info->provider->config->config_url,
                                      idp_info->metadata.idp_login_url);

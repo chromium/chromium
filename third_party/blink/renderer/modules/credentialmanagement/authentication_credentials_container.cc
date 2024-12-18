@@ -2070,12 +2070,7 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     UseCounter::Count(resolver->GetExecutionContext(),
                       WebFeature::kFedCmIframe);
   }
-  // Track when websites use FedCM with the IDP sign-in status opt-in
-  if (RuntimeEnabledFeatures::FedCmIdpSigninStatusEnabled(
-          resolver->GetExecutionContext())) {
-    UseCounter::Count(resolver->GetExecutionContext(),
-                      WebFeature::kFedCmIdpSigninStatusApi);
-  }
+
   int provider_index = 0;
   Vector<mojom::blink::IdentityProviderRequestOptionsPtr>
       identity_provider_ptrs;

@@ -14,13 +14,13 @@ enum LoginStatus {
     ImplementedAs=NavigatorLogin
 ]
 partial interface Navigator {
-  [SecureContext, RuntimeEnabled=FedCmIdpSigninStatus] readonly attribute NavigatorLogin login;
+  [SecureContext, RuntimeEnabled=FedCm] readonly attribute NavigatorLogin login;
 };
 
 [
     Exposed=Window,
     SecureContext,
-    RuntimeEnabled=FedCmIdpSigninStatus
+    RuntimeEnabled=FedCm
 ]
 interface NavigatorLogin {
     [CallWith=ScriptState, MeasureAs=FedCmIdpSigninStatusJsApi]
