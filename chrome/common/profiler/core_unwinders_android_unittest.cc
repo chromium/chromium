@@ -5,6 +5,7 @@
 #include "chrome/common/profiler/core_unwinders.h"
 
 #include "base/command_line.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -108,14 +109,15 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     raw_ptr<UnwindPrerequisitesDelegate> delegate;
     bool are_unwind_prerequisites_expected;
   } test_cases[] = {
-    // Android unwinders require the presence of the unwinder module.
+#if ARM32_UNWINDING_SUPPORTED
+      // 32-bit Chrome Android unwinder requires the presence of the unwinder
+      // module.
     {version_info::Channel::CANARY, &false_mock_delegate, false},
     {version_info::Channel::DEV, &false_mock_delegate, false},
     {version_info::Channel::BETA, &false_mock_delegate, false},
     {version_info::Channel::STABLE, &false_mock_delegate, false},
     {version_info::Channel::UNKNOWN, &false_mock_delegate, false},
 
-#if UNWINDING_SUPPORTED
     {version_info::Channel::CANARY, &true_mock_delegate, true},
     {version_info::Channel::DEV, &true_mock_delegate, true},
     {version_info::Channel::BETA, &true_mock_delegate, true},
@@ -130,20 +132,28 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     {version_info::Channel::STABLE, &true_mock_delegate, true},
     {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
 #endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#else   // UNWINDING_SUPPORTED
-    // Unwinding on any other platforms is not currently supported for Android.
-    {version_info::Channel::CANARY, &true_mock_delegate, false},
-    {version_info::Channel::DEV, &true_mock_delegate, false},
-    {version_info::Channel::BETA, &true_mock_delegate, false},
-    {version_info::Channel::STABLE, &true_mock_delegate, false},
-    {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
-#endif  // UNWINDING_SUPPORTED
+#else   // ARM32_UNWINDING_SUPPORTED
+    {version_info::Channel::CANARY, &false_mock_delegate, true},
+    {version_info::Channel::DEV, &false_mock_delegate, true},
+    {version_info::Channel::BETA, &false_mock_delegate, true},
+    {version_info::Channel::STABLE, &false_mock_delegate, true},
+    {version_info::Channel::UNKNOWN, &false_mock_delegate, true},
+
+    {version_info::Channel::CANARY, &true_mock_delegate, true},
+    {version_info::Channel::DEV, &true_mock_delegate, true},
+    {version_info::Channel::BETA, &true_mock_delegate, true},
+    {version_info::Channel::STABLE, &true_mock_delegate, true},
+    {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
+#endif  // ARM32_UNWINDING_SUPPORTED
   };
 
   for (const auto& test_case : test_cases) {
     EXPECT_EQ(
         AreUnwindPrerequisitesAvailable(test_case.channel, test_case.delegate),
-        test_case.are_unwind_prerequisites_expected);
+        test_case.are_unwind_prerequisites_expected)
+        << "Channel " << static_cast<int>(test_case.channel) << ", "
+        << (test_case.delegate == &false_mock_delegate ? "false_mock_delegate"
+                                                       : "true_mock_delegate");
   }
 }
 
