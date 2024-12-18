@@ -314,6 +314,9 @@ message OmniboxEventProto {
 
     // URLs amongst the user's synced sessions.
     CROSS_DEVICE_TAB = 28;
+
+    // Suggestions from policy configured search aggregator keywords.
+    ENTERPRISE_SEARCH_AGGREGATOR = 29;
   }
 
   // The result set displayed on the completion popup

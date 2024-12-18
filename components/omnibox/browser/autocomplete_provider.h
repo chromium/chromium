@@ -177,6 +177,7 @@ class AutocompleteProvider
     TYPE_CALCULATOR = 1 << 19,
     TYPE_FEATURED_SEARCH = 1 << 20,
     TYPE_HISTORY_EMBEDDINGS = 1 << 21,
+    TYPE_ENTERPRISE_SEARCH_AGGREGATOR = 1 << 22,
     // When adding a value here, also update:
     // - omnibox_event.proto
     // - `AutocompleteProvider::AsOmniboxEventProviderType`

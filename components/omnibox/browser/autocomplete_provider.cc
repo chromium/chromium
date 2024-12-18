@@ -78,6 +78,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "FeaturedSearch";
     case TYPE_HISTORY_EMBEDDINGS:
       return "HistoryEmbeddings";
+    case TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+      return "EnterpriseSearchAggregator";
     default:
       DUMP_WILL_BE_NOTREACHED()
           << "Unhandled AutocompleteProvider::Type " << type;
@@ -159,6 +161,8 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::FEATURED_SEARCH;
     case TYPE_HISTORY_EMBEDDINGS:
       return metrics::OmniboxEventProto::HISTORY_EMBEDDINGS;
+    case TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+      return metrics::OmniboxEventProto::ENTERPRISE_SEARCH_AGGREGATOR;
     default:
       // TODO(crbug.com/40940012) This was a NOTREACHED that we converted to
       //   help debug crbug.com/1499235 since NOTREACHED's don't log their
