@@ -54,7 +54,6 @@ public class ChromeCachedFlagsTest {
             Set.of(
                     ChromeFeatureList.sCctFeatureUsage,
                     ChromeFeatureList.sCctGoogleBottomBar,
-                    ChromeFeatureList.sCollectAndroidFrameTimelineMetrics,
                     ChromeFeatureList.sDownloadsMigrateToJobsAPI,
                     ChromeFeatureList.sDrawKeyNativeEdgeToEdge,
                     ChromeFeatureList.sEdgeToEdgeBottomChin,

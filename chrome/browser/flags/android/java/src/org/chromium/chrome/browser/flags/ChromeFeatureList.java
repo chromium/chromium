@@ -642,7 +642,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
-            newCachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
+            newCachedFlag(
+                    COLLECT_ANDROID_FRAME_TIMELINE_METRICS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCommandLineOnNonRooted =
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
