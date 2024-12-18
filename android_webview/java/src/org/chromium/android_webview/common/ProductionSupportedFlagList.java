@@ -509,10 +509,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, media::VideoEncoder implementation is used in MediaRecorder API"
                         + " instead of using MediaRecorder own video encoder implementation."),
         Flag.baseFeature(
-                MetricsFeatures.METRICS_SERVICE_ALLOW_EARLY_LOG_CLOSE,
-                "Controls whether a log is allowed to be closed when Chrome"
-                        + " is backgrounded/foregrounded early."),
-        Flag.baseFeature(
                 MetricsFeatures.FLUSH_PERSISTENT_SYSTEM_PROFILE_ON_WRITE,
                 "Controls whether to schedule a flush of persistent histogram memory "
                         + "immediately after writing a system profile to it."),

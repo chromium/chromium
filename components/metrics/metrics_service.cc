@@ -1583,14 +1583,8 @@ void MetricsService::UpdateLastLiveTimestampTask() {
 }
 
 bool MetricsService::IsTooEarlyToCloseLog() {
-  // When kMetricsServiceAllowEarlyLogClose is enabled, start closing logs as
-  // soon as the first log is opened (|state_| is set to INIT_TASK_SCHEDULED
-  // when the first log is opened, see OpenNewLog()). Otherwise, only start
-  // closing logs when logs have started being sent.
-  return base::FeatureList::IsEnabled(
-             features::kMetricsServiceAllowEarlyLogClose)
-             ? state_ < INIT_TASK_SCHEDULED
-             : state_ < SENDING_LOGS;
+  // Only start closing logs when logs have started being sent.
+  return state_ < SENDING_LOGS;
 }
 
 void MetricsService::OnClonedInstallDetected() {
