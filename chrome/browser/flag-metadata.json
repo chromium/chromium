@@ -2408,11 +2408,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "enable-accessibility-snapshot-stress-tests",
-    "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-accessibility-unified-snapshots",
     "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 140

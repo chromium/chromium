@@ -4297,12 +4297,6 @@ const char kAccessibilityPageZoomEnhancementsDescription[] =
     "When enabled, will show enhancements to the Page Zoom feature based on "
     "user feedback from the v1 version (e.g. reset button, better IPH, etc).";
 
-const char kAccessibilitySnapshotStressTestsName[] =
-    "Accessibility AXTree Snapshot Stress Tests";
-const char kAccessibilitySnapshotStressTestsDescription[] =
-    "Enable experiment that will disable max node and timeout limits for the "
-    "AXTreeSnapshotter, and track performance stats.";
-
 const char kAccessibilityUnifiedSnapshotsName[] =
     "Accessibility Unified Snapshots";
 const char kAccessibilityUnifiedSnapshotsDescription[] =

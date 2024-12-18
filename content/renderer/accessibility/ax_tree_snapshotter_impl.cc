@@ -8,15 +8,11 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/thread_pool.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "content/renderer/render_frame_impl.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_error_types.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -33,13 +29,6 @@ using blink::WebDocument;
 using ErrorSet = std::set<ui::AXSerializationErrorFlag>;
 
 namespace content {
-
-namespace {
-
-constexpr int kMaxNodesHistogramLimit = 20000;
-constexpr int kTimeoutInMillisecondsHistogramLimit = 3000;
-
-}  // namespace
 
 constexpr char kAXTreeSnapshotterErrorHistogramName[] =
     "Accessibility.AXTreeSnapshotter.Snapshot.Error";
@@ -96,22 +85,9 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
     NOTREACHED();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   if (SerializeTreeWithLimits(max_node_count, timeout, response)) {
     return;
   }
-#else
-  // On Android, experiment with serialization without any limits.
-  if (features::IsAccessibilitySnapshotStressTestsEnabled()) {
-    if (SerializeTree(response)) {
-      return;
-    }
-  } else {
-    if (SerializeTreeWithLimits(max_node_count, timeout, response)) {
-      return;
-    }
-  }
-#endif
 
   RECORD_ERROR(GenericSerializationError);
   // It failed again. Clear the response object because it might have errors.
@@ -153,39 +129,6 @@ bool AXTreeSnapshotterImpl::SerializeTreeWithLimits(
   } else if (timeout_iter != out_error.end()) {
     RECORD_ERROR(SerializeTimeoutReached);
   }
-
-  return true;
-}
-
-bool AXTreeSnapshotterImpl::SerializeTree(ui::AXTreeUpdate* response) {
-#if !BUILDFLAG(IS_ANDROID)
-  int max_nodes_count = 0;
-#else
-  // Experiment with different max values for end-to-end timing. An arbitrarily
-  // large value will simulate there being no max nodes count.
-  int max_nodes_count = base::GetFieldTrialParamByFeatureAsInt(
-      features::kAccessibilitySnapshotStressTests,
-      "AccessibilitySnapshotStressTestsMaxNodes", 100000);
-#endif
-
-  base::ElapsedTimer timer = base::ElapsedTimer();
-  timer.start_time();
-  if (!context_->SerializeEntireTree(max_nodes_count, {}, response)) {
-    return false;
-  }
-
-  base::TimeDelta snapshotDuration = timer.Elapsed();
-  base::LinearHistogram::FactoryGet(
-      "Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Nodes", 0,
-      kMaxNodesHistogramLimit, 100,
-      base::HistogramBase::kUmaTargetedHistogramFlag)
-      ->Add(response->nodes.size());
-
-  base::LinearHistogram::FactoryGet(
-      "Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Time", 0,
-      kTimeoutInMillisecondsHistogramLimit, 100,
-      base::HistogramBase::kUmaTargetedHistogramFlag)
-      ->Add(snapshotDuration.InMilliseconds());
 
   return true;
 }

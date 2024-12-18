@@ -199,20 +199,6 @@ AX_BASE_EXPORT bool IsAccessibilitySlowKeysEnabled();
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-// Disable max node and timeout limits on the
-// AXTreeSnapshotter's Snapshot method, and track related histograms.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySnapshotStressTests);
-AX_BASE_EXPORT bool IsAccessibilitySnapshotStressTestsEnabled();
-// Controls the maximum amount of nodes in a given snapshot. We set an
-// arbitrarily high value as the default to simulate there being no max nodes
-// limit.
-AX_BASE_EXPORT const base::FeatureParam<int>
-    kAccessibilitySnapshotStressTestsMaxNodes{
-        &kAccessibilitySnapshotStressTests,
-        "AccessibilitySnapshotStressTestsMaxNodes", 100000};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
 // Use the experimental Accessibility Service.
 // TODO(katydek): Provide a more descriptive name here.

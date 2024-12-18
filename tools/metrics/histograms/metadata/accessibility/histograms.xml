@@ -588,18 +588,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime"
-    units="ms" expires_after="2025-04-27">
-  <owner>mschillaci@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks the total end-to-end runtime of the AXTreeSnapshotter flow from
-    initial Java request to a fully populated Java-side tree. This is recorded
-    during the snapshot callback after the root node's asyncCommit call. It is
-    currently recorded only during the snapshot stress test experiments.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.AXTreeSnapshotter.Snapshot.Error"
     enum="AXTreeSnapshotErrorReason" expires_after="2025-06-08">
   <owner>mschillaci@google.com</owner>
@@ -610,26 +598,6 @@ chromium-metrics-reviews@google.com.
     report one failure reason. A page with multiple render frames can have some
     snapshots succeed, and others fail. On repeat calls for snapshots, a
     previously succeeding call may fail, or vice versa.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Nodes"
-    units="count" expires_after="2025-05-11">
-  <owner>mschillaci@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks the total number of nodes that are serialized in a AXTreeSnapshotter
-    call that does not have a max node limit.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Time"
-    units="ms" expires_after="2025-05-11">
-  <owner>mschillaci@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks the total serialization runtime of a AXTreeSnapshotter call that does
-    not have a timeout limit.
   </summary>
 </histogram>
 

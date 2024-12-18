@@ -64,7 +64,6 @@ import android.content.ReceiverCallNotAllowedException;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -91,7 +90,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -111,8 +109,6 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.accessibility.AccessibilityFeatures;
-import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -1103,8 +1099,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         mHasFinishedLatestAccessibilitySnapshot = false;
-        long beforeSnapshotTimeMs = SystemClock.elapsedRealtime();
-
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
             mNativeAssistDataObj =
                     WebContentsAccessibilityImplJni.get()
@@ -1119,28 +1113,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             viewRoot,
                             mDelegate.getAccessibilityCoordinates(),
                             mView,
-                            () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
+                            () -> onSnapshotDoneCallback(viewRoot));
         } else {
             mDelegate.requestAccessibilitySnapshot(
-                    viewRoot, () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
+                    viewRoot, () -> onSnapshotDoneCallback(viewRoot));
         }
     }
 
-    private void onSnapshotDoneCallback(ViewStructure viewRoot, long beforeSnapshotTimeMs) {
+    private void onSnapshotDoneCallback(ViewStructure viewRoot) {
         viewRoot.asyncCommit();
         mHasFinishedLatestAccessibilitySnapshot = true;
-
-        if (AccessibilityFeaturesMap.isEnabled(
-                AccessibilityFeatures.ACCESSIBILITY_SNAPSHOT_STRESS_TESTS)) {
-            long snapshotRuntimeMs = SystemClock.elapsedRealtime() - beforeSnapshotTimeMs;
-            RecordHistogram.recordLinearCountHistogram(
-                    "Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime",
-                    (int) snapshotRuntimeMs,
-                    1,
-                    5 * 1000,
-                    100);
-        }
-
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
             // In some cases (e.g. testing) the full engine may also be running, so don't delete.
             if (!isNativeInitialized()) {

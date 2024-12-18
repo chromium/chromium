@@ -260,16 +260,6 @@ bool IsAccessibilityShakeToLocateEnabled() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAccessibilitySnapshotStressTests,
-             "AccessibilitySnapshotStressTests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilitySnapshotStressTestsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilitySnapshotStressTests);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
 bool IsScreenAIMainContentExtractionEnabled() {
   return base::FeatureList::IsEnabled(

@@ -130,12 +130,6 @@ component("ax_base") {
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
-
-  if (is_android) {
-    sources += [ "android/accessibility_features_map.cc" ]
-
-    deps += [ ":ax_base_jni_headers" ]
-  }
 }
 
 #if (is_win) {
@@ -502,10 +496,6 @@ if (is_android) {
     srcjar_deps = [ ":java_features_srcjar" ]
   }
 
-  generate_jni("ax_base_jni_headers") {
-    sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
-  }
-
   generate_jni("ax_jni_headers") {
     sources = [
       "android/java/src/org/chromium/ui/accessibility/AccessibilityAutofillHelper.java",
@@ -521,16 +511,6 @@ if (is_android) {
     deps = [
       ":ax_jni_headers",
       "//base",
-    ]
-  }
-
-  android_library("accessibility_features_native_map_java") {
-    srcjar_deps = [ ":ax_base_jni_headers" ]
-
-    sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
-    deps = [
-      "//base:base_java",
-      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 

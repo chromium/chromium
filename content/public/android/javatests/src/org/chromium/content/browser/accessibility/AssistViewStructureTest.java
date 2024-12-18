@@ -23,15 +23,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
-import org.chromium.ui.accessibility.AccessibilityFeatures;
 
 import java.util.concurrent.TimeoutException;
 
@@ -91,19 +87,6 @@ public class AssistViewStructureTest {
                 + "var selection=window.getSelection();"
                 + "selection.removeAllRanges();"
                 + "selection.addRange(range);";
-    }
-
-    private String addManyNodesScript() {
-        return "var body = document.getElementById('container');\n"
-                + "for (i = 0; i < 600; i++) {\n"
-                + "  var nextContainer = document.createElement('div');\n"
-                + "  for (j = 0; j < 10; j++) {\n"
-                + "    var paragraph = document.createElement('p');\n"
-                + "    paragraph.innerHTML = \"Example Text\";\n"
-                + "    nextContainer.appendChild(paragraph);\n"
-                + "  }\n"
-                + "  body.appendChild(nextContainer);\n"
-                + "}\n";
     }
 
     /** Test that the snapshot contains the url. */
@@ -251,55 +234,5 @@ public class AssistViewStructureTest {
         Assert.assertTrue(unclippedRight > 0);
         Assert.assertTrue(unclippedWidth > 0);
         Assert.assertTrue(unclippedHeight > 0);
-    }
-
-    /** Test that pages with larger than the max node count result in a partial tree. */
-    @Test
-    @MediumTest
-    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_SNAPSHOT_STRESS_TESTS)
-    public void testMaxNodesLimit() throws Throwable {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(
-                                "Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime", 0)
-                        .build();
-
-        // There is a max of 5000 nodes, add many nodes with some children. If the tree is flat
-        // then all nodes will end up serialized because the serializer will finish the current
-        // node and its children. The number of nodes returned may be more or less than 5000.
-        TestViewStructure root =
-                getViewStructureFromHtml("<div id='container'></div>", addManyNodesScript())
-                        .getChild(0);
-
-        // Recursively count child nodes. Allow for approximately 5000 nodes.
-        Assert.assertTrue(
-                String.format(
-                        "Too many nodes serialized, found %s", root.getTotalDescendantCount()),
-                5100 > root.getTotalDescendantCount());
-
-        histogramWatcher.assertExpected();
-    }
-
-    /** Test that pages with more than the max node count return a full tree during stress tests. */
-    @Test
-    @MediumTest
-    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_SNAPSHOT_STRESS_TESTS)
-    @DisabledTest(message = "crbug.com/362208929")
-    public void testMaxNodesLimit_ignoredDuringStressTests() throws Throwable {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(
-                                "Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime", 1)
-                        .build();
-
-        TestViewStructure root =
-                getViewStructureFromHtml("<div id='container'></div>", addManyNodesScript())
-                        .getChild(0);
-
-        Assert.assertTrue(
-                String.format("Too few nodes serialized, found %s", root.getTotalDescendantCount()),
-                12000 < root.getTotalDescendantCount());
-
-        histogramWatcher.assertExpected();
     }
 }

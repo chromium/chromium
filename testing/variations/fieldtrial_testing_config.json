@@ -150,60 +150,6 @@
             ]
         }
     ],
-    "AccessibilitySnapshotStressTests": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Max3500_20231206",
-                    "params": {
-                        "AccessibilitySnapshotStressTestsMaxNodes": "3500"
-                    },
-                    "enable_features": [
-                        "AccessibilitySnapshotStressTests"
-                    ]
-                },
-                {
-                    "name": "Enabled_Max2000_20231206",
-                    "params": {
-                        "AccessibilitySnapshotStressTestsMaxNodes": "2000"
-                    },
-                    "enable_features": [
-                        "AccessibilitySnapshotStressTests"
-                    ]
-                },
-                {
-                    "name": "Enabled_Max1500_20231206",
-                    "params": {
-                        "AccessibilitySnapshotStressTestsMaxNodes": "1500"
-                    },
-                    "enable_features": [
-                        "AccessibilitySnapshotStressTests"
-                    ]
-                },
-                {
-                    "name": "Enabled_Max1000_20231206",
-                    "params": {
-                        "AccessibilitySnapshotStressTestsMaxNodes": "1000"
-                    },
-                    "enable_features": [
-                        "AccessibilitySnapshotStressTests"
-                    ]
-                },
-                {
-                    "name": "Control_NoMax_20231206",
-                    "params": {
-                        "AccessibilitySnapshotStressTestsMaxNodes": "100000"
-                    },
-                    "enable_features": [
-                        "AccessibilitySnapshotStressTests"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityUnifiedSnapshots": [
         {
             "platforms": [
