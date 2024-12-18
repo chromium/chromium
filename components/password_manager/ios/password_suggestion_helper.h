@@ -24,6 +24,7 @@ struct PasswordFormFillData;
 
 namespace password_manager {
 struct FillData;
+class PasswordManagerInterface;
 }  // namespace password_manager
 
 namespace web {
@@ -62,7 +63,8 @@ class WebState;
 
 // Creates a instance for the given |webState|.
 - (instancetype)initWithWebState:(web::WebState*)webState
-    NS_DESIGNATED_INITIALIZER;
+                 passwordManager:(password_manager::PasswordManagerInterface*)
+                                     passwordManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

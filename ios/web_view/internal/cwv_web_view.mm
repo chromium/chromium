@@ -1003,7 +1003,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   PasswordFormHelper* formHelper =
       [[PasswordFormHelper alloc] initWithWebState:_webState.get()];
   PasswordSuggestionHelper* suggestionHelper =
-      [[PasswordSuggestionHelper alloc] initWithWebState:_webState.get()];
+      [[PasswordSuggestionHelper alloc] initWithWebState:_webState.get()
+                                         passwordManager:passwordManager.get()];
   PasswordControllerDriverHelper* driverHelper =
       [[PasswordControllerDriverHelper alloc] initWithWebState:_webState.get()];
   SharedPasswordController* passwordController =

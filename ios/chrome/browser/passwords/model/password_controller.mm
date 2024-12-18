@@ -193,7 +193,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     PasswordFormHelper* formHelper =
         [[PasswordFormHelper alloc] initWithWebState:webState];
     PasswordSuggestionHelper* suggestionHelper =
-        [[PasswordSuggestionHelper alloc] initWithWebState:_webState];
+        [[PasswordSuggestionHelper alloc]
+            initWithWebState:_webState
+             passwordManager:_passwordManager.get()];
     PasswordControllerDriverHelper* driverHelper =
         [[PasswordControllerDriverHelper alloc] initWithWebState:_webState];
     _sharedPasswordController = [[SharedPasswordController alloc]

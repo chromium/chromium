@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/form_data.h"
@@ -17,8 +18,14 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
+#import "components/password_manager/core/browser/features/password_features.h"
+#import "components/password_manager/core/browser/mock_password_form_cache.h"
+#import "components/password_manager/core/browser/mock_password_manager.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/test_helpers.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -39,6 +46,7 @@ using autofill::test::MakeFieldRendererId;
 using autofill::test::MakeFormRendererId;
 using base::SysUTF8ToNSString;
 using base::UTF8ToUTF16;
+using ::testing::Return;
 
 namespace {
 
@@ -87,10 +95,18 @@ class PasswordSuggestionHelperTest : public PlatformTest {
     autofill::AutofillDriverIOSFactory::CreateForWebState(
         &web_state_, &autofill_client_, /*autofill_agent=*/nil);
 
+    IOSPasswordManagerDriverFactory::CreateForWebState(&web_state_, nil,
+                                                       &password_manager_);
+
     delegate_ = OCMProtocolMock(@protocol(PasswordSuggestionHelperDelegate));
 
-    helper_ = [[PasswordSuggestionHelper alloc] initWithWebState:&web_state_];
+    helper_ =
+        [[PasswordSuggestionHelper alloc] initWithWebState:&web_state_
+                                           passwordManager:&password_manager_];
     helper_.delegate = delegate_;
+
+    ON_CALL(password_manager_, GetPasswordFormCache)
+        .WillByDefault(Return(&password_form_cache_));
   }
 
   void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
@@ -137,6 +153,9 @@ class PasswordSuggestionHelperTest : public PlatformTest {
   PasswordSuggestionHelper* helper_;
   raw_ptr<web::FakeWebFrame> main_frame_;
   raw_ptr<web::FakeWebFramesManager> frames_manager_;
+  password_manager::MockPasswordManager password_manager_;
+  password_manager::MockPasswordFormCache password_form_cache_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the suggestions check query passes when there is fill data for the
@@ -693,6 +712,9 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnUsernameField) {
 
 // Tests retrieving suggestions on password field in form when available.
 TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
+  feature_list_.InitAndDisableFeature(
+      password_manager::features::kIOSImprovePasswordFieldDetectionForFilling);
+
   FormSuggestionProviderQuery* query =
       BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
@@ -705,6 +727,47 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
                          forSecurityOrigin:main_frame_->GetSecurityOrigin()];
+
+  NSArray<FormSuggestion*>* suggestions =
+      [helper_ retrieveSuggestionsWithForm:query];
+
+  ASSERT_EQ(1ul, [suggestions count]);
+
+  FormSuggestion* suggestionToEvaluate = suggestions.firstObject;
+
+  EXPECT_NSEQ(SysUTF8ToNSString(kFillDataUsername), suggestionToEvaluate.value);
+  EXPECT_FALSE(suggestionToEvaluate.metadata.is_single_username_form);
+}
+
+// Tests retrieving suggestions on the password field in form when suggestions
+// are available. Tests the case where the type of the field is associated with
+// a password and can be determined from the password manager cache.
+TEST_F(PasswordSuggestionHelperTest,
+       RetrieveSuggestions_OnPasswordField_UsingPasswordFormCache) {
+  feature_list_.InitAndEnableFeature(
+      password_manager::features::kIOSImprovePasswordFieldDetectionForFilling);
+
+  FormSuggestionProviderQuery* query =
+      BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
+  FormRendererId form_renderer_id(query.formRendererID);
+  FieldRendererId password_renderer_id(query.fieldRendererID);
+
+  PasswordFormFillData form_fill_data = CreatePasswordFillData(
+      form_renderer_id,
+      /*username_renderer_id=*/autofill::test::MakeFieldRendererId(),
+      password_renderer_id);
+  [helper_ processWithPasswordFormFillData:form_fill_data
+                                forFrameId:main_frame_->GetFrameId()
+                               isMainFrame:main_frame_->IsMainFrame()
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
+
+  // Return a password form in the cache that has its password field
+  // corresponding to the field in the query.
+  password_manager::PasswordForm password_form;
+  password_form.password_element_renderer_id = password_renderer_id;
+  EXPECT_CALL(password_form_cache_,
+              GetPasswordForm(::testing::_, form_renderer_id))
+      .WillOnce(Return(&password_form));
 
   NSArray<FormSuggestion*>* suggestions =
       [helper_ retrieveSuggestionsWithForm:query];

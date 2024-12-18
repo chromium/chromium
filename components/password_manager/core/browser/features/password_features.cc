@@ -64,6 +64,10 @@ BASE_FEATURE(kIosDetectUsernameInUff,
              "IosSaveUsernameInUff",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSImprovePasswordFieldDetectionForFilling,
+             "IOSImprovePasswordFieldDetectionForFilling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSPasswordBottomSheetV2,
              "IOSPasswordBottomSheetV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
