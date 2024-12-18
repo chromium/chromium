@@ -2440,7 +2440,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.JobCreateToResultTime.{Result}" units="ms"
+<histogram name="Net.HttpStreamPool.JobCreateToResumeTime.{Result}" units="ms"
     expires_after="2025-02-27">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>

@@ -80,8 +80,7 @@ HttpStreamPool::Job::~Job() {
         CreateToResumeTime());
 
     if (*result_ != OK) {
-      base::UmaHistogramSparse("Net.NetworkTransaction.JobErrorCode",
-                               -*result_);
+      base::UmaHistogramSparse("Net.HttpStreamPool.JobErrorCode", -*result_);
     }
   }
 
