@@ -2976,12 +2976,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenResponseCode"
-    units="code" expires_after="2025-09-29">
+<histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenNetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-17">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    HTTP Response code returned by the server when trying to fetch the OAuth
+    The net error or HTTP response code returned when trying to fetch the OAuth
     token for a tailored security service query.
   </summary>
 </histogram>
