@@ -298,13 +298,6 @@ BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 // Controls whether the integration of tailored security settings is enabled.
 BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enable an observer-based retry mechanism for the tailored security dialogs.
-// When enabled, the tailored security integration will use tab observers to
-// retry the tailored security logic when a WebContents becomes available.
-BASE_DECLARE_FEATURE(kTailoredSecurityObserverRetries);
-#endif
-
 // Specifies which non-resource HTML Elements to collect based on their tag and
 // attributes. It's a single param containing a comma-separated list of pairs.
 // For example: "tag1,id,tag1,height,tag2,foo" - this will collect elements with

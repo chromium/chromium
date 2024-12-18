@@ -90,26 +90,14 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
 #if BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents = GetWebContentsForProfile(profile_);
   if (!web_contents) {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kTailoredSecurityObserverRetries)) {
-      RegisterObserver();
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
-          kRetryMechanismTriggered);
-      return;
-    }
-    if (is_enabled) {
-      RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kNoWebContentsAvailable);
-    }
-    return;
-  }
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityObserverRetries)) {
+    RegisterObserver();
     base::UmaHistogramBoolean(
         "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
-        kRetryMechanismNotTriggered);
+        kRetryMechanismTriggered);
+    return;
   }
+  base::UmaHistogramBoolean("SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
+                            kRetryMechanismNotTriggered);
 
   // Since the Android UX is a notice, we simply set Safe Browsing state.
   SetSafeBrowsingState(profile_->GetPrefs(),

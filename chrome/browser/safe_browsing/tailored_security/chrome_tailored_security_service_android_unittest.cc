@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -15,7 +14,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -84,26 +82,7 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
   base::HistogramTester histograms_;
   testing::NiceMock<messages::MockMessageDispatcherBridge>
       message_dispatcher_bridge_;
-  base::test::ScopedFeatureList feature_list;
 };
-
-TEST_F(ChromeTailoredSecurityServiceTest,
-       RetryDisabledWithNoTabsLogsNoWebContents) {
-  feature_list.InitAndDisableFeature(
-      safe_browsing::kTailoredSecurityObserverRetries);
-
-  for (TabModel* tab : TabModelList::models()) {
-    TabModelList::RemoveTabModel(tab);
-  }
-
-  EXPECT_EQ(TabModelList::models().size(), 0U);
-
-  chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
-      kTailoredSecurityEnabled);
-  histograms_.ExpectBucketCount(
-      "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
-      TailoredSecurityNotificationResult::kNoWebContentsAvailable, 1);
-}
 
 TEST_F(ChromeTailoredSecurityServiceTest, WhenATabIsAvailableShowsTheMessage) {
   TestTabModel tab_model(getProfile());
@@ -121,11 +100,7 @@ TEST_F(ChromeTailoredSecurityServiceTest, WhenATabIsAvailableShowsTheMessage) {
       TailoredSecurityNotificationResult::kShown, 1);
 }
 
-TEST_F(ChromeTailoredSecurityServiceTest,
-       RetryEnabledWithNoTabsDoesNotLogWebContents) {
-  feature_list.InitAndEnableFeature(
-      safe_browsing::kTailoredSecurityObserverRetries);
-
+TEST_F(ChromeTailoredSecurityServiceTest, WithNoTabsDoesNotLogWebContents) {
   EXPECT_EQ(TabModelList::models().size(), 0U);
 
   chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
@@ -136,10 +111,7 @@ TEST_F(ChromeTailoredSecurityServiceTest,
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       RetryEnabledWithNoTabsThenCallOnSyncThenAddTabLogsThatMessageWasShown) {
-  feature_list.InitAndEnableFeature(
-      safe_browsing::kTailoredSecurityObserverRetries);
-
+       WithNoTabsThenCallOnSyncThenAddTabLogsThatMessageWasShown) {
   // Call OnSync method while there are no tabs
   EXPECT_EQ(TabModelList::models().size(), 0U);
   tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
@@ -165,11 +137,7 @@ TEST_F(ChromeTailoredSecurityServiceTest,
       TailoredSecurityNotificationResult::kShown, 1);
 }
 
-TEST_F(ChromeTailoredSecurityServiceTest,
-       RetryEnabledWithNoWebContentsLogsRetryMechanism) {
-  feature_list.InitAndEnableFeature(
-      safe_browsing::kTailoredSecurityObserverRetries);
-
+TEST_F(ChromeTailoredSecurityServiceTest, WithNoWebContentsLogsRetryMechanism) {
   for (TabModel* tab : TabModelList::models()) {
     TabModelList::RemoveTabModel(tab);
   }
@@ -183,10 +151,7 @@ TEST_F(ChromeTailoredSecurityServiceTest,
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       RetryEnabledWithWebContentsDoesNotLogRetryMechanism) {
-  feature_list.InitAndEnableFeature(
-      safe_browsing::kTailoredSecurityObserverRetries);
-
+       WithWebContentsDoesNotLogRetryMechanism) {
   TestTabModel tab_model(getProfile());
   TabModelList::AddTabModel(&tab_model);
 
@@ -201,11 +166,7 @@ TEST_F(ChromeTailoredSecurityServiceTest,
       "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered", false, 1);
 }
 
-TEST_F(ChromeTailoredSecurityServiceTest,
-       RetryEnabledWithTabModelAddsTabModelObserver) {
-  feature_list.InitAndEnableFeature(
-      safe_browsing::kTailoredSecurityObserverRetries);
-
+TEST_F(ChromeTailoredSecurityServiceTest, WithTabModelAddsTabModelObserver) {
   // Create a tab model without any tabs.
   TestTabModel tab_model(getProfile());
   EXPECT_EQ(tab_model.GetWebContentsAt(0), nullptr);
@@ -222,13 +183,10 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   TabModelList::RemoveTabModel(&tab_model);
 }
 
-TEST_F(ChromeTailoredSecurityServiceTest,
-       RetryEnabledCanRunTwoTimesWithoutCrashing) {
+TEST_F(ChromeTailoredSecurityServiceTest, CanRunTwoTimesWithoutCrashing) {
   // The TabModelList observers can only be added one time or it will crash.
   // This test checks that ChromeTailoredSecurityService does not add itself
   // more than once to the observer lists.
-  feature_list.InitAndEnableFeature(
-      safe_browsing::kTailoredSecurityObserverRetries);
 
   // Create a tab model without any tabs.
   TestTabModel tab_model(getProfile());
