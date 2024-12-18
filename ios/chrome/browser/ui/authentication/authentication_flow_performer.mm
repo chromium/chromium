@@ -161,19 +161,13 @@ NSString* const kAuthenticationSnackbarCategory =
 }
 
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {
+  __weak __typeof(_delegate) weakDelegate = _delegate;
   GetApplicationContext()
       ->GetAccountProfileMapper()
       ->MakePersonalProfileManagedWithGaiaID(
-          base::SysNSStringToUTF8(identity.gaiaID));
-  // Note: The profile conversion itself is synchronous, but updating the
-  // accounts in IdentityManager is an async task.
-  // TODO(crbug.com/331783685): Consider adding a completion callback to
-  // MakePersonalProfileManagedWithGaiaID().
-  __weak __typeof(_delegate) weakDelegate = _delegate;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakDelegate didMakePersonalProfileManaged];
-      }));
+          base::SysNSStringToUTF8(identity.gaiaID), base::BindOnce(^{
+            [weakDelegate didMakePersonalProfileManaged];
+          }));
 }
 
 - (void)signOutProfile:(ProfileIOS*)profile {

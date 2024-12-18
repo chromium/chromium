@@ -96,8 +96,10 @@ class AccountProfileMapper {
 
   // Marks the personal profile as managed, attaches the given `gaia_id`, and
   // moves all personal accounts to a new empty personal profile. Deletes the
-  // managed profile to which `gaia_id` was attached. That profile must still be
-  // "new" (per ProfileAttributesIOS::IsNewProfile()).
+  // managed profile to which `gaia_id` was attached. That profile must not be
+  // fully initialized yet (per ProfileAttributesIOS::IsFullyInitialized()).
+  // Runs the `done_callback` once the profile has been converted and accounts
+  // reattached.
   // This is meant for two situations:
   // 1. Signing in with a managed account during the FRE. In this case, there
   //    can't be any pre-existing local data, so no need to move to a new empty
@@ -106,7 +108,8 @@ class AccountProfileMapper {
   //    personal profile. In this case, the user *may* be offered to take
   //    existing local data along into the managed profile, which is implemented
   //    as converting the personal profile into a managed one.
-  void MakePersonalProfileManagedWithGaiaID(std::string_view gaia_id);
+  void MakePersonalProfileManagedWithGaiaID(std::string_view gaia_id,
+                                            base::OnceClosure done_callback);
 
  private:
   class Assigner;

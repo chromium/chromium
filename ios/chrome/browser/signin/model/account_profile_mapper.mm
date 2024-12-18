@@ -585,8 +585,15 @@ std::string AccountProfileMapper::GetPersonalProfileName() {
 }
 
 void AccountProfileMapper::MakePersonalProfileManagedWithGaiaID(
-    std::string_view gaia_id) {
+    std::string_view gaia_id,
+    base::OnceClosure done_callback) {
   assigner_->MakePersonalProfileManagedWithGaiaID(gaia_id);
+  // Note: The profile conversion itself is synchronous, but updating the
+  // assigned accounts in IdentityManager is an async task (see
+  // `AuthenticationService::OnIdentityListChanged()`). So wait for that to
+  // happen before notifying the caller.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(done_callback));
 }
 
 void AccountProfileMapper::IdentitiesOnDeviceChanged() {
