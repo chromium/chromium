@@ -16,6 +16,10 @@ import {
   PinModeRestriction, PrinterStatusReason,
   // </if>
   PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
+// <if expr="is_chromeos">
+import {ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from 'chrome://print/print_preview.js';
+import type {DestinationOptionalParams, ManagedPrintOptions} from 'chrome://print/print_preview.js';
+// </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -922,6 +926,120 @@ suite('ModelTest', function() {
     assertEquals(model.getSettingValue('color'), true);
     assertEquals(model.getSettingValue('duplex'), false);
     assertEquals(model.getSettingValue('pin'), false);
+  });
+
+  test('ManagedPrintOptionsDisabledViaExperiment', function() {
+    loadTimeData.overrideValues(
+      {isUseManagedPrintJobOptionsInPrintPreviewEnabled: false});
+    const managedPrintOptions: ManagedPrintOptions = {
+      color: {defaultValue: false},
+    };
+    const params: DestinationOptionalParams = {
+      managedPrintOptions: managedPrintOptions,
+    };
+    const testDestination1 = new Destination(
+        /*id_=*/ 'TestDestination1',
+        /*origin_=*/ DestinationOrigin.LOCAL,
+        /*displayName_=*/ 'TestDestination1',
+        /*params_=*/ params);
+    testDestination1.capabilities =
+        getCddTemplate('TestDestination1').capabilities;
+    initializeModel();
+    model.destination = testDestination1;
+
+    model.applyDestinationSpecificPolicies();
+
+    // Managed per-printers options are disabled via experiment, so the
+    // destination default value should be selected.
+    assertEquals(model.getSettingValue('color'), true);
+  });
+
+  test('ManagedPrintOptionsSupportedDefaultValues', function() {
+    loadTimeData.overrideValues(
+        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
+    const managedPrintOptions: ManagedPrintOptions = {
+      mediaSize: {defaultValue: {width: 101600, height: 152400}},
+      mediaType: {defaultValue: 'photographic'},
+      duplex: {defaultValue: ManagedPrintOptionsDuplexType.SHORT_EDGE},
+      color: {defaultValue: false},
+      dpi: {defaultValue: {horizontal: 100, vertical: 100}},
+      quality: {defaultValue: ManagedPrintOptionsQualityType.HIGH},
+      printAsImage: {defaultValue: true},
+    };
+    const params: DestinationOptionalParams = {
+      managedPrintOptions: managedPrintOptions,
+    };
+    const testDestination1 = new Destination(
+        /*id_=*/ 'TestDestination1',
+        /*origin_=*/ DestinationOrigin.LOCAL,
+        /*displayName_=*/ 'TestDestination1',
+        /*params_=*/ params);
+    testDestination1.capabilities =
+        getCddTemplateWithAdvancedSettings(5, 'TestDestination1').capabilities;
+    initializeModel();
+
+    model.destination = testDestination1;
+    model.applyDestinationSpecificPolicies();
+
+    assertEquals(model.getSettingValue('mediaSize').name, '4x6');
+    assertEquals(model.getSettingValue('mediaType').vendor_id, 'photographic');
+    assertEquals(model.getSettingValue('duplex'), true);
+    assertEquals(model.getSettingValue('duplexShortEdge'), true);
+    assertEquals(model.getSettingValue('color'), false);
+    assertEquals(model.getSettingValue('dpi').horizontal_dpi, 100);
+    assertEquals(model.getSettingValue('dpi').vertical_dpi, 100);
+    assertEquals(
+        model.getSettingValue('vendorItems')['print-quality'],
+        /* ManagedPrintOptionsQualityType.HIGH */ '5');
+    assertEquals(model.getSettingValue('rasterize'), true);
+  });
+
+  test('ManagedPrintOptionsUnsupportedDefaultValues', function() {
+    loadTimeData.overrideValues(
+        {isUseManagedPrintJobOptionsInPrintPreviewEnabled: true});
+    const managedPrintOptions: ManagedPrintOptions = {
+      mediaSize: {defaultValue: {width: 1, height: 1}},
+      mediaType: {defaultValue: 'abacaba'},
+      duplex: {defaultValue: ManagedPrintOptionsDuplexType.UNKNOWN_DUPLEX},
+      color: {defaultValue: true},
+      dpi: {defaultValue: {horizontal: 1, vertical: 1}},
+      quality: {defaultValue: ManagedPrintOptionsQualityType.UNKNOWN_QUALITY},
+      printAsImage: {defaultValue: true},
+    };
+    const params: DestinationOptionalParams = {
+      managedPrintOptions: managedPrintOptions,
+    };
+    const testDestination1 = new Destination(
+        /*id_=*/ 'TestDestination1',
+        /*origin_=*/ DestinationOrigin.LOCAL,
+        /*displayName_=*/ 'TestDestination1',
+        /*params_=*/ params);
+    testDestination1.capabilities =
+        getCddTemplateWithAdvancedSettings(5, 'TestDestination1').capabilities;
+    testDestination1.capabilities!.printer.color = {
+      option: [
+        {type: 'STANDARD_MONOCHROME', is_default: true},
+      ] as ColorOption[],
+    };
+    initializeModel();
+    model.set('settings.rasterize.available', false);
+    // Now all the default values in `managedPrintOptions` are unsupported.
+
+    model.destination = testDestination1;
+    model.applyDestinationSpecificPolicies();
+
+    // For each setting the destination default value should be selected.
+    assertEquals(model.getSettingValue('mediaSize').name, 'NA_LETTER');
+    assertEquals(model.getSettingValue('mediaType').vendor_id, 'stationery');
+    assertEquals(model.getSettingValue('duplex'), false);
+    assertEquals(model.getSettingValue('duplexShortEdge'), false);
+    assertEquals(model.getSettingValue('color'), false);
+    assertEquals(model.getSettingValue('dpi').horizontal_dpi, 200);
+    assertEquals(model.getSettingValue('dpi').vertical_dpi, 200);
+    assertEquals(
+        model.getSettingValue('vendorItems')['print-quality'],
+        /* ManagedPrintOptionsQualityType.NORMAL */ '4');
+    assertEquals(model.getSettingValue('rasterize'), false);
   });
   // </if>
 });

@@ -22,6 +22,7 @@ import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
 // <if expr="is_chromeos">
+import {ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from './managed_print_options_cros.js';
 import {PrinterStatusReason} from './printer_status_cros.js';
 // </if>
 
@@ -207,6 +208,17 @@ export enum DuplexMode {
   SHORT_EDGE = 2,
   UNKNOWN_DUPLEX_MODE = -1,
 }
+
+// <if expr="is_chromeos">
+/**
+ * Print quality values matching registered IPP values.
+ */
+export enum QualityIppValue {
+  DRAFT = '3',
+  NORMAL = '4',
+  HIGH = '5',
+}
+// </if>
 
 let instance: PrintPreviewModelElement|null = null;
 
@@ -1665,6 +1677,134 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 
   /**
+   * Applies per-printer job options to a given printer.
+   *
+   * The default values override all the other option values sources (including
+   * values specified by the user).
+   */
+  // TODO(crbug.com/374066702): Decide if we want to fork this function and
+  // related classes to be ChromeOS specific.
+  // <if expr="is_chromeos">
+  private applyDestinationManagedJobOptions() {
+    // TODO(crbug.com/374066702): support "allowed" print option values set by
+    // the per-printer job options policy.
+    const managedPrintOptions = this.destination.managedPrintOptions;
+    if (!managedPrintOptions) {
+      return;
+    }
+
+    if (!this.settings.mediaSize.setFromUi &&
+        managedPrintOptions.mediaSize?.defaultValue) {
+      const mediaSize = this.destination.getMediaSize(
+          managedPrintOptions.mediaSize.defaultValue.width,
+          managedPrintOptions.mediaSize.defaultValue.height);
+      if (mediaSize) {
+        this.setSetting('mediaSize', mediaSize, /*noSticky=*/ true);
+      }
+    }
+
+    if (!this.settings.mediaType.setFromUi &&
+        managedPrintOptions.mediaType?.defaultValue) {
+      const mediaType = this.destination.getMediaType(
+          managedPrintOptions.mediaType!.defaultValue);
+      if (mediaType) {
+        this.setSetting('mediaType', mediaType, /*noSticky=*/ true);
+      }
+    }
+
+    if (!this.settings.duplex.setFromUi &&
+        !this.settings.duplexShortEdge.setFromUi &&
+        managedPrintOptions.duplex?.defaultValue) {
+      switch (managedPrintOptions.duplex.defaultValue) {
+        case ManagedPrintOptionsDuplexType.ONE_SIDED: {
+          if (this.destination.supportsDuplex(DuplexType.NO_DUPLEX)) {
+            this.setSetting('duplex', /*value=*/ false, /*noSticky=*/ true);
+          }
+          break;
+        }
+        case ManagedPrintOptionsDuplexType.LONG_EDGE: {
+          if (this.destination.supportsDuplex(DuplexType.LONG_EDGE)) {
+            this.setSetting('duplex', /*value=*/ true, /*noSticky=*/ true);
+            this.setSetting(
+                'duplexShortEdge', /*value=*/ false, /*noSticky=*/ true);
+          }
+          break;
+        }
+        case ManagedPrintOptionsDuplexType.SHORT_EDGE: {
+          if (this.destination.supportsDuplex(DuplexType.SHORT_EDGE)) {
+            this.setSetting('duplex', /*value=*/ true, /*noSticky=*/ true);
+            this.setSetting(
+                'duplexShortEdge', /*value=*/ true, /*noSticky=*/ true);
+          }
+          break;
+        }
+      }
+    }
+
+    if (!this.settings.color.setFromUi &&
+        managedPrintOptions.color?.defaultValue !== undefined &&
+        this.destination.getColor(managedPrintOptions.color.defaultValue)) {
+      this.setSetting(
+          'color', managedPrintOptions.color.defaultValue, /*noSticky=*/ true);
+    }
+
+    if (!this.settings.dpi.setFromUi && managedPrintOptions.dpi?.defaultValue) {
+      const dpi = this.destination.getDpi(
+          managedPrintOptions.dpi.defaultValue.horizontal,
+          managedPrintOptions.dpi.defaultValue.vertical);
+      if (dpi) {
+        this.setSetting('dpi', dpi, /*noSticky=*/ true);
+      }
+    }
+
+    // "vendorItems" are treated as a single entity, so there's no way to check
+    // or modify "setFromUi" flag for a single advanced setting. For native
+    // printers all the advanced settings are known beforehand, so ideally these
+    // setting should instead be treated separately.
+    if (!this.settings.vendorItems.setFromUi &&
+        managedPrintOptions.quality?.defaultValue &&
+        this.destination.capabilities?.printer.vendor_capability) {
+      // Match quality enum values to the registered IPP values.
+      let qualityId: string;
+      switch (managedPrintOptions.quality.defaultValue) {
+        case ManagedPrintOptionsQualityType.DRAFT: {
+          qualityId = QualityIppValue.DRAFT;
+          break;
+        }
+        case ManagedPrintOptionsQualityType.NORMAL: {
+          qualityId = QualityIppValue.NORMAL;
+          break;
+        }
+        case ManagedPrintOptionsQualityType.HIGH: {
+          qualityId = QualityIppValue.HIGH;
+          break;
+        }
+      }
+      const printQualityCapability =
+          this.destination.capabilities.printer.vendor_capability.find(o => {
+            return o.id === 'print-quality';
+          });
+      const hasCorrespondingQualityOption =
+          printQualityCapability?.select_cap?.option?.find(o => {
+            return o.value === qualityId;
+          });
+      if (hasCorrespondingQualityOption) {
+        const advancedSettings = this.getSettingValue('vendorItems');
+        advancedSettings['print-quality'] = qualityId;
+        this.setSetting('vendorItems', advancedSettings, /*noSticky=*/ true);
+      }
+    }
+
+    if (managedPrintOptions.printAsImage?.defaultValue !== undefined &&
+        this.settings.rasterize.available) {
+      this.setSetting(
+          'rasterize', managedPrintOptions.printAsImage.defaultValue,
+          /*noSticky=*/ true);
+    }
+  }
+  // </if>
+
+  /**
    * Restricts settings and applies defaults as defined by policy applicable to
    * current destination.
    */
@@ -1680,6 +1820,13 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
       }
     }
+
+    // <if expr="is_chromeos">
+    if (loadTimeData.getBoolean(
+            'isUseManagedPrintJobOptionsInPrintPreviewEnabled')) {
+      this.applyDestinationManagedJobOptions();
+    }
+    // </if>
 
     this.updateManaged_();
   }

@@ -454,6 +454,13 @@ export class Destination {
   get isProvisional(): boolean {
     return this.provisionalType_ !== DestinationProvisionalType.NONE;
   }
+
+  /**
+   * @return Printer specific print job options set via policy.
+   */
+  get managedPrintOptions(): ManagedPrintOptions|null {
+    return this.managedPrintOptions_;
+  }
   // </if>
 
   /** @return Path to the SVG for the destination's icon. */
