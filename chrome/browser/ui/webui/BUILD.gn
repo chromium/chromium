@@ -4,8 +4,8 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
-import("//components/metrics/generate_allowlist_from_histograms_file.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 
 generate_allowlist_from_histograms_file("webui_url_hashes") {
   namespace = "webui_metrics"

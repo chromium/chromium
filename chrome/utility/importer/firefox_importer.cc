@@ -34,7 +34,7 @@
 
 namespace {
 
-constexpr const char kDatabaseTag[] = "FirefoxImporter";
+inline constexpr sql::Database::Tag kDatabaseTag{"FirefoxImporter"};
 
 // Original definition is in:
 //   toolkit/components/places/nsINavBookmarksService.idl

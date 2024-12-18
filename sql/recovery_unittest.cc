@@ -68,8 +68,7 @@ class SqlRecoveryTest : public testing::Test,
                         public testing::WithParamInterface<bool> {
  public:
   SqlRecoveryTest()
-      : db_(DatabaseOptions{.wal_mode = ShouldEnableWal()},
-            "MyFeatureDatabase") {
+      : db_(DatabaseOptions{.wal_mode = ShouldEnableWal()}, test::kTestTag) {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kEnableWALModeByDefault, ShouldEnableWal()}});
   }
@@ -619,11 +618,12 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
                                        /*expected_bucket_count=*/1);
   // And the histograms for this specific feature.
   histogram_tester_.ExpectUniqueSample(
-      base::StrCat({kRecoveryResultHistogramName, ".MyFeatureDatabase"}),
+      base::StrCat({kRecoveryResultHistogramName, ".", test::kTestTag.value}),
       Recovery::Result::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(
-      base::StrCat({kRecoveryResultCodeHistogramName, ".MyFeatureDatabase"}),
+      base::StrCat(
+          {kRecoveryResultCodeHistogramName, ".", test::kTestTag.value}),
       SqliteLoggedResultCode::kNoError,
       /*expected_bucket_count=*/1);
 }

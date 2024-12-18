@@ -114,7 +114,7 @@ PrivateAggregationBudgetStorage::PrivateAggregationBudgetStorage(
       db_task_runner_(std::move(db_task_runner)),
       db_(std::make_unique<sql::Database>(
           sql::DatabaseOptions{.page_size = 4096, .cache_size = 32},
-          /*tag=*/"PrivateAggregation")) {}
+          sql::Database::Tag("PrivateAggregation"))) {}
 
 PrivateAggregationBudgetStorage::~PrivateAggregationBudgetStorage() {
   Shutdown();

@@ -26,27 +26,46 @@ chromium-metrics-reviews@google.com.
   <variant name="Activity" summary="Activity"/>
   <variant name="Affiliation" summary="Affiliation"/>
   <variant name="AggregationService" summary="AggregationService"/>
+  <variant name="AnnotationStorage" summary="AnnotationStorage"/>
   <variant name="BackgroundRequestQueue" summary="BackgroundRequestQueue"/>
   <variant name="BrowsingTopics" summary="BrowsingTopics"/>
+  <variant name="CdmStorage" summary="CdmStorage"/>
   <variant name="Conversions" summary="Conversions"/>
   <variant name="Cookie" summary="Cookie"/>
   <variant name="DatabaseTracker" summary="DatabaseTracker"/>
+  <variant name="DataSharingGroupStorage" summary="DataSharingGroupStorage"/>
+  <variant name="DBSCSessions" summary="DBSCSessions"/>
   <variant name="DIPS" summary="DIPS"/>
+  <variant name="FileIndexService" summary="FileIndexService"/>
+  <variant name="FirefoxImporter" summary="FirefoxImporter"/>
   <variant name="FirstPartySets" summary="FirstPartySets"/>
+  <variant name="FSPContextDatabase" summary="FSPContextDatabase"/>
   <variant name="History" summary="History"/>
+  <variant name="HistoryEmbeddings" summary="HistoryEmbeddings"/>
+  <variant name="HistoryInMemoryDB" summary="HistoryInMemoryDB"/>
   <variant name="InterestGroups" summary="InterestGroups"/>
+  <variant name="InterestGroupStorage" summary="InterestGroupStorage"/>
+  <variant name="KAnonymityService" summary="KAnonymityService"/>
   <variant name="LocalTraces" summary="LocalTraces"/>
   <variant name="MediaDeviceSalts" summary="MediaDeviceSalts"/>
+  <variant name="MediaLicense" summary="MediaLicense"/>
+  <variant name="OfflinePageMetadata" summary="OfflinePageMetadata"/>
   <variant name="OptOutBlacklist" summary="OptOutBlacklist"/>
   <variant name="Passwords" summary="Passwords"/>
+  <variant name="PermissionAuditingLogs" summary="PermissionAuditingLogs"/>
   <variant name="PowerBookmarks" summary="PowerBookmarks"/>
   <variant name="Predictor" summary="Predictor"/>
   <variant name="PrivateAggregation" summary="PrivateAggregation"/>
   <variant name="Quota" summary="Quota"/>
+  <variant name="RazeNullDB" summary="RazeNullDB"/>
+  <variant name="Recovery" summary="Recovery"/>
   <variant name="ReportingAndNEL" summary="ReportingAndNEL"/>
+  <variant name="ServerCertificate" summary="ServerCertificate"/>
   <variant name="SharedDictionary" summary="SharedDictionary"/>
   <variant name="SharedStorage" summary="SharedStorage"/>
   <variant name="Shortcuts" summary="Shortcuts"/>
+  <variant name="SQLiteDiagnostics" summary="SQLiteDiagnostics"/>
+  <variant name="Test" summary="Test"/>
   <variant name="Thumbnail" summary="Thumbnail"/>
   <variant name="TopSites" summary="TopSites"/>
   <variant name="TrustTokens" summary="TrustTokens"/>

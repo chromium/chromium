@@ -98,7 +98,7 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
               .mmap_alt_status_discouraged = true,
               .enable_views_discouraged = true,  // Required by mmap_alt_status.
           },
-          /*tag=*/"Predictor")),
+          sql::Database::Tag("Predictor"))),
       db_task_runner_(db_task_runner),
       autocomplete_table_(
           new AutocompleteActionPredictorTable(db_task_runner_)),

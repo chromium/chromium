@@ -109,7 +109,8 @@ DIPSDatabase::DIPSDatabase(const std::optional<base::FilePath>& db_path)
   if (base::FeatureList::IsEnabled(kDisableExclusiveLockingOnDipsDatabase)) {
     db_options.exclusive_locking = false;
   }
-  db_ = std::make_unique<sql::Database>(db_options, /*tag=*/"DIPS");
+
+  db_ = std::make_unique<sql::Database>(db_options, sql::Database::Tag("DIPS"));
 
   base::AssertLongCPUWorkAllowed();
   if (db_path.has_value()) {

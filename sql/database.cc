@@ -319,13 +319,13 @@ void DatabaseDiagnostics::WriteIntoTrace(
   context->set_error_message(error_message);
 }
 
-Database::Database(std::string_view tag) : Database(DatabaseOptions{}, tag) {}
+Database::Database(Database::Tag tag) : Database(DatabaseOptions{}, tag) {}
 
-Database::Database(DatabaseOptions options, std::string_view tag)
+Database::Database(DatabaseOptions options, Database::Tag tag)
     : options_(options),
       mmap_disabled_(!enable_mmap_by_default_),
-      histogram_tag_(tag),
-      tracing_track_name_(base::StrCat({"Database: ", tag})) {
+      histogram_tag_(tag.value),
+      tracing_track_name_(base::StrCat({"Database: ", histogram_tag_})) {
   DCHECK_GE(options.page_size, 512);
   DCHECK_LE(options.page_size, 65536);
   DCHECK(!(options.page_size & (options.page_size - 1)))

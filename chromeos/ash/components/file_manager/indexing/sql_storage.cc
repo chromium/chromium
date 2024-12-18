@@ -22,7 +22,7 @@ enum class DbOperationStatus {
   kMaxValue = kDatabaseRazed,
 };
 
-SqlStorage::SqlStorage(base::FilePath db_path, const std::string& uma_tag)
+SqlStorage::SqlStorage(base::FilePath db_path, sql::Database::Tag uma_tag)
     : db_path_(db_path),
       db_(sql::Database(uma_tag)),
       token_table_(&db_),

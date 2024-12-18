@@ -29,6 +29,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -37,6 +38,7 @@
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
+#include "sql/sql_name_variants.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
@@ -274,6 +276,39 @@ class COMPONENT_EXPORT(SQL) Database {
   class StatementRef;  // Forward declaration, see real one below.
 
  public:
+  // A convenience struct to
+  // 1. Convert (often implicitly) a static const char* string to a database tag
+  // to pass to the Database constructors
+  // 2. Check that the tag is in the DatabaseTag histogram variant list, at
+  // compile time.
+  //
+  // There is nothing special to do to use this struct. For example, the
+  // following works out of the box:
+  //
+  // Database db(DatabaseOptions{}, "TagName");
+  //
+  // However, if the database is a unique_ptr created with make_unique,
+  // explicitly invoking the constructor is necessary:
+  //
+  // auto db = std::make_unique<Database>(
+  //   DatabaseOptions{},
+  //   Database::Tag("TagName"));
+  struct Tag {
+    // Purposely not explicit to avoid requiring callers to wrap their tag
+    // string.
+    consteval Tag(const char* tag_value) : value(tag_value) {
+      if (!sql_metrics::IsValidDatabaseTag(tag_value)) {
+        // This will never actually invoke what's under NOTREACHED(), but
+        // NOTREACHED() is invalid in a consteval context so compilation will
+        // fail iff the string is invalid.
+        NOTREACHED() << "Invalid database tag. Did you add it to the "
+                        "DatabaseTag variant in storage/histograms.xml?";
+      }
+    }
+
+    std::string_view value;
+  };
+
   // Creates an instance that can receive Open() / OpenInMemory() calls.
   //
   // Some `options` members are only applied to newly created databases.
@@ -286,10 +321,10 @@ class COMPONENT_EXPORT(SQL) Database {
   // for timing and error histograms. Tests that don't care about those
   // histograms values can use `sql::test::kTestTag` from
   // sql/test/test_helpers.h.
-  Database(DatabaseOptions options, std::string_view tag);
+  Database(DatabaseOptions options, Tag tag);
 
   // Convenience constructor for callers that use default options.
-  explicit Database(std::string_view tag);
+  explicit Database(Tag tag);
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;

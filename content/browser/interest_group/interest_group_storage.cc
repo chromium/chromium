@@ -5496,7 +5496,7 @@ bool InterestGroupStorage::InitializeDB() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_ = std::make_unique<sql::Database>(GetDatabaseOptions(),
-                                        /*tag=*/"InterestGroups");
+                                        sql::Database::Tag("InterestGroups"));
   db_->set_error_callback(base::BindRepeating(
       &InterestGroupStorage::DatabaseErrorCallback, base::Unretained(this)));
 

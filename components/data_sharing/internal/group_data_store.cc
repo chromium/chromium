@@ -78,7 +78,8 @@ GroupDataStore::GroupDataStore(const base::FilePath& db_dir_path,
                                DBLoadedCallback db_loaded_callback)
     : db_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(kDBTaskTraits)),
-      db_(std::make_unique<sql::Database>(/*tag=*/"DataSharingGroupStorage")),
+      db_(std::make_unique<sql::Database>(
+          sql::Database::Tag("DataSharingGroupStorage"))),
       proto_table_manager_(
           base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
               db_task_runner_)),

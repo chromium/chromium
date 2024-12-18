@@ -398,7 +398,7 @@ void OptOutStoreSQL::LoadBlockList(
             .cache_size = 250},
         // TODO(crbug.com/40134470): Migrate to OptOutBlocklist and update any
         // backend code that may depend on this tag.
-        /*tag=*/"OptOutBlacklist");
+        sql::Database::Tag("OptOutBlacklist"));
   }
   background_task_runner_->PostTask(
       FROM_HERE,

@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chromeos/dbus/machine_learning",
     "//sql",
+    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
