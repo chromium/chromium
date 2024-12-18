@@ -2535,39 +2535,6 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
                                 context_->GetDocument()));
 }
 
-// A (hopefully) fast check for whether the given declaration block could
-// contain nested CSS rules. All of these have to involve { in some shape
-// or form, so we simply check for the existence of that. (It means we will
-// have false positives for e.g. { within comments or strings, but this
-// only means we will turn off lazy parsing for that rule, nothing worse.)
-// This will work even for UTF-16, although with some more false positives
-// with certain Unicode characters such as U+017E (LATIN SMALL LETTER Z
-// WITH CARON). This is, again, not a big problem for us.
-static bool MayContainNestedRules(const String& text,
-                                  wtf_size_t offset,
-                                  wtf_size_t length) {
-  if (length < 2u) {
-    // {} is the shortest possible block (but if there's
-    // a lone { and then EOF, we will be called with length 1).
-    return false;
-  }
-
-  // Strip away the outer {} pair (the { would always give us a false positive).
-  DCHECK_EQ(text[offset], '{');
-  if (text[offset + length - 1] != '}') {
-    // EOF within the block, so just be on the safe side
-    // and use the normal (non-lazy) code path.
-    return true;
-  }
-  ++offset;
-  length -= 2;
-
-  size_t char_size = text.Is8Bit() ? sizeof(LChar) : sizeof(UChar);
-  auto text_bytes = base::as_chars(
-      text.RawByteSpan().subspan(offset * char_size, length * char_size));
-  return memchr(text_bytes.data(), '{', text_bytes.size()) != nullptr;
-}
-
 StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
                                            CSSNestingType nesting_type,
                                            StyleRule* parent_rule_for_nesting,
@@ -2651,67 +2618,31 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
     return nullptr;
   }
 
-  if (RuntimeEnabledFeatures::CSSLazyParsingFastPathEnabled()) {
-    // TODO(csharrison): How should we lazily parse css that needs the observer?
-    if (!observer_ && lazy_state_) {
-      DCHECK(style_sheet_);
+  // TODO(csharrison): How should we lazily parse css that needs the observer?
+  if (!observer_ && lazy_state_) {
+    DCHECK(style_sheet_);
 
-      StringView text(stream.RemainingText(), 1);
+    StringView text(stream.RemainingText(), 1);
 #ifdef ARCH_CPU_X86_FAMILY
-      wtf_size_t len;
-      if (base::CPU::GetInstanceNoAllocation().has_avx2()) {
-        len = static_cast<wtf_size_t>(FindLengthOfDeclarationListAVX2(text));
-      } else {
-        len = static_cast<wtf_size_t>(FindLengthOfDeclarationList(text));
-      }
-#else
-      wtf_size_t len =
-          static_cast<wtf_size_t>(FindLengthOfDeclarationList(text));
-#endif
-      if (len != 0) {
-        wtf_size_t block_start_offset = stream.Offset();
-        stream.SkipToEndOfBlock(len + 2);  // +2 for { and }.
-        return StyleRule::Create(selector_vector,
-                                 MakeGarbageCollected<CSSLazyPropertyParser>(
-                                     block_start_offset, lazy_state_));
-      }
+    wtf_size_t len;
+    if (base::CPU::GetInstanceNoAllocation().has_avx2()) {
+      len = static_cast<wtf_size_t>(FindLengthOfDeclarationListAVX2(text));
+    } else {
+      len = static_cast<wtf_size_t>(FindLengthOfDeclarationList(text));
     }
-    CSSParserTokenStream::BlockGuard guard(stream);
-    return ConsumeStyleRuleContents(selector_vector, stream,
-                                    has_visited_pseudo);
-  } else {
-    CSSParserTokenStream::BlockGuard guard(stream);
-
-    // TODO(csharrison): How should we lazily parse css that needs the observer?
-    if (!observer_ && lazy_state_) {
-      DCHECK(style_sheet_);
-
-      wtf_size_t block_start_offset = stream.Offset() - 1;  // - 1 for the {.
-      guard.SkipToEndOfBlock();
-      wtf_size_t block_length = stream.Offset() - block_start_offset;
-
-      // Lazy parsing cannot deal with nested rules. We make a very quick check
-      // to see if there could possibly be any in there; if so, we need to go
-      // back to normal (non-lazy) parsing. If that happens, we've wasted some
-      // work; specifically, the SkipToEndOfBlock(), and potentially that we
-      // cannot use the CachedCSSTokenizer if that would otherwise be in use.
-      if (MayContainNestedRules(lazy_state_->SheetText(), block_start_offset,
-                                block_length)) {
-        CSSParserTokenStream block_stream(lazy_state_->SheetText(),
-                                          block_start_offset);
-        CSSParserTokenStream::BlockGuard sub_guard(
-            block_stream);  // Consume the {, and open the block stack.
-        return ConsumeStyleRuleContents(selector_vector, block_stream,
-                                        has_visited_pseudo);
-      }
-
+#else
+    wtf_size_t len = static_cast<wtf_size_t>(FindLengthOfDeclarationList(text));
+#endif
+    if (len != 0) {
+      wtf_size_t block_start_offset = stream.Offset();
+      stream.SkipToEndOfBlock(len + 2);  // +2 for { and }.
       return StyleRule::Create(selector_vector,
                                MakeGarbageCollected<CSSLazyPropertyParser>(
                                    block_start_offset, lazy_state_));
     }
-    return ConsumeStyleRuleContents(selector_vector, stream,
-                                    has_visited_pseudo);
   }
+  CSSParserTokenStream::BlockGuard guard(stream);
+  return ConsumeStyleRuleContents(selector_vector, stream, has_visited_pseudo);
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRuleContents(

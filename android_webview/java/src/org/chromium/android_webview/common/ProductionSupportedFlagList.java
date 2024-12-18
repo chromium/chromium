@@ -606,9 +606,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BaseFeatures.THREAD_POOL_CAP2, "Sets a fixed thread pool cap"),
         Flag.baseFeature("ThreadGroupSemaphore"),
         Flag.baseFeature(
-                BlinkFeatures.CSS_LAZY_PARSING_FAST_PATH,
-                "Enables a fast-path for skipping lazily-parsed CSS declaration blocks"),
-        Flag.baseFeature(
                 ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
                 "If enabled, allows navigations to be queued when there is "
                         + "an existing pending commit navigation in progress."),
