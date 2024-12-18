@@ -80,7 +80,7 @@ class Product:
         options.processes = self.processes
         # pylint: disable=assignment-from-none
         options.browser_version = self.get_version()
-        options.webdriver_binary = self.webdriver_binary
+        options.webdriver_binary = self._options.webdriver_binary or self.webdriver_binary
         options.webdriver_args.extend(self.additional_webdriver_args())
 
     @functools.cached_property
