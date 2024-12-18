@@ -34,12 +34,20 @@ bool GlicUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 }
 
 GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+  content::BrowserContext* browser_context =
+      web_ui->GetWebContents()->GetBrowserContext();
+
   // Set up the chrome://glic source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(), chrome::kChromeUIGlicHost);
+      browser_context, chrome::kChromeUIGlicHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
+
+  // Register auto-granted permissions.
+  auto* allowlist = WebUIAllowlist::GetOrCreate(browser_context);
+  allowlist->RegisterAutoGrantedPermission(source->GetOrigin(),
+                                           ContentSettingsType::GEOLOCATION);
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
 

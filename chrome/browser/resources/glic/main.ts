@@ -28,7 +28,7 @@ class GlicAppHostManager {
       this.onNewWindowEvent(e as chrome.webviewTag.NewWindowEvent);
     });
     webview.addEventListener('permissionrequest', (e: any) => {
-      if (e.permission === 'media') {
+      if (e.permission === 'media' || e.permission === 'geolocation') {
         e.request.allow();
       }
     });
