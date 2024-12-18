@@ -3460,14 +3460,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Internal.Prerender2.DomContentLoadedToActivation{PreloadingTriggerType}"
+    name="PageLoad.Internal.Prerender2.DomContentLoadedToActivation2{PreloadingTriggerType}"
     units="ms" expires_after="2025-05-11">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Records the duration from DOMContentLoaded to activation for a prerendered
-    and then activated page. If the DOMContentLoaded event is fired after
-    activation, the number will be negative.
+    and then activated page.
+
+    Note that the duration is shifted by 1 minute (60000ms) when recording the
+    metric, because UMA cannot record negative values.
+
+    If the DOMContentLoaded event is fired after activation, the number will be
+    less than 60000(ms).
+
+    If the DOMContentLoaded event is fired before activation, the number will be
+    greater than 60000(ms).
 
     This metric will be recorded when a session ends, at
     PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics.
