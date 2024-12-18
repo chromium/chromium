@@ -3753,8 +3753,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
     // blocked by SafeSites API for having mature content. The mature content
     // filter requires an async call. This call is made if the user selects
     // "Save link as" and blocks the download.
-    if (url_filter->GetFilteringBehaviorForURL(params_.link_url) !=
-        supervised_user::FilteringBehavior::kAllow) {
+    if (!url_filter->GetFilteringBehavior(params_.link_url).IsAllowed()) {
       return false;
     }
   }
@@ -4141,7 +4140,7 @@ void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
         SupervisedUserServiceFactory::GetForProfile(profile);
     supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
-    url_filter->GetFilteringBehaviorForURLWithAsyncChecks(
+    url_filter->GetFilteringBehaviorWithAsyncChecks(
         params_.link_url,
         base::BindOnce(&RenderViewContextMenu::OnSupervisedUserURLFilterChecked,
                        weak_pointer_factory_.GetWeakPtr()),
@@ -4152,10 +4151,8 @@ void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
 }
 
 void RenderViewContextMenu::OnSupervisedUserURLFilterChecked(
-    supervised_user::FilteringBehavior filtering_behavior,
-    supervised_user::FilteringBehaviorReason reason,
-    bool uncertain) {
-  if (filtering_behavior == supervised_user::FilteringBehavior::kAllow) {
+    supervised_user::SupervisedUserURLFilter::Result result) {
+  if (result.IsAllowed()) {
     ExecSaveLinkAs();
   }
 }

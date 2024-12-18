@@ -153,17 +153,18 @@ bool AreSafeSitesConfigured(const FamilyLinkSettingsState::Services& services) {
 bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,
                      const GURL& url,
                      FilteringBehavior expected_filtering_behavior) {
-  FilteringBehavior filtering_behavior;
-  if (!url_filter.GetManualFilteringBehaviorForURL(url, &filtering_behavior)) {
+  SupervisedUserURLFilter::Result result = url_filter.GetFilteringBehavior(url);
+
+  if (!result.IsFromManualList()) {
     // The change that arrived doesn't have the manual mode for requested url
     // - wait for the next one.
     LOG(WARNING) << "IsUrlConfigured: no manual mode for " << url.spec();
     return false;
   }
 
-  if (filtering_behavior != expected_filtering_behavior) {
+  if (result.behavior != expected_filtering_behavior) {
     LOG(WARNING) << "IsUrlConfigured: filtering behavior mismatch, actual="
-                 << filtering_behavior
+                 << result.behavior
                  << " expected=" << expected_filtering_behavior;
     return false;
   }

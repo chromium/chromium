@@ -72,18 +72,18 @@ void SupervisedUserNavigationThrottle::CheckURL() {
   bool got_result = false;
 
   if (navigation_handle()->IsInPrimaryMainFrame()) {
-    got_result = url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
+    got_result = url_filter_->GetFilteringBehaviorWithAsyncChecks(
         url,
         base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
-                       weak_ptr_factory_.GetWeakPtr(), url),
+                       weak_ptr_factory_.GetWeakPtr()),
         skip_manual_parent_filter,
         supervised_user::FilteringContext::kNavigationThrottle,
         navigation_handle()->GetPageTransition());
   } else {
-    got_result = url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
+    got_result = url_filter_->GetFilteringBehaviorForSubFrameWithAsyncChecks(
         url, navigation_handle()->GetWebContents()->GetVisibleURL(),
         base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
-                       weak_ptr_factory_.GetWeakPtr(), url),
+                       weak_ptr_factory_.GetWeakPtr()),
         supervised_user::FilteringContext::kNavigationThrottle,
         navigation_handle()->GetPageTransition());
   }
@@ -99,8 +99,7 @@ void SupervisedUserNavigationThrottle::CheckURL() {
 }
 
 void SupervisedUserNavigationThrottle::ShowInterstitial(
-    const GURL& url,
-    supervised_user::FilteringBehaviorReason reason) {
+    supervised_user::SupervisedUserURLFilter::Result result) {
   // Don't show interstitial synchronously - it doesn't seem like a good idea to
   // show an interstitial right in the middle of a call into a
   // NavigationThrottle. This also lets OnInterstitialResult to be invoked
@@ -109,7 +108,7 @@ void SupervisedUserNavigationThrottle::ShowInterstitial(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SupervisedUserNavigationThrottle::ShowInterstitialAsync,
-                     weak_ptr_factory_.GetWeakPtr(), reason));
+                     weak_ptr_factory_.GetWeakPtr(), result.reason));
 }
 
 void SupervisedUserNavigationThrottle::ShowInterstitialAsync(
@@ -175,21 +174,16 @@ const char* SupervisedUserNavigationThrottle::GetNameForLogging() {
 }
 
 void SupervisedUserNavigationThrottle::OnCheckDone(
-    const GURL& url,
-    supervised_user::FilteringBehavior behavior,
-    supervised_user::FilteringBehaviorReason reason,
-    bool uncertain) {
+    supervised_user::SupervisedUserURLFilter::Result result) {
   DCHECK_EQ(supervised_user::FilteringBehavior::kInvalid, behavior_);
 
-  // If we got a result synchronously, pass it back to ShowInterstitialIfNeeded.
   if (!deferred_) {
-    behavior_ = behavior;
+    behavior_ = result.behavior;
   }
 
-  reason_ = reason;
-
-  if (behavior == supervised_user::FilteringBehavior::kBlock) {
-    ShowInterstitial(url, reason);
+  reason_ = result.reason;
+  if (result.IsBlocked()) {
+    ShowInterstitial(result);
   } else if (deferred_) {
     if (base::FeatureList::GetInstance()->IsFeatureOverridden(
             supervised_user::kClassifyUrlOnProcessResponseEvent.name)) {

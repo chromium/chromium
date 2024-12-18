@@ -124,19 +124,19 @@ void ClassifyUrlNavigationThrottle::CheckURL() {
   ClassifyUrlCheckList::Key key = list_.NewCheck();
 
   if (navigation_handle()->IsInPrimaryMainFrame()) {
-    url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
+    url_filter_->GetFilteringBehaviorWithAsyncChecks(
         url,
         base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
-                       weak_ptr_factory_.GetWeakPtr(), key, url),
+                       weak_ptr_factory_.GetWeakPtr(), key),
         supervised_user::ShouldContentSkipParentAllowlistFiltering(
             navigation_handle()->GetWebContents()->GetOutermostWebContents()),
         FilteringContext::kNavigationThrottle,
         navigation_handle()->GetPageTransition());
   } else {
-    url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
+    url_filter_->GetFilteringBehaviorForSubFrameWithAsyncChecks(
         url, navigation_handle()->GetWebContents()->GetVisibleURL(),
         base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
-                       weak_ptr_factory_.GetWeakPtr(), key, url),
+                       weak_ptr_factory_.GetWeakPtr(), key),
         FilteringContext::kNavigationThrottle,
         navigation_handle()->GetPageTransition());
   }
@@ -144,10 +144,7 @@ void ClassifyUrlNavigationThrottle::CheckURL() {
 
 void ClassifyUrlNavigationThrottle::OnURLCheckDone(
     ClassifyUrlCheckList::Key key,
-    const GURL& url,
-    FilteringBehavior behavior,
-    FilteringBehaviorReason reason,
-    bool uncertain) {
+    SupervisedUserURLFilter::Result filtering_result) {
   if (list_.IsDecided()) {
     // If the verdict is already determined there's no point in processing the
     // check. This will reduce noise in metrics, but side-effects might apply
@@ -156,7 +153,7 @@ void ClassifyUrlNavigationThrottle::OnURLCheckDone(
   }
 
   // Updates the check results. This invalidates the InPending state.
-  list_.UpdateCheck(key, {url, behavior, reason});
+  list_.UpdateCheck(key, filtering_result);
 
   if (!list_.IsDecided()) {
     // Stop right here. More checks need to complete to know if navigation
@@ -174,8 +171,9 @@ void ClassifyUrlNavigationThrottle::OnURLCheckDone(
   }
 
   // Checks are completed after they were needed by WillProcessResponse.
-  if (auto result = list_.GetBlockingResult(); result.has_value()) {
-    ScheduleInterstitial(*result);
+  if (auto blocking_result = list_.GetBlockingResult();
+      blocking_result.has_value()) {
+    ScheduleInterstitial(*blocking_result);
   } else {
     base::UmaHistogramTimes(kClassifiedLaterThanContentResponseHistogramName,
                             waiting_for_decision_->Elapsed());
@@ -185,7 +183,7 @@ void ClassifyUrlNavigationThrottle::OnURLCheckDone(
 }
 
 void ClassifyUrlNavigationThrottle::ScheduleInterstitial(
-    ClassifyUrlCheckList::FilteringResult result) {
+    SupervisedUserURLFilter::Result result) {
   // Don't show interstitial synchronously - it doesn't seem like a good idea to
   // show an interstitial right in the middle of a call into a
   // NavigationThrottle. This also lets OnInterstitialResult to be invoked
@@ -198,7 +196,7 @@ void ClassifyUrlNavigationThrottle::ScheduleInterstitial(
 }
 
 void ClassifyUrlNavigationThrottle::ShowInterstitial(
-    ClassifyUrlCheckList::FilteringResult result) {
+    SupervisedUserURLFilter::Result result) {
   SupervisedUserNavigationObserver::OnRequestBlocked(
       navigation_handle()->GetWebContents(), result.url, result.reason,
       navigation_handle()->GetNavigationId(),
@@ -208,7 +206,7 @@ void ClassifyUrlNavigationThrottle::ShowInterstitial(
 }
 
 void ClassifyUrlNavigationThrottle::OnInterstitialResult(
-    ClassifyUrlCheckList::FilteringResult result,
+    SupervisedUserURLFilter::Result result,
     SupervisedUserNavigationThrottle::CallbackActions action,
     bool already_sent_request,
     bool is_main_frame) {
@@ -291,7 +289,7 @@ ClassifyUrlNavigationThrottle::NextNavigationState(
 }
 ClassifyUrlNavigationThrottle::ThrottleCheckResult
 ClassifyUrlNavigationThrottle::DeferAndScheduleInterstitial(
-    ClassifyUrlCheckList::FilteringResult result) {
+    SupervisedUserURLFilter::Result result) {
   ScheduleInterstitial(result);
   return *NextNavigationState(
       ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial);
@@ -343,7 +341,7 @@ ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::NewCheck() {
 
 void ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::UpdateCheck(
     Key key,
-    FilteringResult result) {
+    SupervisedUserURLFilter::Result result) {
   // Every time a check is completed update the timer, so that it only measures
   // elapsed time from the last meaningful check to when the verdict was needed.
   elapsed_.emplace();
@@ -356,14 +354,13 @@ ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::ElapsedSinceDecided()
   return elapsed_->Elapsed();
 }
 
-std::optional<
-    ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::FilteringResult>
+std::optional<SupervisedUserURLFilter::Result>
 ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::GetBlockingResult() const {
   for (const auto& result : results_) {
     if (!result.has_value()) {
       return std::nullopt;
     }
-    if (result->behavior == FilteringBehavior::kBlock) {
+    if (result->IsBlocked()) {
       return result;
     }
   }
@@ -377,7 +374,7 @@ bool ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::IsDecided() const {
     if (!result.has_value()) {
       return false;
     }
-    if (result->behavior == FilteringBehavior::kBlock) {
+    if (result->IsBlocked()) {
       return true;
     }
   }

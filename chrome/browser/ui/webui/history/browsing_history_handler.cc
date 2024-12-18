@@ -263,10 +263,10 @@ base::Value::Dict HistoryEntryToValue(
         SupervisedUserServiceFactory::GetForProfile(&profile);
     supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
-    supervised_user::FilteringBehavior filtering_behavior =
-        url_filter->GetFilteringBehaviorForURL(entry.url.GetWithEmptyPath());
     is_blocked_visit = entry.blocked_visit;
-    host_filtering_behavior = static_cast<int>(filtering_behavior);
+    host_filtering_behavior = static_cast<int>(
+        url_filter->GetFilteringBehavior(entry.url.GetWithEmptyPath())
+            .behavior);
   }
 
   result.Set("dateTimeOfDay", date_time_of_day);

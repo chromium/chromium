@@ -117,10 +117,7 @@ bool SupervisedUserErrorContainer::IsRemoteApprovalPendingForUrl(
 }
 
 void SupervisedUserErrorContainer::URLFilterCheckCallback(
-    const GURL& url,
-    supervised_user::FilteringBehavior behavior,
-    supervised_user::FilteringBehaviorReason reason,
-    bool uncertain) {
+    supervised_user::SupervisedUserURLFilter::Result result) {
   auto* blocking_tab_helper =
       security_interstitials::IOSBlockingPageTabHelper::FromWebState(
           web_state_);
@@ -142,14 +139,13 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
     SupervisedUserInterstitialBlockingPage* supervised_user_blocking_page =
         static_cast<SupervisedUserInterstitialBlockingPage*>(blocking_page);
     is_showing_supervised_user_interstitial_for_url =
-        supervised_user_blocking_page->interstitial().url() == url;
+        supervised_user_blocking_page->interstitial().url() == result.url;
     is_main_frame = supervised_user_blocking_page->interstitial()
                         .web_content_handler()
                         ->IsMainFrame();
   }
 
-  bool should_show_interstitial =
-      behavior == supervised_user::FilteringBehavior::kBlock;
+  bool should_show_interstitial = result.IsBlocked();
 
   if (is_showing_supervised_user_interstitial_for_url !=
       should_show_interstitial) {
@@ -163,13 +159,11 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
 }
 
 void SupervisedUserErrorContainer::OnURLFilterChanged() {
-  supervised_user_service_->GetURLFilter()
-      ->GetFilteringBehaviorForURLWithAsyncChecks(
-          web_state_->GetLastCommittedURL(),
-          base::BindOnce(&SupervisedUserErrorContainer::URLFilterCheckCallback,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         web_state_->GetLastCommittedURL()),
-          /*skip_manual_parent_filter=*/false);
+  supervised_user_service_->GetURLFilter()->GetFilteringBehaviorWithAsyncChecks(
+      web_state_->GetLastCommittedURL(),
+      base::BindOnce(&SupervisedUserErrorContainer::URLFilterCheckCallback,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*skip_manual_parent_filter=*/false);
 
   MaybeUpdatePendingApprovals();
 }
@@ -185,16 +179,14 @@ void SupervisedUserErrorContainer::OnRequestCreated(
 }
 
 void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
-  supervised_user::FilteringBehavior filtering_behavior;
   supervised_user::SupervisedUserURLFilter* url_filter =
       supervised_user_service_->GetURLFilter();
 
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
-    bool is_manual = url_filter->GetManualFilteringBehaviorForURL(
-        GURL(*iter), &filtering_behavior);
+    supervised_user::SupervisedUserURLFilter::Result result =
+        url_filter->GetFilteringBehavior(GURL(*iter));
 
-    if (is_manual &&
-        filtering_behavior == supervised_user::FilteringBehavior::kAllow) {
+    if (result.IsFromManualList() && result.IsAllowed()) {
       iter = requested_hosts_.erase(iter);
     } else {
       iter++;

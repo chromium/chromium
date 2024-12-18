@@ -61,17 +61,16 @@ std::string GetFilteringContextName(FilteringContext context) {
 
 // Converts FilteringBehavior to SupervisedUserSafetyFilterResult histogram
 // value in tools/metrics/histograms/enums.xml.
-int GetHistogramValueForFilteringBehavior(FilteringBehavior behavior,
-                                          FilteringBehaviorReason reason,
-                                          bool is_filtering_behavior_known) {
-  switch (behavior) {
+int GetHistogramValueForFilteringBehavior(
+    SupervisedUserURLFilter::Result result) {
+  switch (result.behavior) {
     case FilteringBehavior::kAllow:
-      return is_filtering_behavior_known
+      return result.IsClassificationSuccessful()
                  ? SupervisedUserSafetyFilterResult::FILTERING_BEHAVIOR_ALLOW
                  : SupervisedUserSafetyFilterResult::
                        FILTERING_BEHAVIOR_ALLOW_UNCERTAIN;
     case FilteringBehavior::kBlock:
-      switch (reason) {
+      switch (result.reason) {
         case FilteringBehaviorReason::ASYNC_CHECKER:
           return SupervisedUserSafetyFilterResult::
               FILTERING_BEHAVIOR_BLOCK_SAFESITES;
@@ -89,13 +88,12 @@ int GetHistogramValueForFilteringBehavior(FilteringBehavior behavior,
 }
 
 SupervisedUserFilterTopLevelResult TopLevelResult(
-    FilteringBehavior behavior,
-    FilteringBehaviorReason reason) {
-  switch (behavior) {
+    SupervisedUserURLFilter::Result result) {
+  switch (result.behavior) {
     case FilteringBehavior::kAllow:
       return SupervisedUserFilterTopLevelResult::kAllow;
     case FilteringBehavior::kBlock:
-      switch (reason) {
+      switch (result.reason) {
         case FilteringBehaviorReason::ASYNC_CHECKER:
           return SupervisedUserFilterTopLevelResult::kBlockSafeSites;
         case FilteringBehaviorReason::MANUAL:
@@ -115,27 +113,24 @@ SupervisedUserFilterTopLevelResult TopLevelResult(
 // Records ManagedUsers.FilteringResult only when `transition_type` is
 // available.
 void WrappedCallbackWithMetrics(
-    SupervisedUserURLFilter::FilteringBehaviorCallback callback,
+    SupervisedUserURLFilter::ResultCallback callback,
     FilteringContext context,
     std::optional<ui::PageTransition> transition_type,
-    FilteringBehavior behavior,
-    FilteringBehaviorReason reason,
-    bool uncertain) {
-  std::move(callback).Run(behavior, reason, uncertain);
+    SupervisedUserURLFilter::Result result) {
+  std::move(callback).Run(result);
 
   // Legacy recording only in original throttle context
   if (context == FilteringContext::kNavigationThrottle) {
     base::UmaHistogramSparse(
         kSupervisedUserTopLevelURLFilteringResultHistogramName,
-        static_cast<int>(TopLevelResult(behavior, reason)));
+        static_cast<int>(TopLevelResult(result)));
   }
 
   // Recorded only when transition type is specified.
   if (transition_type.has_value()) {
-    int value =
-        GetHistogramValueForFilteringBehavior(behavior, reason, !uncertain) *
-            kHistogramFilteringBehaviorSpacing +
-        GetHistogramValueForTransitionType(*transition_type);
+    int value = GetHistogramValueForFilteringBehavior(result) *
+                    kHistogramFilteringBehaviorSpacing +
+                GetHistogramValueForTransitionType(*transition_type);
     DCHECK_LT(value, kSupervisedUserURLFilteringResultHistogramMax);
     base::UmaHistogramSparse(kSupervisedUserURLFilteringResultHistogramName,
                              value);
@@ -144,16 +139,16 @@ void WrappedCallbackWithMetrics(
   // Aggregated recording
   base::UmaHistogramSparse(
       kSupervisedUserTopLevelURLFilteringResult2HistogramName,
-      static_cast<int>(TopLevelResult(behavior, reason)));
+      static_cast<int>(TopLevelResult(result)));
   // Context-specific recording
   base::UmaHistogramSparse(
       base::StrCat({kSupervisedUserTopLevelURLFilteringResult2HistogramName,
                     GetFilteringContextName(context)}),
-      static_cast<int>(TopLevelResult(behavior, reason)));
+      static_cast<int>(TopLevelResult(result)));
 }
 
-SupervisedUserURLFilter::FilteringBehaviorCallback WrapCallbackWithMetrics(
-    SupervisedUserURLFilter::FilteringBehaviorCallback callback,
+SupervisedUserURLFilter::ResultCallback WrapCallbackWithMetrics(
+    SupervisedUserURLFilter::ResultCallback callback,
     FilteringContext context,
     std::optional<ui::PageTransition> transition_type) {
   return base::BindOnce(&WrappedCallbackWithMetrics, std::move(callback),
@@ -473,12 +468,6 @@ bool SupervisedUserURLFilter::HostMatchesPattern(
   return trimmed_host == trimmed_pattern;
 }
 
-supervised_user::FilteringBehavior
-SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) {
-  supervised_user::FilteringBehaviorReason reason;
-  return GetFilteringBehaviorForURL(url, &reason);
-}
-
 bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
     const GURL& effective_url) {
   DCHECK(delegate_);
@@ -489,18 +478,8 @@ bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
          delegate_->SupportsWebstoreURL(effective_url);
 }
 
-bool SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
-    const GURL& url,
-    FilteringBehavior* behavior) {
-  supervised_user::FilteringBehaviorReason reason;
-  *behavior = GetFilteringBehaviorForURL(url, &reason);
-  return reason == supervised_user::FilteringBehaviorReason::MANUAL;
-}
-
-supervised_user::FilteringBehavior
-SupervisedUserURLFilter::GetFilteringBehaviorForURL(
-    const GURL& url,
-    supervised_user::FilteringBehaviorReason* reason) {
+SupervisedUserURLFilter::Result SupervisedUserURLFilter::GetFilteringBehavior(
+    const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
@@ -508,29 +487,26 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
     effective_url = url;
   }
 
-  *reason = supervised_user::FilteringBehaviorReason::MANUAL;
-
   if (IsExemptedFromGuardianApproval(effective_url)) {
-    return FilteringBehavior::kAllow;
+    return {url, FilteringBehavior::kAllow, FilteringBehaviorReason::MANUAL};
   }
 
   // Check manual denylists and allowlists.
   FilteringBehavior manual_result =
       GetManualFilteringBehaviorForURL(effective_url);
   if (manual_result != FilteringBehavior::kInvalid) {
-    return manual_result;
+    return {url, manual_result, FilteringBehaviorReason::MANUAL};
   }
 
   // Fall back to the default behavior.
-  *reason = supervised_user::FilteringBehaviorReason::DEFAULT;
-  return default_behavior_;
+  return {url, default_behavior_, FilteringBehaviorReason::DEFAULT};
 }
 
 // There may be conflicting patterns, say, "allow *.google.com" and "block
 // www.google.*". To break the tie, we prefer blocklists over allowlists.
 // If there are no applicable manual overrides, we return INVALID.
-supervised_user::FilteringBehavior
-SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(const GURL& url) {
+FilteringBehavior SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
+    const GURL& url) {
   FilteringBehavior result = FilteringBehavior::kInvalid;
   std::optional<FilteringSubdomainConflictType> conflict_type = std::nullopt;
 
@@ -568,7 +544,7 @@ SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(const GURL& url) {
   }
 
   if (result == FilteringBehavior::kAllow) {
-    // Return if there are no BLOCK matches and the resut is ALLOW from the
+    // Return if there are no BLOCK matches and the result is ALLOW from the
     // exact url search.
     return result;
   }
@@ -600,37 +576,27 @@ SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(const GURL& url) {
   return result;
 }
 
-bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
+bool SupervisedUserURLFilter::GetFilteringBehaviorWithAsyncChecks(
     const GURL& url,
-    FilteringBehaviorCallback callback,
+    ResultCallback callback,
     bool skip_manual_parent_filter,
     FilteringContext filtering_context,
     std::optional<ui::PageTransition> transition_type) {
   callback = WrapCallbackWithMetrics(std::move(callback), filtering_context,
                                      transition_type);
 
-  supervised_user::FilteringBehaviorReason reason =
-      supervised_user::FilteringBehaviorReason::DEFAULT;
-  FilteringBehavior behavior = GetFilteringBehaviorForURL(url, &reason);
+  Result result = GetFilteringBehavior(url);
 
-  if (behavior == FilteringBehavior::kAllow &&
-      reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
-    std::move(callback).Run(behavior, reason, false);
-    for (Observer& observer : observers_) {
-      observer.OnURLChecked(url, behavior, {reason});
-    }
+  if (result.IsAllowed() && !result.IsFromDefaultSetting()) {
+    NotifyCallerAndObservers(std::move(callback), result);
     return true;
   }
 
   if (!skip_manual_parent_filter) {
     // Any non-default reason trumps the async checker.
     // Also, if we're blocking anyway, then there's no need to check it.
-    if (reason != supervised_user::FilteringBehaviorReason::DEFAULT ||
-        behavior == FilteringBehavior::kBlock) {
-      std::move(callback).Run(behavior, reason, false);
-      for (Observer& observer : observers_) {
-        observer.OnURLChecked(url, behavior, {reason});
-      }
+    if (!result.IsFromDefaultSetting() || result.IsBlocked()) {
+      NotifyCallerAndObservers(std::move(callback), result);
       return true;
     }
   }
@@ -639,37 +605,28 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
   return RunAsyncChecker(url, std::move(callback));
 }
 
-bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
+bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameWithAsyncChecks(
     const GURL& url,
     const GURL& main_frame_url,
-    FilteringBehaviorCallback callback,
+    ResultCallback callback,
     FilteringContext filtering_context,
     std::optional<ui::PageTransition> transition_type) {
   callback = WrapCallbackWithMetrics(std::move(callback), filtering_context,
                                      transition_type);
 
-  supervised_user::FilteringBehaviorReason reason =
-      supervised_user::FilteringBehaviorReason::DEFAULT;
-  FilteringBehavior behavior = GetFilteringBehaviorForURL(url, &reason);
+  Result result = GetFilteringBehavior(url);
 
   // If the reason is not default, then it is manually allowed or blocked.
-  if (reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
-    std::move(callback).Run(behavior, reason, false);
-    for (Observer& observer : observers_) {
-      observer.OnURLChecked(url, behavior, {reason});
-    }
+  if (!result.IsFromDefaultSetting()) {
+    NotifyCallerAndObservers(std::move(callback), result);
     return true;
   }
 
   // If the reason is default and behavior is block and the subframe url is not
   // the same domain as the main frame, block the subframe.
-  if (behavior == FilteringBehavior::kBlock &&
-      !IsSameDomain(url, main_frame_url)) {
+  if (result.IsBlocked() && !IsSameDomain(url, main_frame_url)) {
     // It is not in the same domain and is blocked.
-    std::move(callback).Run(behavior, reason, false);
-    for (Observer& observer : observers_) {
-      observer.OnURLChecked(url, behavior, {reason});
-    }
+    NotifyCallerAndObservers(std::move(callback), result);
     return true;
   }
 
@@ -803,14 +760,13 @@ void SupervisedUserURLFilter::SetFilterInitialized(bool is_filter_initialized) {
   is_filter_initialized_ = is_filter_initialized;
 }
 
-bool SupervisedUserURLFilter::RunAsyncChecker(
-    const GURL& url,
-    FilteringBehaviorCallback callback) const {
+bool SupervisedUserURLFilter::RunAsyncChecker(const GURL& url,
+                                              ResultCallback callback) const {
   // The parental setting may allow all sites to be visited.
   if (GetWebFilterType() == WebFilterType::kAllowAllSites) {
-    std::move(callback).Run(FilteringBehavior::kAllow,
-                            supervised_user::FilteringBehaviorReason::DEFAULT,
-                            false);
+    std::move(callback).Run(
+        {url, FilteringBehavior::kAllow,
+         supervised_user::FilteringBehaviorReason::DEFAULT});
     return true;
   }
 
@@ -820,7 +776,7 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
   return async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this), std::move(callback), url));
 }
 
 void SupervisedUserURLFilter::SetURLCheckerClient(
@@ -834,22 +790,24 @@ bool SupervisedUserURLFilter::IsHostInBlocklist(const std::string& host) const {
 }
 
 void SupervisedUserURLFilter::CheckCallback(
-    FilteringBehaviorCallback callback,
-    const GURL& url,
+    ResultCallback callback,
+    const GURL& requested_url,
+    const GURL& checked_url,
     safe_search_api::Classification classification,
     safe_search_api::ClassificationDetails details) const {
-  FilteringBehavior behavior =
-      GetBehaviorFromSafeSearchClassification(classification);
-  std::move(callback).Run(
-      behavior, supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
-      details.reason ==
-          safe_search_api::ClassificationDetails::Reason::kFailedUseDefault);
+  NotifyCallerAndObservers(
+      std::move(callback),
+      {.url = requested_url,
+       .behavior = GetBehaviorFromSafeSearchClassification(classification),
+       .reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
+       .async_check_details = details});
+}
+
+void SupervisedUserURLFilter::NotifyCallerAndObservers(ResultCallback callback,
+                                                       Result result) const {
+  std::move(callback).Run(result);
   for (Observer& observer : observers_) {
-    observer.OnURLChecked(
-        url, behavior,
-        supervised_user::FilteringBehaviorDetails{
-            .reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
-            .classification_details = details});
+    observer.OnURLChecked(result);
   }
 }
 

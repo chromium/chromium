@@ -26,19 +26,15 @@ namespace supervised_user {
 namespace {
 static const char* kExampleURL = "https://example.com/";
 
-class MockSupervisedUserURLFilter
-    : public supervised_user::SupervisedUserURLFilter {
+class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
  public:
   explicit MockSupervisedUserURLFilter(PrefService& prefs)
-      : supervised_user::SupervisedUserURLFilter(
-            prefs,
-            std::make_unique<FakeURLFilterDelegate>()) {}
+      : SupervisedUserURLFilter(prefs,
+                                std::make_unique<FakeURLFilterDelegate>()) {}
 
-  MOCK_METHOD(FilteringBehavior,
-              GetFilteringBehaviorForURL,
-              (const GURL& url,
-               supervised_user::FilteringBehaviorReason* reason),
-              (override));
+  MOCK_METHOD(SupervisedUserURLFilter::Result,
+              GetFilteringBehavior,
+              (const GURL& url));
 };
 }  // namespace
 
@@ -60,7 +56,7 @@ class SupervisedUserNavigationThrottleTest
         navigation_handle_.get());
   }
 
-  supervised_user::SupervisedUserURLFilter* GetSupervisedUserURLFilter() {
+  SupervisedUserURLFilter* GetSupervisedUserURLFilter() {
     return SupervisedUserServiceFactory::GetForProfile(profile())
         ->GetURLFilter();
   }
@@ -79,8 +75,8 @@ TEST_F(SupervisedUserNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   CreateNavigationThrottle(allowed_url)->WillStartRequest();
 
   histogram_tester()->ExpectBucketCount(
-      supervised_user::kSupervisedUserTopLevelURLFilteringResultHistogramName,
-      supervised_user::SupervisedUserFilterTopLevelResult::kAllow, 1);
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
 }
 
 TEST_F(SupervisedUserNavigationThrottleTest,
@@ -89,39 +85,37 @@ TEST_F(SupervisedUserNavigationThrottleTest,
   std::map<std::string, bool> hosts;
   hosts[blocked_url.host()] = false;
   GetSupervisedUserURLFilter()->SetManualHosts(std::move(hosts));
-  ASSERT_EQ(
-      supervised_user::FilteringBehavior::kBlock,
-      GetSupervisedUserURLFilter()->GetFilteringBehaviorForURL(blocked_url));
+  ASSERT_TRUE(GetSupervisedUserURLFilter()
+                  ->GetFilteringBehavior(blocked_url)
+                  .IsBlocked());
 
   CreateNavigationThrottle(blocked_url)->WillStartRequest();
 
   histogram_tester()->ExpectBucketCount(
-      supervised_user::kSupervisedUserTopLevelURLFilteringResultHistogramName,
-      supervised_user::SupervisedUserFilterTopLevelResult::kBlockManual, 1);
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kBlockManual, 1);
 }
 
 TEST_F(SupervisedUserNavigationThrottleTest,
        AllSitesBlockedRecordedInBlockNotInAllowlistBucket) {
   GetSupervisedUserURLFilter()->SetDefaultFilteringBehavior(
-      supervised_user::FilteringBehavior::kBlock);
+      FilteringBehavior::kBlock);
 
   CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest();
 
   histogram_tester()->ExpectBucketCount(
-      supervised_user::kSupervisedUserTopLevelURLFilteringResultHistogramName,
-      supervised_user::SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist,
-      1);
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
 }
 
 TEST_F(SupervisedUserNavigationThrottleTest,
        BlockedMatureSitesRecordedInBlockSafeSitesBucket) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURL(testing::_, testing::_))
-      .WillByDefault([](const GURL& url,
-                        supervised_user::FilteringBehaviorReason* reason) {
-        *reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER;
-        return supervised_user::FilteringBehavior::kBlock;
+  ON_CALL(*mock_url_filter, GetFilteringBehavior(testing::_))
+      .WillByDefault([](const GURL& url) -> SupervisedUserURLFilter::Result {
+        return {url, FilteringBehavior::kBlock,
+                FilteringBehaviorReason::ASYNC_CHECKER};
       });
   SupervisedUserServiceFactory::GetForProfile(profile())
       ->SetURLFilterForTesting(std::move(mock_url_filter));
@@ -129,8 +123,8 @@ TEST_F(SupervisedUserNavigationThrottleTest,
   CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest();
 
   histogram_tester()->ExpectBucketCount(
-      supervised_user::kSupervisedUserTopLevelURLFilteringResultHistogramName,
-      supervised_user::SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
 }
 
 }  // namespace supervised_user

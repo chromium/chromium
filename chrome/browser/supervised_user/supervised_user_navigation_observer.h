@@ -103,12 +103,10 @@ class SupervisedUserNavigationObserver
                                 content::FrameTreeNodeId frame_id,
                                 const OnInterstitialResultCallback& callback);
 
-  void URLFilterCheckCallback(const GURL& url,
-                              int render_frame_process_id,
-                              int render_frame_routing_id,
-                              supervised_user::FilteringBehavior behavior,
-                              supervised_user::FilteringBehaviorReason reason,
-                              bool uncertain);
+  void URLFilterCheckCallback(
+      int render_frame_process_id,
+      int render_frame_routing_id,
+      supervised_user::SupervisedUserURLFilter::Result result);
 
   void MaybeShowInterstitial(const GURL& url,
                              supervised_user::FilteringBehaviorReason reason,
