@@ -115,7 +115,7 @@ void TestAmbientClient::IssueAccessToken(bool is_empty) {
 
   if (is_empty) {
     std::move(pending_callback_)
-        .Run(/*gaia_id=*/std::string(),
+        .Run(GaiaId(),
              /*access_token=*/std::string(),
              /*expiration_time=*/base::Time::Now());
   } else {

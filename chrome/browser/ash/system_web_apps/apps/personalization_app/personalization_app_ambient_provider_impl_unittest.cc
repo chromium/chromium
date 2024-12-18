@@ -40,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,7 +63,7 @@ using ::testing::Pointee;
 
 constexpr char kFakeTestEmail[] = "fakeemail@example.com";
 const AccountId kFakeTestAccountId =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, kFakeTestEmail);
+    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kFakeTestEmail));
 
 class TestAmbientObserver
     : public ash::personalization_app::mojom::AmbientObserver {

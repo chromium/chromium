@@ -62,6 +62,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -111,7 +112,7 @@ void AddAndLoginUser(const AccountId& account_id) {
 }
 
 AccountId GetTestAccountId() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
 }
 
 // Create a test 1x1 image with a given |color|.
@@ -448,7 +449,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
 TEST_F(PersonalizationAppWallpaperProviderImplTest,
        IgnoresWallpaperResizeForOtherUser) {
   const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
-      "otherfakeemail@personalization", "0987654321");
+      "otherfakeemail@personalization", GaiaId("0987654321"));
   test_wallpaper_controller()->SetCurrentUser(other_account_id);
 
   test_wallpaper_controller()->ShowWallpaperImage(
