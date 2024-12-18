@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConsta
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.SOFT_CLEANUP_DELAY_MS;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -331,6 +332,29 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                 new SyncOneshotSupplierImpl<>();
         @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
         assert coordinator != null;
+
+        Resources res = hubContainerView.getContext().getResources();
+        int thumbnailRadiusTop =
+                res.getDimensionPixelSize(R.dimen.tab_grid_card_thumbnail_corner_radius_top);
+        int thumbnailRadiusBottom =
+                res.getDimensionPixelSize(R.dimen.tab_grid_card_thumbnail_corner_radius_bottom);
+
+        int initialTopCornerRadius;
+        int finalTopCornerRadius;
+        int initialBottomCornerRadius;
+        int finalBottomCornerRadius;
+        if (isShrink) {
+            initialTopCornerRadius = 0;
+            finalTopCornerRadius = thumbnailRadiusTop;
+            initialBottomCornerRadius = 0;
+            finalBottomCornerRadius = thumbnailRadiusBottom;
+        } else {
+            initialTopCornerRadius = thumbnailRadiusTop;
+            finalTopCornerRadius = 0;
+            initialBottomCornerRadius = thumbnailRadiusBottom;
+            finalBottomCornerRadius = 0;
+        }
+
         Runnable provideAnimationData =
                 () -> {
                     Rect hubRect = new Rect();
@@ -380,6 +404,10 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                             new ShrinkExpandAnimationData(
                                     initialRect,
                                     finalRect,
+                                    initialTopCornerRadius,
+                                    initialBottomCornerRadius,
+                                    finalTopCornerRadius,
+                                    finalBottomCornerRadius,
                                     coordinator.getThumbnailSize(),
                                     useFallbackAnimation));
                 };

@@ -520,6 +520,10 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                 new ShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
+                        /* initialTopCornerRadius= */ 0,
+                        /* initialBottomCornerRadius= */ 0,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
                         /* thumbnailSize= */ null,
                         /* useFallbackAnimation= */ false));
 
