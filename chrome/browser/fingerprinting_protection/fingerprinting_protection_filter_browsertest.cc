@@ -461,8 +461,25 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(https://crbug.com/382055410): Adjust
 // `FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest` tests so
 // they can also run on android.
+class FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyNonIncognito
+    : public FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest {
+ public:
+  FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyNonIncognito() {
+    // Enable refresh heuristic after 2 refreshes in nonincognito.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kEnableFingerprintingProtectionFilter,
+          {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
+         {features::kEnableFingerprintingProtectionFilterInIncognito, {}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(
-    FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest,
+    FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyNonIncognito,
     ExceptionIsAddedInNonIncognito) {
   // Refresh exception code depends on eTLD+1, so we need to navigate to a
   // host with a domain name.
@@ -494,17 +511,117 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // An exception will have been added.
+  // Exception added - expect all subframes to be visible.
+  const std::vector<bool> kExpectAllSubframes{true, true, true};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectAllSubframes));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+}
 
-  // TODO(https://crbug.com/372669423): When acting on exceptions is
-  // implemented, change this test to expect no blocking.
+IN_PROC_BROWSER_TEST_F(
+    FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyNonIncognito,
+    ExceptionIsNotAddedInIncognito) {
+  // Close normal browser and switch the test's browser instance to an incognito
+  // instance.
+  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), incognito);
+
+  // Refresh exception code depends on eTLD+1, so we need to navigate to a
+  // host with a domain name.
+  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+
+  // Disallow child frame documents.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Expect initially only second subframe loads due to blocking.
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload again
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+}
+
+class FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito
+    : public FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest {
+ public:
+  FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito() {
+    // Enable refresh heuristic after 2 refreshes in incognito.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kEnableFingerprintingProtectionFilterInIncognito,
+          {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
+         {features::kEnableFingerprintingProtectionFilter, {}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito,
+    ExceptionIsNotAddedInNonIncognito) {
+  // Refresh exception code depends on eTLD+1, so we need to navigate to a
+  // host with a domain name.
+  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+
+  // Disallow child frame documents.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Expect initially only second subframe loads due to blocking.
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload again
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest,
+    FPFRefreshHeuristicExceptionBrowserTestParamEnabledOnlyIncognito,
     ExceptionIsAddedInIncognito) {
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
@@ -543,10 +660,230 @@ IN_PROC_BROWSER_TEST_F(
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  // An exception will have been added.
+  // Exception added - expect all subframes to be visible.
+  const std::vector<bool> kExpectAllSubframes{true, true, true};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectAllSubframes));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+}
 
-  // TODO(https://crbug.com/372669423): When acting on exceptions is
-  // implemented, change this test to expect no blocking.
+class FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth
+    : public FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest {
+ public:
+  FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth() {
+    // Enable refresh heuristic after 2 refreshes in nonincognito and incognito.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kEnableFingerprintingProtectionFilter,
+          {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
+         {features::kEnableFingerprintingProtectionFilterInIncognito,
+          {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
+                       ExceptionAddedInNonIncognitoPersistsIntoIncognito) {
+  // Refresh exception code depends on eTLD+1, so we need to navigate to a
+  // host with a domain name.
+  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+
+  // Disallow child frame documents.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Expect only second subframe loads due to blocking.
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload twice
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Exception added - expect all subframes to be visible.
+  const std::vector<bool> kExpectAllSubframes{true, true, true};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectAllSubframes));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+
+  // Close normal browser and switch the test's browser instance to an incognito
+  // instance.
+  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), incognito);
+
+  // Go to same URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  // Exception persists into incognito.
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectAllSubframes));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    FPFRefreshHeuristicExceptionBrowserTestParamEnabledBoth,
+    ExceptionAddedInIncognitoDoesNotPersistIntoNonIncognito) {
+  // Hold a reference to the nonincognito profile so we can create another
+  // nonincognito window later.
+  Profile* nonincognito_profile = browser()->profile();
+  // Close normal browser and switch the test's browser instance to an incognito
+  // instance.
+  Browser* incognito = CreateIncognitoBrowser(nonincognito_profile);
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), incognito);
+
+  // Refresh exception code depends on eTLD+1, so we need to navigate to a
+  // host with a domain name.
+  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+
+  // Disallow child frame documents.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Expect only second subframe loads due to blocking.
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload twice
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Exception added - expect all subframes to be visible.
+  const std::vector<bool> kExpectAllSubframes{true, true, true};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectAllSubframes));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+
+  // Close incognito and open nonincognito browser instance.
+  Browser* nonincognito = CreateBrowser(nonincognito_profile);
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), nonincognito);
+
+  // Go to same URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Exception doesn't persist into nonincognito.
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+}
+
+class FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth
+    : public FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest {
+ public:
+  FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth() {
+    // Disable refresh heuristic
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kEnableFingerprintingProtectionFilter, {}},
+         {features::kEnableFingerprintingProtectionFilterInIncognito, {}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
+                       NoExceptionAddedInNonIncognito) {
+  // Refresh exception code depends on eTLD+1, so we need to navigate to a
+  // host with a domain name.
+  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+
+  // Disallow child frame documents.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Expect only second subframe loads due to blocking.
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload again
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+}
+
+IN_PROC_BROWSER_TEST_F(FPFRefreshHeuristicExceptionBrowserTestParamDisabledBoth,
+                       NoExceptionAddedInIncognito) {
+  // Close normal browser and switch the test's browser instance to an incognito
+  // instance.
+  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), incognito);
+
+  // Refresh exception code depends on eTLD+1, so we need to navigate to a
+  // host with a domain name.
+  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+
+  // Disallow child frame documents.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Expect only second subframe loads due to blocking.
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload again
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectOnlySecondSubframe));
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);

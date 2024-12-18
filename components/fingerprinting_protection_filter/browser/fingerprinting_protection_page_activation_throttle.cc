@@ -11,6 +11,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
@@ -72,6 +73,14 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
     // Feature flag enabled, but disabled by feature param.
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::ACTIVATION_DISABLED};
+  }
+
+  if (features::IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
+          is_incognito_) &&
+      HasBreakageException(navigation_handle()->GetURL(), *prefs_)) {
+    // Disabled by breakage exception.
+    return {.level = ActivationLevel::kDisabled,
+            .decision = ActivationDecision::URL_ALLOWLISTED};
   }
 
   if (features::kActivationLevel.Get() == ActivationLevel::kDryRun) {
