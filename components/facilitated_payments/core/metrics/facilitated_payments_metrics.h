@@ -167,7 +167,12 @@ void LogEwalletFlowExitedReason(
 void LogPixFlowExitedReason(PixFlowExitedReason reason);
 
 // Log the attempt to send the call to the InitiatePayment backend endpoint.
-void LogInitiatePaymentAttempt();
+// `payment_type` must be either `kEwallet` or `kPix`.
+// The `scheme` parameter is required for the 'kEwallet' payment type and should
+// not be `kInvalid`.
+void LogInitiatePaymentAttempt(
+    FacilitatedPaymentsType payment_type,
+    std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
 // Log the result and latency for the InitiatePayment backend endpoint.
 // `payment_type` must be either `kEwallet` or `kPix`.

@@ -250,7 +250,7 @@ void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
   initiate_payment_network_start_time_ = base::TimeTicks::Now();
   if (FacilitatedPaymentsNetworkInterface* payments_network_interface =
           client_->GetFacilitatedPaymentsNetworkInterface()) {
-    LogInitiatePaymentAttempt();
+    LogInitiatePaymentAttempt(kPaymentsType);
     payments_network_interface->InitiatePayment(
         std::move(initiate_payment_request_details_),
         base::BindOnce(

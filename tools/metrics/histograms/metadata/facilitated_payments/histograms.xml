@@ -58,6 +58,21 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Ewallet.InitiatePayment.Attempt.{Scheme}"
+    enum="BooleanAttempted" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when a request is sent to the Initiate Payment backend endpoint.
+    It should never log a false case. The payment is supported by {Scheme}.
+    [Frequency] Logged at most once per eWallet flow. [Trigger] User selects an
+    eWallet payment from the list of options shown in the eWallet UI.
+  </summary>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
 <histogram
     name="FacilitatedPayments.Ewallet.InitiatePayment.{Result}.Latency.{Scheme}"
     units="ms" expires_after="2025-07-01">
@@ -183,20 +198,6 @@ reviewer.
     on the browser. [Frequency] Logged once per Pix payflow. Pix payflow is
     triggered at most once per page load. [Trigger] The histogram is logged when
     the Pix FOP selector is shown.
-  </summary>
-</histogram>
-
-<histogram name="FacilitatedPayments.Pix.InitiatePayment.Attempt"
-    enum="BooleanAttempted" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs true when a request is sent to the Initiate Payment backend endpoint.
-    It should never log a false case. [Frequency] Logged at most once per Pix
-    flow. [Trigger] User selects a payment instrument from the list of options
-    shown in the Pix UI.
   </summary>
 </histogram>
 
@@ -340,6 +341,22 @@ reviewer.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
   <token key="Result" variants="BooleanResult"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Attempt"
+    enum="BooleanAttempted" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when a request is sent to the Initiate Payment backend endpoint.
+    It should never log a false case. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} flow. [Trigger] User selects a payment instrument
+    from the list of options shown in the {FacilitatedPaymentsType} UI.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
 
 <histogram

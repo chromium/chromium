@@ -479,6 +479,24 @@ TEST_F(
   test_api(*ewallet_manager_).SendInitiatePaymentRequest();
 }
 
+// Test that LogInitiatePaymentAttempt is logged correctly.
+TEST_F(EwalletManagerTest, LogInitiatePaymentAttempt) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(payments_network_interface_,
+              InitiatePayment(testing::_, testing::_, testing::_));
+
+  test_api(*ewallet_manager_).SendInitiatePaymentRequest();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Attempt",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.InitiatePayment.Attempt.ShopeePay",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 // Test that if the response from
 // `FacilitatedPaymentsNetworkInterface::InitiatePayment` call has failure
 // result, purchase action is not invoked. Instead, an error message is shown.

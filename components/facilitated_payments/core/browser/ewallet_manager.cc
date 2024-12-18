@@ -210,6 +210,7 @@ void EwalletManager::SendInitiatePaymentRequest() {
     return;
   }
 
+  LogInitiatePaymentAttempt(kPaymentsType, scheme_);
   payments_network_interface->InitiatePayment(
       std::move(initiate_payment_request_details_),
       base::BindOnce(&EwalletManager::OnInitiatePaymentResponseReceived,

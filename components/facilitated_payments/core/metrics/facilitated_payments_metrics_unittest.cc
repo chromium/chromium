@@ -77,17 +77,6 @@ TEST(FacilitatedPaymentsMetricsTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentAttempt) {
-  base::HistogramTester histogram_tester;
-
-  LogInitiatePaymentAttempt();
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePayment.Attempt",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-}
-
 TEST(FacilitatedPaymentsMetricsTest,
      LogInitiatePurchaseActionResultAndLatency) {
   for (PurchaseActionResult result :
@@ -526,6 +515,26 @@ TEST_P(FacilitatedPaymentsMetricsParameterizedTest,
                     ".InitiatePayment.Failure.Latency.", GetSchemeString()}),
       /*sample=*/10,
       /*expected_count=*/payment_type() == FacilitatedPaymentsType::kEwallet
+          ? 1
+          : 0);
+}
+
+TEST_P(FacilitatedPaymentsMetricsParameterizedTest, LogInitiatePaymentAttempt) {
+  base::HistogramTester histogram_tester;
+
+  LogInitiatePaymentAttempt(payment_type(), scheme());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".InitiatePayment.Attempt"}),
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.Ewallet.InitiatePayment.Attempt.",
+                    GetSchemeString()}),
+      /*sample=*/true,
+      /*expected_bucket_count=*/payment_type() ==
+              FacilitatedPaymentsType::kEwallet
           ? 1
           : 0);
 }
