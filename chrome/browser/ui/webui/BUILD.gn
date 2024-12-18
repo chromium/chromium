@@ -88,23 +88,9 @@ source_set("internal_webui_config") {
 }
 
 source_set("webui_util") {
-  sources = [
-    "webui_util.cc",
-    "webui_util.h",
-  ]
+  sources = [ "webui_util.h" ]
 
-  public_deps = [
-    "//base",
-    "//ui/base",
-  ]
-
-  deps = [
-    "//build:chromeos_buildflags",
-    "//content/public/browser",
-    "//content/public/common",
-    "//services/network/public/mojom",
-    "//ui/resources",
-  ]
+  public_deps = [ "//ui/webui" ]
 
   if (!is_android) {
     sources += [
@@ -112,7 +98,7 @@ source_set("webui_util") {
       "webui_embedding_context.h",
     ]
 
-    deps += [
+    deps = [
       "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/tabs:tabs_public",
     ]

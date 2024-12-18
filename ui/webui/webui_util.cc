@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "ui/webui/webui_util.h"
 
 #include <string>
 
@@ -49,7 +49,7 @@ void SetJSModuleDefaults(content::WebUIDataSource* source) {
         "img-src chrome://resources chrome://theme chrome://image "
         "chrome://favicon2 chrome://app-icon chrome://extension-icon "
         "chrome://fileicon "
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         "chrome://chromeos-asset chrome://userimage "
 #endif
         "blob: data: 'self';");

@@ -6,22 +6,10 @@
 
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/commerce_constants.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui_data_source.h"
 
 namespace commerce {
-
-void SetUpWebUIDataSource(content::WebUI* web_ui,
-                          const char* web_ui_host,
-                          base::span<const webui::ResourcePath> resources,
-                          int default_resource) {
-  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(), web_ui_host);
-  webui::SetupWebUIDataSource(source, resources, default_resource);
-}
 
 CommerceInternalsUIConfig::CommerceInternalsUIConfig()
     : WebUIConfig(content::kChromeUIScheme,
@@ -35,8 +23,6 @@ CommerceInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
   Profile* profile = Profile::FromWebUI(web_ui);
   return std::make_unique<CommerceInternalsUI>(
       web_ui,
-      base::BindOnce(&SetUpWebUIDataSource, web_ui,
-                     commerce::kChromeUICommerceInternalsHost),
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile));
 }
 
