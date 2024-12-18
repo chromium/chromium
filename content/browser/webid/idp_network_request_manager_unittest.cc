@@ -68,6 +68,8 @@ constexpr char kTestClientMetadataEndpoint[] =
     "https://idp.test/client_metadata_endpoint";
 constexpr char kTestDisconnectEndpoint[] =
     "https://idp.test/revocation_endpoint";
+constexpr char kTestLocalHostTokenEndpoint[] =
+    "http://localhost/token_endpoint";
 
 constexpr char kSingleAccountEndpointValidJson[] = R"({
   "accounts" : [
@@ -238,8 +240,9 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
       net::HttpStatusCode http_status = net::HTTP_OK,
       const std::string& mime_type = "application/json",
       const char* response = R"({"token": "token"})",
-      bool idp_blindness = false) {
-    GURL token_endpoint(kTestTokenEndpoint);
+      bool idp_blindness = false,
+      const char* token_endpoint_str = kTestTokenEndpoint) {
+    GURL token_endpoint{token_endpoint_str};
     AddResponse(token_endpoint, http_status, mime_type, response);
 
     FetchStatus fetch_status;
@@ -1927,6 +1930,56 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kInvalidRequestWithoutUrl, *error_dialog_type());
   EXPECT_FALSE(error_url_type());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithLocalHostUrl) {
+  // allow localhost for error url
+  {
+    FetchStatus fetch_status;
+    TokenResult token_result;
+    std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+        "account", "request", net::HTTP_OK, "application/json", R"({
+        "error": {
+          "url": "http://localhost/error"
+        }
+      })",
+        false, kTestLocalHostTokenEndpoint);
+
+    EXPECT_TRUE(token_result.error);
+    EXPECT_EQ("", token_result.error->code);
+    EXPECT_EQ(GURL("http://localhost/error"), token_result.error->url);
+    EXPECT_EQ(TokenResponseType::
+                  kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
+              token_response_type());
+    EXPECT_TRUE(error_dialog_type());
+    EXPECT_EQ(ErrorDialogType::kGenericEmptyWithUrl, *error_dialog_type());
+    ASSERT_TRUE(error_url_type());
+    EXPECT_EQ(ErrorUrlType::kSameOrigin, *error_url_type());
+  }
+
+  {
+    FetchStatus fetch_status;
+    TokenResult token_result;
+    std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
+        "account", "request", net::HTTP_OK, "application/json", R"({
+        "error": {
+          "code": "invalid_request",
+          "url": "http://localhost/error"
+        }
+      })",
+        false, kTestLocalHostTokenEndpoint);
+
+    EXPECT_TRUE(token_result.error);
+    EXPECT_EQ("invalid_request", token_result.error->code);
+    EXPECT_EQ(GURL("http://localhost/error"), token_result.error->url);
+    EXPECT_EQ(TokenResponseType::
+                  kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
+              token_response_type());
+    EXPECT_TRUE(error_dialog_type());
+    EXPECT_EQ(ErrorDialogType::kInvalidRequestWithUrl, *error_dialog_type());
+    ASSERT_TRUE(error_url_type());
+    EXPECT_EQ(ErrorUrlType::kSameOrigin, *error_url_type());
+  }
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse200NonParsable) {
