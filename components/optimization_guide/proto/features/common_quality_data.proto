@@ -203,19 +203,57 @@ message AnnotatedPageContent {
   ContentNode root_node = 2;
 }
 
-// A ContentNode is a semantic chunk of information on a page. It could be a
-// single DOM node or could represent multiple DOM nodes. It can represent
-// text on the page or more structured content on the page. It can also be a
-// container for other ContentNodes.
+// The ContentNode tree is a sparse representation of the DOM tree for a web
+// page, i.e., not every DOM node generates a ContentNode. For example, a `div`
+// used only for styling or layout the subtree will not generate a ContentNode.
+//
+// The ContentNode is roughly 1:1 with a DOM node but there are exceptions:
+//
+// - Some DOM nodes can generate multiple ContentNodes. For example, a
+//   `::before` pseudo-element would have text and image ContentNodes for it's
+//   content specified in CSS.
+//
+// - A form with `<input type="image">` will have ContentNodes for the input
+//   element and it's image.
+//
+// - We currently don't coalesce text content from multiple DOM nodes into a
+//   single ContentNode but that maybe added in the future.
+//
+// Note: The ContentNode tree including content from all embedded iframes.
 // Next ID: 3
 message ContentNode {
+  // Note: CONTENT_ATTRIBUTE_TEXT and CONTENT_ATTRIBUTE_IMAGE are leaf nodes
+  // which don't have any children nodes.
   repeated ContentNode children_nodes = 1;
 
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 10
+// Next ID: 16
 message ContentAttributes {
+  oneof content_data {
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
+    TextInfo text_data = 10;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_IMAGE.
+    ImageInfo image_data = 11;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_ANCHOR.
+    AnchorData anchor_data = 14;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_FORM.
+    FormData form_data = 7;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE.
+    TableData table_data = 8;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_IFRAME.
+    IframeData iframe_data = 9;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE_ROW.
+    TableRowData table_row_data = 13;
+  }
+
   // The IDs of the DOM nodes whose content is represented by this ContentNode.
   // This is used to map the results of the receiver's action back to the
   // original DOM node.
@@ -230,26 +268,17 @@ message ContentAttributes {
   // This is the geometry of the common_ancestor_dom_node_id.
   Geometry geometry = 4;
 
-  // There might be multiple text chunks in a single node; e.g. listitems.
-  repeated TextInfo text_info = 5;
+  repeated TextInfo text_info = 5; // deprecated
 
-  // There may be multiple images in a single node; e.g. a table cell with two
-  // images.
-  repeated ImageInfo image_info = 6;
+  repeated ImageInfo image_info = 6; // deprecated
 
-  // Only set if attribute_type is CONTENT_ATTRIBUTE_FORM.
-  FormData form_data = 7;
-
-  // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE.
-  TableData table_data = 8;
-
-  // Provides metadata about the iframe if this ContentNode is of type
-  // CONTENT_ATTRIBUTE_IFRAME.
-  IframeData iframe_data = 9;
+  // These can come from the aria role, the html tag, or are assumed from some
+  // properties of the page.
+  repeated AnnotatedRole annotated_roles = 15;
 }
 
 // The geometry of the content, in the page coordinate system.
-// Next ID: 3
+// Next ID: 6
 message Geometry {
   // The bounding box of the content node, in the page coordinate system. This
   // roughly corresponds to the element's local box used for hit testing.
@@ -258,6 +287,16 @@ message Geometry {
   // Denotes which subset of this node is visible, in the page coordinate
   // system. If the content is offscreen, this field will be empty.
   BoundingRect visible_bounding_box = 2;
+
+  // Whether the content node is fixed or sticky position. This may suggest
+  // that the node is a header, footer, or sidebar.
+  bool is_fixed_or_sticky_position = 3;
+
+  // Whether the content node can scroll in the x direction.
+  bool scrolls_overflow_x = 4;
+
+  // Whether the content node can scroll in the y direction.
+  bool scrolls_overflow_y = 5;
 }
 
 message BoundingRect {
@@ -274,11 +313,11 @@ message BoundingRect {
 message TextInfo {
   string text_content = 1;
 
-  BoundingRect text_bounding_box = 2;
-
   TextStyle text_style = 3;
 
-  string url = 4;
+  BoundingRect text_bounding_box = 2; // deprecated
+
+  reserved 4;
 }
 
 // Next ID: 5
@@ -298,13 +337,20 @@ message TextStyle {
 // Information about the image. In the future, this may include a pixmap.
 // Next ID: 4
 message ImageInfo {
-  BoundingRect image_bounding_box = 1;
-
   string image_caption = 2;
 
   // Provides the URL for this image if available. For example, data: URLs for
   // inline images will be skipped.
   string source_url = 3;
+
+  BoundingRect image_bounding_box = 1; // deprecated
+}
+
+message AnchorData {
+  string url = 1;
+
+  // The relationship between the linked URL and the current document.
+  repeated AnchorRel rel = 2;
 }
 
 message FormData {
@@ -374,11 +420,11 @@ message TableData {
   // The name of the table, coming from the caption.
   string table_name = 1;
 
-  repeated TableRow header_rows = 2;
+  repeated TableRow header_rows = 2; // deprecated
 
-  repeated TableRow body_rows = 3;
+  repeated TableRow body_rows = 3; // deprecated
 
-  repeated TableRow footer_rows = 4;
+  repeated TableRow footer_rows = 4; // deprecated
 }
 
 message TableRow {
@@ -392,6 +438,10 @@ message IframeData {
   // Indicates whether the iframe is likely to be an ad frame. This is set for
   // both the root ad frame and its descendants.
   bool likely_ad_frame = 2;
+}
+
+message TableRowData {
+  TableRowType type = 1;
 }
 
 message UserAnnotationsEntry {
@@ -1272,11 +1322,12 @@ enum AnnotatedPageContentVersion {
   ANNOTATED_PAGE_CONTENT_VERSION_1_0 = 1;
 }
 
-// Content node types that are currently exposed by the Page Content Agent.
+// Indicates the structure of the ContentNode. Suggests which type of
+// content_data will be found in the ContentNode.
 // When adding new types, please also update AIPageContentAttributeType in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
 // See crrev.com/c/6072788 for an example.
-// Next ID: 20;
+// Next ID: 23;
 enum ContentAttributeType {
   CONTENT_ATTRIBUTE_UNKNOWN = 0;
 
@@ -1287,39 +1338,46 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IFRAME = 3;
 
   // Text chunks.
-  CONTENT_ATTRIBUTE_PARAGRAPH = 4;
+  CONTENT_ATTRIBUTE_PARAGRAPH = 4; // deprecated, use ANNOTATED_ROLE_PARAGRAPH.
 
-  CONTENT_ATTRIBUTE_HEADING = 5;
+  CONTENT_ATTRIBUTE_HEADING = 5; // deprecated, use ANNOTATED_ROLE_HEADING.
+
+  CONTENT_ATTRIBUTE_TEXT = 20;
+
+  CONTENT_ATTRIBUTE_ANCHOR = 22;
+
+  // Image chunks.
+  CONTENT_ATTRIBUTE_IMAGE = 9;
 
   // Structured chunks.
-  CONTENT_ATTRIBUTE_ORDERED_LIST = 6;
+  CONTENT_ATTRIBUTE_ORDERED_LIST = 6; // deprecated, use ANNOTATED_ROLE_ORDERED_LIST.
 
-  CONTENT_ATTRIBUTE_UNORDERED_LIST = 7;
+  CONTENT_ATTRIBUTE_UNORDERED_LIST = 7; // deprecated, use ANNOTATED_ROLE_UNORDERED_LIST.
 
   CONTENT_ATTRIBUTE_FORM = 8;
 
-  CONTENT_ATTRIBUTE_IMAGE = 9;
-
   CONTENT_ATTRIBUTE_TABLE = 10;
+
+  CONTENT_ATTRIBUTE_TABLE_ROW = 21;
 
   CONTENT_ATTRIBUTE_TABLE_CELL = 11;
 
   // Landmark/section chunks.
-  CONTENT_ATTRIBUTE_HEADER = 12;
+  CONTENT_ATTRIBUTE_HEADER = 12; // deprecated, use ANNOTATED_ROLE_HEADER.
 
-  CONTENT_ATTRIBUTE_NAV = 13;
+  CONTENT_ATTRIBUTE_NAV = 13; // deprecated, use ANNOTATED_ROLE_NAV.
 
-  CONTENT_ATTRIBUTE_SEARCH = 14;
+  CONTENT_ATTRIBUTE_SEARCH = 14; // deprecated, use ANNOTATED_ROLE_SEARCH.
 
-  CONTENT_ATTRIBUTE_MAIN = 15;
+  CONTENT_ATTRIBUTE_MAIN = 15; // deprecated, use ANNOTATED_ROLE_MAIN.
 
-  CONTENT_ATTRIBUTE_ARTICLE = 16;
+  CONTENT_ATTRIBUTE_ARTICLE = 16; // deprecated, use ANNOTATED_ROLE_ARTICLE.
 
-  CONTENT_ATTRIBUTE_SECTION = 17;
+  CONTENT_ATTRIBUTE_SECTION = 17; // deprecated, use ANNOTATED_ROLE_SECTION.
 
-  CONTENT_ATTRIBUTE_ASIDE = 18;
+  CONTENT_ATTRIBUTE_ASIDE = 18; // deprecated, use ANNOTATED_ROLE_ASIDE.
 
-  CONTENT_ATTRIBUTE_FOOTER = 19;
+  CONTENT_ATTRIBUTE_FOOTER = 19; // deprecated, use ANNOTATED_ROLE_FOOTER.
 }
 
 // Next ID: 5
@@ -1333,6 +1391,22 @@ enum TextSize {
   TEXT_SIZE_L = 3;
 
   TEXT_SIZE_XL = 4;
+}
+
+// The relationship between the linked URL and the current document.
+// https://html.spec.whatwg.org/multipage/links.html#linkTypes
+enum AnchorRel {
+  ANCHOR_REL_UNKNOWN = 0;
+
+  ANCHOR_REL_NO_REFERRER = 1;
+
+  ANCHOR_REL_NO_OPENER = 2;
+
+  ANCHOR_REL_OPENER = 3;
+
+  ANCHOR_REL_PRIVACY_POLICY = 4;
+
+  ANCHOR_REL_TERMS_OF_SERVICE = 5;
 }
 
 // Matches FormControlType in mojo, but off by one, because this list contains
@@ -1368,6 +1442,51 @@ enum FormControlType {
   FORM_CONTROL_TYPE_SELECT_MULTIPLE = 13;
 
   FORM_CONTROL_TYPE_TEXT_AREA = 15;
+}
+
+enum TableRowType {
+  TABLE_ROW_TYPE_UNKNOWN = 0;
+
+  TABLE_ROW_TYPE_HEADER = 1;
+
+  TABLE_ROW_TYPE_BODY = 2;
+
+  TABLE_ROW_TYPE_FOOTER = 3;
+}
+
+// Indicates the semantic role of the content. These can come from the aria
+// role, the html tag, or are assumed from some properties of the page.
+// When adding new roles, please also update AIPageContentAnnotatedRole in
+// third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
+// Next ID: 13
+enum AnnotatedRole {
+  ANNOTATED_ROLE_UNKNOWN = 0;
+
+  // Text chunks.
+  ANNOTATED_ROLE_PARAGRAPH = 1;
+
+  ANNOTATED_ROLE_HEADING = 2;
+
+  ANNOTATED_ROLE_ORDERED_LIST = 3;
+
+  ANNOTATED_ROLE_UNORDERED_LIST = 4;
+
+  // Landmark/section chunks.
+  ANNOTATED_ROLE_HEADER = 5;
+
+  ANNOTATED_ROLE_NAV = 6;
+
+  ANNOTATED_ROLE_SEARCH = 7;
+
+  ANNOTATED_ROLE_MAIN = 8;
+
+  ANNOTATED_ROLE_ARTICLE = 9;
+
+  ANNOTATED_ROLE_SECTION = 10;
+
+  ANNOTATED_ROLE_ASIDE = 11;
+
+  ANNOTATED_ROLE_FOOTER = 12;
 }
 
 // Whether or not status of the model's output is a success (i.e "is good") or
