@@ -551,8 +551,8 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
     }
     return state->has_shortcut();
   }();
-  if (!provider->ui_manager().CanReparentAppTabToWindow(
-          app_id, shortcut_created, contents)) {
+  if (!provider->ui_manager().CanReparentAppTabToWindow(app_id,
+                                                        shortcut_created)) {
     return protocol::Response::InvalidParams(
         base::StrCat({"The web app ", in_manifest_id,
                       " cannot be opened in its app. Check if the app is "
