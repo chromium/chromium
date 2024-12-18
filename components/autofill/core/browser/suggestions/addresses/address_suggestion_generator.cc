@@ -630,22 +630,27 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   // Field types we are interested in showing suggestions for.
   // TODO(crbug.com/381994105): Add a finch parameter to easily experiment with
   // adding and removing field types.
-  static constexpr FieldTypeSet kTypes = {NAME_FIRST,
-                                          NAME_FULL,
-                                          NAME_LAST,
-                                          COMPANY_NAME,
-                                          ADDRESS_HOME_LINE1,
-                                          ADDRESS_HOME_STREET_ADDRESS,
-                                          ADDRESS_HOME_CITY,
-                                          ADDRESS_HOME_STATE,
-                                          ADDRESS_HOME_COUNTRY,
-                                          ADDRESS_HOME_STREET_NAME,
-                                          EMAIL_ADDRESS,
-                                          PHONE_HOME_WHOLE_NUMBER,
-                                          PHONE_HOME_CITY_AND_NUMBER,
-                                          ADDRESS_HOME_ZIP};
+  static constexpr FieldTypeSet kTypes = {
+      NAME_FIRST,
+      NAME_FULL,
+      NAME_LAST,
+      NAME_LAST_SECOND,
+      COMPANY_NAME,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_STREET_NAME,
+      EMAIL_ADDRESS,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+      PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_WHOLE_NUMBER,
+      ADDRESS_HOME_ZIP};
   static constexpr FieldTypeSet kNumberTypes = {
-      PHONE_HOME_CITY_AND_NUMBER, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_ZIP};
+      PHONE_HOME_CITY_AND_NUMBER, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_ZIP,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
 
   std::vector<Suggestion> suggestions;
   std::set<std::u16string> suggestions_text;
