@@ -110,6 +110,20 @@ enum FindMatchingIpSessionResult {
   FIND_MATCHING_IP_SESSION_RESULT_MAX
 };
 
+// Whether we have partial match for `QuicSessionKey` with the same `ServerId`.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QuicSessionKeyPartialMatchResult)
+enum QuicSessionKeyPartialMatchResult {
+  kNoMatch,
+  kMatchedToActiveSession,
+  kMatchedToActiveJob,
+  kMaxValue = kMatchedToActiveJob
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionKeyPartialMatchResult)
+
 std::string QuicPlatformNotificationToString(
     QuicPlatformNotification notification) {
   switch (notification) {
@@ -246,6 +260,14 @@ void LogUsingExistingSession(const NetLogWithSource& request_net_log,
       NetLogEventType::
           QUIC_SESSION_POOL_ATTACH_HTTP_STREAM_JOB_TO_EXISTING_SESSION,
       request_net_log.source());
+}
+
+void LogSessionKeyMismatch(QuicSessionKeyPartialMatchResult result,
+                           const url::SchemeHostPort& destination) {
+  std::string histogram_name = base::StrCat(
+      {"Net.QuicSession.SessionKeyMismatch",
+       IsGoogleHostWithAlpnH3(destination.host()) ? ".GoogleHost" : ""});
+  base::UmaHistogramEnumeration(histogram_name, result);
 }
 
 }  // namespace
@@ -603,6 +625,26 @@ QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
   return nullptr;
 }
 
+bool QuicSessionPool::HasActiveSessionToServerId(
+    const QuicSessionKey& session_key) const {
+  auto it = base::ranges::find_if(
+      active_sessions_, [&session_key](const auto& key_value) {
+        return session_key != key_value.first &&
+               session_key.server_id() == key_value.first.server_id();
+      });
+  return it != std::end(active_sessions_);
+}
+
+bool QuicSessionPool::HasActiveJobToServerId(
+    const QuicSessionKey& session_key) const {
+  auto it = base::ranges::find_if(
+      active_jobs_, [&session_key](const auto& key_value) {
+        return session_key != key_value.first &&
+               session_key.server_id() == key_value.first.server_id();
+      });
+  return it != std::end(active_jobs_);
+}
+
 bool QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
     const QuicSessionAliasKey& session_alias_key,
     const ServiceEndpoint& service_endpoint,
@@ -660,6 +702,19 @@ int QuicSessionPool::RequestSession(
     active_job->second->AddRequest(request);
     return ERR_IO_PENDING;
   }
+
+  // Check and record if we have some sort of partially matched results for the
+  // `session_key`.
+  QuicSessionKeyPartialMatchResult partial_match_result =
+      QuicSessionKeyPartialMatchResult::kNoMatch;
+  if (HasActiveSessionToServerId(session_key)) {
+    partial_match_result =
+        QuicSessionKeyPartialMatchResult::kMatchedToActiveSession;
+  } else if (HasActiveJobToServerId(session_key)) {
+    partial_match_result =
+        QuicSessionKeyPartialMatchResult::kMatchedToActiveJob;
+  }
+  LogSessionKeyMismatch(partial_match_result, destination);
 
   // If a proxy is in use, then a traffic annotation is required.
   if (!session_key.proxy_chain().is_direct()) {

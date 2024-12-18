@@ -2373,6 +2373,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="SETTING_DO_NOT_FRAGMENT"/>
 </enum>
 
+<!-- LINT.IfChange(QuicSessionKeyPartialMatchResult) -->
+
+<enum name="QuicSessionKeyPartialMatchResult">
+  <int value="0" label="kNoMatch"/>
+  <int value="1" label="kMatchedToActiveSession"/>
+  <int value="2" label="kMatchedToActiveJob"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyPartialMatchResult) -->
+
 <enum name="QuicTransportErrorCodes">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="INTERNAL_ERROR"/>

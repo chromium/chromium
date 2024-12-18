@@ -4646,6 +4646,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.SessionKeyMismatch{HostType}"
+    enum="QuicSessionKeyPartialMatchResult" expires_after="2025-03-30">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records whether `QuicSessionPool` had an existing session or an in-flight
+    session attempt to {HostType}. Recorded every time when we attempt to create
+    a QUIC session.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
 <histogram name="Net.QuicSession.SmoothedRTT" units="ms"
     expires_after="2025-05-11">
   <owner>dschinazi@chromium.org</owner>
