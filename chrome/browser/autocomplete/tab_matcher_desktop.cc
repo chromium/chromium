@@ -27,8 +27,7 @@ class AutocompleteClientWebContentsUserData
       int last_committed_index,
       const GURL& last_committed_url,
       const TemplateURLService* template_url_service,
-      const bool keep_search_intent_params,
-      const bool normalize_search_terms) {
+      const bool keep_search_intent_params) {
     if (last_committed_url.is_valid()) {
       last_committed_entry_index_ = last_committed_index;
       // Use a blank input as the stripped URL will be reused with other inputs.
@@ -38,7 +37,7 @@ class AutocompleteClientWebContentsUserData
       // plain-text SRPs.
       last_committed_stripped_url_ = AutocompleteMatch::GURLToStrippedGURL(
           last_committed_url, AutocompleteInput(), template_url_service,
-          std::u16string(), keep_search_intent_params, normalize_search_terms);
+          std::u16string(), keep_search_intent_params);
     }
   }
 
@@ -74,15 +73,12 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   // SRPs.
   const bool keep_search_intent_params = base::FeatureList::IsEnabled(
       omnibox::kDisambiguateTabMatchingForEntitySuggestions);
-  const bool normalize_search_terms =
-      base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions);
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
       url, *input, template_url_service_, std::u16string(),
-      keep_search_intent_params, normalize_search_terms);
+      keep_search_intent_params);
   for (auto* web_contents : GetOpenWebContents()) {
     if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents,
-                                           keep_search_intent_params,
-                                           normalize_search_terms)) {
+                                           keep_search_intent_params)) {
       return true;
     }
   }
@@ -126,8 +122,7 @@ std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents()
 bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     const GURL& stripped_url,
     content::WebContents* web_contents,
-    const bool keep_search_intent_params,
-    const bool normalize_search_terms) const {
+    const bool keep_search_intent_params) const {
   AutocompleteClientWebContentsUserData::CreateForWebContents(web_contents);
   AutocompleteClientWebContentsUserData* user_data =
       AutocompleteClientWebContentsUserData::FromWebContents(web_contents);
@@ -137,7 +132,7 @@ bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     user_data->UpdateLastCommittedStrippedURL(
         web_contents->GetController().GetLastCommittedEntryIndex(),
         web_contents->GetLastCommittedURL(), template_url_service_,
-        keep_search_intent_params, normalize_search_terms);
+        keep_search_intent_params);
   }
   return stripped_url == user_data->GetLastCommittedStrippedURL();
 }

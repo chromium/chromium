@@ -293,8 +293,7 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
     const GURL stripped_destination_url(AutocompleteMatch::GURLToStrippedGURL(
         shortcut.match_core.destination_url, input, template_url_service,
         shortcut.match_core.keyword,
-        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/
-        base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)));
+        /*keep_search_intent_params=*/false));
     shortcuts_by_url[stripped_destination_url].push_back(&shortcut);
   }
 

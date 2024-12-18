@@ -785,8 +785,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     // `matches_cache_`.
     match.stripped_destination_url = AutocompleteMatch::GURLToStrippedGURL(
         GURL(short_url), input_, client_->GetTemplateURLService(),
-        std::u16string(), /*keep_search_intent_params=*/false,
-        /*normalize_search_terms=*/false);
+        std::u16string(), /*keep_search_intent_params=*/false);
 
     match.contents =
         AutocompleteMatch::SanitizeString(base::UTF8ToUTF16(title));

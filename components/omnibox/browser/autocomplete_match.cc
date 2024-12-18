@@ -971,8 +971,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
     const AutocompleteInput& input,
     const TemplateURLService* template_url_service,
     const std::u16string& keyword,
-    const bool keep_search_intent_params,
-    const bool normalize_search_terms) {
+    const bool keep_search_intent_params) {
   if (!url.is_valid())
     return url;
 
@@ -993,17 +992,17 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
       template_url_service, keyword, stripped_destination_url.host());
   if (template_url && template_url->SupportsReplacement(
                           template_url_service->search_terms_data())) {
-    using CacheKey = std::tuple<const TemplateURL*, GURL, bool, bool>;
+    using CacheKey = std::tuple<const TemplateURL*, GURL, bool>;
     static base::NoDestructor<base::LRUCache<CacheKey, GURL>> template_cache(
         30);
-    const CacheKey cache_key = {template_url, url, keep_search_intent_params,
-                                normalize_search_terms};
+    const CacheKey cache_key = {template_url, url, keep_search_intent_params};
     const auto& cached = template_cache->Get(cache_key);
     if (cached != template_cache->end()) {
       stripped_destination_url = cached->second;
     } else if (template_url->KeepSearchTermsInURL(
                    url, template_url_service->search_terms_data(),
-                   keep_search_intent_params, normalize_search_terms,
+                   keep_search_intent_params,
+                   /*normalize_search_terms=*/false,
                    &stripped_destination_url)) {
       template_cache->Put(cache_key, stripped_destination_url);
     }
@@ -1206,9 +1205,7 @@ void AutocompleteMatch::ComputeStrippedDestinationURL(
   if (stripped_destination_url.is_empty()) {
     stripped_destination_url = GURLToStrippedGURL(
         destination_url, input, template_url_service, keyword,
-        /*keep_search_intent_params=*/false,
-        /*normalize_search_terms=*/
-        base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions));
+        /*keep_search_intent_params=*/false);
   }
 }
 

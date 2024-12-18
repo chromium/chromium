@@ -502,12 +502,10 @@ bool ChromeAutocompleteProviderClient::StrippedURLsAreEqual(
   const TemplateURLService* template_url_service = GetTemplateURLService();
   return AutocompleteMatch::GURLToStrippedGURL(
              url1, *input, template_url_service, std::u16string(),
-             /*keep_search_intent_params=*/false,
-             /*normalize_search_terms=*/false) ==
+             /*keep_search_intent_params=*/false) ==
          AutocompleteMatch::GURLToStrippedGURL(
              url2, *input, template_url_service, std::u16string(),
-             /*keep_search_intent_params=*/false,
-             /*normalize_search_terms=*/false);
+             /*keep_search_intent_params=*/false);
 }
 
 void ChromeAutocompleteProviderClient::OpenSharingHub() {

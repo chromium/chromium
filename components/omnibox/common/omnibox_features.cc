@@ -109,17 +109,6 @@ BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
              "LocalHistoryZeroSuggestBeyondNTP",
              DISABLED);
 
-// If enabled, SearchProvider uses `normalized_term` instead of `term` from the
-// `keyword_search_terms` table. `normalized_term` is the original search term
-// in lower case with extra whitespace characters collapsed. To ensure
-// suggestions from SearchProvider continue to get deduped with those from
-// ShortcutsProvider, AutocompleteMatch::GURLToStrippedGURL uses the normalized
-// term to build the destination URLs so they are identical despite case
-// mismatches in the terms.
-BASE_FEATURE(kNormalizeSearchSuggestions,
-             "NormalizeSearchSuggestions",
-             DISABLED);
-
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.
 BASE_FEATURE(kZeroSuggestInMemoryCaching,

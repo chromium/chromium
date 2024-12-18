@@ -466,9 +466,6 @@ void SearchProvider::UpdateMatchContentsClass(
     const std::u16string& input_text,
     SearchSuggestionParser::Results* results) {
   std::u16string trimmed_input = base::CollapseWhitespace(input_text, false);
-  if (base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)) {
-    trimmed_input = base::i18n::ToLower(trimmed_input);
-  }
   for (auto& suggest_result : results->suggest_results)
     suggest_result.ClassifyMatchContents(false, trimmed_input);
   for (auto& navigation_result : results->navigation_results)
@@ -1188,14 +1185,9 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
   // True if the user has asked this exact query previously.
   bool found_what_you_typed_match = false;
   std::u16string trimmed_input = base::CollapseWhitespace(input_text, false);
-  if (base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)) {
-    trimmed_input = base::i18n::ToLower(trimmed_input);
-  }
   for (const auto& result : results) {
     const std::u16string& trimmed_suggestion =
-        base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)
-            ? result->normalized_term
-            : base::CollapseWhitespace(result->term, false);
+        base::CollapseWhitespace(result->term, false);
 
     // Don't autocomplete multi-word queries that have only been seen once
     // unless the user has typed more than one word.
