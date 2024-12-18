@@ -220,7 +220,6 @@ source_set("common") {
     "//base",
     "//base/allocator:buildflags",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//build/util:chromium_git_revision",
     "//components/discardable_memory/common",
     "//components/input",
@@ -374,7 +373,7 @@ source_set("common") {
     deps += [ "//ppapi/proxy:ipc_sources" ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources -= [ "cursors/webcursor_ash.cc" ]
   }
 

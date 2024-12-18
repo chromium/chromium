@@ -19,19 +19,9 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
     if (!custom_cursor_) {
       SkBitmap bitmap = cursor_.custom_bitmap();
       gfx::Point hotspot = cursor_.custom_hotspot();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // In lacros, cursor should not be scaled to device scale
-      // factor because device scale factor is not always integer
-      // which could cause rounding errors. We should keep the
-      // image scale factor and handle the actual scaling in ash.
-      // Cursor rotation is also handled in ash.
-      float cursor_image_scale = cursor_.image_scale_factor();
-#else
       float cursor_image_scale = device_scale_factor_;
       wm::ScaleAndRotateCursorBitmapAndHotpoint(GetCursorScaleFactor(&bitmap),
                                                 rotation_, &bitmap, &hotspot);
-#endif
       custom_cursor_ = ui::Cursor::NewCustom(
           std::move(bitmap), std::move(hotspot), cursor_image_scale);
       custom_cursor_->SetPlatformCursor(
@@ -45,7 +35,7 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
   return cursor_.type();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Ash has its own UpdateDisplayInfoForWindow that takes rotation into account.
 void WebCursor::UpdateDisplayInfoForWindow(aura::Window* window) {
   float preferred_scale = display::Screen::GetScreen()

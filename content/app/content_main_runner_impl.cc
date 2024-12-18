@@ -55,7 +55,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/power_monitor/make_power_monitor_device_source.h"
@@ -161,11 +160,6 @@
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#include "chromeos/startup/startup_switches.h"
-#endif
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "content/common/pepper_plugin_list.h"
@@ -340,10 +334,6 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
       switches::kRegisterPepperPlugins,
       switches::kV,
       switches::kVModule,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      switches::kCrosWidevineBundledDir,
-      switches::kCrosWidevineComponentUpdatedHintFile,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                              kForwardSwitches);
@@ -356,11 +346,6 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
       PosixFileDescriptorInfoImpl::Create());
   additional_remapped_fds->Share(
       GetSandboxFD(), SandboxHostLinux::GetInstance()->GetChildSocket());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  GetContentClient()->browser()->GetAdditionalMappedFilesForZygote(
-      cmd_line, additional_remapped_fds.get());
-#endif
 
   return ZygoteHostImpl::GetInstance()->LaunchZygote(
       cmd_line, control_fd, additional_remapped_fds->GetMapping());
@@ -535,13 +520,12 @@ void InstallConsoleControlHandler(bool is_browser_process) {
 
 bool ShouldAllowSystemTracingConsumer() {
 // System tracing consumer support is currently only supported on ChromeOS.
-// TODO(crbug.com/40167100): Also enable for Lacros-Chrome.
 #if BUILDFLAG(IS_CHROMEOS)
   // The consumer should only be enabled when the delegate allows it.
   return GetContentClient()->browser()->IsSystemWideTracingEnabled();
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void CreateChildThreadPool(const std::string& process_type) {

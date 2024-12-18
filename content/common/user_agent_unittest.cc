@@ -5,7 +5,6 @@
 #include "content/public/common/user_agent.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -21,6 +20,7 @@ struct BuildOSCpuInfoTestCases {
 }  // namespace
 
 TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
+  // clang-format off
   const BuildOSCpuInfoTestCases test_cases[] = {
 #if BUILDFLAG(IS_WIN)
     // On Windows, it's possible to have an empty string for CPU type.
@@ -74,7 +74,7 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
         /*cpu_type=*/"CPU TYPE",
         /*expected_os_cpu_info=*/"CPU TYPE Mac OS X VERSION",
     },
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
     {
         /*os_version=*/"4537.56.0",
         /*cpu_type=*/"armv7l",
@@ -118,6 +118,7 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
     },
 #endif
   };
+  // clang-format on
 
   for (const auto& test_case : test_cases) {
     const std::string os_cpu_info = BuildOSCpuInfoFromOSVersionAndCpuType(

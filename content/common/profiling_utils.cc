@@ -40,14 +40,6 @@ base::FilePath GetProfileFileDirectory() {
 #if BUILDFLAG(IS_ANDROID)
   base::PathService::Get(base::DIR_TEMP, &path);
   path = path.Append("pgo_profiles/");
-  // Lacros is similar to Android that it's running on a device that is not
-  // the host machine and environment variables aren't well supported.
-  // But Lacros also need to pass in the path so it is the same path as
-  // isolate test output folder on bots.
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  path = base::CommandLine::ForCurrentProcess()
-             ->GetSwitchValuePath(switches::kLLVMProfileFile)
-             .DirName();
 #else
   std::string prof_template;
   std::unique_ptr<base::Environment> env(base::Environment::Create());

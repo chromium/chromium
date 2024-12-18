@@ -32,7 +32,6 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/service/main/viz_main_impl.h"
 #include "content/child/child_process.h"
 #include "content/common/content_constants_internal.h"
@@ -371,7 +370,7 @@ int GpuMain(MainFunctionParams parameters) {
   // message from the browser (through mojom::VizMain::CreateGpuService()).
   const bool init_success = gpu_init->InitializeAndStartSandbox(
       const_cast<base::CommandLine*>(&command_line), gpu_preferences);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "gpu initialization completed init_success:" << init_success;
 #endif
   const bool dead_on_arrival = !init_success;
@@ -503,7 +502,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // Video decoding of many video streams can use thousands of FDs as well as
-  // Exo clients like Lacros.
+  // Exo clients.
   // See https://crbug.com/1417237
   const auto current_max_fds =
       base::saturated_cast<unsigned int>(base::GetMaxFds());
