@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.permissions;
 
-import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpda
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Test suite for media permissions requests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -56,7 +56,7 @@ public class MediaTest {
     @MediumTest
     @Feature({"MediaPermissions", "Main"})
     @CommandLineFlags.Add({FAKE_DEVICE})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R) // https://crbug.com/383407975
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136, https://crbug.com/383407975
     public void testMicrophoneMediaPermissionsPlumbingDialog() throws Exception {
         testMediaPermissionsPlumbing("Mic count:", "initiate_getMicrophone()", 1, true, true);
     }
@@ -81,6 +81,7 @@ public class MediaTest {
     @MediumTest
     @Feature({"MediaPermissions", "Main"})
     @CommandLineFlags.Add({FAKE_DEVICE})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136
     public void testCombinedPermissionsPlumbingDialog() throws Exception {
         testMediaPermissionsPlumbing("Combined count:", "initiate_getCombined()", 1, true, true);
     }
