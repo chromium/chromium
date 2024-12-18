@@ -39,7 +39,6 @@
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
-#include "net/base/host_port_pair.h"
 #include "net/base/url_util.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/x509_certificate.h"
@@ -190,7 +189,7 @@ class HSTSPreloadDecoder : public extras::PreloadDecoder {
   PreloadResult result_;
 };
 
-bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
+bool DecodeHSTSPreload(std::string_view search_hostname, PreloadResult* out) {
 #if !BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
   if (g_hsts_source == nullptr)
     return false;
@@ -203,18 +202,17 @@ bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
     return false;
   }
   // Normalize any trailing '.' used for DNS suffix searches.
-  std::string hostname = search_hostname;
-  size_t trailing_dot_found = hostname.find_last_not_of('.');
-  if (trailing_dot_found != std::string::npos) {
-    hostname.erase(trailing_dot_found + 1);
-  } else {
-    hostname.clear();
+  size_t trailing_dot_found = search_hostname.find_last_not_of('.');
+  if (trailing_dot_found == std::string::npos) {
+    return false;
   }
+  search_hostname.remove_suffix(search_hostname.size() - trailing_dot_found -
+                                1);
 
   // |hostname| has already undergone IDN conversion, so should be
   // entirely A-Labels. The preload data is entirely normalized to
   // lower case.
-  hostname = base::ToLowerASCII(hostname);
+  std::string hostname = base::ToLowerASCII(search_hostname);
   if (hostname.empty()) {
     return false;
   }
@@ -260,14 +258,14 @@ TransportSecurityState::TransportSecurityState(
 
 // Both HSTS and HPKP cause fatal SSL errors, so return true if a
 // host has either.
-bool TransportSecurityState::ShouldSSLErrorsBeFatal(const std::string& host) {
+bool TransportSecurityState::ShouldSSLErrorsBeFatal(std::string_view host) {
   STSState unused_sts;
   PKPState unused_pkp;
   return GetSTSState(host, &unused_sts) || GetPKPState(host, &unused_pkp);
 }
 
 base::Value::Dict TransportSecurityState::NetLogUpgradeToSSLParam(
-    const std::string& host) {
+    std::string_view host) {
   STSState sts_state;
   base::Value::Dict dict;
   dict.Set("host", host);
@@ -279,7 +277,7 @@ base::Value::Dict TransportSecurityState::NetLogUpgradeToSSLParam(
 }
 
 SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
-    const std::string& host,
+    std::string_view host,
     bool is_top_level_nav,
     const NetLogWithSource& net_log) {
   net_log.AddEvent(
@@ -320,7 +318,7 @@ SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
 }
 
 bool TransportSecurityState::ShouldUpgradeToSSL(
-    const std::string& host,
+    std::string_view host,
     const NetLogWithSource& net_log) {
   // TODO(crbug.com/361746120): Propagate `is_top_level_nav` to callers.
   return GetSSLUpgradeDecision(host, true, net_log) !=
@@ -328,26 +326,26 @@ bool TransportSecurityState::ShouldUpgradeToSSL(
 }
 
 TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
-    const HostPortPair& host_port_pair,
+    std::string_view host,
     bool is_issued_by_known_root,
     const HashValueVector& public_key_hashes) {
   // Perform pin validation only if the server actually has public key pins.
-  if (!HasPublicKeyPins(host_port_pair.host())) {
+  if (!HasPublicKeyPins(host)) {
     return PKPStatus::OK;
   }
 
-  return CheckPublicKeyPinsImpl(host_port_pair, is_issued_by_known_root,
+  return CheckPublicKeyPinsImpl(host, is_issued_by_known_root,
                                 public_key_hashes);
 }
 
-bool TransportSecurityState::HasPublicKeyPins(const std::string& host) {
+bool TransportSecurityState::HasPublicKeyPins(std::string_view host) {
   PKPState pkp_state;
   return GetPKPState(host, &pkp_state) && pkp_state.HasPublicKeyPins();
 }
 
 TransportSecurityState::CTRequirementsStatus
 TransportSecurityState::CheckCTRequirements(
-    const HostPortPair& host_port_pair,
+    std::string_view host,
     bool is_issued_by_known_root,
     const HashValueVector& public_key_hashes,
     const X509Certificate* validated_certificate_chain,
@@ -378,7 +376,7 @@ TransportSecurityState::CheckCTRequirements(
   if (require_ct_delegate_) {
     // Allow the delegate to override the CT requirement state.
     ct_required = require_ct_delegate_->IsCTRequiredForHost(
-        host_port_pair.host(), validated_certificate_chain, public_key_hashes);
+        host, validated_certificate_chain, public_key_hashes);
   }
   switch (ct_required) {
     case CTRequirementLevel::REQUIRED:
@@ -487,7 +485,6 @@ void TransportSecurityState::
 }
 
 TransportSecurityState::PKPStatus TransportSecurityState::CheckPins(
-    const HostPortPair& host_port_pair,
     bool is_issued_by_known_root,
     const TransportSecurityState::PKPState& pkp_state,
     const HashValueVector& hashes) {
@@ -502,7 +499,7 @@ TransportSecurityState::PKPStatus TransportSecurityState::CheckPins(
   return PKPStatus::VIOLATED;
 }
 
-bool TransportSecurityState::DeleteDynamicDataForHost(const std::string& host) {
+bool TransportSecurityState::DeleteDynamicDataForHost(std::string_view host) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
@@ -639,20 +636,19 @@ bool TransportSecurityState::IsBuildTimely() {
 }
 
 TransportSecurityState::PKPStatus
-TransportSecurityState::CheckPublicKeyPinsImpl(
-    const HostPortPair& host_port_pair,
-    bool is_issued_by_known_root,
-    const HashValueVector& hashes) {
+TransportSecurityState::CheckPublicKeyPinsImpl(std::string_view host,
+                                               bool is_issued_by_known_root,
+                                               const HashValueVector& hashes) {
   PKPState pkp_state;
-  bool found_state = GetPKPState(host_port_pair.host(), &pkp_state);
+  bool found_state = GetPKPState(host, &pkp_state);
 
   // HasPublicKeyPins should have returned true in order for this method to have
   // been called.
   DCHECK(found_state);
-  return CheckPins(host_port_pair, is_issued_by_known_root, pkp_state, hashes);
+  return CheckPins(is_issued_by_known_root, pkp_state, hashes);
 }
 
-bool TransportSecurityState::GetStaticSTSState(const std::string& host,
+bool TransportSecurityState::GetStaticSTSState(std::string_view host,
                                                STSState* sts_result) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -673,7 +669,7 @@ bool TransportSecurityState::GetStaticSTSState(const std::string& host,
   return false;
 }
 
-bool TransportSecurityState::GetStaticPKPState(const std::string& host,
+bool TransportSecurityState::GetStaticPKPState(std::string_view host,
                                                PKPState* pkp_result) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -689,14 +685,13 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
       return false;
     }
     // Normalize any trailing '.' used for DNS suffix searches.
-    std::string normalized_host = host;
-    size_t trailing_dot_found = normalized_host.find_last_not_of('.');
+    size_t trailing_dot_found = host.find_last_not_of('.');
     if (trailing_dot_found == std::string::npos) {
       // Hostname is either empty or all dots
       return false;
     }
-    normalized_host.erase(trailing_dot_found + 1);
-    normalized_host = base::ToLowerASCII(normalized_host);
+    host.remove_suffix(host.size() - trailing_dot_found - 1);
+    std::string normalized_host = base::ToLowerASCII(host);
 
     std::string_view search_hostname = normalized_host;
     while (true) {
@@ -768,17 +763,17 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
   return false;
 }
 
-bool TransportSecurityState::GetSTSState(const std::string& host,
+bool TransportSecurityState::GetSTSState(std::string_view host,
                                          STSState* result) {
   return GetDynamicSTSState(host, result) || GetStaticSTSState(host, result);
 }
 
-bool TransportSecurityState::GetPKPState(const std::string& host,
+bool TransportSecurityState::GetPKPState(std::string_view host,
                                          PKPState* result) {
   return GetDynamicPKPState(host, result) || GetStaticPKPState(host, result);
 }
 
-bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
+bool TransportSecurityState::GetDynamicSTSState(std::string_view host,
                                                 STSState* result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -819,7 +814,7 @@ bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
   return false;
 }
 
-bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
+bool TransportSecurityState::GetDynamicPKPState(std::string_view host,
                                                 PKPState* result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

@@ -80,7 +80,6 @@ namespace test3 {
 }
 
 const char kHost[] = "example.test";
-const uint16_t kPort = 443;
 
 const auto kGoodPath = std::to_array<const char*>({
     "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
@@ -873,40 +872,35 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
     TransportSecurityState state;
     const TransportSecurityState::CTRequirementsStatus original_status =
         state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
+            "www.example.com", true, hashes, cert.get(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
 
     MockRequireCTDelegate always_require_delegate;
     EXPECT_CALL(always_require_delegate, IsCTRequiredForHost(_, _, _))
         .WillRepeatedly(Return(CTRequirementLevel::REQUIRED));
     state.SetRequireCTDelegate(&always_require_delegate);
-    EXPECT_EQ(
-        TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-    EXPECT_EQ(
-        TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
-    EXPECT_EQ(
-        TransportSecurityState::CT_REQUIREMENTS_MET,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
-    EXPECT_EQ(
-        TransportSecurityState::CT_REQUIREMENTS_MET,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
+    EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
+    EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
+    EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_MET,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+    EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_MET,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
 
     state.SetRequireCTDelegate(nullptr);
-    EXPECT_EQ(
-        original_status,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
+    EXPECT_EQ(original_status,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   }
 
   // If CT is not required, then regardless of the CT state for the host,
@@ -915,30 +909,27 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
     TransportSecurityState state;
     const TransportSecurityState::CTRequirementsStatus original_status =
         state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
+            "www.example.com", true, hashes, cert.get(),
             ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS);
 
     MockRequireCTDelegate never_require_delegate;
     EXPECT_CALL(never_require_delegate, IsCTRequiredForHost(_, _, _))
         .WillRepeatedly(Return(CTRequirementLevel::NOT_REQUIRED));
     state.SetRequireCTDelegate(&never_require_delegate);
-    EXPECT_EQ(
-        TransportSecurityState::CT_NOT_REQUIRED,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-    EXPECT_EQ(
-        TransportSecurityState::CT_NOT_REQUIRED,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
+    EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
+    EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
 
     state.SetRequireCTDelegate(nullptr);
-    EXPECT_EQ(
-        original_status,
-        state.CheckCTRequirements(
-            HostPortPair("www.example.com", 443), true, hashes, cert.get(),
-            ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
+    EXPECT_EQ(original_status,
+              state.CheckCTRequirements(
+                  "www.example.com", true, hashes, cert.get(),
+                  ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   }
 }
 
@@ -968,25 +959,25 @@ TEST(CTEmergencyDisableTest, CTEmergencyDisable) {
   state.SetRequireCTDelegate(&always_require_delegate);
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
-                HostPortPair("www.example.com", 443), true, hashes, cert.get(),
+                "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
-                HostPortPair("www.example.com", 443), true, hashes, cert.get(),
+                "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
-                HostPortPair("www.example.com", 443), true, hashes, cert.get(),
+                "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
-                HostPortPair("www.example.com", 443), true, hashes, cert.get(),
+                "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
 
   state.SetRequireCTDelegate(nullptr);
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
             state.CheckCTRequirements(
-                HostPortPair("www.example.com", 443), true, hashes, cert.get(),
+                "www.example.com", true, hashes, cert.get(),
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 }
 
@@ -1519,8 +1510,6 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HostPortPair host_port_pair(kHost, kPort);
-
   HashValueVector bad_hashes;
   for (size_t i = 0; kBadPath[i]; i++)
     EXPECT_TRUE(AddHash(kBadPath[i], &bad_hashes));
@@ -1530,7 +1519,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
 
   // Prior to updating the list, bad_hashes should be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, bad_hashes));
+            state.CheckPublicKeyPins(kHost, true, bad_hashes));
 
   // Update the pins list, adding bad_hashes to the accepted hashes for this
   // host.
@@ -1551,15 +1540,13 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
 
   // Hashes should now be accepted.
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, bad_hashes));
+            state.CheckPublicKeyPins(kHost, true, bad_hashes));
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HostPortPair host_port_pair(kHost, kPort);
-
   HashValueVector good_hashes;
   for (size_t i = 0; kGoodPath[i]; i++)
     EXPECT_TRUE(AddHash(kGoodPath[i], &good_hashes));
@@ -1569,7 +1556,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
 
   // Prior to updating the list, good_hashes should be accepted
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, good_hashes));
+            state.CheckPublicKeyPins(kHost, true, good_hashes));
 
   // Update the pins list, adding good_hashes to the rejected hashes for this
   // host.
@@ -1590,26 +1577,22 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
 
   // Hashes should now be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, good_hashes));
+            state.CheckPublicKeyPins(kHost, true, good_hashes));
 
   // Hashes should also be rejected if the hostname has a trailing dot.
-  host_port_pair = HostPortPair("example.test.", kPort);
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, good_hashes));
+            state.CheckPublicKeyPins("example.test", true, good_hashes));
 
   // Hashes should also be rejected if the hostname has different
   // capitalization.
-  host_port_pair = HostPortPair("ExAmpLe.tEsT", kPort);
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, good_hashes));
+            state.CheckPublicKeyPins("ExAmpLe.tEsT", true, good_hashes));
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HostPortPair host_port_pair(kHost, kPort);
-
   HashValueVector bad_hashes;
   for (size_t i = 0; kBadPath[i]; i++)
     EXPECT_TRUE(AddHash(kBadPath[i], &bad_hashes));
@@ -1619,22 +1602,20 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
 
   // Prior to updating the list, bad_hashes should be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, bad_hashes));
+            state.CheckPublicKeyPins(kHost, true, bad_hashes));
 
   // Update the pins list with an empty list.
   state.UpdatePinList({}, {}, base::Time::Now());
 
   // Hashes should now be accepted.
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, bad_hashes));
+            state.CheckPublicKeyPins(kHost, true, bad_hashes));
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HostPortPair host_port_pair("example.sub.test", kPort);
-
   // unpinned_hashes is a set of hashes that (after the update) won't match the
   // expected hashes for the tld of this domain. kGoodPath is used here because
   // it's a path that is accepted prior to any updates, and this test will
@@ -1648,8 +1629,9 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
   EnableStaticPins(&state);
 
   // Prior to updating the list, unpinned_hashes should be accepted
-  EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, unpinned_hashes));
+  EXPECT_EQ(
+      TransportSecurityState::PKPStatus::OK,
+      state.CheckPublicKeyPins("example.sub.test", true, unpinned_hashes));
 
   // Update the pins list, adding kBadPath to the accepted hashes for this
   // host, relying on include_subdomains for enforcement. The contents of the
@@ -1673,16 +1655,15 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
   state.UpdatePinList({test_pinset}, {test_pinsetinfo}, base::Time::Now());
 
   // The path that was accepted before updating the pins should now be rejected.
-  EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, unpinned_hashes));
+  EXPECT_EQ(
+      TransportSecurityState::PKPStatus::VIOLATED,
+      state.CheckPublicKeyPins("example.sub.test", true, unpinned_hashes));
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HostPortPair host_port_pair(kHost, kPort);
-
   // unpinned_hashes is a set of hashes that (after the update) won't match the
   // expected hashes for the tld of this domain. kGoodPath is used here because
   // it's a path that is accepted prior to any updates, and this test will
@@ -1697,7 +1678,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
 
   // Prior to updating the list, unpinned_hashes should be accepted
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, unpinned_hashes));
+            state.CheckPublicKeyPins(kHost, true, unpinned_hashes));
 
   // Update the pins list, adding kBadPath to the accepted hashes for this
   // host, relying on include_subdomains for enforcement. The contents of the
@@ -1722,15 +1703,13 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
 
   // The path that was accepted before updating the pins should now be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, unpinned_hashes));
+            state.CheckPublicKeyPins(kHost, true, unpinned_hashes));
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HostPortPair host_port_pair(kHost, kPort);
-
   // unpinned_hashes is a set of hashes that (after the update) won't match the
   // expected hashes for the tld of this domain. kGoodPath is used here because
   // it's a path that is accepted prior to any updates, and this test will
@@ -1746,7 +1725,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
 
   // Prior to updating the list, unpinned_hashes should be accepted
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, unpinned_hashes));
+            state.CheckPublicKeyPins(kHost, true, unpinned_hashes));
 
   // Update the pins list, adding kBadPath to the accepted hashes for the
   // tld of this host, but without include_subdomains set. The contents of the
@@ -1773,20 +1752,17 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
   // include subdomains is not set for the pinset, and this is not an exact
   // match.
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, unpinned_hashes));
+            state.CheckPublicKeyPins(kHost, true, unpinned_hashes));
 
   // Hashes should be rejected for an exact match of the hostname.
-  HostPortPair exact_match_host("test", kPort);
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(exact_match_host, true, unpinned_hashes));
+            state.CheckPublicKeyPins("test", true, unpinned_hashes));
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HostPortPair host_port_pair(kHost, kPort);
-
   HashValueVector bad_hashes;
   for (size_t i = 0; kBadPath[i]; i++)
     EXPECT_TRUE(AddHash(kBadPath[i], &bad_hashes));
@@ -1796,7 +1772,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
 
   // Prior to updating the list, bad_hashes should be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, bad_hashes));
+            state.CheckPublicKeyPins(kHost, true, bad_hashes));
 
   // TransportSecurityStateTest sets a flag when EnableStaticPins is called that
   // results in TransportSecurityState considering the pins list as always
@@ -1824,7 +1800,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
 
   // Hashes should now be accepted.
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, bad_hashes));
+            state.CheckPublicKeyPins(kHost, true, bad_hashes));
 
   // Update the pins list again, with a timestamp <70 days old.
   state.UpdatePinList({test_pinset}, {test_pinsetinfo},
@@ -1832,7 +1808,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
 
   // Hashes should now be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(host_port_pair, true, bad_hashes));
+            state.CheckPublicKeyPins(kHost, true, bad_hashes));
 }
 
 class TransportSecurityStatePinningKillswitchTest
@@ -1848,8 +1824,6 @@ class TransportSecurityStatePinningKillswitchTest
 };
 
 TEST_F(TransportSecurityStatePinningKillswitchTest, PinningKillswitchSet) {
-  HostPortPair host_port_pair(kHost, kPort);
-
   HashValueVector bad_hashes;
   for (size_t i = 0; kBadPath[i]; i++)
     EXPECT_TRUE(AddHash(kBadPath[i], &bad_hashes));
@@ -1859,7 +1833,7 @@ TEST_F(TransportSecurityStatePinningKillswitchTest, PinningKillswitchSet) {
 
   // Hashes should be accepted since pinning enforcement is disabled.
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
-            state.CheckPublicKeyPins(host_port_pair, true, bad_hashes));
+            state.CheckPublicKeyPins(kHost, true, bad_hashes));
 }
 
 }  // namespace net

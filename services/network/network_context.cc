@@ -1718,7 +1718,7 @@ int NetworkContext::CheckCTRequirementsForSignedExchange(
 
   net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       url_request_context_->transport_security_state()->CheckCTRequirements(
-          host_port_pair, cert_verify_result.is_issued_by_known_root,
+          host_port_pair.host(), cert_verify_result.is_issued_by_known_root,
           cert_verify_result.public_key_hashes, verified_cert,
           cert_verify_result.policy_compliance);
 
@@ -3126,7 +3126,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
     net::TransportSecurityState::PKPStatus pin_validity =
         url_request_context_->transport_security_state()->CheckPublicKeyPins(
-            net::HostPortPair::FromURL(pending_cert_verify->url),
+            pending_cert_verify->url.host(),
             pending_cert_verify->result->is_issued_by_known_root,
             pending_cert_verify->result->public_key_hashes);
     switch (pin_validity) {
