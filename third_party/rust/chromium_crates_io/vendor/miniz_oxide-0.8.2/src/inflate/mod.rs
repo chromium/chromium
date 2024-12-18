@@ -2,7 +2,6 @@
 
 #[cfg(feature = "with-alloc")]
 use crate::alloc::{boxed::Box, vec, vec::Vec};
-use ::core::usize;
 #[cfg(all(feature = "std", feature = "with-alloc"))]
 use std::error::Error;
 
@@ -123,7 +122,7 @@ fn decompress_error(status: TINFLStatus, output: Vec<u8>) -> Result<Vec<u8>, Dec
 #[inline]
 #[cfg(feature = "with-alloc")]
 pub fn decompress_to_vec(input: &[u8]) -> Result<Vec<u8>, DecompressError> {
-    decompress_to_vec_inner(input, 0, usize::max_value())
+    decompress_to_vec_inner(input, 0, usize::MAX)
 }
 
 /// Decompress the deflate-encoded data (with a zlib wrapper) in `input` to a vector.
@@ -139,7 +138,7 @@ pub fn decompress_to_vec_zlib(input: &[u8]) -> Result<Vec<u8>, DecompressError> 
     decompress_to_vec_inner(
         input,
         inflate_flags::TINFL_FLAG_PARSE_ZLIB_HEADER,
-        usize::max_value(),
+        usize::MAX,
     )
 }
 

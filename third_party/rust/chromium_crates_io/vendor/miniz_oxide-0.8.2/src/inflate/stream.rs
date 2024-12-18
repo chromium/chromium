@@ -57,6 +57,7 @@ impl ResetPolicy for FullReset {
 
 /// A struct that compbines a decompressor with extra data for streaming decompression.
 ///
+#[derive(Clone)]
 pub struct InflateState {
     /// Inner decompressor struct
     decomp: DecompressorOxide,
@@ -226,6 +227,9 @@ pub fn inflate(
     if (flush == MZFlush::Finish) && first_call {
         decomp_flags |= inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF;
 
+        // The caller is indicating that they want to finish the compression and this is the first call with the current stream
+        // so we can simply write directly to the output buffer.
+        // If there is not enough space for all of the decompressed data we will end up with a failure regardless.
         let status = decompress(&mut state.decomp, next_in, next_out, 0, decomp_flags);
         let in_bytes = status.1;
         let out_bytes = status.2;
@@ -419,5 +423,79 @@ mod test {
         assert_eq!(state.decompressor().adler32(), Some(1));
         // Should still have the checksum read from the header file.
         assert_eq!(state.decompressor().adler32_header(), Some(459605011))
+    }
+
+    #[test]
+    fn test_partial_continue() {
+        let encoded = [
+            120u8, 156, 243, 72, 205, 201, 201, 215, 81, 168, 202, 201, 76, 82, 4, 0, 27, 101, 4,
+            19,
+        ];
+
+        // Feed input bytes one at a time to the decompressor
+        let mut out = vec![0; 50];
+        let mut state = InflateState::new_boxed(DataFormat::Zlib);
+        let mut part_in = 0;
+        let mut part_out = 0;
+        for i in 1..=encoded.len() {
+            let res = inflate(
+                &mut state,
+                &encoded[part_in..i],
+                &mut out[part_out..],
+                MZFlush::None,
+            );
+            let status = res.status.expect("Failed to decompress!");
+            if i == encoded.len() {
+                assert_eq!(status, MZStatus::StreamEnd);
+            } else {
+                assert_eq!(status, MZStatus::Ok);
+            }
+            part_out += res.bytes_written as usize;
+            part_in += res.bytes_consumed;
+        }
+
+        assert_eq!(out[..part_out as usize], b"Hello, zlib!"[..]);
+        assert_eq!(part_in, encoded.len());
+        assert_eq!(state.decompressor().adler32(), Some(459605011));
+    }
+
+    // Inflate part of a stream and clone the inflate state.
+    // Discard the original state and resume the stream from the clone.
+    #[test]
+    fn test_rewind_and_resume() {
+        let encoded = [
+            120u8, 156, 243, 72, 205, 201, 201, 215, 81, 168, 202, 201, 76, 82, 4, 0, 27, 101, 4,
+            19,
+        ];
+        let decoded = b"Hello, zlib!";
+
+        // Feed partial input bytes to the decompressor
+        let mut out = vec![0; 50];
+        let mut state = InflateState::new_boxed(DataFormat::Zlib);
+        let res1 = inflate(&mut state, &encoded[..10], &mut out, MZFlush::None);
+        let status = res1.status.expect("Failed to decompress!");
+        assert_eq!(status, MZStatus::Ok);
+
+        // Clone the state and discard the original
+        let mut resume = state.clone();
+        drop(state);
+
+        // Resume the stream using the cloned state
+        let res2 = inflate(
+            &mut resume,
+            &encoded[res1.bytes_consumed..],
+            &mut out[res1.bytes_written..],
+            MZFlush::Finish,
+        );
+        let status = res2.status.expect("Failed to decompress!");
+        assert_eq!(status, MZStatus::StreamEnd);
+
+        assert_eq!(res1.bytes_consumed + res2.bytes_consumed, encoded.len());
+        assert_eq!(res1.bytes_written + res2.bytes_written, decoded.len());
+        assert_eq!(
+            &out[..res1.bytes_written + res2.bytes_written as usize],
+            decoded
+        );
+        assert_eq!(resume.decompressor().adler32(), Some(459605011));
     }
 }

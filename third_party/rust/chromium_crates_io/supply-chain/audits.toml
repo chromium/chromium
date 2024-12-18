@@ -1511,6 +1511,11 @@ I've grepped for `-i cipher`, `-i crypto`, `\bfs\b`, `\bnet\b`, and
 and in `Readme.md`).
 '''
 
+[[audits.miniz_oxide]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.8.0 -> 0.8.2"
+
 [[audits.nom]]
 who = "danakj@chromium.org"
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-1"]

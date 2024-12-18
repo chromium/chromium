@@ -206,6 +206,13 @@ pub enum CompressionStrategy {
     Fixed = 4,
 }
 
+impl From<CompressionStrategy> for i32 {
+    #[inline(always)]
+    fn from(value: CompressionStrategy) -> Self {
+        value as i32
+    }
+}
+
 /// A list of deflate flush types.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum TDEFLFlush {
@@ -299,10 +306,15 @@ pub(crate) const MAX_MATCH_LEN: usize = 258;
 const DEFAULT_FLAGS: u32 = NUM_PROBES[4] | TDEFL_WRITE_ZLIB_HEADER;
 
 mod zlib {
+    use super::{TDEFL_FORCE_ALL_RAW_BLOCKS, TDEFL_RLE_MATCHES};
+
     const DEFAULT_CM: u8 = 8;
     const DEFAULT_CINFO: u8 = 7 << 4;
     const _DEFAULT_FDICT: u8 = 0;
     const DEFAULT_CMF: u8 = DEFAULT_CM | DEFAULT_CINFO;
+    // CMF used for RLE (technically it uses a window size of 0 but the lowest that can
+    // be specified in the header corresponds to a window size of 1 << (0 + 8) aka 256.
+    const MIN_CMF: u8 = DEFAULT_CM; // | 0
     /// The 16-bit value consisting of CMF and FLG must be divisible by this to be valid.
     const FCHECK_DIVISOR: u8 = 31;
 
@@ -324,7 +336,9 @@ mod zlib {
         use super::NUM_PROBES;
 
         let num_probes = flags & (super::MAX_PROBES_MASK as u32);
-        if flags & super::TDEFL_GREEDY_PARSING_FLAG != 0 {
+        if (flags & super::TDEFL_GREEDY_PARSING_FLAG != 0)
+            || (flags & super::TDEFL_RLE_MATCHES != 0)
+        {
             if num_probes <= 1 {
                 0
             } else {
@@ -337,10 +351,20 @@ mod zlib {
         }
     }
 
+    const fn cmf_from_flags(flags: u32) -> u8 {
+        if (flags & TDEFL_RLE_MATCHES == 0) && (flags & TDEFL_FORCE_ALL_RAW_BLOCKS == 0) {
+            DEFAULT_CMF
+        // If we are using RLE encoding or no compression the window bits can be set as the
+        // minimum.
+        } else {
+            MIN_CMF
+        }
+    }
+
     /// Get the zlib header for the level using the default window size and no
     /// dictionary.
-    fn header_from_level(level: u8) -> [u8; 2] {
-        let cmf = DEFAULT_CMF;
+    fn header_from_level(level: u8, flags: u32) -> [u8; 2] {
+        let cmf = cmf_from_flags(flags);
         [cmf, add_fcheck(cmf, level << 6)]
     }
 
@@ -348,7 +372,7 @@ mod zlib {
     /// Only level is considered.
     pub fn header_from_flags(flags: u32) -> [u8; 2] {
         let level = zlib_level_from_flags(flags);
-        header_from_level(level)
+        header_from_level(level, flags)
     }
 
     #[cfg(test)]
@@ -381,18 +405,12 @@ mod zlib {
 
         #[test]
         fn test_header() {
-            let header = super::header_from_level(3);
+            let header = super::header_from_level(3, 0);
             assert_eq!(
                 ((usize::from(header[0]) * 256) + usize::from(header[1])) % 31,
                 0
             );
         }
-    }
-}
-
-fn memset<T: Copy>(slice: &mut [T], val: T) {
-    for x in slice {
-        *x = val
     }
 }
 
@@ -532,7 +550,7 @@ pub struct CallbackFunc<'a> {
     pub put_buf_func: &'a mut dyn FnMut(&[u8]) -> bool,
 }
 
-impl<'a> CallbackFunc<'a> {
+impl CallbackFunc<'_> {
     fn flush_output(
         &mut self,
         saved_output: SavedOutputBufferOxide,
@@ -556,7 +574,7 @@ struct CallbackBuf<'a> {
     pub out_buf: &'a mut [u8],
 }
 
-impl<'a> CallbackBuf<'a> {
+impl CallbackBuf<'_> {
     fn flush_output(
         &mut self,
         saved_output: SavedOutputBufferOxide,
@@ -585,7 +603,7 @@ enum CallbackOut<'a> {
     Buf(CallbackBuf<'a>),
 }
 
-impl<'a> CallbackOut<'a> {
+impl CallbackOut<'_> {
     fn new_output_buffer<'b>(
         &'b mut self,
         local_buf: &'b mut [u8],
@@ -676,7 +694,7 @@ struct OutputBufferOxide<'a> {
     pub bits_in: u32,
 }
 
-impl<'a> OutputBufferOxide<'a> {
+impl OutputBufferOxide<'_> {
     fn put_bits(&mut self, bits: u32, len: u32) {
         // TODO: Removing this assertion worsens performance
         // Need to figure out why
@@ -776,7 +794,7 @@ const HUFF_CODES_TABLE: usize = 2;
 /// Status of RLE encoding of huffman code lengths.
 struct Rle {
     pub z_count: u32,
-    pub repeat_count: u32,
+    pub repeat_count: u16,
     pub prev_code_size: u8,
 }
 
@@ -792,7 +810,7 @@ impl Rle {
         if self.repeat_count != 0 {
             if self.repeat_count < 3 {
                 counts[self.prev_code_size as usize] =
-                    counts[self.prev_code_size as usize].wrapping_add(self.repeat_count as u16);
+                    counts[self.prev_code_size as usize].wrapping_add(self.repeat_count);
                 let code = self.prev_code_size;
                 write(&[code, code, code][..self.repeat_count as usize])?;
             } else {
@@ -1017,8 +1035,8 @@ impl HuffmanOxide {
 
             Self::enforce_max_code_size(&mut num_codes, num_used_symbols, code_size_limit);
 
-            memset(&mut self.code_sizes[table_num][..], 0);
-            memset(&mut self.codes[table_num][..], 0);
+            self.code_sizes[table_num].fill(0);
+            self.codes[table_num].fill(0);
 
             let mut last = num_used_symbols;
             for (i, &num_item) in num_codes
@@ -1064,12 +1082,12 @@ impl HuffmanOxide {
     }
 
     fn start_static_block(&mut self, output: &mut OutputBufferOxide) {
-        memset(&mut self.code_sizes[LITLEN_TABLE][0..144], 8);
-        memset(&mut self.code_sizes[LITLEN_TABLE][144..256], 9);
-        memset(&mut self.code_sizes[LITLEN_TABLE][256..280], 7);
-        memset(&mut self.code_sizes[LITLEN_TABLE][280..288], 8);
+        self.code_sizes[LITLEN_TABLE][0..144].fill(8);
+        self.code_sizes[LITLEN_TABLE][144..256].fill(9);
+        self.code_sizes[LITLEN_TABLE][256..280].fill(7);
+        self.code_sizes[LITLEN_TABLE][280..288].fill(8);
 
-        memset(&mut self.code_sizes[DIST_TABLE][..32], 5);
+        self.code_sizes[DIST_TABLE][..32].fill(5);
 
         self.optimize_table(LITLEN_TABLE, 288, 15, true);
         self.optimize_table(DIST_TABLE, 32, 15, true);
@@ -1114,7 +1132,7 @@ impl HuffmanOxide {
             prev_code_size: 0xFF,
         };
 
-        memset(&mut self.count[HUFF_CODES_TABLE][..MAX_HUFF_SYMBOLS_2], 0);
+        self.count[HUFF_CODES_TABLE][..MAX_HUFF_SYMBOLS_2].fill(0);
 
         let mut packed_pos = 0;
         for &code_size in &code_sizes_to_pack[..total_code_sizes_to_pack] {
@@ -1729,8 +1747,8 @@ fn flush_block(
             }
         }
 
-        memset(&mut d.huff.count[0][..MAX_HUFF_SYMBOLS_0], 0);
-        memset(&mut d.huff.count[1][..MAX_HUFF_SYMBOLS_1], 0);
+        d.huff.count[0][..MAX_HUFF_SYMBOLS_0].fill(0);
+        d.huff.count[1][..MAX_HUFF_SYMBOLS_1].fill(0);
 
         d.lz.code_position = 1;
         d.lz.flag_position = 0;
@@ -2328,8 +2346,8 @@ fn compress_inner(
             _ => {
                 d.params.finished = d.params.flush == TDEFLFlush::Finish;
                 if d.params.flush == TDEFLFlush::Full {
-                    memset(&mut d.dict.b.hash[..], 0);
-                    memset(&mut d.dict.b.next[..], 0);
+                    d.dict.b.hash.fill(0);
+                    d.dict.b.next.fill(0);
                     d.dict.size = 0;
                 }
             }
@@ -2465,5 +2483,46 @@ mod test {
 
         let decoded = decompress_to_vec(&encoded[..]).unwrap();
         assert_eq!(&decoded[..], &slice[..]);
+    }
+
+    #[test]
+    fn zlib_window_bits() {
+        use crate::inflate::stream::{inflate, InflateState};
+        use crate::DataFormat;
+        use alloc::boxed::Box;
+        let slice = [
+            1, 2, 3, 4, 1, 2, 3, 1, 2, 3, 1, 2, 6, 1, 2, 3, 1, 2, 3, 2, 3, 1, 2, 3, 35, 22, 22, 2,
+            6, 2, 6,
+        ];
+        let mut encoded = vec![];
+        let flags = create_comp_flags_from_zip_params(2, 1, CompressionStrategy::RLE.into());
+        let mut d = CompressorOxide::new(flags);
+        let (status, in_consumed) =
+            compress_to_output(&mut d, &slice, TDEFLFlush::Finish, |out: &[u8]| {
+                encoded.extend_from_slice(out);
+                true
+            });
+
+        assert_eq!(status, TDEFLStatus::Done);
+        assert_eq!(in_consumed, slice.len());
+
+        let mut output = vec![0; slice.len()];
+
+        let mut decompressor = Box::new(InflateState::new(DataFormat::Zlib));
+
+        let mut out_slice = output.as_mut_slice();
+        // Feed 1 byte at a time and no back buffer to test that RLE encoding has been used.
+        for i in 0..encoded.len() {
+            let result = inflate(
+                &mut decompressor,
+                &encoded[i..i + 1],
+                out_slice,
+                crate::MZFlush::None,
+            );
+            out_slice = &mut out_slice[result.bytes_written..];
+        }
+        let cmf = decompressor.decompressor().zlib_header().0;
+        assert_eq!(cmf, 8);
+        assert_eq!(output, slice)
     }
 }

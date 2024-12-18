@@ -1,7 +1,7 @@
 [package]
 name = "miniz_oxide"
 authors = ["Frommi <daniil.liferenko@gmail.com>", "oyvindln <oyvindln@users.noreply.github.com>"]
-version = "0.8.0"
+version = "0.8.2"
 license = "MIT OR Zlib OR Apache-2.0"
 readme = "Readme.md"
 keywords = ["zlib", "miniz", "deflate", "encoding"]
