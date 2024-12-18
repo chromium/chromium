@@ -2467,6 +2467,9 @@ if (!is_android) {
         "//chrome/browser/glic/launcher:browser_tests",
       ]
     }
+    if (enable_glic) {
+      deps += [ "//chrome/browser/ui/views/glic/border:browser_tests" ]
+    }
 
     allow_circular_includes_from =
         [ "//chrome/browser/optimization_guide:browser_tests" ]

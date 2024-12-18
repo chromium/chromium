@@ -65,8 +65,12 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
 
 void BorderView::OnChildViewAdded(views::View* observed_view,
                                   views::View* child) {
-  // Use this API to make sure our border view is always the z-top-most of the
-  // contents_web_view_ of the browser view.
+  MakeTopMostChild(observed_view, child);
+}
+
+void BorderView::OnChildViewReordered(views::View* observed_view,
+                                      views::View* child) {
+  MakeTopMostChild(observed_view, child);
 }
 
 void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
@@ -95,6 +99,27 @@ void BorderView::CancelAnimation() {
   // `DestroyLayer()` schedules another paint to repaint the affected area by
   // the destroyed layer.
   DestroyLayer();
+}
+
+void BorderView::MakeTopMostChild(View* parent_view, View* child) {
+  CHECK(parent());
+  if (parent_view != parent()) {
+    return;
+  }
+  if (reorder_in_progress_) {
+    if (this != child) {
+      // While we are reordering `this`, another sibling is also reordering
+      // itself.
+      base::debug::DumpWithoutCrashing();
+    } else {
+      // An in-progress `this->MakeTopMostChild(parent, this)` is in progress,
+      // which dispatches a `ViewObserver::OnChildViewReordered`.
+    }
+    return;
+  }
+  base::AutoReset<bool> reset(&reorder_in_progress_, true);
+  size_t z_topmost = parent_view->children().size();
+  parent_view->ReorderChildView(this, z_topmost);
 }
 
 BEGIN_METADATA(BorderView)
