@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_serializer_for_modules.h"
 
 #include "base/notreached.h"
@@ -43,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
@@ -1356,7 +1352,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   const unsigned kTotalSamples = (kFrames * kChannels);
   const float kSampleMultiplier = 1.0 / kTotalSamples;
   for (unsigned ch = 0; ch < kChannels; ++ch) {
-    float* data = audio_bus->channel(ch);
+    auto data = audio_bus->ChannelSpan(ch);
     for (unsigned i = 0; i < kFrames; ++i)
       data[i] = (i + ch * kFrames) * kSampleMultiplier;
   }
@@ -1386,9 +1382,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
 
   // Copy out the frames to make sure they haven't been changed during the
   // transfer.
-  DOMArrayBuffer* copy_dest = DOMArrayBuffer::Create(kFrames, sizeof(float));
+  auto* copy_dest = DOMFloat32Array::Create(kFrames);
   AllowSharedBufferSource* dest =
-      MakeGarbageCollected<AllowSharedBufferSource>(copy_dest);
+      MakeGarbageCollected<AllowSharedBufferSource>(MaybeShared(copy_dest));
   AudioDataCopyToOptions* options =
       MakeGarbageCollected<AudioDataCopyToOptions>();
 
@@ -1397,7 +1393,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
     new_data->copyTo(dest, options, scope.GetExceptionState());
     EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-    float* new_samples = static_cast<float*>(copy_dest->Data());
+    auto new_samples = copy_dest->AsSpan();
 
     for (unsigned int i = 0; i < kFrames; ++i)
       ASSERT_EQ(new_samples[i], (i + ch * kFrames) * kSampleMultiplier);

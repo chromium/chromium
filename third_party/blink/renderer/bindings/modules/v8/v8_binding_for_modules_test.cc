@@ -23,13 +23,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
@@ -197,22 +193,18 @@ void SerializeV8Value(v8::Local<v8::Value> value,
   // Sanity check that the serialization header has not changed, as the tests
   // that use this method rely on the header format.
   //
-  // The cast from char* to unsigned char* is necessary to avoid VS2015 warning
-  // C4309 (truncation of constant value). This happens because VersionTag is
-  // 0xFF.
-  const unsigned char* wire_data =
-      reinterpret_cast<unsigned char*>(wire_bytes->data());
-  ASSERT_EQ(static_cast<unsigned char>(kVersionTag),
-            wire_data[kSSVHeaderBlinkVersionTagOffset]);
-  ASSERT_EQ(
-      static_cast<unsigned char>(SerializedScriptValue::kWireFormatVersion),
-      wire_data[kSSVHeaderBlinkVersionOffset]);
+  // The cast from Vector<char> to base::span<const uint8_t> is necessary
+  // to avoid VS2015 warning C4309 (truncation of constant value). This happens
+  // because VersionTag is 0xFF.
+  base::span<const uint8_t> wire_data_span = base::as_byte_span(*wire_bytes);
+  ASSERT_EQ(kVersionTag, wire_data_span[kSSVHeaderBlinkVersionTagOffset]);
+  ASSERT_EQ(SerializedScriptValue::kWireFormatVersion,
+            wire_data_span[kSSVHeaderBlinkVersionOffset]);
 
-  ASSERT_EQ(static_cast<unsigned char>(kVersionTag),
-            wire_data[kSSVHeaderV8VersionTagOffset]);
+  ASSERT_EQ(kVersionTag, wire_data_span[kSSVHeaderV8VersionTagOffset]);
   // TODO(jbroman): Use the compile-time constant for V8 data format version.
   // ASSERT_EQ(v8::ValueSerializer::GetCurrentDataFormatVersion(),
-  //           wire_data[kSSVHeaderV8VersionOffset]);
+  //           wire_data_span[kSSVHeaderV8VersionOffset]);
 }
 
 std::unique_ptr<IDBValue> CreateIDBValue(v8::Isolate* isolate,

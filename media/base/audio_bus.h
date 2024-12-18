@@ -168,6 +168,18 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // inf, nan, or between [-1.0, 1.0]) values in the channel data.
   float* channel(int channel) { return channel_data_[channel]; }
   const float* channel(int channel) const { return channel_data_[channel]; }
+  base::span<float> ChannelSpan(int channel) {
+    // SAFETY: AudioBus's constructor ensures that `channel_data_[channel]` is
+    // at least `frames_` size.
+    return UNSAFE_BUFFERS(
+        base::span(channel_data_[channel], static_cast<size_t>(frames_)));
+  }
+  base::span<const float> ChannelSpan(int channel) const {
+    // SAFETY: AudioBus's constructor ensures that `channel_data_[channel]` is
+    // at least `frames_` size.
+    return UNSAFE_BUFFERS(
+        base::span(channel_data_[channel], static_cast<size_t>(frames_)));
+  }
 
   // Returns the number of channels.
   int channels() const { return static_cast<int>(channel_data_.size()); }
