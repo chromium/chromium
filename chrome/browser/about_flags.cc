@@ -11865,6 +11865,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(::features::kBlockRootWindowAccessibleNameChangeEvent)},
 #endif  // BUILDFLAG(IS_MAC)
 
+    {"throttle-main-thread-to-60hz", flag_descriptions::kThrottleMainTo60HzName,
+     flag_descriptions::kThrottleMainTo60HzDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kThrottleMainFrameTo60Hz)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

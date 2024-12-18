@@ -18387,6 +18387,7 @@ from previous Chrome versions.
   <int value="-810110236" label="EditPasswordsInSettings:enabled"/>
   <int value="-809640965" label="ShelfAutoHideSeparation:enabled"/>
   <int value="-809456392" label="WebViewVulkanIntermediateBuffer:enabled"/>
+  <int value="-809443221" label="ThrottleMainFrameTo60Hz:enabled"/>
   <int value="-808486493" label="NewWallpaperPicker:disabled"/>
   <int value="-807352944" label="IppFirstSetupForUsbPrinters:disabled"/>
   <int value="-806549905"
@@ -22305,6 +22306,7 @@ from previous Chrome versions.
   <int value="752194066" label="enable-app-window-cycling"/>
   <int value="752416911" label="FastPair:disabled"/>
   <int value="752939691" label="disable-tab-for-desktop-share"/>
+  <int value="753375390" label="ThrottleMainFrameTo60Hz:disabled"/>
   <int value="756018202" label="CCTMinimized:enabled"/>
   <int value="756897997" label="PaintHoldingCrossOrigin:disabled"/>
   <int value="757645375" label="AndroidDarkSearch:disabled"/>

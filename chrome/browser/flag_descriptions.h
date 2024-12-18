@@ -2178,6 +2178,9 @@ extern const char kAutofillThirdPartyModeContentProviderDescription[];
 extern const char kThreadedScrollPreventRenderingStarvationName[];
 extern const char kThreadedScrollPreventRenderingStarvationDescription[];
 
+extern const char kThrottleMainTo60HzName[];
+extern const char kThrottleMainTo60HzDescription[];
+
 extern const char kTintCompositedContentName[];
 extern const char kTintCompositedContentDescription[];
 

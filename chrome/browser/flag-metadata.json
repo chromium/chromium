@@ -8712,6 +8712,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "throttle-main-thread-to-60hz",
+    "owners": [ "lizeb@google.com", "clank-performance-team@google.com" ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "tiled-display-support",
     "owners": [ "sukoo@chromium.org", "//ui/display/OWNERS", "chromeos-gfx-compositor@chromium.org" ],
     "expiry_milestone": 135

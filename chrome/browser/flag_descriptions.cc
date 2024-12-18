@@ -3758,6 +3758,10 @@ const char kThreadedScrollPreventRenderingStarvationDescription[] =
     "Prevents main thread rendering starvation during threaded scrolling based "
     "on a given threshold.";
 
+const char kThrottleMainTo60HzName[] = "throttle-main-thread-to-60hz";
+const char kThrottleMainTo60HzDescription[] =
+    "Throttle main thread updates to 60fps, even when VSync rate is higher.";
+
 const char kTintCompositedContentName[] = "Tint composited content";
 const char kTintCompositedContentDescription[] =
     "Tint contents composited using Viz with a shade of red to help debug and "
