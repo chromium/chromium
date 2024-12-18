@@ -77,8 +77,6 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenFreeformPreviousPrompts", IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS},
       {"seaPenFreeformPreviousPromptsTooltip",
        IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS_TOOLTIP},
-      {"seaPenFreeformMoreSuggestionsButton",
-       IDS_SEA_PEN_FREEFORM_MORE_SUGGESTIONS_BUTTON},
       {"seaPenFreeformPromptingGuide", IDS_SEA_PEN_FREEFORM_PROMPTING_GUIDE},
       {"seaPenFreeformNavigationDescription",
        IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION},
@@ -90,6 +88,8 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
        IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SAMPLE_PROMPTS},
       {"seaPenFreeformAriaLabelSuggestions",
        IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SUGGESTIONS},
+      {"seaPenFreeformAriaLabelShuffleSuggestions",
+       IDS_SEA_PEN_FREEFORM_ARIA_LABEL_SHUFFLE_SUGGESTIONS},
 
       {"seaPenDismissError", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
