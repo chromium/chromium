@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.common.splash;
+import org.chromium.build.annotations.NullMarked;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -19,6 +20,7 @@ import android.widget.TextView;
  * Contains utility methods for drawing splash screen. The methods are applicable for both home
  * screen shortcuts and WebAPKs.
  */
+@NullMarked
 public class SplashLayout {
     public static int getDefaultBackgroundColor(Context appContext) {
         return getColorCompatibility(appContext.getResources(), R.color.webapp_default_bg);
