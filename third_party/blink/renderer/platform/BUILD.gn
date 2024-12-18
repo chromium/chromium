@@ -1765,7 +1765,6 @@ component("platform") {
     "//cc/ipc",
     "//cc/mojo_embedder",
     "//components/language_detection/content/common",
-    "//components/language_detection/content/common:common_blink",
     "//components/language_detection/content/renderer",
     "//components/language_detection/core",
     "//components/paint_preview/common",

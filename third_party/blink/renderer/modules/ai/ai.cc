@@ -81,8 +81,7 @@ AIRewriterFactory* AI::rewriter() {
 AILanguageDetectorFactory* AI::languageDetector() {
   if (!ai_language_detector_factory_) {
     ai_language_detector_factory_ =
-        MakeGarbageCollected<AILanguageDetectorFactory>(GetExecutionContext(),
-                                                        task_runner_);
+        MakeGarbageCollected<AILanguageDetectorFactory>(GetExecutionContext());
   }
   return ai_language_detector_factory_.Get();
 }

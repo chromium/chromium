@@ -66,13 +66,6 @@ void LanguageDetectionModelManager::GetLanguageDetectionModel(
           weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void LanguageDetectionModelManager::GetLanguageDetectionModelStatus(
-    const blink::BrowserInterfaceBrokerProxy& interface_broker,
-    GetLanguageDetectionModelStatusCallback callback) {
-  GetLanguageDetectionDriver(interface_broker)
-      ->GetLanguageDetectionModelStatus(std::move(callback));
-}
-
 mojo::Remote<mojom::ContentLanguageDetectionDriver>&
 LanguageDetectionModelManager::GetLanguageDetectionDriver(
     const blink::BrowserInterfaceBrokerProxy& interface_broker) {

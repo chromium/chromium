@@ -32,19 +32,4 @@ void ContentLanguageDetectionDriver::GetLanguageDetectionModel(
       std::move(callback));
 }
 
-void ContentLanguageDetectionDriver::GetLanguageDetectionModelStatus(
-    GetLanguageDetectionModelStatusCallback callback) {
-  if (!language_detection_model_provider_) {
-    // TODO (crbug.com/383022111): Pass the model availability based on the
-    // real-time status of the model (if the model is unloaded).
-    std::move(callback).Run(mojom::LanguageDetectionModelStatus::kNotAvailable);
-    return;
-  }
-  if (language_detection_model_provider_->HasValidModelFile()) {
-    std::move(callback).Run(mojom::LanguageDetectionModelStatus::kReadily);
-    return;
-  }
-  std::move(callback).Run(mojom::LanguageDetectionModelStatus::kAfterDownload);
-}
-
 }  // namespace language_detection

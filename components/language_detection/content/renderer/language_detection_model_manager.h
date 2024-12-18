@@ -30,8 +30,6 @@ class LanguageDetectionModelManager {
   // `nullptr` indicates that no valid model could be loaded.
   using GetLanuageDetectionModelCallback =
       base::OnceCallback<void(LanguageDetectionModel* model)>;
-  using GetLanguageDetectionModelStatusCallback = language_detection::mojom::
-      ContentLanguageDetectionDriver::GetLanguageDetectionModelStatusCallback;
 
   // Passes a model to `callback`. If no valid model can possibly be loaded, an
   // invalid model will be passed. If the current model is valid, this will
@@ -41,11 +39,6 @@ class LanguageDetectionModelManager {
   void GetLanguageDetectionModel(
       const blink::BrowserInterfaceBrokerProxy& interface_broker,
       GetLanuageDetectionModelCallback callback);
-
-  // Checks if the model has been downloaded in the browser process.
-  void GetLanguageDetectionModelStatus(
-      const blink::BrowserInterfaceBrokerProxy& interface_broker,
-      GetLanguageDetectionModelStatusCallback callback);
 
  private:
   // Ensures that the driver is connected before returning it.

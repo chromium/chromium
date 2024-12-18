@@ -43,9 +43,6 @@ class ContentLanguageDetectionDriver
   void GetLanguageDetectionModel(
       GetLanguageDetectionModelCallback callback) override;
 
-  void GetLanguageDetectionModelStatus(
-      GetLanguageDetectionModelStatusCallback callback) override;
-
  protected:
   // Notifies `this` that the translate model service is available for model
   // requests or is invalidating existing requests specified by `is_available`.

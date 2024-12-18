@@ -20,14 +20,3 @@ static_library("language_detection_model_service") {
     "//mojo/public/cpp/bindings",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "language_detection_model_provider_unittest.cc" ]
-  deps = [
-    ":language_detection_model_service",
-    "//base",
-    "//base/test:test_support",
-    "//components/language_detection/testing",
-  ]
-}

@@ -10,21 +10,15 @@
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector_capabilities.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
-
-class AICreateMonitor;
-
 // `ExecutionContextClient` gives us access to the browser interface broker.
 class AILanguageDetectorFactory final : public ScriptWrappable,
-                                        public ExecutionContextClient {
+                                        ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AILanguageDetectorFactory(
-      ExecutionContext* context,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  explicit AILanguageDetectorFactory(ExecutionContext* context);
 
   void Trace(Visitor* visitor) const override;
 
@@ -36,33 +30,6 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
 
   ScriptPromise<AILanguageDetectorCapabilities> capabilities(
       ScriptState* script_state);
-
- private:
-  class AILanguageDetectorCreateTask
-      : public GarbageCollected<AILanguageDetectorCreateTask>,
-        public ExecutionContextClient {
-   public:
-    AILanguageDetectorCreateTask(
-        ScriptPromiseResolver<AILanguageDetector>* resolver,
-        ExecutionContext* execution_context,
-        scoped_refptr<base::SequencedTaskRunner> task_runner,
-        const AILanguageDetectorCreateOptions* options);
-
-    void CreateDetector(base::OnceClosure on_created_callback);
-
-    void Trace(Visitor* visitor) const override;
-
-   private:
-    void OnModelLoaded(base::OnceClosure on_created_callback,
-                       base::expected<LanguageDetectionModel*,
-                                      DetectLanguageError> maybe_model);
-
-    Member<AICreateMonitor> monitor_;
-    Member<ScriptPromiseResolver<AILanguageDetector>> resolver_;
-  };
-
-  HeapHashSet<Member<AILanguageDetectorCreateTask>> pending_tasks_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace blink
