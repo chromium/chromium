@@ -78,56 +78,44 @@ class BASE_EXPORT CheckError {
   // Takes ownership of `log_message`.
   explicit CheckError(LogMessage* log_message);
 
-  // All instances that take a base::Location should use
-  // base::Location::CurrentWithoutFunctionName() by default since we
-  // immediately pass file_name() and line_number() to LogMessage's constructor
-  // and discard the function_name() anyways. This saves ~23k on the Android
-  // size bots (as of 2024-12-17) but that's the official build that barely uses
-  // these for CHECKs. The size gains are believed to be significantly larger on
-  // developer builds and official+DCHECK where all CHECK failures generate
-  // logs.
-
   // TODO(pbos): Make all static methods that currently return some version of
   // CheckError return LogMessage*.
-  static CheckError Check(const char* condition,
-                          base::NotFatalUntil fatal_milestone,
-                          const base::Location& location =
-                              base::Location::CurrentWithoutFunctionName());
+  static CheckError Check(
+      const char* condition,
+      base::NotFatalUntil fatal_milestone,
+      const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // CHECK_op macros.
-  static LogMessage* CheckOp(char* log_message_str,
-                             base::NotFatalUntil fatal_milestone,
-                             const base::Location& location =
-                                 base::Location::CurrentWithoutFunctionName());
+  static LogMessage* CheckOp(
+      char* log_message_str,
+      base::NotFatalUntil fatal_milestone,
+      const base::Location& location = base::Location::Current());
 
-  static CheckError DCheck(const char* condition,
-                           const base::Location& location =
-                               base::Location::CurrentWithoutFunctionName());
+  static CheckError DCheck(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // DCHECK_op macros.
-  static LogMessage* DCheckOp(char* log_message_str,
-                              const base::Location& location =
-                                  base::Location::CurrentWithoutFunctionName());
+  static LogMessage* DCheckOp(
+      char* log_message_str,
+      const base::Location& location = base::Location::Current());
 
   static CheckError DumpWillBeCheck(
       const char* condition,
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // DUMP_WILL_BE_CHECK_op macros.
   static LogMessage* DumpWillBeCheckOp(
       char* log_message_str,
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
 
-  static CheckError DPCheck(const char* condition,
-                            const base::Location& location =
-                                base::Location::CurrentWithoutFunctionName());
+  static CheckError DPCheck(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
 
   static CheckError NotImplemented(
       const char* function,
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
 
   // Stream for adding optional details to the error message.
   std::ostream& stream();
@@ -156,21 +144,18 @@ class BASE_EXPORT CheckNoreturnError : public CheckError {
 
   static CheckNoreturnError Check(
       const char* condition,
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // CHECK_op macros.
-  static LogMessage* CheckOp(char* log_message_str,
-                             const base::Location& location =
-                                 base::Location::CurrentWithoutFunctionName());
+  static LogMessage* CheckOp(
+      char* log_message_str,
+      const base::Location& location = base::Location::Current());
 
   static CheckNoreturnError PCheck(
       const char* condition,
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
   static CheckNoreturnError PCheck(
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
 };
 
 // Used for NOTREACHED(base::NotFatalUntil) and DUMP_WILL_BE_NOTREACHED().
@@ -178,12 +163,10 @@ class BASE_EXPORT NotReachedError : public CheckError {
  public:
   static NotReachedError NotReached(
       base::NotFatalUntil fatal_milestone,
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
 
   static NotReachedError DumpWillBeNotReached(
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
 
   NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedError();
 
@@ -195,8 +178,7 @@ class BASE_EXPORT NotReachedError : public CheckError {
 class BASE_EXPORT NotReachedNoreturnError : public CheckError {
  public:
   explicit NotReachedNoreturnError(
-      const base::Location& location =
-          base::Location::CurrentWithoutFunctionName());
+      const base::Location& location = base::Location::Current());
 
   [[noreturn]] NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedNoreturnError();
 };

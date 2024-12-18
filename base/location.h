@@ -79,10 +79,6 @@ class BASE_EXPORT Location {
                           const char* file_name = __builtin_FILE(),
                           int line_number = __builtin_LINE());
 
-  static Location CurrentWithoutFunctionName(
-      const char* file_name = __builtin_FILE(),
-      int line_number = __builtin_LINE());
-
  private:
   // Only initializes the file name and program counter, the source information
   // will be null for the strings, and -1 for the line number.
