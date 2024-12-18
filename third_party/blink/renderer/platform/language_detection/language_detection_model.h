@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
+#include "components/language_detection/content/common/language_detection.mojom-blink.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -36,12 +37,20 @@ class PLATFORM_EXPORT LanguageDetectionModel
       base::expected<LanguageDetectionModel*, DetectLanguageError>;
   using CreateLanguageDetectionModelCallback =
       base::OnceCallback<void(MaybeModel)>;
+  using LanguageDetectionModelStatus =
+      language_detection::mojom::blink::LanguageDetectionModelStatus;
+  using LanguageDetectionModelStatusCallback =
+      language_detection::mojom::blink::ContentLanguageDetectionDriver::
+          GetLanguageDetectionModelStatusCallback;
 
   // Creates an instance and passes it to `callback` when the model has been
   // loaded (or we know that it will fail to load). `interface_broker` can be
   // used to communicate with the browser to find the model.
   static void Create(const blink::BrowserInterfaceBrokerProxy& interface_broker,
                      CreateLanguageDetectionModelCallback callback);
+  static void GetStatus(
+      const blink::BrowserInterfaceBrokerProxy& interface_broker,
+      LanguageDetectionModelStatusCallback callback);
 
   // Public for `MakeGarbageCollected`, use `Create` instead.
   explicit LanguageDetectionModel(
@@ -61,6 +70,8 @@ class PLATFORM_EXPORT LanguageDetectionModel
   // `on_complete` callback.
   void DetectLanguage(const WTF::String& text,
                       DetectLanguageCallback on_complete);
+
+  int64_t GetModelSize() const;
 
  private:
   // `Create` passes this to be called with the result of requesting a model.

@@ -241,23 +241,35 @@ Prediction LanguageDetectionModel::PredictTopLanguageWithSamples(
 
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetModel(LoadModelFromFile(std::move(model_file), num_threads_));
+  const int64_t model_file_size =
+      model_file.IsValid() ? model_file.GetLength() : 0;
+  SetModel(model_file_size,
+           LoadModelFromFile(std::move(model_file), num_threads_));
 }
 
 void LanguageDetectionModel::UpdateWithFileAsync(base::File model_file,
                                                  base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const int64_t model_file_size =
+      model_file.IsValid() ? model_file.GetLength() : 0;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadModelFromFile, std::move(model_file), num_threads_),
       base::BindOnce(&LanguageDetectionModel::SetModel,
-                     weak_factory_.GetWeakPtr())
+                     weak_factory_.GetWeakPtr(), model_file_size)
           .Then(std::move(callback)));
 }
 
 bool LanguageDetectionModel::IsAvailable() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return lang_detection_model_ != nullptr;
+}
+
+int64_t LanguageDetectionModel::GetModelSize() const {
+  if (!IsAvailable()) {
+    return 0;
+  }
+  return model_file_size_;
 }
 
 std::string LanguageDetectionModel::GetModelVersion() const {
@@ -268,9 +280,11 @@ std::string LanguageDetectionModel::GetModelVersion() const {
 }
 
 void LanguageDetectionModel::SetModel(
+    int64_t model_file_size,
     std::optional<OwnedNLClassifier> optional_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (optional_model.has_value()) {
+    model_file_size_ = model_file_size;
     lang_detection_model_ = std::move(optional_model).value();
   }
   NotifyModelLoaded();

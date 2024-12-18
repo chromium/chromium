@@ -53,6 +53,10 @@ class LanguageDetectionModelProvider {
   // valid file occurs.
   void UnloadModelFile();
 
+  // Returns whether a valid model is available. The method will return false if
+  // `has_model_ever_been_set_ == false` or the model file is invalid.
+  bool HasValidModelFile();
+
  private:
   // Replaces the current model file with a new one. It is careful to
   // open/close files as necessary on a background thread.
