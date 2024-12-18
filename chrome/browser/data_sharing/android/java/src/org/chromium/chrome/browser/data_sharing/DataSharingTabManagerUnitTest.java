@@ -150,6 +150,7 @@ public class DataSharingTabManagerUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock private Callback<Boolean> mCreateGroupFinishedCallback;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
@@ -424,7 +425,7 @@ public class DataSharingTabManagerUnitTest {
         doReturn(TEST_URL)
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
-        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID);
+        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID, null);
         // Verifying showShareSheet() method is called.
         verify(mDataSharingService).getDataSharingUrl(eq(groupData));
         verify(mShareDelegate).share(any(), any(), eq(ShareDelegate.ShareOrigin.TAB_GROUP));
@@ -441,7 +442,7 @@ public class DataSharingTabManagerUnitTest {
                 .when(mDistillerUrlUtilsJniMock)
                 .getOriginalUrlFromDistillerUrl(any(String.class));
 
-        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID);
+        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID, null);
 
         ArgumentCaptor<DataSharingManageUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingManageUiConfig.class);
@@ -479,7 +480,8 @@ public class DataSharingTabManagerUnitTest {
         mSavedTabGroup.collaborationId = null;
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
-        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID);
+        mDataSharingTabManager.createGroupFlow(
+                mActivity, TITLE, LOCAL_ID, mCreateGroupFinishedCallback);
 
         // Verifying DataSharingService createGroup API is called.
         verify(mDataSharingService).createGroup(eq(TITLE), any());
@@ -509,7 +511,8 @@ public class DataSharingTabManagerUnitTest {
         mSavedTabGroup.collaborationId = null;
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
-        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID);
+        mDataSharingTabManager.createGroupFlow(
+                mActivity, TITLE, LOCAL_ID, mCreateGroupFinishedCallback);
 
         ArgumentCaptor<DataSharingCreateUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingCreateUiConfig.class);
@@ -546,7 +549,8 @@ public class DataSharingTabManagerUnitTest {
         mSavedTabGroup.collaborationId = null;
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
-        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID);
+        mDataSharingTabManager.createGroupFlow(
+                mActivity, TITLE, LOCAL_ID, mCreateGroupFinishedCallback);
 
         ArgumentCaptor<DataSharingCreateUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingCreateUiConfig.class);

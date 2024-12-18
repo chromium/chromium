@@ -251,17 +251,21 @@ public class TabUiUtils {
      *     UI and DataSharing services.
      * @param tabId The local id of the tab.
      * @param tabGroupDisplayName The display name of the current group title.
+     * @param onGroupSharedCallback The callback to execute after the create share flow is
+     *     completed.
      */
     public static void startShareTabGroupFlow(
             Activity activity,
             TabGroupModelFilter filter,
             DataSharingTabManager dataSharingTabManager,
             int tabId,
-            String tabGroupDisplayName) {
+            String tabGroupDisplayName,
+            Callback<Boolean> onGroupSharedCallback) {
         Tab tab = filter.getTabModel().getTabById(tabId);
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
-        dataSharingTabManager.createGroupFlow(activity, tabGroupDisplayName, localTabGroupId);
+        dataSharingTabManager.createGroupFlow(
+                activity, tabGroupDisplayName, localTabGroupId, onGroupSharedCallback);
     }
 
     /**

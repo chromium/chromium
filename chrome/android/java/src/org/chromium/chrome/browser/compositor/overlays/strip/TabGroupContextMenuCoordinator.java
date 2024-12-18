@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -108,7 +109,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             WindowAndroid windowAndroid,
             TabGroupSyncService tabGroupSyncService,
             DataSharingTabManager dataSharingTabManager,
-            CollaborationService collaborationService) {
+            CollaborationService collaborationService,
+            Callback<Boolean> onGroupSharedCallback) {
         super(
                 R.layout.tab_strip_group_menu_layout,
                 getMenuItemClickedCallback(
@@ -116,7 +118,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabGroupModelFilter,
                         actionConfirmationManager,
                         modalDialogManager,
-                        dataSharingTabManager),
+                        dataSharingTabManager,
+                        onGroupSharedCallback),
                 tabModelSupplier,
                 tabGroupSyncService,
                 collaborationService);
@@ -138,6 +141,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      * @param windowAndroid The {@link WindowAndroid} current window.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
+     * @param onGroupSharedCallback The callback to execute after the create share flow is
+     *     completed.
      */
     public static TabGroupContextMenuCoordinator createContextMenuCoordinator(
             TabModel tabModel,
@@ -145,7 +150,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             WindowAndroid windowAndroid,
-            DataSharingTabManager dataSharingTabManager) {
+            DataSharingTabManager dataSharingTabManager,
+            Callback<Boolean> onGroupSharedCallback) {
         Profile profile = tabModel.getProfile();
         @Nullable
         TabGroupSyncService tabGroupSyncService =
@@ -162,7 +168,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 windowAndroid,
                 tabGroupSyncService,
                 dataSharingTabManager,
-                collaborationService);
+                collaborationService,
+                onGroupSharedCallback);
     }
 
     @VisibleForTesting
@@ -171,7 +178,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
-            DataSharingTabManager dataSharingTabManager) {
+            DataSharingTabManager dataSharingTabManager,
+            Callback<Boolean> onGroupSharedCallback) {
         return (menuId, tabId, collaborationId) -> {
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
                 TabUiUtils.ungroupTabGroup(tabGroupModelFilter, tabId);
@@ -210,7 +218,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabGroupModelFilter,
                         dataSharingTabManager,
                         tabId,
-                        tabGroupDisplayName);
+                        tabGroupDisplayName,
+                        onGroupSharedCallback);
                 recordUserAction("ShareGroup");
             } else if (menuId == R.id.manage_sharing) {
                 dataSharingTabManager.showManageSharing(activity, collaborationId);

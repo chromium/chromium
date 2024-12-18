@@ -562,9 +562,13 @@ public class DataSharingTabManager {
      * @param activity The activity in which the group is to be created.
      * @param tabGroupDisplayName The title or display name of the tab group.
      * @param localTabGroupId The tab group ID of the tab in the local tab group model.
+     * @param createGroupFinishedCallback Callback invoked when the creation flow is finished.
      */
     public void createGroupFlow(
-            Activity activity, String tabGroupDisplayName, LocalTabGroupId localTabGroupId) {
+            Activity activity,
+            String tabGroupDisplayName,
+            LocalTabGroupId localTabGroupId,
+            Callback<Boolean> createGroupFinishedCallback) {
         DataSharingMetrics.recordShareActionFlowState(
                 DataSharingMetrics.ShareActionStateAndroid.SHARE_TRIGGERED);
         assert mProfile != null;
@@ -614,6 +618,7 @@ public class DataSharingTabManager {
                                 Callback<Boolean> onCreateFinished) {
                             tabGroupService.makeTabGroupShared(
                                     localTabGroupId, result.getGroupId());
+                            createGroupFinishedCallback.onResult(true);
                             DataSharingMetrics.recordShareActionFlowState(
                                     DataSharingMetrics.ShareActionStateAndroid
                                             .GROUP_CREATE_SUCCESS);
@@ -658,11 +663,13 @@ public class DataSharingTabManager {
                     if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN
                             || result.groupData == null) {
                         Log.e(TAG, "Group creation failed " + result.actionFailure);
+                        createGroupFinishedCallback.onResult(false);
                         DataSharingMetrics.recordShareActionFlowState(
                                 DataSharingMetrics.ShareActionStateAndroid.GROUP_CREATE_FAILED);
                     } else {
                         tabGroupService.makeTabGroupShared(
                                 localTabGroupId, result.groupData.groupToken.collaborationId);
+                        createGroupFinishedCallback.onResult(true);
 
                         DataSharingMetrics.recordShareActionFlowState(
                                 DataSharingMetrics.ShareActionStateAndroid.GROUP_CREATE_SUCCESS);

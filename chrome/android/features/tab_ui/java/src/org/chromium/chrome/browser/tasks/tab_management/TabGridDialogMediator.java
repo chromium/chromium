@@ -559,6 +559,11 @@ public class TabGridDialogMediator
             return;
         }
 
+        if (mModel.get(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE)) {
+            // TODO(b/333776074): Close the ShareSheet without causing a crash at accessibility
+            // important restoration.
+        }
+
         if (mSnackbarManager != null) {
             mSnackbarManager.dismissSnackbars(TabGridDialogMediator.this);
         }
@@ -1007,11 +1012,20 @@ public class TabGridDialogMediator
     private void handleShareClick() {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
 
+        mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, true);
+
         String tabGroupDisplayName = mModel.get(TabGridDialogProperties.HEADER_TITLE);
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
 
         TabUiUtils.startShareTabGroupFlow(
-                mActivity, filter, mDataSharingTabManager, mCurrentTabId, tabGroupDisplayName);
+                mActivity,
+                filter,
+                mDataSharingTabManager,
+                mCurrentTabId,
+                tabGroupDisplayName,
+                (groupCreated) -> {
+                    mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, false);
+                });
     }
 
     private void updateTabGroupId() {

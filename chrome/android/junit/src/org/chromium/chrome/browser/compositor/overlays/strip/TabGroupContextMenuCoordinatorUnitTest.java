@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -95,6 +96,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private ServiceStatus mServiceStatus;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
+    @Mock private Callback<Boolean> mCallback;
 
     @Before
     public void setUp() {
@@ -122,7 +124,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mTabGroupModelFilter,
                         mActionConfirmationManager,
                         mModalDialogManager,
-                        mDataSharingTabManager);
+                        mDataSharingTabManager,
+                        mCallback);
         mTabGroupContextMenuCoordinator =
                 TabGroupContextMenuCoordinator.createContextMenuCoordinator(
                         mTabModel,
@@ -130,7 +133,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mActionConfirmationManager,
                         mModalDialogManager,
                         mWindowAndroid,
-                        mDataSharingTabManager);
+                        mDataSharingTabManager,
+                        mCallback);
 
         // Set groupRootId to bypass showMenu() call.
         mTabGroupContextMenuCoordinator.setGroupRootIdForTesting(mTabId);

@@ -30,6 +30,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_KEYBOARD_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_MAIN_CONTENT_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.MENU_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PRIMARY_COLOR;
@@ -253,6 +254,12 @@ class TabGridDialogViewBinder {
         } else if (COLOR_ICON_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setColorIconOnClickListener(
                     model.get(COLOR_ICON_CLICK_LISTENER));
+        } else if (IS_SHARE_SHEET_VISIBLE == propertyKey) {
+            if (!model.get(IS_SHARE_SHEET_VISIBLE) && model.get(IS_DIALOG_VISIBLE)) {
+                // Fit the scrim to the TabGridDialog again after the bottom sheet visibility
+                // changes.
+                viewHolder.dialogView.refreshScrim();
+            }
         } else if (ANIMATION_BACKGROUND_COLOR == propertyKey) {
             // Only set in LIST mode not GRID mode. Will always be set in LIST mode. Mode is not
             // mutable without restarting the app.
