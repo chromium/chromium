@@ -124,26 +124,12 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         value: false,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isRevampWayfindingEnabled');
-        },
-        readOnly: true,
-      },
-
       isDeprecateDnsDialogEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isDeprecateDnsDialogEnabled');
         },
         readOnly: true,
-      },
-
-      shouldShowDialogWhenDisablingDns_: {
-        type: Boolean,
-        computed: 'computeShouldShowDialogWhenDisablingDns_(' +
-            'isDeprecateDnsDialogEnabled_, isRevampWayfindingEnabled_)',
       },
 
       /**
@@ -180,9 +166,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
   private showDisableDnsDialog_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
-  private isDeprecateDnsDialogEnabled_: boolean;
-  private shouldShowDialogWhenDisablingDns_: boolean;
+  private readonly isDeprecateDnsDialogEnabled_: boolean;
   private showNetworkDefaultDescription_: boolean;
   private showPrivacyPolicyDescription_: boolean;
   private networkDefaultAriaDescribedBy_: string|null;
@@ -210,7 +194,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       // This event will only get dispatched from the DNS dialog. If the flag
       // kOsSettingsDeprecateDnsDialog is enabled, we don't have to listen for
       // the event.
-      if (this.shouldShowDialogWhenDisablingDns_) {
+      if (!this.isDeprecateDnsDialogEnabled_) {
         this.addEventListener(
             'dns-settings-invalid-custom-to-off-mode',
             () => this.onSecureDnsPrefChangedToFalse_());
@@ -547,24 +531,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     secureDnsToggle.resetToPrefValue();
 
     this.showDisableDnsDialog_ = false;
-  }
-
-  private getDnsRowIcon_(): string {
-    return this.isRevampWayfindingEnabled_ ? 'os-settings:privacy-secure-dns' :
-                                             '';
-  }
-
-  /**
-   * The DNS Dialog has been deprecated, so we will only show the dialog when
-   * the feature flag kOsSettingsDeprecateDnsDialog is disabled and revamp flag
-   * is enabled.
-   *
-   * Returns whether we should show the DNS dialog when the user toggles DNS
-   * from enabled to disabled.
-   */
-  private computeShouldShowDialogWhenDisablingDns_(): boolean {
-    return !this.isDeprecateDnsDialogEnabled_ &&
-        this.isRevampWayfindingEnabled_;
   }
 }
 

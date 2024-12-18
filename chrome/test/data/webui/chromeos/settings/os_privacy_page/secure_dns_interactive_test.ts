@@ -97,7 +97,6 @@ suite('SettingsSecureDnsInteractive', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showSecureDnsSetting: true,
-      isRevampWayfindingEnabled: false,
     });
   });
 

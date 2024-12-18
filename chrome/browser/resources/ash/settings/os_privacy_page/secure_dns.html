@@ -21,17 +21,17 @@
         margin-top: calc(var(--cr-section-padding) / 2);
       }
 
-      :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+      settings-toggle-button {
         --cr-icon-button-margin-end: 16px;
         --iron-icon-fill-color: var(--cros-sys-primary);
       }
     </style>
 
-    <template is="dom-if" if="[[!shouldShowDialogWhenDisablingDns_]]">
+    <template is="dom-if" if="[[isDeprecateDnsDialogEnabled_]]">
       <settings-toggle-button
           id="secureDnsToggle"
           class="hr"
-          icon="[[getDnsRowIcon_()]]"
+          icon="os-settings:privacy-secure-dns"
           pref="{{secureDnsToggle_}}"
           label="$i18n{secureDnsOsSettingsTitle}"
           sub-label="[[secureDnsDescription_]]"
@@ -39,7 +39,7 @@
       </settings-toggle-button>
     </template>
 
-    <template is="dom-if" if="[[shouldShowDialogWhenDisablingDns_]]">
+    <template is="dom-if" if="[[!isDeprecateDnsDialogEnabled_]]">
       <settings-toggle-button
           id="secureDnsToggle"
           class="hr"
