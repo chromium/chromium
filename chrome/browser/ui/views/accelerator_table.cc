@@ -260,16 +260,6 @@ const AcceleratorMapping kDevToolsAcceleratorMap[] = {
 #endif  // !BUILDFLAG(IS_MAC)
 };
 
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-// Accelerators to enable if lens::features::kEnableRegionSearchKeyboardShortcut
-// is true.
-constexpr AcceleratorMapping kRegionSearchAcceleratorMap[] = {
-    // TODO(nguyenbryan): This is a temporary hotkey; update when finalized.
-    {ui::VKEY_E, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
-     IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH},
-};
-#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-
 constexpr int kDebugModifier =
     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
 
@@ -313,15 +303,6 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
       DCHECK((mapping.modifiers & kCtrlAlt) != kCtrlAlt)
           << "Accelerators with Ctrl+Alt are reserved by Windows.";
 #endif
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-    if (base::FeatureList::IsEnabled(
-            lens::features::kEnableRegionSearchKeyboardShortcut)) {
-      accelerators->insert(accelerators->begin(),
-                           std::begin(kRegionSearchAcceleratorMap),
-                           std::end(kRegionSearchAcceleratorMap));
-    }
-#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
     if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
       accelerators->insert(accelerators->begin(),

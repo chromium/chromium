@@ -212,20 +212,6 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       *accel = ui::Accelerator(ui::VKEY_S, ui::EF_CONTROL_DOWN);
       return true;
 
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-    case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
-    case IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH:
-      if (base::FeatureList::IsEnabled(
-              lens::features::kEnableRegionSearchKeyboardShortcut)) {
-        // TODO(nguyenbryan): This is a temporary hotkey; update when finalized.
-        *accel = ui::Accelerator(ui::VKEY_E,
-                                 ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
-        return true;
-      } else {
-        return false;
-      }
-#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN: {
       // Esc only works in HTML5 (site-triggered) fullscreen.
       if (IsHTML5Fullscreen()) {

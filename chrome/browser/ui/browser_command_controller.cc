@@ -84,7 +84,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/lens/buildflags.h"
-#include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -1448,14 +1447,6 @@ void BrowserCommandController::InitCommandState() {
     command_updater_.UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE_DETAILS,
                                           true);
   }
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  if (base::FeatureList::IsEnabled(
-          lens::features::kEnableRegionSearchKeyboardShortcut)) {
-    command_updater_.UpdateCommandEnabled(
-        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, true);
-  }
-#endif
 
   command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
 
