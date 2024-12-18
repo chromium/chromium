@@ -118,7 +118,8 @@ class HttpStreamPool::AttemptManager
                 RequestPriority priority,
                 const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
                 quic::ParsedQuicVersion quic_version,
-                const NetLogWithSource& net_log);
+                const NetLogWithSource& request_net_log,
+                const NetLogWithSource& job_controller_net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once
@@ -127,6 +128,7 @@ class HttpStreamPool::AttemptManager
   // callbacks are invoked when one stream/session is established (not two).
   int Preconnect(size_t num_streams,
                  quic::ParsedQuicVersion quic_version,
+                 const NetLogWithSource& job_controller_net_log,
                  CompletionOnceCallback callback);
 
   // HostResolver::ServiceEndpointRequest::Delegate implementation:

@@ -8,6 +8,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/alternative_service.h"
+#include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/socket/socket_tag.h"
 #include "url/scheme_host_port.h"
@@ -24,7 +25,8 @@ HttpStreamPoolRequestInfo::HttpStreamPoolRequestInfo(
     AlternativeServiceInfo alternative_service_info,
     bool is_http1_allowed,
     int load_flags,
-    ProxyInfo proxy_info)
+    ProxyInfo proxy_info,
+    NetLogWithSource factory_job_controller_net_log)
     : destination(std::move(destination)),
       privacy_mode(privacy_mode),
       socket_tag(std::move(socket_tag)),
@@ -36,7 +38,9 @@ HttpStreamPoolRequestInfo::HttpStreamPoolRequestInfo(
       alternative_service_info(std::move(alternative_service_info)),
       is_http1_allowed(is_http1_allowed),
       load_flags(load_flags),
-      proxy_info(std::move(proxy_info)) {}
+      proxy_info(std::move(proxy_info)),
+      factory_job_controller_net_log(
+          std::move(factory_job_controller_net_log)) {}
 
 HttpStreamPoolRequestInfo::HttpStreamPoolRequestInfo(
     HttpStreamPoolRequestInfo&&) = default;

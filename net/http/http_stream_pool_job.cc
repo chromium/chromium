@@ -21,6 +21,8 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/log/net_log_source_type.h"
+#include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
@@ -52,16 +54,34 @@ HttpStreamPool::Job::Job(Delegate* delegate,
                          Group* group,
                          quic::ParsedQuicVersion quic_version,
                          NextProto expected_protocol,
-                         const NetLogWithSource& net_log)
+                         const NetLogWithSource& request_net_log)
     : delegate_(delegate),
       group_(group),
       quic_version_(quic_version),
       allowed_alpns_(CalculateAllowedAlpns(expected_protocol,
                                            delegate_->is_http1_allowed())),
-      net_log_(net_log),
+      request_net_log_(request_net_log),
+      job_net_log_(
+          NetLogWithSource::Make(request_net_log.net_log(),
+                                 NetLogSourceType::HTTP_STREAM_POOL_JOB)),
       create_time_(base::TimeTicks::Now()) {
   CHECK(delegate_->is_http1_allowed() ||
         expected_protocol != NextProto::kProtoHTTP11);
+  job_net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
+    base::Value::Dict dict;
+    dict.Set("stream_key", group_->stream_key().ToValue());
+    dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+    base::Value::List allowed_alpn_list;
+    for (const auto alpn : allowed_alpns_) {
+      allowed_alpn_list.Append(NextProtoToString(alpn));
+    }
+    dict.Set("allowed_alpns", std::move(allowed_alpn_list));
+    delegate_->net_log().source().AddToEventParameters(dict);
+    return dict;
+  });
+  delegate_->net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_JOB_BOUND,
+      job_net_log_.source());
 }
 
 HttpStreamPool::Job::~Job() {
@@ -83,6 +103,8 @@ HttpStreamPool::Job::~Job() {
       base::UmaHistogramSparse("Net.HttpStreamPool.JobErrorCode", -*result_);
     }
   }
+
+  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE);
 
   // `group_` may be deleted after this call.
   group_.ExtractAsDangling()->OnJobComplete(this);
@@ -203,7 +225,8 @@ void HttpStreamPool::Job::StartInternal() {
   }
 
   attempt_manager()->StartJob(this, priority(), delegate_->allowed_bad_certs(),
-                              quic_version_, net_log_);
+                              quic_version_, request_net_log_,
+                              delegate_->net_log());
 }
 
 }  // namespace net

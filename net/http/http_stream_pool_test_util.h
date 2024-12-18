@@ -277,6 +277,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
   bool enable_alternative_services() const override;
   bool is_http1_allowed() const override;
   const ProxyInfo& proxy_info() const override;
+  const NetLogWithSource& net_log() const override;
   void OnStreamFailed(HttpStreamPool::Job* job,
                       int status,
                       const NetErrorDetails& net_error_details,
@@ -301,6 +302,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
       quic::ParsedQuicVersion::Unsupported();
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
+  NetLogWithSource net_log_;
 
   std::unique_ptr<HttpStreamPool::Job> job_;
 

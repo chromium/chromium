@@ -1401,6 +1401,39 @@ EVENT_TYPE(HTTP_STREAM_POOL_CONSISTENCY_CHECK_FAIL)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 
+// Marks the start/end of a HttpStreamPool::JobController.
+// The following parameters are attached:
+//   {
+//      "origin_destination": <The destination of the origin>,
+//      "alternative_destination": <The destination of the alternative, if
+//                                  exists>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE)
+
+// Emitted when an HttpStreamPool::JobController found an existing SPDY session.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_SPDY_SESSION)
+
+// Emitted when an HttpStreamPool::JobController found an existing QUIC session.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_QUIC_SESSION)
+
+// Emitted when an HttpStreamPool::Job is bound to an
+// HttpStreamPool::JobController.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_JOB_BOUND)
+
+// Emitted when an preconnect request in an HttpStreamPool::AttemptManager is
+// bound to an HttpStreamPool::JobController.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND)
+
+// Marks the start/end of a HttpStreamPool::Job.
+// The following parameters are attached:
+//   {
+//      "stream_key": <The HttpStreamKey of the job>,
+//      "quic_version": <The QUIC version to attempt>,
+//      "allowed_alpns": <List of allowed ALPNs>,
+//      "source_dependency": <The source identifier of the JobController>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
+
 // Marks the start/end of a HttpStreamPool::Group.
 // The following parameters are attached:
 //   {
@@ -1412,6 +1445,14 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 // Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
 // reference to HttpStreamPool::Group's net log.
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
+
+// Emitted when an HttpStreamPool::Handle is created for a group. The event
+// parameters are:
+//   {
+//      "source_dependency": <The source identifier of the stream socket>,
+//      "reuse_type": <The reuse type of the handle>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_HANDLE_CREATED)
 
 // Emitted when an HttpStreamPool::AttemptManager starts a stream. The event
 // parameters are:
@@ -1433,7 +1474,8 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND)
 // event parameter is:
 //   {
 //      "num_streams": <The number of streams requested>,
-//      "quic_version": <The QUIC version to attempt>
+//      "quic_version": <The QUIC version to attempt>,
+//      "source_dependency": <The source identifier of the preconnect request>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT)
 
@@ -1444,8 +1486,12 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED)
 // Marks the start/end of a HttpStreamPool::AttemptManager.
 // For the BEGIN event, the event parameters are:
 //   {
+//     "stream_key": <The HttpStreamKey of the AttemptManager>,
 //     "stream_attempt_delay": <The stream attempt delay in milliseconds>,
-//     "source_dependency": <The source identifier of the parent group>
+//     "should_block_stream_attempt": <True when TCP-based stream attempts
+//                                     should be blocked>,
+//     "supports_spdy": <True when the destination is known to support HTTP/2>,
+//     "source_dependency": <The source identifier of the parent group>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 
@@ -1473,7 +1519,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
 // In addition to the common event parameters, this event has the following
 // parameter:
 //   {
-//     "net_error": <Net error code integer>,
+//     "result": <String representation of the result>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
 
@@ -1488,7 +1534,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE)
 // Emitted when DNS resolution on an HttpStreamPool::AttemptManager finishes.
 // The event parameters are:
 //   {
-//     "net_error": <Net error code integer>,
+//     "result": <String representation of the result>,
 //     "resolve_error": <DNS resolution error code integer>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED)
@@ -1506,6 +1552,14 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
 
 // Emitted when an HttpStreamPool::QuicTask is completed.
 // This event has the common event parameters (see above).
+// In addition to the common event parameters, this event has the following
+// parameters:
+//   {
+//     "result": <String representation of the result>,
+//     "quic_error": <The QUIC error, if any>,
+//     "source_dependency": <The source identifier of the QUIC session, if the
+//                           task succeeded>,
+//   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED)
 
 // Marks the start/end of a HttpStreamPool::QuicTask.

@@ -1504,7 +1504,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, disable_cert_network_fetches,
       alternative_service_info_, request_info_.is_http1_allowed,
-      request_info_.load_flags, proxy_info_);
+      request_info_.load_flags, proxy_info_, net_log_);
   if (is_preconnect_) {
     int rv = session_->http_stream_pool()->Preconnect(
         std::move(pool_request_info), num_streams_,

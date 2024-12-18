@@ -263,7 +263,7 @@ void TestJobDelegate::CreateAndStartJob(HttpStreamPool& pool) {
   CHECK(!job_);
   job_ = pool.GetOrCreateGroupForTesting(GetStreamKey())
              .CreateJob(this, quic_version_, expected_protocol_,
-                        NetLogWithSource());
+                        /*request_net_log=*/NetLogWithSource());
   job_->Start();
 }
 
@@ -301,6 +301,10 @@ bool TestJobDelegate::is_http1_allowed() const {
 
 const ProxyInfo& TestJobDelegate::proxy_info() const {
   return proxy_info_;
+}
+
+const NetLogWithSource& TestJobDelegate::net_log() const {
+  return net_log_;
 }
 
 void TestJobDelegate::OnStreamFailed(HttpStreamPool::Job* job,

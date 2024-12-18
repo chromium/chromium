@@ -61,6 +61,8 @@ class HttpStreamPool::Job {
     // Returns the proxy info.
     virtual const ProxyInfo& proxy_info() const = 0;
 
+    virtual const NetLogWithSource& net_log() const = 0;
+
     // Callback methods: Only one of these methods will be called.
     // Called when a stream is ready.
     virtual void OnStreamReady(Job* job,
@@ -84,7 +86,7 @@ class HttpStreamPool::Job {
       Group* group,
       quic::ParsedQuicVersion quic_version,
       NextProto expected_protocol,
-      const NetLogWithSource& net_log);
+      const NetLogWithSource& request_net_log);
 
   Job& operator=(const Job&) = delete;
 
@@ -137,6 +139,8 @@ class HttpStreamPool::Job {
 
   const ProxyInfo& proxy_info() const { return delegate_->proxy_info(); }
 
+  const NetLogWithSource& net_log() const { return job_net_log_; }
+
   const NextProtoSet& allowed_alpns() const { return allowed_alpns_; }
 
   const ConnectionAttempts& connection_attempts() const {
@@ -156,7 +160,8 @@ class HttpStreamPool::Job {
   raw_ptr<Group> group_;
   const quic::ParsedQuicVersion quic_version_;
   const NextProtoSet allowed_alpns_;
-  const NetLogWithSource net_log_;
+  const NetLogWithSource request_net_log_;
+  const NetLogWithSource job_net_log_;
   const base::TimeTicks create_time_;
   base::TimeTicks resume_time_;
 

@@ -274,8 +274,11 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE, [&] {
         base::Value::Dict dict;
+        dict.Set("stream_key", stream_key().ToValue());
         dict.Set("stream_attempt_delay",
                  static_cast<int>(stream_attempt_delay_.InMilliseconds()));
+        dict.Set("should_block_stream_attempt", should_block_stream_attempt_);
+        dict.Set("supports_spdy", supports_spdy_);
         group_->net_log().source().AddToEventParameters(dict);
         return dict;
       });
@@ -296,7 +299,8 @@ void HttpStreamPool::AttemptManager::StartJob(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     quic::ParsedQuicVersion quic_version,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& request_net_log,
+    const NetLogWithSource& job_controller_net_log) {
   CHECK(!is_failing_);
 
   MaybeUpdateQuicVersionWhenForced(quic_version);
@@ -316,10 +320,13 @@ void HttpStreamPool::AttemptManager::StartJob(
         dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
         dict.Set("create_to_resume_ms",
                  static_cast<int>(job->CreateToResumeTime().InMilliseconds()));
-        net_log.source().AddToEventParameters(dict);
+        job->net_log().source().AddToEventParameters(dict);
         return dict;
       });
-  net_log.AddEventReferencingSource(
+  request_net_log.AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND,
+      net_log_.source());
+  job->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND,
       net_log_.source());
 
@@ -341,7 +348,7 @@ void HttpStreamPool::AttemptManager::StartJob(
   CHECK(!spdy_session_);
   DCHECK(!spdy_session_pool()->FindAvailableSession(
       spdy_session_key(), IsIpBasedPoolingEnabled(),
-      /*is_websocket=*/false, net_log));
+      /*is_websocket=*/false, request_net_log));
 
   jobs_.Insert(job, priority);
 
@@ -375,6 +382,7 @@ void HttpStreamPool::AttemptManager::StartJob(
 int HttpStreamPool::AttemptManager::Preconnect(
     size_t num_streams,
     quic::ParsedQuicVersion quic_version,
+    const NetLogWithSource& job_controller_net_log,
     CompletionOnceCallback callback) {
   CHECK(!is_failing_);
 
@@ -384,8 +392,12 @@ int HttpStreamPool::AttemptManager::Preconnect(
         base::Value::Dict dict;
         dict.Set("num_streams", static_cast<int>(num_streams));
         dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+        job_controller_net_log.source().AddToEventParameters(dict);
         return dict;
       });
+  job_controller_net_log.AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND,
+      net_log_.source());
 
   // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
   // this method.
@@ -426,7 +438,7 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED,
       [&] {
         base::Value::Dict dict;
-        dict.Set("net_error", rv);
+        dict.Set("result", ErrorToString(rv));
         dict.Set("resolve_error", resolve_error_info_.error);
         return dict;
       });
@@ -724,12 +736,20 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED,
       [&] {
         base::Value::Dict dict = GetStatesAsNetLogParams();
-        if (rv != 0) {
-          dict.Set("net_error", rv);
-        }
+        dict.Set("result", ErrorToString(rv));
         if (net_error_details_.quic_connection_error != quic::QUIC_NO_ERROR) {
           dict.Set("quic_error", quic::QuicErrorCodeToString(
                                      net_error_details_.quic_connection_error));
+        }
+
+        if (rv == OK) {
+          QuicChromiumClientSession* quic_session =
+              quic_session_pool()->FindExistingSession(
+                  quic_session_alias_key().session_key(),
+                  quic_session_alias_key().destination());
+          if (quic_session) {
+            quic_session->net_log().source().AddToEventParameters(dict);
+          }
         }
         return dict;
       });
@@ -1648,7 +1668,7 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
   net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END, [&] {
         base::Value::Dict dict = GetStatesAsNetLogParams();
-        dict.Set("net_error", rv);
+        dict.Set("result", ErrorToString(rv));
         raw_attempt->attempt()->net_log().source().AddToEventParameters(dict);
         return dict;
       });

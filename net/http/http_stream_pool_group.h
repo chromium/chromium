@@ -94,7 +94,7 @@ class HttpStreamPool::Group {
   std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
                                  quic::ParsedQuicVersion quic_version,
                                  NextProto expected_protocol,
-                                 const NetLogWithSource& net_log);
+                                 const NetLogWithSource& request_net_log);
 
   // Called by `job` to see whether `job` can start.
   bool CanStartJob(Job* job);
@@ -109,6 +109,7 @@ class HttpStreamPool::Group {
   // callbacks are invoked when one stream/session is established (not two).
   int Preconnect(size_t num_streams,
                  quic::ParsedQuicVersion quic_version,
+                 const NetLogWithSource& job_controller_net_log,
                  CompletionOnceCallback callback);
 
   // Creates an HttpStreamPoolHandle from `socket`. Call sites must ensure that

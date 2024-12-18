@@ -10,6 +10,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/alternative_service.h"
+#include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/socket/socket_tag.h"
 #include "url/scheme_host_port.h"
@@ -27,7 +28,8 @@ struct NET_EXPORT_PRIVATE HttpStreamPoolRequestInfo {
                             AlternativeServiceInfo alternative_service_info,
                             bool is_http1_allowed,
                             int load_flags,
-                            ProxyInfo proxy_info);
+                            ProxyInfo proxy_info,
+                            NetLogWithSource factory_job_controller_net_log);
 
   HttpStreamPoolRequestInfo(HttpStreamPoolRequestInfo&&);
   HttpStreamPoolRequestInfo& operator=(HttpStreamPoolRequestInfo&&);
@@ -50,6 +52,8 @@ struct NET_EXPORT_PRIVATE HttpStreamPoolRequestInfo {
   bool is_http1_allowed;
   int load_flags = 0;
   ProxyInfo proxy_info;
+
+  NetLogWithSource factory_job_controller_net_log;
 };
 
 }  // namespace net
