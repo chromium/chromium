@@ -26,7 +26,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="ChromeOS.Settings.Accessibility.AccessibilityMagnifierFollowsSts"
     enum="BooleanToggled" expires_after="2025-09-23">
   <owner>lkupo@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Records when a user changes the magnifier follows the word being read by
     select-to-speak setting on the Accessibility page.
@@ -84,7 +84,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
  of color choices. -->
 
   <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Records when a user picks any colored cursor (toggled on) vs the black
     cursor (toggled off) on the Accessibility page.
@@ -95,7 +95,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
     enum="BooleanToggled" expires_after="2025-09-23">
   <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Records when a user changes the kFullscreenMagnifierFocusFollowing setting
     on the Accessibility page.
@@ -106,7 +106,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierMouseFollowingMode"
     enum="MagnifierMouseFollowingMode" expires_after="2025-09-23">
   <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Recorded when a user changes the value of the
     kFullscreenMagnifierMouseFollowingMode setting on the Accessibility page.
@@ -117,7 +117,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.Accessibility.MagnifierFollowsChromeVox"
     enum="BooleanToggled" expires_after="2025-09-23">
   <owner>aldietz@google.com</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Recorded when a user changes the value of the kMagnifierFollowsChromeVox
     setting on the Accessibility page.
@@ -127,7 +127,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.Accessibility.{SettingType}.Enabled"
     enum="BooleanToggled" expires_after="2025-09-23">
   <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Records when a user changes the setting on the Accessibility page for the
     feature: {SettingType}
