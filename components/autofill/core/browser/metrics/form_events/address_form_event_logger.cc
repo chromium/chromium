@@ -51,11 +51,13 @@ AddressFormEventLogger::AddressFormEventLogger(BrowserAutofillManager* owner)
     : FormEventLoggerBase("Address", owner) {}
 
 AddressFormEventLogger::~AddressFormEventLogger() {
-  for (const auto& [field_global_id, state] :
-       fields_where_autofill_on_typing_was_shown_) {
-    base::UmaHistogramBoolean(
-        "Autofill.AddressSuggestionOnTypingAcceptance",
-        state == AutofillOnTypingSuggestionState::kAccepted);
+  // Once a `SuggestionType::kAutofillAddressOntyping` suggestion
+  // is accepted, we remove it from
+  // `fields_where_autofill_on_typing_was_shown_`. Therefore for the remaining
+  // fields, log that they were not accepted
+  for (const auto& _ : fields_where_autofill_on_typing_was_shown_) {
+    base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance",
+                              false);
   }
 }
 
@@ -98,15 +100,15 @@ void AddressFormEventLogger::OnDidUndoAutofill() {
 
 void AddressFormEventLogger::OnDidShownAutofillOnTyping(
     FieldGlobalId field_global_id) {
-  fields_where_autofill_on_typing_was_shown_[field_global_id] =
-      AutofillOnTypingSuggestionState::kShown;
+  fields_where_autofill_on_typing_was_shown_.insert(field_global_id);
 }
 
 void AddressFormEventLogger::OnDidAcceptAutofillOnTyping(
     FieldGlobalId field_global_id) {
   CHECK(fields_where_autofill_on_typing_was_shown_.contains(field_global_id));
-  fields_where_autofill_on_typing_was_shown_[field_global_id] =
-      AutofillOnTypingSuggestionState::kAccepted;
+  base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance",
+                            true);
+  fields_where_autofill_on_typing_was_shown_.erase(field_global_id);
 }
 
 void AddressFormEventLogger::OnLog(const std::string& name,
