@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.shape_detection;
+import org.chromium.build.annotations.NullMarked;
 
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -23,6 +24,7 @@ import org.chromium.shape_detection.mojom.BarcodeDetectorOptions;
 import org.chromium.shape_detection.mojom.BarcodeFormat;
 
 /** Implementation of mojo BarcodeDetection, using Google Play Services vision package. */
+@NullMarked
 public class BarcodeDetectionImpl implements BarcodeDetection {
     private static final String TAG = "BarcodeDetectionImpl";
 
