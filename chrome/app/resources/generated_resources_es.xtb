@@ -3674,7 +3674,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3607671391978830431">Para un menor</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> quiere verificar que eres tú</translation>
 <translation id="3608460311600621471">Introduce un motivo para imprimir estos datos:</translation>
-<translation id="3608730769702025110">Paso 3 de 4: Revisa la información personal identificable</translation>
+<translation id="3608730769702025110">Paso 3 de 4: Revisa la información de identificación personal</translation>
 <translation id="3609277884604412258">Búsqueda rápida</translation>
 <translation id="3610241585790874201">No tienen permiso para guardar datos en tu dispositivo</translation>
 <translation id="3610369246614755442">El ventilador de la base necesita reparación</translation>
@@ -9899,7 +9899,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8101409298456377967">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Color personalizado</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>
-<translation id="8102139037507939978">Quita la información personal identificable del archivo system_logs.txt.</translation>
+<translation id="8102139037507939978">Quita la información de identificación personal del archivo system_logs.txt.</translation>
 <translation id="810362914482827094">Buscar claves de acceso</translation>
 <translation id="8104088837833760645">Descargar perfil de eSIM</translation>
 <translation id="8105273883928376822">Inicia sesión para continuar.</translation>
