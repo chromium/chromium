@@ -144,13 +144,6 @@ public class TabModalLifetimeHandler
         if (mPresenter.getDialogModel() != null) mPresenter.updateContainerHierarchy(!hasFocus);
     }
 
-    /** Handle a back press event. */
-    public boolean onBackPressed() {
-        if (!shouldInterceptBackPress()) return false;
-        mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK);
-        return true;
-    }
-
     @Override
     public @BackPressResult int handleBackPress() {
         int result = shouldInterceptBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
