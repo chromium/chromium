@@ -2071,21 +2071,18 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     hr = PerformD3DScaling(input_texture.Get(), frame->visible_rect());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
+  } else if (frame->HasSharedImage()) {
+    // The texture is already a copied version so we can directly use it.
+    sample_texture = input_texture;
   } else {
     // Even though no scaling is needed we still need to copy the texture to
     // avoid concurrent usage causing glitches (https://crbug.com/1462315). This
     // is preferred over holding a keyed mutex for the duration of the encode
     // operation since that can take a significant amount of time and mutex
     // acquisitions (necessary even for read-only operations) are blocking.
-    ComD3D11Device texture_device;
-    input_texture->GetDevice(&texture_device);
-    if (texture_device == dxgi_device_manager_->GetDevice()) {
-      sample_texture = input_texture;
-    } else {
       hr = PerformD3DCopy(input_texture.Get(), frame->visible_rect());
       RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D texture copy", hr);
       sample_texture = copied_d3d11_texture_;
-    }
   }
 
   ComMFMediaBuffer input_buffer;
@@ -2540,9 +2537,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
   video_context_->VideoProcessorSetOutputColorSpace(video_processor_.Get(),
                                                     &output_d3d11_color_space);
 
-  ComD3D11Device texture_device;
-  input_texture->GetDevice(&texture_device);
-  if (texture_device != dxgi_device_manager_->GetDevice()) {
+  {
     std::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
     ComDXGIKeyedMutex keyed_mutex;
     hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
