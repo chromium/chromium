@@ -4008,6 +4008,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-toggle-camera-shortcut",
+    "owners": [
+      "cambickel@google.com",
+      "dpad@google.com",
+      "cros-device-enablement@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-touch-drag-drop",
     "owners": [ "mustaq@chromium.org", "input-dev@chromium.org" ],
     "expiry_milestone": 142

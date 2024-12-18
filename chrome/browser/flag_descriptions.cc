@@ -6585,6 +6585,12 @@ const char kEnableSeamlessRefreshRateSwitchingDescription[] =
     "This option enables seamlessly changing the refresh rate based on power "
     "state on devices with supported hardware and drivers.";
 
+const char kEnableToggleCameraShortcutName[] =
+    "Enable shortcut to toggle camera access";
+const char kEnableToggleCameraShortcutDescription[] =
+    "Adds a shortcut to toggle the value of the top level 'Camera access' "
+    "setting in the privacy controls section of the Settings app.";
+
 const char kEnableTouchpadsInDiagnosticsAppName[] =
     "Enable touchpad cards in the Diagnostics App";
 const char kEnableTouchpadsInDiagnosticsAppDescription[] =

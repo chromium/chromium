@@ -10630,6 +10630,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshSplitKeyboardRefactorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSplitKeyboardRefactor)},
 
+    {"enable-toggle-camera-shortcut",
+     flag_descriptions::kEnableToggleCameraShortcutName,
+     flag_descriptions::kEnableToggleCameraShortcutDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableToggleCameraShortcut)},
+
     {"ash-null-top-row-fix", flag_descriptions::kAshNullTopRowFixName,
      flag_descriptions::kAshNullTopRowFixDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kNullTopRowFix)},

@@ -18316,6 +18316,7 @@ from previous Chrome versions.
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-842236618" label="CrOSSystemVoiceIsolationOption:disabled"/>
   <int value="-839822160" label="WebAppManifestImmediateUpdating:enabled"/>
+  <int value="-839788988" label="EnableToggleCameraShortcut:disabled"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
   <int value="-839544057" label="WebRtcCombinedNetworkAndWorkerThread:enabled"/>
   <int value="-838719204"
@@ -21413,6 +21414,7 @@ from previous Chrome versions.
   <int value="392436285" label="DisconnectWiFiOnEthernetConnected:enabled"/>
   <int value="392782890" label="SafeBrowsingTelemetryForApkDownloads:enabled"/>
   <int value="392823467" label="disable-default-browser-promo"/>
+  <int value="392899843" label="EnableToggleCameraShortcut:enabled"/>
   <int value="393569083" label="OmniboxMatchToolbarAndStatusBarColor:enabled"/>
   <int value="393704200" label="account-consistency"/>
   <int value="393869264" label="ShimlessRMADiagnosticPage:enabled"/>

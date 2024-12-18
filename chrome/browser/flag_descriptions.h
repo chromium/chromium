@@ -3817,6 +3817,9 @@ extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[];
 extern const char kEnableSeamlessRefreshRateSwitchingName[];
 extern const char kEnableSeamlessRefreshRateSwitchingDescription[];
 
+extern const char kEnableToggleCameraShortcutName[];
+extern const char kEnableToggleCameraShortcutDescription[];
+
 extern const char kEnableTouchpadsInDiagnosticsAppName[];
 extern const char kEnableTouchpadsInDiagnosticsAppDescription[];
 

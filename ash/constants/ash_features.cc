@@ -688,6 +688,12 @@ BASE_FEATURE(kEnableRootNsDnsProxy,
              "EnableRootNsDnsProxy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the shortcut to toggle whether the camera is enabled/disabled in
+// Settings > Privacy controls.
+BASE_FEATURE(kEnableToggleCameraShortcut,
+             "EnableToggleCameraShortcut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO:(b/345017297): If enabled, touchscreen mapping experience is visible in
 // settings.
 BASE_FEATURE(kEnableTouchscreenMappingExperience,
@@ -4533,6 +4539,10 @@ bool IsTimeOfDayScreenSaverEnabled() {
 
 bool IsTimeOfDayWallpaperEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementTimeOfDayWallpaper);
+}
+
+bool IsToggleCameraShortcutEnabled() {
+  return base::FeatureList::IsEnabled(kEnableToggleCameraShortcut);
 }
 
 bool IsTouchscreenMappingExperienceEnabled() {

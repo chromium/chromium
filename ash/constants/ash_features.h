@@ -239,6 +239,8 @@ BASE_DECLARE_FEATURE(kEnableNssDbClientCertsRollback);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableRFC8925);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableRootNsDnsProxy);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kEnableToggleCameraShortcut);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableTouchscreenMappingExperience);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableTouchpadsInDiagnosticsApp);
@@ -1374,6 +1376,7 @@ bool IsTetheringExperimentalFunctionalityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTilingWindowResizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTimeOfDayScreenSaverEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTimeOfDayWallpaperEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsToggleCameraShortcutEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTouchscreenMappingExperienceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTouchpadInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTouchscreenInDiagnosticsAppEnabled();
