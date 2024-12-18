@@ -7,12 +7,14 @@
 
 #include <stdint.h>
 
+#include "base/component_export.h"
 #include "components/download/public/task/task_scheduler.h"
 
 namespace download {
 
 // Task scheduler that does nothing for incognito mode.
-class EmptyTaskScheduler : public TaskScheduler {
+class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_TASK) EmptyTaskScheduler
+    : public TaskScheduler {
  public:
   EmptyTaskScheduler();
 

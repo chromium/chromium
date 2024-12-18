@@ -7,7 +7,9 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-source_set("public") {
+component("public") {
+  defines = [ "IS_COMPONENTS_DOWNLOAD_PUBLIC_TASK_IMPL" ]
+
   sources = [
     "empty_task_scheduler.cc",
     "empty_task_scheduler.h",

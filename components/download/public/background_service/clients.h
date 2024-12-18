@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "components/download/public/background_service/client.h"
 
 namespace download {
@@ -53,6 +54,7 @@ enum class DownloadClient {
 // Get a string that represents a particular client. Used in histograms and
 // debugging web UI. Must never change existing value and sync value with
 // variants "DownloadClient" in histograms.xml.
+COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
 std::string BackgroundDownloadClientToString(DownloadClient client);
 
 using DownloadClientMap = std::map<DownloadClient, std::unique_ptr<Client>>;
