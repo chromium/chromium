@@ -43,6 +43,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_education/common/product_messaging_controller.h"
@@ -77,6 +78,10 @@ namespace {
 using PromptAction = ::PrivacySandboxService::PromptAction;
 using SurfaceType = ::PrivacySandboxService::SurfaceType;
 using NoticeQueueState = ::PrivacySandboxService::NoticeQueueState;
+using FakeNoticePromptSuppressionReason =
+    ::PrivacySandboxService::FakeNoticePromptSuppressionReason;
+using PrimaryAccountUserGroups =
+    ::PrivacySandboxService::PrimaryAccountUserGroups;
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
@@ -343,6 +348,82 @@ void CreateTimingHistogram(const std::string& name, base::TimeDelta sample) {
                                 base::Days(10), 100);
 }
 
+void EmitFakeNoticePromptSuppressionMetrics(PrefService* pref_service,
+                                            std::string_view metrics_prefix,
+                                            int current_suppression,
+                                            std::string_view pref_name) {
+  base::UmaHistogramCounts100(
+      base::StrCat({metrics_prefix, ".PromptSuppressionReasonsCombined"}),
+      current_suppression);
+  if (current_suppression &
+      static_cast<int>(FakeNoticePromptSuppressionReason::k3PC_Blocked)) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({metrics_prefix, ".PromptSuppressionReason"}),
+        FakeNoticePromptSuppressionReason::k3PC_Blocked);
+  }
+  if (current_suppression &
+      static_cast<int>(FakeNoticePromptSuppressionReason::kCapabilityFalse)) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({metrics_prefix, ".PromptSuppressionReason"}),
+        FakeNoticePromptSuppressionReason::kCapabilityFalse);
+  }
+  if (current_suppression &
+      static_cast<int>(FakeNoticePromptSuppressionReason::kManagedDevice)) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({metrics_prefix, ".PromptSuppressionReason"}),
+        FakeNoticePromptSuppressionReason::kManagedDevice);
+  }
+  if (current_suppression &
+      static_cast<int>(FakeNoticePromptSuppressionReason::kNoticeShownBefore)) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({metrics_prefix, ".PromptSuppressionReason"}),
+        FakeNoticePromptSuppressionReason::kNoticeShownBefore);
+    int notice_last_seen_days =
+        (base::Time::Now() - pref_service->GetTime(pref_name)).InDaysFloored();
+    base::UmaHistogramCounts1000(
+        base::StrCat({metrics_prefix, ".PromptShownSince"}),
+        notice_last_seen_days);
+  }
+}
+
+int EmitFakeNoticeShownMetrics(PrefService* pref_service,
+                               bool third_party_cookies_blocked,
+                               PrimaryAccountUserGroups user_group,
+                               std::string_view pref_name,
+                               std::string_view metrics_prefix) {
+  int current_suppression = 0;
+  // Prompt already seen.
+  if (pref_service->HasPrefPath(pref_name)) {
+    current_suppression |=
+        static_cast<int>(FakeNoticePromptSuppressionReason::kNoticeShownBefore);
+  }
+
+  // Enterprise account.
+  if (pref_service->IsManagedPreference(prefs::kCookieControlsMode)) {
+    current_suppression |=
+        static_cast<int>(FakeNoticePromptSuppressionReason::kManagedDevice);
+  }
+
+  if (third_party_cookies_blocked) {
+    current_suppression |=
+        static_cast<int>(FakeNoticePromptSuppressionReason::k3PC_Blocked);
+  }
+
+  if (user_group == PrimaryAccountUserGroups::kSignedInCapabilityFalse) {
+    current_suppression |=
+        static_cast<int>(FakeNoticePromptSuppressionReason::kCapabilityFalse);
+  }
+
+  // If prompt isn't suppressed we should show it, if the notice has already
+  // been shown the `current_suppression` will no longer be 0.
+  if (!current_suppression) {
+    pref_service->SetTime(pref_name, base::Time::Now());
+    base::UmaHistogramBoolean(base::StrCat({metrics_prefix, ".PromptShown"}),
+                              true);
+  }
+  return current_suppression;
+}
+
 }  // namespace
 
 // static
@@ -504,14 +585,29 @@ void PrivacySandboxServiceImpl::MaybeInitIdentityManager() {
   identity_manager_obs_.Observe(identity_manager_.get());
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    primary_account_state_ = PrimaryAccountUserGroups::kSignedOut;
+    SetPrimaryAccountState(PrimaryAccountUserGroups::kSignedOut);
   } else {
-    primary_account_state_ =
-        PrimaryAccountUserGroups::kSignedInCapabilityUnknown;
+    SetPrimaryAccountState(
+        PrimaryAccountUserGroups::kSignedInCapabilityUnknown);
   }
   // Account capabilities are not available immediately at startup and are
   // updated asynchronously, so metrics relating to those will be recorded once
   // in `OnExtendedAccountInfoUpdated`.
+}
+
+void PrivacySandboxServiceImpl::SetPrimaryAccountState(
+    PrimaryAccountUserGroups user_group_to_set) {
+  if (user_group_to_set == primary_account_state_) {
+    return;
+  }
+
+  std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
+  if (!profile_bucket.empty()) {
+    base::UmaHistogramEnumeration(base::StrCat({"PrivacySandbox.DarkLaunch.",
+                                                profile_bucket, ".UserGroups"}),
+                                  user_group_to_set);
+  }
+  primary_account_state_ = user_group_to_set;
 }
 
 void PrivacySandboxServiceImpl::OnPrimaryAccountChanged(
@@ -549,22 +645,22 @@ void PrivacySandboxServiceImpl::OnExtendedAccountInfoUpdated(
   }
   switch (info.capabilities.can_run_chrome_privacy_sandbox_trials()) {
     case signin::Tribool::kUnknown:
-      primary_account_state_ =
-          PrimaryAccountUserGroups::kSignedInCapabilityUnknown;
+      SetPrimaryAccountState(
+          PrimaryAccountUserGroups::kSignedInCapabilityUnknown);
       break;
     case signin::Tribool::kFalse:
-      primary_account_state_ =
-          PrimaryAccountUserGroups::kSignedInCapabilityFalse;
+      SetPrimaryAccountState(
+          PrimaryAccountUserGroups::kSignedInCapabilityFalse);
       break;
     case signin::Tribool::kTrue:
-      primary_account_state_ =
-          PrimaryAccountUserGroups::kSignedInCapabilityTrue;
+      SetPrimaryAccountState(PrimaryAccountUserGroups::kSignedInCapabilityTrue);
       break;
   }
 }
 
 void PrivacySandboxServiceImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
+  SetPrimaryAccountState(PrimaryAccountUserGroups::kSignedOut);
   base::Time first_sign_in_time = profile_->GetPrefs()->GetTime(
       prefs::kPrivacySandboxFakeNoticeFirstSignInTime);
   std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
@@ -596,9 +692,6 @@ void PrivacySandboxServiceImpl::OnExtendedAccountInfoRemoved(
       base::StrCat({"PrivacySandbox.DarkLaunch.", profile_bucket,
                     ".ProfileSignOutDuration"}),
       sign_out_time - first_sign_in_time);
-
-  // Stop observing after the first sign out.
-  identity_manager_obs_.Reset();
 }
 
 PrivacySandboxService::PromptType
@@ -619,6 +712,10 @@ PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
   if (!IsRegularProfile(profile_type_)) {
     return PromptType::kNone;
   }
+
+  bool third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
+      cookie_settings_.get(), pref_service_, tracking_protection_settings_);
+  MaybeEmitFakeNoticePromptMetrics(third_party_cookies_blocked);
 
   // Forced testing feature parameters override everything.
   if (base::FeatureList::IsEnabled(
@@ -687,8 +784,7 @@ PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
   // If third party cookies are blocked, set the suppression reason as such, and
   // do not show a prompt. Unless the prompt is allowed when 3P Cookies are
   // blocked.
-  if (AreAllThirdPartyCookiesBlocked(cookie_settings_.get(), pref_service_,
-                                     tracking_protection_settings_) &&
+  if (third_party_cookies_blocked &&
       !base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
     pref_service_->SetInteger(
@@ -1035,6 +1131,46 @@ bool PrivacySandboxServiceImpl::IsPromptOpenForBrowser(Browser* browser) {
 void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
     bool force_chrome_build) {
   force_chrome_build_for_tests_ = force_chrome_build;
+}
+
+void PrivacySandboxServiceImpl::MaybeEmitFakeNoticePromptMetrics(
+    bool third_party_cookies_blocked) {
+  std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
+  if (!profile_bucket.empty()) {
+    // Emit metrics for fake prompt synced prefs.
+    auto metrics_prefix_synced = base::StrCat(
+        {"PrivacySandbox.DarkLaunch.", profile_bucket, ".SyncedPref"});
+    int current_suppression = EmitFakeNoticeShownMetrics(
+        pref_service_, third_party_cookies_blocked, primary_account_state_,
+        prefs::kPrivacySandboxFakeNoticePromptShownTimeSync,
+        metrics_prefix_synced);
+
+    // If the eligibility doesn't change we don't want to log any new
+    // histograms.
+    if (current_suppression &&
+        current_suppression != prompt_suppression_bitmap_) {
+      prompt_suppression_bitmap_ = current_suppression;
+      EmitFakeNoticePromptSuppressionMetrics(
+          pref_service_, metrics_prefix_synced, current_suppression,
+          prefs::kPrivacySandboxFakeNoticePromptShownTimeSync);
+    }
+
+    // Emit metrics for fake prompt non-synced prefs.
+    auto metrics_prefix = base::StrCat(
+        {"PrivacySandbox.DarkLaunch.", profile_bucket, ".NonSyncedPref"});
+    current_suppression = EmitFakeNoticeShownMetrics(
+        pref_service_, third_party_cookies_blocked, primary_account_state_,
+        prefs::kPrivacySandboxFakeNoticePromptShownTime, metrics_prefix);
+    // If the eligibility doesn't change we don't want to log any new
+    // histograms.
+    if (current_suppression &&
+        current_suppression != prompt_suppression_bitmap_sync_) {
+      prompt_suppression_bitmap_sync_ = current_suppression;
+      EmitFakeNoticePromptSuppressionMetrics(
+          pref_service_, metrics_prefix, current_suppression,
+          prefs::kPrivacySandboxFakeNoticePromptShownTime);
+    }
+  }
 }
 
 void PrivacySandboxServiceImpl::MaybeEmitPromptStartupAccountMetrics() {

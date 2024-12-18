@@ -1320,6 +1320,51 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptShown"
+    enum="Boolean" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records if the {Profile} has seen the prompt and whether they are eligible.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptShownSince"
+    units="days" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration of how long it's been since the {Profile} has seen the
+    prompt.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptSuppressionReason"
+    enum="PrivacySandboxPromptSuppressionReason" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the reason why the fake prompt was suppressed on a {Profile}.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptSuppressionReasonsCombined"
+    units="count" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the reasons why the fake prompt was suppressed on a {Profile} if
+    there are multiple, stored as an integer.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
 <histogram name="PrivacySandbox.DarkLaunch.{Profile}.PrimaryAccountOnStartup"
     enum="PrivacySandboxPrimaryAccountUserGroups" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
@@ -1360,6 +1405,62 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="Profile" variants="Profile"/>
 </histogram>
 
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptShown"
+    enum="Boolean" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records if the {Profile} has seen the prompt and whether they are eligible.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptShownSince"
+    units="days" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration of how long it's been since the {Profile} has seen the
+    prompt.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptSuppressionReason"
+    enum="PrivacySandboxPromptSuppressionReason" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the reason why the fake prompt was suppressed on a {Profile}.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptSuppressionReasonsCombined"
+    units="count" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the reasons why the fake prompt was suppressed on a {Profile},
+    stored as an integer.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.UserGroups"
+    enum="PrivacySandboxPrimaryAccountUserGroups" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the sign in status of the a {Profile} at the point of when the
+    notice is shown.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
 <histogram
     name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
     units="ms" expires_after="2025-06-11">
@@ -1390,7 +1491,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     enum="PrivacySandboxNoticeAction" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
-  <owner>koilos-team@google.com</owner>
   <summary>
     Records the action performed on a notice {PSNotice} for a profile.
   </summary>
@@ -1420,7 +1520,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     enum="PrivacySandboxNoticeStartupState" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
-  <owner>koilos-team@google.com</owner>
   <summary>
     Records startup state of a notice {PSNotice} during the profile start up.
   </summary>

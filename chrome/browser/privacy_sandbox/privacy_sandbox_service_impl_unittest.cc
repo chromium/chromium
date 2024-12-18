@@ -108,6 +108,8 @@ using PromptType = ::PrivacySandboxService::PromptType;
 using SurfaceType = ::PrivacySandboxService::SurfaceType;
 using PrimaryAccountUserGroups =
     ::PrivacySandboxService::PrimaryAccountUserGroups;
+using FakeNoticePromptSuppressionReason =
+    ::PrivacySandboxService::FakeNoticePromptSuppressionReason;
 
 using enum privacy_sandbox_test_util::StateKey;
 using enum privacy_sandbox_test_util::InputKey;
@@ -534,7 +536,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   raw_ptr<TestingProfile> default_profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-
   profile_metrics::BrowserProfileType profile_type_ =
       profile_metrics::BrowserProfileType::kRegular;
 
@@ -1271,6 +1272,339 @@ TEST_F(PrivacySandboxDarkLaunchMetrics, OnPrimaryAccountChangedSignIn) {
   EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
               sign_in_time);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       UserGroupTransitionsEmitMetricsSuccessfully) {
+  // kNotSet -> kSignedOut
+  // kSignedOut -> kSignedInCapabilityTrue
+  EnableSignInOver18();
+  // kSignedInCapabilityTrue -> kSignedOut -> kSignedInCapabilityFalse
+  SignOut();
+  EnableSignInU18();
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.UserGroups",
+      PrimaryAccountUserGroups::kSignedOut, 2);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.UserGroups",
+      PrimaryAccountUserGroups::kSignedInCapabilityTrue, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.UserGroups",
+      PrimaryAccountUserGroups::kSignedInCapabilityFalse, 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(PrivacySandboxDarkLaunchMetrics, FakeNoticeShown) {
+  EnableSignInOver18();
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+  base::Time notice_shown = base::Time::Now();
+
+  // Advancing time by an arbitrary amount to imitate function being called
+  // multiple times at different points. The set pref should not be overridden.
+  base::TimeDelta delay = base::Seconds(15);
+  browser_task_environment()->FastForwardBy(delay);
+
+  // The prompt should only track as shown the first time.
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptShown", true, 1);
+  EXPECT_EQ(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTimeSync),
+      notice_shown);
+
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref.PromptShown", true, 1);
+  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTime),
+            notice_shown);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics, FakeNoticePromptShownSince) {
+  EnableSignInOver18();
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  base::TimeDelta delay = base::Days(15);
+  browser_task_environment()->FastForwardBy(delay);
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kNoticeShownBefore, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptShownSince", 15, 1);
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kNoticeShownBefore, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref.PromptShownSince", 15,
+      1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       FakeNoticeSuppressedDueToManagedProfile) {
+  prefs()->SetManagedPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kManagedDevice, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kManagedDevice, 1);
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptShown")));
+  EXPECT_EQ(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTimeSync),
+      base::Time());
+
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref.PromptShown")));
+  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTime),
+            base::Time());
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics, FakeNoticeSuppressedDueTo3PCBlocked) {
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::k3PC_Blocked, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::k3PC_Blocked, 1);
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptShown")));
+  EXPECT_EQ(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTimeSync),
+      base::Time());
+
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref.PromptShown")));
+  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTime),
+            base::Time());
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       FakeNoticeSuppressedDueToAccountCapabilityFalse) {
+  EnableSignInU18();
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kCapabilityFalse, 1);
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kCapabilityFalse, 1);
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptShown")));
+  EXPECT_EQ(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTimeSync),
+      base::Time());
+
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref.PromptShown")));
+  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTime),
+            base::Time());
+}
+
+// Histograms should only record once if `GetRequiredPromptType` is called
+// multiple times with the same eligibility.
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       FakeNoticeMultipleSuppressionReasonsRecordOnlyOnce) {
+  // Signing in with capability true should give suppression 0.
+  EnableSignInOver18();
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  // Next time the function is called suppression should trigger already shown &
+  // we add 3pc blocking.
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  // Call the function again with no eligibility changes.
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  // Relevant histograms should only be emitted once.
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kNoticeShownBefore, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::k3PC_Blocked, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kNoticeShownBefore, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::k3PC_Blocked, 1);
+
+  // Combined bit would be 1001.
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReasonsCombined",
+      9, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReasonsCombined",
+      9, 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       FakeNoticeMultipleSuppressionReasonsRecordsAgainOnceEligibilityChanges) {
+  // Signing in with capability true should give suppression 0.
+  EnableSignInOver18();
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  // Next time the function is called suppression should trigger already shown
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  // Call the function again with 3pc blocked.
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  // Allow 3pc some histograms should be emitted again.
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kNoticeShownBefore, 3);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::k3PC_Blocked, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kNoticeShownBefore, 3);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::k3PC_Blocked, 1);
+
+  // Emit twice for already shown: 1000 (initial call and after allowing 3pc).
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReasonsCombined",
+      8, 2);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReasonsCombined",
+      8, 2);
+
+  // Emit once for 3pc, already shown: 1001
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReasonsCombined",
+      9, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReasonsCombined",
+      9, 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics, FakeNoticeMultipleSuppressionReasons) {
+  // U18 and 3PC Blocking
+  EnableSignInU18();
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+
+  privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop);
+
+  // Both histograms should be emitted.
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kCapabilityFalse, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::k3PC_Blocked, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::kCapabilityFalse, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReason",
+      FakeNoticePromptSuppressionReason::k3PC_Blocked, 1);
+
+  // Combined bit would be 0011.
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref."
+      "PromptSuppressionReasonsCombined",
+      3, 1);
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref."
+      "PromptSuppressionReasonsCombined",
+      3, 1);
+
+  // Prompt shown metrics should not be recorded.
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.SyncedPref.PromptShown")));
+  EXPECT_EQ(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTimeSync),
+      base::Time());
+
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.NonSyncedPref.PromptShown")));
+  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticePromptShownTime),
+            base::Time());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

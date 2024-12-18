@@ -29865,6 +29865,20 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not sent"/>
 </enum>
 
+<!-- LINT.IfChange(PrivacySandboxPromptSuppressionReason) -->
+
+<enum name="PrivacySandboxPromptSuppressionReason">
+<!-- Used as a bitfield so values must be ascending powers of 2 -->
+
+  <int value="0" label="None"/>
+  <int value="1" label="3PC_Blocked"/>
+  <int value="2" label="CapabilityFalse"/>
+  <int value="4" label="ManagedDevice"/>
+  <int value="8" label="NoticeShownBefore"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_service.h:FakeNoticePromptSuppressionReason) -->
+
 <!-- LINT.IfChange(NewTabPageActionEnum) -->
 
 <enum name="PrivacySandboxSentimentSurveyStatus">

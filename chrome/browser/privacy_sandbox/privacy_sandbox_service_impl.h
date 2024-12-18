@@ -366,6 +366,13 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   raw_ptr<signin::IdentityManager> identity_manager_;
   PrimaryAccountUserGroups primary_account_state_ =
       PrimaryAccountUserGroups::kNotSet;
+  // Stores bitmaps for prompt suppression, 0 is not suppressed. This variable
+  // stores information about the dark launch notice that uses the non-synced
+  // pref.
+  int prompt_suppression_bitmap_ = 0;
+  // Stores bitmaps for prompt suppression, 0 is not suppressed. This variable
+  // stores information about the dark launch notice that uses the synced pref.
+  int prompt_suppression_bitmap_sync_ = 0;
 
   PrefChangeRegistrar user_prefs_registrar_;
 
@@ -409,12 +416,18 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   // Returns a PrivacySandboxCountries reference.
   PrivacySandboxCountries* GetPrivacySandboxCountries();
 
+  // Sets member variable primary_account_state_
+  void SetPrimaryAccountState(PrimaryAccountUserGroups user_group_to_set);
+
   // Returns true if _any_ of the k-API prefs are disabled via policy or
   // the prompt was suppressed via policy.
   static bool IsM1PrivacySandboxEffectivelyManaged(PrefService* pref_service);
 
   // Emits startup histograms relating to the user's sign in status.
   void MaybeEmitPromptStartupAccountMetrics();
+
+  // Emits histograms relating to a fake notice's shown or suppression status.
+  void MaybeEmitFakeNoticePromptMetrics(bool third_party_cookies_blocked);
 
   bool force_chrome_build_for_tests_ = false;
   bool should_emit_dark_launch_startup_metrics_ = true;
