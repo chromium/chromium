@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "components/collaboration/internal/messaging/configuration.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
@@ -40,6 +41,7 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
                                     public DataSharingChangeNotifier::Observer {
  public:
   MessagingBackendServiceImpl(
+      const MessagingBackendConfiguration& configuration,
       std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
       std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier,
       std::unique_ptr<MessagingBackendStore> messaging_backend_store,
@@ -202,6 +204,16 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // Clears the dirty bit for the given DB message ID if `success` is true.
   void ClearMessageDirtyBit(base::Uuid db_message_id, bool success);
+
+  // Creates a PersistentMessage based on tab group and tab for when we do not
+  // have a db Message available.
+  PersistentMessage CreatePersistentMessageFromTabGroupAndTab(
+      const data_sharing::GroupId& collaboration_group_id,
+      const tab_groups::SavedTabGroupTab tab,
+      CollaborationEvent collaboration_event);
+
+  // A configuration for how the MessagingBackendService should behave.
+  MessagingBackendConfiguration configuration_;
 
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.

@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "components/collaboration/internal/messaging/configuration.h"
 #import "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #import "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
 #import "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
@@ -65,8 +66,11 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
       std::make_unique<DataSharingChangeNotifierImpl>(data_sharing_service);
   auto messaging_backend_store = std::make_unique<MessagingBackendStoreImpl>();
 
+  // iOS does not need any specialized configuration.
+  MessagingBackendConfiguration configuration;
+
   return std::make_unique<MessagingBackendServiceImpl>(
-      std::move(tab_group_change_notifier),
+      configuration, std::move(tab_group_change_notifier),
       std::move(data_sharing_change_notifier),
       std::move(messaging_backend_store), tab_group_sync_service,
       data_sharing_service);

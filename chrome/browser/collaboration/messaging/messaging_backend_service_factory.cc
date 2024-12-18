@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "components/collaboration/internal/messaging/configuration.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #include "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
 #include "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
@@ -78,8 +79,15 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<DataSharingChangeNotifierImpl>(data_sharing_service);
   auto messaging_backend_store = std::make_unique<MessagingBackendStoreImpl>();
 
+  // This configuration object allows us to control platform specific behavior.
+  MessagingBackendConfiguration configuration;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  configuration.clear_chip_on_tab_selection = false;
+#endif
+
   auto service = std::make_unique<MessagingBackendServiceImpl>(
-      std::move(tab_group_change_notifier),
+      configuration, std::move(tab_group_change_notifier),
       std::move(data_sharing_change_notifier),
       std::move(messaging_backend_store), tab_group_sync_service,
       data_sharing_service);

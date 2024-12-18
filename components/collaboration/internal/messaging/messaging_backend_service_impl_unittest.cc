@@ -41,6 +41,15 @@ using testing::Truly;
 namespace collaboration::messaging {
 
 namespace {
+bool PersistentMessagesHaveSameTypeAndEvent(const PersistentMessage& a,
+                                            const PersistentMessage& b) {
+  return a.collaboration_event == b.collaboration_event && a.type == b.type;
+}
+
+MATCHER_P(PersistentMessageTypeAndEventEq, expected_message, "") {
+  return PersistentMessagesHaveSameTypeAndEvent(arg, expected_message);
+}
+
 data_sharing::GroupMemberPartialData CreatePartialGroupMember(
     const GaiaId& gaia_id,
     const std::string& display_name,
@@ -105,6 +114,20 @@ class MockInstantMessageDelegate
   MOCK_METHOD(void,
               DisplayInstantaneousMessage,
               (InstantMessage message, SuccessCallback success_callback),
+              (override));
+};
+
+class MockPersistentMessageObserver
+    : public MessagingBackendService::PersistentMessageObserver {
+ public:
+  MOCK_METHOD(void, OnMessagingBackendServiceInitialized, (), (override));
+  MOCK_METHOD(void,
+              DisplayPersistentMessage,
+              (PersistentMessage message),
+              (override));
+  MOCK_METHOD(void,
+              HidePersistentMessage,
+              (PersistentMessage message),
               (override));
 };
 
@@ -237,7 +260,7 @@ class MessagingBackendServiceImplTest : public testing::Test {
             });
 
     service_ = std::make_unique<MessagingBackendServiceImpl>(
-        std::move(tab_group_change_notifier),
+        configuration, std::move(tab_group_change_notifier),
         std::move(data_sharing_change_notifier),
         std::move(mock_messaging_backend_store),
         mock_tab_group_sync_service_.get(), mock_data_sharing_service_.get());
@@ -260,16 +283,23 @@ class MessagingBackendServiceImplTest : public testing::Test {
     service_->SetInstantMessageDelegate(mock_instant_message_delegate_.get());
   }
 
+  void AddPersistentMessageObserver() {
+    service_->AddPersistentMessageObserver(&mock_persistent_message_observer_);
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  // Use default configuration unless we specify something else.
+  MessagingBackendConfiguration configuration;
   base::OnceCallback<void(bool)> on_store_initialized_callback_;
   std::unique_ptr<data_sharing::MockDataSharingService>
       mock_data_sharing_service_;
   std::unique_ptr<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
   std::unique_ptr<MockInstantMessageDelegate> mock_instant_message_delegate_;
+  MockPersistentMessageObserver mock_persistent_message_observer_;
   std::unique_ptr<MessagingBackendServiceImpl> service_;
   raw_ptr<MockTabGroupChangeNotifier> unowned_tab_group_change_notifier_;
   raw_ptr<MockDataSharingChangeNotifier> unowned_data_sharing_change_notifier_;
@@ -1317,6 +1347,183 @@ TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
             message.collaboration_event);
   EXPECT_EQ(member2.gaia_id, message.attribution.affected_user->gaia_id);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestTabSelectionClearsChipByDefault) {
+  CreateAndInitializeService();
+  AddPersistentMessageObserver();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  PersistentMessage expected_message_chip;
+  expected_message_chip.collaboration_event = CollaborationEvent::UNDEFINED;
+  expected_message_chip.type = PersistentNotificationType::CHIP;
+  PersistentMessage expected_message_dot;
+  expected_message_dot.collaboration_event = CollaborationEvent::UNDEFINED;
+  expected_message_dot.type = PersistentNotificationType::DIRTY_TAB;
+
+  // Make sure there are still dirty tabs in the group.
+  std::vector<collaboration_pb::Message> db_messages;
+  collaboration_pb::Message db_message;
+  db_messages.emplace_back(db_message);
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(db_messages));
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+  base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
+  base::Uuid tab2_sync_id = tab_group.saved_tabs().at(1).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab2 = tab_group.GetTab(tab2_sync_id);
+
+  PersistentMessage last_persistent_message_chip;
+  PersistentMessage last_persistent_message_dot;
+
+  // Select tab 1, it should clear the chip and dot for tab 1.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessageForTab(collaboration_group_id, tab1_sync_id,
+                                      DirtyType::kDotAndChip))
+      .Times(1);
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_chip)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_chip));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_dot)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot));
+  tg_notifier_observer_->OnTabSelected(*tab1);
+  EXPECT_EQ(tab1_sync_id,
+            last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab1_sync_id,
+            last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
+
+  // Select tab 2, it should clear the chip and dot for tab 2.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
+                                      DirtyType::kDotAndChip))
+      .Times(1);
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_chip)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_chip));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_dot)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot));
+  tg_notifier_observer_->OnTabSelected(*tab2);
+  EXPECT_EQ(tab2_sync_id,
+            last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab2_sync_id,
+            last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
+
+  // Selecting a tab outside a tab group should not do anything.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessageForTab(_, _, _))
+      .Times(0);
+  tg_notifier_observer_->OnTabSelected(std::nullopt);
+}
+
+TEST_F(MessagingBackendServiceImplTest,
+       TestTabSelectionClearsAfterUnselectBasedOnConfiguration) {
+  configuration.clear_chip_on_tab_selection = false;
+  CreateAndInitializeService();
+  AddPersistentMessageObserver();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  PersistentMessage expected_message_chip;
+  expected_message_chip.collaboration_event = CollaborationEvent::UNDEFINED;
+  expected_message_chip.type = PersistentNotificationType::CHIP;
+  PersistentMessage expected_message_dot;
+  expected_message_dot.collaboration_event = CollaborationEvent::UNDEFINED;
+  expected_message_dot.type = PersistentNotificationType::DIRTY_TAB;
+
+  // Make sure there are still dirty tabs in the group.
+  std::vector<collaboration_pb::Message> db_messages;
+  collaboration_pb::Message db_message;
+  db_messages.emplace_back(db_message);
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(db_messages));
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+  base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
+  base::Uuid tab2_sync_id = tab_group.saved_tabs().at(1).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab2 = tab_group.GetTab(tab2_sync_id);
+
+  PersistentMessage last_persistent_message_chip;
+  PersistentMessage last_persistent_message_dot;
+
+  // Select tab 1, it should clear the dot for tab 1.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessageForTab(collaboration_group_id, tab1_sync_id,
+                                      DirtyType::kDot))
+      .Times(1);
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_dot)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot));
+  tg_notifier_observer_->OnTabSelected(*tab1);
+  EXPECT_EQ(tab1_sync_id,
+            last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
+
+  // Select tab 2, it should clear the chip for tab 1 and the dot for tab 2.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessageForTab(collaboration_group_id, tab1_sync_id,
+                                      DirtyType::kChip))
+      .Times(1);
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
+                                      DirtyType::kDot))
+      .Times(1);
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_chip)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_chip));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_dot)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot));
+  tg_notifier_observer_->OnTabSelected(*tab2);
+  EXPECT_EQ(tab1_sync_id,
+            last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab2_sync_id,
+            last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
+
+  // Selecting a tab outside a tab group should clear the chip for tab 2.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              ClearDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
+                                      DirtyType::kChip))
+      .Times(1);
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_chip)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_chip));
+  tg_notifier_observer_->OnTabSelected(std::nullopt);
+  EXPECT_EQ(tab2_sync_id,
+            last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
 }
 
 }  // namespace collaboration::messaging
