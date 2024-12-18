@@ -2596,8 +2596,7 @@ class TabListMediator implements TabListNotificationHandler {
                     mCurrentTabGroupModelFilterSupplier.get(),
                     mDataSharingTabManager,
                     tabId,
-                    model.get(TabProperties.TITLE),
-                    (unused) -> {});
+                    model.get(TabProperties.TITLE));
         }
     }
 

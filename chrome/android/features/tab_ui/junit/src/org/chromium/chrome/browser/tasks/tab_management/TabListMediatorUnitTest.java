@@ -4339,7 +4339,7 @@ public class TabListMediatorUnitTest {
         mModelList.get(POSITION1).model.set(TabProperties.TITLE, myTitle);
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         mMediator.onMenuItemClicked(R.id.share_group, TAB1_ID, /* collaborationId= */ null);
-        verify(mDataSharingTabManager).createGroupFlow(eq(mActivity), eq(myTitle), any(), any());
+        verify(mDataSharingTabManager).createGroupFlow(eq(mActivity), eq(myTitle), any());
     }
 
     @Test

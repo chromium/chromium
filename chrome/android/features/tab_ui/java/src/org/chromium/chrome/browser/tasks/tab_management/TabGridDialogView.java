@@ -939,11 +939,6 @@ public class TabGridDialogView extends FrameLayout {
         recyclerView.setVisibility(View.VISIBLE);
     }
 
-    void refreshScrim() {
-        assert mScrimCoordinator != null && mScrimPropertyModel != null;
-        mScrimCoordinator.showScrim(mScrimPropertyModel);
-    }
-
     /** Show {@link PopupWindow} for dialog with animation. */
     void showDialog() {
         if (mCurrentDialogAnimator != null && mCurrentDialogAnimator != mShowDialogAnimation) {
