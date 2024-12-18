@@ -97,3 +97,8 @@ bool FederatedIdentityApiPermissionContext::HasThirdPartyCookiesAccess(
       /*top_frame_origin=*/relying_party_embedder,
       host.GetCookieSettingOverrides());
 }
+
+bool FederatedIdentityApiPermissionContext::
+    AreThirdPartyCookiesEnabledInSettings() const {
+  return !cookie_settings_->ShouldBlockThirdPartyCookies();
+}

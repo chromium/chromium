@@ -11286,6 +11286,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="BrowserObservedSignIn"/>
 </enum>
 
+<enum name="FedCmThirdPartyCookiesStatus">
+  <int value="0" label="Enabled in settings"/>
+  <int value="1" label="Disabled in settings"/>
+</enum>
+
 <enum name="FedCmTokenResponseType">
   <int value="0"
       label="Token received and error not received and continue_on not

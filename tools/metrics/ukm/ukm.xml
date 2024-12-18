@@ -3884,6 +3884,13 @@ be describing additional metrics about the same event.
       browser receives an account list from IDP prior to showing UI.
     </summary>
   </metric>
+  <metric name="ThirdPartyCookiesStatus" enum="FedCmThirdPartyCookiesStatus">
+    <summary>
+      Records the status of third party cookies when a FedCM API call is
+      invoked. Recorded at most once per API call. i.e. at the same time as
+      Blink.FedCm.Status.RequestIdToken.
+    </summary>
+  </metric>
   <metric name="Timing.AccountsDialogShownDuration">
     <summary>
       Records the duration from when an accounts dialog is shown to when dialog
@@ -4115,6 +4122,13 @@ be describing additional metrics about the same event.
     <summary>
       Records whether user sign-in states between IDP and browser match after
       browser receives an account list from IDP prior to showing UI.
+    </summary>
+  </metric>
+  <metric name="ThirdPartyCookiesStatus" enum="FedCmThirdPartyCookiesStatus">
+    <summary>
+      Records the status of third party cookies when a FedCM API call is
+      invoked. Recorded at most once per API call. i.e. at the same time as
+      Blink.FedCm.Status.RequestIdToken.
     </summary>
   </metric>
   <metric name="Timing.AccountsDialogShownDuration">

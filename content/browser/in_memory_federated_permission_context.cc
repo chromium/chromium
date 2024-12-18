@@ -62,6 +62,11 @@ bool InMemoryFederatedPermissionContext::HasThirdPartyCookiesAccess(
              }) != has_third_party_cookies_access_.end();
 }
 
+bool InMemoryFederatedPermissionContext::AreThirdPartyCookiesEnabledInSettings()
+    const {
+  return true;
+}
+
 void InMemoryFederatedPermissionContext::
     SetHasThirdPartyCookiesAccessForTesting(
         const std::string& identity_provider,

@@ -38,6 +38,10 @@ class MockApiPermissionDelegate
               HasThirdPartyCookiesAccess,
               (RenderFrameHost&, const GURL&, const url::Origin&),
               (const, override));
+  MOCK_METHOD(bool,
+              AreThirdPartyCookiesEnabledInSettings,
+              (),
+              (const, override));
 };
 
 }  // namespace content

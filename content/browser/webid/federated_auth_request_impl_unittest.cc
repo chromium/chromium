@@ -8009,4 +8009,51 @@ TEST_F(FederatedAuthRequestImplTest, VerifyingDialogDestroyAutoReauthnMetrics) {
   CheckAllFedCmSessionIDs();
 }
 
+TEST_F(FederatedAuthRequestImplTest,
+       MetricsForThirdPartyCookiesEnabledInSettings) {
+  // Pretend that third party cookies are enabled in settings.
+  EXPECT_CALL(*test_api_permission_delegate_,
+              AreThirdPartyCookiesEnabledInSettings())
+      .WillOnce(Return(true));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  ukm_loop.Run();
+
+  ExpectUkmValue(
+      "ThirdPartyCookiesStatus",
+      static_cast<int>(FedCmThirdPartyCookiesStatus::kEnabledInSettings));
+
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest,
+       MetricsForThirdPartyCookiesDisabledInSettings) {
+  // Pretend that third party cookies are disabled in settings.
+  EXPECT_CALL(*test_api_permission_delegate_,
+              AreThirdPartyCookiesEnabledInSettings())
+      .WillOnce(Return(false));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  ukm_loop.Run();
+
+  ExpectUkmValue(
+      "ThirdPartyCookiesStatus",
+      static_cast<int>(FedCmThirdPartyCookiesStatus::kDisabledInSettings));
+
+  ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
+  CheckAllFedCmSessionIDs();
+}
 }  // namespace content

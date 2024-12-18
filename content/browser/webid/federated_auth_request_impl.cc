@@ -761,7 +761,10 @@ void FederatedAuthRequestImpl::RequestToken(
               ? RpMode::kActive
               : RpMode::kPassive,
           /*use_other_account_result=*/std::nullopt,
-          /*verifying_dialog_result=*/std::nullopt);
+          /*verifying_dialog_result=*/std::nullopt,
+          api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()
+              ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
+              : FedCmThirdPartyCookiesStatus::kDisabledInSettings);
 
       AddDevToolsIssue(
           blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
@@ -2904,7 +2907,10 @@ void FederatedAuthRequestImpl::CompleteRequest(
     fedcm_metrics_->RecordRequestTokenStatus(
         *token_status, mediation_requirement_, idp_order_, num_idps_mismatch,
         selected_idp_config_url, rp_mode_, use_other_account_result,
-        verifying_dialog_result_);
+        verifying_dialog_result_,
+        api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()
+            ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
+            : FedCmThirdPartyCookiesStatus::kDisabledInSettings);
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {

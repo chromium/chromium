@@ -275,6 +275,16 @@ enum class FedCmVerifyingDialogResult {
   kMaxValue = kDestroyAutoReauthn
 };
 
+// This enum describes the third party cookies status. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class FedCmThirdPartyCookiesStatus {
+  kEnabledInSettings = 0,
+  kDisabledInSettings = 1,
+
+  kMaxValue = kDisabledInSettings
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   explicit FedCmMetrics(const ukm::SourceId page_source_id);
@@ -374,7 +384,8 @@ class CONTENT_EXPORT FedCmMetrics {
       const std::optional<GURL>& selected_idp_config_url,
       const RpMode& rp_mode,
       std::optional<FedCmUseOtherAccountResult> use_other_account_result,
-      std::optional<FedCmVerifyingDialogResult> verifying_dialog_result);
+      std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
+      FedCmThirdPartyCookiesStatus tpc_status);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,

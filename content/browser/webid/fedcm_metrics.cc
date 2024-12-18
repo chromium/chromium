@@ -286,7 +286,8 @@ void FedCmMetrics::RecordRequestTokenStatus(
     const std::optional<GURL>& selected_idp_config_url,
     const RpMode& rp_mode,
     std::optional<FedCmUseOtherAccountResult> use_other_account_result,
-    std::optional<FedCmVerifyingDialogResult> verifying_dialog_result) {
+    std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
+    FedCmThirdPartyCookiesStatus tpc_status) {
   // The following check is to avoid double recording in the following scenario:
   // 1. The request has failed but we have not yet rejected the promise, e.g.
   // when the API is disabled. We record a metric immediately but only post a
@@ -313,6 +314,8 @@ void FedCmMetrics::RecordRequestTokenStatus(
     ukm_builder.SetNumIdpsRequested(num_idps_requested);
     ukm_builder.SetNumIdpsMismatch(num_idps_mismatch);
     ukm_builder.SetRpMode(static_cast<int>(rp_mode));
+    ukm_builder.SetThirdPartyCookiesStatus(
+        std::underlying_type_t<FedCmThirdPartyCookiesStatus>(tpc_status));
     if (use_other_account_result.has_value()) {
       ukm_builder.SetUseOtherAccountResult(
           static_cast<int>(*use_other_account_result));

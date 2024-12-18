@@ -49,6 +49,7 @@ class InMemoryFederatedPermissionContext
       content::RenderFrameHost& host,
       const GURL& provider_url,
       const url::Origin& relying_party_embedder) const override;
+  bool AreThirdPartyCookiesEnabledInSettings() const override;
 
   // FederatedIdentityAutoReauthnPermissionContextDelegate
   bool IsAutoReauthnSettingEnabled() override;
