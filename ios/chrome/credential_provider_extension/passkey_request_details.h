@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_REQUEST_DETAILS_H_
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_REQUEST_DETAILS_H_
 
+#import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
-@class ASPasskeyCredentialRequestParameters;
-@protocol ASCredentialRequest;
+@protocol Credential;
 
 // This class represents a passkey credential request (attestation or
 // registration).
@@ -25,8 +25,17 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Hash of client data for credential provider to sign as part of the operation.
-@property(nonatomic, readonly) NSData* clientDataHash;
+// Performs passkey creation and returns the new credential.
+- (ASPasskeyRegistrationCredential*)createPasskeyForGaia:(NSString*)gaia
+                                   securityDomainSecrets:
+                                       (NSArray<NSData*>*)securityDomainSecrets
+    API_AVAILABLE(ios(17.0));
+
+// Performs passkey assertion and returns the assertion response.
+- (ASPasskeyAssertionCredential*)
+    assertPasskeyCredential:(id<Credential>)credential
+      securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+    API_AVAILABLE(ios(17.0));
 
 // A preference for whether the authenticator should attempt to verify that it
 // is being used by its owner.
@@ -42,12 +51,6 @@
 // Whether at least one signing algorithm is supported by the relying party.
 // Unused by assertion requests.
 @property(nonatomic, readonly) BOOL algorithmIsSupported;
-
-// The user name of the passkey credential.
-@property(nonatomic, readonly) NSString* userName;
-
-// The user handle of the passkey credential.
-@property(nonatomic, readonly) NSData* userHandle;
 
 @end
 

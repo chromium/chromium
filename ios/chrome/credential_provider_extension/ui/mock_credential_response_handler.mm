@@ -6,7 +6,6 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
-#import "ios/chrome/credential_provider_extension/passkey_util.h"
 
 namespace {
 
@@ -41,10 +40,10 @@ NSArray<NSData*>* SecurityDomainSecrets() {
 - (void)userSelectedPasskey:(id<Credential>)passkey
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
   if (@available(iOS 17.0, *)) {
-    [self userSelectedPasskey:PerformPasskeyAssertion(
-                                  passkey, passkeyRequestDetails.clientDataHash,
-                                  passkeyRequestDetails.allowedCredentials,
-                                  SecurityDomainSecrets())];
+    [self userSelectedPasskey:
+              [passkeyRequestDetails
+                  assertPasskeyCredential:passkey
+                    securityDomainSecrets:SecurityDomainSecrets()]];
   }
 }
 

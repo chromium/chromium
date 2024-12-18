@@ -4,8 +4,6 @@
 
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 
-#import <AuthenticationServices/AuthenticationServices.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
@@ -100,6 +98,24 @@
     self.allowedCredentials = nil;
   }
   return self;
+}
+
+- (ASPasskeyRegistrationCredential*)createPasskeyForGaia:(NSString*)gaia
+                                   securityDomainSecrets:
+                                       (NSArray<NSData*>*)securityDomainSecrets
+    API_AVAILABLE(ios(17.0)) {
+  return PerformPasskeyCreation(self.clientDataHash,
+                                self.relyingPartyIdentifier, self.userName,
+                                self.userHandle, gaia, securityDomainSecrets);
+}
+
+- (ASPasskeyAssertionCredential*)
+    assertPasskeyCredential:(id<Credential>)credential
+      securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+    API_AVAILABLE(ios(17.0)) {
+  return PerformPasskeyAssertion(credential, self.clientDataHash,
+                                 self.allowedCredentials,
+                                 securityDomainSecrets);
 }
 
 @end

@@ -166,7 +166,6 @@ source_set("mock_credential_response_handler") {
     ":credential_response_handler",
     "//base",
     "//ios/chrome/credential_provider_extension:passkey_request_details",
-    "//ios/chrome/credential_provider_extension:passkey_util",
   ]
 }
 

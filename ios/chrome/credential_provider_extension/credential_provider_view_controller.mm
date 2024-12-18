@@ -30,7 +30,6 @@
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
-#import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/create_navigation_item_title_view.h"
@@ -894,11 +893,8 @@ UIColor* BackgroundColor() {
            securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
     API_AVAILABLE(ios(17.0)) {
   ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
-      PerformPasskeyCreation(passkeyRequestDetails.clientDataHash,
-                             passkeyRequestDetails.relyingPartyIdentifier,
-                             passkeyRequestDetails.userName,
-                             passkeyRequestDetails.userHandle, gaia,
-                             securityDomainSecrets);
+      [passkeyRequestDetails createPasskeyForGaia:gaia
+                            securityDomainSecrets:securityDomainSecrets];
   if (passkeyRegistrationCredential) {
     [self completeRegistrationRequestWithSelectedPasskeyCredential:
               passkeyRegistrationCredential];
@@ -933,9 +929,9 @@ UIColor* BackgroundColor() {
              passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails
              securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets {
   if (@available(iOS 17.0, *)) {
-    ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
-        credential, passkeyRequestDetails.clientDataHash,
-        passkeyRequestDetails.allowedCredentials, securityDomainSecrets);
+    ASPasskeyAssertionCredential* passkeyCredential =
+        [passkeyRequestDetails assertPasskeyCredential:credential
+                                 securityDomainSecrets:securityDomainSecrets];
     [self userSelectedPasskey:passkeyCredential];
   }
 }

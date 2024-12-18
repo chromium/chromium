@@ -34,7 +34,6 @@ source_set("credential_provider") {
     ":metrics_util",
     ":passkey_keychain_provider_bridge",
     ":passkey_request_details",
-    ":passkey_util",
     ":reauthentication_handler",
     ":system_strings",
     "//base",
