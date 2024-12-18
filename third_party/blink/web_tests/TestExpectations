@@ -6234,7 +6234,7 @@ crbug.com/1137003 fast/dom/timer-throttling-background-page-near-alignment-inter
 crbug.com/1321293 fast/forms/calendar-picker/week-picker-choose-default-value-after-set-value.html [ Failure Pass ]
 
 # Test expectations for Win11
-crbug.com/1295890 [ Win11 ] fast/dom/HTMLScriptElement/script-sync-load-failure.html [ Skip Timeout ]
+crbug.com/384752759 [ Win11 ] fast/dom/HTMLScriptElement/script-sync-load-failure.html [ Skip Timeout Failure ]
 crbug.com/1295890 [ Win11 ] http/tests/eventsource/eventsource-cors-no-server.html [ Skip Timeout ]
 crbug.com/1295890 [ Win11 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Skip Timeout ]
 crbug.com/1295890 [ Win11 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Skip Timeout ]
