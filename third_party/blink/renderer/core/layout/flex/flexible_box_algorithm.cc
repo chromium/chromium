@@ -64,65 +64,6 @@ bool FlexibleBoxAlgorithm::IsHorizontalFlow(const ComputedStyle& style) {
 }
 
 // static
-StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
-    const ComputedStyle& style) {
-  if (style.IsDeprecatedWebkitBox()) {
-    const ContentPosition position = ([&]() {
-      // -webkit-box row-reverse currently flips the start/end (e.g. it always
-      // uses "start" rather than "flex-start"). Firefox doesn't have this
-      // quirk, we should attempt to remove it.
-      const bool is_row_reverse = style.ResolvedIsRowReverseFlexDirection();
-      switch (style.BoxPack()) {
-        case EBoxPack::kCenter:
-          return ContentPosition::kCenter;
-        case EBoxPack::kJustify:
-        case EBoxPack::kStart:
-          return is_row_reverse ? ContentPosition::kFlexEnd
-                                : ContentPosition::kFlexStart;
-        case EBoxPack::kEnd:
-          return is_row_reverse ? ContentPosition::kFlexStart
-                                : ContentPosition::kFlexEnd;
-      }
-    })();
-    const ContentDistributionType distribution =
-        style.BoxPack() == EBoxPack::kJustify
-            ? ContentDistributionType::kSpaceBetween
-            : ContentDistributionType::kDefault;
-    return StyleContentAlignmentData(position, distribution,
-                                     OverflowAlignment::kSafe);
-  }
-
-  const auto writing_direction = style.GetWritingDirection();
-  const StyleContentAlignmentData& justify_content = style.JustifyContent();
-
-  // Coerce "left"/"right" their logical variants.
-  ContentPosition position = justify_content.GetPosition();
-  if (position == ContentPosition::kLeft ||
-      position == ContentPosition::kRight) {
-    if (style.ResolvedIsColumnFlexDirection()) {
-      if (writing_direction.IsHorizontal()) {
-        // The main-axis is in the top-down direction, fallback to start.
-        position = ContentPosition::kStart;
-      } else {
-        LogicalToPhysical physical(
-            writing_direction, ContentPosition::kStart, ContentPosition::kEnd,
-            ContentPosition::kStart, ContentPosition::kEnd);
-        position = position == ContentPosition::kLeft ? physical.Left()
-                                                      : physical.Right();
-      }
-    } else {
-      position =
-          ((position == ContentPosition::kLeft) == writing_direction.IsLtr())
-              ? ContentPosition::kStart
-              : ContentPosition::kEnd;
-    }
-  }
-
-  return StyleContentAlignmentData(position, justify_content.Distribution(),
-                                   justify_content.Overflow());
-}
-
-// static
 ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
     const ComputedStyle& flexbox_style,
     const ComputedStyle& child_style) {

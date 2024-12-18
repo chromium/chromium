@@ -51,7 +51,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
  public:
   static bool IsHorizontalFlow(const ComputedStyle&);
 
-  static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
 };

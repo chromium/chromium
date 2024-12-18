@@ -89,6 +89,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
       wtf_size_t flex_line_idx,
       LogicalOffset offset);
 
+  StyleContentAlignmentData ResolvedJustifyContent() const;
+
   // This is same method as FlexItem but we need that logic before FlexItem is
   // constructed.
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
@@ -191,6 +193,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   const bool is_webkit_box_;
   const bool is_column_;
   const bool is_wrap_reverse_;
+  const bool is_reverse_direction_;
   const bool is_multi_line_;
   const bool is_horizontal_flow_;
   const bool is_cross_size_definite_;

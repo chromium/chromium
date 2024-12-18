@@ -184,6 +184,7 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
       is_webkit_box_(Style().IsDeprecatedWebkitBox()),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_wrap_reverse_(Style().FlexWrap() == EFlexWrap::kWrapReverse),
+      is_reverse_direction_(Style().ResolvedIsReverseFlexDirection()),
       is_multi_line_(Style().FlexWrap() != EFlexWrap::kNowrap),
       is_horizontal_flow_(FlexibleBoxAlgorithm::IsHorizontalFlow(Style())),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()),
@@ -212,6 +213,63 @@ void FlexLayoutAlgorithm::SetupRelayoutData(const FlexLayoutAlgorithm& previous,
   } else {
     ignore_child_scrollbar_changes_ = previous.ignore_child_scrollbar_changes_;
   }
+}
+
+StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent() const {
+  if (is_webkit_box_) {
+    const EBoxPack box_pack = Style().BoxPack();
+    const ContentPosition position = ([&]() {
+      // -webkit-box row-reverse currently flips the start/end (e.g. it always
+      // uses "start" rather than "flex-start"). Firefox doesn't have this
+      // quirk, we should attempt to remove it.
+      const bool is_row_reverse = Style().ResolvedIsRowReverseFlexDirection();
+      switch (box_pack) {
+        case EBoxPack::kCenter:
+          return ContentPosition::kCenter;
+        case EBoxPack::kJustify:
+        case EBoxPack::kStart:
+          return is_row_reverse ? ContentPosition::kFlexEnd
+                                : ContentPosition::kFlexStart;
+        case EBoxPack::kEnd:
+          return is_row_reverse ? ContentPosition::kFlexStart
+                                : ContentPosition::kFlexEnd;
+      }
+    })();
+    const ContentDistributionType distribution =
+        box_pack == EBoxPack::kJustify ? ContentDistributionType::kSpaceBetween
+                                       : ContentDistributionType::kDefault;
+    return StyleContentAlignmentData(position, distribution,
+                                     OverflowAlignment::kSafe);
+  }
+
+  const auto writing_direction = GetConstraintSpace().GetWritingDirection();
+  const StyleContentAlignmentData& justify_content = Style().JustifyContent();
+
+  // Coerce "left"/"right" their logical variants.
+  ContentPosition position = justify_content.GetPosition();
+  if (position == ContentPosition::kLeft ||
+      position == ContentPosition::kRight) {
+    if (is_column_) {
+      if (writing_direction.IsHorizontal()) {
+        // The main-axis is in the top-down direction, fallback to start.
+        position = ContentPosition::kStart;
+      } else {
+        LogicalToPhysical physical(
+            writing_direction, ContentPosition::kStart, ContentPosition::kEnd,
+            ContentPosition::kStart, ContentPosition::kEnd);
+        position = position == ContentPosition::kLeft ? physical.Left()
+                                                      : physical.Right();
+      }
+    } else {
+      position =
+          ((position == ContentPosition::kLeft) == writing_direction.IsLtr())
+              ? ContentPosition::kStart
+              : ContentPosition::kEnd;
+    }
+  }
+
+  return StyleContentAlignmentData(position, justify_content.Distribution(),
+                                   justify_content.Overflow());
 }
 
 LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
@@ -285,28 +343,27 @@ namespace {
 enum AxisEdge { kStart, kCenter, kEnd };
 
 // Maps the resolved justify-content value to a static-position edge.
-AxisEdge MainAxisStaticPositionEdge(const ComputedStyle& style) {
-  const StyleContentAlignmentData justify =
-      FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
-  const ContentPosition content_position = justify.GetPosition();
-  const bool is_reverse = style.ResolvedIsReverseFlexDirection();
-
+AxisEdge MainAxisStaticPositionEdge(
+    const StyleContentAlignmentData& justify_content,
+    bool is_reverse_direction) {
+  const ContentPosition content_position = justify_content.GetPosition();
   DCHECK_NE(content_position, ContentPosition::kLeft);
   DCHECK_NE(content_position, ContentPosition::kRight);
   if (content_position == ContentPosition::kFlexEnd)
-    return is_reverse ? AxisEdge::kStart : AxisEdge::kEnd;
+    return is_reverse_direction ? AxisEdge::kStart : AxisEdge::kEnd;
 
   if (content_position == ContentPosition::kCenter ||
-      justify.Distribution() == ContentDistributionType::kSpaceAround ||
-      justify.Distribution() == ContentDistributionType::kSpaceEvenly)
+      justify_content.Distribution() == ContentDistributionType::kSpaceAround ||
+      justify_content.Distribution() == ContentDistributionType::kSpaceEvenly) {
     return AxisEdge::kCenter;
+  }
 
   if (content_position == ContentPosition::kStart)
     return AxisEdge::kStart;
   if (content_position == ContentPosition::kEnd)
     return AxisEdge::kEnd;
 
-  return is_reverse ? AxisEdge::kEnd : AxisEdge::kStart;
+  return is_reverse_direction ? AxisEdge::kEnd : AxisEdge::kStart;
 }
 
 // Maps the resolved alignment value to a static-position edge.
@@ -379,10 +436,13 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   total_fragment_size =
       ShrinkLogicalSize(total_fragment_size, border_scrollbar_padding);
 
+  const StyleContentAlignmentData justify_content = ResolvedJustifyContent();
+  const AxisEdge main_axis_edge =
+      MainAxisStaticPositionEdge(justify_content, is_reverse_direction_);
+
   for (LayoutBox* oof_child : oofs) {
     BlockNode child(oof_child);
 
-    AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style());
     AxisEdge cross_axis_edge =
         CrossAxisStaticPositionEdge(Style(), child.Style());
 
@@ -449,8 +509,7 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
   // Given CSS reading-flow, flex-flow, flex-direction; read values
   // in correct order.
   auto AddFlexItems = [&](const FlexLine& line) {
-    if (reading_flow == EReadingFlow::kFlexFlow &&
-        style.ResolvedIsReverseFlexDirection()) {
+    if (reading_flow == EReadingFlow::kFlexFlow && is_reverse_direction_) {
       for (const wtf_size_t item_index : base::Reversed(line.item_indices)) {
         AddItemIfNeeded(item_index);
       }
@@ -1328,7 +1387,7 @@ void FlexLayoutAlgorithm::ApplyReversals(HeapVector<FlexLine>* flex_lines) {
     flex_lines->Reverse();
   }
 
-  if (Style().ResolvedIsReverseFlexDirection()) {
+  if (is_reverse_direction_) {
     for (auto& flex_line : *flex_lines) {
       flex_line.item_indices.Reverse();
     }
@@ -1446,10 +1505,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   const auto& style = Style();
   const WritingDirectionMode writing_direction =
       GetConstraintSpace().GetWritingDirection();
-  const bool is_reverse_direction = style.ResolvedIsReverseFlexDirection();
 
-  const StyleContentAlignmentData justify_content =
-      FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
+  const StyleContentAlignmentData justify_content = ResolvedJustifyContent();
   const StyleContentAlignmentData align_content = style.AlignContent();
 
   // Determine the cross-axis free-space.
@@ -1539,7 +1596,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                     : BorderScrollbarPadding().inline_start) +
         InitialContentPositionOffset(justify_content, safe_justify_position,
                                      main_axis_free_space, line_items_size,
-                                     is_reverse_direction);
+                                     is_reverse_direction_);
 
     for (wtf_size_t item_index : flex_line.item_indices) {
       const FlexItem& item = flex_items_[item_index];
