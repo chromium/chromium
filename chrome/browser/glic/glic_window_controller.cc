@@ -96,6 +96,7 @@ void GlicWindowController::Show(views::View* glic_button_view) {
 
   int padding;
   gfx::Point top_right_point;
+  bool should_attach_to_browser = false;
 
   if (!glic_button_view) {
     // Right now this only detects whether the glic widget is summoned from the
@@ -110,6 +111,7 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     // window.
     top_right_point = GetTopRightPositionForAttachedWindow(glic_button_view);
     padding = GetLayoutConstant(TAB_STRIP_PADDING);
+    should_attach_to_browser = true;
   }
 
   widget_ = glic::GlicView::CreateWidget(
@@ -119,6 +121,16 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   glic_widget_observer_ =
       std::make_unique<GlicWidgetObserver>(this, widget_.get());
   widget_->Show();
+
+  if (should_attach_to_browser) {
+    views::Widget* glic_button_widget = glic_button_view->GetWidget();
+    Browser* browser =
+        chrome::FindBrowserWithWindow(glic_button_widget->GetNativeWindow());
+    AttachToBrowser(browser, glic_button_widget);
+  } else {
+    MaybeCreateHolderWindowAndReparent();
+  }
+
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, GetGlicView());
   // Set the draggable area to the top bar of the window, by default.
@@ -138,10 +150,6 @@ gfx::Point GlicWindowController::GetTopRightPositionForAttachedWindow(
   // point of the button.
   gfx::Point top_right_bounds =
       glic_button_view->GetBoundsInScreen().top_right();
-  views::Widget* glic_button_widget = glic_button_view->GetWidget();
-  Browser* browser =
-      chrome::FindBrowserWithWindow(glic_button_widget->GetNativeWindow());
-  AttachToBrowser(browser, glic_button_widget);
 
   return top_right_bounds;
 }

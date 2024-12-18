@@ -95,8 +95,7 @@ class GlicWindowController : public views::WidgetObserver {
   // state.
   gfx::Point GetTopRightPositionForDetachedWindow();
 
-  // Reparents the glic widget under the given widget. Helper method for
-  // GetTopRightPositionForAttachedWindow.
+  // Reparents the glic widget under the given widget.
   void AttachToBrowser(Browser* browser, views::Widget* widget);
 
   // observes the pinned target
