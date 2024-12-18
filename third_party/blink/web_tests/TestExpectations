@@ -2684,6 +2684,8 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 
 # Sometimes flaky when run with headless shell via ChromeDriver.
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
+crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Pass Failure ]
+crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Pass Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/384773801 [ Mac13 ] external/wpt/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Timeout ]
@@ -2709,8 +2711,6 @@ crbug.com/383911311 [ Mac13 ] external/wpt/webrtc/RTCRtpParameters-encodings.htm
 crbug.com/383911311 [ Mac15 ] external/wpt/webrtc/RTCRtpParameters-encodings.html [ Timeout ]
 crbug.com/383999274 [ Mac13 ] external/wpt/css/css-layout-api/edges/padding-vrl.https.html [ Failure ]
 crbug.com/383999274 [ Win10.20h2 ] external/wpt/css/css-layout-api/edges/padding-vrl.https.html [ Failure ]
-crbug.com/383880384 [ Mac13 ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure ]
-crbug.com/383880384 [ Win10.20h2 ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure ]
 crbug.com/383825172 [ Mac11-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac13 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 crbug.com/383825172 [ Mac15 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
