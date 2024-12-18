@@ -219,6 +219,8 @@ class ClipboardSvgReader final : public ClipboardReader {
   // only be used on the main thread.
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    promise_->GetExecutionContext()->CountUse(WebFeature::kClipboardSvgRead);
     system_clipboard()->ReadSvg(
         WTF::BindOnce(&ClipboardSvgReader::OnRead, WrapPersistent(this)));
   }

@@ -10945,6 +10945,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5226" label="AdScriptInStackOnCameraRead"/>
   <int value="5227" label="ClipboardCustomFormatRead"/>
   <int value="5228" label="ClipboardCustomFormatWrite"/>
+  <int value="5229" label="ClipboardSvgRead"/>
+  <int value="5230" label="ClipboardSvgWrite"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -34254,6 +34256,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="269" label="Highlight"/>
   <int value="270" label="DRAFT_ErrorIsError"/>
   <int value="271" label="ClipboardCustomFormat"/>
+  <int value="272" label="ClipboardSvg"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

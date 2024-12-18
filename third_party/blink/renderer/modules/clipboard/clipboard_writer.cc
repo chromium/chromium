@@ -210,6 +210,7 @@ class ClipboardSvgWriter final : public ClipboardWriter {
     String svg_string = String::FromUTF8(svg_data->ByteSpan());
     const Document* doc = dom_parser->parseFromString(
         svg_string, V8SupportedType(V8SupportedType::Enum::kImageSvgXml));
+    promise_->GetExecutionContext()->CountUse(WebFeature::kClipboardSvgWrite);
     Write(CreateMarkup(doc, kIncludeNode, kResolveAllURLs));
   }
 
