@@ -4798,6 +4798,8 @@ static_library("ui") {
       "views/user_education/impl/browser_feature_promo_controller_20.h",
       "views/user_education/impl/browser_feature_promo_controller_25.cc",
       "views/user_education/impl/browser_feature_promo_controller_25.h",
+      "views/user_education/impl/browser_feature_promo_preconditions.cc",
+      "views/user_education/impl/browser_feature_promo_preconditions.h",
       "views/web_apps/create_shortcut_confirmation_view.cc",
       "views/web_apps/create_shortcut_confirmation_view.h",
       "views/web_apps/file_handler_launch_dialog_view.cc",
