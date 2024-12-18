@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
 
@@ -78,8 +79,22 @@ void SpeechRecognition::start(ExceptionState& exception_state) {
   StartInternal(&exception_state);
 }
 
+// TODO(crbug.com/384797834): Add Web Platform Tests for MediaStreamTrack
+// support.
 void SpeechRecognition::start(MediaStreamTrack* media_stream_track,
                               ExceptionState& exception_state) {
+  DCHECK(media_stream_track && media_stream_track->Component());
+
+  if (media_stream_track->Component()->GetReadyState() !=
+          MediaStreamSource::kReadyStateLive ||
+      media_stream_track->Component()->GetSourceType() !=
+          MediaStreamSource::kTypeAudio) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The MediaStreamTrack is not of kind "
+                                      "'audio' or is not of state 'live'.");
+    return;
+  }
+
   stream_track_ = media_stream_track;
   start(exception_state);
 }
