@@ -2867,6 +2867,10 @@ Called by update_net_trust_anchors.py.-->
      https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-6
      with some amendments-->
 
+  <int value="-2146893808" label="NTE_PERM">Access denied.</int>
+  <int value="-2146893785" label="NTE_INVALID_PARAMETER">
+    The parameter is incorrect.
+  </int>
   <int value="-2144862208" label="TPM_E_ERROR_MASK">
     This is an error mask to convert TPM hardware errors to win errors.
   </int>
@@ -3464,6 +3468,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="-2144859869" label="TPM_20_E_NV_UNAVAILABLE">
     TPM 2.0: the command may require writing of NV and NV is not current
     accessible..
+  </int>
+  <int value="-2144845823" label="TBS_E_INTERNAL_ERROR">
+    An internal error has occurred within the Trusted Platform Module support
+    program.
+  </int>
+  <int value="-2144845822" label="TBS_E_BAD_PARAMETER">
+    One or more input parameters is bad.
+  </int>
+  <int value="-2144795641" label="TPM_E_PCP_INTERNAL_ERROR">
+    An unexpected internal error has occurred in the Platform Crypto Provider.
   </int>
 </enum>
 
