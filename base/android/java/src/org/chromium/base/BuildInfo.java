@@ -46,8 +46,8 @@ public class BuildInfo {
     private static final int MAX_FINGERPRINT_LENGTH = 128;
 
     private static @Nullable PackageInfo sBrowserPackageInfo;
-    private static @Nullable ApplicationInfo sBrowserApplicationInfo;
     private static boolean sInitialized;
+    private ApplicationInfo mBrowserApplicationInfo;
 
     /**
      * The package name of the host app which has loaded WebView, retrieved from the application
@@ -230,8 +230,8 @@ public class BuildInfo {
     /**
      * @return ApplicationInfo for Chrome/WebView (as opposed to host app).
      */
-    public @Nullable ApplicationInfo getBrowserApplicationInfo() {
-        return sBrowserApplicationInfo;
+    public ApplicationInfo getBrowserApplicationInfo() {
+        return mBrowserApplicationInfo;
     }
 
     public static BuildInfo getInstance() {
@@ -298,7 +298,7 @@ public class BuildInfo {
             versionName = providedPackageVersionName;
             packageName = providedPackageName;
 
-            sBrowserApplicationInfo = appContext.getApplicationInfo();
+            mBrowserApplicationInfo = appContext.getApplicationInfo();
         } else {
             // The SDK Qualified package name will retrieve the same information as
             // appInstalledPackageName but prefix it with the SDK Sandbox process so that we can
@@ -333,12 +333,12 @@ public class BuildInfo {
             if (sBrowserPackageInfo != null) {
                 packageName = sBrowserPackageInfo.packageName;
                 versionName = nullToEmpty(sBrowserPackageInfo.versionName);
-                sBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
+                mBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
                 sBrowserPackageInfo = null;
             } else {
                 packageName = appContextPackageName;
                 versionName = nullToEmpty(pi.versionName);
-                sBrowserApplicationInfo = appContext.getApplicationInfo();
+                mBrowserApplicationInfo = appContext.getApplicationInfo();
             }
         }
 

@@ -10,9 +10,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.SparseArray;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** The interface that embedders should implement to specialize child service creation. */
+@NullMarked
 public interface ChildProcessServiceDelegate {
     /** Invoked when the service was created. This is the first method invoked on the delegate. */
     void onServiceCreated();

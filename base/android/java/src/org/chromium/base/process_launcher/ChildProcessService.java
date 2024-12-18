@@ -35,6 +35,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
@@ -61,6 +63,7 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @JNINamespace("base::android")
 @SuppressWarnings("SynchronizeOnNonFinalField") // mMainThread assigned in onCreate().
+@NullMarked
 public class ChildProcessService {
     private static final String MAIN_THREAD_NAME = "ChildProcessMain";
     private static final String TAG = "ChildProcessService";
@@ -87,16 +90,17 @@ public class ChildProcessService {
     private int mBoundCallingPid;
 
     @GuardedBy("mBinderLock")
-    private String mBoundCallingClazz;
+    private @Nullable String mBoundCallingClazz;
 
     // This is the native "Main" thread for the renderer / utility process.
+    @SuppressWarnings("NullAway.Init")
     private Thread mMainThread;
 
     // Parameters received via IPC, only accessed while holding the mMainThread monitor.
-    private String[] mCommandLineParams;
+    private String @Nullable [] mCommandLineParams;
 
     // File descriptors that should be registered natively.
-    private FileDescriptorInfo[] mFdInfos;
+    private FileDescriptorInfo @Nullable [] mFdInfos;
 
     @GuardedBy("mLibraryInitializedLock")
     private boolean mLibraryInitialized;
@@ -106,6 +110,7 @@ public class ChildProcessService {
     private boolean mServiceBound;
 
     // Interface to send notifications to the parent process.
+    @SuppressWarnings("NullAway.Init")
     private IParentProcess mParentProcess;
 
     public ChildProcessService(
