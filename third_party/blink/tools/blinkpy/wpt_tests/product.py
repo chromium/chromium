@@ -137,7 +137,7 @@ class HeadlessShell(DesktopProduct):
     def additional_binary_args(self):
         # TODO(crbug.com/40887057): Support `--enable-leak-detection` and plumb
         # the flag here.
-        return [
+        rv = [
             *super().additional_binary_args(),
             "--canvas-2d-layers",
             '--enable-bfcache',
@@ -147,6 +147,9 @@ class HeadlessShell(DesktopProduct):
             # default, so set an arbitrary one that some tests expect.
             '--accept-lang=en-US,en',
         ]
+        if self._port.operating_system() != 'linux':
+            rv.append('--disable-site-isolation-trials')
+        return rv
 
 
 class ChromeiOS(Product):
