@@ -8880,3 +8880,4 @@ crbug.com/381387467 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/vali
 # Gardener 2024-12-18
 crbug.com/352331034 [ Debug Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-svg-only-for-print.html [ Failure Pass ]
 crbug.com/384875218 external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Timeout Pass ]
+crbug.com/384904807 [ Mac ] http/tests/inspector-protocol/tracing/image-decoding.js [ Timeout Failure Pass ]
