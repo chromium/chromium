@@ -80,10 +80,6 @@ BASE_FEATURE(kJourneysNamedNewTabGroups,
              "JourneysNamedNewTabGroups",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kJourneysZeroStateFiltering,
-             "JourneysZeroStateFiltering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace internal
 
 // Intended to be Enabled by default on Desktop and the flag left here as a

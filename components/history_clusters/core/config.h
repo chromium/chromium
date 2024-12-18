@@ -252,10 +252,6 @@ struct Config {
   // which is the pre-M115 behavior.
   bool named_new_tab_groups = true;
 
-  // The `kJourneysZeroStateFiltering` feature and child params.
-
-  bool apply_zero_state_filtering = true;
-
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

@@ -17,7 +17,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
@@ -41,8 +40,7 @@ QueryClustersFilterParams GetFilterParamsFromFlags(const std::string& query) {
   }
 
   // Only set special filter params if the zero state filtering flag is applied.
-  if (!ShouldUseNavigationContextClustersFromPersistence() ||
-      !GetConfig().apply_zero_state_filtering) {
+  if (!ShouldUseNavigationContextClustersFromPersistence()) {
     return filter_params;
   }
 

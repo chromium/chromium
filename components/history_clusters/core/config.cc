@@ -268,12 +268,6 @@ Config::Config() {
         base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
   }
 
-  // The `kJourneysZeroStateFiltering` feature and child params.
-  {
-    apply_zero_state_filtering =
-        base::FeatureList::IsEnabled(internal::kJourneysZeroStateFiltering);
-  }
-
   // Lonely features without child params.
   {
     non_user_visible_debug =
