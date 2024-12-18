@@ -425,6 +425,24 @@ bool OriginTrialContext::InstallFeatures(
 
     installed_features_.insert(enabled_feature);
 
+    if (enabled_feature ==
+        mojom::blink::OriginTrialFeature::kPageFreezeOptOut) {
+      if (auto* rc = document.GetResourceCoordinator()) {
+        UseCounter::Count(document.GetExecutionContext(),
+                          WebFeature::kPageFreezeOptOut);
+
+        // Inform the browser process that the document is opted-out from
+        // freezing via origin trial. This state prevents the browser process
+        // from freezing any document in the same "browsing context group" as
+        // this one and is displayed at chrome://discards for debugging.
+        //
+        // Note: The browser process cannot determine whether a document is
+        // opted-out from freezing via origin trial without participation from
+        // the renderer (crbug.com/40189223).
+        rc->OnFreezingOriginTrialOptOut();
+      }
+    }
+
     if (InstallSettingFeature(document, enabled_feature))
       continue;
 

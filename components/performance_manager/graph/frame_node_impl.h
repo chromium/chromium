@@ -86,11 +86,7 @@ class FrameNodeImpl
   void OnWebMemoryMeasurementRequested(
       mojom::WebMemoryMeasurement::Mode mode,
       OnWebMemoryMeasurementRequestedCallback callback) override;
-
-  // TODO(crbug.com/325954772): Make this a method of
-  // mojom::DocumentCoordinationUnit and invoke it the when the
-  // "PageFreezeOptOut" origin trial is set in the renderer.
-  void OnFreezingOriginTrialOptOut();
+  void OnFreezingOriginTrialOptOut() override;
 
   // Partial FrameNode implementation:
   const blink::LocalFrameToken& GetFrameToken() const override;
