@@ -347,6 +347,10 @@ class PrivacySandboxService : public KeyedService {
   // Guide.
   virtual bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() = 0;
 
+  // Determines whether the China domain should be used for the Privacy Policy
+  // page.
+  virtual bool ShouldUsePrivacyPolicyChinaDomain() = 0;
+
   // Inform the service that the user changed the Topics toggle in settings,
   // so that the current topics consent information can be updated.
   // This is not fired for changes to the preference for policy or extensions,

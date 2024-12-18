@@ -116,6 +116,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                        bool allowed) override;
   bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() override;
+  bool ShouldUsePrivacyPolicyChinaDomain() override;
   void TopicsToggleChanged(bool new_value) const override;
   bool TopicsConsentRequired() const override;
   bool TopicsHasActiveConsent() const override;

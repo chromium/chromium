@@ -1745,6 +1745,10 @@ bool PrivacySandboxServiceImpl::
              privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
 }
 
+bool PrivacySandboxServiceImpl::ShouldUsePrivacyPolicyChinaDomain() {
+  return GetPrivacySandboxCountries()->IsLatestCountryChina();
+}
+
 void PrivacySandboxServiceImpl::TopicsToggleChanged(bool new_value) const {
   RecordUpdatedTopicsConsent(
       privacy_sandbox::TopicsConsentUpdateSource::kSettings, new_value);

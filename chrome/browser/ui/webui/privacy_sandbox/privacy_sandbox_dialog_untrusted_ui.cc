@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_untrusted_ui.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -23,10 +23,14 @@
 #include "url/gurl.h"
 
 namespace {
-PrivacySandboxCountries& GetPrivacySandboxCountries() {
-  static base::NoDestructor<PrivacySandboxCountriesImpl> instance;
-  return *instance;
+
+PrivacySandboxService* GetPrivacySandboxService(content::WebUI* web_ui) {
+  auto* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(Profile::FromWebUI(web_ui));
+  CHECK(privacy_sandbox_service);
+  return privacy_sandbox_service;
 }
+
 }  // namespace
 
 PrivacySandboxDialogUntrustedUIConfig::PrivacySandboxDialogUntrustedUIConfig()
@@ -44,9 +48,10 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIUntrustedPrivacySandboxDialogURL);
 
-  bool is_china_user = GetPrivacySandboxCountries().IsLatestCountryChina();
+  bool should_use_china_domain =
+      GetPrivacySandboxService(web_ui)->ShouldUsePrivacyPolicyChinaDomain();
 
-  std::string privacy_policy_domain = is_china_user
+  std::string privacy_policy_domain = should_use_china_domain
                                           ? "https://policies.google.cn;"
                                           : "https://policies.google.com;";
 
@@ -78,7 +83,7 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
           ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
           : color_scheme == ThemeService::BrowserColorScheme::kDark;
 
-  if (is_china_user) {
+  if (should_use_china_domain) {
     untrusted_source->AddString(
         "privacyPolicyURL",
         is_dark_mode ? chrome::kPrivacyPolicyEmbeddedDarkModeURLPathChina

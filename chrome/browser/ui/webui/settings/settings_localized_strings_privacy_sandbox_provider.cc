@@ -6,8 +6,9 @@
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -26,9 +27,11 @@
 
 namespace settings {
 
-PrivacySandboxCountries& GetPrivacySandboxCountries() {
-  static base::NoDestructor<PrivacySandboxCountriesImpl> instance;
-  return *instance;
+PrivacySandboxService* GetPrivacySandboxService(Profile* profile) {
+  auto* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(profile);
+  DCHECK(privacy_sandbox_service);
+  return privacy_sandbox_service;
 }
 
 // The name of the on-click function when the privacy policy link is pressed.
@@ -295,8 +298,9 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_LINK_ARIA_DESCRIPTION)));
 
-  bool is_china_user = GetPrivacySandboxCountries().IsLatestCountryChina();
-  const char* privacy_policy_url = is_china_user
+  bool should_use_china_domain =
+      GetPrivacySandboxService(profile)->ShouldUsePrivacyPolicyChinaDomain();
+  const char* privacy_policy_url = should_use_china_domain
                                        ? chrome::kPrivacyPolicyURLChina
                                        : chrome::kPrivacyPolicyURL;
 

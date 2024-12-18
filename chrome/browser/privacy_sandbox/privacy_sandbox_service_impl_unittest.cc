@@ -591,6 +591,28 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
                                          std::tuple(false, true, false),
                                          std::tuple(false, false, false)));
 
+class PrivacySandboxShouldUsePrivacyPolicyChinaDomain
+    : public PrivacySandboxServiceTest {};
+
+TEST_F(PrivacySandboxShouldUsePrivacyPolicyChinaDomain, ShouldUseChinaDomain) {
+  ON_CALL(*mock_privacy_sandbox_countries(), IsLatestCountryChina())
+      .WillByDefault(testing::Return(true));
+
+  bool should_use_china_domain =
+      privacy_sandbox_service()->ShouldUsePrivacyPolicyChinaDomain();
+  ASSERT_EQ(should_use_china_domain, true);
+}
+
+TEST_F(PrivacySandboxShouldUsePrivacyPolicyChinaDomain,
+       ShouldNotUseChinaDomain) {
+  ON_CALL(*mock_privacy_sandbox_countries(), IsLatestCountryChina())
+      .WillByDefault(testing::Return(false));
+
+  bool should_use_china_domain =
+      privacy_sandbox_service()->ShouldUsePrivacyPolicyChinaDomain();
+  ASSERT_EQ(should_use_china_domain, false);
+}
+
 TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
   // actions is correctly converted into a list of eTLD+1s.
