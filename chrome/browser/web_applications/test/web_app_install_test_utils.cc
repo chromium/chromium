@@ -182,62 +182,6 @@ webapps::AppId InstallWebAppWithoutOsIntegration(
   return future.Get<webapps::AppId>();
 }
 
-webapps::AppId InstallShortcut(Profile* profile,
-                               const std::string& shortcut_name,
-                               const GURL& start_url,
-                               bool create_default_icon,
-                               bool is_policy_install) {
-  auto web_app_info =
-      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  // Explicitly clear the scope, because this is a shortcut.
-  web_app_info->scope = GURL();
-  web_app_info->title = base::UTF8ToUTF16(shortcut_name);
-  web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
-  if (create_default_icon) {
-    const GeneratedIconsInfo icon_info(
-        IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
-    web_app::AddIconsToWebAppInstallInfo(web_app_info.get(), start_url,
-                                         {icon_info});
-  }
-  // The sync system requires that sync entity name is never empty.
-  if (web_app_info->title.empty()) {
-    web_app_info->title = u"WebAppInstallInfo Shortcut Name";
-  }
-
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      future;
-  auto* provider = WebAppProvider::GetForTest(profile);
-  DCHECK(provider);
-  WaitUntilReady(provider);
-
-  WebAppInstallParams params;
-#if !BUILDFLAG(IS_CHROMEOS)
-  params.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
-  params.add_to_applications_menu = false;
-  params.add_to_desktop = false;
-  params.add_to_quick_launch_bar = false;
-#endif
-
-  // In unit tests, we do not have Browser or WebContents instances. Hence we
-  // use `InstallFromInfoCommand` instead of `FetchManifestAndInstallCommand` or
-  // `WebAppInstallCommand` to install the web app.
-  provider->scheduler().InstallFromInfoWithParams(
-      std::move(web_app_info), /*overwrite_existing_manifest_fields =*/true,
-      is_policy_install ? webapps::WebappInstallSource::EXTERNAL_POLICY
-                        : webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
-      future.GetCallback(), params);
-
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
-            future.Get<webapps::InstallResultCode>());
-
-  // Allow updates to be published to App Service listeners.
-  base::RunLoop().RunUntilIdle();
-
-  CHECK(
-      provider->registrar_unsafe().IsShortcutApp(future.Get<webapps::AppId>()));
-  return future.Get<webapps::AppId>();
-}
-
 void UninstallWebApp(Profile* profile,
                      const webapps::AppId& app_id,
                      webapps::WebappUninstallSource uninstall_source) {

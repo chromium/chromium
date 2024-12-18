@@ -156,8 +156,6 @@ class WebAppRegistrar {
   // CHECK-fail if `allowed_states` is empty.
   // The 'best' criteria is a combination of the following:
   // - The length of the scope of the potential controlling app.
-  // - If the app is a shortcut app or not.
-  // TODO(crbug.com/341316725): Remove shortcut apps.
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
       std::initializer_list<proto::InstallState> allowed_states) const;
@@ -394,10 +392,6 @@ class WebAppRegistrar {
   int GetUrlInAppScopeScore(const std::string& url_spec,
                             const webapps::AppId& app_id) const;
 
-  // Returns whether the app is a shortcut app (as opposed to a PWA).
-  // TODO(crbug.com/341316725): Remove shortcut apps.
-  bool IsShortcutApp(const webapps::AppId& app_id) const;
-
   // Returns whether the app is pending successful navigation in order to
   // complete installation via the ExternallyManagedAppManager.
   bool IsPlaceholderApp(const webapps::AppId& app_id,
@@ -456,13 +450,12 @@ class WebAppRegistrar {
       const std::string& partition_name);
 
   // Returns if the given app_id would ever be eligible to capture links in
-  // its scope. This returns false for apps that aren't installed or for
-  // "Create Shortcut..." apps.
+  // its scope. This returns false for apps that aren't installed.
   bool CanCaptureLinksInScope(const webapps::AppId& app_id) const;
 
   // Returns true if a web app is set to be the default app to
-  // capture links by the user. If an app is not locally installed or is a
-  // shortcut, this returns false.
+  // capture links by the user. If an app is not locally installed, this returns
+  // false.
   bool CapturesLinksInScope(const webapps::AppId& app_id) const;
 
   // Searches for all apps that can control this url, and chooses the best one

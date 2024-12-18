@@ -142,18 +142,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Launch.BrowserTab.CreateShortcutApp.WebAppDisplayMode"
-    enum="WebAppDisplayMode" expires_after="2025-04-28">
-  <owner>dmurph@chromium.org</owner>
-  <owner>pwa-team@google.com</owner>
-  <summary>
-    Records the display mode (as defined in the Web App Manifest spec) at the
-    launch of a web app that was created using &quot;Create Shortcut...&quot; on
-    desktop. This is only recorded if the launch was to a browser tab context,
-    not a standalone window.
-  </summary>
-</histogram>
-
 <histogram name="Launch.BrowserTab.DiyApp.WebAppDisplayMode"
     enum="WebAppDisplayMode" expires_after="2025-12-10">
   <owner>dibyapal@chromium.org</owner>
@@ -254,18 +242,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the launch_handler.client_mode used when a web app is launched in a
     window.
-  </summary>
-</histogram>
-
-<histogram name="Launch.Window.CreateShortcutApp.WebAppDisplayMode"
-    enum="WebAppDisplayMode" expires_after="2025-10-12">
-  <owner>dmurph@chromium.org</owner>
-  <owner>pwa-team@google.com</owner>
-  <summary>
-    Records the display mode (as defined in the Web App Manifest spec) at the
-    launch of a shortcut created using &quot;Add to Homescreen&quot; on mobile,
-    or a &quot;Create Shortcut...&quot; on desktop. This is only recorded if the
-    launch was to a windowed context, not a browser tab.
   </summary>
 </histogram>
 

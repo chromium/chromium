@@ -758,87 +758,17 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   EXPECT_FALSE(app4_match);
 }
 
-TEST_F(WebAppRegistrarTest, CanFindShortcutWithUrlInScope) {
-  StartWebAppProvider();
-
-  const GURL app1_page("https://example.com/app/page");
-  const GURL app2_page("https://example.com/app-two/page");
-  const GURL app3_page("https://not-example.com/app/page");
-
-  const GURL app1_launch("https://example.com/app/launch");
-  const GURL app2_launch("https://example.com/app-two/launch");
-  const GURL app3_launch("https://not-example.com/app/launch");
-
-  const webapps::AppId app1_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, app1_launch);
-  const webapps::AppId app2_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, app2_launch);
-  const webapps::AppId app3_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, app3_launch);
-
-  // Implicit scope "https://example.com/app/"
-  auto app1 = test::CreateWebApp(app1_launch);
-  RegisterAppUnsafe(std::move(app1));
-
-  std::optional<webapps::AppId> app2_match =
-      registrar().FindBestAppWithUrlInScope(
-          app2_page, {
-                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                     });
-  EXPECT_FALSE(app2_match);
-
-  std::optional<webapps::AppId> app3_match =
-      registrar().FindBestAppWithUrlInScope(
-          app3_page, {
-                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                     });
-  EXPECT_FALSE(app3_match);
-
-  auto app2 = test::CreateWebApp(app2_launch);
-  RegisterAppUnsafe(std::move(app2));
-
-  auto app3 = test::CreateWebApp(app3_launch);
-  RegisterAppUnsafe(std::move(app3));
-
-  std::optional<webapps::AppId> app1_match =
-      registrar().FindBestAppWithUrlInScope(
-          app1_page, {
-                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                     });
-  DCHECK(app1_match);
-  EXPECT_EQ(app1_match, std::optional<webapps::AppId>(app1_id));
-
-  app2_match = registrar().FindBestAppWithUrlInScope(
-      app2_page, {
-                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                 });
-  DCHECK(app2_match);
-  EXPECT_EQ(app2_match, std::optional<webapps::AppId>(app2_id));
-
-  app3_match = registrar().FindBestAppWithUrlInScope(
-      app3_page, {
-                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                 });
-  DCHECK(app3_match);
-  EXPECT_EQ(app3_match, std::optional<webapps::AppId>(app3_id));
-}
-
-TEST_F(WebAppRegistrarTest, FindPwaOverShortcut) {
+TEST_F(WebAppRegistrarTest, FindPwaBasedOnStartUrlIfScopeIsEmpty) {
   StartWebAppProvider();
 
   const GURL app1_launch("https://example.com/app/specific/launch1");
 
   const GURL app2_scope("https://example.com/app");
   const GURL app2_page("https://example.com/app/specific/page2");
-  const webapps::AppId app2_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, app2_scope);
 
   const GURL app3_launch("https://example.com/app/specific/launch3");
+  const webapps::AppId app3_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, app3_launch);
 
   auto app1 = test::CreateWebApp(app1_launch);
   RegisterAppUnsafe(std::move(app1));
@@ -856,8 +786,8 @@ TEST_F(WebAppRegistrarTest, FindPwaOverShortcut) {
                          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
                          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                      });
-  DCHECK(app2_match);
-  EXPECT_EQ(app2_match, std::optional<webapps::AppId>(app2_id));
+  ASSERT_TRUE(app2_match);
+  EXPECT_EQ(app2_match, std::optional<webapps::AppId>(app3_id));
 }
 
 TEST_F(WebAppRegistrarTest, BeginAndCommitUpdate) {

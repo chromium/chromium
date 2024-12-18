@@ -97,11 +97,6 @@ class WebAppPublisherHelperTest : public testing::Test {
 
   Profile* profile() { return profile_.get(); }
 
-  webapps::AppId CreateShortcut(const GURL& shortcut_url,
-                                const std::string& shortcut_name) {
-    return test::InstallShortcut(profile(), shortcut_name, shortcut_url);
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   NoOpWebAppPublisherDelegate no_op_delegate_;

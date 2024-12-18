@@ -480,15 +480,6 @@ int WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
   return score;
 }
 
-bool WebAppRegistrar::IsShortcutApp(const webapps::AppId& app_id) const {
-  if (!GetAppById(app_id)) {
-    return false;
-  }
-  // TODO(crbug.com/40277513): Record shortcut distinction explicitly instead of
-  // using scope.
-  return !GetAppScopeInternal(app_id).has_value();
-}
-
 bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->IsSystemApp();
@@ -788,7 +779,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
 
   std::optional<webapps::AppId> best_app_id;
   int best_score = 0;
-  bool best_app_is_shortcut = true;
 
   for (const webapps::AppId& app_id :
        GetAppIdsForAppSet(GetAppsIncludingStubs())) {
@@ -803,11 +793,8 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
     if (!options.include_diy && IsDiyApp(app_id)) {
       continue;
     }
-    // TODO(crbug.com/40277513): Consider treating shortcuts differently to
-    // PWAs.
-    // TODO(crbug.com/341316725): Remove shortcut apps.
-    bool app_is_shortcut = IsShortcutApp(app_id);
-    if (app_is_shortcut && !best_app_is_shortcut) {
+
+    if (!GetAppScope(app_id).is_valid()) {
       continue;
     }
 
@@ -820,11 +807,9 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
       score = GetUrlInAppScopeScore(url_spec, app_id);
     }
 
-    if (score > 0 &&
-        (score > best_score || (best_app_is_shortcut && !app_is_shortcut))) {
+    if (score > 0 && score > best_score) {
       best_app_id = app_id;
       best_score = score;
-      best_app_is_shortcut = app_is_shortcut;
     }
   }
   return best_app_id;
@@ -1125,7 +1110,6 @@ bool WebAppRegistrar::CanCaptureLinksInScope(
   if (!IsInstallState(app_id,
                       {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
-      IsShortcutApp(app_id) ||
       !IsSupportedDisplayModeForNavigationCapture(
           GetAppEffectiveDisplayMode(app_id))) {
     return false;
@@ -1276,7 +1260,7 @@ bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
     return IsInstallState(
                app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) &&
-           !IsShortcutApp(app_id) && other_score > app_score;
+           other_score > app_score;
   });
 }
 
@@ -1493,12 +1477,6 @@ std::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
   if (!web_app)
     return std::nullopt;
 
-  // TODO(crbug.com/40277513): Record shortcut distinction explicitly instead of
-  // using scope.
-  // Shortcuts on the WebApp system have empty scopes, while the implementation
-  // of IsShortcutApp just checks if the scope is |std::nullopt|, so make sure
-  // we return |std::nullopt| rather than an empty scope.
-  // TODO(crbug.com/341316725): Remove shortcut apps.
   if (web_app->scope().is_empty())
     return std::nullopt;
 

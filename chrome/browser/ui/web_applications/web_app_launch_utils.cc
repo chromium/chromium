@@ -1234,10 +1234,6 @@ void RecordAppWindowLaunchMetric(Profile* profile,
     DCHECK_LT(DisplayMode::kUndefined, display);
     DCHECK_LE(display, DisplayMode::kMaxValue);
     base::UmaHistogramEnumeration("Launch.WebAppDisplayMode", display);
-    if (provider->registrar_unsafe().IsShortcutApp(app_id)) {
-      base::UmaHistogramEnumeration(
-          "Launch.Window.CreateShortcutApp.WebAppDisplayMode", display);
-    }
     if (web_app->is_diy_app()) {
       base::UmaHistogramEnumeration("Launch.Window.DiyApp.WebAppDisplayMode",
                                     display);
@@ -1274,11 +1270,6 @@ void RecordAppTabLaunchMetric(Profile* profile,
     DCHECK_LE(display, DisplayMode::kMaxValue);
     base::UmaHistogramEnumeration("Launch.BrowserTab.WebAppDisplayMode",
                                   display);
-    if (provider->registrar_unsafe().IsShortcutApp(app_id)) {
-      base::UmaHistogramEnumeration(
-          "Launch.BrowserTab.CreateShortcutApp.WebAppDisplayMode", display);
-    }
-
     if (web_app->is_diy_app()) {
       base::UmaHistogramEnumeration(
           "Launch.BrowserTab.DiyApp.WebAppDisplayMode", display);

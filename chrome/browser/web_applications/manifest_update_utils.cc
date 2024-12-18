@@ -202,15 +202,8 @@ bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,
   // Shortcut apps may immediately trigger the identity updating if the user
   // has overridden the title of the app, see: https://crbug.com/1366600
   // Don't show the update prompt for shortcut apps and always revert.
-  // Also, ideally we should just use IsShortcutApp here instead of checking the
-  // install source, but as per https://crbug.com/1368592 there is a bug with
-  // that where it returns the wrong thing for Shortcut apps that specify
-  // `scope`.
-  bool is_shortcut_app =
-      registrar.IsShortcutApp(web_app.app_id()) ||
-      registrar.GetLatestAppInstallSource(web_app.app_id()) ==
-          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT;
-  if (is_shortcut_app) {
+  if (registrar.GetLatestAppInstallSource(web_app.app_id()) ==
+      webapps::WebappInstallSource::MENU_CREATE_SHORTCUT) {
     return false;
   }
 
