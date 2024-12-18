@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 // ProcessScopeDependencyProviderImpl
 @JNINamespace("feed::android")
 public class FeedProcessScopeDependencyProvider implements ProcessScopeDependencyProvider {
-    private static final String FEED_SPLIT_NAME = "feedv2";
+    private static final String FEED_SPLIT_NAME = "google3";
 
     private ImageFetchClient mImageFetchClient;
 
