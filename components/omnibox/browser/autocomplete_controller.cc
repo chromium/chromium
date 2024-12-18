@@ -1796,13 +1796,9 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
         num_zero_prefix_suggestions_shown);
   }
   searchbox_stats.set_num_zero_prefix_suggestions_shown(
-      omnibox_feature_configs::ReportNumZPSInSession::Get().enabled
-          ? result->num_zero_prefix_suggestions_shown_in_session()
-          : num_zero_prefix_suggestions_shown);
+      result->num_zero_prefix_suggestions_shown_in_session());
   searchbox_stats.set_zero_prefix_enabled(
-      omnibox_feature_configs::ReportNumZPSInSession::Get().enabled
-          ? result->zero_prefix_enabled_in_session()
-          : searchbox_stats.num_zero_prefix_suggestions_shown() > 0);
+      result->zero_prefix_enabled_in_session());
 
   // Go over all matches and set searchbox stats if the match supports it.
   for (size_t index = 0; index < result->size(); ++index) {

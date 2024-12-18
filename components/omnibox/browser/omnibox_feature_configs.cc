@@ -80,13 +80,6 @@ RealboxContextualAndTrendingSuggestions::
 }
 
 // static
-BASE_FEATURE(ReportNumZPSInSession::kReportNumZPSInSession,
-             "ReportNumZPSInSession",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-ReportNumZPSInSession::ReportNumZPSInSession()
-    : enabled(base::FeatureList::IsEnabled(kReportNumZPSInSession)) {}
-
-// static
 BASE_FEATURE(SuggestionAnswerMigration::kOmniboxSuggestionAnswerMigration,
              "OmniboxSuggestionAnswerMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
