@@ -26,6 +26,7 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Instrumentation;
+import android.os.Build;
 import android.view.View;
 import android.widget.Spinner;
 
@@ -46,6 +47,7 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -237,6 +239,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41496702")
     public void testQuickDeleteHistogram_WhenClickingDelete() throws TimeoutException {
         openQuickDeleteDialog();
 

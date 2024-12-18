@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Build;
 
 import androidx.preference.Preference;
 import androidx.test.core.app.ApplicationProvider;
@@ -27,6 +28,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -220,6 +222,7 @@ public class SafetyCheckSettingsFragmentTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41496704")
     public void testNullStateDisplayedCorrectlySyncOnNoUsingSplitStores() {
         verifyNullStateDisplayedCorrectly(
                 /* isPasswordSyncEnabled= */ true, /* usesSplitStores= */ false);
@@ -227,6 +230,7 @@ public class SafetyCheckSettingsFragmentTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41496704")
     public void testNullStateDisplayedCorrectlySyncOnUsingSplitStores() {
         verifyNullStateDisplayedCorrectly(true, true);
     }

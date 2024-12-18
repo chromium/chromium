@@ -1914,6 +1914,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
     public void testCameraBlocked() throws Exception {
         new TwoStatePermissionTestCase(
                         "Camera",
@@ -1938,6 +1939,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
     public void testCameraNotBlocked() throws Exception {
         new TwoStatePermissionTestCase(
                         "Camera",
@@ -1985,6 +1987,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
     public void testMicNotBlocked() throws Exception {
         new TwoStatePermissionTestCase(
                         "Mic",
