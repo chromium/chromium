@@ -109,7 +109,7 @@ DirectoryLister::Core::~Core() = default;
 void DirectoryLister::Core::CancelOnOriginSequence() {
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
 
-  base::subtle::NoBarrier_Store(&cancelled_, 1);
+  cancelled_.store(true, std::memory_order_relaxed);
   // Core must not call into |lister_| after cancellation, as the |lister_| may
   // have been destroyed. Setting |lister_| to NULL ensures any such access will
   // cause a crash.
@@ -174,7 +174,7 @@ void DirectoryLister::Core::Start() {
 }
 
 bool DirectoryLister::Core::IsCancelled() const {
-  return !!base::subtle::NoBarrier_Load(&cancelled_);
+  return cancelled_.load(std::memory_order_relaxed);
 }
 
 void DirectoryLister::Core::DoneOnOriginSequence(
