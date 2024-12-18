@@ -44,7 +44,6 @@
 
 # crbug.com/376527109
 -org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinatorTest.testIphMessageResizedOnTablet
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
 -org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
 
 # crbug.com/376528174
