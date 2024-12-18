@@ -14,8 +14,7 @@ namespace blink {
 namespace {
 
 // Represents a fragmentainer. This is in the logical coordinate system
-// because the size of the fragmentation context may not have determined yet.
-// In that case, physical coordinates can't be computed yet.
+// for convenience reasons.
 struct FragmentainerContext {
   STACK_ALLOCATED();
 
@@ -45,12 +44,12 @@ struct StitchedAnchorReference
     return stitched_rect;
   }
 
-  LogicalAnchorReference* GetStitchedAnchorReference(
+  PhysicalAnchorReference* GetStitchedAnchorReference(
       const WritingModeConverter& converter) const {
     DCHECK(layout_object);
     PhysicalRect physical_rect = converter.ToPhysical(StitchedRect());
 
-    return MakeGarbageCollected<LogicalAnchorReference>(
+    return MakeGarbageCollected<PhysicalAnchorReference>(
         *layout_object, physical_rect, /* is_out_of_flow */ false, nullptr);
   }
 
@@ -78,17 +77,17 @@ struct StitchedAnchorReference
 };
 
 // This creates anchor queries in the stitched coordinate system. The result
-// can be converted to a |LogicalAnchorQuery|.
+// can be converted to a |PhysicalAnchorQuery|.
 struct StitchedAnchorQuery : public GarbageCollected<StitchedAnchorQuery>,
                              public AnchorQueryBase<StitchedAnchorReference> {
   using Base = AnchorQueryBase<StitchedAnchorReference>;
 
-  // Convert |this| to a |LogicalAnchorQuery|. The result is a regular
-  // |LogicalAnchorQuery| except that its coordinate system is stitched
+  // Convert |this| to a |PhysicalAnchorQuery|. The result is a regular
+  // |PhysicalAnchorQuery| except that its coordinate system is stitched
   // (i.e., as if they weren't fragmented.)
-  LogicalAnchorQuery* GetStitchedAnchorQuery(
+  PhysicalAnchorQuery* GetStitchedAnchorQuery(
       const WritingModeConverter& converter) const {
-    auto* anchor_query = MakeGarbageCollected<LogicalAnchorQuery>();
+    auto* anchor_query = MakeGarbageCollected<PhysicalAnchorQuery>();
     for (const auto entry : *this) {
       anchor_query->Set(entry.key,
                         entry.value->GetStitchedAnchorReference(converter));
@@ -370,7 +369,7 @@ void StitchedAnchorQueries::SetChildren(
   }
 }
 
-const LogicalAnchorQuery* StitchedAnchorQueries::AnchorQuery(
+const PhysicalAnchorQuery* StitchedAnchorQueries::AnchorQuery(
     const LayoutObject& containing_block) const {
   DCHECK(&containing_block);
   DCHECK(containing_block.CanContainAbsolutePositionObjects() ||

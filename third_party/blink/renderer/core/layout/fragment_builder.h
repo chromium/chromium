@@ -187,7 +187,7 @@ class CORE_EXPORT FragmentBuilder {
   void PropagateChildAnchors(const PhysicalFragment& child,
                              const LogicalOffset& child_offset);
 
-  const LogicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
+  const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
 
   // Builder has non-trivial OOF-positioned methods.
   // They are intended to be used by a layout algorithm like this:
@@ -524,7 +524,7 @@ class CORE_EXPORT FragmentBuilder {
 
   HeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
   HeapVector<Member<Element>>& EnsureSnapAreas();
-  LogicalAnchorQuery& EnsureAnchorQuery();
+  PhysicalAnchorQuery& EnsureAnchorQuery();
 
   void PropagateFromLayoutResultAndFragment(
       const LayoutResult&,
@@ -577,7 +577,7 @@ class CORE_EXPORT FragmentBuilder {
   HeapVector<Member<Element>>* snap_areas_ = nullptr;
   // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target
   const LayoutObject* scroll_start_target_ = nullptr;
-  LogicalAnchorQuery* anchor_query_ = nullptr;
+  PhysicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   std::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;

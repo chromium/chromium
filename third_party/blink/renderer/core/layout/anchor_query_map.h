@@ -41,10 +41,10 @@ class CORE_EXPORT StitchedAnchorQueries {
 
   bool IsEmpty() const { return !has_anchor_queries_; }
 
-  // Get |LogicalAnchorQuery| in the stitched coordinate system for the given
+  // Get |PhysicalAnchorQuery| in the stitched coordinate system for the given
   // containing block. If there is no anchor query for the containing block,
   // returns an empty instance.
-  const LogicalAnchorQuery* AnchorQuery(
+  const PhysicalAnchorQuery* AnchorQuery(
       const LayoutObject& containing_block) const;
 
   // Update |children| when their anchor queries are changed.
@@ -53,7 +53,7 @@ class CORE_EXPORT StitchedAnchorQueries {
  private:
   void Update(const LayoutObject& layout_object) const;
 
-  mutable HeapHashMap<Member<const LayoutObject>, Member<LogicalAnchorQuery>>
+  mutable HeapHashMap<Member<const LayoutObject>, Member<PhysicalAnchorQuery>>
       queries_;
   mutable const LayoutObject* computed_for_ = nullptr;
   const LayoutBox& root_box_;

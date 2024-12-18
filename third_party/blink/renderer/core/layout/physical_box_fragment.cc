@@ -850,8 +850,10 @@ void PhysicalBoxFragment::MutableForOofFragmentation::Merge(
     if (!fragment_.oof_data_) {
       fragment_.oof_data_ = MakeGarbageCollected<OofData>();
     }
+    PhysicalAnchorQuery& anchor_query =
+        fragment_.oof_data_->EnsureAnchorQuery();
     for (auto entry : *query) {
-      fragment_.oof_data_->AnchorQuery().insert(entry.key, entry.value);
+      anchor_query.insert(entry.key, entry.value);
     }
   }
 

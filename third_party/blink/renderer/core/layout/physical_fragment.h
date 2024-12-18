@@ -679,20 +679,20 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
            PropagatedSnapAreas();
   }
 
-  class OofData : public GarbageCollected<OofData>,
-                  private PhysicalAnchorQuery {
+  class OofData : public GarbageCollected<OofData> {
    public:
     virtual ~OofData() = default;
-    void Trace(Visitor* visitor) const override;
+    virtual void Trace(Visitor* visitor) const;
     HeapVector<PhysicalOofPositionedNode>& OofPositionedDescendants() {
       return oof_positioned_descendants_;
     }
-    PhysicalAnchorQuery& AnchorQuery() {
-      return *static_cast<PhysicalAnchorQuery*>(this);
-    }
+    void SetAnchorQuery(PhysicalAnchorQuery* query) { anchor_query_ = query; }
+    const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
+    PhysicalAnchorQuery& EnsureAnchorQuery();
 
    private:
     HeapVector<PhysicalOofPositionedNode> oof_positioned_descendants_;
+    Member<PhysicalAnchorQuery> anchor_query_;
   };
 
   // Returns true if some child is OOF in the fragment tree. This happens if
@@ -716,7 +716,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   base::span<PhysicalOofPositionedNode> OutOfFlowPositionedDescendants() const;
 
   bool HasAnchorQuery() const {
-    return oof_data_ && !oof_data_->AnchorQuery().IsEmpty();
+    return oof_data_ && oof_data_->AnchorQuery() &&
+           !oof_data_->AnchorQuery()->IsEmpty();
   }
   bool HasAnchorQueryToPropagate() const {
     return HasAnchorQuery() || IsAnchor();
@@ -724,7 +725,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   const PhysicalAnchorQuery* AnchorQuery() const {
     if (!HasAnchorQuery())
       return nullptr;
-    return &oof_data_->AnchorQuery();
+    return oof_data_->AnchorQuery();
   }
 
   const FragmentedOofData* GetFragmentedOofData() const;

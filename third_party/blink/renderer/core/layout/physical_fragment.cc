@@ -552,11 +552,11 @@ PhysicalFragment::OofData* PhysicalFragment::OofDataFromBuilder(
     }
   }
 
-  if (const LogicalAnchorQuery* anchor_query = builder->AnchorQuery()) {
+  if (builder->anchor_query_) {
     if (!oof_data) {
       oof_data = MakeGarbageCollected<OofData>();
     }
-    oof_data->AnchorQuery().SetFromLogical(*anchor_query, converter);
+    oof_data->SetAnchorQuery(builder->anchor_query_);
   }
 
   return oof_data;
@@ -1030,7 +1030,14 @@ bool PhysicalFragment::DependsOnPercentageBlockSize(
 
 void PhysicalFragment::OofData::Trace(Visitor* visitor) const {
   visitor->Trace(oof_positioned_descendants_);
-  PhysicalAnchorQuery::Trace(visitor);
+  visitor->Trace(anchor_query_);
+}
+
+PhysicalAnchorQuery& PhysicalFragment::OofData::EnsureAnchorQuery() {
+  if (!anchor_query_) {
+    anchor_query_ = MakeGarbageCollected<PhysicalAnchorQuery>();
+  }
+  return *anchor_query_;
 }
 
 std::ostream& operator<<(std::ostream& out, const PhysicalFragment& fragment) {

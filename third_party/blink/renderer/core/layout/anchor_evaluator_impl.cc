@@ -85,18 +85,10 @@ CSSAnchorValue PhysicalAnchorValueFromInsideOutside(CSSAnchorValue anchor_value,
 
 }  // namespace
 
-PhysicalAnchorReference::PhysicalAnchorReference(
-    const LogicalAnchorReference& logical_reference,
-    const WritingModeConverter& converter)
-    : rect(logical_reference.rect),
-      layout_object(logical_reference.layout_object),
-      display_locks(logical_reference.display_locks),
-      is_out_of_flow(logical_reference.is_out_of_flow) {}
-
-void LogicalAnchorReference::InsertInReverseTreeOrderInto(
-    Member<LogicalAnchorReference>* head_ptr) {
+void PhysicalAnchorReference::InsertInReverseTreeOrderInto(
+    Member<PhysicalAnchorReference>* head_ptr) {
   for (;;) {
-    LogicalAnchorReference* const head = *head_ptr;
+    PhysicalAnchorReference* const head = *head_ptr;
     DCHECK(!head || head->layout_object);
     if (!head || head->layout_object->IsBeforeInPreOrder(*layout_object)) {
       next = head;
@@ -184,39 +176,23 @@ const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
   return nullptr;
 }
 
-const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
-    const LayoutBox& query_box,
-    const AnchorKey& key) const {
-  if (const LogicalAnchorReference* reference = Base::GetAnchorReference(key)) {
-    for (const LogicalAnchorReference* result = reference; result;
-         result = result->next) {
-      if ((!result->is_out_of_flow ||
-           result->layout_object->IsBeforeInPreOrder(query_box)) &&
-          InSameAnchorScope(key, query_box, *result->layout_object)) {
-        return result;
-      }
-    }
-  }
-  return nullptr;
-}
-
-void LogicalAnchorQuery::Set(const AnchorKey& key,
-                             const LayoutObject& layout_object,
-                             const PhysicalRect& rect,
-                             SetOptions options,
-                             Element* element_for_display_lock) {
+void PhysicalAnchorQuery::Set(const AnchorKey& key,
+                              const LayoutObject& layout_object,
+                              const PhysicalRect& rect,
+                              SetOptions options,
+                              Element* element_for_display_lock) {
   HeapHashSet<Member<Element>>* display_locks = nullptr;
   if (element_for_display_lock) {
     display_locks = MakeGarbageCollected<HeapHashSet<Member<Element>>>();
     display_locks->insert(element_for_display_lock);
   }
-  Set(key, MakeGarbageCollected<LogicalAnchorReference>(
+  Set(key, MakeGarbageCollected<PhysicalAnchorReference>(
                layout_object, rect, options == SetOptions::kOutOfFlow,
                display_locks));
 }
 
-void LogicalAnchorQuery::Set(const AnchorKey& key,
-                             LogicalAnchorReference* reference) {
+void PhysicalAnchorQuery::Set(const AnchorKey& key,
+                              PhysicalAnchorReference* reference) {
   DCHECK(reference);
   DCHECK(!reference->next);
   const auto result = Base::insert(key, reference);
@@ -224,12 +200,13 @@ void LogicalAnchorQuery::Set(const AnchorKey& key,
     return;
 
   // If this is a fragment of the existing |LayoutObject|, unite the rect.
-  Member<LogicalAnchorReference>* const existing_head_ptr = result.stored_value;
-  LogicalAnchorReference* const existing_head = *existing_head_ptr;
+  Member<PhysicalAnchorReference>* const existing_head_ptr =
+      result.stored_value;
+  PhysicalAnchorReference* const existing_head = *existing_head_ptr;
   DCHECK(existing_head);
   const LayoutObject* new_object = reference->layout_object;
   DCHECK(new_object);
-  for (LogicalAnchorReference* existing = existing_head; existing;
+  for (PhysicalAnchorReference* existing = existing_head; existing;
        existing = existing->next) {
     const LayoutObject* existing_object = existing->layout_object;
     DCHECK(existing_object);
@@ -244,28 +221,7 @@ void LogicalAnchorQuery::Set(const AnchorKey& key,
   reference->InsertInReverseTreeOrderInto(existing_head_ptr);
 }
 
-void PhysicalAnchorQuery::SetFromLogical(
-    const LogicalAnchorQuery& logical_query,
-    const WritingModeConverter& converter) {
-  // This function assumes |this| is empty on the entry. Merging multiple
-  // references is not supported.
-  DCHECK(IsEmpty());
-  for (const auto entry : logical_query) {
-    auto* head =
-        MakeGarbageCollected<PhysicalAnchorReference>(*entry.value, converter);
-    PhysicalAnchorReference* tail = head;
-    for (LogicalAnchorReference* runner = entry.value->next; runner;
-         runner = runner->next) {
-      tail->next =
-          MakeGarbageCollected<PhysicalAnchorReference>(*runner, converter);
-      tail = tail->next;
-    }
-    const auto result = Base::insert(entry.key, head);
-    DCHECK(result.is_new_entry);
-  }
-}
-
-void LogicalAnchorQuery::SetFromPhysical(
+void PhysicalAnchorQuery::SetFromChild(
     const PhysicalAnchorQuery& physical_query,
     PhysicalOffset additional_offset,
     SetOptions options,
@@ -292,15 +248,15 @@ void LogicalAnchorQuery::SetFromPhysical(
       if (element_for_display_lock) {
         display_locks->insert(element_for_display_lock);
       }
-      Set(entry.key, MakeGarbageCollected<LogicalAnchorReference>(
+      Set(entry.key, MakeGarbageCollected<PhysicalAnchorReference>(
                          *reference->layout_object, rect,
                          options == SetOptions::kOutOfFlow, display_locks));
     }
   }
 }
 
-std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
-    const LogicalAnchorReference& reference,
+std::optional<LayoutUnit> PhysicalAnchorQuery::EvaluateAnchor(
+    const PhysicalAnchorReference& reference,
     CSSAnchorValue anchor_value,
     float percentage,
     LayoutUnit available_size,
@@ -391,8 +347,8 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
   return value;
 }
 
-LayoutUnit LogicalAnchorQuery::EvaluateSize(
-    const LogicalAnchorReference& reference,
+LayoutUnit PhysicalAnchorQuery::EvaluateSize(
+    const PhysicalAnchorReference& reference,
     CSSAnchorSizeValue anchor_size_value,
     WritingMode container_writing_mode,
     WritingMode self_writing_mode) const {
@@ -425,7 +381,7 @@ LayoutUnit LogicalAnchorQuery::EvaluateSize(
   NOTREACHED();
 }
 
-const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
+const PhysicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
   if (anchor_query_)
     return anchor_query_;
   if (anchor_queries_) {
@@ -458,13 +414,13 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
   }
 }
 
-const LogicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
+const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
     const AnchorSpecifierValue& anchor_specifier,
     const ScopedCSSName* position_anchor) const {
   if (!anchor_specifier.IsNamed() && !position_anchor && !implicit_anchor_) {
     return nullptr;
   }
-  const LogicalAnchorQuery* anchor_query = AnchorQuery();
+  const PhysicalAnchorQuery* anchor_query = AnchorQuery();
   if (!anchor_query) {
     return nullptr;
   }
@@ -481,7 +437,7 @@ const LogicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
 const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(
     const ScopedCSSName* position_anchor) const {
   return cached_default_anchor_.Get(position_anchor, [&]() {
-    const LogicalAnchorReference* reference = ResolveAnchorReference(
+    const PhysicalAnchorReference* reference = ResolveAnchorReference(
         *AnchorSpecifierValue::Default(), position_anchor);
     return reference ? reference->layout_object : nullptr;
   });
@@ -558,7 +514,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     return std::nullopt;
   }
 
-  const LogicalAnchorReference* anchor_reference =
+  const PhysicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier, position_anchor);
   if (!anchor_reference) {
     return std::nullopt;
@@ -612,7 +568,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
       anchor_size_value = CSSAnchorSizeValue::kWidth;
     }
   }
-  const LogicalAnchorReference* anchor_reference =
+  const PhysicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier, position_anchor);
   if (!anchor_reference) {
     return std::nullopt;
@@ -805,12 +761,6 @@ PhysicalRect AnchorEvaluatorImpl::PositionAreaModifiedContainingBlock(
 
         return position_area_modified_containing_block_rect;
       });
-}
-
-void LogicalAnchorReference::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_object);
-  visitor->Trace(next);
-  visitor->Trace(display_locks);
 }
 
 void PhysicalAnchorReference::Trace(Visitor* visitor) const {
