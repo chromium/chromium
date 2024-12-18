@@ -514,6 +514,16 @@ bool CheckVulkanCompatibilities(
       }
     }
 
+    // Most Mali-G57 devices had vkCreateInstance() fail and would use GL. Add
+    // them to the blocklist to keep these devices from using Vulkan with
+    // Graphite. The exception is devices with driver version >= 41 had
+    // vkCreateInstance() pass and were running Vulkan. See
+    // https://crbug.com/384531040 for more info.
+    if (device_name == "G57" &&
+        device_properties.driver_version < VK_MAKE_VERSION(41, 0, 0)) {
+      return false;
+    }
+
     return IsVulkanV1EnabledForMali(gpu_info) ||
            IsVulkanV2EnabledForMali(gpu_info);
   }
