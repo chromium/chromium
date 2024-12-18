@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/cloned_install_detector.h"

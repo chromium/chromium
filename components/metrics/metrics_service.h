@@ -30,7 +30,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_store.h"
@@ -177,7 +176,7 @@ class MetricsService {
   // be included in the next log.
   void MarkCurrentHistogramsAsReported();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Binds a user log store to store unsent logs. This log store will be
   // fully managed by MetricsLogStore. This will no-op if another log store has
   // already been set.
@@ -227,9 +226,7 @@ class MetricsService {
 
   // Updates the current user metrics consent. No-ops if no user has logged in.
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Forces the client ID to be reset and generates a new client ID. This will
   // be called when a user re-consents to metrics collection and the user had
   // consented in the past.

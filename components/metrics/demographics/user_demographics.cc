@@ -16,7 +16,7 @@
 
 namespace metrics {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr auto kSyncDemographicsPrefFlags =
     user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF;
 #else
@@ -37,7 +37,7 @@ constexpr auto kDeprecatedDemographicsBirthYearOffsetPrefFlags =
 namespace {
 
 const base::Value::Dict& GetDemographicsDict(PrefService* profile_prefs) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40240008): On Ash only, clear sync demographics pref once
   // os-level syncable pref is fully rolled out and Ash drops support for
   // non-os-level syncable prefs.
@@ -193,7 +193,7 @@ void RegisterDemographicsLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterDemographicsProfilePrefs(PrefRegistrySimple* registry) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterDictionaryPref(kSyncOsDemographicsPrefName,
                                    kSyncOsDemographicsPrefFlags);
 #endif
@@ -214,7 +214,7 @@ void ClearDemographicsPrefs(PrefService* profile_prefs) {
   // to change for a given user + client id, then the min/max noisy birth year
   // values could both be reported, revealing the true value in the middle.
   profile_prefs->ClearPref(kSyncDemographicsPrefName);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   profile_prefs->ClearPref(kSyncOsDemographicsPrefName);
 #endif
 }

@@ -149,7 +149,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/field_trials_provider.h"
@@ -295,7 +294,7 @@ const int kInitializationDelaySeconds = 30;
 // The browser last live timestamp is updated every 15 minutes.
 const int kUpdateAliveTimestampSeconds = 15 * 60;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 enum UserLogStoreState {
   kSetPostSendLogsState = 0,
   kSetPreSendLogsState = 1,
@@ -307,7 +306,7 @@ enum UserLogStoreState {
 void RecordUserLogStoreState(UserLogStoreState state) {
   base::UmaHistogramEnumeration("UMA.CrosPerUser.UserLogStoreState", state);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -669,7 +668,7 @@ void MetricsService::MarkCurrentHistogramsAsReported() {
       &snapshot_manager);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void MetricsService::SetUserLogStore(
     std::unique_ptr<UnsentLogStore> user_log_store) {
   if (log_store()->has_alternate_ongoing_log_store())
@@ -754,9 +753,7 @@ void MetricsService::UpdateCurrentUserMetricsConsent(
     bool user_metrics_consent) {
   client_->UpdateCurrentUserMetricsConsent(user_metrics_consent);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 void MetricsService::ResetClientId() {
   // Pref must be cleared in order for ForceClientIdCreation to generate a new
   // client ID.
@@ -1421,11 +1418,11 @@ std::unique_ptr<MetricsLog> MetricsService::CreateLog(
       state_manager_->client_id(), session_id_, log_type, client_);
   new_metrics_log->AssignRecordId(local_state_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<std::string> user_id = GetCurrentUserId();
   if (user_id.has_value())
     new_metrics_log->SetUserId(user_id.value());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return new_metrics_log;
 }

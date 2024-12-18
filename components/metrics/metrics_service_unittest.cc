@@ -1426,28 +1426,7 @@ TEST_F(MetricsServiceTest, PurgeLogsOnClonedInstallDetected) {
   EXPECT_FALSE(test_log_store->has_unsent_logs());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// ResetClientId is only enabled on certain targets.
-TEST_F(MetricsServiceTest, SetClientIdToExternalId) {
-  EnableMetricsReporting();
-  TestMetricsServiceClient client;
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
-
-  const std::string client_id = "d92ad666-a420-4c73-8718-94311ae2ff5f";
-
-  EXPECT_NE(service.GetClientId(), client_id);
-
-  service.SetExternalClientId(client_id);
-  // Reset will cause the client id to be regenerated. If an external client id
-  // is provided, it should defer to using that id instead of creating its own.
-  service.ResetClientId();
-
-  EXPECT_EQ(service.GetClientId(), client_id);
-}
-#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(MetricsServiceTest,
        OngoingLogNotFlushedBeforeInitialLogWhenUserLogStoreSet) {
   EnableMetricsReporting();
@@ -1607,6 +1586,6 @@ TEST_F(MetricsServiceTest, UnsettingLogStoreShouldDisableRecording) {
   base::RecordAction(base::UserMetricsAction("TestAction"));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace metrics

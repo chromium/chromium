@@ -436,9 +436,9 @@ void MetricsStateManager::ForceClientIdCreation() {
     local_state_->SetString(prefs::kMetricsClientID, client_id_);
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string previous_client_id = client_id_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   {
     std::string client_id_from_prefs = ReadClientId(local_state_);
     // If client id in prefs matches the cached copy, return early.

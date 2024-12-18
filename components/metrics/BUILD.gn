@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
@@ -254,7 +253,6 @@ if (!is_cronet_build || is_ios) {
       "//base:base_static",
       "//base:i18n",
       "//build:branding_buildflags",
-      "//build:chromeos_buildflags",
       "//components/flags_ui:switches",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
@@ -428,7 +426,6 @@ if (!is_cronet_build) {
 
     deps = [
       "//base",
-      "//build:chromeos_buildflags",
       "//components/encrypted_messages:encrypted_message_proto",
       "//components/encrypted_messages:encrypted_messages",
       "//components/variations",
@@ -606,7 +603,6 @@ if (!is_cronet_build) {
       "//base:base_stack_sampling_profiler_test_util",
       "//base/test:test_support",
       "//build:branding_buildflags",
-      "//build:chromeos_buildflags",
       "//components/component_updater:test_support",
       "//components/encrypted_messages:encrypted_message_proto",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
@@ -651,11 +647,8 @@ if (!is_cronet_build) {
     if (is_chromeos) {
       sources += [ "call_stacks/stack_sampling_recorder_unittest.cc" ]
 
-      deps += [ ":system_stack_sampled_metrics_status_proto" ]
-    }
-
-    if (is_chromeos_ash) {
       deps += [
+        ":system_stack_sampled_metrics_status_proto",
         "//chromeos/ash/components/dbus:test_support",
         "//chromeos/ash/components/network:test_support",
       ]

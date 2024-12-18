@@ -33,7 +33,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/flags_ui/flags_ui_switches.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/environment_recorder.h"
@@ -403,11 +402,7 @@ void MetricsLog::RecordCoreSystemProfile(
 #endif
 
   metrics::SystemProfileProto::OS* os = system_profile->mutable_os();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The Lacros browser runs on Chrome OS, but reports a special OS name to
-  // differentiate itself from the built-in ash browser + window manager binary.
-  os->set_name("Lacros");
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   os->set_name("CrOS");
 #else
   os->set_name(base::SysInfo::OperatingSystemName());
@@ -416,9 +411,9 @@ void MetricsLog::RecordCoreSystemProfile(
 
 // On ChromeOS, KernelVersion refers to the Linux kernel version and
 // OperatingSystemVersion refers to the ChromeOS release version.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   os->set_kernel_version(base::SysInfo::KernelVersion());
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   // Linux operating system version is copied over into kernel version to be
   // consistent.
   os->set_kernel_version(base::SysInfo::OperatingSystemVersion());
@@ -640,12 +635,12 @@ void MetricsLog::TruncateEvents() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void MetricsLog::SetUserId(const std::string& user_id) {
   uint64_t hashed_user_id = Hash(user_id);
   uma_proto_.set_user_id(hashed_user_id);
   log_metadata_.user_id = hashed_user_id;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace metrics
