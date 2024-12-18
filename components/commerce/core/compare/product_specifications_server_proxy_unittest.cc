@@ -133,7 +133,7 @@ class ProductSpecificationsServerProxyTest : public testing::Test {
     ON_CALL(*account_checker_, IsSyncTypeEnabled)
         .WillByDefault(testing::Return(true));
 
-    RegisterCommercePrefs(prefs_->registry());
+    MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
     account_checker_->SetPrefs(prefs_.get());
 

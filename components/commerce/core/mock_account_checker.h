@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/commerce/core/account_checker.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/sync/base/data_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -57,6 +58,14 @@ class MockAccountChecker : public AccountChecker {
   void SetLocale(std::string locale);
 
   void SetPrefs(PrefService* prefs);
+
+  // Register all preference names that are relevant to commerce features,
+  // regardless of whether they are defined in this class or not.
+  //
+  // Please note that this should only be used in testing, as this call is also
+  // registering some prefs that might be registered by other components in
+  // prod, which would lead to multiple-registering error.
+  static void RegisterCommercePrefs(PrefRegistrySimple* registry);
 };
 
 }  // namespace commerce

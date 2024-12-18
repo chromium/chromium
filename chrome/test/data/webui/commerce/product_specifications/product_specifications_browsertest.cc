@@ -28,7 +28,7 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
     account_checker_->SetSignedIn(true);
     account_checker_->SetPrefs(prefs_.get());
 
-    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
 
     set_test_loader_host(commerce::kChromeUICompareHost);

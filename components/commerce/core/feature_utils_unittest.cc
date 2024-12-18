@@ -30,7 +30,7 @@ class FeatureUtilsTest : public testing::Test {
         account_checker_(std::make_unique<MockAccountChecker>()),
         specifications_service_(
             std::make_unique<MockProductSpecificationsService>()) {
-    RegisterCommercePrefs(prefs_->registry());
+    MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     account_checker_->SetPrefs(prefs_.get());
   }
   ~FeatureUtilsTest() override = default;
@@ -240,7 +240,7 @@ TEST_F(FeatureUtilsTest,
   TestingPrefServiceSimple prefs;
 
   // If the preference is local, we shouldn't be respecting it.
-  RegisterCommercePrefs(prefs.registry());
+  MockAccountChecker::RegisterCommercePrefs(prefs.registry());
   prefs.SetInteger(
       optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
       2);

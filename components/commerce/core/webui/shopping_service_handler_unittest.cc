@@ -101,7 +101,7 @@ class ShoppingServiceHandlerTest : public testing::Test {
     shopping_service_->SetAccountChecker(account_checker_.get());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     account_checker_->SetPrefs(pref_service_.get());
-    RegisterCommercePrefs(pref_service_->registry());
+    MockAccountChecker::RegisterCommercePrefs(pref_service_->registry());
     SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
 

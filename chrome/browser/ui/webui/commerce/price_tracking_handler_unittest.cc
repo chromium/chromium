@@ -102,7 +102,7 @@ class PriceTrackingHandlerTest : public testing::Test {
     account_checker_ = std::make_unique<MockAccountChecker>();
     account_checker_->SetLocale("en-us");
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterCommercePrefs(pref_service_->registry());
+    MockAccountChecker::RegisterCommercePrefs(pref_service_->registry());
     SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
     account_checker_->SetPrefs(pref_service_.get());

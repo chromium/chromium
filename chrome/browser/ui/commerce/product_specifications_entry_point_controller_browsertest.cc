@@ -76,7 +76,7 @@ class ProductSpecificationsEntryPointControllerBrowserTest
     account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
     account_checker_->SetPrefs(prefs_.get());
 
-    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
 
     ON_CALL(*account_checker_, IsSyncTypeEnabled)

@@ -84,7 +84,7 @@ class ProductSpecificationsPageActionControllerUnittest
     ON_CALL(*mock_product_specifications_service_, GetSetByUuid)
         .WillByDefault(testing::Return(std::move(set)));
 
-    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
     controller_ = std::make_unique<ProductSpecificationsPageActionController>(
         std::move(callback), shopping_service_.get());

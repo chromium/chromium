@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/mock_account_checker.h"
+
+#include "components/commerce/core/pref_names.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 
 namespace commerce {
@@ -56,6 +59,14 @@ void MockAccountChecker::SetLocale(std::string locale) {
 
 void MockAccountChecker::SetPrefs(PrefService* prefs) {
   ON_CALL(*this, GetPrefs).WillByDefault(testing::Return(prefs));
+}
+
+void MockAccountChecker::RegisterCommercePrefs(PrefRegistrySimple* registry) {
+  RegisterPrefs(registry);
+
+  registry->RegisterIntegerPref(
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+      0);
 }
 
 }  // namespace commerce
