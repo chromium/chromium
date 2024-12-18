@@ -164,6 +164,7 @@ extern template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 // this function. They should call ConfigurePartitions() directly.
 PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
   auto enable_brp = allocator_shim::EnableBrp(true);
+  size_t brp_extra_extras_size = 0;
 
   // Embedders's tests might benefit from MTE checks. However, this is costly
   // and shouldn't be used in benchmarks.
@@ -184,7 +185,7 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
   auto use_pool_offset_freelists = UsePoolOffsetFreelists(true);
   auto use_small_single_slot_spans = UseSmallSingleSlotSpans(true);
 
-  ConfigurePartitions(enable_brp, enable_memory_tagging,
+  ConfigurePartitions(enable_brp, brp_extra_extras_size, enable_memory_tagging,
                       memory_tagging_reporting_mode, distribution,
                       scheduler_loop_quarantine,
                       scheduler_loop_quarantine_capacity_in_bytes,
