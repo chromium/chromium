@@ -10633,7 +10633,7 @@ class LayerTreeHostTestForceRecreateTilingForLCDText
     layer_id_ = layer_on_main_->id();
   }
 
-  void WillCommit(const CommitState&) override {
+  void OnCommitRequested() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 0:
         // First frame enables LCD text by marking the layer opaque.
@@ -10679,6 +10679,7 @@ class LayerTreeHostTestForceRecreateTilingForLCDText
                   LCDTextDisallowedReason::kContentsNotOpaque);
         EXPECT_FALSE(layer_impl->HighResTiling()->can_use_lcd_text());
         host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(1, 1));
+        PostSetNeedsCommitToMainThread();
         break;
       case 2:
         ASSERT_FALSE(host_impl->IsPinchGestureActive());

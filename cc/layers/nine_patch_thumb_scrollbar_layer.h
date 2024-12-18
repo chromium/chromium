@@ -36,15 +36,18 @@ class CC_EXPORT NinePatchThumbScrollbarLayer : public ScrollbarLayerBase {
   bool OpacityCanAnimateOnImplThread() const override;
   bool Update() override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   ScrollbarLayerType GetScrollbarLayerType() const override;
 
  protected:
   explicit NinePatchThumbScrollbarLayer(scoped_refptr<Scrollbar> scrollbar);
   ~NinePatchThumbScrollbarLayer() override;
+
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
  private:
   template <typename T>

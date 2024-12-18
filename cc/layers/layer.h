@@ -730,9 +730,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // that state as well. The |layer| passed in will be of the type created by
   // CreateLayerImpl(), so can be safely down-casted if the subclass uses a
   // different type for the compositor thread.
-  virtual void PushPropertiesTo(LayerImpl* layer,
-                                const CommitState& commit_state,
-                                const ThreadUnsafeCommitState& unsafe_state);
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state);
 
   // Internal method to be overridden by Layer subclasses that need to do work
   // during a main frame. The method should compute any state that will need to
@@ -765,7 +765,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // compositor thread during the next commit. The PushPropertiesTo() method
   // will be called for this layer during the next commit only if this method
   // was called before it.
-  void SetNeedsPushProperties();
+  void SetNeedsPushProperties(uint8_t changed_props = kChangedGeneralProperty);
+
+  // Clear cached properties
+  void ClearChangedPushPropertiesForTesting() {
+    changed_properties_.Write(*this) = 0u;
+  }
 
   // Internal to property tree construction. A generation number for the
   // property trees, to verify the layer's indices are pointers into the trees
@@ -876,6 +881,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   Layer();
   ~Layer() override;
 
+  // This is implementation helper for PushPropertiesTo().
+  virtual void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state);
+
   // These SetNeeds functions are in order of severity of update:
 
   // See SetNeedsCommit() above - it belongs here in the order of severity.
@@ -913,6 +925,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     return base::AutoReset<bool>(
         &ignore_set_needs_commit_for_test_.Write(*this), true);
   }
+
+  enum : uint8_t {
+    kChangedPropertyTreeIndex = 1 << 0,
+    kChangedGeneralProperty = 1 << 1,
+    kChangedAllProperties = kChangedPropertyTreeIndex | kChangedGeneralProperty,
+  };
 
  private:
   friend class base::RefCounted<Layer>;
@@ -1132,11 +1150,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // SetLayerTreeHost() uses a custom protected sequence check, and then uses
   // const_cast to do the assignment.
   const raw_ptr<LayerTreeHost> layer_tree_host_;
-
-  ProtectedSequenceReadable<Inputs> inputs_;
   ProtectedSequenceReadable<std::unique_ptr<LayerTreeInputs>>
       layer_tree_inputs_;
 
+  // Keep pointers together to reduce alignment padding on 64bit
+  ProtectedSequenceWritable<std::unique_ptr<LayerDebugInfo>> debug_info_;
+
+  ProtectedSequenceReadable<Inputs> inputs_;
   ProtectedSequenceWritable<gfx::Rect> update_rect_;
 
   const int layer_id_;
@@ -1154,6 +1174,11 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // will be handled implicitly after the update completes. Not a bitfield
   // because it's used in base::AutoReset.
   ProtectedSequenceReadable<bool> ignore_set_needs_commit_for_test_;
+  ProtectedSequenceWritable<bool> subtree_property_changed_;
+
+#if DCHECK_IS_ON()
+  bool allow_remove_for_readd_ = false;
+#endif
 
   enum : uint8_t {
     kDrawsContentFlagMask = 1 << 0,
@@ -1166,8 +1191,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     kSubtreeHasCopyRequestFlagMask = 1 << 7
   };
   ProtectedSequenceReadable<uint8_t> bitflags_;
-
-  ProtectedSequenceWritable<bool> subtree_property_changed_;
+  ProtectedSequenceWritable<uint8_t> changed_properties_;
 
 #if DCHECK_IS_ON()
   class AllowRemoveForReadd {
@@ -1195,7 +1219,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     raw_ptr<Layer> layer_;
   };
 
-  bool allow_remove_for_readd_ = false;
 #else
   class AllowRemoveForReadd {
    public:
@@ -1205,8 +1228,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     AllowRemoveForReadd& operator=(const AllowRemoveForReadd&) = delete;
   };
 #endif
-
-  ProtectedSequenceWritable<std::unique_ptr<LayerDebugInfo>> debug_info_;
 
   static constexpr gfx::Transform kIdentityTransform{};
   static constexpr gfx::RoundedCornersF kNoRoundedCornersF{};

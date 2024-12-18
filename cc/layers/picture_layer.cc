@@ -41,28 +41,34 @@ std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
   return PictureLayerImpl::Create(tree_impl, id());
 }
 
-void PictureLayer::PushPropertiesTo(
+void PictureLayer::PushDirtyPropertiesTo(
     LayerImpl* base_layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
+  Layer::PushDirtyPropertiesTo(base_layer, dirty_flag, commit_state,
+                               unsafe_state);
 
-  if (!update_rect().IsEmpty()) {
-    layer_impl->set_has_non_animated_image_update_rect();
+  if (dirty_flag & kChangedGeneralProperty) {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                 "PictureLayer::PushPropertiesTo");
+    DropRecordingSourceContentIfInvalid(
+        base_layer->layer_tree_impl()->source_frame_number());
+
+    PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
+
+    if (!update_rect().IsEmpty()) {
+      layer_impl->set_has_non_animated_image_update_rect();
+    }
+
+    layer_impl->set_gpu_raster_max_texture_size(
+        commit_state.device_viewport_rect.size());
+    layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
+
+    layer_impl->UpdateRasterSource(CreateRasterSource(),
+                                   &last_updated_invalidation_.Write(*this));
   }
 
-  Layer::PushPropertiesTo(base_layer, commit_state, unsafe_state);
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-               "PictureLayer::PushPropertiesTo");
-  DropRecordingSourceContentIfInvalid(
-      base_layer->layer_tree_impl()->source_frame_number());
-
-  layer_impl->set_gpu_raster_max_texture_size(
-      commit_state.device_viewport_rect.size());
-  layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
-
-  layer_impl->UpdateRasterSource(CreateRasterSource(),
-                                 &last_updated_invalidation_.Write(*this));
   DCHECK(last_updated_invalidation_.Read(*this).IsEmpty());
 }
 

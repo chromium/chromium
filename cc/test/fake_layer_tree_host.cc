@@ -32,6 +32,14 @@ FakeLayerTreeHost::FakeLayerTreeHost(FakeLayerTreeHostClient* client,
   client_->SetLayerTreeHost(this);
 }
 
+void FakeLayerTreeHost::ClearPendingLayerCommitStates() {
+  for (auto layer :
+       pending_commit_state()->layers_that_should_push_properties) {
+    layer->ClearChangedPushPropertiesForTesting();
+  }
+  pending_commit_state()->layers_that_should_push_properties.clear();
+}
+
 std::unique_ptr<FakeLayerTreeHost> FakeLayerTreeHost::Create(
     FakeLayerTreeHostClient* client,
     TestTaskGraphRunner* task_graph_runner,

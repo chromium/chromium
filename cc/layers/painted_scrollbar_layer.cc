@@ -60,69 +60,73 @@ bool PaintedScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return is_overlay_;
 }
 
-void PaintedScrollbarLayer::PushPropertiesTo(
+void PaintedScrollbarLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  ScrollbarLayerBase::PushPropertiesTo(layer, commit_state, unsafe_state);
+  ScrollbarLayerBase::PushDirtyPropertiesTo(layer, dirty_flag, commit_state,
+                                            unsafe_state);
 
-  PaintedScrollbarLayerImpl* scrollbar_layer =
-      static_cast<PaintedScrollbarLayerImpl*>(layer);
+  if (dirty_flag & kChangedGeneralProperty) {
+    PaintedScrollbarLayerImpl* scrollbar_layer =
+        static_cast<PaintedScrollbarLayerImpl*>(layer);
 
-  scrollbar_layer->set_internal_contents_scale_and_bounds(
-      internal_contents_scale_.Read(*this),
-      internal_content_bounds_.Read(*this));
+    scrollbar_layer->set_internal_contents_scale_and_bounds(
+        internal_contents_scale_.Read(*this),
+        internal_content_bounds_.Read(*this));
 
-  scrollbar_layer->SetJumpOnTrackClick(jump_on_track_click_.Read(*this));
-  scrollbar_layer->SetSupportsDragSnapBack(supports_drag_snap_back_);
-  scrollbar_layer->SetBackButtonRect(back_button_rect_.Read(*this));
-  scrollbar_layer->SetForwardButtonRect(forward_button_rect_.Read(*this));
-  scrollbar_layer->SetTrackRect(track_rect_.Read(*this));
-  if (orientation() == ScrollbarOrientation::kHorizontal) {
-    scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).height());
-    scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).width());
-  } else {
-    scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).width());
-    scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).height());
+    scrollbar_layer->SetJumpOnTrackClick(jump_on_track_click_.Read(*this));
+    scrollbar_layer->SetSupportsDragSnapBack(supports_drag_snap_back_);
+    scrollbar_layer->SetBackButtonRect(back_button_rect_.Read(*this));
+    scrollbar_layer->SetForwardButtonRect(forward_button_rect_.Read(*this));
+    scrollbar_layer->SetTrackRect(track_rect_.Read(*this));
+    if (orientation() == ScrollbarOrientation::kHorizontal) {
+      scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).height());
+      scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).width());
+    } else {
+      scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).width());
+      scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).height());
+    }
+
+    if (track_and_buttons_resource_.Read(*this)) {
+      scrollbar_layer->set_track_and_buttons_ui_resource_id(
+          track_and_buttons_resource_.Read(*this)->id());
+    } else {
+      scrollbar_layer->set_track_and_buttons_ui_resource_id(0);
+    }
+    if (thumb_resource_.Read(*this)) {
+      scrollbar_layer->set_thumb_ui_resource_id(
+          thumb_resource_.Read(*this)->id());
+    } else {
+      scrollbar_layer->set_thumb_ui_resource_id(0);
+    }
+
+    scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_.Read(*this));
+
+    scrollbar_layer->set_is_overlay_scrollbar(is_overlay_);
+    scrollbar_layer->set_is_web_test(is_web_test_);
+
+    if (thumb_color_.Read(*this).has_value()) {
+      scrollbar_layer->SetThumbColor(thumb_color_.Read(*this).value());
+    }
+    if (uses_nine_patch_track_and_buttons_ &&
+        track_and_buttons_resource_.Read(*this)) {
+      const auto iter = commit_state.ui_resource_sizes.find(
+          track_and_buttons_resource_.Read(*this)->id());
+      const gfx::Size image_bounds =
+          (iter == commit_state.ui_resource_sizes.end()) ? gfx::Size()
+                                                         : iter->second;
+      scrollbar_layer->SetTrackAndButtonsImageBounds(image_bounds);
+      scrollbar_layer->SetTrackAndButtonsAperture(
+          track_and_buttons_aperture_.Read(*this));
+    } else {
+      scrollbar_layer->SetTrackAndButtonsImageBounds(gfx::Size());
+      scrollbar_layer->SetTrackAndButtonsAperture(gfx::Rect());
+    }
+    scrollbar_layer->set_uses_nine_patch_track_and_buttons(
+        uses_nine_patch_track_and_buttons_);
   }
-
-  if (track_and_buttons_resource_.Read(*this)) {
-    scrollbar_layer->set_track_and_buttons_ui_resource_id(
-        track_and_buttons_resource_.Read(*this)->id());
-  } else {
-    scrollbar_layer->set_track_and_buttons_ui_resource_id(0);
-  }
-  if (thumb_resource_.Read(*this)) {
-    scrollbar_layer->set_thumb_ui_resource_id(
-        thumb_resource_.Read(*this)->id());
-  } else {
-    scrollbar_layer->set_thumb_ui_resource_id(0);
-  }
-
-  scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_.Read(*this));
-
-  scrollbar_layer->set_is_overlay_scrollbar(is_overlay_);
-  scrollbar_layer->set_is_web_test(is_web_test_);
-
-  if (thumb_color_.Read(*this).has_value()) {
-    scrollbar_layer->SetThumbColor(thumb_color_.Read(*this).value());
-  }
-  if (uses_nine_patch_track_and_buttons_ &&
-      track_and_buttons_resource_.Read(*this)) {
-    const auto iter = commit_state.ui_resource_sizes.find(
-        track_and_buttons_resource_.Read(*this)->id());
-    const gfx::Size image_bounds =
-        (iter == commit_state.ui_resource_sizes.end()) ? gfx::Size()
-                                                       : iter->second;
-    scrollbar_layer->SetTrackAndButtonsImageBounds(image_bounds);
-    scrollbar_layer->SetTrackAndButtonsAperture(
-        track_and_buttons_aperture_.Read(*this));
-  } else {
-    scrollbar_layer->SetTrackAndButtonsImageBounds(gfx::Size());
-    scrollbar_layer->SetTrackAndButtonsAperture(gfx::Rect());
-  }
-  scrollbar_layer->set_uses_nine_patch_track_and_buttons(
-      uses_nine_patch_track_and_buttons_);
 }
 
 void PaintedScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {

@@ -37,9 +37,6 @@ class CC_EXPORT PictureLayer : public Layer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect) override;
   bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   sk_sp<const SkPicture> GetPicture() const override;
@@ -63,6 +60,12 @@ class CC_EXPORT PictureLayer : public Layer {
  protected:
   explicit PictureLayer(ContentLayerClient* client);
   ~PictureLayer() override;
+
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
   bool HasDrawableContent() const override;
 

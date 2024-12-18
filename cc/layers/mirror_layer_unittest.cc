@@ -89,6 +89,7 @@ TEST_F(MirrorLayerTest, MirrorCount) {
   auto mirrored = Layer::Create();
   mirrored->SetLayerTreeHost(layer_tree_host_.get());
 
+  layer_tree_host_->ClearPendingLayerCommitStates();
   auto commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
                                                    /*has_updates=*/true);
   layer_tree_host_->CommitComplete(commit_state->source_frame_number,

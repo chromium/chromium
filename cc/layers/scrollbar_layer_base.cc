@@ -79,19 +79,22 @@ bool ScrollbarLayerBase::SetHasFindInPageTickmarks(
   return true;
 }
 
-void ScrollbarLayerBase::PushPropertiesTo(
+void ScrollbarLayerBase::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
 
-  auto* scrollbar_layer_impl = static_cast<ScrollbarLayerImplBase*>(layer);
-  DCHECK_EQ(scrollbar_layer_impl->orientation(), orientation_);
-  DCHECK_EQ(scrollbar_layer_impl->is_left_side_vertical_scrollbar(),
-            is_left_side_vertical_scrollbar_);
-  scrollbar_layer_impl->SetHasFindInPageTickmarks(
-      has_find_in_page_tickmarks_.Read(*this));
-  scrollbar_layer_impl->SetScrollElementId(scroll_element_id_.Read(*this));
+  if (dirty_flag & kChangedGeneralProperty) {
+    auto* scrollbar_layer_impl = static_cast<ScrollbarLayerImplBase*>(layer);
+    DCHECK_EQ(scrollbar_layer_impl->orientation(), orientation_);
+    DCHECK_EQ(scrollbar_layer_impl->is_left_side_vertical_scrollbar(),
+              is_left_side_vertical_scrollbar_);
+    scrollbar_layer_impl->SetHasFindInPageTickmarks(
+        has_find_in_page_tickmarks_.Read(*this));
+    scrollbar_layer_impl->SetScrollElementId(scroll_element_id_.Read(*this));
+  }
 }
 
 bool ScrollbarLayerBase::IsScrollbarLayerForTesting() const {

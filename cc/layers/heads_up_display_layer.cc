@@ -24,6 +24,7 @@ HeadsUpDisplayLayer::HeadsUpDisplayLayer()
   if (!typeface_.Read(*this)) {
     typeface_.Write(*this) =
         skia::MakeTypefaceFromName("monospace", SkFontStyle::Bold());
+    SetNeedsPushProperties();
   }
   DCHECK(typeface_.Read(*this).get());
   SetIsDrawable(true);
@@ -84,21 +85,25 @@ const std::vector<gfx::Rect>& HeadsUpDisplayLayer::LayoutShiftRects() const {
 void HeadsUpDisplayLayer::SetLayoutShiftRects(
     const std::vector<gfx::Rect>& rects) {
   layout_shift_rects_.Write(*this) = rects;
+  SetNeedsPushProperties();
 }
 
-
-void HeadsUpDisplayLayer::PushPropertiesTo(
+void HeadsUpDisplayLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
-  TRACE_EVENT0("cc", "HeadsUpDisplayLayer::PushPropertiesTo");
-  HeadsUpDisplayLayerImpl* layer_impl =
-      static_cast<HeadsUpDisplayLayerImpl*>(layer);
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
 
-  layer_impl->SetHUDTypeface(typeface_.Write(*this));
-  layer_impl->SetLayoutShiftRects(LayoutShiftRects());
-  layout_shift_rects_.Write(*this).clear();
+  if (dirty_flag & kChangedGeneralProperty) {
+    TRACE_EVENT0("cc", "HeadsUpDisplayLayer::PushPropertiesTo");
+    HeadsUpDisplayLayerImpl* layer_impl =
+        static_cast<HeadsUpDisplayLayerImpl*>(layer);
+
+    layer_impl->SetHUDTypeface(typeface_.Write(*this));
+    layer_impl->SetLayoutShiftRects(LayoutShiftRects());
+    layout_shift_rects_.Write(*this).clear();
+  }
 }
 
 }  // namespace cc

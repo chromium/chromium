@@ -148,6 +148,13 @@ class FakeLayerTreeHost : public LayerTreeHost {
                              base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
+  void ClearPendingLayerCommitStates() {
+    for (auto layer :
+         pending_commit_state()->layers_that_should_push_properties) {
+      layer->ClearChangedPushPropertiesForTesting();
+    }
+    pending_commit_state()->layers_that_should_push_properties.clear();
+  }
   CommitState* GetPendingCommitState() { return pending_commit_state(); }
   ThreadUnsafeCommitState& GetThreadUnsafeCommitState() {
     return thread_unsafe_commit_state();
@@ -363,6 +370,8 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsFullTreeSync());
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit())
       .Times(AtLeast(1));
+
+  layer_tree_host_->ClearPendingLayerCommitStates();
   auto commit_state = layer_tree_host_->WillCommit(/*completion=*/nullptr,
                                                    /*has_updates=*/true);
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetMaskLayer(mask_layer1));
@@ -766,8 +775,7 @@ TEST_F(LayerTest, ReorderChildren) {
   EXPECT_EQ(child3, parent->children()[2]);
 
   // This is normally done by TreeSynchronizer::PushLayerProperties().
-  layer_tree_host_->GetPendingCommitState()
-      ->layers_that_should_push_properties.clear();
+  layer_tree_host_->ClearPendingLayerCommitStates();
 
   LayerList new_children_order;
   new_children_order.emplace_back(child3);
@@ -1806,8 +1814,7 @@ TEST_F(LayerTest, UpdateMirrorCount) {
   test_layer->SetLayerTreeHost(layer_tree_host_.get());
 
   // This is normally done by TreeSynchronizer::PushLayerProperties().
-  layer_tree_host_->GetPendingCommitState()
-      ->layers_that_should_push_properties.clear();
+  layer_tree_host_->ClearPendingLayerCommitStates();
 
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
   EXPECT_EQ(0, test_layer->mirror_count());
@@ -1824,8 +1831,7 @@ TEST_F(LayerTest, UpdateMirrorCount) {
                                  ->layers_that_should_push_properties,
                              test_layer.get()));
 
-  layer_tree_host_->GetPendingCommitState()
-      ->layers_that_should_push_properties.clear();
+  layer_tree_host_->ClearPendingLayerCommitStates();
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
 
   // Incrementing mirror count from non-zero should not trigger property trees
@@ -1837,8 +1843,7 @@ TEST_F(LayerTest, UpdateMirrorCount) {
                                  ->layers_that_should_push_properties,
                              test_layer.get()));
 
-  layer_tree_host_->GetPendingCommitState()
-      ->layers_that_should_push_properties.clear();
+  layer_tree_host_->ClearPendingLayerCommitStates();
 
   // Decrementing mirror count to non-zero should not trigger property trees
   // rebuild.

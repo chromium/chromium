@@ -202,47 +202,54 @@ bool TextureLayer::IsSnappedToPixelGridInTarget() const {
   return true;
 }
 
-void TextureLayer::PushPropertiesTo(
+void TextureLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
-  TRACE_EVENT0("cc", "TextureLayer::PushPropertiesTo");
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
 
-  TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);
-  texture_layer->SetUVTopLeft(uv_top_left_.Read(*this));
-  texture_layer->SetUVBottomRight(uv_bottom_right_.Read(*this));
-  texture_layer->SetPremultipliedAlpha(premultiplied_alpha_.Read(*this));
-  texture_layer->SetBlendBackgroundColor(blend_background_color_.Read(*this));
-  texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_.Read(*this));
-  if (needs_set_resource_.Read(*this)) {
-    viz::TransferableResource resource;
-    viz::ReleaseCallback release_callback;
-    if (auto& resource_holder = resource_holder_.Write(*this)) {
-      resource = resource_holder->resource();
-      release_callback =
-          base::BindOnce(&TransferableResourceHolder::Return, resource_holder,
-                         base::RetainedRef(layer->layer_tree_impl()
-                                               ->task_runner_provider()
-                                               ->MainThreadTaskRunner()));
+  if (dirty_flag & kChangedGeneralProperty) {
+    TRACE_EVENT0("cc", "TextureLayer::PushPropertiesTo");
+
+    TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);
+    texture_layer->SetUVTopLeft(uv_top_left_.Read(*this));
+    texture_layer->SetUVBottomRight(uv_bottom_right_.Read(*this));
+    texture_layer->SetPremultipliedAlpha(premultiplied_alpha_.Read(*this));
+    texture_layer->SetBlendBackgroundColor(blend_background_color_.Read(*this));
+    texture_layer->SetForceTextureToOpaque(
+        force_texture_to_opaque_.Read(*this));
+    if (needs_set_resource_.Read(*this)) {
+      viz::TransferableResource resource;
+      viz::ReleaseCallback release_callback;
+      if (auto& resource_holder = resource_holder_.Write(*this)) {
+        resource = resource_holder->resource();
+        release_callback =
+            base::BindOnce(&TransferableResourceHolder::Return, resource_holder,
+                           base::RetainedRef(layer->layer_tree_impl()
+                                                 ->task_runner_provider()
+                                                 ->MainThreadTaskRunner()));
+      }
+      texture_layer->SetTransferableResource(resource,
+                                             std::move(release_callback));
+      needs_set_resource_.Write(*this) = false;
     }
-    texture_layer->SetTransferableResource(resource,
-                                           std::move(release_callback));
-    needs_set_resource_.Write(*this) = false;
+    auto& to_register_bitmaps = to_register_bitmaps_.Write(*this);
+    for (auto& pair : to_register_bitmaps) {
+      texture_layer->RegisterSharedBitmapId(pair.first, pair.second);
+    }
+    // Store the registered SharedBitmapIds in case we get a new
+    // TextureLayerImpl, in a new tree, to re-send them to.
+    registered_bitmaps_.Write(*this).insert(
+        std::make_move_iterator(to_register_bitmaps.begin()),
+        std::make_move_iterator(to_register_bitmaps.end()));
+    to_register_bitmaps.clear();
+    auto& to_unregister_bitmap_ids = to_unregister_bitmap_ids_.Write(*this);
+    for (const auto& id : to_unregister_bitmap_ids) {
+      texture_layer->UnregisterSharedBitmapId(id);
+    }
+    to_unregister_bitmap_ids.clear();
   }
-  auto& to_register_bitmaps = to_register_bitmaps_.Write(*this);
-  for (auto& pair : to_register_bitmaps)
-    texture_layer->RegisterSharedBitmapId(pair.first, pair.second);
-  // Store the registered SharedBitmapIds in case we get a new TextureLayerImpl,
-  // in a new tree, to re-send them to.
-  registered_bitmaps_.Write(*this).insert(
-      std::make_move_iterator(to_register_bitmaps.begin()),
-      std::make_move_iterator(to_register_bitmaps.end()));
-  to_register_bitmaps.clear();
-  auto& to_unregister_bitmap_ids = to_unregister_bitmap_ids_.Write(*this);
-  for (const auto& id : to_unregister_bitmap_ids)
-    texture_layer->UnregisterSharedBitmapId(id);
-  to_unregister_bitmap_ids.clear();
 }
 
 SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
