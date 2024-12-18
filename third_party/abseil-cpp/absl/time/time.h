@@ -620,12 +620,12 @@ ABSL_ATTRIBUTE_CONST_FUNCTION Duration Hours(T n) {
 //
 //   absl::Duration d = absl::Milliseconds(1500);
 //   int64_t isec = absl::ToInt64Seconds(d);  // isec == 1
-ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToInt64Nanoseconds(Duration d);
-ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToInt64Microseconds(Duration d);
-ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToInt64Milliseconds(Duration d);
-ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToInt64Seconds(Duration d);
-ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToInt64Minutes(Duration d);
-ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToInt64Hours(Duration d);
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Nanoseconds(Duration d);
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Microseconds(Duration d);
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Milliseconds(Duration d);
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Seconds(Duration d);
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Minutes(Duration d);
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Hours(Duration d);
 
 // ToDoubleNanoseconds()
 // ToDoubleMicroseconds()
@@ -1862,6 +1862,56 @@ ABSL_ATTRIBUTE_CONST_FUNCTION constexpr Time FromUnixSeconds(int64_t s) {
 
 ABSL_ATTRIBUTE_CONST_FUNCTION constexpr Time FromTimeT(time_t t) {
   return time_internal::FromUnixDuration(Seconds(t));
+}
+
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Nanoseconds(Duration d) {
+  if (time_internal::GetRepHi(d) >= 0 &&
+      time_internal::GetRepHi(d) >> 33 == 0) {
+    return (time_internal::GetRepHi(d) * 1000 * 1000 * 1000) +
+           (time_internal::GetRepLo(d) / time_internal::kTicksPerNanosecond);
+  }
+  return d / Nanoseconds(1);
+}
+
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Microseconds(Duration d) {
+  if (time_internal::GetRepHi(d) >= 0 &&
+      time_internal::GetRepHi(d) >> 43 == 0) {
+    return (time_internal::GetRepHi(d) * 1000 * 1000) +
+           (time_internal::GetRepLo(d) /
+            (time_internal::kTicksPerNanosecond * 1000));
+  }
+  return d / Microseconds(1);
+}
+
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Milliseconds(Duration d) {
+  if (time_internal::GetRepHi(d) >= 0 &&
+      time_internal::GetRepHi(d) >> 53 == 0) {
+    return (time_internal::GetRepHi(d) * 1000) +
+           (time_internal::GetRepLo(d) /
+            (time_internal::kTicksPerNanosecond * 1000 * 1000));
+  }
+  return d / Milliseconds(1);
+}
+
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Seconds(Duration d) {
+  int64_t hi = time_internal::GetRepHi(d);
+  if (time_internal::IsInfiniteDuration(d)) return hi;
+  if (hi < 0 && time_internal::GetRepLo(d) != 0) ++hi;
+  return hi;
+}
+
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Minutes(Duration d) {
+  int64_t hi = time_internal::GetRepHi(d);
+  if (time_internal::IsInfiniteDuration(d)) return hi;
+  if (hi < 0 && time_internal::GetRepLo(d) != 0) ++hi;
+  return hi / 60;
+}
+
+ABSL_ATTRIBUTE_CONST_FUNCTION inline int64_t ToInt64Hours(Duration d) {
+  int64_t hi = time_internal::GetRepHi(d);
+  if (time_internal::IsInfiniteDuration(d)) return hi;
+  if (hi < 0 && time_internal::GetRepLo(d) != 0) ++hi;
+  return hi / (60 * 60);
 }
 
 ABSL_NAMESPACE_END

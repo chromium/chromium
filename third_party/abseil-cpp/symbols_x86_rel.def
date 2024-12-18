@@ -1186,12 +1186,6 @@ EXPORTS
     ?ToDoubleMinutes@absl@@YANVDuration@1@@Z
     ?ToDoubleNanoseconds@absl@@YANVDuration@1@@Z
     ?ToDoubleSeconds@absl@@YANVDuration@1@@Z
-    ?ToInt64Hours@absl@@YA_JVDuration@1@@Z
-    ?ToInt64Microseconds@absl@@YA_JVDuration@1@@Z
-    ?ToInt64Milliseconds@absl@@YA_JVDuration@1@@Z
-    ?ToInt64Minutes@absl@@YA_JVDuration@1@@Z
-    ?ToInt64Nanoseconds@absl@@YA_JVDuration@1@@Z
-    ?ToInt64Seconds@absl@@YA_JVDuration@1@@Z
     ?ToSinkAlso@LogMessage@log_internal@absl@@QAEAAV123@PAVLogSink@3@@Z
     ?ToSinkOnly@LogMessage@log_internal@absl@@QAEAAV123@PAVLogSink@3@@Z
     ?ToString@?$BigUnsigned@$03@strings_internal@absl@@QBE?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ

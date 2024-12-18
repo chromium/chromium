@@ -2477,59 +2477,6 @@ TYPED_TEST(SooTest, IterationOrderChangesByInstance) {
   }
 }
 
-TYPED_TEST(SooTest, RelativeIterationOrderChangesByInstance) {
-  for (bool do_reserve : {false, true}) {
-    for (size_t size : {2u, 3u, 4u, 5u}) {
-      SCOPED_TRACE(absl::StrCat("size: ", size, " do_reserve: ", do_reserve));
-      std::set<std::pair<int64_t, int64_t>> relative_orders;
-      auto str = [&] {
-        std::string out;
-        for (auto p : relative_orders) {
-          absl::StrAppend(&out, "{", p.first, ",", p.second, "}", "|");
-        }
-        return out;
-      };
-      const size_t expected_num_orders = size * (size - 1);
-
-      std::vector<std::vector<TypeParam>> tables;
-      for (int i = 0; relative_orders.size() < expected_num_orders; ++i) {
-        static constexpr int kBatchSize = 100;
-        ASSERT_LE(i * kBatchSize, 500)
-            << "Relative iteration order remained the same across "
-               "many attempts with size "
-            << size << ". Found " << relative_orders.size()
-            << " out of expected " << expected_num_orders << " orders found "
-            << str();
-
-        std::vector<TypeParam> batch(kBatchSize);
-        if (do_reserve) {
-          for (auto& table : batch) {
-            table.reserve(size);
-          }
-        }
-        // Insert into the tables one by one in order to avoid reusing the same
-        // memory that was freed by the previous table resize.
-        for (size_t value = 0; value < size; ++value) {
-          for (auto& table : batch) {
-            table.insert(value);
-          }
-        }
-
-        for (const auto& table : batch) {
-          auto order = OrderOfIteration(table);
-          for (auto it = order.begin(); it != order.end(); ++it) {
-            for (auto it2 = std::next(it); it2 != order.end(); ++it2) {
-              relative_orders.emplace(*it, *it2);
-            }
-          }
-        }
-
-        tables.push_back(std::move(batch));
-      }
-    }
-  }
-}
-
 TYPED_TEST(SooTest, IterationOrderChangesOnRehash) {
   // We test different sizes with many small numbers, because small table
   // resize has a different codepath.

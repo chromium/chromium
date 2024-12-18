@@ -36,8 +36,10 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
+#include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <deque>
 #include <forward_list>
@@ -56,7 +58,9 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "absl/base/internal/unaligned_access.h"
+#include "absl/base/optimization.h"
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
 #include "absl/hash/internal/city.h"
