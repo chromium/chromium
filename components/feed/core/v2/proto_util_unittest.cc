@@ -277,22 +277,6 @@ TEST(ProtoUtilTest, CormorantEnabled) {
             feedwire::FeedEntryPointSource::CHROME_SINGLE_WEB_FEED_MENU);
 }
 
-TEST(ProtoUtilTest, InfoCardAcknowledgementTrackingDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({}, {kInfoCardAcknowledgementTracking});
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
-          /*doc_view_counts=*/{})
-          .feed_request();
-
-  ASSERT_THAT(
-      request.client_capability(),
-      Not(Contains(feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING)));
-}
-
 TEST(ProtoUtilTest, FeedSignedOutViewDemotionEnablesCapability) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeedSignedOutViewDemotion}, {});

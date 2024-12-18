@@ -143,7 +143,8 @@ feedwire::Request CreateFeedQueryRequest(
 #if BUILDFLAG(IS_ANDROID)
         Capability::SYNC_STRING_REMOVAL,
 #endif
-        Capability::SPORTS_IN_GAME_UPDATE}) {
+        Capability::SPORTS_IN_GAME_UPDATE,
+        Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING}) {
     feed_request.add_client_capability(capability);
   }
 
@@ -172,11 +173,6 @@ feedwire::Request CreateFeedQueryRequest(
 
   if (base::FeatureList::IsEnabled(kFeedSignedOutViewDemotion)) {
     feed_request.add_client_capability(Capability::ON_DEVICE_VIEW_HISTORY);
-  }
-
-  if (base::FeatureList::IsEnabled(kInfoCardAcknowledgementTracking)) {
-    feed_request.add_client_capability(
-        Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING);
   }
 
   if (base::FeatureList::IsEnabled(kSyntheticCapabilities)) {

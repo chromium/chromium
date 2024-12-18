@@ -2719,9 +2719,6 @@ extern const char kGtsCloseTabAnimationDescription[];
 extern const char kRefreshFeedOnRestartName[];
 extern const char kRefreshFeedOnRestartDescription[];
 
-extern const char kInfoCardAcknowledgementTrackingName[];
-extern const char kInfoCardAcknowledgementTrackingDescription[];
-
 extern const char kInterestFeedV2Name[];
 extern const char kInterestFeedV2Description[];
 

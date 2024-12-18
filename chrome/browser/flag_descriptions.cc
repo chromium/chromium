@@ -4690,11 +4690,6 @@ const char kRefreshFeedOnRestartName[] = "Enable refreshing feed on restart";
 const char kRefreshFeedOnRestartDescription[] =
     "Refresh feed when Chrome restarts.";
 
-const char kInfoCardAcknowledgementTrackingName[] =
-    "Info card acknowledgement tracking";
-const char kInfoCardAcknowledgementTrackingDescription[] =
-    "Enable acknowledgement tracking for info cards.";
-
 const char kInterestFeedV2Name[] = "Interest Feed v2";
 const char kInterestFeedV2Description[] =
     "Show content suggestions on the New Tab Page and Start Surface using the "

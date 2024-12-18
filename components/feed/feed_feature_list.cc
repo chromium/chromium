@@ -65,10 +65,6 @@ signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
   return signin::ConsentLevel::kSignin;
 }
 
-BASE_FEATURE(kInfoCardAcknowledgementTracking,
-             "InfoCardAcknowledgementTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedNoViewCache,
              "FeedNoViewCache",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -75,10 +75,6 @@ BASE_DECLARE_FEATURE(kPersonalizeFeedUnsignedUsers);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 
-// Feature that enables tracking the acknowledgement state for the info cards.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kInfoCardAcknowledgementTracking);
-
 // When enabled, no view cache is used.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedNoViewCache);
