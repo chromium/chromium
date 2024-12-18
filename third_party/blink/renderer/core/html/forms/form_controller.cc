@@ -33,19 +33,13 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 class ControlKey;
-}
-
-// `ControlKey`'s strings are interned, so it's safe to hash; allow conversion
-// to a byte span to facilitate this.
-namespace base {
-template <>
-inline constexpr bool kCanSafelyConvertToByteSpan<::blink::ControlKey> = true;
 }
 
 namespace blink {
@@ -126,84 +120,44 @@ FormControlState FormControlState::Deserialize(
 
 class ControlKey {
  public:
-  ControlKey(StringImpl* = nullptr, StringImpl* = nullptr);
-  ~ControlKey();
+  ControlKey(const AtomicString& name, const AtomicString& type);
   ControlKey(const ControlKey&);
   ControlKey& operator=(const ControlKey&);
 
-  StringImpl* GetName() const { return name_; }
-  StringImpl* GetType() const { return type_; }
+  const AtomicString& GetName() const { return name_; }
+  const AtomicString& GetType() const { return type_; }
 
   // Hash table deleted values, which are only constructed and never copied or
   // destroyed.
-  ControlKey(WTF::HashTableDeletedValueType) : name_(HashTableDeletedValue()) {}
-  bool IsHashTableDeletedValue() const {
-    return name_ == HashTableDeletedValue();
-  }
+  ControlKey(WTF::HashTableDeletedValueType) : type_(g_star_atom) {}
+  bool IsHashTableDeletedValue() const { return type_ == g_star_atom; }
 
  private:
-  void Ref() const;
-  void Deref() const;
+  AtomicString name_;
+  AtomicString type_;
 
-  static StringImpl* HashTableDeletedValue() {
-    return reinterpret_cast<StringImpl*>(-1);
-  }
-
-  StringImpl* name_;
-  StringImpl* type_;
+  friend struct ControlKeyHashTraits;
 };
 
-ControlKey::ControlKey(StringImpl* name, StringImpl* type)
-    : name_(name), type_(type) {
-  // These strings being atomic is load-bearing for this type to be safely
-  // comparable by its byte hash.
-  const auto is_atomic = [](StringImpl* s) {
-    return !s || !s->length() || s->IsAtomic();
-  };
-  CHECK(is_atomic(name));
-  CHECK(is_atomic(type));
-  Ref();
-}
-
-ControlKey::~ControlKey() {
-  Deref();
-}
+ControlKey::ControlKey(const AtomicString& name, const AtomicString& type)
+    : name_(name), type_(type) {}
 
 ControlKey::ControlKey(const ControlKey& other)
     : name_(other.GetName()), type_(other.GetType()) {
-  Ref();
 }
 
 ControlKey& ControlKey::operator=(const ControlKey& other) {
-  other.Ref();
-  Deref();
   name_ = other.GetName();
   type_ = other.GetType();
   return *this;
-}
-
-void ControlKey::Ref() const {
-  if (GetName())
-    GetName()->AddRef();
-  if (GetType())
-    GetType()->AddRef();
-}
-
-void ControlKey::Deref() const {
-  if (GetName())
-    GetName()->Release();
-  if (GetType())
-    GetType()->Release();
 }
 
 inline bool operator==(const ControlKey& a, const ControlKey& b) {
   return a.GetName() == b.GetName() && a.GetType() == b.GetType();
 }
 
-struct ControlKeyHashTraits : SimpleClassHashTraits<ControlKey> {
-  static unsigned GetHash(const ControlKey& key) {
-    return StringHasher::HashMemory(base::byte_span_from_ref(key));
-  }
+struct ControlKeyHashTraits
+    : TwoFieldsHashTraits<ControlKey, &ControlKey::name_, &ControlKey::type_> {
 };
 
 // ----------------------------------------------------------------------------
@@ -286,7 +240,7 @@ void SavedFormState::SerializeTo(Vector<String>& state_vector) const {
 void SavedFormState::AppendControlState(const AtomicString& name,
                                         const AtomicString& type,
                                         const FormControlState& state) {
-  ControlKey key(name.Impl(), type.Impl());
+  ControlKey key(name, type);
   ControlStateMap::iterator it = state_for_new_controls_.find(key);
   if (it != state_for_new_controls_.end()) {
     it->value.push_back(state);
@@ -303,7 +257,7 @@ FormControlState SavedFormState::TakeControlState(const AtomicString& name,
   if (state_for_new_controls_.empty())
     return FormControlState();
   ControlStateMap::iterator it =
-      state_for_new_controls_.find(ControlKey(name.Impl(), type.Impl()));
+      state_for_new_controls_.find(ControlKey(name, type));
   if (it == state_for_new_controls_.end())
     return FormControlState();
   DCHECK_GT(it->value.size(), 0u);
@@ -318,7 +272,7 @@ Vector<String> SavedFormState::GetReferencedFilePaths() const {
   Vector<String> to_return;
   for (const auto& form_control : state_for_new_controls_) {
     const ControlKey& key = form_control.key;
-    if (!Equal(key.GetType(), base::span_from_cstring("file"))) {
+    if (key.GetType() != input_type_names::kFile) {
       continue;
     }
     const Deque<FormControlState>& queue = form_control.value;
