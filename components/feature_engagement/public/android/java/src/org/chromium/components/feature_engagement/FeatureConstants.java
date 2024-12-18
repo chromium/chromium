@@ -6,6 +6,8 @@ package org.chromium.components.feature_engagement;
 
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -111,6 +113,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface FeatureConstants {
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab";
