@@ -76,6 +76,15 @@ inline constexpr char kDownloadAppVerificationPromptTimestamps[] =
 // data in the profile folder on disk but only in memory.
 inline constexpr char kForceEphemeralProfiles[] = "profile.ephemeral_mode";
 
+#if BUILDFLAG(ENABLE_GLIC)
+// Boolean pref that enables or disables microphone access for Glic.
+inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
+// Boolean pref that enables or disables geolocation access for Glic.
+inline constexpr char kGlicGeolocationEnabled[] = "glic.geolocation_enabled";
+// Boolean pref that enables or disables tab context for Glic.
+inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 // A boolean specifying whether the New Tab page is the home page or not.
 inline constexpr char kHomePageIsNewTabPage[] = "homepage_is_newtabpage";
 

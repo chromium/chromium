@@ -106,6 +106,24 @@ export declare interface GlicBrowserHost {
 
   // Returns the state of the panel.
   getPanelState?(): Observable<PanelState>;
+
+  // Returns the state of the microphone permission.
+  getMicrophonePermissionState?(): Observable<boolean>;
+
+  // Returns the state of the location permission.
+  getLocationPermissionState?(): Observable<boolean>;
+
+  // Returns the state of the tab context permission.
+  getTabContextPermissionState?(): Observable<boolean>;
+
+  // Set the state of the microphone permission in settings.
+  setMicrophonePermissionState(enabled: boolean): Promise<void>;
+
+  // Set the state of the location permission in settings.
+  setLocationPermissionState(enabled: boolean): Promise<void>;
+
+  // Set the state of the tab context permission in settings.
+  setTabContextPermissionState(enabled: boolean): Promise<void>;
 }
 
 // A panel can be in one of these three states.

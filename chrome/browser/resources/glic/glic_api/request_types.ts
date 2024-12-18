@@ -88,6 +88,24 @@ export declare interface HostRequestTypes {
     },
     response: void,
   };
+  glicBrowserSetMicrophonePermissionState: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicBrowserSetLocationPermissionState: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicBrowserSetTabContextPermissionState: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
 }
 
 // Types of requests to the GlicWebClient.
@@ -105,6 +123,24 @@ export declare interface WebClientRequestTypes {
   glicWebClientPanelStateChanged: {
     request: {
       panelState: PanelState,
+    },
+    response: void,
+  };
+  glicWebClientNotifyMicrophonePermissionStateChanged: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicWebClientNotifyLocationPermissionStateChanged: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicWebClientNotifyTabContextPermissionStateChanged: {
+    request: {
+      enabled: boolean,
     },
     response: void,
   };

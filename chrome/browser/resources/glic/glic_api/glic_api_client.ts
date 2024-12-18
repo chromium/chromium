@@ -42,7 +42,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   constructor(
       private webClient: GlicWebClient, private host: GlicBrowserHostImpl) {}
 
-
   glicWebClientNotifyPanelOpened(payload: {dockedToWindowId: string|undefined}):
       void {
     if (this.webClient.notifyPanelOpened) {
@@ -57,7 +56,25 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   }
 
   glicWebClientPanelStateChanged(payload: {panelState: PanelState}): void {
-    this.host.panelState.assignAndSignal(payload.panelState);
+    this.host.getPanelState().assignAndSignal(payload.panelState);
+  }
+
+  glicWebClientNotifyMicrophonePermissionStateChanged(payload: {
+    enabled: boolean,
+  }) {
+    this.host.getMicrophonePermissionState().assignAndSignal(payload.enabled);
+  }
+
+  glicWebClientNotifyLocationPermissionStateChanged(payload: {
+    enabled: boolean,
+  }) {
+    this.host.getLocationPermissionState().assignAndSignal(payload.enabled);
+  }
+
+  glicWebClientNotifyTabContextPermissionStateChanged(payload: {
+    enabled: boolean,
+  }) {
+    this.host.getTabContextPermissionState().assignAndSignal(payload.enabled);
   }
 }
 
@@ -66,7 +83,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private receiver: PostMessageRequestReceiver;
   private handlerFunctionNames: Set<string> = new Set();
   private webClientMessageHandler: WebClientMessageHandler;
-  panelState = new ObservableValue<PanelState>({kind: PanelStateKind.HIDDEN});
+  private panelState = new ObservableValue<PanelState>({ kind: PanelStateKind.HIDDEN });
+  private permissionStateMicrophone = new ObservableValue<boolean>(false);
+  private permissionStateLocation = new ObservableValue<boolean>(false);
+  private permissionStateTabContext = new ObservableValue<boolean>(false);
 
   constructor(private webClient: GlicWebClient, windowProxy: WindowProxy) {
     this.sender = new PostMessageRequestSender(windowProxy, 'chrome://glic');
@@ -145,18 +165,45 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return convertTabContextResultFromPrivate(context.tabContextResult);
   }
 
-  async resizeWindow(width: number, height: number) {
+  resizeWindow(width: number, height: number) {
     return this.sender.requestWithResponse(
         'glicBrowserResizeWindow', {width, height});
   }
 
-  async setWindowDraggableAreas(areas: DraggableArea[]) {
+  setWindowDraggableAreas(areas: DraggableArea[]) {
     return this.sender.requestWithResponse(
         'glicBrowserSetWindowDraggableAreas', {areas});
   }
 
-  getPanelState(): Observable<PanelState> {
+  getPanelState(): ObservableValue<PanelState> {
     return this.panelState;
+  }
+
+  getMicrophonePermissionState(): ObservableValue<boolean> {
+    return this.permissionStateMicrophone;
+  }
+
+  getLocationPermissionState(): ObservableValue<boolean> {
+    return this.permissionStateLocation;
+  }
+
+  getTabContextPermissionState(): ObservableValue<boolean> {
+    return this.permissionStateTabContext;
+  }
+
+  setMicrophonePermissionState(enabled: boolean): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicBrowserSetMicrophonePermissionState', {enabled});
+  }
+
+  setLocationPermissionState(enabled: boolean): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicBrowserSetLocationPermissionState', {enabled});
+  }
+
+  setTabContextPermissionState(enabled: boolean): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicBrowserSetTabContextPermissionState', {enabled});
   }
 }
 
@@ -275,6 +322,7 @@ class ObservableValue<T> implements Observable<T> {
   getValue(): T {
     return this.value;
   }
+
   subscribe(change: (newValue: T) => void): Subscriber {
     const newSub = new ObservableSubscription(
         change, (sub) => this.subscribers.delete(sub));

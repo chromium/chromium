@@ -10,6 +10,8 @@
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -18,9 +20,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              public GlicWindowController::StateObserver {
  public:
   explicit GlicWebClientHandler(
-      GlicKeyedService* glic_service,
+      content::BrowserContext* browser_context,
       mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver)
-      : glic_service_(glic_service), receiver_(this, std::move(receiver)) {}
+      : glic_service_(
+            GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
+        pref_service_(Profile::FromBrowserContext(browser_context)->GetPrefs()),
+        receiver_(this, std::move(receiver)) {}
 
   // glic::mojom::WebClientHandler implementation.
   void WebClientInitialized(
@@ -31,6 +36,23 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->window_controller().AddStateObserver(this);
     web_client_->NotifyPanelStateChange(
         glic_service_->window_controller().GetPanelState().Clone());
+    // Configure the pref_change_registrar to listen for changes to the prefs
+    pref_change_registrar_.Init(pref_service_);
+    pref_change_registrar_.Add(
+        prefs::kGlicMicrophoneEnabled,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kGlicGeolocationEnabled,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kGlicTabContextEnabled,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
+
+    // Communicate initial permission values to web client.
+    SendPermissionsToWebClient();
   }
 
   void GetChromeVersion(GetChromeVersionCallback callback) override {
@@ -83,9 +105,48 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
  private:
   void WebClientDisconnected() {
+    pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
   }
+
+  void SetMicrophonePermissionState(bool enabled) override {
+    pref_service_->SetBoolean(prefs::kGlicMicrophoneEnabled, enabled);
+  }
+
+  void SetLocationPermissionState(bool enabled) override {
+    pref_service_->SetBoolean(prefs::kGlicGeolocationEnabled, enabled);
+  }
+
+  void SetTabContextPermissionState(bool enabled) override {
+    pref_service_->SetBoolean(prefs::kGlicTabContextEnabled, enabled);
+  }
+
+  void OnPrefChanged(const std::string& pref_name) {
+    bool is_enabled = pref_service_->GetBoolean(pref_name);
+    if (pref_name == prefs::kGlicMicrophoneEnabled) {
+      web_client_->NotifyMicrophonePermissionStateChanged(is_enabled);
+    } else if (pref_name == prefs::kGlicGeolocationEnabled) {
+      web_client_->NotifyLocationPermissionStateChanged(is_enabled);
+    } else if (pref_name == prefs::kGlicTabContextEnabled) {
+      web_client_->NotifyTabContextPermissionStateChanged(is_enabled);
+    } else {
+      DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
+    }
+  }
+
+ private:
+  void SendPermissionsToWebClient() {
+    web_client_->NotifyMicrophonePermissionStateChanged(
+        pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled));
+    web_client_->NotifyLocationPermissionStateChanged(
+        pref_service_->GetBoolean(prefs::kGlicGeolocationEnabled));
+    web_client_->NotifyTabContextPermissionStateChanged(
+        pref_service_->GetBoolean(prefs::kGlicTabContextEnabled));
+  }
+
+  PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<GlicKeyedService> glic_service_;
+  raw_ptr<PrefService> pref_service_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
 };
@@ -101,8 +162,7 @@ void GlicPageHandler::CreateWebClient(
     ::mojo::PendingReceiver<glic::mojom::WebClientHandler>
         web_client_receiver) {
   web_client_handler_ = std::make_unique<GlicWebClientHandler>(
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_),
-      std::move(web_client_receiver));
+      browser_context_, std::move(web_client_receiver));
 }
 
 }  // namespace glic

@@ -5,10 +5,10 @@
 module glic.mojom;
 
 import "mojo/public/mojom/base/version.mojom";
-import "url/mojom/url.mojom";
-import "url/mojom/origin.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
 
 // Factory for PageHandler used in chrome://glic.
 interface PageHandlerFactory {
@@ -26,7 +26,7 @@ interface PageHandler {
 enum GetTabContextErrorReason {
   // A valid web contents was not available for the entire duration of context
   // gathering.
- kWebContentsChanged,
+  kWebContentsChanged,
 };
 
 union GetContextResult {
@@ -43,28 +43,45 @@ interface WebClientHandler {
   // initialize(), indicating that it will support Chrome. `web_client` may
   // be used to communicate with the client.
   WebClientInitialized(pending_remote<WebClient> web_client);
+
   // Returns the Chrome version.
   GetChromeVersion() => (mojo_base.mojom.Version version);
+
   // Creates a new tab. `url` must have a http or https protocol.
   // `tab_data` is null if the tab could not be created, which may happen if the
   // url or window_id is invalid.
   CreateTab(url.mojom.Url url, bool open_in_background, int32? window_id)
-    => (TabData? tab_data);
+      => (TabData? tab_data);
+
   // Closes the Glic panel.
   ClosePanel();
+
   // Returns the context from the currently active tab.
   // `tab_context_result` is null if tab content could not be captured.
   // This may fail if the tab is navigated while collecting data, or closed
   // before data is collected.
-  GetContextFromFocusedTab(bool include_inner_text,
-    bool include_viewport_screenshot) =>
-      (GetContextResult result);
+  GetContextFromFocusedTab(
+      bool include_inner_text, bool include_viewport_screenshot)
+      => (GetContextResult result);
 
   // Set the bounds of the widget hosting the WebUI to the given size.
   ResizeWidget(gfx.mojom.Size size) => (gfx.mojom.Size? actual_size);
+
   // Set the areas of the Glic panel from which it should be draggable. If
   // `draggable_areas` is empty, the panel will use the top bar area by default.
   SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas);
+
+  // Set the state of the Microphone permission pref:
+  // prefs::kGlicMicrophoneEnabled.
+  SetMicrophonePermissionState(bool enabled);
+
+  // Set the state of the Location permission pref:
+  // prefs::kGlicGeolocationEnabled.
+  SetLocationPermissionState(bool enabled);
+
+  // Set the state of the TabContext permission pref:
+  // prefs::kGlicTabContextEnabled.
+  SetTabContextPermissionState(bool enabled);
 };
 
 // State of the glic panel.
@@ -92,12 +109,26 @@ interface WebClient {
   // `docked_to_window_id` identifies the browser window to which the
   // panel is docked to. It is undefined if it is floating free.
   NotifyPanelOpened(int32? docked_to_window_id);
+
   // The user has closed the web client window. The window may be activated
   // again later. Returns when the web client has stored any needed
   // information and stopped accepting the user's input.
   NotifyPanelClosed() => ();
+
   // Informs the client that the state of the glic panel has changed.
   NotifyPanelStateChange(PanelState panel_state);
+
+  // The Microphone permission has changed either by action within the web
+  // client or by user action in the glic settings.
+  NotifyMicrophonePermissionStateChanged(bool enabled);
+
+  // The Location permission has changed either by action within the web client
+  // or by user action in the glic settings.
+  NotifyLocationPermissionStateChanged(bool enabled);
+
+  // The Tab Context permission has changed either by action within the web
+  // client or by user action in the glic settings.
+  NotifyTabContextPermissionStateChanged(bool enabled);
 };
 
 // Information extracted from a tab.
@@ -144,8 +175,7 @@ struct TabData {
 // Annotates an image, providing security relevant information about the origins
 // from which image is composed.
 // TODO(crbug.com/380495633): Finalize and implement image annotations.
-struct ImageOriginAnnotations {
-};
+struct ImageOriginAnnotations {};
 
 // An encoded screenshot image and associated metadata.
 struct Screenshot {

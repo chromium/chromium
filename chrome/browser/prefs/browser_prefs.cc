@@ -2035,6 +2035,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
   fingerprinting_protection_filter::prefs::RegisterProfilePrefs(registry);
+#if BUILDFLAG(ENABLE_GLIC)
+  registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
+#endif
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
   history_clusters::prefs::RegisterProfilePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);

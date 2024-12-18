@@ -59,6 +59,27 @@ class WebClientImpl implements WebClientInterface {
       panelState: panelStateToClient(panelState),
     });
   }
+
+  notifyMicrophonePermissionStateChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyMicrophonePermissionStateChanged', {
+          enabled: enabled,
+        });
+  }
+
+  notifyLocationPermissionStateChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyLocationPermissionStateChanged', {
+          enabled: enabled,
+        });
+  }
+
+  notifyTabContextPermissionStateChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyTabContextPermissionStateChanged', {
+          enabled: enabled,
+        });
+  }
 }
 
 // Handles all requests to the host.
@@ -201,8 +222,20 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  async glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {
+  glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {
     this.handler.setPanelDraggableAreas(request.areas);
+  }
+
+  glicBrowserSetMicrophonePermissionState(request: {enabled: boolean}) {
+    this.handler.setMicrophonePermissionState(request.enabled);
+  }
+
+  glicBrowserSetLocationPermissionState(request: {enabled: boolean}) {
+    this.handler.setLocationPermissionState(request.enabled);
+  }
+
+  glicBrowserSetTabContextPermissionState(request: {enabled: boolean}) {
+    this.handler.setTabContextPermissionState(request.enabled);
   }
 }
 
