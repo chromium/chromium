@@ -65,7 +65,6 @@ source_set("patch_impl") {
   ]
   deps = [
     ":update_client",
-    "//build:chromeos_buildflags",
     "//components/services/patch/public/cpp",
     "//components/services/patch/public/mojom",
     "//mojo/public/cpp/bindings",
@@ -163,7 +162,6 @@ static_library("update_client") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/client_update_protocol",
     "//components/crx_file",
     "//components/prefs",

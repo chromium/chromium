@@ -146,20 +146,4 @@ static_library("test_support") {
       "//url",
     ]
   }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "test/fake_crosapi_trusted_vault_backend.cc",
-      "test/fake_crosapi_trusted_vault_backend.h",
-      "test/fake_crosapi_trusted_vault_backend_service.cc",
-      "test/fake_crosapi_trusted_vault_backend_service.h",
-    ]
-
-    public_deps += [
-      "//chromeos/crosapi/mojom",
-      "//mojo/public/cpp/bindings",
-    ]
-
-    deps += [ "//components/account_manager_core" ]
-  }
 }

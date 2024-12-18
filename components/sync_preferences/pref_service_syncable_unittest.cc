@@ -16,7 +16,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -41,7 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #endif
 
@@ -74,7 +73,7 @@ const char kNonDefaultCharsetValue[] = "foo";
 const char kDefaultCharsetValue[] = "utf-8";
 const char kBrowserPrefName[] = "browser_pref";
 const char kBrowserPriorityPrefName[] = "browser_priority_pref";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kOsPrefName[] = "os_pref";
 const char kOsPriorityPrefName[] = "os_priority_pref";
 #endif
@@ -101,7 +100,7 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kBrowserPriorityPrefName,
      {8, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {kOsPrefName,
      {9, syncer::OS_PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kOsPriorityPrefName,
@@ -129,7 +128,7 @@ std::optional<base::Value> FindValue(
   return std::nullopt;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr DataTypeSet kAllPreferenceDataTypes = {
     syncer::PREFERENCES, syncer::PRIORITY_PREFERENCES, syncer::OS_PREFERENCES,
     syncer::OS_PRIORITY_PREFERENCES};
@@ -138,7 +137,7 @@ MATCHER_P(MatchesDataType, data_type, "") {
   const syncer::SyncChange& sync_change = arg;
   return Matches(data_type)(sync_change.sync_data().GetDataType());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
  public:
@@ -991,7 +990,7 @@ TEST_F(PrefServiceSyncableTest, DeletePreference) {
   EXPECT_TRUE(pref->IsDefaultValue());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The Chrome OS tests exercise pref model association that happens in the
 // constructor of PrefServiceSyncable. The tests must register prefs first,
 // then create the PrefServiceSyncable object. The tests live in this file
@@ -1391,7 +1390,7 @@ TEST_F(PrefServiceSyncableChromeOsTest,
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class PrefServiceSyncableFactoryTest : public PrefServiceSyncableTest {
  public:
@@ -1421,7 +1420,7 @@ TEST_F(PrefServiceSyncableFactoryTest,
       static_cast<PrefModelAssociator*>(
           pref_service->GetSyncableService(syncer::PRIORITY_PREFERENCES))
           ->IsUsingDualLayerUserPrefStoreForTesting());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(static_cast<PrefModelAssociator*>(
                    pref_service->GetSyncableService(syncer::OS_PREFERENCES))
                    ->IsUsingDualLayerUserPrefStoreForTesting());
@@ -1445,7 +1444,7 @@ TEST_F(PrefServiceSyncableFactoryTest,
       static_cast<PrefModelAssociator*>(
           pref_service->GetSyncableService(syncer::PRIORITY_PREFERENCES))
           ->IsUsingDualLayerUserPrefStoreForTesting());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(static_cast<PrefModelAssociator*>(
                   pref_service->GetSyncableService(syncer::OS_PREFERENCES))
                   ->IsUsingDualLayerUserPrefStoreForTesting());

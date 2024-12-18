@@ -6,7 +6,6 @@
 #define COMPONENTS_VERSION_UI_VERSION_UI_CONSTANTS_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace version_ui {
 
@@ -51,7 +50,7 @@ extern const char kJSVersion[];
 #endif
 extern const char kLogoAltText[];
 extern const char kOfficial[];
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 extern const char kOSName[];
 extern const char kOSType[];
 #endif

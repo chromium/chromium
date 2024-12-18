@@ -360,8 +360,6 @@ TEST_F(ListFamilyMembersServiceTest,
   test_list_family_members_service_->Shutdown();
 }
 
-// Sign-out test is not supported for ChromeOS
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Data cleanup is only available for Windows, Mac and Linux
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
@@ -454,7 +452,6 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherResetsPrefOnSignout) {
   test_list_family_members_service_->Shutdown();
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace supervised_user

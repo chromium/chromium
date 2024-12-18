@@ -51,7 +51,7 @@ TranslateUIDelegate::TranslateUIDelegate(
             language::kContentLanguagesInLanguagePicker,
             language::kContentLanguagesDisableObserversParam,
             false /* default */)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       const std::string& pref_name = language::prefs::kPreferredLanguages;
 #else
       const std::string& pref_name = language::prefs::kAcceptLanguages;

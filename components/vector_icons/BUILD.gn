@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/branding.gni")
 import("//components/vector_icons/vector_icons.gni")
 
@@ -259,11 +258,10 @@ aggregate_vector_icons("components_vector_icons") {
   ]
 
   if (is_chromeos) {
-    sources += [ "notification_download.icon" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "videogame_asset_outline.icon" ]
+    sources += [
+      "notification_download.icon",
+      "videogame_asset_outline.icon",
+    ]
   }
 
   if (is_chrome_branded) {

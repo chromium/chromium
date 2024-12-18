@@ -274,7 +274,7 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           PrefSensitivity::kNone, MergeBehavior::kNone}},
 // For Ash, the OS_PRIORITY_PREFERENCES equivalent is defined in
 // chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc instead.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
         {variations::kDogfoodGroupsSyncPrefName,
          {syncable_prefs_ids::kDogfoodGroupsSyncPrefName,
           syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,

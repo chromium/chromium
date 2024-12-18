@@ -164,7 +164,7 @@ UnifiedConsentService::UnifiedConsentService(
   DCHECK(identity_manager_);
   DCHECK(sync_service_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (GetMigrationState() == MigrationState::kNotInitialized)
     MigrateProfileToUnifiedConsent();
 #endif
@@ -186,7 +186,7 @@ void UnifiedConsentService::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
                                 false);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterIntegerPref(
       prefs::kUnifiedConsentMigrationState,
       static_cast<int>(MigrationState::kNotInitialized));
@@ -195,7 +195,7 @@ void UnifiedConsentService::RegisterPrefs(
 
 void UnifiedConsentService::SetUrlKeyedAnonymizedDataCollectionEnabled(
     bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (GetMigrationState() != MigrationState::kCompleted)
     SetMigrationState(MigrationState::kCompleted);
 #endif
@@ -267,7 +267,7 @@ void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
       service_pref_changes_.clear();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40066949): Simplify (remove the following block) after
   // Sync-the-feature users are migrated to ConsentLevel::kSignin (and thus
   // CanSyncFeatureStart() always returns false).
@@ -317,7 +317,7 @@ void UnifiedConsentService::ServicePrefChanged(const std::string& name) {
   service_pref_changes_[name] = value.Clone();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 MigrationState UnifiedConsentService::GetMigrationState() {
   int migration_state_int =
       pref_service_->GetInteger(prefs::kUnifiedConsentMigrationState);
@@ -365,6 +365,6 @@ void UnifiedConsentService::UpdateSettingsForMigration() {
       !sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
   SetUrlKeyedAnonymizedDataCollectionEnabled(url_keyed_metrics_enabled);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  //  namespace unified_consent

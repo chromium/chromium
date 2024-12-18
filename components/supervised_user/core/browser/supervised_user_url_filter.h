@@ -14,7 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "build/chromeos_buildflags.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"

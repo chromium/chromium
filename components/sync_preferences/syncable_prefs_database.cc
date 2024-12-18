@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 
 namespace sync_preferences {
 

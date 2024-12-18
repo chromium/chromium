@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
@@ -213,7 +212,7 @@ void TranslatePrefs::ResetToDefaults() {
 // static
 base::Value::List TranslatePrefs::GetDefaultBlockedLanguages() {
   base::Value::List languages;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Preferred languages.
   std::string language = language::kFallbackInputMethodLocale;
   language::ToTranslateLanguageSynonym(&language);

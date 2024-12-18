@@ -10,12 +10,6 @@
 #ifndef COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_LINUX_H_
 #define COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_LINUX_H_
 
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#error "Use the ChromeOS-specific implementation instead."
-#endif
-
 #include <map>
 #include <memory>
 #include <string>
@@ -28,6 +22,10 @@
 #include "build/build_config.h"
 #include "components/storage_monitor/mtab_watcher_linux.h"
 #include "components/storage_monitor/storage_monitor.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#error "Use the ChromeOS-specific implementation instead."
+#endif
 
 namespace base {
 class SequencedTaskRunner;

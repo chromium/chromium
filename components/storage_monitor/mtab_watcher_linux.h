@@ -5,12 +5,6 @@
 #ifndef COMPONENTS_STORAGE_MONITOR_MTAB_WATCHER_LINUX_H_
 #define COMPONENTS_STORAGE_MONITOR_MTAB_WATCHER_LINUX_H_
 
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#error "ChromeOS does not use MtabWatcherLinux."
-#endif
-
 #include <map>
 
 #include "base/files/file_path.h"
@@ -18,6 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#error "ChromeOS does not use MtabWatcherLinux."
+#endif
 
 namespace storage_monitor {
 
