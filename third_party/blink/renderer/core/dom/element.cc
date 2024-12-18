@@ -7312,19 +7312,6 @@ void Element::SetInnerHTMLInternal(
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
             html, this, kAllowScriptingContent, parse_declarative_shadows,
             force_html, exception_state)) {
-      if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
-        // TODO(vogelheim): Not sure if this is the correct point in time for
-        // sanitization. It should be before the parse result is connected to
-        // a live DOM tree. But I'm not sure (yet) how this interacts with the
-        // DOMParts handling below.
-        if (sanitize_html == SanitizeHtml::kSanitizeSafe) {
-          SanitizerAPI::SanitizeSafeInternal(fragment, set_html_options,
-                                             exception_state);
-        } else if (sanitize_html == SanitizeHtml::kSanitizeUnsafe) {
-          SanitizerAPI::SanitizeUnsafeInternal(fragment, set_html_options,
-                                               exception_state);
-        }
-      }
       ContainerNode* container = this;
       bool swap_dom_parts{false};
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
@@ -7341,6 +7328,20 @@ void Element::SetInnerHTMLInternal(
         To<DocumentFragment>(*container)
             .getPartRoot()
             .SwapPartsList(fragment->getPartRoot());
+      }
+      if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
+        // TODO(vogelheim): The interaction of sanitization with DOMParts
+        // handling above is still unclear.
+        // We need to know the container that we're parsing into (and not just
+        // the temporary fragment), and sanitization needs to happen before
+        // connecting the result to a live DOM tree.
+        if (sanitize_html == SanitizeHtml::kSanitizeSafe) {
+          SanitizerAPI::SanitizeSafeInternal(container, set_html_options,
+                                             exception_state);
+        } else if (sanitize_html == SanitizeHtml::kSanitizeUnsafe) {
+          SanitizerAPI::SanitizeUnsafeInternal(container, set_html_options,
+                                               exception_state);
+        }
       }
     }
   }

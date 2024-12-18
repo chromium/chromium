@@ -22,6 +22,7 @@ void SanitizerAPI::SanitizeSafeInternal(ContainerNode* element,
     const Element* real_element = To<Element>(element);
     if (real_element->TagQName() == html_names::kScriptTag ||
         real_element->TagQName() == svg_names::kScriptTag) {
+      element->setTextContent("");
       return;
     }
   }
