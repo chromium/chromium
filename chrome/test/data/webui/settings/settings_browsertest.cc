@@ -411,13 +411,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
   RunTest("settings/secure_dns_test.js", "runMochaSuite('SettingsSecureDns')");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsDialog) {
-  RunTest("settings/secure_dns_test.js",
-          "runMochaSuite('OsSettingsRevampSecureDnsDialog')");
-}
-#endif
-
 // TODO(crbug.com/372493822): remove when hybrid linking is disabled by default.
 class HybridDisabledSettingsTest : public SettingsTest {
  public:

@@ -311,7 +311,6 @@ build_webui("build") {
   ]
 
   if (is_chromeos_ash) {
-    web_component_files += [ "privacy_page/secure_dns_dialog.ts" ]
     non_web_component_files +=
         [ "people_page/account_manager_browser_proxy.ts" ]
   } else {
