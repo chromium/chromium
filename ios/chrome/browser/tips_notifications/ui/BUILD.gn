@@ -10,6 +10,7 @@ source_set("shared") {
     "tips_promo_view_controller.mm",
   ]
   deps = [
+    "//base",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/instruction_view",

@@ -134,6 +134,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   // Whether the buttons have been updated from "More" to the action buttons.
   BOOL _buttonUpdated;
+
+  // Task runner to resize banner image off the UI thread.
+  scoped_refptr<base::SequencedTaskRunner> _taskRunner;
 }
 
 @synthesize actionButtonsVisibility = _actionButtonsVisibility;
@@ -142,7 +145,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 #pragma mark - Public
 
-- (instancetype)init {
+- (instancetype)initWithTaskRunner:
+    (scoped_refptr<base::SequencedTaskRunner>)taskRunner {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _titleHorizontalMargin = kTitleHorizontalMargin;
@@ -152,9 +156,18 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _noBackgroundHeaderImageTopMarginPercentage =
         kNoBackgroundHeaderImageTopMarginPercentage;
     _primaryButtonEnabled = YES;
+    _taskRunner = taskRunner;
   }
 
   return self;
+}
+
+- (instancetype)init {
+  scoped_refptr<base::SequencedTaskRunner> taskRunner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  return [self initWithTaskRunner:taskRunner];
 }
 
 - (UIFontTextStyle)titleLabelFontTextStyle {
@@ -1011,6 +1024,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 // Asynchronously updates `self.bannerImageView.image` to `[self bannerImage]`
 // resized to `newSize`. If `currentImage` is already the correct size then
 // `self.bannerImageView.image` is instead set to `currentImage` synchronously.
+// If there is no task runner, then `self.bannerImageView.image` is updated
+// synchronously.
 - (void)scaleBannerWithCurrentImage:(UIImage*)currentImage
                              toSize:(CGSize)newSize {
   UIUserInterfaceStyle currentStyle =
@@ -1022,10 +1037,18 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 
   _bannerStyle = currentStyle;
-  base::ThreadPool::PostTaskAndReplyWithResult(
+
+  // Resize on the UI thread if there is no TaskRunner (this can happen in
+  // application extensions).
+  if (!_taskRunner) {
+    self.bannerImageView.image =
+        ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
+    return;
+  }
+
+  // Otherwise, resize image off the UI thread.
+  _taskRunner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
           [](UIImage* bannerImage, CGSize newSize) {
             return ResizeImage(bannerImage, newSize,
