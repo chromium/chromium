@@ -1445,6 +1445,8 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     //
     // TODO(sesse): Do we need the token range here anymore?
     if (!ValidateFallback(property, fallback.OriginalText())) {
+      // TODO(crbug.com/372475301): We should not validate the fallback.
+      CountUse(WebFeature::kVarFallbackValidation);
       return false;
     }
     if (!data) {
