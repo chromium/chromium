@@ -5566,14 +5566,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lacros-only",
-    "owners": [ "hidehiko@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
-    // Once Lacros is launched, this flag can be removed. Until then, this
-    // absolutely must not expire. We do not yet have a launch milestone.
-    // TODO(crbug.com/40157060).
-    "expiry_milestone": 140
-  },
-  {
     "name": "lacros-profile-migration-force-off",
     "owners": ["ythjkt@chromium.org", "hidehiko@chromium.org", "lacros-team@google.com"],
     // Once Lacros is launched, this flag can be removed. Until then, this

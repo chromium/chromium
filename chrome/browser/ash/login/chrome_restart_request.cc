@@ -252,7 +252,6 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
   auto kForwardFeatures = {
       &features::kAutoNightLight,
       &ash::features::kSeamlessRefreshRateSwitching,
-      &ash::standalone_browser::features::kLacrosOnly,
       &::features::kPluginVm,
       &display::features::kCtmColorManagement,
       &display::features::kOledScaleFactorEnabled,
