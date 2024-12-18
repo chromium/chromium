@@ -98,6 +98,10 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
  private:
   void OnStoreInitialized(bool success);
 
+  // We need to be able to find the currently selected tab on startup so we know
+  // what changed in OnTabSelected.
+  void SetCurrentlySelectedTabOnStartup();
+
   // Uses all available sources to try to retrieve a name that describes the
   // given user.
   std::optional<std::string> GetDisplayNameForUserInGroup(
@@ -182,6 +186,22 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   void DisplayOrHideTabGroupDirtyDotForTabGroup(
       const data_sharing::GroupId& collaboration_group_id,
       base::Uuid shared_tab_group_id);
+
+  // Creates MessageAttribution based on all the provided information.
+  MessageAttribution CreateMessageAttributionForTabUpdates(
+      const collaboration_pb::Message& message,
+      const std::optional<tab_groups::SavedTabGroup>& tab_group,
+      const std::optional<tab_groups::SavedTabGroupTab>& tab);
+
+  // Notifies the InstantMessageDelegate to display the message for all the
+  // provided levels.
+  void DisplayInstantMessage(
+      const base::Uuid& db_message_uuid,
+      const InstantMessage& base_message,
+      const std::vector<InstantNotificationLevel>& levels);
+
+  // Clears the dirty bit for the given DB message ID if `success` is true.
+  void ClearMessageDirtyBit(base::Uuid db_message_id, bool success);
 
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.

@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
@@ -437,12 +438,42 @@ void MessagingBackendServiceImpl::OnDataSharingChangeNotifierInitialized() {
 }
 
 void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
+  SetCurrentlySelectedTabOnStartup();
   initialized_ = true;
   for (auto& observer : persistent_message_observers_) {
     observer.OnMessagingBackendServiceInitialized();
   }
   CHECK(data_sharing_flush_callback_);
   std::move(data_sharing_flush_callback_).Run();
+}
+
+void MessagingBackendServiceImpl::SetCurrentlySelectedTabOnStartup() {
+  std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+      selected_tab_id_pair =
+          tab_group_sync_service_->GetCurrentlySelectedTabID();
+  std::optional<base::Uuid> tab_group_id = selected_tab_id_pair.first;
+  std::optional<base::Uuid> tab_id = selected_tab_id_pair.second;
+  if (!tab_group_id || !tab_id) {
+    // We are missing tab group ID or tab ID, so we will be unable to find the
+    // tab.
+    return;
+  }
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(*tab_group_id);
+  if (!tab_group) {
+    // This should not happen, but since the API returns an std::optional, we
+    // should still do this check to ensure we do not crash when dereferencing
+    // `tab_group`.
+    return;
+  }
+  tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(*tab_id);
+  if (!tab) {
+    // Just as with the `tab_group`, this is not expected to happen, but in case
+    // there is an invariant we are not currently aware of we return early here.
+    return;
+  }
+
+  last_selected_tab_ = *tab;
 }
 
 void MessagingBackendServiceImpl::OnTabGroupAdded(
@@ -473,6 +504,17 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
       *collaboration_group_id, removed_group,
       collaboration_pb::TAB_GROUP_REMOVED, DirtyType::kNone);
   store_->AddMessage(message);
+
+  if (instant_message_delegate_) {
+    InstantMessage instant_message;
+    instant_message.attribution = CreateMessageAttributionForTabUpdates(
+        message, removed_group, std::nullopt);
+    instant_message.collaboration_event = CollaborationEvent::TAB_GROUP_REMOVED;
+    instant_message.type = InstantNotificationType::UNDEFINED;
+
+    DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
+                          instant_message, {InstantNotificationLevel::BROWSER});
+  }
 }
 
 void MessagingBackendServiceImpl::OnTabGroupNameUpdated(
@@ -558,6 +600,20 @@ void MessagingBackendServiceImpl::OnTabRemoved(
 
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            removed_tab.saved_group_guid());
+
+  if (last_selected_tab_ &&
+      last_selected_tab_->saved_tab_guid() == removed_tab.saved_tab_guid() &&
+      instant_message_delegate_) {
+    InstantMessage instant_message_base;
+    instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
+        message, std::nullopt, removed_tab);
+    instant_message_base.collaboration_event = CollaborationEvent::TAB_REMOVED;
+    instant_message_base.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
+
+    DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
+                          instant_message_base,
+                          {InstantNotificationLevel::BROWSER});
+  }
 }
 
 void MessagingBackendServiceImpl::OnTabUpdated(
@@ -1034,22 +1090,8 @@ PersistentMessage MessagingBackendServiceImpl::CreatePersistentMessage(
   PersistentMessage persistent_message;
   persistent_message.collaboration_event =
       ToCollaborationEvent(message.event_type());
-  persistent_message.attribution = MessageAttribution();
-  persistent_message.attribution.collaboration_id =
-      data_sharing::GroupId(message.collaboration_id());
-  std::optional<tab_groups::SavedTabGroup> stack_tab_group = tab_group;
-  if (!tab_group && tab) {
-    stack_tab_group =
-        tab_group_sync_service_->GetGroup(tab->saved_group_guid());
-  }
-  persistent_message.attribution.tab_group_metadata =
-      CreateTabGroupMessageMetadataFromMessageOrTabGroup(message, tab_group);
-  persistent_message.attribution.tab_metadata =
-      CreateTabMessageMetadataFromMessageOrTab(
-          message, tab.has_value() ? tab : GetTabFromGroup(message, tab_group));
-  persistent_message.attribution.triggering_user = GetGroupMemberFromGaiaId(
-      data_sharing::GroupId(message.collaboration_id()),
-      GaiaId(message.triggering_user_gaia_id()));
+  persistent_message.attribution =
+      CreateMessageAttributionForTabUpdates(message, tab_group, tab);
   if (type) {
     persistent_message.type = *type;
   }
@@ -1119,6 +1161,55 @@ void MessagingBackendServiceImpl::DisplayOrHideTabGroupDirtyDotForTabGroup(
     NotifyHidePersistentMessagesForTypes(
         persistent_message, {PersistentNotificationType::DIRTY_TAB_GROUP});
   }
+}
+
+MessageAttribution
+MessagingBackendServiceImpl::CreateMessageAttributionForTabUpdates(
+    const collaboration_pb::Message& message,
+    const std::optional<tab_groups::SavedTabGroup>& tab_group,
+    const std::optional<tab_groups::SavedTabGroupTab>& tab) {
+  MessageAttribution attribution;
+  attribution.collaboration_id =
+      data_sharing::GroupId(message.collaboration_id());
+  std::optional<tab_groups::SavedTabGroup> stack_tab_group = tab_group;
+  if (!tab_group && tab) {
+    stack_tab_group =
+        tab_group_sync_service_->GetGroup(tab->saved_group_guid());
+  }
+  attribution.tab_group_metadata =
+      CreateTabGroupMessageMetadataFromMessageOrTabGroup(message,
+                                                         stack_tab_group);
+  attribution.tab_metadata = CreateTabMessageMetadataFromMessageOrTab(
+      message,
+      tab.has_value() ? tab : GetTabFromGroup(message, stack_tab_group));
+  attribution.triggering_user = GetGroupMemberFromGaiaId(
+      data_sharing::GroupId(message.collaboration_id()),
+      GaiaId(message.triggering_user_gaia_id()));
+  return attribution;
+}
+
+void MessagingBackendServiceImpl::DisplayInstantMessage(
+    const base::Uuid& db_message_uuid,
+    const InstantMessage& base_message,
+    const std::vector<InstantNotificationLevel>& levels) {
+  CHECK(instant_message_delegate_);
+  for (InstantNotificationLevel level : levels) {
+    InstantMessage instant_message = base_message;
+    instant_message.level = level;
+    instant_message_delegate_->DisplayInstantaneousMessage(
+        instant_message,
+        base::BindOnce(&MessagingBackendServiceImpl::ClearMessageDirtyBit,
+                       weak_ptr_factory_.GetWeakPtr(), db_message_uuid));
+  }
+}
+
+void MessagingBackendServiceImpl::ClearMessageDirtyBit(base::Uuid db_message_id,
+                                                       bool success) {
+  if (!success) {
+    return;
+  }
+
+  store_->ClearDirtyMessage(db_message_id, DirtyType::kMessageOnly);
 }
 
 }  // namespace collaboration::messaging
