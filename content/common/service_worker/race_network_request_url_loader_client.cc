@@ -33,6 +33,17 @@ const char kMainResourceHistogramForRaceNetworkFetchEvent[] =
     "ServiceWorker.FetchEvent.MainResource.RaceNetworkRequest";
 const char kSubresourceHistogramForRaceNetworkFetchEvent[] =
     "ServiceWorker.FetchEvent.Subresource.RaceNetworkRequest";
+
+void RecordRaceNetworkRequestCloningResponseForFetchHandlerHistogram(
+    bool is_main_resource,
+    bool is_cloning_data_finished_before_response_complete) {
+  base::UmaHistogramBoolean(
+      base::StrCat({is_main_resource
+                        ? kMainResourceHistogramForRaceNetworkFetchEvent
+                        : kSubresourceHistogramForRaceNetworkFetchEvent,
+                    ".IsCloningDataFinishedBeforeResponseComplete"}),
+      is_cloning_data_finished_before_response_complete);
+}
 }  // namespace
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -382,6 +393,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
     // ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement feature
     // is enabled.
     forwarding_client_->OnComplete(completion_status_.value());
+    RecordRaceNetworkRequestCloningResponseForFetchHandlerHistogram(
+        is_main_resource_,
+        /*is_cloning_data_finished_before_response_complete=*/true);
   }
 }
 
@@ -689,6 +703,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
     // completed as well.
     forwarding_client_->OnComplete(completion_status_.value());
     write_buffer_manager_for_fetch_handler_.ResetProducer();
+    RecordRaceNetworkRequestCloningResponseForFetchHandlerHistogram(
+        is_main_resource_,
+        /*is_cloning_data_finished_before_response_complete=*/false);
   }
 }
 

@@ -457,6 +457,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.IsCloningDataFinishedBeforeResponseComplete"
+    enum="Boolean" expires_after="2025-05-11">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Recorded as true when the data cloning from the original response to the
+    data pipe for the fetch handler is completed, but still the completion
+    status via `ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete()` is
+    not invoked.
+
+    This metric is recorded per {Resource}.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
+<histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.Redirect"
     enum="Boolean" expires_after="2025-01-26">
   <owner>sisidovski@chromium.org</owner>
