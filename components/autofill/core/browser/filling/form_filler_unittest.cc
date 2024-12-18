@@ -141,7 +141,7 @@ class FormFillerTest : public testing::Test {
     task_environment_.FastForwardBy(year2020 - AutofillClock::Now());
 
     autofill_client_.GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
+        ->set_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(),

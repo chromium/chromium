@@ -285,7 +285,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
     autofill_client_.GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
+        ->set_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(), &personal_data()));
@@ -502,8 +502,8 @@ class CreditCardSaveManagerTest : public testing::Test {
         *autofill_client_.GetPaymentsAutofillClient());
   }
   payments::TestPaymentsNetworkInterface& payments_network_interface() {
-    return *autofill_client_.GetPaymentsAutofillClient()
-                ->GetPaymentsNetworkInterface();
+    return static_cast<payments::TestPaymentsNetworkInterface&>(
+        *payments_client().GetPaymentsNetworkInterface());
   }
   TestStrikeDatabase& strike_database() {
     return *autofill_client_.GetStrikeDatabase();

@@ -79,14 +79,13 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       new payments::TestPaymentsNetworkInterface(
           autofill_client_->GetURLLoaderFactory(),
           autofill_client_->GetIdentityManager(), &personal_data());
-  autofill_client_->GetPaymentsAutofillClient()
-      ->set_test_payments_network_interface(
-          std::unique_ptr<payments::TestPaymentsNetworkInterface>(
-              payments_network_interface));
+  payments_autofill_client().set_payments_network_interface(
+      std::unique_ptr<payments::TestPaymentsNetworkInterface>(
+          payments_network_interface));
   test_api(*autofill_client_->GetFormDataImporter())
       .set_credit_card_save_manager(
           std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()));
-  autofill_client_->GetPaymentsAutofillClient()->set_autofill_offer_manager(
+  payments_autofill_client().set_autofill_offer_manager(
       std::make_unique<AutofillOfferManager>(
           &personal_data().payments_data_manager()));
 
@@ -110,8 +109,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   // Mandatory re-auth is required for credit card autofill on automotive, so
   // the authenticator response needs to be properly mocked.
 #if BUILDFLAG(IS_ANDROID)
-  autofill_client_->GetPaymentsAutofillClient()
-      ->SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
+  payments_autofill_client()
+      .SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
 }
 
@@ -155,8 +154,8 @@ void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
       access_manager.GetOrCreateFidoAuthenticator())
       ->SetUserVerifiable(is_verifiable);
 #endif
-  autofill_client_->GetPaymentsAutofillClient()
-      ->GetPaymentsNetworkInterface()
+  static_cast<payments::TestPaymentsNetworkInterface*>(
+      payments_autofill_client().GetPaymentsNetworkInterface())
       ->AllowFidoRegistration(true);
   test_api(access_manager).set_is_authentication_in_progress(false);
   test_api(access_manager).set_can_fetch_unmask_details(true);

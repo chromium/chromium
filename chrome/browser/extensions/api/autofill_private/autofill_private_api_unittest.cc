@@ -353,12 +353,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, LogServerCardLinkClicked) {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveVirtualCard) {
+  using autofill::payments::TestPaymentsNetworkInterface;
   autofill::TestPersonalDataManager& personal_data_manager =
       autofill_client()->GetPersonalDataManager();
   autofill_client()
       ->GetPaymentsAutofillClient()
-      ->set_test_payments_network_interface(
-          std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
+      ->set_payments_network_interface(
+          std::make_unique<TestPaymentsNetworkInterface>(
               autofill_client()->GetURLLoaderFactory(),
               autofill_client()->GetIdentityManager(), &personal_data_manager));
   // Required for adding the server card.
@@ -371,9 +372,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveVirtualCard) {
       virtual_card);
   EXPECT_TRUE(RunAutofillSubtest("removeVirtualCard"));
   EXPECT_THAT(
-      autofill_client()
-          ->GetPaymentsAutofillClient()
-          ->GetPaymentsNetworkInterface()
+      static_cast<TestPaymentsNetworkInterface*>(
+          autofill_client()
+              ->GetPaymentsAutofillClient()
+              ->GetPaymentsNetworkInterface())
           ->update_virtual_card_enrollment_request_details(),
       ::testing::AllOf(
           ::testing::Field(

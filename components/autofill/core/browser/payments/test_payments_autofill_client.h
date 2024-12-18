@@ -85,7 +85,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  TestPaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+  PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
@@ -134,9 +134,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return autofill_progress_dialog_shown_;
   }
 
-  void set_test_payments_network_interface(
-      std::unique_ptr<TestPaymentsNetworkInterface>
-          payments_network_interface) {
+  void set_payments_network_interface(
+      std::unique_ptr<PaymentsNetworkInterface> payments_network_interface) {
     payments_network_interface_ = std::move(payments_network_interface);
   }
 
@@ -197,7 +196,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
  private:
   const raw_ref<AutofillClient> client_;
 
-  std::unique_ptr<TestPaymentsNetworkInterface> payments_network_interface_;
+  std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
   std::vector<std::string> migration_card_selection_;
 

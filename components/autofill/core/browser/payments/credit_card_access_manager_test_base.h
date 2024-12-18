@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -180,6 +181,9 @@ class CreditCardAccessManagerTestBase : public testing::Test {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   TestCreditCardFidoAuthenticator& fido_authenticator();
 #endif
+  payments::TestPaymentsAutofillClient& payments_autofill_client() {
+    return *autofill_client_.GetPaymentsAutofillClient();
+  }
   payments::TestPaymentsNetworkInterface& payments_network_interface();
   TestPersonalDataManager& personal_data();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

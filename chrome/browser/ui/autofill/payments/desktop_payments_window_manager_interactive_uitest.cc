@@ -43,7 +43,7 @@ class TestContentAutofillClientForWindowManagerTest
   explicit TestContentAutofillClientForWindowManagerTest(
       content::WebContents* web_contents)
       : TestContentAutofillClient(web_contents) {
-    GetPaymentsAutofillClient()->set_test_payments_network_interface(
+    GetPaymentsAutofillClient()->set_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(
             nullptr, nullptr, nullptr));
     GetPaymentsAutofillClient()->set_payments_window_manager(

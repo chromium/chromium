@@ -61,7 +61,7 @@ class IbanSaveManagerTest : public testing::Test {
   IbanSaveManagerTest() {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
+        ->set_payments_network_interface(
             std::make_unique<MockTestPaymentsNetworkInterface>());
     autofill_client_.set_sync_service(&sync_service_);
     std::unique_ptr<TestStrikeDatabase> test_strike_database =

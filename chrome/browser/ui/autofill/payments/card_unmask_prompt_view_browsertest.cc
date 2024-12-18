@@ -44,7 +44,7 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
   TestCardUnmaskDelegate(const TestCardUnmaskDelegate&) = delete;
   TestCardUnmaskDelegate& operator=(const TestCardUnmaskDelegate&) = delete;
 
-  virtual ~TestCardUnmaskDelegate() = default;
+  ~TestCardUnmaskDelegate() override = default;
 
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(

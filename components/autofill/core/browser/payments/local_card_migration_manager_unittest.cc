@@ -79,7 +79,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
         autofill_client_.GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data());
     autofill_client_.GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
+        ->set_payments_network_interface(
             std::unique_ptr<payments::TestPaymentsNetworkInterface>(
                 payments_network_interface_));
     auto credit_card_save_manager =

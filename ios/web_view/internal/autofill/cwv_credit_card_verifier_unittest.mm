@@ -45,7 +45,7 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
   FakeCardUnmaskDelegate(const FakeCardUnmaskDelegate&) = delete;
   FakeCardUnmaskDelegate& operator=(const FakeCardUnmaskDelegate&) = delete;
 
-  virtual ~FakeCardUnmaskDelegate() {}
+  ~FakeCardUnmaskDelegate() override = default;
 
   // CardUnmaskDelegate implementation.
   void OnUnmaskPromptAccepted(

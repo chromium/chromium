@@ -87,11 +87,10 @@ void CreditCardAccessManagerTestBase::SetUp() {
   accessor_ = std::make_unique<TestAccessor>();
   autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
 
-  autofill_client_.GetPaymentsAutofillClient()
-      ->set_test_payments_network_interface(
-          std::make_unique<payments::TestPaymentsNetworkInterface>(
-              autofill_client_.GetURLLoaderFactory(),
-              autofill_client_.GetIdentityManager(), &personal_data()));
+  payments_autofill_client().set_payments_network_interface(
+      std::make_unique<payments::TestPaymentsNetworkInterface>(
+          autofill_client_.GetURLLoaderFactory(),
+          autofill_client_.GetIdentityManager(), &personal_data()));
   autofill_client_.set_test_strike_database(
       std::make_unique<TestStrikeDatabase>());
   autofill_driver_->set_autofill_manager(
@@ -106,7 +105,7 @@ void CreditCardAccessManagerTestBase::SetUp() {
   auto otp_authenticator =
       std::make_unique<TestCreditCardOtpAuthenticator>(&autofill_client_);
   otp_authenticator_ = otp_authenticator.get();
-  autofill_client_.GetPaymentsAutofillClient()->set_otp_authenticator(
+  payments_autofill_client().set_otp_authenticator(
       std::move(otp_authenticator));
 
   // Force creation of the CreditCardAccessManager.
@@ -161,7 +160,7 @@ const CreditCard* CreditCardAccessManagerTestBase::CreateServerCard(
 
 CreditCardCvcAuthenticator&
 CreditCardAccessManagerTestBase::GetCvcAuthenticator() {
-  return autofill_client_.GetPaymentsAutofillClient()->GetCvcAuthenticator();
+  return payments_autofill_client().GetCvcAuthenticator();
 }
 
 void CreditCardAccessManagerTestBase::MockUserResponseForCvcAuth(
@@ -369,8 +368,7 @@ void CreditCardAccessManagerTestBase::
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
   // unmasking flow.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
-                  ->risk_based_authentication_invoked());
+  EXPECT_TRUE(payments_autofill_client().risk_based_authentication_invoked());
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
   response.result = CreditCardRiskBasedAuthenticator::
       RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
@@ -412,8 +410,7 @@ void CreditCardAccessManagerTestBase::
   if (challenge_option.type ==
       CardUnmaskChallengeOptionType::kThreeDomainSecure) {
     EXPECT_CALL(*static_cast<payments::MockPaymentsWindowManager*>(
-                    autofill_client_.GetPaymentsAutofillClient()
-                        ->GetPaymentsWindowManager()),
+                    payments_autofill_client().GetPaymentsWindowManager()),
                 InitVcn3dsAuthentication)
         .Times(1)
         .WillOnce([&vcn_3ds_context](
@@ -430,7 +427,7 @@ void CreditCardAccessManagerTestBase::
   switch (challenge_option.type) {
     case CardUnmaskChallengeOptionType::kCvc: {
       CreditCardCvcAuthenticator& cvc_authenticator =
-          autofill_client_.GetPaymentsAutofillClient()->GetCvcAuthenticator();
+          payments_autofill_client().GetCvcAuthenticator();
       payments::UnmaskRequestDetails* request_details =
           cvc_authenticator.GetFullCardRequest()->request_.get();
       EXPECT_EQ(request_details->card.record_type(),
@@ -500,8 +497,8 @@ CreditCardAccessManagerTestBase::fido_authenticator() {
 
 payments::TestPaymentsNetworkInterface&
 CreditCardAccessManagerTestBase::payments_network_interface() {
-  return *autofill_client_.GetPaymentsAutofillClient()
-              ->GetPaymentsNetworkInterface();
+  return static_cast<payments::TestPaymentsNetworkInterface&>(
+      *payments_autofill_client().GetPaymentsNetworkInterface());
 }
 
 TestPersonalDataManager& CreditCardAccessManagerTestBase::personal_data() {

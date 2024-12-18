@@ -33,6 +33,8 @@ class CardUnmaskDelegate {
     bool was_checkbox_visible = false;
   };
 
+  virtual ~CardUnmaskDelegate() = default;
+
   // Called when the user has attempted a verification. Prompt is still
   // open at this point.
   virtual void OnUnmaskPromptAccepted(

@@ -282,7 +282,7 @@ class DISABLED_FastCheckoutClientImplTest
 
     autofill_client()
         ->GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
+        ->set_payments_network_interface(
             std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
                 autofill_client()->GetURLLoaderFactory(),
                 autofill_client()->GetIdentityManager(),

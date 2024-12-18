@@ -696,7 +696,7 @@ class MockAutofillClient : public TestAutofillClient {
 
     auto create_payments_autofill_client = [&client] {
       auto x = std::make_unique<MockPaymentsAutofillClient>(&*client);
-      x->set_test_payments_network_interface(
+      x->set_payments_network_interface(
           std::make_unique<payments::TestPaymentsNetworkInterface>(
               client->GetURLLoaderFactory(), client->GetIdentityManager(),
               &client->GetPersonalDataManager()));

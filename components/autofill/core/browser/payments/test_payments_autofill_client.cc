@@ -110,7 +110,7 @@ void TestPaymentsAutofillClient::ConfirmExpirationDateFixFlow(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-TestPaymentsNetworkInterface*
+PaymentsNetworkInterface*
 TestPaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return payments_network_interface_.get();
 }

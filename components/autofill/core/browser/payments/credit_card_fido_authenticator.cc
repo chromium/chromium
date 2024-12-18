@@ -744,12 +744,8 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
     case AUTHENTICATION_FLOW: {
       base::Value::Dict response =
           ParseAssertionResponse(std::move(assertion_response));
-      full_card_request_ = std::make_unique<payments::FullCardRequest>(
-          autofill_client_,
-          autofill_client_->GetPaymentsAutofillClient()
-              ->GetPaymentsNetworkInterface(),
-          &autofill_client_->GetPersonalDataManager());
-
+      full_card_request_ =
+          std::make_unique<payments::FullCardRequest>(autofill_client_);
       std::optional<GURL> last_committed_primary_main_frame_origin;
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard &&
           autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
