@@ -431,6 +431,88 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleNoticeAcknowledge) {
   ASSERT_EQ(web_ui()->call_data().size(), 0U);
 }
 
+// Ads API UX Enhancements
+TEST_F(PrivacySandboxNoticeDialogHandlerTest,
+       HandleClickSiteSuggestedAdsMoreInfo) {
+  ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::
+                               kNoticeSiteSuggestedAdsMoreInfoOpened,
+                           PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::
+                               kNoticeSiteSuggestedAdsMoreInfoClosed,
+                           PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+          PrivacySandboxService::SurfaceType::kDesktop));
+
+  base::Value::List site_suggested_ads_more_info_opened_args;
+  site_suggested_ads_more_info_opened_args.Append(
+      static_cast<int>(PrivacySandboxService::PromptAction::
+                           kNoticeSiteSuggestedAdsMoreInfoOpened));
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "promptActionOccurred",
+      std::move(site_suggested_ads_more_info_opened_args));
+
+  ASSERT_EQ(web_ui()->call_data().size(), 0U);
+
+  base::Value::List site_suggested_ads_more_info_closed_args;
+  site_suggested_ads_more_info_closed_args.Append(
+      static_cast<int>(PrivacySandboxService::PromptAction::
+                           kNoticeSiteSuggestedAdsMoreInfoClosed));
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "promptActionOccurred",
+      std::move(site_suggested_ads_more_info_closed_args));
+
+  ASSERT_EQ(web_ui()->call_data().size(), 0U);
+}
+
+// Ads API UX Enhancements
+TEST_F(PrivacySandboxNoticeDialogHandlerTest,
+       HandleClickAdsMeasurementMoreInfo) {
+  ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::
+                               kNoticeAdsMeasurementMoreInfoOpened,
+                           PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::
+                               kNoticeAdsMeasurementMoreInfoClosed,
+                           PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+          PrivacySandboxService::SurfaceType::kDesktop));
+
+  base::Value::List ads_measurement_more_info_opened_args;
+  ads_measurement_more_info_opened_args.Append(
+      static_cast<int>(PrivacySandboxService::PromptAction::
+                           kNoticeAdsMeasurementMoreInfoOpened));
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "promptActionOccurred",
+      std::move(ads_measurement_more_info_opened_args));
+
+  ASSERT_EQ(web_ui()->call_data().size(), 0U);
+
+  base::Value::List ads_measurement_more_info_closed_args;
+  ads_measurement_more_info_closed_args.Append(
+      static_cast<int>(PrivacySandboxService::PromptAction::
+                           kNoticeAdsMeasurementMoreInfoClosed));
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "promptActionOccurred",
+      std::move(ads_measurement_more_info_closed_args));
+
+  ASSERT_EQ(web_ui()->call_data().size(), 0U);
+}
+
 class PrivacySandboxNoticeRestrictedDialogHandlerTest
     : public PrivacySandboxDialogHandlerTest {
  protected:

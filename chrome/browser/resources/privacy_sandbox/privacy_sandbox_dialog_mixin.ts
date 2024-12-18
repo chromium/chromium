@@ -84,23 +84,33 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
 
         onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(
             newValue: boolean, oldValue: boolean) {
-          // TODO(crbug.com/377557616): Create new PromptAction and add metrics
           if (newValue && !oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ true);
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction
+                    .NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_OPENED);
           }
           if (!newValue && oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ false);
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction
+                    .NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_CLOSED);
           }
         }
 
-        onNoticeAdMeasurementLearnMoreExpandedChanged(
+        onNoticeAdsMeasurementLearnMoreExpandedChanged(
             newValue: boolean, oldValue: boolean) {
-          // TODO(crbug.com/377557616): Create new PromptAction and add metrics
           if (newValue && !oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ true);
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction
+                    .NOTICE_ADS_MEASUREMENT_MORE_INFO_OPENED);
           }
           if (!newValue && oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ false);
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction
+                    .NOTICE_ADS_MEASUREMENT_MORE_INFO_CLOSED);
           }
         }
 
@@ -283,7 +293,7 @@ export interface PrivacySandboxDialogMixinInterface {
   onNoticeLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
   onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(
       newValue: boolean, oldValue: boolean): void;
-  onNoticeAdMeasurementLearnMoreExpandedChanged(
+  onNoticeAdsMeasurementLearnMoreExpandedChanged(
       newValue: boolean, oldValue: boolean): void;
   onNoticeOpenSettings(): void;
   onNoticeAcknowledge(): void;

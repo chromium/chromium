@@ -44,7 +44,7 @@ export class PrivacySandboxDialogNoticeStepElement extends
 
       adMeasurementLearnMoreExpanded_: {
         type: Boolean,
-        observer: 'onNoticeAdMeasurementLearnMoreExpandedChanged',
+        observer: 'onNoticeAdsMeasurementLearnMoreExpandedChanged',
       },
 
       /**

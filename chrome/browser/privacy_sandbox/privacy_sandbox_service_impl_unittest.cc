@@ -809,6 +809,37 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
                 "Settings.PrivacySandbox.Notice.MoreButtonClicked"),
             1);
 
+  // Site Suggested Ads & Ads Measurement more info dropdown prompt actions part
+  // of Ads API UX Enhancements.
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened,
+      SurfaceType::kDesktop);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(
+          "Settings.PrivacySandbox.Notice.SiteSuggestedAdsLearnMoreExpanded"),
+      1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeSiteSuggestedAdsMoreInfoClosed,
+      SurfaceType::kDesktop);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(
+          "Settings.PrivacySandbox.Notice.SiteSuggestedAdsLearnMoreClosed"),
+      1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeAdsMeasurementMoreInfoOpened, SurfaceType::kDesktop);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount(
+          "Settings.PrivacySandbox.Notice.AdsMeasurementLearnMoreExpanded"),
+      1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeAdsMeasurementMoreInfoClosed, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.AdsMeasurementLearnMoreClosed"),
+            1);
+
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,

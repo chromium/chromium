@@ -1051,41 +1051,48 @@ suite('NoticeEEAAdsApiUxEnhancement', function() {
         browserProxy, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 
-  test('learnMoreClicked', async function() {
+  async function verifyCollapseSectionOpensAndCloses(
+      learnMoreELementId: string, openedAction: PrivacySandboxPromptAction,
+      closedAction: PrivacySandboxPromptAction,
+      browserProxy: TestPrivacySandboxDialogBrowserProxy) {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep(page);
     assertEquals(noticeStep!.id, PrivacySandboxCombinedDialogStep.NOTICE);
     // TODO(crbug.com/40244046): Test scrolling behaviour.
     // The collapse section is closed.
-    const learnMoreElements = noticeStep!.shadowRoot!.querySelectorAll(
-        'privacy-sandbox-dialog-learn-more');
-    learnMoreElements.forEach(async learnMoreElement => {
-      const collapseElement =
-          learnMoreElement!.shadowRoot!.querySelector('cr-collapse');
-      assertFalse(collapseElement!.opened);
+    const learnMore =
+        noticeStep!.shadowRoot!.querySelector<HTMLElement>(learnMoreELementId);
+    const collapseElement = learnMore!.shadowRoot!.querySelector('cr-collapse');
+    assertFalse(collapseElement!.opened);
 
-      // The collapse section is opened and the native UI is notified about the
-      // action.
-      testClickButton('cr-expand-button', learnMoreElement);
-      await verifyActionOccured(
-          browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
-      assertTrue(collapseElement!.opened);
+    // The collapse section is opened and the native UI is notified about the
+    // action.
+    testClickButton('cr-expand-button', learnMore);
+    await verifyActionOccured(browserProxy, openedAction);
+    assertTrue(collapseElement!.opened);
 
-      // The collapse section is opened and the native UI is notified about the
-      // action.
-      testClickButton('cr-expand-button', learnMoreElement);
-      await verifyActionOccured(
-          browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
-      assertTrue(collapseElement!.opened);
+    // After clicking on the collapse section again, the content area
+    // collapses and returns to the initial state.
+    testClickButton('cr-expand-button', learnMore);
+    await verifyActionOccured(browserProxy, closedAction);
+    assertFalse(collapseElement!.opened);
+  }
 
-      // After clicking on the collapse section again, the content area
-      // collapses and returns to the initial state.
-      testClickButton('cr-expand-button', learnMoreElement);
-      await verifyActionOccured(
-          browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
-      assertFalse(collapseElement!.opened);
-    });
+  test('siteSuggestedAdsLearnMoreClicked', async function() {
+    verifyCollapseSectionOpensAndCloses(
+        '#siteSuggestedAdsLearnMore',
+        PrivacySandboxPromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_OPENED,
+        PrivacySandboxPromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_CLOSED,
+        browserProxy);
+  });
+
+  test('adsMeasurementLearnMoreClicked', async function() {
+    verifyCollapseSectionOpensAndCloses(
+        '#adsMeasurementLearnMore',
+        PrivacySandboxPromptAction.NOTICE_ADS_MEASUREMENT_MORE_INFO_OPENED,
+        PrivacySandboxPromptAction.NOTICE_ADS_MEASUREMENT_MORE_INFO_CLOSED,
+        browserProxy);
   });
 
   test('noticeEEAContent', async function() {
@@ -1111,7 +1118,9 @@ suite('NoticeEEAAdsApiUxEnhancement', function() {
     const collapseElement = learnMore!.shadowRoot!.querySelector('cr-collapse');
     testClickButton('cr-expand-button', learnMore);
     await flushTasks();
-    // // TODO(crbug.com/377557616): Create new PromptAction and add metrics
+    await verifyActionOccured(
+        browserProxy,
+        PrivacySandboxPromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
     assertFalse(isVisible(
         noticeStep.shadowRoot!.querySelector('#privacyPolicyLinkV2')));
@@ -1129,7 +1138,9 @@ suite('NoticeEEAAdsApiUxEnhancement', function() {
     const collapseElement = learnMore!.shadowRoot!.querySelector('cr-collapse');
     testClickButton('cr-expand-button', learnMore);
     await flushTasks();
-    // TODO(crbug.com/377557616): Create new PromptAction and add metrics
+    await verifyActionOccured(
+        browserProxy,
+        PrivacySandboxPromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
 
     const privacyPolicyLinkV2 =

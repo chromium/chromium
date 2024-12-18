@@ -933,6 +933,9 @@ void UpdateNoticeStorage(
           privacy_sandbox::NoticeActionTaken::kSettings, base::Time::Now());
       break;
     }
+    // TODO(crbug.com/377557616): Update notice storage with new Ads API UX
+    // Enhancements prompt actions
+
     // Restricted notices
     case PromptAction::kRestrictedNoticeShown: {
       DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
@@ -1862,119 +1865,73 @@ void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
 }
 #endif
 
-void PrivacySandboxServiceImpl::RecordPromptActionMetrics(PromptAction action) {
+std::string GetPromptActionHistogramSuffix(PromptAction action) {
   switch (action) {
-    case PromptAction::kNoticeShown: {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Notice.Shown"));
-      break;
-    }
-    case PromptAction::kNoticeOpenSettings: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.OpenedSettings"));
-      break;
-    }
-    case PromptAction::kNoticeAcknowledge: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.Acknowledged"));
-      break;
-    }
-    case PromptAction::kNoticeDismiss: {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Notice.Dismissed"));
-      break;
-    }
-    case PromptAction::kNoticeClosedNoInteraction: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
-      break;
-    }
-    case PromptAction::kConsentShown: {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Shown"));
-      break;
-    }
-    case PromptAction::kConsentAccepted: {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Accepted"));
-      break;
-    }
-    case PromptAction::kConsentDeclined: {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Declined"));
-      break;
-    }
-    case PromptAction::kConsentMoreInfoOpened: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Consent.LearnMoreExpanded"));
-      break;
-    }
-    case PromptAction::kConsentMoreInfoClosed: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Consent.LearnMoreClosed"));
-      break;
-    }
-    case PromptAction::kConsentClosedNoDecision: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
-      break;
-    }
-    case PromptAction::kNoticeLearnMore: {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Notice.LearnMore"));
-      break;
-    }
-    case PromptAction::kNoticeMoreInfoOpened: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.LearnMoreExpanded"));
-      break;
-    }
-    case PromptAction::kNoticeMoreInfoClosed: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.LearnMoreClosed"));
-      break;
-    }
-    case PromptAction::kConsentMoreButtonClicked: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Consent.MoreButtonClicked"));
-      break;
-    }
-    case PromptAction::kNoticeMoreButtonClicked: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
-      break;
-    }
-    case PromptAction::kRestrictedNoticeAcknowledge: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"));
-      break;
-    }
-    case PromptAction::kRestrictedNoticeOpenSettings: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
-      break;
-    }
-    case PromptAction::kRestrictedNoticeShown: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.RestrictedNotice.Shown"));
-      break;
-    }
-    case PromptAction::kRestrictedNoticeClosedNoInteraction: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"));
-      break;
-    }
-    case PromptAction::kRestrictedNoticeMoreButtonClicked: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"));
-      break;
-    }
-    case PromptAction::kPrivacyPolicyLinkClicked: {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Consent.PrivacyPolicyLinkClicked"));
-      break;
-    }
+    // Notice Actions
+    case PromptAction::kNoticeShown:
+      return "Notice.Shown";
+    case PromptAction::kNoticeOpenSettings:
+      return "Notice.OpenedSettings";
+    case PromptAction::kNoticeAcknowledge:
+      return "Notice.Acknowledged";
+    case PromptAction::kNoticeDismiss:
+      return "Notice.Dismissed";
+    case PromptAction::kNoticeClosedNoInteraction:
+      return "Notice.ClosedNoInteraction";
+    case PromptAction::kNoticeLearnMore:
+      return "Notice.LearnMore";
+    case PromptAction::kNoticeMoreInfoOpened:
+      return "Notice.LearnMoreExpanded";
+    case PromptAction::kNoticeMoreInfoClosed:
+      return "Notice.LearnMoreClosed";
+    case PromptAction::kNoticeMoreButtonClicked:
+      return "Notice.MoreButtonClicked";
+    case PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened:
+      return "Notice.SiteSuggestedAdsLearnMoreExpanded";
+    case PromptAction::kNoticeSiteSuggestedAdsMoreInfoClosed:
+      return "Notice.SiteSuggestedAdsLearnMoreClosed";
+    case PromptAction::kNoticeAdsMeasurementMoreInfoOpened:
+      return "Notice.AdsMeasurementLearnMoreExpanded";
+    case PromptAction::kNoticeAdsMeasurementMoreInfoClosed:
+      return "Notice.AdsMeasurementLearnMoreClosed";
+
+    // Consent Actions
+    case PromptAction::kConsentShown:
+      return "Consent.Shown";
+    case PromptAction::kConsentAccepted:
+      return "Consent.Accepted";
+    case PromptAction::kConsentDeclined:
+      return "Consent.Declined";
+    case PromptAction::kConsentMoreInfoOpened:
+      return "Consent.LearnMoreExpanded";
+    case PromptAction::kConsentMoreInfoClosed:
+      return "Consent.LearnMoreClosed";
+    case PromptAction::kConsentClosedNoDecision:
+      return "Consent.ClosedNoInteraction";
+    case PromptAction::kConsentMoreButtonClicked:
+      return "Consent.MoreButtonClicked";
+    case PromptAction::kPrivacyPolicyLinkClicked:
+      return "Consent.PrivacyPolicyLinkClicked";
+
+    // Restricted Notice Actions
+    case PromptAction::kRestrictedNoticeAcknowledge:
+      return "RestrictedNotice.Acknowledged";
+    case PromptAction::kRestrictedNoticeOpenSettings:
+      return "RestrictedNotice.OpenedSettings";
+    case PromptAction::kRestrictedNoticeShown:
+      return "RestrictedNotice.Shown";
+    case PromptAction::kRestrictedNoticeClosedNoInteraction:
+      return "RestrictedNotice.ClosedNoInteraction";
+    case PromptAction::kRestrictedNoticeMoreButtonClicked:
+      return "RestrictedNotice.MoreButtonClicked";
   }
+}
+
+void PrivacySandboxServiceImpl::RecordPromptActionMetrics(PromptAction action) {
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat(
+          {"Settings.PrivacySandbox.", GetPromptActionHistogramSuffix(action)})
+          .c_str()));
 }
 
 void PrivacySandboxServiceImpl::OnTopicsPrefChanged() {

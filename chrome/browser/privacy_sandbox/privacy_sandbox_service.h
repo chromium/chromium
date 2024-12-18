@@ -135,7 +135,14 @@ class PrivacySandboxService : public KeyedService {
     // Privacy policy interactions
     kPrivacyPolicyLinkClicked = 21,
 
-    kMaxValue = kPrivacyPolicyLinkClicked,
+    // Interactions with M1 Notice EEA Prompt. This is in relation to Ads API UX
+    // Enhancement splitting the more info into two different sections.
+    kNoticeSiteSuggestedAdsMoreInfoOpened = 22,
+    kNoticeSiteSuggestedAdsMoreInfoClosed = 23,
+    kNoticeAdsMeasurementMoreInfoOpened = 24,
+    kNoticeAdsMeasurementMoreInfoClosed = 25,
+
+    kMaxValue = kNoticeAdsMeasurementMoreInfoClosed,
   };
 
   // Contains the possible states of the Notice Queue.

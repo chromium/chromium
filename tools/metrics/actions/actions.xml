@@ -35290,6 +35290,24 @@ should be able to be added at any place in this file.
   <description>User acknowledged the Privacy Sandbox notice.</description>
 </action>
 
+<action name="Settings.PrivacySandbox.Notice.AdsMeasurementLearnMoreClosed">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User closed the Ads Measurement Learn More in the Privacy Sandbox Notice.
+    This is part of the Ads API UX Enhancements.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Notice.AdsMeasurementLearnMoreExpanded">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User expanded the Ads Measurement Learn More in the Privacy Sandbox Notice.
+    This is part of the Ads API UX Enhancements.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.Notice.ClosedNoInteraction">
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -35374,6 +35392,24 @@ should be able to be added at any place in this file.
   <owner>msramek@chromium.org</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>User is shown the Privacy Sandbox notice.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Notice.SiteSuggestedAdsLearnMoreClosed">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User closed the Site Suggested Ads Learn More in the Privacy Sandbox Notice.
+    This is part of the Ads API UX Enhancements.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Notice.SiteSuggestedAdsLearnMoreExpanded">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User expanded the Site Suggested Ads Learn More in the Privacy Sandbox
+    Notice. This is part of the Ads API UX Enhancements.
+  </description>
 </action>
 
 <action name="Settings.PrivacySandbox.OpenedFromCookiesPageToast">
