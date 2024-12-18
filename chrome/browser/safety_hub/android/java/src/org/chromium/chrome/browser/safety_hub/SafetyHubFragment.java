@@ -106,11 +106,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        mCallbackController = new CallbackController();
-        PostTask.postDelayedTask(
-                TaskTraits.UI_DEFAULT,
-                mCallbackController.makeCancelable(this::triggerOrganicHatsSurvey),
-                ORGANIC_HATS_SURVEY_DELAY_MS);
+        if (ChromeFeatureList.sSafetyHubAndroidOrganicSurvey.isEnabled()) {
+            mCallbackController = new CallbackController();
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mCallbackController.makeCancelable(this::triggerOrganicHatsSurvey),
+                    ORGANIC_HATS_SURVEY_DELAY_MS);
+        }
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
