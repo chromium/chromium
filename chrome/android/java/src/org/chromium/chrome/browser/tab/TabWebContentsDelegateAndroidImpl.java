@@ -233,9 +233,13 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     public void visibleSSLStateChanged() {
         PolicyAuditor auditor = PolicyAuditor.maybeCreate();
         if (auditor != null) {
-            auditor.notifyCertificateFailure(
-                    PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
-                    ContextUtils.getApplicationContext());
+            WebContents webContents = mTab.getWebContents();
+            // Speculative fix for crbug.com/384566650
+            if (webContents != null && !webContents.isDestroyed()) {
+                auditor.notifyCertificateFailure(
+                        PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
+                        ContextUtils.getApplicationContext());
+            }
         }
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) observers.next().onSSLStateUpdated(mTab);
