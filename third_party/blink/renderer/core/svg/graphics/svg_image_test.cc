@@ -213,7 +213,7 @@ TEST_F(SVGImageTest, LayoutShiftTrackerDisabled) {
 TEST_F(SVGImageTest, SetSizeOnVisualViewport) {
   const bool kDontPause = false;
   Load(base::span_from_cstring(
-           "<svg xmlns='http://www.w3.org/2000/svg'>"
+           "<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100'>"
            "   <rect id='green' width='100%' height='100%' fill='green' />"
            "</svg>"),
        kDontPause);
