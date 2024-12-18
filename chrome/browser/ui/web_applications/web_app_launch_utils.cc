@@ -762,10 +762,8 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
   CHECK(source_browser);
   CHECK(web_contents);
   CHECK(target_browser);
-  CHECK(AreWebAppsEnabled(target_browser->profile(),
-                          /*exclude_original_profile=*/true));
-  CHECK(AreWebAppsEnabled(source_browser->profile(),
-                          /*exclude_original_profile=*/true));
+  CHECK(AreWebAppsEnabled(target_browser->profile()));
+  CHECK(AreWebAppsEnabled(source_browser->profile()));
   CHECK_EQ(source_browser->profile(), target_browser->profile());
 
   // In a reparent, the owning session service needs to be told it's tab

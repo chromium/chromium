@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -217,9 +218,11 @@ void WebAppTabHelper::FlushLaunchQueueForTesting() const {
 WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
                                  content::WebContents* contents)
     : content::WebContentsUserData<WebAppTabHelper>(*contents),
-      content::WebContentsObserver(contents),
-      provider_(WebAppProvider::GetForLocalAppsUnchecked(
-          tab->GetBrowserWindowInterface()->GetProfile())) {
+      content::WebContentsObserver(contents) {
+  CHECK(AreWebAppsEnabled(tab->GetBrowserWindowInterface()->GetProfile()));
+  provider_ = WebAppProvider::GetForLocalAppsUnchecked(
+      tab->GetBrowserWindowInterface()->GetProfile());
+  CHECK(provider_);
   observation_.Observe(&provider_->install_manager());
   // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
   // for correctness.

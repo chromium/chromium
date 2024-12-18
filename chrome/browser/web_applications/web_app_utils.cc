@@ -274,24 +274,15 @@ constexpr base::FilePath::CharType kManifestResourcesDirectoryName[] =
 constexpr base::FilePath::CharType kTempDirectoryName[] =
     FILE_PATH_LITERAL("Temp");
 
-bool AreWebAppsEnabled(Profile* profile, bool exclude_original_profile) {
+bool AreWebAppsEnabled(Profile* profile) {
   if (!profile || profile->IsSystemProfile()) {
     return false;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (exclude_original_profile) {
-    return !profile->IsOffTheRecord();
-  }
-  DCHECK(!profile->GetOriginalProfile()->IsOffTheRecord());
-  return true;
-#else
-  const Profile* original_profile = profile->GetOriginalProfile();
-  DCHECK(!original_profile->IsOffTheRecord());
-
+#if BUILDFLAG(IS_CHROMEOS)
   // Web Apps should not be installed to the ChromeOS system profiles except the
   // lock screen app profile.
-  if (!ash::ProfileHelper::IsUserProfile(original_profile) &&
+  if (!ash::ProfileHelper::IsUserProfile(profile) &&
       !ash::IsShimlessRmaAppBrowserContext(profile)) {
     return false;
   }
@@ -304,9 +295,13 @@ bool AreWebAppsEnabled(Profile* profile, bool exclude_original_profile) {
       return false;
     }
   }
-
-  return true;
+  // Guest session forces OTR to be turned on.
+  if (profile->IsGuestSession()) {
+    return profile->IsOffTheRecord();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return !profile->IsOffTheRecord();
 }
 
 bool AreWebAppsUserInstallable(Profile* profile) {
@@ -321,19 +316,18 @@ content::BrowserContext* GetBrowserContextForWebApps(
   if (!profile) {
     return nullptr;
   }
+
+  if (AreWebAppsEnabled(profile)) {
+    return profile;
+  }
+
   Profile* original_profile = profile->GetOriginalProfile();
-  if (!AreWebAppsEnabled(original_profile)) {
-    return nullptr;
+  CHECK(original_profile);
+  if (AreWebAppsEnabled(original_profile)) {
+    return original_profile;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Use OTR profile for Guest Session.
-  if (profile->IsGuestSession()) {
-    return profile->IsOffTheRecord() ? profile : nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  return original_profile;
+  return nullptr;
 }
 
 content::BrowserContext* GetBrowserContextForWebAppMetrics(

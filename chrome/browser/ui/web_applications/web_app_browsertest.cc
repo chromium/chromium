@@ -985,9 +985,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopOutDisabledInIncognito) {
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
   size_t index = 0;
-  ASSERT_TRUE(app_menu_model->GetModelAndIndexForCommandId(
+  EXPECT_FALSE(app_menu_model->GetModelAndIndexForCommandId(
       IDC_OPEN_IN_PWA_WINDOW, &model, &index));
-  EXPECT_FALSE(model->IsEnabledAt(index));
 }
 
 // Tests that web app menus don't crash when no tabs are selected.

@@ -788,7 +788,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     // Verify these are necessary: then reorder or remove.
 
     "AccountManagerPolicyController",
-    "AppShortcutManager",
     "ArcAppsPrivateAPI",
     "AuthTokenValidatorFactory",
     "AutocompleteActionPredictor",

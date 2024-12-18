@@ -52,20 +52,23 @@ const char kSupplementaryIcon[] = "supplementary_icon";
 const char16_t kOfflineIconId[] = u"offlineIcon";
 }  // namespace error_page
 
-// These functions return true if the WebApp System or its subset is allowed
-// for a given profile.
-// |profile| can be original profile or its secondary off-the-record profile.
-// Returns false if |profile| is nullptr.
+// These functions return true if the WebAppProvider is allowed
+// for a given profile. This does not consider 'original' profiles. Returns
+// false if |profile| is off-the-record or nullptr.
 //
-// Is main WebApp System allowed (WebAppProvider exists):
-// TODO(crbug.com/382108359): Remove exclude_original_profile argument when
-// incognito profiles return 'false'.
-bool AreWebAppsEnabled(Profile* profile, bool exclude_original_profile = false);
+// Note: For ChromeOS guest profiles, this instead returns 'true' if the profile
+// is off-the-record, and 'false' if it is not (as the user guest profile is
+// hard-coded as OTR).
+bool AreWebAppsEnabled(Profile* profile);
 
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
 
-// Get BrowserContext to use for a WebApp KeyedService creation.
+// Get BrowserContext to use for a WebApp KeyedService creation. If disabled for
+// the profile of the `context`, then will consider the profile's original
+// profile.
+// TODO(https://crbug.com/384063076): Stop returning for profiles where
+// `AreWebAppsEnabled` returns `false`.
 content::BrowserContext* GetBrowserContextForWebApps(
     content::BrowserContext* context);
 content::BrowserContext* GetBrowserContextForWebAppMetrics(

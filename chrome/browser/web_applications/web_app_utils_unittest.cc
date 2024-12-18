@@ -192,32 +192,33 @@ TEST(WebAppTest, ResolveEffectiveDisplayModeWithIsolatedWebApp) {
 
 TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
+  SkipMainProfileCheckForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   Profile* regular_profile = profile();
 
   EXPECT_FALSE(AreWebAppsEnabled(nullptr));
   EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
-  EXPECT_TRUE(AreWebAppsEnabled(
+  EXPECT_FALSE(AreWebAppsEnabled(
       regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-  EXPECT_TRUE(AreWebAppsEnabled(regular_profile->GetOffTheRecordProfile(
+  EXPECT_FALSE(AreWebAppsEnabled(regular_profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true)));
 
   Profile* guest_profile = profile_manager().CreateGuestProfile();
-  EXPECT_TRUE(AreWebAppsEnabled(guest_profile));
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(AreWebAppsEnabled(guest_profile));
+  EXPECT_FALSE(AreWebAppsEnabled(guest_profile->GetOriginalProfile()));
   EXPECT_TRUE(AreWebAppsEnabled(
       guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* system_profile = profile_manager().CreateSystemProfile();
-  EXPECT_FALSE(AreWebAppsEnabled(system_profile));
+#else
+  EXPECT_TRUE(AreWebAppsEnabled(guest_profile));
+  EXPECT_TRUE(AreWebAppsEnabled(guest_profile->GetOriginalProfile()));
   EXPECT_FALSE(AreWebAppsEnabled(
-      system_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-#endif
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* signin_profile =
       profile_manager().CreateTestingProfile(chrome::kInitialProfile);
   EXPECT_FALSE(AreWebAppsEnabled(signin_profile));
@@ -314,20 +315,22 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebApps) {
 
   Profile* guest_profile = profile_manager().CreateGuestProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  guest_profile =
-      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* guest_otr_profile = guest_profile->GetPrimaryOTRProfile(
+      /*create_if_needed=*/true);
+  EXPECT_EQ(nullptr, GetBrowserContextForWebApps(guest_profile));
+  EXPECT_EQ(guest_otr_profile, GetBrowserContextForWebApps(guest_otr_profile));
+#else
   EXPECT_EQ(guest_profile, GetBrowserContextForWebApps(guest_profile));
   EXPECT_EQ(guest_profile,
             GetBrowserContextForWebApps(guest_profile->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true)));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
   Profile* system_profile = profile_manager().CreateSystemProfile();
   EXPECT_EQ(nullptr, GetBrowserContextForWebApps(system_profile));
   EXPECT_EQ(nullptr,
             GetBrowserContextForWebApps(system_profile->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true)));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
