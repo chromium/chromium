@@ -178,10 +178,12 @@ class CORE_EXPORT PhysicalAnchorQuery
                       const WritingModeConverter& converter);
 };
 
+// TODO(mstensho): Merge into PhysicalAnchorReference. LogicalAnchorReference is
+// now also physical, although named otherwise.
 struct CORE_EXPORT LogicalAnchorReference
     : public GarbageCollected<LogicalAnchorReference> {
   LogicalAnchorReference(const LayoutObject& layout_object,
-                         const LogicalRect& rect,
+                         const PhysicalRect& rect,
                          bool is_out_of_flow,
                          HeapHashSet<Member<Element>>* display_locks)
       : rect(rect),
@@ -194,7 +196,7 @@ struct CORE_EXPORT LogicalAnchorReference
 
   void Trace(Visitor* visitor) const;
 
-  LogicalRect rect;
+  PhysicalRect rect;
   Member<const LayoutObject> layout_object;
   // A singly linked list in the reverse tree order. There can be at most one
   // in-flow reference, which if exists must be at the end of the list.
@@ -222,15 +224,14 @@ class CORE_EXPORT LogicalAnchorQuery
   // passed as |element_for_display_lock|.
   void Set(const AnchorKey&,
            const LayoutObject& layout_object,
-           const LogicalRect& rect,
+           const PhysicalRect& rect,
            SetOptions,
            Element* element_for_display_lock);
   void Set(const AnchorKey&, LogicalAnchorReference* reference);
   // If the element owning this object has a display lock, the element should be
   // passed as |element_for_display_lock|.
   void SetFromPhysical(const PhysicalAnchorQuery& physical_query,
-                       const WritingModeConverter& converter,
-                       const LogicalOffset& additional_offset,
+                       PhysicalOffset additional_offset,
                        SetOptions,
                        Element* element_for_display_lock);
 
@@ -241,7 +242,7 @@ class CORE_EXPORT LogicalAnchorQuery
       CSSAnchorValue anchor_value,
       float percentage,
       LayoutUnit available_size,
-      const WritingModeConverter& container_converter,
+      WritingDirectionMode container_writing_direction,
       WritingDirectionMode self_writing_direction,
       const PhysicalOffset& offset_to_padding_box,
       bool is_y_axis,
@@ -263,13 +264,13 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   AnchorEvaluatorImpl(const LayoutBox& query_box,
                       const LogicalAnchorQuery& anchor_query,
                       const LayoutObject* implicit_anchor,
-                      const WritingModeConverter& container_converter,
+                      WritingDirectionMode container_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
       : query_box_(&query_box),
         anchor_query_(&anchor_query),
         implicit_anchor_(implicit_anchor),
-        container_converter_(container_converter),
+        container_writing_direction_(container_writing_direction),
         containing_block_rect_(offset_to_padding_box, available_size),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<HeapHashSet<Member<Element>>>()) {
@@ -282,14 +283,14 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       const StitchedAnchorQueries& anchor_queries,
                       const LayoutObject* implicit_anchor,
                       const LayoutObject& containing_block,
-                      const WritingModeConverter& container_converter,
+                      WritingDirectionMode container_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
       : query_box_(&query_box),
         anchor_queries_(&anchor_queries),
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
-        container_converter_(container_converter),
+        container_writing_direction_(container_writing_direction),
         containing_block_rect_(offset_to_padding_box, available_size),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<HeapHashSet<Member<Element>>>()) {
@@ -377,8 +378,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   mutable const StitchedAnchorQueries* anchor_queries_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
   const LayoutObject* containing_block_ = nullptr;
-  const WritingModeConverter container_converter_{
-      {WritingMode::kHorizontalTb, TextDirection::kLtr}};
+  WritingDirectionMode container_writing_direction_{WritingMode::kHorizontalTb,
+                                                    TextDirection::kLtr};
 
   // Either width or height will be used, depending on IsYAxis().
   PhysicalRect containing_block_rect_;

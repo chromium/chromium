@@ -210,8 +210,10 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
     DCHECK(child.GetLayoutObject());
     // Set the child's `anchor-name` before propagating its descendants', so
     // that ancestors have precedence over their descendants.
-    LogicalRect rect{child_offset,
-                     child.Size().ConvertToLogical(GetWritingMode())};
+    LogicalRect logical_rect(child_offset,
+                             child.Size().ConvertToLogical(GetWritingMode()));
+    const WritingModeConverter converter(GetWritingDirection(), Size());
+    PhysicalRect rect = converter.ToPhysical(logical_rect);
     options = AnchorQuerySetOptions(
         child, node_, IsBlockFragmentationContextRoot() || HasItems());
     if (child.IsExplicitAnchor()) {
@@ -232,8 +234,10 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
       options = AnchorQuerySetOptions(
           child, node_, IsBlockFragmentationContextRoot() || HasItems());
     }
-    const WritingModeConverter converter(GetWritingDirection(), child.Size());
-    EnsureAnchorQuery().SetFromPhysical(*anchor_query, converter, child_offset,
+    const WritingModeConverter converter(GetWritingDirection(), Size());
+    PhysicalOffset additional_offset =
+        converter.ToPhysical(child_offset, child.Size());
+    EnsureAnchorQuery().SetFromPhysical(*anchor_query, additional_offset,
                                         *options, context);
   }
 }
@@ -292,9 +296,20 @@ void FragmentBuilder::PropagateFromFragment(
     return;
   }
 
-  // Propagate anchors from the |child|. Anchors are in |OofData| but the
-  // |child| itself may have an anchor.
-  PropagateChildAnchors(child, child_offset + relative_offset);
+  if (child.HasAnchorQueryToPropagate()) {
+    // This child either is an anchor, or has anchors inside (or both). They are
+    // to be propagated as soon as the container size is known.
+    LogicalOffset total_offset = child_offset + relative_offset;
+    if (HasFinalSize()) {
+      // When handling OOFs (after in-flow layout is finished) and an OOF wants
+      // to propagate anchors, it needs to be done right away, since there may
+      // be subsequent OOFs that have queries against those anchors.
+      PropagateChildAnchors(child, total_offset);
+    } else {
+      children_with_size_dependent_propagation_.push_back(
+          LogicalFragmentLink(child, total_offset));
+    }
+  }
 
   PropagateStickyDescendants(child);
   PropagateSnapAreas(child);
@@ -1002,6 +1017,16 @@ void FragmentBuilder::PropagateSpaceShortage(
   UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage_);
 }
 
+void FragmentBuilder::Finalize() {
+#if DCHECK_IS_ON()
+  DCHECK(!is_finalized_);
+  is_finalized_ = true;
+#endif
+
+  has_final_size_ = true;
+  PropagateSizeDependentData();
+}
+
 const LayoutResult* FragmentBuilder::Abort(LayoutResult::EStatus status) {
   return MakeGarbageCollected<LayoutResult>(
       LayoutResult::FragmentBuilderPassKey(), status, this);
@@ -1022,5 +1047,14 @@ String FragmentBuilder::ToString() const {
 }
 
 #endif
+
+void FragmentBuilder::PropagateSizeDependentData() {
+  DCHECK(has_final_size_);
+  for (const LogicalFragmentLink& link :
+       children_with_size_dependent_propagation_) {
+    PropagateChildAnchors(*link.fragment, link.offset);
+  }
+  children_with_size_dependent_propagation_.clear();
+}
 
 }  // namespace blink

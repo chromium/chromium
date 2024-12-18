@@ -102,6 +102,9 @@ class CORE_EXPORT FragmentBuilder {
 
   bool HasBlockSize() const { return size_.block_size != kIndefiniteSize; }
 
+  // Return true when the final size of the fragment has been calculated.
+  bool HasFinalSize() const { return has_final_size_; }
+
   void SetIsHiddenForPaint(bool value) { is_hidden_for_paint_ = value; }
   void SetIsOpaque() { is_opaque_ = true; }
 
@@ -492,6 +495,10 @@ class CORE_EXPORT FragmentBuilder {
     return tallest_unbreakable_block_size_ >= LayoutUnit();
   }
 
+  // To be called once, after the final size has been set (i.e. in-flow layout
+  // is done), and before generating the fragment.
+  void Finalize();
+
   const LayoutResult* Abort(LayoutResult::EStatus);
 
 #if DCHECK_IS_ON()
@@ -548,6 +555,9 @@ class CORE_EXPORT FragmentBuilder {
 
   void UpdateScrollInitialTarget(const LayoutObject* new_target);
 
+  // Propagate data that was held back until the final size was known.
+  void PropagateSizeDependentData();
+
   LayoutInputNode node_;
   const ConstraintSpace& space_;
   const ComputedStyle* style_;
@@ -574,8 +584,11 @@ class CORE_EXPORT FragmentBuilder {
   ExclusionSpace exclusion_space_;
   std::optional<int> lines_until_clamp_;
 
-
   ChildrenVector children_;
+
+  // Children where we need to know the container size before some propagation
+  // operation can take place.
+  HeapVector<LogicalFragmentLink> children_with_size_dependent_propagation_;
 
   FragmentItemsBuilder* items_builder_ = nullptr;
 
@@ -635,11 +648,13 @@ class CORE_EXPORT FragmentBuilder {
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
   bool is_block_end_trimmable_line_ = false;
+  bool has_final_size_ = false;
 
   bool oof_candidates_may_have_anchor_queries_ = false;
   bool oof_fragmentainer_descendants_may_have_anchor_queries_ = false;
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
+  bool is_finalized_ = false;
 #endif
 
   friend class InlineLayoutStateStack;

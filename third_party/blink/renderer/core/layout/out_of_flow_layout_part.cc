@@ -1464,6 +1464,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   }
   StitchedAnchorQueries stitched_anchor_queries(
       *builder_for_anchor_query->Node().GetLayoutBox(),
+      builder_for_anchor_query->SizeForAnchorQueries(),
       builder_for_anchor_query->Children(),
       builder_for_anchor_query->GetWritingDirection());
 
@@ -1745,18 +1746,18 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     // is stitched. Use the given |anchor_query|.
     const LayoutObject* css_containing_block = candidate_layout_box.Container();
     CHECK(css_containing_block);
-    return AnchorEvaluatorImpl(candidate_layout_box, *anchor_queries,
-                               implicit_anchor, *css_containing_block,
-                               container_converter, offset_to_padding_box,
-                               container_physical_content_size);
+    return AnchorEvaluatorImpl(
+        candidate_layout_box, *anchor_queries, implicit_anchor,
+        *css_containing_block, container_info.writing_direction,
+        offset_to_padding_box, container_physical_content_size);
   }
   if (const LogicalAnchorQuery* anchor_query =
           container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
-    return AnchorEvaluatorImpl(candidate_layout_box, *anchor_query,
-                               implicit_anchor, container_converter,
-                               offset_to_padding_box,
-                               container_physical_content_size);
+    return AnchorEvaluatorImpl(
+        candidate_layout_box, *anchor_query, implicit_anchor,
+        container_info.writing_direction, offset_to_padding_box,
+        container_physical_content_size);
   }
   return AnchorEvaluatorImpl();
 }

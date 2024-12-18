@@ -88,7 +88,7 @@ CSSAnchorValue PhysicalAnchorValueFromInsideOutside(CSSAnchorValue anchor_value,
 PhysicalAnchorReference::PhysicalAnchorReference(
     const LogicalAnchorReference& logical_reference,
     const WritingModeConverter& converter)
-    : rect(converter.ToPhysical(logical_reference.rect)),
+    : rect(logical_reference.rect),
       layout_object(logical_reference.layout_object),
       display_locks(logical_reference.display_locks),
       is_out_of_flow(logical_reference.is_out_of_flow) {}
@@ -202,7 +202,7 @@ const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
 
 void LogicalAnchorQuery::Set(const AnchorKey& key,
                              const LayoutObject& layout_object,
-                             const LogicalRect& rect,
+                             const PhysicalRect& rect,
                              SetOptions options,
                              Element* element_for_display_lock) {
   HeapHashSet<Member<Element>>* display_locks = nullptr;
@@ -267,8 +267,7 @@ void PhysicalAnchorQuery::SetFromLogical(
 
 void LogicalAnchorQuery::SetFromPhysical(
     const PhysicalAnchorQuery& physical_query,
-    const WritingModeConverter& converter,
-    const LogicalOffset& additional_offset,
+    PhysicalOffset additional_offset,
     SetOptions options,
     Element* element_for_display_lock) {
   for (auto entry : physical_query) {
@@ -280,7 +279,7 @@ void LogicalAnchorQuery::SetFromPhysical(
     // See also InSameAnchorScope.
     for (PhysicalAnchorReference* reference = entry.value; reference;
          reference = reference->next) {
-      LogicalRect rect = converter.ToLogical(reference->rect);
+      PhysicalRect rect = reference->rect;
       rect.offset += additional_offset;
 
       HeapHashSet<Member<Element>>* display_locks = nullptr;
@@ -305,20 +304,20 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
     CSSAnchorValue anchor_value,
     float percentage,
     LayoutUnit available_size,
-    const WritingModeConverter& container_converter,
+    WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction,
     const PhysicalOffset& offset_to_padding_box,
     bool is_y_axis,
     bool is_right_or_bottom) const {
-  PhysicalRect anchor_rect = container_converter.ToPhysical(reference.rect);
+  PhysicalRect anchor_rect = reference.rect;
   // Make the offset relative to the padding box, because the containing block
   // is formed by the padding edge.
   // https://www.w3.org/TR/CSS21/visudet.html#containing-block-details
   anchor_rect.offset -= offset_to_padding_box;
 
   anchor_value = PhysicalAnchorValueFromLogicalOrAuto(
-      anchor_value, container_converter.GetWritingDirection(),
-      self_writing_direction, is_y_axis);
+      anchor_value, container_writing_direction, self_writing_direction,
+      is_y_axis);
   anchor_value = PhysicalAnchorValueFromInsideOutside(anchor_value, is_y_axis,
                                                       is_right_or_bottom);
   LayoutUnit value;
@@ -358,14 +357,16 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
         // The percentage is logical, between the `start` and `end` sides.
         // Convert to the physical percentage.
         // https://drafts.csswg.org/css-anchor-1/#anchor-pos
-        if (container_converter.GetWritingDirection().IsFlippedY())
+        if (container_writing_direction.IsFlippedY()) {
           percentage = 100 - percentage;
+        }
       } else {
         value = anchor_rect.X();
         size = anchor_rect.Width();
         // Convert the logical percentage to physical. See above.
-        if (container_converter.GetWritingDirection().IsFlippedX())
+        if (container_writing_direction.IsFlippedX()) {
           percentage = 100 - percentage;
+        }
       }
       value += LayoutUnit::FromFloatRound(size * percentage / 100);
       break;
@@ -395,30 +396,29 @@ LayoutUnit LogicalAnchorQuery::EvaluateSize(
     CSSAnchorSizeValue anchor_size_value,
     WritingMode container_writing_mode,
     WritingMode self_writing_mode) const {
-  const LogicalSize& anchor = reference.rect.size;
+  const PhysicalSize& physical_size = reference.rect.size;
+  LogicalSize logical_size =
+      physical_size.ConvertToLogical(container_writing_mode);
+
   switch (anchor_size_value) {
     case CSSAnchorSizeValue::kInline:
-      return anchor.inline_size;
+      return logical_size.inline_size;
     case CSSAnchorSizeValue::kBlock:
-      return anchor.block_size;
+      return logical_size.block_size;
     case CSSAnchorSizeValue::kWidth:
-      return IsHorizontalWritingMode(container_writing_mode)
-                 ? anchor.inline_size
-                 : anchor.block_size;
+      return physical_size.width;
     case CSSAnchorSizeValue::kHeight:
-      return IsHorizontalWritingMode(container_writing_mode)
-                 ? anchor.block_size
-                 : anchor.inline_size;
+      return physical_size.height;
     case CSSAnchorSizeValue::kSelfInline:
       return IsHorizontalWritingMode(container_writing_mode) ==
                      IsHorizontalWritingMode(self_writing_mode)
-                 ? anchor.inline_size
-                 : anchor.block_size;
+                 ? logical_size.inline_size
+                 : logical_size.block_size;
     case CSSAnchorSizeValue::kSelfBlock:
       return IsHorizontalWritingMode(container_writing_mode) ==
                      IsHorizontalWritingMode(self_writing_mode)
-                 ? anchor.block_size
-                 : anchor.inline_size;
+                 ? logical_size.block_size
+                 : logical_size.inline_size;
     case CSSAnchorSizeValue::kImplicit:
       break;
   }
@@ -581,7 +581,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
   if (std::optional<LayoutUnit> result = AnchorQuery()->EvaluateAnchor(
           *anchor_reference, anchor_value, percentage,
           AvailableSizeAlongAxis(position_area_modified_containing_block_rect),
-          container_converter_, query_box_->StyleRef().GetWritingDirection(),
+          container_writing_direction_,
+          query_box_->StyleRef().GetWritingDirection(),
           position_area_modified_containing_block_rect.offset, is_y_axis,
           IsRightOrBottom())) {
     bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
@@ -626,9 +627,10 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
   }
 
   DCHECK(AnchorQuery());
-  return AnchorQuery()->EvaluateSize(*anchor_reference, anchor_size_value,
-                                     container_converter_.GetWritingMode(),
-                                     query_box_->StyleRef().GetWritingMode());
+  return AnchorQuery()->EvaluateSize(
+      *anchor_reference, anchor_size_value,
+      container_writing_direction_.GetWritingMode(),
+      query_box_->StyleRef().GetWritingMode());
 }
 
 void AnchorEvaluatorImpl::UpdateAccessibilityAnchor(
@@ -700,7 +702,7 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
     return std::nullopt;
   }
   PositionArea physical_position_area =
-      position_area.ToPhysical(container_converter_.GetWritingDirection(),
+      position_area.ToPhysical(container_writing_direction_,
                                query_box_->StyleRef().GetWritingDirection());
 
   std::optional<LayoutUnit> top;

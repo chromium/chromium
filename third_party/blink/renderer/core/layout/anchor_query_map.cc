@@ -45,10 +45,13 @@ struct StitchedAnchorReference
     return stitched_rect;
   }
 
-  LogicalAnchorReference* GetStitchedAnchorReference() const {
+  LogicalAnchorReference* GetStitchedAnchorReference(
+      const WritingModeConverter& converter) const {
     DCHECK(layout_object);
+    PhysicalRect physical_rect = converter.ToPhysical(StitchedRect());
+
     return MakeGarbageCollected<LogicalAnchorReference>(
-        *layout_object, StitchedRect(), /* is_out_of_flow */ false, nullptr);
+        *layout_object, physical_rect, /* is_out_of_flow */ false, nullptr);
   }
 
   void Unite(const LogicalRect& other_rect,
@@ -83,10 +86,13 @@ struct StitchedAnchorQuery : public GarbageCollected<StitchedAnchorQuery>,
   // Convert |this| to a |LogicalAnchorQuery|. The result is a regular
   // |LogicalAnchorQuery| except that its coordinate system is stitched
   // (i.e., as if they weren't fragmented.)
-  LogicalAnchorQuery* GetStitchedAnchorQuery() const {
+  LogicalAnchorQuery* GetStitchedAnchorQuery(
+      const WritingModeConverter& converter) const {
     auto* anchor_query = MakeGarbageCollected<LogicalAnchorQuery>();
-    for (const auto entry : *this)
-      anchor_query->Set(entry.key, entry.value->GetStitchedAnchorReference());
+    for (const auto entry : *this) {
+      anchor_query->Set(entry.key,
+                        entry.value->GetStitchedAnchorReference(converter));
+    }
     return anchor_query;
   }
 
@@ -337,9 +343,12 @@ struct StitchedAnchorQueryCollector {
 
 StitchedAnchorQueries::StitchedAnchorQueries(
     const LayoutBox& root_box,
+    LogicalSize container_size,
     const LogicalFragmentLinkVector& children,
     WritingDirectionMode writing_direction)
-    : root_box_(root_box), writing_direction_(writing_direction) {
+    : root_box_(root_box),
+      container_size_(container_size),
+      writing_direction_(writing_direction) {
   DCHECK(&root_box);
   SetChildren(children);
 }
@@ -400,13 +409,15 @@ void StitchedAnchorQueries::Update(const LayoutObject& layout_object) const {
   stitched_anchor_queries.AddFragmentainerChildren(*children_,
                                                    writing_direction_);
 
+  WritingModeConverter converter(writing_direction_, container_size_);
+
   // TODO(kojii): Currently this clears and rebuilds all anchor queries on
   // incremental updates. It may be possible to reduce the computation when
   // there are previous results.
   queries_.clear();
   for (const auto& it : stitched_anchor_queries.anchor_queries_) {
     const auto result =
-        queries_.insert(it.key, it.value->GetStitchedAnchorQuery());
+        queries_.insert(it.key, it.value->GetStitchedAnchorQuery(converter));
     DCHECK(result.is_new_entry);
   }
 

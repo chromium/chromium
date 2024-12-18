@@ -35,6 +35,7 @@ class CORE_EXPORT StitchedAnchorQueries {
   // This happens when laying out OOFs in a block fragmentation context, and
   // assumes children are fragmentainers.
   StitchedAnchorQueries(const LayoutBox& root_box,
+                        LogicalSize container_size,
                         const LogicalFragmentLinkVector& children,
                         WritingDirectionMode writing_direction);
 
@@ -56,6 +57,7 @@ class CORE_EXPORT StitchedAnchorQueries {
       queries_;
   mutable const LayoutObject* computed_for_ = nullptr;
   const LayoutBox& root_box_;
+  const LogicalSize container_size_;
   const LogicalFragmentLinkVector* children_ = nullptr;
   WritingDirectionMode writing_direction_;
   bool has_anchor_queries_ = false;
