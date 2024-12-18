@@ -940,6 +940,8 @@ component("net") {
     "socket/stream_attempt.h",
     "socket/stream_socket.cc",
     "socket/stream_socket.h",
+    "socket/stream_socket_close_reason.cc",
+    "socket/stream_socket_close_reason.h",
     "socket/stream_socket_handle.cc",
     "socket/stream_socket_handle.h",
     "socket/tcp_client_socket.cc",

@@ -2698,7 +2698,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Cross-site redirect with storage access override"/>
 </enum>
 
-<enum name="StreamCloseReason">
+<enum name="StreamSocketCloseReason">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Close all connections"/>
   <int value="2" label="IP address changed"/>

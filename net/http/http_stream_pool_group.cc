@@ -19,6 +19,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -335,7 +336,7 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
 
 void HttpStreamPool::Group::FlushWithError(
     int error,
-    StreamCloseReason attempt_cancel_reason,
+    StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
   // Refresh() may delete this. Get a weak pointer to this and call CancelJobs()
   // only when this is still alive.
@@ -347,7 +348,7 @@ void HttpStreamPool::Group::FlushWithError(
 }
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
-                                    StreamCloseReason cancel_reason) {
+                                    StreamSocketCloseReason cancel_reason) {
   // TODO(crbug.com/381742472): Should we do anything for paused
   // jobs/preconnects?
   ++generation_;

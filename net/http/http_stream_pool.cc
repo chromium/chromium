@@ -37,6 +37,7 @@
 #include "net/quic/quic_session_pool.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/gurl.h"
@@ -237,7 +238,7 @@ void HttpStreamPool::OnIPAddressChanged() {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {
     group.second->FlushWithError(ERR_NETWORK_CHANGED,
-                                 StreamCloseReason::kIpAddressChanged,
+                                 StreamSocketCloseReason::kIpAddressChanged,
                                  kIpAddressChanged);
   }
 }
@@ -246,7 +247,7 @@ void HttpStreamPool::OnSSLConfigChanged(
     SSLClientContext::SSLConfigChangeType change_type) {
   for (const auto& group : groups_) {
     group.second->Refresh(kSslConfigChanged,
-                          StreamCloseReason::kSslConfigChanged);
+                          StreamSocketCloseReason::kSslConfigChanged);
   }
   ProcessPendingRequestsInGroups();
 }
@@ -258,7 +259,7 @@ void HttpStreamPool::OnSSLConfigForServersChanged(
         servers.contains(
             HostPortPair::FromSchemeHostPort(group.first.destination()))) {
       group.second->Refresh(kSslConfigChanged,
-                            StreamCloseReason::kSslConfigChanged);
+                            StreamSocketCloseReason::kSslConfigChanged);
     }
   }
   ProcessPendingRequestsInGroups();
@@ -278,7 +279,7 @@ void HttpStreamPool::OnJobControllerComplete(JobController* job_controller) {
 
 void HttpStreamPool::FlushWithError(
     int error,
-    StreamCloseReason attempt_cancel_reason,
+    StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
   for (auto& group : groups_) {
     group.second->FlushWithError(error, attempt_cancel_reason,

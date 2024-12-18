@@ -22,6 +22,7 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
 #include "net/quic/quic_session_alias_key.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -172,14 +173,14 @@ class HttpStreamPool::Group {
 
   // Closes all streams in this group and cancels all pending requests.
   void FlushWithError(int error,
-                      StreamCloseReason attempt_cancel_reason,
+                      StreamSocketCloseReason attempt_cancel_reason,
                       std::string_view net_log_close_reason_utf8);
 
   // Increments the generation of this group. Closes idle streams. Streams
   // handed out before this increment won't be reused. Cancels in-flight
   // connection attempts.
   void Refresh(std::string_view net_log_close_reason_utf8,
-               StreamCloseReason cancel_reason);
+               StreamSocketCloseReason cancel_reason);
 
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 

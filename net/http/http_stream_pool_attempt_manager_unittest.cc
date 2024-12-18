@@ -58,6 +58,7 @@
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
@@ -1341,8 +1342,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, GetIPEndPointToAttempt) {
 
     // Clean-up for the next iteration: destroy the attempt manager and the
     // group by cancelling the in-flight attempt.
-    manager->CancelInFlightAttempts(
-        HttpStreamPool::StreamCloseReason::kUnspecified);
+    manager->CancelInFlightAttempts(StreamSocketCloseReason::kUnspecified);
     requester.ResetRequest();
     FastForwardUntilNoTasksRemain();
     ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
@@ -5866,8 +5866,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithError) {
   EXPECT_EQ(pool().TotalActiveStreamCount(), 2u);
 
   // Flushing should destroy all active streams and in-flight attempts.
-  pool().FlushWithError(ERR_ABORTED,
-                        HttpStreamPool::StreamCloseReason::kUnspecified,
+  pool().FlushWithError(ERR_ABORTED, StreamSocketCloseReason::kUnspecified,
                         "For testing");
   EXPECT_EQ(pool().TotalActiveStreamCount(), 0u);
 }
@@ -5907,8 +5906,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithErrorPendingJobs) {
   EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(),
             kNumPausedJobs);
 
-  pool().FlushWithError(ERR_ABORTED,
-                        HttpStreamPool::StreamCloseReason::kUnspecified,
+  pool().FlushWithError(ERR_ABORTED, StreamSocketCloseReason::kUnspecified,
                         "for testing");
   for (auto& requester : requesters) {
     requester->WaitForResult();

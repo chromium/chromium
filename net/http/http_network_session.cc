@@ -33,6 +33,7 @@
 #include "net/socket/client_socket_pool_manager_impl.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
@@ -361,7 +362,7 @@ void HttpNetworkSession::CloseAllConnections(int net_error,
       net_error, net_log_reason_utf8);
   if (http_stream_pool_) {
     http_stream_pool_->FlushWithError(
-        net_error, HttpStreamPool::StreamCloseReason::kCloseAllConnections,
+        net_error, StreamSocketCloseReason::kCloseAllConnections,
         net_log_reason_utf8);
   }
   spdy_session_pool_.CloseCurrentSessions(static_cast<Error>(net_error));

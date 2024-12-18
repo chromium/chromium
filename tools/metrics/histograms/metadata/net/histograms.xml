@@ -2466,7 +2466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpStreamPool.StreamAttemptCancelReason"
-    enum="StreamCloseReason" expires_after="2025-02-27">
+    enum="StreamSocketCloseReason" expires_after="2025-02-27">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

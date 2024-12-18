@@ -13,6 +13,7 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/ssl/ssl_cert_request_info.h"
 
 namespace net {
@@ -79,6 +80,11 @@ scoped_refptr<SSLCertRequestInfo> StreamAttempt::GetCertRequestInfo() {
   return nullptr;
 }
 
+void StreamAttempt::SetCancelReason(StreamSocketCloseReason cancel_reason) {
+  CHECK(!cancel_reason_.has_value());
+  cancel_reason_ = cancel_reason;
+}
+
 void StreamAttempt::SetStreamSocket(std::unique_ptr<StreamSocket> socket) {
   stream_socket_ = std::move(socket);
 }
@@ -93,7 +99,15 @@ void StreamAttempt::NotifyOfCompletion(int rv) {
 
 void StreamAttempt::LogCompletion(int rv) {
   connect_timing_.connect_end = base::TimeTicks::Now();
-  net_log().EndEventWithNetErrorCode(net_log_attempt_event_type_, rv);
+  net_log().EndEvent(net_log_attempt_event_type_, [&] {
+    base::Value::Dict dict;
+    dict.Set("net_error", rv);
+    if (cancel_reason_.has_value()) {
+      dict.Set("cancel_reason",
+               StreamSocketCloseReasonToString(*cancel_reason_));
+    }
+    return dict;
+  });
 }
 
 }  // namespace net

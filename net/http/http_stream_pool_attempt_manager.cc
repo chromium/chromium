@@ -38,6 +38,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
@@ -119,7 +120,12 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
     result_ = rv;
   }
 
-  void SetCancelReason(StreamCloseReason reason) { cancel_reason_ = reason; }
+  void SetCancelReason(StreamSocketCloseReason reason) {
+    cancel_reason_ = reason;
+    if (attempt_) {
+      attempt_->SetCancelReason(reason);
+    }
+  }
 
   StreamAttempt* attempt() { return attempt_.get(); }
 
@@ -186,7 +192,7 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   std::unique_ptr<StreamAttempt> attempt_;
   base::TimeTicks start_time_;
   std::optional<int> result_;
-  std::optional<StreamCloseReason> cancel_reason_;
+  std::optional<StreamSocketCloseReason> cancel_reason_;
   // Timer to start a next attempt. When fired, `this` is treated as a slow
   // attempt but `this` is not timed out yet.
   base::OneShotTimer slow_timer_;
@@ -537,7 +543,7 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
 }
 
 void HttpStreamPool::AttemptManager::CancelInFlightAttempts(
-    StreamCloseReason reason) {
+    StreamSocketCloseReason reason) {
   for (auto& attempt : in_flight_attempts_) {
     attempt->SetCancelReason(reason);
   }
@@ -759,7 +765,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   const bool has_jobs = !jobs_.empty() || !notified_jobs_.empty();
 
   if (rv == OK) {
-    HandleQuicSessionReady(StreamCloseReason::kQuicSessionCreated);
+    HandleQuicSessionReady(StreamSocketCloseReason::kQuicSessionCreated);
     if (has_jobs) {
       CreateQuicStreamAndNotify();
       return;
@@ -888,7 +894,8 @@ void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
   CHECK(!allowed_alpns_.empty());
 
   if (!CanUseTcpBasedProtocols()) {
-    CancelInFlightAttempts(StreamCloseReason::kCannotUseTcpBasedProtocols);
+    CancelInFlightAttempts(
+        StreamSocketCloseReason::kCannotUseTcpBasedProtocols);
   }
 
   if (!CanUseQuic()) {
@@ -945,7 +952,8 @@ bool HttpStreamPool::AttemptManager::
           quic_task_result_ = OK;
           quic_task_.reset();
         }
-        HandleQuicSessionReady(StreamCloseReason::kUsingExistingQuicSession);
+        HandleQuicSessionReady(
+            StreamSocketCloseReason::kUsingExistingQuicSession);
         // Use PostTask() because we could reach here from RequestStream()
         // synchronously when the DNS resolution finishes immediately.
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -971,7 +979,8 @@ bool HttpStreamPool::AttemptManager::
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
     if (spdy_session_) {
-      HandleSpdySessionReady(StreamCloseReason::kUsingExistingSpdySession);
+      HandleSpdySessionReady(
+          StreamSocketCloseReason::kUsingExistingSpdySession);
       // Use PostTask() because we could reach here from RequestStream()
       // synchronously when the DNS resolution finishes immediately.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1594,7 +1603,7 @@ void HttpStreamPool::AttemptManager::NotifyStreamReady(
 }
 
 void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
-    StreamCloseReason refresh_group_reason) {
+    StreamSocketCloseReason refresh_group_reason) {
   CHECK(!group_->force_quic());
   CHECK(!is_failing_);
   CHECK(spdy_session_);
@@ -1604,7 +1613,7 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
 }
 
 void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
-    StreamCloseReason refresh_group_reason) {
+    StreamSocketCloseReason refresh_group_reason) {
   CHECK(!is_failing_);
   CHECK(!quic_task_);
   DCHECK(CanUseExistingQuicSession());
@@ -1745,7 +1754,7 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
           /*supports_spdy=*/true);
     }
 
-    HandleSpdySessionReady(StreamCloseReason::kSpdySessionCreated);
+    HandleSpdySessionReady(StreamSocketCloseReason::kSpdySessionCreated);
     CreateSpdyStreamAndNotify();
     return;
   }

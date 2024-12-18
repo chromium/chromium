@@ -34,6 +34,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tls_stream_attempt.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
@@ -150,7 +151,7 @@ class HttpStreamPool::AttemptManager
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
 
   // Cancels all in-flight attempts.
-  void CancelInFlightAttempts(StreamCloseReason reason);
+  void CancelInFlightAttempts(StreamSocketCloseReason reason);
 
   // Called when `job` is going to be destroyed.
   void OnJobComplete(Job* job);
@@ -391,11 +392,11 @@ class HttpStreamPool::AttemptManager
 
   // Called when a SPDY session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes preconnects.
-  void HandleSpdySessionReady(StreamCloseReason refresh_group_reason);
+  void HandleSpdySessionReady(StreamSocketCloseReason refresh_group_reason);
 
   // Called when a QUIC session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes preconnects.
-  void HandleQuicSessionReady(StreamCloseReason refresh_group_reason);
+  void HandleQuicSessionReady(StreamSocketCloseReason refresh_group_reason);
 
   // Extracts an entry from `jobs_` of which priority is highest. The ownership
   // of the entry is moved to `notified_jobs_`.
