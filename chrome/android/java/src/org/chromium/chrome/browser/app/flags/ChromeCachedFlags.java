@@ -10,6 +10,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -144,7 +145,7 @@ public class ChromeCachedFlags {
 
     @CalledByNative
     @AnyThread
-    static boolean isEnabled(String featureName) {
+    static boolean isEnabled(@JniType("std::string") String featureName) {
         CachedFlag cachedFlag = ChromeFeatureList.sAllCachedFlags.get(featureName);
         assert cachedFlag != null;
 

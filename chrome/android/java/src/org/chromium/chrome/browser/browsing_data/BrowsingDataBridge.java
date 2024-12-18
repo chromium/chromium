@@ -300,7 +300,8 @@ public final class BrowsingDataBridge {
 
         int getMaxImportantSites();
 
-        void markOriginAsImportantForTesting(@JniType("Profile*") Profile profile, String origin);
+        void markOriginAsImportantForTesting(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
 
         boolean getBrowsingDataDeletionPreference(
                 @JniType("Profile*") Profile profile, int dataType, int clearBrowsingDataTab);

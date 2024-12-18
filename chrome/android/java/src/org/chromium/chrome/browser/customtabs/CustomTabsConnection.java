@@ -2079,7 +2079,7 @@ public class CustomTabsConnection {
 
     @CalledByNative
     public static void notifyClientOfDetachedRequestCompletion(
-            CustomTabsSessionToken session, String url, int status) {
+            CustomTabsSessionToken session, @JniType("std::string") String url, int status) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)) {
             return;
         }
@@ -2228,7 +2228,9 @@ public class CustomTabsConnection {
      */
     @CalledByNative
     private static void notifyClientOfTextFragmentLookupCompletion(
-            CustomTabsSessionToken session, String stateKey, String[] foundTextFragments) {
+            CustomTabsSessionToken session,
+            @JniType("std::string") String stateKey,
+            String[] foundTextFragments) {
         getInstance()
                 .notifyClientOfTextFragmentLookupCompletionReportApp(
                         session, stateKey, new ArrayList(Arrays.asList(foundTextFragments)));
@@ -2268,7 +2270,7 @@ public class CustomTabsConnection {
                 int referrerPolicy,
                 @DetachedResourceRequestMotivation int motivation);
 
-        void setClientDataHeader(WebContents webContents, String header);
+        void setClientDataHeader(WebContents webContents, @JniType("std::string") String header);
 
         void textFragmentLookup(
                 CustomTabsSessionToken session,

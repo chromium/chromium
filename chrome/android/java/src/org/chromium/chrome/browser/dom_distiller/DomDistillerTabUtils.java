@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -144,6 +145,7 @@ public class DomDistillerTabUtils {
 
         void distillAndView(WebContents sourceWebContents, WebContents destinationWebContents);
 
+        @JniType("std::u16string")
         String getFormattedUrlFromOriginalDistillerUrl(GURL url);
 
         int getDistillerHeuristics();

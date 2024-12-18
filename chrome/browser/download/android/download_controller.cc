@@ -424,18 +424,11 @@ void DownloadController::StartAndroidDownloadInternal(
                                 info.original_mime_type, default_file_name_);
   ScopedJavaLocalRef<jobject> jurl =
       url::GURLAndroid::FromNativeGURL(env, info.url);
-  ScopedJavaLocalRef<jstring> juser_agent =
-      ConvertUTF8ToJavaString(env, info.user_agent);
-  ScopedJavaLocalRef<jstring> jmime_type =
-      ConvertUTF8ToJavaString(env, info.original_mime_type);
-  ScopedJavaLocalRef<jstring> jcookie =
-      ConvertUTF8ToJavaString(env, info.cookie);
   ScopedJavaLocalRef<jobject> jreferer =
       url::GURLAndroid::FromNativeGURL(env, info.referer);
-  ScopedJavaLocalRef<jstring> jfile_name =
-      base::android::ConvertUTF16ToJavaString(env, file_name);
   Java_DownloadController_enqueueAndroidDownloadManagerRequest(
-      env, jurl, juser_agent, jfile_name, jmime_type, jcookie, jreferer);
+      env, jurl, info.user_agent, file_name, info.original_mime_type,
+      info.cookie, jreferer);
 
   WebContents* web_contents = wc_getter.Run();
   CloseTabIfEmpty(web_contents, nullptr);

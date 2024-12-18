@@ -8,6 +8,7 @@ import android.view.accessibility.AccessibilityEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -18,7 +19,7 @@ public class AutofillAccessibilityUtils {
     private AutofillAccessibilityUtils() {}
 
     @CalledByNative
-    private static void announce(String message) {
+    private static void announce(@JniType("std::u16string") String message) {
         if (!AccessibilityState.isTouchExplorationEnabled()) return;
 
         AccessibilityEvent accessibilityEvent = AccessibilityEvent.obtain();

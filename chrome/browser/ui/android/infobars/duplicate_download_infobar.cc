@@ -35,10 +35,6 @@ DuplicateDownloadInfoBar::CreateRenderInfoBar(
     const ResourceIdMapper& resource_id_mapper) {
   DuplicateDownloadInfoBarDelegate* delegate = GetDelegate();
 
-  base::android::ScopedJavaLocalRef<jstring> j_file_path =
-      base::android::ConvertUTF8ToJavaString(env, delegate->GetFilePath());
-  base::android::ScopedJavaLocalRef<jstring> j_page_url =
-      base::android::ConvertUTF8ToJavaString(env, delegate->GetPageURL());
   base::android::ScopedJavaLocalRef<jobject> j_otr_profile_id;
   if (delegate->GetOTRProfileID()) {
     j_otr_profile_id =
@@ -46,8 +42,9 @@ DuplicateDownloadInfoBar::CreateRenderInfoBar(
   }
   base::android::ScopedJavaLocalRef<jobject> java_infobar(
       Java_DuplicateDownloadInfoBar_createInfoBar(
-          env, j_file_path, delegate->IsOfflinePage(), j_page_url,
-          j_otr_profile_id, delegate->DuplicateRequestExists()));
+          env, delegate->GetFilePath(), delegate->IsOfflinePage(),
+          delegate->GetPageURL(), j_otr_profile_id,
+          delegate->DuplicateRequestExists()));
   return java_infobar;
 }
 

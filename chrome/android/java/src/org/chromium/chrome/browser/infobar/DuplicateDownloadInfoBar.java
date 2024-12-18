@@ -9,6 +9,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
@@ -34,9 +35,9 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
 
     @CalledByNative
     private static InfoBar createInfoBar(
-            String filePath,
+            @JniType("std::string") String filePath,
             boolean isOfflinePage,
-            String pageUrl,
+            @JniType("std::string") String pageUrl,
             OtrProfileId otrProfileId,
             boolean duplicateRequestExists) {
         return new DuplicateDownloadInfoBar(
