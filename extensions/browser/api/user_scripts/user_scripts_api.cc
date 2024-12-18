@@ -110,7 +110,7 @@ ConvertRegisteredUserScriptToSerializedUserScript(
   serialized_script.include_globs = std::move(user_script.include_globs);
   serialized_script.exclude_globs = std::move(user_script.exclude_globs);
   serialized_script.js =
-      user_script_sources_to_serialized_sources(std::move(user_script.js));
+      user_script_sources_to_serialized_sources(std::move(*user_script.js));
   serialized_script.matches = std::move(*user_script.matches);
   serialized_script.run_at = std::move(user_script.run_at);
   serialized_script.world = convert_execution_world(user_script.world);
@@ -138,14 +138,14 @@ std::unique_ptr<UserScript> ParseUserScript(
     return nullptr;
   }
 
-  // `js` must not be empty.
-  if (user_script.js.empty()) {
+  // `js` must be existent and not empty.
+  if (!user_script.js || user_script.js.value().empty()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         kEmptySourceError, UserScript::TrimPrefixFromScriptID(user_script.id));
     return nullptr;
   }
 
-  for (const api::user_scripts::ScriptSource& source : user_script.js) {
+  for (const api::user_scripts::ScriptSource& source : *user_script.js) {
     if ((source.code && source.file) || (!source.code && !source.file)) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           kInvalidSourceError,
@@ -499,7 +499,7 @@ std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
     original_script.exclude_matches = std::move(new_script.exclude_matches);
   }
 
-  if (!new_script.js.empty()) {
+  if (new_script.js) {
     original_script.js = std::move(new_script.js);
   }
 

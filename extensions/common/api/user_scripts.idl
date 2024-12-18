@@ -53,7 +53,9 @@ namespace userScripts {
     DOMString[]? excludeGlobs;
     // The list of ScriptSource objects defining sources of scripts to be
     // injected into matching pages.
-    ScriptSource[] js;
+    // This property must be specified for  ${ref:register}, and when specified
+    // it must be a non-empty array.
+    ScriptSource[]? js;
     // Specifies which pages this user script will be injected into. See
     // <a href="develop/concepts/match-patterns">Match Patterns</a> for more details on the
     // syntax of these strings. This property must be specified for

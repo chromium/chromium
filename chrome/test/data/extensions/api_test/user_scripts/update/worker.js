@@ -171,6 +171,55 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Test that an error is returned if the script source list specified is
+  // empty.
+  async function emptyJsError() {
+    await chrome.userScripts.unregister();
+
+    // Register user script.
+    const scriptId = 'us1';
+    const scriptsToRegister = [
+      {id: scriptId, matches: ['*://*/*'], js: [{file: 'user_script.js'}]}
+    ];
+    await chrome.userScripts.register(scriptsToRegister);
+    let tab = await navigateToRequestedUrl();
+
+    // Verify user script was registered and injected.
+    let registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(1, registeredScripts.length);
+    chrome.test.assertEq(
+        ['injected_user_script'],
+        await getInjectedElementIds(tab.id));
+
+    // Updating a script with an empty script source list should fail.
+    const scriptsToUpdate = [
+      {
+        id: scriptId,
+        matches: ['*://hostperms-a.com/*'],
+        js: []
+      }
+    ];
+
+    await chrome.test.assertPromiseRejects(
+      chrome.userScripts.update(scriptsToUpdate),
+      `Error: User script with ID '${scriptId}' must specify at least one ` +
+          `js source.`);
+
+    // Verify previously registered user script was not affected.
+    const expectedScripts = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{file: 'user_script.js'}],
+      runAt: 'document_idle',
+      allFrames: false,
+      world: "USER_SCRIPT"
+    }];
+    registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(expectedScripts, registeredScripts);
+
+    chrome.test.succeed();
+  },
+
   async function updatingToAnInvalidWorldIdThrowsError() {
     await chrome.userScripts.unregister();
 
@@ -304,6 +353,48 @@ chrome.test.runTests([
     tab = await openTab(url);
     chrome.test.assertEq(
         ['injected_user_script_2'], await getInjectedElementIds(tab.id));
+
+    chrome.test.succeed();
+  },
+
+  // Tests that the script id is the only required field when calling
+  // userScripts.update. Such call will be successful and have no effect.
+  async function scriptUpdated_requiredFields() {
+    await chrome.userScripts.unregister();
+
+    // Register user script.
+    const scriptsToRegister = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{file: 'user_script.js'}],
+      runAt: 'document_end'
+    }];
+    await chrome.userScripts.register(scriptsToRegister);
+    let tab = await navigateToRequestedUrl();
+
+    // Verify user script was registered and injected
+    let registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(1, registeredScripts.length);
+    chrome.test.assertEq(
+        ['injected_user_script'], await getInjectedElementIds(tab.id));
+
+    // Update user script with no changes.
+    const scriptsToUpdate = [{
+      id: 'us1'
+    }];
+    await chrome.userScripts.update(scriptsToUpdate);
+
+    // Verify user script remains the same.
+    const expectedScripts = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{file: 'user_script.js'}],
+      runAt: 'document_end',
+      allFrames: false,
+      world:"USER_SCRIPT"
+    }];
+    registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(expectedScripts, registeredScripts);
 
     chrome.test.succeed();
   },
