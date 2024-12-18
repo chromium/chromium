@@ -10,8 +10,6 @@ static_library("core") {
   sources = [
     "cached_image_fetcher.cc",
     "cached_image_fetcher.h",
-    "features.cc",
-    "features.h",
     "image_data_fetcher.cc",
     "image_data_fetcher.h",
     "image_decoder.h",
