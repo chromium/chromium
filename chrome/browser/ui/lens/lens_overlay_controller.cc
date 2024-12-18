@@ -634,7 +634,7 @@ views::WebView* LensOverlayController::GetOverlayWebViewForTesting() {
 void LensOverlayController::SendText(lens::mojom::TextPtr text) {
   if (!page_) {
     // Store the text to send once the page is bound.
-    initialization_data_->text_ = std::move(text);
+    pre_initialization_text_ = std::move(text);
     return;
   }
   page_->TextReceived(std::move(text));
@@ -664,7 +664,7 @@ void LensOverlayController::SendObjects(
     std::vector<lens::mojom::OverlayObjectPtr> objects) {
   if (!page_) {
     // Store the objects to send once the page is bound.
-    initialization_data_->objects_ = std::move(objects);
+    pre_initialization_objects_ = std::move(objects);
     return;
   }
   page_->ObjectsReceived(std::move(objects));
@@ -1904,6 +1904,8 @@ void LensOverlayController::CloseUIPart2(
   side_panel_searchbox_handler_.reset();
   results_side_panel_coordinator_.reset();
   pre_initialization_suggest_inputs_.reset();
+  pre_initialization_objects_.reset();
+  pre_initialization_text_.reset();
 
   side_panel_shown_subscription_ = base::CallbackListSubscription();
   side_panel_coordinator_ = nullptr;
@@ -1990,6 +1992,18 @@ void LensOverlayController::InitializeOverlay(
   // exit early and wait for the other condition to call this method again.
   if (!page_ || !initialization_data_) {
     return;
+  }
+
+  // Move the data that was stored prior to initialization into
+  // initialization_data_.
+  if (pre_initialization_objects_.has_value()) {
+    initialization_data_->objects_ =
+        std::move(pre_initialization_objects_.value());
+    pre_initialization_objects_.reset();
+  }
+  if (pre_initialization_text_.has_value()) {
+    initialization_data_->text_ = std::move(pre_initialization_text_.value());
+    pre_initialization_text_.reset();
   }
 
   InitializeOverlayUI(*initialization_data_);

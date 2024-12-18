@@ -1203,10 +1203,23 @@ class LensOverlayController : public LensSearchboxClient,
   // shown.
   bool hats_triggered_in_session_ = false;
 
-  // The stored suggest inputs to be attached to the initialization data
-  // if suggest inputs were updated before the initialization data was ready.
+  // TODO(384778180): The three `pre_initialization_*` fields below are used to
+  // store data that came back before the initialization data was ready. This
+  // should be refactored into one struct to make it cleaner.
+  //
+  // The stored suggest inputs to be attached to the initialization data if
+  // suggest inputs were updated before the initialization data was ready.
   std::optional<lens::proto::LensOverlaySuggestInputs>
       pre_initialization_suggest_inputs_;
+
+  // The stored objects response to be attached to the initialization data
+  // if the object response came back before the initialization data was ready.
+  std::optional<std::vector<lens::mojom::OverlayObjectPtr>>
+      pre_initialization_objects_;
+
+  // The stored text response to be attached to the initialization data
+  // if the text response came back before the initialization data was ready.
+  std::optional<lens::mojom::TextPtr> pre_initialization_text_;
 
   // The callback subscription for the element shown callback used to show the
   // translate feature promo.
