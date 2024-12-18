@@ -133,7 +133,8 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
     if (cookies) {
       uint64_t data_type_mask =
           BrowsingDataRemover::DATA_TYPE_COOKIES |
-          BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS;
+          BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS |
+          BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
       net::CookiePartitionKey::AncestorChainBit ancestor_chain_bit =
           net::CookiePartitionKey::BoolToAncestorChainBit(
               partition_key_cross_site);
@@ -152,7 +153,8 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
     if (storage || cache) {
       uint64_t data_type_mask =
           (storage ? BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
-                         BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX
+                         BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
+                         BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS
                    : 0) |
           (cache ? BrowsingDataRemover::DATA_TYPE_CACHE : 0);
       data_type_mask &=

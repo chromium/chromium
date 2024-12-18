@@ -496,6 +496,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
   }
+  if (remove_mask & DATA_TYPE_DEVICE_BOUND_SESSIONS) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS;
+  }
 
   if (storage_partition_remove_mask) {
     // If cookies are supposed to be conditionally deleted from the storage

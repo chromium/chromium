@@ -34,7 +34,8 @@ class CONTENT_EXPORT DipsDelegate {
       content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
       content::BrowsingDataRemover::DATA_TYPE_CACHE |
       content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
-      content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS;
+      content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS |
+      content::BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
 
   virtual ~DipsDelegate();
 
