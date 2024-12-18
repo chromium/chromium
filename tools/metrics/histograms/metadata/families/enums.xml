@@ -463,6 +463,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Favicon Unavailable"/>
 </enum>
 
+<!-- LINT.IfChange(top_level_filtering_result) -->
+
 <enum name="SupervisedUserFilterTopLevelResult">
   <int value="0" label="ALLOWED">
     Records sites that have been allowed explicitly through the allowlist; when
@@ -481,6 +483,8 @@ chromium-metrics-reviews@google.com.
     turned on
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:top_level_filtering_result) -->
 
 <!-- LINT.IfChange(SupervisedUserImplicitParentApprovalGrantEntryPoint) -->
 

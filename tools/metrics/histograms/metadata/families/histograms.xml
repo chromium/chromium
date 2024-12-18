@@ -769,7 +769,41 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
     includes the outcome of the filter (allowed or blocked). If outcome is
     blocked reason for the block (e.g. SafeSites, Blocklist) is also recorded.
     For more granular information see ManagedUsers.FilteringResult.
+
+    Do not extend the histogram once it expires. Use
+    ManagedUsers.TopLevelFilteringResult2.NavigationThrottle instead, which has
+    the same semantics. ManagedUsers.TopLevelFilteringResult2 is a new metric
+    that replaces this one with broader information.
   </summary>
+</histogram>
+
+<histogram name="ManagedUsers.TopLevelFilteringResult2{Context}"
+    enum="SupervisedUserFilterTopLevelResult" expires_after="2025-11-01">
+  <owner>tju@chromium.org</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records counts of results from supervised user URL filtering that are
+    {Context}. Each entry includes the outcome of the filter (allowed or
+    blocked). If outcome is blocked then the reason for the block (e.g.
+    SafeSites, Blocklist) is also recorded. For more granular information see
+    ManagedUsers.FilteringResult.
+  </summary>
+<!-- LINT.IfChange(top_level_filtering_context) -->
+
+  <token key="Context">
+    <variant name="" summary="aggregated across all contexts"/>
+    <variant name=".Default"
+        summary="not in explicitly specified context (eg. for tools in
+                 chrome:// internal pages)"/>
+    <variant name=".FamilyLinkSettingsUpdated"
+        summary="caused by changes to Family Link"/>
+    <variant name=".NavigationObserver"
+        summary="caused by navigation observer events"/>
+    <variant name=".NavigationThrottle"
+        summary="caused by navigation throttle events"/>
+  </token>
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:top_level_filtering_context,//components/supervised_user/core/browser/supervised_user_url_filter.cc:top_level_filtering_context) -->
+
 </histogram>
 
 <histogram

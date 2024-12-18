@@ -129,12 +129,14 @@ void ClassifyUrlNavigationThrottle::CheckURL() {
         base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
                        weak_ptr_factory_.GetWeakPtr(), key, url),
         supervised_user::ShouldContentSkipParentAllowlistFiltering(
-            navigation_handle()->GetWebContents()->GetOutermostWebContents()));
+            navigation_handle()->GetWebContents()->GetOutermostWebContents()),
+        FilteringContext::kNavigationThrottle);
   } else {
     url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
         url, navigation_handle()->GetWebContents()->GetVisibleURL(),
         base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
-                       weak_ptr_factory_.GetWeakPtr(), key, url));
+                       weak_ptr_factory_.GetWeakPtr(), key, url),
+        FilteringContext::kNavigationThrottle);
   }
 }
 

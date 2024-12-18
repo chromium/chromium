@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "components/safe_search_api/url_checker.h"
@@ -39,6 +40,112 @@ using net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES;
 using net::registry_controlled_domains::GetCanonicalHostRegistryLength;
 
 namespace supervised_user {
+
+namespace {
+// Lint.IfChange(top_level_filtering_context)
+std::string GetFilteringContextName(FilteringContext context) {
+  switch (context) {
+    case FilteringContext::kDefault:
+      return ".Default";
+    case FilteringContext::kNavigationThrottle:
+      return ".NavigationThrottle";
+    case FilteringContext::kNavigationObserver:
+      return ".NavigationObserver";
+    case FilteringContext::kFamilyLinkSettingsUpdated:
+      return ".FamilyLinkSettingsUpdated";
+    default:
+      NOTREACHED();
+  }
+}
+// Lint.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
+
+// Converts FilteringBehavior to SupervisedUserSafetyFilterResult histogram
+// value in tools/metrics/histograms/enums.xml.
+int GetHistogramValueForFilteringBehavior(FilteringBehavior behavior,
+                                          FilteringBehaviorReason reason,
+                                          bool is_filtering_behavior_known) {
+  switch (behavior) {
+    case FilteringBehavior::kAllow:
+      return is_filtering_behavior_known
+                 ? SupervisedUserSafetyFilterResult::FILTERING_BEHAVIOR_ALLOW
+                 : SupervisedUserSafetyFilterResult::
+                       FILTERING_BEHAVIOR_ALLOW_UNCERTAIN;
+    case FilteringBehavior::kBlock:
+      switch (reason) {
+        case FilteringBehaviorReason::ASYNC_CHECKER:
+          return SupervisedUserSafetyFilterResult::
+              FILTERING_BEHAVIOR_BLOCK_SAFESITES;
+        case FilteringBehaviorReason::MANUAL:
+          return SupervisedUserSafetyFilterResult::
+              FILTERING_BEHAVIOR_BLOCK_MANUAL;
+        case FilteringBehaviorReason::DEFAULT:
+          return SupervisedUserSafetyFilterResult::
+              FILTERING_BEHAVIOR_BLOCK_DEFAULT;
+      }
+    case FilteringBehavior::kInvalid:
+      NOTREACHED();
+  }
+  return 0;
+}
+
+SupervisedUserFilterTopLevelResult TopLevelResult(
+    FilteringBehavior behavior,
+    FilteringBehaviorReason reason) {
+  switch (behavior) {
+    case FilteringBehavior::kAllow:
+      return SupervisedUserFilterTopLevelResult::kAllow;
+    case FilteringBehavior::kBlock:
+      switch (reason) {
+        case FilteringBehaviorReason::ASYNC_CHECKER:
+          return SupervisedUserFilterTopLevelResult::kBlockSafeSites;
+        case FilteringBehaviorReason::MANUAL:
+          return SupervisedUserFilterTopLevelResult::kBlockManual;
+        case FilteringBehaviorReason::DEFAULT:
+          return SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist;
+      }
+    case FilteringBehavior::kInvalid:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
+// Records ManagedUsers.TopLevelFilteringResult and
+// ManagedUsers.TopLevelFilteringContext metrics after the client's callback
+// completes.
+void WrappedCallbackWithTopLevelMetrics(
+    SupervisedUserURLFilter::FilteringBehaviorCallback callback,
+    FilteringContext context,
+    FilteringBehavior behavior,
+    FilteringBehaviorReason reason,
+    bool uncertain) {
+  std::move(callback).Run(behavior, reason, uncertain);
+
+  // Legacy recording only in original throttle context
+  if (context == FilteringContext::kNavigationThrottle) {
+    base::UmaHistogramSparse(
+        kSupervisedUserTopLevelURLFilteringResultHistogramName,
+        static_cast<int>(TopLevelResult(behavior, reason)));
+  }
+
+  // Aggregated recording
+  base::UmaHistogramSparse(
+      kSupervisedUserTopLevelURLFilteringResult2HistogramName,
+      static_cast<int>(TopLevelResult(behavior, reason)));
+  // Context-specific recording
+  base::UmaHistogramSparse(
+      base::StrCat({kSupervisedUserTopLevelURLFilteringResult2HistogramName,
+                    GetFilteringContextName(context)}),
+      static_cast<int>(TopLevelResult(behavior, reason)));
+}
+
+SupervisedUserURLFilter::FilteringBehaviorCallback
+WrapCallbackWithTopLevelMetrics(
+    SupervisedUserURLFilter::FilteringBehaviorCallback callback,
+    FilteringContext context) {
+  return base::BindOnce(&WrappedCallbackWithTopLevelMetrics,
+                        std::move(callback), context);
+}
+}  // namespace
 
 supervised_user::FilteringBehavior GetBehaviorFromSafeSearchClassification(
     safe_search_api::Classification classification) {
@@ -352,57 +459,6 @@ bool SupervisedUserURLFilter::HostMatchesPattern(
   return trimmed_host == trimmed_pattern;
 }
 
-SupervisedUserFilterTopLevelResult
-SupervisedUserURLFilter::GetHistogramValueForTopLevelFilteringBehavior(
-    FilteringBehavior behavior,
-    FilteringBehaviorReason reason,
-    bool is_filtering_behavior_known) {
-  switch (behavior) {
-    case FilteringBehavior::kAllow:
-      return SupervisedUserFilterTopLevelResult::kAllow;
-    case FilteringBehavior::kBlock:
-      switch (reason) {
-        case FilteringBehaviorReason::ASYNC_CHECKER:
-          return SupervisedUserFilterTopLevelResult::kBlockSafeSites;
-        case FilteringBehaviorReason::MANUAL:
-          return SupervisedUserFilterTopLevelResult::kBlockManual;
-        case FilteringBehaviorReason::DEFAULT:
-          return SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist;
-      }
-    case FilteringBehavior::kInvalid:
-      NOTREACHED();
-  }
-  NOTREACHED();
-}
-
-// static
-int SupervisedUserURLFilter::GetHistogramValueForFilteringBehavior(
-    FilteringBehavior behavior,
-    FilteringBehaviorReason reason,
-    bool is_filtering_behavior_known) {
-  switch (behavior) {
-    case FilteringBehavior::kAllow:
-      return is_filtering_behavior_known
-                 ? SupervisedUserSafetyFilterResult::FILTERING_BEHAVIOR_ALLOW
-                 : SupervisedUserSafetyFilterResult::
-                       FILTERING_BEHAVIOR_ALLOW_UNCERTAIN;
-    case FilteringBehavior::kBlock:
-      switch (reason) {
-        case FilteringBehaviorReason::ASYNC_CHECKER:
-          return SupervisedUserSafetyFilterResult::
-              FILTERING_BEHAVIOR_BLOCK_SAFESITES;
-        case FilteringBehaviorReason::MANUAL:
-          return SupervisedUserSafetyFilterResult::
-              FILTERING_BEHAVIOR_BLOCK_MANUAL;
-        case FilteringBehaviorReason::DEFAULT:
-          return SupervisedUserSafetyFilterResult::
-              FILTERING_BEHAVIOR_BLOCK_DEFAULT;
-      }
-    case FilteringBehavior::kInvalid:
-      NOTREACHED();
-  }
-  return 0;
-}
 
 // static
 void SupervisedUserURLFilter::RecordFilterResultEvent(
@@ -410,13 +466,6 @@ void SupervisedUserURLFilter::RecordFilterResultEvent(
     FilteringBehaviorReason reason,
     bool is_filtering_behavior_known,
     ui::PageTransition transition_type) {
-  SupervisedUserFilterTopLevelResult top_level_filter_behaviour =
-      GetHistogramValueForTopLevelFilteringBehavior(
-          behavior, reason, is_filtering_behavior_known);
-  base::UmaHistogramSparse(
-      kSupervisedUserTopLevelURLFilteringResultHistogramName,
-      static_cast<int>(top_level_filter_behaviour));
-
   int value = GetHistogramValueForFilteringBehavior(
                   behavior, reason, is_filtering_behavior_known) *
                   kHistogramFilteringBehaviorSpacing +
@@ -556,7 +605,11 @@ SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(const GURL& url) {
 bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
     const GURL& url,
     FilteringBehaviorCallback callback,
-    bool skip_manual_parent_filter) {
+    bool skip_manual_parent_filter,
+    FilteringContext filtering_context) {
+  callback =
+      WrapCallbackWithTopLevelMetrics(std::move(callback), filtering_context);
+
   supervised_user::FilteringBehaviorReason reason =
       supervised_user::FilteringBehaviorReason::DEFAULT;
   FilteringBehavior behavior = GetFilteringBehaviorForURL(url, &reason);
@@ -590,7 +643,11 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
 bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
     const GURL& url,
     const GURL& main_frame_url,
-    FilteringBehaviorCallback callback) {
+    FilteringBehaviorCallback callback,
+    FilteringContext filtering_context) {
+  callback =
+      WrapCallbackWithTopLevelMetrics(std::move(callback), filtering_context);
+
   supervised_user::FilteringBehaviorReason reason =
       supervised_user::FilteringBehaviorReason::DEFAULT;
   FilteringBehavior behavior = GetFilteringBehaviorForURL(url, &reason);

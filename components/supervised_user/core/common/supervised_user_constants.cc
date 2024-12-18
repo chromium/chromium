@@ -13,12 +13,10 @@ const int kHistogramFilteringBehaviorSpacing = 100;
 const int kSupervisedUserURLFilteringResultHistogramMax = 800;
 
 namespace {
-
 const int kHistogramPageTransitionMaxKnownValue =
     static_cast<int>(ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 const int kHistogramPageTransitionFallbackValue =
     kHistogramFilteringBehaviorSpacing - 1;
-
 }  // namespace
 
 static_assert(kHistogramPageTransitionMaxKnownValue <
@@ -108,6 +106,8 @@ const char kSupervisedUserURLFilteringResultHistogramName[] =
 
 const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
     "ManagedUsers.TopLevelFilteringResult";
+const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[] =
+    "ManagedUsers.TopLevelFilteringResult2";
 
 const char kManagedByParentUiMoreInfoUrl[] =
     "https://familylink.google.com/setting/resource/94";

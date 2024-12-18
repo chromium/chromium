@@ -76,12 +76,14 @@ void SupervisedUserNavigationThrottle::CheckURL() {
         url,
         base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
                        weak_ptr_factory_.GetWeakPtr(), url),
-        skip_manual_parent_filter);
+        skip_manual_parent_filter,
+        supervised_user::FilteringContext::kNavigationThrottle);
   } else {
     got_result = url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
         url, navigation_handle()->GetWebContents()->GetVisibleURL(),
         base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
-                       weak_ptr_factory_.GetWeakPtr(), url));
+                       weak_ptr_factory_.GetWeakPtr(), url),
+        supervised_user::FilteringContext::kNavigationThrottle);
   }
 
   DCHECK_EQ(got_result,

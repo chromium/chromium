@@ -18,11 +18,13 @@
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
+namespace {
 
 class SupervisedUserURLFilterTest : public ::testing::Test,
                                     public SupervisedUserURLFilter::Observer {
@@ -689,4 +691,173 @@ INSTANTIATE_TEST_SUITE_P(
                  {"*.google.*", false}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictAndOtherConflict)));
+
+struct MetricTestParam {
+  // Context of filtering
+  FilteringContext context;
+
+  // Name of the histogram to emit that is specific for context (alongside
+  // aggregated and legacy histograms).
+  std::string context_specific_histogram;
+
+  // Human-readable label of test case.
+  std::string label;
+};
+
+class SupervisedUserURLFilterMetricsTest
+    : public ::testing::TestWithParam<MetricTestParam> {
+ protected:
+  void EnableSafeSites() {
+    supervised_user::RegisterProfilePrefs(pref_service_.registry());
+    pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+    pref_service_.SetString(prefs::kSupervisedUserId, kChildAccountSUID);
+  }
+
+  base::HistogramTester histogram_tester_;
+  TestingPrefServiceSimple pref_service_;
+  SupervisedUserURLFilter filter_{pref_service_,
+                                  std::make_unique<FakeURLFilterDelegate>()};
+};
+
+TEST_P(SupervisedUserURLFilterMetricsTest,
+       RecordsTopLevelMetricsForBlockNotInAllowlist) {
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
+
+  ASSERT_TRUE(filter_.GetFilteringBehaviorForURLWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
+}
+
+TEST_P(SupervisedUserURLFilterMetricsTest, RecordsTopLevelMetricsForAllow) {
+  filter_.SetManualHosts({{"http://example.com", true}});
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
+
+  ASSERT_TRUE(filter_.GetFilteringBehaviorForURLWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kAllow, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+}
+
+TEST_P(SupervisedUserURLFilterMetricsTest,
+       RecordsTopLevelMetricsForBlockManual) {
+  filter_.SetManualHosts({{"http://example.com", false}});
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kAllow);
+
+  ASSERT_TRUE(filter_.GetFilteringBehaviorForURLWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kBlockManual, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kBlockManual, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kBlockManual, 1);
+}
+
+TEST_P(SupervisedUserURLFilterMetricsTest,
+       RecordsTopLevelMetricsForAsyncBlock) {
+  EnableSafeSites();
+  std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
+      std::make_unique<safe_search_api::FakeURLCheckerClient>();
+  safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
+  filter_.SetURLCheckerClient(std::move(client));
+
+  ASSERT_FALSE(filter_.GetFilteringBehaviorForURLWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+  client_ptr->RunCallback(safe_search_api::ClientClassification::kRestricted);
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+}
+
+TEST_P(SupervisedUserURLFilterMetricsTest,
+       RecordsTopLevelMetricsForAsyncAllow) {
+  EnableSafeSites();
+  std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
+      std::make_unique<safe_search_api::FakeURLCheckerClient>();
+  safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
+  filter_.SetURLCheckerClient(std::move(client));
+
+  ASSERT_FALSE(filter_.GetFilteringBehaviorForURLWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+  client_ptr->RunCallback(safe_search_api::ClientClassification::kAllowed);
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kAllow, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+}
+
+const MetricTestParam kMetricTestParams[] = {
+    {.context = FilteringContext::kNavigationThrottle,
+     .context_specific_histogram =
+         "ManagedUsers.TopLevelFilteringResult2.NavigationThrottle",
+     .label = "NavigationThrottleContext"},
+    {.context = FilteringContext::kDefault,
+     .context_specific_histogram =
+         "ManagedUsers.TopLevelFilteringResult2.Default",
+     .label = "DefaultContext"},
+    {.context = FilteringContext::kNavigationObserver,
+     .context_specific_histogram =
+         "ManagedUsers.TopLevelFilteringResult2.NavigationObserver",
+     .label = "NavigationObserverContext"},
+    {.context = FilteringContext::kFamilyLinkSettingsUpdated,
+     .context_specific_histogram =
+         "ManagedUsers.TopLevelFilteringResult2.FamilyLinkSettingsUpdated",
+     .label = "FamilyLinkSettingsUpdated"},
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SupervisedUserURLFilterMetricsTest,
+                         testing::ValuesIn(kMetricTestParams),
+                         [](const auto& info) { return info.param.label; });
+
+}  // namespace
 }  // namespace supervised_user

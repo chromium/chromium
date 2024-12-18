@@ -156,22 +156,25 @@ class SupervisedUserURLFilter {
   bool GetManualFilteringBehaviorForURL(const GURL& url,
                                         FilteringBehavior* behavior);
 
-  // Like |GetFilteringBehaviorForURL|, but also includes asynchronous checks
+  // Like `GetFilteringBehaviorForURL`, but also includes asynchronous checks
   // against a remote service. If the result is already determined by the
-  // synchronous checks, then |callback| will be called synchronously.
-  // Returns true if |callback| was called synchronously. If
-  // |skip_manual_parent_filter| is set to true, it only uses the asynchronous
+  // synchronous checks, then `callback` will be called synchronously.
+  // Returns true if `callback` was called synchronously. If
+  // `skip_manual_parent_filter` is set to true, it only uses the asynchronous
   // safe search checks.
-  virtual bool GetFilteringBehaviorForURLWithAsyncChecks(
+  // `context` parameter determines what metric will be recorded.
+  bool GetFilteringBehaviorForURLWithAsyncChecks(
       const GURL& url,
       FilteringBehaviorCallback callback,
-      bool skip_manual_parent_filter);
+      bool skip_manual_parent_filter,
+      FilteringContext filtering_context = FilteringContext::kDefault);
 
-  // Like |GetFilteringBehaviorForURLWithAsyncChecks| but used for subframes.
+  // Like `GetFilteringBehaviorForURLWithAsyncChecks` but used for subframes.
   bool GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
       const GURL& url,
       const GURL& main_frame_url,
-      FilteringBehaviorCallback callback);
+      FilteringBehaviorCallback callback,
+      FilteringContext filtering_context = FilteringContext::kDefault);
 
   // Sets the filtering behavior for pages not on a list (default is ALLOW).
   void SetDefaultFilteringBehavior(FilteringBehavior behavior);
@@ -222,26 +225,10 @@ class SupervisedUserURLFilter {
   friend class SupervisedUserURLFilterTest;
   friend class SupervisedUserURLFilteringWithConflictsTest;
 
-  // Converts FilteringBehavior to the SupervisedUserFilterTopLevelResult
-  // histogram value in tools/metrics/histograms/enums.xml to be used in the
-  // "ManagedUsers.TopLevelFilteringResult" histogram.
-  static SupervisedUserFilterTopLevelResult
-  GetHistogramValueForTopLevelFilteringBehavior(
-      FilteringBehavior behavior,
-      FilteringBehaviorReason reason,
-      bool is_filtering_behavior_known);
-
-  // Converts FilteringBehavior to SupervisedUserSafetyFilterResult histogram
-  // value in tools/metrics/histograms/enums.xml.
-  static int GetHistogramValueForFilteringBehavior(
-      FilteringBehavior behavior,
-      FilteringBehaviorReason reason,
-      bool is_filtering_behavior_known);
-
   bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 
-  bool RunAsyncChecker(const GURL& url,
-                       FilteringBehaviorCallback callback) const;
+  virtual bool RunAsyncChecker(const GURL& url,
+                               FilteringBehaviorCallback callback) const;
 
   virtual FilteringBehavior GetFilteringBehaviorForURL(
       const GURL& url,

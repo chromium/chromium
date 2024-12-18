@@ -56,12 +56,10 @@ class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
   explicit MockSupervisedUserURLFilter(PrefService& prefs)
       : SupervisedUserURLFilter(prefs,
                                 std::make_unique<FakeURLFilterDelegate>()) {}
-
   MOCK_METHOD(bool,
-              GetFilteringBehaviorForURLWithAsyncChecks,
-              (const GURL& url,
-               FilteringBehaviorCallback callback,
-               bool skip_manual_parent_filter));
+              RunAsyncChecker,
+              (const GURL& url, FilteringBehaviorCallback callback),
+              (const));
 };
 }  // namespace
 
@@ -210,19 +208,16 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
        BlockedMatureSitesRecordedInBlockSafeSitesBucket) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [](const GURL& url,
-             MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-             bool skip_manual_parent_filter) {
+             MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             std::move(callback).Run(FilteringBehavior::kBlock,
                                     FilteringBehaviorReason::ASYNC_CHECKER,
                                     /*is_uncertain=*/false);
             return true;
           });
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    GURL(kExampleURL), testing::_, false))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(GURL(kExampleURL), testing::_))
       .Times(1);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -250,18 +245,15 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsFasterThanHttp) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   MockSupervisedUserURLFilter::FilteringBehaviorCallback check;
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&check](
               const GURL& url,
-              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-              bool skip_manual_parent_filter) {
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             check = std::move(callback);
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    GURL(kExampleURL), testing::_, false))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(GURL(kExampleURL), testing::_))
       .Times(1);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -310,18 +302,15 @@ TEST_F(ClassifyUrlNavigationThrottleTest, ClassificationIsSlowerThanHttp) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   MockSupervisedUserURLFilter::FilteringBehaviorCallback check;
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&check](
               const GURL& url,
-              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-              bool skip_manual_parent_filter) {
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             check = std::move(callback);
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    GURL(kExampleURL), testing::_, false))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(GURL(kExampleURL), testing::_))
       .Times(1);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -378,18 +367,15 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
   std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
   // Check for the first url that will complete last.
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks](
               const GURL& url,
-              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-              bool skip_manual_parent_filter) {
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             checks.push_back(std::move(callback));
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, false))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .Times(2);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -458,19 +444,16 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks](
               const GURL& url,
-              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-              bool skip_manual_parent_filter) {
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             checks.push_back(std::move(callback));
             // Asynchronous behavior all the time.
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, false))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .Times(3);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -531,19 +514,16 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks](
               const GURL& url,
-              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-              bool skip_manual_parent_filter) {
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             checks.push_back(std::move(callback));
             // Asynchronous behavior all the time.
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, false))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .Times(3);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -608,19 +588,16 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks](
               const GURL& url,
-              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-              bool skip_manual_parent_filter) {
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             checks.push_back(std::move(callback));
             // Asynchronous behavior all the time.
             return false;
           });
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, false))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .Times(3);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -694,13 +671,11 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
       std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
 
   bool first_check = false;
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, false))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&first_check](
               const GURL& url,
-              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-              bool skip_manual_parent_filter) {
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             if (!first_check) {
               std::move(callback).Run(FilteringBehavior::kAllow,
                                       FilteringBehaviorReason::ASYNC_CHECKER,
@@ -715,8 +690,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
                                     /*is_uncertain=*/false);
             return true;
           });
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .Times(2);
 
   SupervisedUserServiceFactory::GetForProfile(profile())
@@ -755,13 +729,11 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 
   std::vector<MockSupervisedUserURLFilter::FilteringBehaviorCallback> checks;
   bool first_check_completed = false;
-  ON_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                testing::_, testing::_, testing::_))
+  ON_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
           [&checks, &first_check_completed](
               const GURL& url,
-              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback,
-              bool skip_manual_parent_filter) {
+              MockSupervisedUserURLFilter::FilteringBehaviorCallback callback) {
             // First check is synchronous allow
             if (!first_check_completed) {
               first_check_completed = true;
@@ -775,8 +747,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
             return false;
           });
 
-  EXPECT_CALL(*mock_url_filter, GetFilteringBehaviorForURLWithAsyncChecks(
-                                    testing::_, testing::_, false))
+  EXPECT_CALL(*mock_url_filter, RunAsyncChecker(testing::_, testing::_))
       .Times(3);
 
   SupervisedUserServiceFactory::GetForProfile(profile())

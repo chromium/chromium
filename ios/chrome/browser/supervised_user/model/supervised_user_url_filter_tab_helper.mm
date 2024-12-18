@@ -98,7 +98,8 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
   supervised_user_service->GetURLFilter()
       ->GetFilteringBehaviorForURLWithAsyncChecks(
           request_url, std::move(filtering_behavior_callback),
-          /*skip_manual_parent_filter=*/false);
+          /*skip_manual_parent_filter=*/false,
+          supervised_user::FilteringContext::kNavigationThrottle);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserURLFilterTabHelper)

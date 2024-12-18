@@ -166,7 +166,8 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
             &SupervisedUserNavigationObserver::URLFilterCheckCallback,
             weak_ptr_factory_.GetWeakPtr(), navigation_handle->GetURL(),
             process_id, routing_id),
-        skip_manual_parent_filter);
+        skip_manual_parent_filter,
+        supervised_user::FilteringContext::kNavigationObserver);
   }
 }
 
@@ -190,7 +191,6 @@ void SupervisedUserNavigationObserver::DidFinishLoad(
     UMA_HISTOGRAM_COUNTS_1000("ManagedUsers.BlockedIframeCount", count);
     RecordPageLoadUKM(render_frame_host);
   }
-
 }
 
 void SupervisedUserNavigationObserver::RecordPageLoadUKM(
@@ -246,7 +246,8 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents()->GetLastCommittedURL(),
                      main_frame_process_id, routing_id),
-      skip_manual_parent_filter);
+      skip_manual_parent_filter,
+      supervised_user::FilteringContext::kFamilyLinkSettingsUpdated);
 
   MaybeUpdateRequestedHosts();
 
@@ -396,7 +397,8 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
       base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
                      weak_ptr_factory_.GetWeakPtr(), last_committed_url,
                      render_frame_host->GetProcess()->GetDeprecatedID(),
-                     render_frame_host->GetRoutingID()));
+                     render_frame_host->GetRoutingID()),
+      supervised_user::FilteringContext::kNavigationObserver);
 }
 
 void SupervisedUserNavigationObserver::GoBack() {
