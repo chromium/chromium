@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
+#include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -26,7 +27,6 @@
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "third_party/skia/include/private/chromium/SkImageChromium.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -376,9 +376,9 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
   // *before* they get this far if possible.
   if (img->isTextureBacked()) {
     GrDirectContext* ctx = SkImages::GetContext(img);
-    return SkPngEncoder::Encode(ctx, img, SkPngEncoder::Options{});
+    return skia::EncodePngAsSkData(ctx, img);
   }
-  return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+  return skia::EncodePngAsSkData(nullptr, img);
 }
 
 sk_sp<SkImage> DeserializeRasterImage(const void* bytes, size_t length, void*) {

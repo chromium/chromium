@@ -48,6 +48,7 @@
 #include "gin/object_template_builder.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
@@ -68,7 +69,6 @@
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #include "third_party/skia/include/docs/SkXPSDocument.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -191,7 +191,7 @@ class SkPictureSerializer {
             // Note: if the picture contains texture-backed (gpu) images, they
             // will fail to be read-back and therefore fail to be encoded unless
             // we can thread the correct GrDirectContext through to here.
-            return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+            return skia::EncodePngAsSkData(nullptr, img);
           }};
       auto data = picture->serialize(&procs);
       file.write(data->data(), data->size());

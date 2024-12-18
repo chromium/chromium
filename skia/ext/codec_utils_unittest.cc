@@ -11,12 +11,13 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace skia {
 namespace {
 
-TEST(SkiaCodecUtils, EncodePngAsSkDataSmokeTest) {
+TEST(SkiaCodecUtils, EncodeSkPixmapAsPngAsSkDataSmokeTest) {
   // Prepare a test `bitmap`.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(10, 10);
@@ -24,6 +25,34 @@ TEST(SkiaCodecUtils, EncodePngAsSkDataSmokeTest) {
 
   // Encode the `bitmap` into `png`.
   sk_sp<SkData> png = EncodePngAsSkData(bitmap.pixmap());
+  ASSERT_TRUE(png);
+
+  // Decode the `png` into `roundtrip` bitmap.
+  SkBitmap roundtrip;
+  {
+    SkCodec::Result result;
+    std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(
+        std::make_unique<SkMemoryStream>(std::move(png)), &result);
+    ASSERT_TRUE(codec);
+    ASSERT_EQ(result, SkCodec::kSuccess);
+    roundtrip.allocN32Pixels(10, 10);
+    ASSERT_EQ(SkCodec::kSuccess, codec->getPixels(roundtrip.pixmap()));
+  }
+
+  // Smoke-test that the `roundtrip` bitmap has, well, round-tripped.
+  EXPECT_EQ(roundtrip.getColor(5, 5), SK_ColorGREEN);
+}
+
+TEST(SkiaCodecUtils, EncodeSkImageAsPngAsSkDataSmokeTest) {
+  // Prepare a test `bitmap` / `image`.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorGREEN);
+  sk_sp<SkImage> image = SkImages::RasterFromBitmap(bitmap);
+  ASSERT_TRUE(image);
+
+  // Encode the `image` into `png`.
+  sk_sp<SkData> png = EncodePngAsSkData(nullptr, image.get());
   ASSERT_TRUE(png);
 
   // Decode the `png` into `roundtrip` bitmap.

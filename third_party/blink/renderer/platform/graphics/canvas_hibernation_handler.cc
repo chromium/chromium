@@ -13,6 +13,7 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
@@ -35,7 +36,6 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
 // "GN check" doesn't know that this file is only included when
@@ -246,17 +246,16 @@ void CanvasHibernationHandler::Encode(
 
   switch (params->algorithm) {
     case CompressionAlgorithm::kZlib:
-      encoded = SkPngEncoder::Encode(nullptr, params->image.get(), {});
+      encoded = skia::EncodePngAsSkData(nullptr, params->image.get());
       break;
     case CompressionAlgorithm::kZstd: {
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
-      SkPngEncoder::Options options;
       // When the compression level is set to 0, no compression is done. Then we
       // can pass the result to ZSTD. This won't produce a valid PNG, but it
       // doesn't matter, as we don't write it to disk, and restore it ourselves.
-      options.fZLibLevel = 0;
-      sk_sp<SkData> encoded_uncompressed =
-          SkPngEncoder::Encode(nullptr, params->image.get(), options);
+      constexpr int kZLibCompressionLevel = 0;
+      sk_sp<SkData> encoded_uncompressed = skia::EncodePngAsSkData(
+          nullptr, params->image.get(), kZLibCompressionLevel);
 
       TRACE_EVENT_BEGIN2("blink", "ZstdCompression", "original_size", 0, "size",
                          0);
