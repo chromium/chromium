@@ -3213,6 +3213,8 @@ crbug.com/338457111 [ Mac12 ] external/wpt/fs/FileSystemFileHandle-move.https.an
 crbug.com/338457111 [ Win11-arm64 ] external/wpt/fs/FileSystemFileHandle-move.https.any.worker.html [ Timeout ]
 crbug.com/338457112 [ Mac12 ] external/wpt/workers/Worker-terminate-forever-during-evaluation.html [ Timeout ]
 crbug.com/338457112 [ Win11-arm64 ] external/wpt/workers/Worker-terminate-forever-during-evaluation.html [ Timeout ]
+crbug.com/338513293 [ Mac13 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
+crbug.com/338513293 [ Win10.20h2 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
 crbug.com/338513293 [ Win11-arm64 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
 crbug.com/338437452 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-type-only.html [ Timeout ]
 crbug.com/338350366 [ Win11-arm64 ] external/wpt/preload/delaying-onload-link-preload-after-discovery.html [ Timeout ]
