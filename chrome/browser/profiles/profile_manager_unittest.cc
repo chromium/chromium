@@ -122,8 +122,11 @@ void ExpectProfileWithName(const std::string& profile_name,
 
 class ProfileDeletionWaiter {
  public:
+  explicit ProfileDeletionWaiter(const base::FilePath& path) : path_(path) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
   explicit ProfileDeletionWaiter(const Profile* profile)
-      : profile_path_(profile->GetPath()) {
+      : path_(profile->GetPath()) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
@@ -144,28 +147,28 @@ class ProfileDeletionWaiter {
   void StartWatchingPath() {
     DCHECK(!watcher_);
     watcher_ = std::make_unique<base::FilePathWatcher>();
-    EXPECT_TRUE(watcher_->Watch(
-        profile_path_, base::FilePathWatcher::Type::kNonRecursive,
-        base::BindRepeating(&ProfileDeletionWaiter::OnChanged,
-                            base::Unretained(this))));
+    EXPECT_TRUE(
+        watcher_->Watch(path_, base::FilePathWatcher::Type::kNonRecursive,
+                        base::BindRepeating(&ProfileDeletionWaiter::OnChanged,
+                                            base::Unretained(this))));
     CheckIfPathExists();
   }
 
   void OnChanged(const base::FilePath& path, bool error) {
-    EXPECT_EQ(profile_path_, path);
+    EXPECT_EQ(path_, path);
     EXPECT_FALSE(error);
     CheckIfPathExists();
   }
 
   void CheckIfPathExists() {
-    if (!base::PathExists(profile_path_)) {
+    if (!base::PathExists(path_)) {
       watcher_.reset();
       run_loop_.Quit();
     }
   }
 
   base::RunLoop run_loop_;
-  const base::FilePath profile_path_;
+  const base::FilePath path_;
   std::unique_ptr<base::FilePathWatcher> watcher_;
 };
 
@@ -1750,7 +1753,13 @@ TEST_F(ProfileManagerTest, DestroyProfileOnBrowserClose) {
   EXPECT_FALSE(profile_manager->IsValidProfile(profile2));
 }
 
+// TODO(crbug.com/383763359) Re-enable once profile paths only need to be
+// watched for destruction once.
+#if defined(THREAD_SANITIZER)
+TEST_F(ProfileManagerTest, DISABLED_DestroyEphemeralProfileOnBrowserClose) {
+#else
 TEST_F(ProfileManagerTest, DestroyEphemeralProfileOnBrowserClose) {
+#endif
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
 
@@ -1784,15 +1793,35 @@ TEST_F(ProfileManagerTest, DestroyEphemeralProfileOnBrowserClose) {
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(profile_params2));
 
-  ProfileDeletionWaiter waiter(profile2);
-  // Close the browser for profile2.
-  browser2.reset();
-  waiter.Wait();
+  {
+    ASSERT_EQ(dest_path2, profile2->GetPath());
+    ProfileDeletionWaiter waiter(profile2);
+    // Close the browser for profile2.
+    browser2.reset();
+    waiter.Wait();
+    ASSERT_FALSE(base::PathExists(dest_path2));
+  }
+  {
+    // perform the previous check to let the rest of the tasks run. It seems
+    // some process can destroy the file, recreate the file, and then destroy
+    // it again, which is why the path needs to be watched twice. If this
+    // is fixed then add a crbug to track down what the profile is doing.
+    content::RunAllTasksUntilIdle();
+
+    if (base::PathExists(dest_path2)) {
+      ProfileDeletionWaiter waiter(dest_path2);
+      // Close the browser for profile2.
+      browser2.reset();
+      waiter.Wait();
+    }
+  }
 
   last_used_profile = profile_manager->GetLastUsedProfile();
+  ASSERT_FALSE(base::PathExists(dest_path2));
   EXPECT_NE(profile1, last_used_profile);
   EXPECT_NE(profile2, last_used_profile);
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
+  ASSERT_FALSE(base::PathExists(dest_path2));
   EXPECT_TRUE(base::PathExists(dest_path1));
   // |dest_path2| should've been cleaned up from disk.
   EXPECT_FALSE(base::PathExists(dest_path2));

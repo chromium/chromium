@@ -33,7 +33,7 @@ BASE_FEATURE(kTabGroupSyncDisableNetworkLayer,
 // triggering, extension support etc. b/325123353
 BASE_FEATURE(kTabGroupsSaveV2,
              "TabGroupsSaveV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This flag controls the UI update made to saved tab groups as well as model
 // and sync support for pinning saved tab groups.
