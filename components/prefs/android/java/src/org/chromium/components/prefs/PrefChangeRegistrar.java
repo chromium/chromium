@@ -10,6 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Map;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Map;
  *
  * <p>Note that {@link #destroy} should be called to destroy the native PrefChangeRegistrar.
  */
+@NullMarked
 public class PrefChangeRegistrar {
     /** Interface for callback when registered preference is changed. */
     public interface PrefObserver {

@@ -4,13 +4,15 @@
 
 package org.chromium.components.prefs;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** PrefService provides read and write access to native PrefService. */
+@NullMarked
 public class PrefService {
     private long mNativePrefServiceAndroid;
 
@@ -34,13 +36,17 @@ public class PrefService {
         mNativePrefServiceAndroid = nativePrefServiceAndroid;
     }
 
-    /** @param preference The name of the preference. */
-    public void clearPref(@NonNull String preference) {
+    /**
+     * @param preference The name of the preference.
+     */
+    public void clearPref(String preference) {
         PrefServiceJni.get().clearPref(mNativePrefServiceAndroid, preference);
     }
 
-    /** @param preference The name of the preference. */
-    public boolean hasPrefPath(@NonNull String preference) {
+    /**
+     * @param preference The name of the preference.
+     */
+    public boolean hasPrefPath(String preference) {
         return PrefServiceJni.get().hasPrefPath(mNativePrefServiceAndroid, preference);
     }
 
@@ -48,7 +54,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @return Whether the specified preference is enabled.
      */
-    public boolean getBoolean(@NonNull String preference) {
+    public boolean getBoolean(String preference) {
         return PrefServiceJni.get().getBoolean(mNativePrefServiceAndroid, preference);
     }
 
@@ -56,7 +62,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @param value The value the specified preference will be set to.
      */
-    public void setBoolean(@NonNull String preference, boolean value) {
+    public void setBoolean(String preference, boolean value) {
         PrefServiceJni.get().setBoolean(mNativePrefServiceAndroid, preference, value);
     }
 
@@ -64,7 +70,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @return value The value of the specified preference.
      */
-    public int getInteger(@NonNull String preference) {
+    public int getInteger(String preference) {
         return PrefServiceJni.get().getInteger(mNativePrefServiceAndroid, preference);
     }
 
@@ -72,7 +78,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @param value The value the specified preference will be set to.
      */
-    public void setInteger(@NonNull String preference, int value) {
+    public void setInteger(String preference, int value) {
         PrefServiceJni.get().setInteger(mNativePrefServiceAndroid, preference, value);
     }
 
@@ -80,7 +86,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @return value The value of the specified preference.
      */
-    public double getDouble(@NonNull String preference) {
+    public double getDouble(String preference) {
         return PrefServiceJni.get().getDouble(mNativePrefServiceAndroid, preference);
     }
 
@@ -88,7 +94,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @param value The value the specified preference will be set to.
      */
-    public void setDouble(@NonNull String preference, double value) {
+    public void setDouble(String preference, double value) {
         PrefServiceJni.get().setDouble(mNativePrefServiceAndroid, preference, value);
     }
 
@@ -96,7 +102,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @return value The value of the specified preference.
      */
-    public long getLong(@NonNull String preference) {
+    public long getLong(String preference) {
         return PrefServiceJni.get().getLong(mNativePrefServiceAndroid, preference);
     }
 
@@ -104,7 +110,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @param value The value the specified preference will be set to.
      */
-    public void setLong(@NonNull String preference, long value) {
+    public void setLong(String preference, long value) {
         PrefServiceJni.get().setLong(mNativePrefServiceAndroid, preference, value);
     }
 
@@ -112,8 +118,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @return value The value of the specified preference.
      */
-    @NonNull
-    public String getString(@NonNull String preference) {
+    public String getString(String preference) {
         return PrefServiceJni.get().getString(mNativePrefServiceAndroid, preference);
     }
 
@@ -121,7 +126,7 @@ public class PrefService {
      * @param preference The name of the preference.
      * @param value The value the specified preference will be set to.
      */
-    public void setString(@NonNull String preference, @NonNull String value) {
+    public void setString(String preference, String value) {
         PrefServiceJni.get().setString(mNativePrefServiceAndroid, preference, value);
     }
 
@@ -129,16 +134,16 @@ public class PrefService {
      * @param preference The name of the preference.
      * @return Whether the specified preference is managed.
      */
-    public boolean isManagedPreference(@NonNull String preference) {
+    public boolean isManagedPreference(String preference) {
         return PrefServiceJni.get().isManagedPreference(mNativePrefServiceAndroid, preference);
     }
 
     /**
      * @param preference The name of the preference
-     * @return Whether the specified preference is currently using its default value
-     * and has not been set by any higher-priority source (even with the same value).
+     * @return Whether the specified preference is currently using its default value and has not
+     *     been set by any higher-priority source (even with the same value).
      */
-    public boolean isDefaultValuePreference(@NonNull String preference) {
+    public boolean isDefaultValuePreference(String preference) {
         return PrefServiceJni.get().isDefaultValuePreference(mNativePrefServiceAndroid, preference);
     }
 
