@@ -32,7 +32,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
@@ -358,7 +357,6 @@ public class ContentTextSelectionTest {
     @MediumTest
     @Feature({"TextSelection"})
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.P) /* getSecondaryAssistItems requires >= P */
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testCorrectPasteMenuItemsAddedWhenThereIsNoSelection() throws Throwable {
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
@@ -393,7 +391,6 @@ public class ContentTextSelectionTest {
     @Test
     @MediumTest
     @Feature({"TextSelection"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testCorrectSelectionMenuItemsAddedForInputSelection() throws Throwable {
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
@@ -768,7 +765,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarPlainTextCopy() throws Exception {
         DOMUtils.longPressNode(mWebContents, "plain_text_1");
         waitForSelectActionBarVisible(true);
@@ -781,7 +777,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarInputCopy() throws Exception {
         DOMUtils.longPressNode(mWebContents, "input_text");
         waitForSelectActionBarVisible(true);
@@ -794,7 +789,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarPasswordCopy() throws Exception {
         DOMUtils.longPressNode(mWebContents, "plain_text_1");
         waitForSelectActionBarVisible(true);
@@ -815,7 +809,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarTextAreaCopy() throws Exception {
         DOMUtils.longPressNode(mWebContents, "textarea");
         waitForSelectActionBarVisible(true);
@@ -828,7 +821,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextSelection"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarPlainTextCut() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "plain_text_1");
@@ -847,7 +839,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarInputCut() throws Exception {
         DOMUtils.longPressNode(mWebContents, "input_text");
         waitForSelectActionBarVisible(true);
@@ -864,7 +855,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarPasswordCut() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "password");
@@ -882,7 +872,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarTextAreaCut() throws Exception {
         DOMUtils.longPressNode(mWebContents, "textarea");
         waitForSelectActionBarVisible(true);
@@ -913,7 +902,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarInputSelectAll() throws Exception {
         DOMUtils.longPressNode(mWebContents, "input_text");
         waitForSelectActionBarVisible(true);
@@ -928,7 +916,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarPasswordSelectAll() throws Exception {
         DOMUtils.longPressNode(mWebContents, "password");
         waitForSelectActionBarVisible(true);
@@ -942,7 +929,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarTextAreaSelectAll() throws Exception {
         DOMUtils.longPressNode(mWebContents, "textarea");
         waitForSelectActionBarVisible(true);
@@ -989,7 +975,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextSelection"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarPlainTextPaste() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "plain_text_1");
@@ -1008,7 +993,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarInputPaste() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
 
@@ -1033,7 +1017,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/343808767")
     public void testSelectActionBarPasswordPaste() throws Throwable {
         copyStringToClipboard("SamplePassword2");
 
