@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -60,6 +61,29 @@ std::string UpdateDebugInfoAndSerializeToHeader(
   std::string serialized = debug_info.SerializeAsString();
   return base::Base64Encode(serialized);
 }
+
+std::string_view GetRotationHttpResultHistogramName(
+    bool had_previously_received_challenge,
+    bool request_contained_challenge_response) {
+  static constexpr std::string_view kHistogramNameWithoutChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithoutChallenge";
+  static constexpr std::string_view kHistogramNameWithCachedChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithCachedChallenge";
+  static constexpr std::string_view kHistogramNameWithFreshChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithFreshChallenge";
+  if (had_previously_received_challenge) {
+    DUMP_WILL_BE_CHECK(request_contained_challenge_response);
+    return kHistogramNameWithFreshChallenge;
+  }
+
+  return request_contained_challenge_response
+             ? kHistogramNameWithCachedChallenge
+             : kHistogramNameWithoutChallenge;
+}
+
 }  // namespace
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
@@ -186,6 +210,11 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete",
               perfetto::Flow::FromPointer(this), "net_error", net_error);
+
+  base::UmaHistogramSparse(
+      GetRotationHttpResultHistogramName(
+          IsChallengeReceived(), sec_session_challenge_response_.has_value()),
+      headers ? headers->response_code() : net_error);
 
   std::optional<std::string> challenge_header_value =
       GetChallengeIfBindingKeyAssertionRequired(headers);
