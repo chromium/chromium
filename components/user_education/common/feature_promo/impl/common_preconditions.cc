@@ -82,7 +82,8 @@ MeetsFeatureEngagementCriteriaPrecondition::
     ~MeetsFeatureEngagementCriteriaPrecondition() = default;
 
 FeaturePromoResult
-MeetsFeatureEngagementCriteriaPrecondition::CheckPrecondition() const {
+MeetsFeatureEngagementCriteriaPrecondition::CheckPrecondition(
+    ComputedData& data) const {
   // Note: if we don't have access to `ListEvents()` this is a no-op.
 #if !BUILDFLAG(IS_ANDROID)
   for (const auto& [config, count] : tracker_->ListEvents(*feature_)) {
@@ -110,9 +111,10 @@ AnchorElementPrecondition::AnchorElementPrecondition(
 
 AnchorElementPrecondition::~AnchorElementPrecondition() = default;
 
-FeaturePromoResult AnchorElementPrecondition::CheckPrecondition() const {
+FeaturePromoResult AnchorElementPrecondition::CheckPrecondition(
+    ComputedData& data) const {
   auto* const element = provider_->GetAnchorElement(default_context_);
-  GetCachedData(kAnchorElement) = element;
+  GetCachedDataForComputation(data, kAnchorElement) = element;
   return element != nullptr ? FeaturePromoResult::Success()
                             : FeaturePromoResult::kBlockedByUi;
 }
@@ -126,15 +128,16 @@ LifecyclePrecondition::LifecyclePrecondition(
     bool for_demo)
     : FeaturePromoPreconditionBase(kLifecyclePrecondition, "Lifecycle Check"),
       for_demo_(for_demo) {
-  InitCache(kLifecycle);
-  GetCachedData(kLifecycle) = std::move(lifecycle);
+  CHECK(lifecycle);
+  InitCachedData(kLifecycle, std::move(lifecycle));
 }
 
 LifecyclePrecondition::~LifecyclePrecondition() = default;
 
-FeaturePromoResult LifecyclePrecondition::CheckPrecondition() const {
-  return for_demo_ ? FeaturePromoResult::Success()
-                   : GetCachedData(kLifecycle)->CanShow();
+FeaturePromoResult LifecyclePrecondition::CheckPrecondition(
+    ComputedData& data) const {
+  auto* const lifecycle = GetCachedDataForComputation(data, kLifecycle).get();
+  return for_demo_ ? FeaturePromoResult::Success() : lifecycle->CanShow();
 }
 
 SessionPolicyPrecondition::SessionPolicyPrecondition(
@@ -151,7 +154,8 @@ SessionPolicyPrecondition::SessionPolicyPrecondition(
 SessionPolicyPrecondition::~SessionPolicyPrecondition() = default;
 
 // FeaturePromoPrecondition:
-FeaturePromoResult SessionPolicyPrecondition::CheckPrecondition() const {
+FeaturePromoResult SessionPolicyPrecondition::CheckPrecondition(
+    ComputedData& data) const {
   return session_policy_->CanShowPromo(priority_info_,
                                        get_current_promo_info_callback_.Run());
 }

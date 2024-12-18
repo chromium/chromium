@@ -5,9 +5,18 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 
 #include "base/check.h"
+#include "base/functional/callback_forward.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 
 namespace user_education {
+
+FeaturePromoPrecondition::ComputedData::ComputedData() = default;
+FeaturePromoPrecondition::ComputedData::ComputedData(ComputedData&&) noexcept =
+    default;
+FeaturePromoPrecondition::ComputedData&
+FeaturePromoPrecondition::ComputedData::operator=(ComputedData&&) noexcept =
+    default;
+FeaturePromoPrecondition::ComputedData::~ComputedData() = default;
 
 FeaturePromoPreconditionBase::FeaturePromoPreconditionBase(
     Identifier identifier,
@@ -45,14 +54,27 @@ CachingFeaturePromoPrecondition::CachingFeaturePromoPrecondition(
 
 CachingFeaturePromoPrecondition::~CachingFeaturePromoPrecondition() = default;
 
-FeaturePromoResult CachingFeaturePromoPrecondition::CheckPrecondition() const {
+FeaturePromoResult CachingFeaturePromoPrecondition::CheckPrecondition(
+    ComputedData&) const {
   return check_result_;
 }
 
 CallbackFeaturePromoPrecondition::CallbackFeaturePromoPrecondition(
     Identifier identifier,
     std::string description,
-    base::RepeatingCallback<FeaturePromoResult()> check_result_callback)
+    SimpleCallback check_result_callback)
+    : FeaturePromoPreconditionBase(identifier, std::move(description)),
+      check_result_callback_(
+          base::BindRepeating([](const SimpleCallback& callback,
+                                 ComputedData& data) { return callback.Run(); },
+                              std::move(check_result_callback))) {
+  CHECK(!check_result_callback_.is_null());
+}
+
+CallbackFeaturePromoPrecondition::CallbackFeaturePromoPrecondition(
+    Identifier identifier,
+    std::string description,
+    CallbackWithData check_result_callback)
     : FeaturePromoPreconditionBase(identifier, std::move(description)),
       check_result_callback_(std::move(check_result_callback)) {
   CHECK(!check_result_callback_.is_null());
@@ -60,8 +82,9 @@ CallbackFeaturePromoPrecondition::CallbackFeaturePromoPrecondition(
 
 CallbackFeaturePromoPrecondition::~CallbackFeaturePromoPrecondition() = default;
 
-FeaturePromoResult CallbackFeaturePromoPrecondition::CheckPrecondition() const {
-  return check_result_callback_.Run();
+FeaturePromoResult CallbackFeaturePromoPrecondition::CheckPrecondition(
+    ComputedData& data) const {
+  return check_result_callback_.Run(data);
 }
 
 ForwardingFeaturePromoPrecondition::ForwardingFeaturePromoPrecondition(
@@ -80,9 +103,9 @@ const std::string& ForwardingFeaturePromoPrecondition::GetDescription() const {
   return source_->GetDescription();
 }
 
-FeaturePromoResult ForwardingFeaturePromoPrecondition::CheckPrecondition()
-    const {
-  return source_->CheckPrecondition();
+FeaturePromoResult ForwardingFeaturePromoPrecondition::CheckPrecondition(
+    ComputedData& data) const {
+  return source_->CheckPrecondition(data);
 }
 
 FeaturePromoPreconditionList::FeaturePromoPreconditionList(
@@ -93,8 +116,9 @@ FeaturePromoPreconditionList::~FeaturePromoPreconditionList() = default;
 
 FeaturePromoPreconditionList::CheckResult
 FeaturePromoPreconditionList::CheckPreconditions() const {
+  FeaturePromoPrecondition::ComputedData data;
   for (const auto& precondition : preconditions_) {
-    const auto result = precondition->CheckPrecondition();
+    const auto result = precondition->CheckPrecondition(data);
     if (!result) {
       return CheckResult(result, precondition->GetIdentifier());
     }

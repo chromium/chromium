@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_ELEMENT_TRACKER_H_
 #define UI_BASE_INTERACTION_ELEMENT_TRACKER_H_
 
+#include <concepts>
 #include <list>
 #include <map>
 #include <memory>
@@ -290,6 +291,13 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
   }
   bool operator!=(const TrackedElement* other) const {
     return element_ != other;
+  }
+
+  // Gets the held element as type T if present, null if not present or not a T.
+  template <typename T>
+    requires std::derived_from<T, TrackedElement>
+  T* get_as() const {
+    return element_ ? element_->AsA<T>() : nullptr;
   }
 
  private:

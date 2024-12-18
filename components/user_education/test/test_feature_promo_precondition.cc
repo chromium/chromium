@@ -42,7 +42,7 @@ class TestPreconditionListProvider::TestPrecondition
     return data_->description;
   }
 
-  FeaturePromoResult CheckPrecondition() const override {
+  FeaturePromoResult CheckPrecondition(ComputedData&) const override {
     const auto* result =
         base::FindOrNull(data_->overrides, &iph_feature_.get());
     return result ? *result : data_->default_result;

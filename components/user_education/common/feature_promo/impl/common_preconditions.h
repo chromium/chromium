@@ -73,7 +73,7 @@ class MeetsFeatureEngagementCriteriaPrecondition
   ~MeetsFeatureEngagementCriteriaPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   const raw_ref<const base::Feature> feature_;
@@ -91,7 +91,7 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
   ~AnchorElementPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   const raw_ref<const AnchorElementProvider> provider_;
@@ -107,7 +107,7 @@ class LifecyclePrecondition : public FeaturePromoPreconditionBase {
   ~LifecyclePrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   const bool for_demo_;
@@ -126,7 +126,7 @@ class SessionPolicyPrecondition : public FeaturePromoPreconditionBase {
   ~SessionPolicyPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   const raw_ref<FeaturePromoSessionPolicy> session_policy_;

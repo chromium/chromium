@@ -59,11 +59,14 @@ class PreconditionData {
     return it == coll.end() ? nullptr : &it->second->AsTyped(id).data();
   }
 
- private:
   // Retrieves this object as a typed object. The identifier must match.
   template <typename T>
   TypedPreconditionData<T>& AsTyped(TypedIdentifier<T> id);
+  // Retrieves this object as a typed object. The identifier must match.
+  template <typename T>
+  const TypedPreconditionData<T>& AsTyped(TypedIdentifier<T> id) const;
 
+ private:
   const Identifier identifier_;
 };
 
@@ -81,23 +84,31 @@ class TypedPreconditionData : public PreconditionData {
  public:
   using Type = T;
 
-  template <typename U>
+  template <typename U, typename... Args>
     requires std::same_as<T, U>
-  explicit TypedPreconditionData(TypedIdentifier<U> identifier)
-      : PreconditionData(identifier.identifier()) {}
+  explicit TypedPreconditionData(TypedIdentifier<U> identifier, Args&&... args)
+      : PreconditionData(identifier.identifier()),
+        data_(std::forward<Args>(args)...) {}
   ~TypedPreconditionData() override = default;
 
   T& data() { return data_; }
   const T& data() const { return data_; }
 
  private:
-  T data_ = T();
+  T data_;
 };
 
 template <typename T>
 TypedPreconditionData<T>& PreconditionData::AsTyped(TypedIdentifier<T> id) {
   CHECK_EQ(id.identifier(), identifier_);
   return *static_cast<TypedPreconditionData<T>*>(this);
+}
+
+template <typename T>
+const TypedPreconditionData<T>& PreconditionData::AsTyped(
+    TypedIdentifier<T> id) const {
+  CHECK_EQ(id.identifier(), identifier_);
+  return *static_cast<const TypedPreconditionData<T>*>(this);
 }
 
 }  // namespace user_education::internal

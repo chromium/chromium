@@ -15,6 +15,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education {
 
@@ -29,6 +30,45 @@ class FeaturePromoPrecondition {
  public:
   using Identifier = ui::ElementIdentifier;
 
+  // Represents data computed by a precondition that can be passed to subsequent
+  // preconditions that are to be evaluated, to avoid duplication of effort.
+  class ComputedData {
+   public:
+    ComputedData();
+    ComputedData(ComputedData&&) noexcept;
+    ComputedData& operator=(ComputedData&&) noexcept;
+    ~ComputedData();
+
+    // Add data to the lookup.
+    template <typename T>
+    void Add(ui::TypedIdentifier<T> id,
+             const internal::PreconditionData& data) {
+      CHECK_EQ(id.identifier(), data.identifier());
+      const auto result = lookup_.try_emplace(data.identifier(), data);
+      CHECK(result.second || &result.first->second.get() == &data);
+    }
+
+    // Get data from the lookup. The data must be present.
+    template <typename T>
+    const T& Get(ui::TypedIdentifier<T> id) const {
+      const auto it = lookup_.find(id.identifier());
+      CHECK(it != lookup_.end());
+      return it->second->AsTyped(id).data();
+    }
+
+    // Get data from the lookup. Returns null if not found.
+    template <typename T>
+    const T* GetIfPresent(ui::TypedIdentifier<T> id) const {
+      const auto it = lookup_.find(id.identifier());
+      return it != lookup_.end() ? &it->second->AsTyped(id).data() : nullptr;
+    }
+
+   private:
+    std::map<internal::PreconditionData::Identifier,
+             raw_ref<const internal::PreconditionData>>
+        lookup_;
+  };
+
   // Boilerplate; this class is not copyable.
   FeaturePromoPrecondition(const FeaturePromoPrecondition&) = delete;
   void operator=(const FeaturePromoPrecondition&) = delete;
@@ -42,7 +82,12 @@ class FeaturePromoPrecondition {
 
   // Gets whether the precondition is met and promos are allowed. If not,
   // returns the relevant failure.
-  virtual FeaturePromoResult CheckPrecondition() const = 0;
+  //
+  // When preconditions are being computed together, `data` contains all
+  // information computed by previous preconditions. This is necessarily order-
+  // dependent; a precondition cannot retrieve data computed by another
+  // precondition that is evaluated after it.
+  virtual FeaturePromoResult CheckPrecondition(ComputedData& data) const = 0;
 
   // Extracts any cached data from this precondition and adds it to `to_add_to`;
   // future calls to this object may fail. Cached data likely reflects the most
@@ -87,23 +132,42 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
      ...);
   }
 
+  // Use this method to initialize a single piece of cached data the
+  // precondition will support with an initial value constructed from `args`.
+  template <typename T, typename... Args>
+  void InitCachedData(ui::TypedIdentifier<T> id, Args&&... args) {
+    data_.emplace(id.identifier(),
+                  std::make_unique<internal::TypedPreconditionData<T>>(
+                      id, std::forward<Args>(args)...));
+  }
+
   // Retrieve a reference to cached data held by the precondition, which can be
   // used to get or set the value. InitCache() must have been called with
   // the same `id`, and `ExtractData()` must not have been called.
   //
   // The data returned is mutable even thought the method is const, because it
   // is expected to be used to cache data.
+  //
+  // A readonly reference to the cached data is also stored in `data` to ensure
+  // that it is available to later preconditions in the list.
   template <typename T>
-  T& GetCachedData(internal::PreconditionData::TypedIdentifier<T> id) const {
-    auto* const result = internal::PreconditionData::Get<T>(data_, id);
-    CHECK(result);
-    return *result;
+  T& GetCachedDataForComputation(
+      ComputedData& data,
+      internal::PreconditionData::TypedIdentifier<T> id) const {
+    const auto it = data_.find(id.identifier());
+    CHECK(it != data_.end());
+    data.Add(id, *it->second);
+    return it->second->AsTyped(id).data();
   }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest, SetAndGetCachedData);
   FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
+                           SetAndGetCachedDataDifferentPreconditions);
+  FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
                            GetCachedDataCrashesIfDataNotPresent);
+  FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
+                           GetCachedDataCrashesIfCacheCollision);
   FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest, ExtractCachedData);
   FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
                            GetAfterExtractCachedDataFails);
@@ -129,7 +193,7 @@ class CachingFeaturePromoPrecondition : public FeaturePromoPreconditionBase {
   ~CachingFeaturePromoPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData&) const override;
 
   // See `set_is_allowed`.
   void set_check_result_for_testing(FeaturePromoResult check_result) {
@@ -150,17 +214,22 @@ class CachingFeaturePromoPrecondition : public FeaturePromoPreconditionBase {
 // source of truth via a callback.
 class CallbackFeaturePromoPrecondition : public FeaturePromoPreconditionBase {
  public:
-  CallbackFeaturePromoPrecondition(
-      Identifier identifier,
-      std::string description,
-      base::RepeatingCallback<FeaturePromoResult()> check_result_callback);
+  using SimpleCallback = base::RepeatingCallback<FeaturePromoResult()>;
+  using CallbackWithData =
+      base::RepeatingCallback<FeaturePromoResult(ComputedData& data)>;
+  CallbackFeaturePromoPrecondition(Identifier identifier,
+                                   std::string description,
+                                   SimpleCallback check_result_callback);
+  CallbackFeaturePromoPrecondition(Identifier identifier,
+                                   std::string description,
+                                   CallbackWithData check_result_callback);
   ~CallbackFeaturePromoPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
-  const base::RepeatingCallback<FeaturePromoResult()> check_result_callback_;
+  const CallbackWithData check_result_callback_;
 };
 
 // Represents a precondition that forwards all of its information from another
@@ -174,7 +243,7 @@ class ForwardingFeaturePromoPrecondition : public FeaturePromoPrecondition {
   // FeaturePromoPrecondition:
   Identifier GetIdentifier() const override;
   const std::string& GetDescription() const override;
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   raw_ref<const FeaturePromoPrecondition> source_;
