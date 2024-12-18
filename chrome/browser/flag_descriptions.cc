@@ -948,10 +948,6 @@ const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[] =
     "the user grants permission.";
 #endif
 
-const char kCommerceHintAndroidName[] = "Commerce Hint Android";
-const char kCommerceHintAndroidDescription[] =
-    "Enables commerce hint detection on Android.";
-
 const char kClientSideDetectionBrandAndIntentForScamDetectionName[] =
     "Client Side Detection Brand and  Intent for Scam Detection";
 const char kClientSideDetectionBrandAndIntentForScamDetectionDescription[] =

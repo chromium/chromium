@@ -9700,13 +9700,6 @@ const FeatureEntry kFeatureEntries[] = {
          kOnDeviceNotificationContentDetectionModelVariations,
          "OnDeviceNotificationContentDetectionModel")},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-commerce-hint-android",
-     flag_descriptions::kCommerceHintAndroidName,
-     flag_descriptions::kCommerceHintAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(commerce::kCommerceHintAndroid)},
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"enable-web-bluetooth-confirm-pairing-support",
      flag_descriptions::kWebBluetoothConfirmPairingSupportName,

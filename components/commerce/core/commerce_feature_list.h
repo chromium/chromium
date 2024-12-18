@@ -103,9 +103,6 @@ extern const char kRetailCouponsWithCodeParam[];
 // Feature flag for Discount user consent v2.
 BASE_DECLARE_FEATURE(kDiscountConsentV2);
 
-// Feature flag for exposing commerce hint on Android.
-BASE_DECLARE_FEATURE(kCommerceHintAndroid);
-
 // Feature flag for Code-based RBD.
 BASE_DECLARE_FEATURE(kCodeBasedRBD);
 
@@ -144,11 +141,7 @@ constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
 // The heuristics of cart pages are from top 100 US shopping domains.
 // https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
 constexpr base::FeatureParam<std::string> kCartPattern{
-#if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule,
-#else
-  &kCommerceHintAndroid,
-#endif
       "cart-pattern",
       // clang-format off
     "(^https?://cart\\.)"
@@ -170,22 +163,14 @@ constexpr base::FeatureParam<std::string> kCartPattern{
 };
 
 constexpr base::FeatureParam<std::string> kCartPatternMapping{
-#if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule,
-#else
-  &kCommerceHintAndroid,
-#endif
       "cart-pattern-mapping",
       // Empty JSON string.
       ""
 };
 
 constexpr base::FeatureParam<std::string> kCheckoutPattern{
-#if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule,
-#else
-  &kCommerceHintAndroid,
-#endif
       "checkout-pattern",
       // clang-format off
     "/("
@@ -204,11 +189,7 @@ constexpr base::FeatureParam<std::string> kCheckoutPattern{
 };
 
 constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
-#if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule,
-#else
-  &kCommerceHintAndroid,
-#endif
       "checkout-pattern-mapping",
       // Empty JSON string.
       ""
@@ -310,9 +291,6 @@ extern const base::FeatureParam<bool>
 // result page.
 extern const char kContextualConsentShowOnSRPParam[];
 extern const base::FeatureParam<bool> kContextualConsentShowOnSRP;
-
-// Feature params for enabling the cart heuristics improvement on Android.
-extern const char kCommerceHintAndroidHeuristicsImprovementParam[];
 
 // Feature params for code-based Rule-based Discount (RBD).
 extern const char kCodeBasedRuleDiscountParam[];

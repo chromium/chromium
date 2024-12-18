@@ -560,9 +560,6 @@ extern const char kCanvasOopRasterizationDescription[];
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
 
-extern const char kCommerceHintAndroidName[];
-extern const char kCommerceHintAndroidDescription[];
-
 extern const char kCompactModeId[];
 extern const char kCompactModeName[];
 extern const char kCompactModeDescription[];

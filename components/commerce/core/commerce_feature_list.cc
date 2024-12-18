@@ -381,10 +381,6 @@ BASE_FEATURE(kDiscountConsentV2,
              "DiscountConsentV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceHintAndroid,
-             "CommerceHintAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCodeBasedRBD, "CodeBasedRBD", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kParcelTracking,
@@ -494,9 +490,6 @@ const base::FeatureParam<bool> kContextualConsentShowOnCartAndCheckoutPage{
 const char kContextualConsentShowOnSRPParam[] = "show-on-srp";
 const base::FeatureParam<bool> kContextualConsentShowOnSRP{
     &commerce::kDiscountConsentV2, kContextualConsentShowOnSRPParam, false};
-
-const char kCommerceHintAndroidHeuristicsImprovementParam[] =
-    "CommerceHintAndroidHeuristicsImprovementParam";
 
 const char kCodeBasedRuleDiscountParam[] = "code-based-rbd";
 const base::FeatureParam<bool> kCodeBasedRuleDiscount{
