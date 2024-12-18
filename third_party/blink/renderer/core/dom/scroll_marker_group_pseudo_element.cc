@@ -159,6 +159,15 @@ bool ScrollMarkerGroupPseudoElement::SetSelected(
   }
   if (selected_marker_) {
     selected_marker_->SetSelected(false);
+    // When updating the active marker the following is meant to ensure that if
+    // the previously active marker was focused we update the focus to the new
+    // active marker.
+    if (selected_marker_->IsFocused()) {
+      GetDocument().SetFocusedElement(
+          &scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                      mojom::blink::FocusType::kNone,
+                                      /*capabilities=*/nullptr));
+    }
   }
   scroll_marker.SetSelected(true);
   selected_marker_ = scroll_marker;
