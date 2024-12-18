@@ -42,10 +42,6 @@ source_set("android_impl") {
   ]
 }
 
-android_library("delegate_java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/partnerbookmarks/Placeholder.java" ]
-}
-
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmark.java",
