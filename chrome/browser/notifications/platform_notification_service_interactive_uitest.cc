@@ -1012,54 +1012,6 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 }
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
-class PlatformNotificationServiceWithoutContentImageBrowserTest
-    : public PlatformNotificationServiceBrowserTest {
- public:
-  // InProcessBrowserTest overrides.
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kNotificationContentImage});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PlatformNotificationServiceWithoutContentImageBrowserTest,
-    KillSwitch) {
-  GrantNotificationPermissionForTest();
-
-  EXPECT_EQ("ok", RunScript("DisplayPersistentAllOptionsNotification()"));
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications(true /* is_persistent */);
-  ASSERT_EQ(1u, notifications.size());
-
-  // Since the kNotificationContentImage kill switch has disabled images, the
-  // notification should be shown without an image.
-  EXPECT_TRUE(notifications[0].image().IsEmpty());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PlatformNotificationServiceWithoutContentImageBrowserTest,
-    KillSwitch_NonPersistentNotifications) {
-  GrantNotificationPermissionForTest();
-
-  EXPECT_EQ("ok", RunScript(
-                      R"(DisplayNonPersistentNotification('Title2', {
-          image: 'icon.png'
-        }))"));
-
-  std::vector<message_center::Notification> notifications =
-      GetDisplayedNotifications(false /* is_persistent */);
-  ASSERT_EQ(1u, notifications.size());
-
-  // Since the kNotificationContentImage kill switch has disabled images, the
-  // notification should be shown without an image.
-  EXPECT_TRUE(notifications[0].image().IsEmpty());
-}
-
 class PlatformNotificationServiceIncomingCallTest
     : public PlatformNotificationServiceBrowserTest {
  public:

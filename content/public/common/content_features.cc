@@ -668,11 +668,6 @@ BASE_FEATURE(kNetworkServiceInProcess,
 #endif
 );
 
-// Kill switch for Web Notification content images.
-BASE_FEATURE(kNotificationContentImage,
-             "NotificationContentImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature which holdbacks NoStatePrefetch on all surfaces.
 BASE_FEATURE(kNoStatePrefetchHoldback,
              "NoStatePrefetchHoldback",

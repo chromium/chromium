@@ -34,9 +34,6 @@ namespace content {
 
 namespace {
 
-const char kBadMessageImproperNotificationImage[] =
-    "Received an unexpected message with image while notification images are "
-    "disabled.";
 const char kBadMessageInvalidNotificationTriggerTimestamp[] =
     "Received an invalid notification trigger timestamp.";
 const char kBadMessageInvalidNotificationActionButtons[] =
@@ -252,16 +249,6 @@ bool BlinkNotificationServiceImpl::ValidateNotificationDataAndResources(
 
   if (!CheckNotificationTriggerRange(platform_notification_data)) {
     receiver_.ReportBadMessage(kBadMessageInvalidNotificationTriggerTimestamp);
-    OnConnectionError();
-    return false;
-  }
-
-  if (!notification_resources.image.drawsNothing() &&
-      !base::FeatureList::IsEnabled(features::kNotificationContentImage)) {
-    receiver_.ReportBadMessage(kBadMessageImproperNotificationImage);
-    // The above ReportBadMessage() closes |binding_| but does not trigger its
-    // connection error handler, so we need to call the error handler explicitly
-    // here to do some necessary work.
     OnConnectionError();
     return false;
   }

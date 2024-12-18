@@ -256,8 +256,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(media::kMediaCastOverlayButton)},
           {wf::EnableMediaEngagementBypassAutoplayPolicies,
            raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
-          {wf::EnableNotificationContentImage,
-           raw_ref(features::kNotificationContentImage), kSetOnlyIfOverridden},
           {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
           {wf::EnablePaymentRequest, raw_ref(features::kWebPayments)},
           {wf::EnablePeriodicBackgroundSync,
