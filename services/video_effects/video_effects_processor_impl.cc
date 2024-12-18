@@ -50,6 +50,12 @@ VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
   manager_remote_.set_disconnect_handler(
       base::BindOnce(&VideoEffectsProcessorImpl::OnMojoDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  manager_remote_->AddObserver(
+      configuration_observer_.BindNewPipeAndPassRemote());
+  manager_remote_->GetConfiguration(
+      base::BindOnce(&VideoEffectsProcessorImpl::OnConfigurationChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 VideoEffectsProcessorImpl::~VideoEffectsProcessorImpl() {
@@ -150,6 +156,12 @@ void VideoEffectsProcessorImpl::OnContextLost() {
   }
 }
 
+void VideoEffectsProcessorImpl::OnConfigurationChanged(
+    media::mojom::VideoEffectsConfigurationPtr configuration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/374149033): save configuration, to be passed to `processor_webgpu_`.
+}
+
 void VideoEffectsProcessorImpl::OnMojoDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -157,6 +169,7 @@ void VideoEffectsProcessorImpl::OnMojoDisconnected() {
   // `on_unrecoverable_error_` since the owner of this processor instance may
   // want to tear us down (the processor is no longer usable).
   processor_receiver_.reset();
+  configuration_observer_.reset();
   manager_remote_.reset();
 
   MaybeCallOnUnrecoverableError();

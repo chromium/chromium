@@ -28,8 +28,10 @@
 
 namespace video_effects {
 
-class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
-                                  public viz::ContextLostObserver {
+class VideoEffectsProcessorImpl
+    : public mojom::VideoEffectsProcessor,
+      public viz::ContextLostObserver,
+      public media::mojom::VideoEffectsConfigurationObserver {
  public:
   // `gpu_channel_host_provider` must outlive this processor.
   // `on_unrecoverable_error` will be called after an unrecoverable condition
@@ -66,6 +68,10 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
+  // media::mojom::VideoEffectsConfigurationObserver impl.
+  void OnConfigurationChanged(
+      media::mojom::VideoEffectsConfigurationPtr configuration) override;
+
   // Registered as a disconnect handler for `manager_remote_` and
   // `processor_receiver_`. Calling it will cause this processor to become
   // defunct as we cannot work without functional mojo connections.
@@ -82,6 +88,8 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   wgpu::Device device_;
 
   mojo::Remote<media::mojom::VideoEffectsManager> manager_remote_;
+  mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
+      configuration_observer_{this};
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;
 
   scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider_;
