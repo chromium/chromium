@@ -25,7 +25,6 @@
 #         release release-x64
 #         fuchsia-chrome
 #         web-engine-shell
-#         lacros-chrome
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
@@ -322,73 +321,6 @@ crbug.com/1008535 [ android android-pixel-2 passthrough ] conformance2/textures/
 crbug.com/1345782 [ mac amd-0x6821 passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Skip ]
 crbug.com/1345782 [ mac amd-0x679e passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Skip ]
 crbug.com/1345782 [ mac amd-0x67ef passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Skip ]
-
-# Skipped due to low capacity of Lacros devices
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/ogles/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/canvas_sub_rectangle/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_data/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/svg_image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/video/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/webgl_canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image_data/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_video/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_blob/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image_bitmap/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/uniforms/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/more/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] deqp/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/canvas_sub_rectangle/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_data/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/svg_image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/video/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/webgl_canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_bitmap_from_image_data/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_bitmap_from_image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_bitmap_from_video/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_bitmap_from_canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_bitmap_from_blob/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_bitmap_from_image_bitmap/* [ Skip ]
-
-# Extensions not available on Lacros, skip as failures causes re-login which takes ~1 min
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_OVR_multiview2 [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_EXT_render_snorm [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-octopus passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
-crbug.com/1481267 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_NV_shader_noperspective_interpolation [ Skip ]
-
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_norm16 [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_OES_texture_float_linear [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_OVR_multiview2 [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_clip_control [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_render_snorm [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_NV_shader_noperspective_interpolation [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
 # Can cause subsequent tests to fail.
 crbug.com/329130354 [ mac amd-0x679e ] conformance2/textures/canvas_sub_rectangle/tex-3d-rgba4-rgba-unsigned_short_4_4_4_4.html [ Skip ]
@@ -1016,15 +948,8 @@ crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/*
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/* [ RetryOnFailure ]
 
 
-#####################
-# Lacros failures #
-#####################
-
-
-
-
 ##############################
-# Lacros-like Linux Failures #
+# Linux Failures #
 ##############################
 
 crbug.com/1399117 [ linux intel display-server-wayland no-passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]

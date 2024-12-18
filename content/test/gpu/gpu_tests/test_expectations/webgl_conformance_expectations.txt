@@ -25,7 +25,6 @@
 #         release release-x64
 #         fuchsia-chrome
 #         web-engine-shell
-#         lacros-chrome
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
@@ -243,7 +242,7 @@ crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebglExtension
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 
-# Extensions not available on LaCrOS (ChromeOS / Intel bot).
+# Extensions not available on Linux Wayland.
 crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
 crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 
@@ -361,41 +360,6 @@ crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 # decoder has been unshipped on Mac.
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array/array_001_to_006.html [ Skip ]
-
-
-# Skipped due to low capacity of Lacros devices
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/ogles/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/canvas_sub_rectangle/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_data/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/svg_image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/video/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/webgl_canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image_data/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_video/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_canvas/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_blob/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image_bitmap/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/uniforms/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/more/* [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome passthrough ] deqp/* [ Skip ]
-
-# Extensions not available on Lacros, skip as failures causes re-login which takes ~1 min
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_frag_depth [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_OES_texture_float_linear [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_draw_buffers [ Skip ]
-
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_clip_control [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
 # Crashes fuchsia on qemu
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Skip ]
@@ -729,13 +693,8 @@ crbug.com/40285462 [ chromeos cros-chrome chromeos-board-jacuzzi angle-opengles 
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/* [ RetryOnFailure ]
 
-#####################
-# Lacros failures #
-#####################
-
-
 ###########################
-# Lacros/Wayland failures #
+# Linux/Wayland failures #
 ###########################
 
 crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExtension_EXT_shader_texture_lod [ Failure ]

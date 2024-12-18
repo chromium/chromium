@@ -67,8 +67,7 @@ TAG_SPECIALIZATIONS = {
         # These two are both Fuchsia-related.
         'fuchsia-chrome': [],
         'web-engine-shell': [],
-        # These two are both ChromeOS-related.
-        'lacros-chrome': [],
+        # ChromeOS.
         'cros-chrome': [],
     },
     'GPU_TAGS': {

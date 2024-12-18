@@ -25,7 +25,6 @@
 #         release release-x64
 #         fuchsia-chrome
 #         web-engine-shell
-#         lacros-chrome
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
@@ -256,8 +255,8 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 [ win ] Pixel_RenderPasses [ Skip ]
 [ fuchsia ] Pixel_RenderPasses [ Skip ]
 
-# This test ensures correctness of a delegated compositing implementation,
-# enabled today in Lacros. So far verified only on ChromeOS and MacOS.
+# This test ensures correctness of a delegated compositing implementation.
+# So far verified only on ChromeOS and MacOS.
 [ linux ] Pixel_PerspectiveTest [ Skip ]
 [ android ] Pixel_PerspectiveTest [ Skip ]
 [ win ] Pixel_PerspectiveTest [ Skip ]
@@ -412,13 +411,6 @@ crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaF
 
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
-
-# Lacros consistent failures on CrOS devices, skip to save some time
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_Video_Context_Loss_MP4 [ Skip ]
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_Video_Context_Loss_VP9 [ Skip ]
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLContextRestored [ Skip ]
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLPreservedAfterTabSwitch [ Skip ]
 
 # jacuzzi produces the wrong aspect ratio image
 crbug.com/1392806 [ chromeos chromeos-board-jacuzzi ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
