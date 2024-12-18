@@ -1307,7 +1307,8 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   if (ShouldEnableShadowMetadata(process_type)) {
     partition_alloc::PartitionRoot::EnableShadowMetadata(
         partition_alloc::internal::PoolHandleMask::kRegular |
-        partition_alloc::internal::PoolHandleMask::kBRP);
+        partition_alloc::internal::PoolHandleMask::kBRP |
+        partition_alloc::internal::PoolHandleMask::kConfigurable);
   }
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
