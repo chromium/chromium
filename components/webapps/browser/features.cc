@@ -18,7 +18,7 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
 // Enables installable message throttle.
 BASE_FEATURE(kInstallMessageThrottle,
              "InstallMessageThrottle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Do not remove this feature flag, since it serves as a kill-switch for the ML
