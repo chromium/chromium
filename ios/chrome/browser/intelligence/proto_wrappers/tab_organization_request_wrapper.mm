@@ -116,6 +116,7 @@
 
     [pageContextWrapper setShouldGetSnapshot:YES];
     [pageContextWrapper setShouldForceUpdateMissingSnapshots:YES];
+    [pageContextWrapper setShouldGetInnerText:YES];
 
     // Hold references to each PageContextWrapper to keep them alive during
     // their async work.

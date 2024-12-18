@@ -49,7 +49,8 @@ class WebState;
 // callback.
 - (void)populatePageContextFieldsAsync;
 
-// Enables force taking snapshots if none could be retrieved from storage.
+// Enables force taking snapshots if none could be retrieved from storage, does
+// nothing if `shouldGetSnapshot` is NO.
 @property(nonatomic, assign) BOOL shouldForceUpdateMissingSnapshots;
 
 // Boolean flags for enabling/disabling the async tasks that the PageContext
@@ -63,6 +64,11 @@ class WebState;
 // Whether a full page PDF of the associated WebState should be fetched. This
 // force-realizes the associated WebState.
 @property(nonatomic, assign) BOOL shouldGetFullPagePDF;
+
+// Whether the entire webpage body's innerText should be fetched. This includes
+// the innerText of the webpage's iframes, but only for those from the same
+// origin as the main WebFrame.
+@property(nonatomic, assign) BOOL shouldGetInnerText;
 
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
