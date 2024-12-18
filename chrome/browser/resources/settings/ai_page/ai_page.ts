@@ -161,7 +161,8 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private async setShowAutofillAiControl_() {
-    if (loadTimeData.getBoolean('showAiSettingsForTesting')) {
+    if (loadTimeData.valueExists('showAiSettingsForTesting') &&
+        loadTimeData.getBoolean('showAiSettingsForTesting')) {
       this.showAutofillAIControl_ = true;
       return;
     }
