@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.Seco
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -391,20 +390,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.FromLaunch.ActivityInflated",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
-    }
-
-    @Override
-    protected void performPostInflationStartup() {
-        super.performPostInflationStartup();
-
-        FontPreloader.getInstance().onPostInflationStartupFre();
-    }
-
-    @Override
-    protected void onFirstDrawComplete() {
-        super.onFirstDrawComplete();
-
-        FontPreloader.getInstance().onFirstDrawFre();
     }
 
     @Override
