@@ -156455,6 +156455,10 @@
     { "name": "www.bbc.com", "policy": "custom", "mode": "force-https", "include_subdomains": false },
     { "name": "bbc.co.uk", "policy": "custom", "mode": "force-https", "include_subdomains": false },
     { "name": "www.bbc.co.uk", "policy": "custom", "mode": "force-https", "include_subdomains": false },
+    { "name": "www.tiaa.org", "policy": "custom", "mode": "force-https", "include_subdomains": true },
+    { "name": "auth.tiaa.org", "policy": "custom", "mode": "force-https", "include_subdomains": true },
+    { "name": "my.tiaa.org", "policy": "custom", "mode": "force-https", "include_subdomains": true },
+    { "name": "mobile.tiaa.org", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     // END OF MANUAL CUSTOM ENTRIES
 
     // eTLD owners who are working towards wide HSTS adoption can request to
