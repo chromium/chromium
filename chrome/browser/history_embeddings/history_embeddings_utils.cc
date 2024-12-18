@@ -27,11 +27,21 @@ namespace {
 bool IsEnabledForCountryAndLocale(const base::Feature& launch_feature) {
   // Launch in the US via client-side code, leaving a Finch hook available just
   // in case. Note, the variations service may be nullptr in unit tests.
-  return g_browser_process && g_browser_process->variations_service() &&
-         g_browser_process->variations_service()->GetStoredPermanentCountry() ==
-             "US" &&
-         g_browser_process->GetApplicationLocale() == "en-US" &&
-         base::FeatureList::IsEnabled(launch_feature);
+  if (!g_browser_process || !g_browser_process->variations_service()) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(launch_feature)) {
+    return false;
+  }
+  if (g_browser_process->GetApplicationLocale() != "en-US") {
+    return false;
+  }
+  std::string country_code =
+      g_browser_process->variations_service()->GetStoredPermanentCountry();
+  if (country_code.empty()) {
+    country_code = g_browser_process->variations_service()->GetLatestCountry();
+  }
+  return country_code == "us";
 }
 }  // namespace
 
