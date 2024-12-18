@@ -21917,6 +21917,21 @@
             ]
         }
     ],
+    "SkipParentAccessCodeForReauth": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkipParentAccessCodeForReauth"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipUnnecessaryRemoteFrameGeometryPropagation": [
         {
             "platforms": [
