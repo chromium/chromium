@@ -14,10 +14,10 @@ TEST(AssertionsTest, Assertions) {
   DCHECK(true);
 #if DCHECK_IS_ON()
   EXPECT_DEATH_IF_SUPPORTED(DCHECK(false), "");
-  EXPECT_DEATH_IF_SUPPORTED(DCHECK_AT(false, base::Location::Current()), "");
+  EXPECT_DEATH_IF_SUPPORTED(DCHECK_AT(false, __FILE__, __LINE__), "");
 #else
   DCHECK(false);
-  DCHECK_AT(false, base::Location::Current());
+  DCHECK_AT(false, __FILE__, __LINE__);
 #endif
 
   CHECK(true);

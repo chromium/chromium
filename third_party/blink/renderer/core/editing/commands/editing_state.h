@@ -69,8 +69,7 @@ class NoEditingAbortChecker final {
   STACK_ALLOCATED();
 
  public:
-  explicit NoEditingAbortChecker(
-      const base::Location& location = base::Location::Current());
+  NoEditingAbortChecker(const char* file, int line);
   NoEditingAbortChecker(const NoEditingAbortChecker&) = delete;
   NoEditingAbortChecker& operator=(const NoEditingAbortChecker&) = delete;
   ~NoEditingAbortChecker();
@@ -79,7 +78,8 @@ class NoEditingAbortChecker final {
 
  private:
   EditingState editing_state_;
-  const base::Location location_;
+  const char* const file_;
+  int const line_;
 };
 
 // If a function with EditingState* argument should not be aborted,
@@ -87,7 +87,8 @@ class NoEditingAbortChecker final {
 //    fooFunc(...., ASSERT_NO_EDITING_ABORT);
 // It causes an assertion failure If DCHECK_IS_ON() and the function was aborted
 // unexpectedly.
-#define ASSERT_NO_EDITING_ABORT (NoEditingAbortChecker().GetEditingState())
+#define ASSERT_NO_EDITING_ABORT \
+  (NoEditingAbortChecker(__FILE__, __LINE__).GetEditingState())
 #else
 #define ASSERT_NO_EDITING_ABORT (IgnorableEditingAbortState().GetEditingState())
 #endif

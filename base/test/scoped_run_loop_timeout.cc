@@ -35,9 +35,10 @@ std::string TimeoutMessage(const RepeatingCallback<std::string()>& get_log,
 void StandardTimeoutCallback(const Location& timeout_enabled_from_here,
                              RepeatingCallback<std::string()> on_timeout_log,
                              const Location& run_from_here) {
-  logging::CheckNoreturnError::Check(
-      TimeoutMessage(on_timeout_log, timeout_enabled_from_here).data(),
-      run_from_here);
+  const std::string message =
+      TimeoutMessage(on_timeout_log, timeout_enabled_from_here);
+  logging::LogMessage(run_from_here.file_name(), run_from_here.line_number(),
+                      message.data());
 }
 
 void TimeoutCallbackWithGtestFailure(

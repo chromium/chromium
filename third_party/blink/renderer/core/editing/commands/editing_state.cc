@@ -23,11 +23,11 @@ IgnorableEditingAbortState::~IgnorableEditingAbortState() = default;
 #if DCHECK_IS_ON()
 // ---
 
-NoEditingAbortChecker::NoEditingAbortChecker(const base::Location& location)
-    : location_(std::move(location)) {}
+NoEditingAbortChecker::NoEditingAbortChecker(const char* file, int line)
+    : file_(file), line_(line) {}
 
 NoEditingAbortChecker::~NoEditingAbortChecker() {
-  DCHECK_AT(!editing_state_.IsAborted(), location_)
+  DCHECK_AT(!editing_state_.IsAborted(), file_, line_)
       << "The operation should not have been aborted.";
 }
 
