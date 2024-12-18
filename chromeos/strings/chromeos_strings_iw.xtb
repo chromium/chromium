@@ -484,6 +484,7 @@
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">הגדרות</translation>
 <translation id="3347558044552027859">מודרני</translation>
+<translation id="3353477144743332882">הורדת מודל ליצירת סיכום ושם</translation>
 <translation id="3359218928534347896">הפעלה או כיבוי של השתקת המיקרופון</translation>
 <translation id="3360306038446926262">חלונות</translation>
 <translation id="3361618936611118375">סושי</translation>
@@ -769,6 +770,7 @@
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
+<translation id="4750394297954878236">הצעות</translation>
 <translation id="4771607256327216405">מקלדת בהירה</translation>
 <translation id="4771923071974529837">מחר</translation>
 <translation id="4773299976671772492">הופסק</translation>
@@ -999,6 +1001,7 @@
 <translation id="5859969039821714932">מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש בלי <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
+<translation id="5875913454160982848">הורדת מודל התמלול</translation>
 <translation id="5876385649737594562">צריך להפעיל כדי לבחור אפשרויות</translation>
 <translation id="5877503382465267833">השהיה של <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">מסך מלא</translation>
@@ -1590,6 +1593,7 @@
 <translation id="8503836310948963452">רק עוד מספר דקות…</translation>
 <translation id="8505011850330200833">‏מודל Gemini צריך נפח אחסון של 2GB כדי לעבד תמלילים וליצור סיכומים</translation>
 <translation id="8508640263392900755">‏פרטי APN</translation>
+<translation id="8509574872955173831">מידע נוסף על יצירת הסיכום והשם</translation>
 <translation id="8522687886059337719">עכשיו יש לך גישה ל<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />טפטים<ph name="END_LINK_WALLPAPER_SUBPAGE" /> חדשים ול<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />שומר מסך<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">בית תה</translation>

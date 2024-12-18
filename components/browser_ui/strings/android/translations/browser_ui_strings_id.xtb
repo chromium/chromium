@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Terhubung ke perangkat USB</translation>
 <translation id="4194328954146351878">Tanyakan sebelum mengizinkan situs melihat dan mengubah informasi di perangkat NFC (direkomendasikan)</translation>
 <translation id="4200726100658658164">Buka Setelan Lokasi</translation>
+<translation id="4213239715282467974">Chrome kini membagikan tab terbaru ke perangkat Anda. Anda dapat mengaksesnya dengan cepat di daftar aplikasi dan hasil penelusuran perangkat. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="4226663524361240545">Notifikasi dapat membuat perangkat bergetar</translation>
 <translation id="4259722352634471385">Navigasi diblokir: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Diizinkan</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Situs diblokir agar tidak meminta izin Anda untuk menggunakan info tentang Anda yang disimpannya</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lainnya)}other{(+ # lainnya)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
+<translation id="5408906274948600065">Izinkan Chrome membagikan tab terbaru ke perangkat Anda agar Anda dapat melihatnya di daftar aplikasi dan hasil penelusuran perangkat. Anda dapat mengaktifkan atau menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="5438097262470833822">Pilihan ini akan mereset izin untuk <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Jika diaktifkan, situs dapat meminta lokasi Anda. Jika dinonaktifkan, situs tidak dapat melihat lokasi Anda.</translation>
 <translation id="5489227211564503167">Waktu berlalu <ph name="ELAPSED_TIME" /> dari <ph name="TOTAL_TIME" />.</translation>

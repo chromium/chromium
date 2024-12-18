@@ -4261,6 +4261,11 @@ Mit dieser Richtlinie wurde das automatische Upgrade für gemischte Inhalte unte
 
       Diese Funktion wird nur innerhalb der internen Netzwerkumgebung von Google unterstützt.</translation>
 <translation id="4269859918103560644">Nutzer kann entscheiden</translation>
+<translation id="4271245613154024710">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche isolierten Web-Apps (IWAs) über die Web Smart Card API eine Verbindung zu Smartcards herstellen können, ohne dass der Nutzer aufgefordert wird, eine Berechtigung zu erteilen. Für diese Richtlinie können keine Platzhalter verwendet werden.
+
+Diese Richtlinie überschreibt „<ph name="POLICY_NAME" />“. In erster Linie bedeutet das, dass der Wert „<ph name="ALL_ISOLATED_WEB_APPS" />“ in der Sperrliste dafür sorgt, dass alle IWAs, die nicht in dieser Richtlinie aufgeführt sind, keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, diese Berechtigung zu erteilen.
+
+Isolierte Web-Apps, in deren Manifest Smartcard-Berechtigungen angegeben sind, können standardmäßig eine Verbindung zu Smartcards herstellen, sofern der Nutzer interaktiv die entsprechende Berechtigung für das jeweilige Lesegerät erteilt.</translation>
 <translation id="4274691295133617461">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Lesezugriff auf Dateien und Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten. Ist sie auf "2" gesetzt, wird der Zugriff verweigert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
@@ -5830,6 +5835,11 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
       </translation>
 <translation id="5448022937220253000">Festlegen, was mit Nutzerdaten geschehen soll, nachdem <ph name="LACROS_NAME" /> deaktiviert wurde</translation>
 <translation id="5449690328792750354">Die Event.path API ist verfügbar.</translation>
+<translation id="5450507908812118425">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche isolierten Web-Apps (IWAs) keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, die entsprechende Berechtigung zu erteilen. Für diese Richtlinie können Platzhalter verwendet werden. Beispielsweise wird durch „<ph name="ALL_ISOLATED_WEB_APPS" />“ der Zugriff für alle IWAs blockiert.
+
+Diese Richtlinie wird von „<ph name="POLICY_NAME" />“ überschrieben. In erster Linie bedeutet das, dass der Wert „<ph name="ALL_ISOLATED_WEB_APPS" />“ in der Sperrliste dafür sorgt, dass alle IWAs, die nicht in „<ph name="POLICY_NAME" />“ aufgeführt sind, keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, diese Berechtigung zu erteilen.
+
+Isolierte Web-Apps, in deren Manifest Smartcard-Berechtigungen angegeben sind, können standardmäßig eine Verbindung zu Smartcards herstellen, sofern der Nutzer interaktiv die entsprechende Berechtigung für das jeweilige Lesegerät erteilt.</translation>
 <translation id="5452024130413254050">Bestimmt, ob VMs, für die diese Konfiguration verwendet wird, Zugriff auf ein vTPM haben. Der Standardwert ist „false“ und „<ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />“, falls nicht konfiguriert.</translation>
 <translation id="5454128917282602937">Wenn ein Nutzer zwischen <ph name="PRODUCT_OS_NAME" />-Geräten wechselt, werden vom Dienst <ph name="PRODUCT_NAME" /> Version 2 die Browser- und App-Fenster vom vorherigen Gerät auf dem neuen Gerät gestartet.
 Wenn die Richtlinie aktiviert ist, werden Browser- und App-Fenster vom zuletzt verwendeten <ph name="PRODUCT_OS_NAME" />-Gerät des aktuellen Nutzers bei der Anmeldung automatisch geöffnet.

@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Inaktivera mörkt tema</translation>
 <translation id="1807246157184219062">Ljust</translation>
 <translation id="1808803439260407870">Klassisk konst</translation>
+<translation id="181434555916624618">Just nu visas inga resultat med personer. Testa en annan prompt.</translation>
 <translation id="1815850098929213707">Tangenten <ph name="KEYS" /> har valts. Tryck på knappen för att redigera kontrollen</translation>
 <translation id="1823120442877418684">Figurer</translation>
 <translation id="1827738518074806965">Konstgalleri</translation>
@@ -769,6 +770,7 @@
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
+<translation id="4750394297954878236">Förslag</translation>
 <translation id="4771607256327216405">öka ljusstyrkan på tangentbordet</translation>
 <translation id="4771923071974529837">i morgon</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
@@ -1295,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Namnserver}other{Namnservrar}}</translation>
 <translation id="7135814714616751706">Sök efter kortkommando</translation>
 <translation id="7138614237884624401">Förenklad text</translation>
+<translation id="7138668887584231801">Inte tillräckligt många ord för att sammanfatta</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>

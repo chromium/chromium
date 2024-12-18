@@ -1141,6 +1141,7 @@
 <translation id="306573536155379004">गेम सुरु भएको छ।</translation>
 <translation id="3067505415088964188">सस्तो मूल्य</translation>
 <translation id="3068118691172921711">तपाईंको फाइल <ph name="CLOUD_PROVIDER" /> मा अपलोड गर्ने प्रक्रिया १ मिनेटमा सुरु हुने छ</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} सामग्री}other{{ITEMS} वटा सामग्री}}</translation>
 <translation id="3076865167425975822">आपरेटिङ सिस्टमहरू</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3082007635241601060">तपाईंका निम्ति उपलब्ध छुटहरू भेट्टाउने प्रयोजनका लागि Google लाई तपाईंका कार्ट प्रयोग गर्ने अनुमति दिनुहोस्</translation>
@@ -2830,6 +2831,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> को वेबपृष्ठ अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="6107012941649240045">लाई जारी गरिएको</translation>
 <translation id="6107924765192360631">लेखनसम्बन्धी सुझावहरू पाउन केही शब्द लेख्नुहोस् वा पहिलो ड्राफ्ट बनाउनुहोस्।</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" /> को तुलना गर्नुहोस्</translation>
 <translation id="6108580855199168381">प्रमाणपत्रसम्बन्धी विवरणहरू</translation>
 <translation id="6108702513636120202">Chromium मा प्रयोग गरिने डिफल्ट सर्च इन्जिन</translation>
 <translation id="6108849843016142864">सरीसृप तथा उभयचरहरू</translation>

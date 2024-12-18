@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Wyłącz ciemny motyw</translation>
 <translation id="1807246157184219062">Jasny</translation>
 <translation id="1808803439260407870">klasycznym</translation>
+<translation id="181434555916624618">Na razie wyniki z ludźmi nie będą wyświetlane. Użyj innego prompta.</translation>
 <translation id="1815850098929213707">Wybrany klawisz to <ph name="KEYS" />. Kliknij przycisk, aby edytować element sterujący</translation>
 <translation id="1823120442877418684">Postacie</translation>
 <translation id="1827738518074806965">Galeria sztuki</translation>
@@ -769,6 +770,7 @@
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4744944742468440486">Informacje związane z zaznaczoną treścią</translation>
+<translation id="4750394297954878236">Sugestie</translation>
 <translation id="4771607256327216405">rozjaśnienie klawiatury</translation>
 <translation id="4771923071974529837">jutro</translation>
 <translation id="4773299976671772492">Zatrzymano</translation>
@@ -1295,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7135814714616751706">Szukaj skrótów</translation>
 <translation id="7138614237884624401">Uproszczony tekst</translation>
+<translation id="7138668887584231801">Za mało słów do podsumowania</translation>
 <translation id="7141470099673912333">Przenoszenie treści</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>

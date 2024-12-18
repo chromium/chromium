@@ -8021,6 +8021,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="672208878794563299">Acest site va întreba din nou data viitoare.</translation>
 <translation id="6722744767592605627">Poți recupera <ph name="EMAIL" />, dar datele locale se vor șterge.</translation>
 <translation id="6723661294526996303">Importați marcajele și setările...</translation>
+<translation id="6723740634201835758">În Contul Google</translation>
 <translation id="6723839827191551955">Controlează conținutul media proiectat</translation>
 <translation id="6723839937902243910">Alimentare</translation>
 <translation id="6725073593266469338">Serviciul IU</translation>
@@ -10189,6 +10190,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8263228331881858381">Cheia de acces a fost salvată</translation>
 <translation id="8263336784344783289">Denumește acest grup</translation>
 <translation id="8264024885325823677">Această setare este gestionată de administrator.</translation>
+<translation id="8265018477030547118">Numai pe acest dispozitiv</translation>
 <translation id="826511437356419340">S-a trecut în modul de prezentare a ferestrei. Glisează pentru a naviga sau apasă tasta Tab dacă folosești tastatura.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Fereastra incognito nu se va deschide după relansare}few{{COUNT} ferestre incognito nu se vor deschide după relansare}other{{COUNT} de ferestre incognito nu se vor deschide după relansare}}</translation>
 <translation id="8266947622852630193">Toate metodele de introducere a textului</translation>

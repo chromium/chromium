@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Синк асаах уу?</translation>
 <translation id="1253032109800629289">"Үнэ мөшгөх мэдэгдэл авах"-ыг нуух</translation>
 <translation id="1258491128795710625">Шинэ юм юу байна</translation>
+<translation id="1259210743048744967">Таны одоо байгаа интернэтээр үзсэн өгөгдөл <ph name="USER_EMAIL" />-с гарсан даруйд боломжтой болно. Үүнийг энэ бүртгэлд хадгалахгүй.</translation>
 <translation id="1262724000444746916">Хавчуургад нэмэхийг нуух</translation>
 <translation id="1263231323834454256">Унших жагсаалт</translation>
 <translation id="1263433075299269530">Таны сүүлийн нээлттэй таб</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Табыг хасаж, бүлгийг устгах уу?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> сонгогдсон</translation>
 <translation id="1709916727352927457">Passkey-г устгах</translation>
+<translation id="1712341189152602203">Одоо байгаа интернэтээр үзсэн өгөгдлийг <ph name="USER_EMAIL" />-д холбоно. Энэ өгөгдлийг танай байгууллагаас үзэх боломжтой байж магадгүй.</translation>
 <translation id="1713777106376424209">Дараахаар хүргэсэн</translation>
 <translation id="1715515772563243997">Та <ph name="SITE" />-д итгэдэг бол нэвтрэхдээ хадгалсан нууц үгээ ашиглах боломжтой.</translation>
 <translation id="1728549374069268714">Буулгаж, очих</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Та нууц үг хадгалсан сайт дээрээ нэвтрэх нууц үг талбарыг товшино уу.</translation>
 <translation id="1872096359983322073">Чийдэн</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Нууц үг, түүх болон энэ төхөөрөмж дээр байгаа интернэтээр үзсэн бусад өгөгдлийг хэрхэхийг сонгоно уу.</translation>
 <translation id="1881621406744213161">Гэр бүлийн гишүүдийг урих</translation>
 <translation id="188237709236611317">Ухаалгаар эрэмбэлэх цэсийн мөр</translation>
 <translation id="1883255238294161206">Нуух жагсаалт</translation>
@@ -512,6 +515,7 @@
 <translation id="3324193307694657476">Хаяг 2</translation>
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
 <translation id="333229797575847124">Энэ онцлогийг хэрхэн идэвхжүүлэх вэ?</translation>
+<translation id="3333566504534692948">Үгүй, өгөгдлийг ажлын орон зай руугаа зөөнө</translation>
 <translation id="3344485292736684439">{count,plural, =1{Хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}other{Хавчуургуудыг таны {email} бүртгэлийн "{title}"-д хадгалсан}}</translation>
 <translation id="334690320928261823">Саяхны табууд</translation>
 <translation id="3348387552617855658">Энэ карт танд илгээмжүүдээ хянасаар байх болон хүргэлтийн талаарх чухал шинэ мэдээнүүдийг өгөхөд тусална.</translation>

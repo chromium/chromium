@@ -2318,6 +2318,7 @@
 <translation id="2606568927909309675">英語の音声と動画の字幕を自動生成します。音声と字幕はデバイス上でローカルに処理されます。</translation>
 <translation id="2606890864830643943">診断データをエクスポートしています</translation>
 <translation id="2607101320794533334">サブジェクトの公開鍵情報</translation>
+<translation id="2608837922830967145">今後このメッセージを表示しない</translation>
 <translation id="2609896558069604090">ショートカットの作成...</translation>
 <translation id="2609980095400624569">接続を確立できませんでした</translation>
 <translation id="2610157865375787051">スリープモードにする</translation>
@@ -8004,6 +8005,7 @@
 <translation id="672208878794563299">次回、このサイトからもう一度許可を求められます。</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> を復元できますが、ローカルデータは削除されます。</translation>
 <translation id="6723661294526996303">ブックマークと設定をインポート...</translation>
+<translation id="6723740634201835758">Google アカウント</translation>
 <translation id="6723839827191551955">キャスト メディアを操作できます</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6725073593266469338">UI サービス</translation>
@@ -10170,6 +10172,7 @@
 <translation id="8263228331881858381">パスキーを保存しました</translation>
 <translation id="8263336784344783289">このグループに名前を付ける</translation>
 <translation id="8264024885325823677">この設定は管理者によって管理されています。</translation>
+<translation id="8265018477030547118">保存先: このデバイスのみ</translation>
 <translation id="826511437356419340">ウィンドウ概観モードに切り替わりました。移動するにはスワイプするか、キーボードの場合は Tab キーを押してください。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{シークレット ウィンドウは、再起動後は自動的には開きません}other{現在開いている {COUNT} 個のシークレット ウィンドウは、再起動後は自動的には開きません}}</translation>
 <translation id="8266947622852630193">すべての入力方法</translation>

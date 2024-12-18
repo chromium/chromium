@@ -8018,6 +8018,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="672208878794563299">Este sitio solicitará acceso la próxima vez.</translation>
 <translation id="6722744767592605627">Puedes recuperar <ph name="EMAIL" />, pero se borrarán los datos locales.</translation>
 <translation id="6723661294526996303">Importar favoritos y configuración...</translation>
+<translation id="6723740634201835758">En tu Cuenta de Google</translation>
 <translation id="6723839827191551955">Controla el contenido multimedia que transmites.</translation>
 <translation id="6723839937902243910">Alimentación</translation>
 <translation id="6725073593266469338">Servicio de IU</translation>
@@ -10186,6 +10187,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8263228331881858381">Se guardó la llave de acceso</translation>
 <translation id="8263336784344783289">Escribe un nombre para este grupo</translation>
 <translation id="8264024885325823677">El administrador controla esta configuración.</translation>
+<translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="826511437356419340">Se activó el modo de vista Recientes. Desliza el dedo para navegar o presiona Tab si usas un teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{No se volverá a abrir la ventana de incógnito después de reiniciar el navegador}other{No se volverán a abrir {COUNT} ventanas de incógnito después de reiniciar el navegador}}</translation>
 <translation id="8266947622852630193">Todos los métodos de entrada</translation>

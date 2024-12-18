@@ -98,6 +98,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added}other{<ph name="MANY_ADDED" /> tabs added}}</translation>
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5339733443032484186">Your last tab</translation>
+<translation id="5380159289133845234">Archive duplicate tabs</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Tab group expanded</translation>
 <translation id="5494920125229734069">Select all</translation>
@@ -117,6 +118,7 @@ If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP"
 <translation id="6051432659151380973">Your tab groups automatically save</translation>
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">You'll immediately lose access to the <ph name="GROUP_NAME" /> tab group</translation>
+<translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6228793724645064692">(store rating)</translation>
 <translation id="6271513594716432922">Close all inactive tabs</translation>

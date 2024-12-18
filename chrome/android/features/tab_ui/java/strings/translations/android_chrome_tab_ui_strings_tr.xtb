@@ -98,6 +98,7 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> sekme eklendi}other{<ph name="MANY_ADDED" /> sekme eklendi}}</translation>
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
 <translation id="5339733443032484186">Son sekmeniz</translation>
+<translation id="5380159289133845234">Kopya sekmeleri arşivle</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
@@ -117,6 +118,7 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="6051432659151380973">Sekme gruplarınız otomatik olarak kaydedilir</translation>
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6082313992897617440"><ph name="GROUP_NAME" /> sekme grubuna erişiminizi anında kaybedersiniz</translation>
+<translation id="6109251075362363230">En son kullanılan kopya hariç tüm kopya sekmeler artık arşivlenecek.</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6271513594716432922">Etkin olmayan tüm sekmeleri kapat</translation>

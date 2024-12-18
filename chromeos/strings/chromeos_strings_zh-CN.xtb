@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">与您所选内容相关的信息</translation>
+<translation id="4750394297954878236">建议</translation>
 <translation id="4771607256327216405">提高键盘亮度</translation>
 <translation id="4771923071974529837">明天</translation>
 <translation id="4773299976671772492">已停止</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
 <translation id="7135814714616751706">搜索快捷键</translation>
 <translation id="7138614237884624401">简化文本</translation>
+<translation id="7138668887584231801">字词太少，无法总结</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>

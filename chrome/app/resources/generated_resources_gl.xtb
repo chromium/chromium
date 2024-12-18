@@ -8020,6 +8020,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="672208878794563299">Este sitio preguntarache de novo a próxima vez que o visites.</translation>
 <translation id="6722744767592605627">Podes recuperar <ph name="EMAIL" />, pero os datos locais eliminaranse.</translation>
 <translation id="6723661294526996303">Importar marcadores e configuración...</translation>
+<translation id="6723740634201835758">Na túa Conta de Google</translation>
 <translation id="6723839827191551955">Controla o contido multimedia que emites</translation>
 <translation id="6723839937902243910">A</translation>
 <translation id="6725073593266469338">Servizo de IU</translation>
@@ -10186,6 +10187,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8263228331881858381">Gardouse a clave de acceso</translation>
 <translation id="8263336784344783289">Ponlle un nome a este grupo</translation>
 <translation id="8264024885325823677">O teu administrador xestiona esta opción de configuración.</translation>
+<translation id="8265018477030547118">Almacenaríase só neste dispositivo</translation>
 <translation id="826511437356419340">Entraches no modo de vista xeral da ventá. Pasa o dedo para navegar ou preme o tabulador no teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{A ventá do modo de incógnito non se abrirá tras o reinicio}other{As {COUNT} ventás do modo de incógnito non se volverán abrir tras o reinicio}}</translation>
 <translation id="8266947622852630193">Todos os métodos de introdución de texto</translation>

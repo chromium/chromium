@@ -2333,6 +2333,7 @@
 <translation id="2606568927909309675">ለእንግሊዝኛ ኦዲዮ እና ቪዲዮ የመግለጫ ጽሑፎችን በራስ-ሰር ይፈጥራል። ኦዲዮ እና መግለጫ ጽሑፎች መሣሪያዎን በጭራሽ አይተዉም።</translation>
 <translation id="2606890864830643943">የምርመራ ውሂብ ወደ ውጭ በመላክ ላይ</translation>
 <translation id="2607101320794533334">የርዕሰ ጉዳዩ ህዝባዊ ቁልፍ መረጃ</translation>
+<translation id="2608837922830967145">ይህን መልዕክት ዳግም አታሳይ</translation>
 <translation id="2609896558069604090">አቋራጮችን ይፍጠሩ...</translation>
 <translation id="2609980095400624569">ግንኙነት መፍጠር አልተቻለም</translation>
 <translation id="2610157865375787051">አንቀላፋ</translation>
@@ -4756,7 +4757,7 @@
 <translation id="4324577459193912240">ፋይል ያልተሟላ ነው</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />ን በማራገፍ ላይ...</translation>
 <translation id="4325433082696797523">ማከማቻ እና ኃይል</translation>
-<translation id="4325515113816851466">ዘግተው ከወጡ በኋላ የወላጅዎ ምርጫዎች ተግባራዊ አይሆኑም።</translation>
+<translation id="4325515113816851466">ዘግተው ከወጡ በኋላ የወላጅዎ ምርጫዎች ተግባራዊ አይሆኑም</translation>
 <translation id="4326146840124313313">የChrome በጣም ጠንካራ ጥበቃ እርስዎን ከአደገኛ ድር ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ለመጠበቅ ተጨማሪ ነገር ያደርጋል</translation>
 <translation id="4327380114687339519">የቅጥያዎች ምናሌ</translation>
 <translation id="4330191372652740264">በረዶ ውሃ</translation>
@@ -8030,6 +8031,7 @@
 <translation id="672208878794563299">ይህ ጣቢያ በሚቀጥለው ጊዜ እንደገና ይጠይቃል።</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" />ን መልሰው ማግኘት ይችላሉ ነገር ግን አካባቢያዊ ውሂብ ይሰረዛል።</translation>
 <translation id="6723661294526996303">ዕልባቶችን እና ቅንብሮችን አስመጣ...</translation>
+<translation id="6723740634201835758">በእርስዎ የGoogle መለያ ውስጥ</translation>
 <translation id="6723839827191551955">እርስዎ cast በማድረግ ላይ ያሉትን ሚዲያ ይቆጣጠሩ</translation>
 <translation id="6723839937902243910">ኃይል</translation>
 <translation id="6725073593266469338">የዩአይ አገልግሎት</translation>
@@ -10203,6 +10205,7 @@ nil</translation>
 <translation id="8263228331881858381">የይለፍ ቁልፍ ተቀምጧል</translation>
 <translation id="8263336784344783289">ይህን ቡድን ይሰይሙ</translation>
 <translation id="8264024885325823677">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
+<translation id="8265018477030547118">በዚህ መሣሪያ ላይ ብቻ</translation>
 <translation id="826511437356419340">የአጠቃላይ ዕይታ ሁኔታ መስኮት ገብቷል። ለመዳሰስ በጣት ይጥረጉ፣ ወይም ቁልፍ ሰሌዳ የሚጠቀሙ ከሆነ tab ይጫኑ።</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{ዳግም ካስጀመሩ በኋላ የእርስዎ ማንነት የማያሳውቅ መስኮት አይከፈትም።}one{ዳግም ካስጀመሩ በኋላ የእርስዎ {COUNT} ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}other{ዳግም ካስጀመሩ በኋላ የእርስዎ {COUNT} ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}}</translation>
 <translation id="8266947622852630193">ሁሉም የግብዓት ዘዴዎች</translation>

@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> өтмөк кошулду}other{<ph name="MANY_ADDED" /> өтмөк кошулду}}</translation>
 <translation id="5161254044473106830">Аталышы керек</translation>
 <translation id="5339733443032484186">Акыркы өтмөгүңүз</translation>
+<translation id="5380159289133845234">Кайталанма өтмөктөрдү архивдөө</translation>
 <translation id="5400836586163650660">Боз</translation>
 <translation id="5490235265819901748">Өтмөктөр тобу жайылып көрсөтүлдү</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Өтмөк топторуңуз автоматтык түрдө сакталат</translation>
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
 <translation id="6082313992897617440"><ph name="GROUP_NAME" /> өтмөктөр тобуна кирүү мүмкүнчүлүгүнөн дароо ажырайсыз</translation>
+<translation id="6109251075362363230">Эми эң акыркы колдонулгандан башка бардык кайталанма өтмөктөр архивделет.</translation>
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
 <translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
 <translation id="6271513594716432922">Жигерсиз өтмөктөрдүн баарын жабуу</translation>

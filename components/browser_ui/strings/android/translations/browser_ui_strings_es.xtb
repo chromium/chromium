@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Conectado a un dispositivo USB</translation>
 <translation id="4194328954146351878">Pregunta antes de permitir que los sitios vean y cambien la información de los dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir Ajustes de ubicación</translation>
+<translation id="4213239715282467974">Ahora Chrome comparte tus pestañas recientes con tu dispositivo. Puedes acceder a ellas rápidamente en la lista de aplicaciones y en los resultados de búsqueda del dispositivo. Desactiva esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan que el dispositivo vibre</translation>
 <translation id="4259722352634471385">Se ha bloqueado la navegación: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Concedido</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Los sitios no pueden solicitarte permiso para usar la información que hayan guardado sobre ti</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(y 1 más)}other{(y # más)}}</translation>
 <translation id="5403592356182871684">Nombres</translation>
+<translation id="5408906274948600065">Permite que Chrome comparta tus pestañas recientes con tu dispositivo para que aparezcan en la lista de aplicaciones y en los resultados de búsqueda del dispositivo. Puedes activar o desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="5438097262470833822">Se restablecerán los permisos de <ph name="WEBSITE" />.</translation>
 <translation id="5459413148890178711">Cuando esta opción está activada, los sitios pueden solicitar permiso para conocer tu ubicación. Si está desactivada, los sitios no pueden ver tu ubicación.</translation>
 <translation id="5489227211564503167">Tiempo transcurrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

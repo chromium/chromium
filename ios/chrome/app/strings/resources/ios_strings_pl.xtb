@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Włączyć synchronizację?</translation>
 <translation id="1253032109800629289">Ukryj moduł „Otrzymuj powiadomienia ze śledzenia cen”</translation>
 <translation id="1258491128795710625">Nowe funkcje</translation>
+<translation id="1259210743048744967">Obecne dane przeglądania będą dostępne po wylogowaniu się z konta <ph name="USER_EMAIL" />. Nie zostaną zapisane na tym koncie.</translation>
 <translation id="1262724000444746916">Ukryj opcję Dodaj do zakładek</translation>
 <translation id="1263231323834454256">Do przeczytania</translation>
 <translation id="1263433075299269530">Ostatnio otwarta karta</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Usunąć kartę i grupę?</translation>
 <translation id="1700629756560807968">Wybrane: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Usuwanie klucza</translation>
+<translation id="1712341189152602203">Obecne dane przeglądania zostaną powiązane z kontem <ph name="USER_EMAIL" />. Te dane mogą być widoczne dla Twojej organizacji.</translation>
 <translation id="1713777106376424209">Firma kurierska:</translation>
 <translation id="1715515772563243997">Jeśli ufasz stronie <ph name="SITE" />, możesz użyć zapisanego hasła, aby się zalogować.</translation>
 <translation id="1728549374069268714">Wklej i otwórz</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Na stronie, na której zapisano hasło, kliknij pole hasła do logowania.</translation>
 <translation id="1872096359983322073">Latarka</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Wybierz, co chcesz zrobić z dotychczasowymi danymi przeglądania na tym urządzeniu, np. z hasłami czy historią.</translation>
 <translation id="1881621406744213161">Zaproś osoby do grupy rodzinnej</translation>
 <translation id="188237709236611317">Pasek menu inteligentnego sortowania</translation>
 <translation id="1883255238294161206">Zwiń listę</translation>
@@ -512,6 +515,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="333229797575847124">Jak włączyć tę funkcję</translation>
+<translation id="3333566504534692948">Nie, przenieś je do profilu służbowego</translation>
 <translation id="3344485292736684439">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}other{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="334690320928261823">Ostatnie karty</translation>
 <translation id="3348387552617855658">Na tej karcie możesz śledzić swoje przesyłki i sprawdzać ważne informacje o ich dostarczaniu.</translation>

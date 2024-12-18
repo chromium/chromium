@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">แท็บสุดท้าย</translation>
 <translation id="5380159289133845234">เก็บแท็บที่ซ้ำกัน</translation>
 <translation id="5400836586163650660">สีเทา</translation>
+<translation id="5446043142172831860">นำแท็บออกและออกจากกลุ่ม</translation>
 <translation id="5490235265819901748">ขยายกลุ่มแท็บแล้ว</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>

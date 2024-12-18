@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Verbonden met een USB-apparaat</translation>
 <translation id="4194328954146351878">Vragen voordat sites informatie op NFC-apparaten mogen zien en wijzigen (aanbevolen)</translation>
 <translation id="4200726100658658164">Locatie-instellingen openen</translation>
+<translation id="4213239715282467974">Chrome deelt nu je recente tabbladen met je apparaat. Je kunt snel toegang tot ze krijgen via de app-lijst en de zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Toegestaan</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Sites kunnen je niet vragen om informatie te gebruiken die ze over jou hebben opgeslagen</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(en nog 1)}other{(en nog #)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
+<translation id="5408906274948600065">Sta toe dat Chrome je recente tabbladen deelt met je apparaat zodat je ze kunt zien in de app-lijst en de zoekresultaten van je apparaat. Je kunt dit altijd aan- of uitzetten in de Chrome-instellingen.</translation>
 <translation id="5438097262470833822">Met deze keuze reset je de rechten voor <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Als deze optie aanstaat, kunnen sites om je locatie vragen. Staat de optie uit, dan kunnen sites je locatie niet zien.</translation>
 <translation id="5489227211564503167">De verstreken tijd is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>

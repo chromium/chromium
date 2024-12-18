@@ -100,6 +100,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="5339733443032484186">Je laatste tabblad</translation>
 <translation id="5380159289133845234">Dubbele tabbladen archiveren</translation>
 <translation id="5400836586163650660">Grijs</translation>
+<translation id="5446043142172831860">Tabblad verwijderen en groep verlaten</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad sluiten, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen sluiten, kleur <ph name="COLOR_NAME" />.}}</translation>

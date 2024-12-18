@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Kveikja á samstillingu?</translation>
 <translation id="1253032109800629289">Fela „Fá tilkynningar fyrir verðrakningu“</translation>
 <translation id="1258491128795710625">Nýjungar</translation>
+<translation id="1259210743048744967">Fyrirliggjandi vefskoðunargögn verða tiltæk þegar þú skráir þig út af <ph name="USER_EMAIL" />. Þau verða ekki vistuð á þessum reikningi.</translation>
 <translation id="1262724000444746916">Fela „Bæta við bókamerki“</translation>
 <translation id="1263231323834454256">Leslisti</translation>
 <translation id="1263433075299269530">Síðasti opni flipi</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Fjarlægja flipa og eyða hópi?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
 <translation id="1709916727352927457">Eyða aðgangslykli</translation>
+<translation id="1712341189152602203">Fyrirliggjandi vefskoðunargögn verða tengd við <ph name="USER_EMAIL" />. Fyrirtækið þitt getur hugsanlega séð gögnin.</translation>
 <translation id="1713777106376424209">Afhendingaraðili:</translation>
 <translation id="1715515772563243997">Ef þú treystir <ph name="SITE" /> geturðu notað vistað aðgangsorð til að skrá þig inn.</translation>
 <translation id="1728549374069268714">Líma og opna</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Ýttu á innskráningarreitinn fyrir aðgangsorð á síðu þar sem þú hefur vistað aðgangsorð.</translation>
 <translation id="1872096359983322073">Ljós</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Veldu hvað þú vilt gera við fyrirliggjandi vefskoðunargögn í tækinu, t.d. aðgangsorð, feril og fleira.</translation>
 <translation id="1881621406744213161">Bjóddu fjölskyldumeðlimum</translation>
 <translation id="188237709236611317">Valmyndarstika snjallflokkunar</translation>
 <translation id="1883255238294161206">Fella saman lista</translation>
@@ -512,6 +515,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3324193307694657476">Heimilisfang 2</translation>
 <translation id="3328801116991980348">Upplýsingar um vefsvæði</translation>
 <translation id="333229797575847124">Hvernig á að virkja þennan eiginleika</translation>
+<translation id="3333566504534692948">Nei, flytja á vinnusvæði</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bókamerki vistað í „{title}“ á reikningnum þínum, {email}}one{Bókamerki vistuð í „{title}“ á reikningnum þínum, {email}}other{Bókamerki vistuð í „{title}“ á reikningnum þínum, {email}}}</translation>
 <translation id="334690320928261823">Nýlegir flipar</translation>
 <translation id="3348387552617855658">Þetta spjald hjálpar þér að fylgjast með pökkunum þínum og færa þér mikilvægar afhendingaruppfærslur.</translation>

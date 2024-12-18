@@ -98,6 +98,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe}}</translation>
 <translation id="5161254044473106830">Isihloko siyadingeka</translation>
 <translation id="5339733443032484186">Ithebhu yakho yokugcina</translation>
+<translation id="5380159289133845234">Faka kungobo yomlando amathebhu ayimpinda</translation>
 <translation id="5400836586163650660">Okumpunga</translation>
 <translation id="5490235265819901748">Iqembu lethebhu linwetshiwe</translation>
 <translation id="5494920125229734069">Khetha konke</translation>
@@ -117,6 +118,7 @@ Uma uhamba, uzolahlekelwa ngokushesha ukufinyelela eqenjini lethebhu elithi "<ph
 <translation id="6051432659151380973">Amaqembu wethebhu yakho alondoloza ngokuzenzekela</translation>
 <translation id="6054741997831917303">Intengo yale nto isanda kwehla kusuka ku-<ph name="PREVIOUS_PRICE" /> ukuya ku-<ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Uzolahlekelwa ukufinyelela ngokushesha iqembu lethebhu ye-<ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Wonke amathebhu ayimpinda nawo azofakwa kungobo yomlando, kuyokwenzeka okuhlukile ngamakhophi asanda kusetshenziswa.</translation>
 <translation id="6193448654517602979">Khetha amathebhu</translation>
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="6271513594716432922">Vala wonke amathebhu angasebenzi</translation>

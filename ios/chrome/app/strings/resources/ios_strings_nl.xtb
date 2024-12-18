@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Synchronisatie aanzetten?</translation>
 <translation id="1253032109800629289">'Meldingen voor prijzen volgen krijgen' verbergen</translation>
 <translation id="1258491128795710625">Wat is er nieuw</translation>
+<translation id="1259210743048744967">Je bestaande browsegegevens zijn beschikbaar als je uitlogt van <ph name="USER_EMAIL" />. Ze worden niet opgeslagen in dit account.</translation>
 <translation id="1262724000444746916">Toevoegen aan bookmarks verbergen</translation>
 <translation id="1263231323834454256">Leeslijst</translation>
 <translation id="1263433075299269530">Je laatst geopende tabblad</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Tabblad verwijderen en groep verwijderen?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> geselecteerd</translation>
 <translation id="1709916727352927457">Toegangscode verwijderen</translation>
+<translation id="1712341189152602203">Bestaande browsegegevens worden gekoppeld aan <ph name="USER_EMAIL" />. Deze gegevens kunnen zichtbaar zijn voor je organisatie.</translation>
 <translation id="1713777106376424209">Bezorgd door</translation>
 <translation id="1715515772563243997">Als je <ph name="SITE" /> vertrouwt, kun je een opgeslagen wachtwoord gebruiken om in te loggen.</translation>
 <translation id="1728549374069268714">Plakken en zoeken</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Tik op een site waar je een wachtwoord hebt opgeslagen op het veld voor het inlogwachtwoord.</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Kies wat je wilt doen met de bestaande browsegegevens op dit apparaat, zoals wachtwoorden en geschiedenis.</translation>
 <translation id="1881621406744213161">Gezinsleden uitnodigen</translation>
 <translation id="188237709236611317">Menubalk slim sorteren</translation>
 <translation id="1883255238294161206">Lijst samenvouwen</translation>
@@ -512,6 +515,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
 <translation id="333229797575847124">Deze functie aanzetten</translation>
+<translation id="3333566504534692948">Nee, deze verplaatsen naar je werkruimte</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark opgeslagen in {title} in je account {email}}other{Bookmarks opgeslagen in {title} in je account {email}}}</translation>
 <translation id="334690320928261823">Recente tabbladen</translation>
 <translation id="3348387552617855658">Met deze kaart kun je bijhouden waar je pakketten zijn en krijg je belangrijke updates over de bezorging.</translation>

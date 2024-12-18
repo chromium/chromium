@@ -1906,6 +1906,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Следећи тастери нису подржани: Tab, Shift, Control, Escape, Caps lock, тастери за јачину звука</translation>
 <translation id="2309620859903500144">Овом сајту је забрањен приступ сензорима за покрет или светло.</translation>
+<translation id="2310414604104802967">Проверава се да ли сте пријављени…</translation>
 <translation id="2310923358723722542">Приказ и увећање</translation>
 <translation id="2312219318583366810">URL странице</translation>
 <translation id="2314165183524574721">Актуелно подешавање видљивости је: Скривено</translation>
@@ -8040,6 +8041,7 @@
 <translation id="672208878794563299">Овај сајт ће вас поново питати следећи пут.</translation>
 <translation id="6722744767592605627">Можете да вратите <ph name="EMAIL" />, али ће локални подаци бити избрисани.</translation>
 <translation id="6723661294526996303">Увези обележиваче и подешавања...</translation>
+<translation id="6723740634201835758">На Google налогу</translation>
 <translation id="6723839827191551955">Контролишите медије које пребацујете</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6725073593266469338">Услуга корисничког интерфејса</translation>
@@ -10213,6 +10215,7 @@
 <translation id="8263228331881858381">Приступни кључ је сачуван</translation>
 <translation id="8263336784344783289">Дајте назив овој групи</translation>
 <translation id="8264024885325823677">Овим подешавањем управља администратор.</translation>
+<translation id="8265018477030547118">Само на овом уређају</translation>
 <translation id="826511437356419340">Ушли сте у режим прегледа прозора. Превуците да бисте се кретали или притисните Tab ако користите тастатуру.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Прозор без архивирања се неће отворити када поново покренете}one{{COUNT} прозор без архивирања се неће отворити када поново покренете}few{{COUNT} прозора без архивирања се неће отворити када поново покренете}other{{COUNT} прозора без архивирања се неће отворити када поново покренете}}</translation>
 <translation id="8266947622852630193">Све методе уноса</translation>
@@ -11280,6 +11283,7 @@
 <translation id="9007688236643268728">Пријави ме поново</translation>
 <translation id="9008201768610948239">Игнориши</translation>
 <translation id="9008201858626224558">Дугме Назад на страници са детаљима <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008425116680857079">Chrome може да промени лозинку када се пријавите.</translation>
 <translation id="9008828754342192581">Претходно сте одабрали да дозволите све додатке на <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Отпремање (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Увезено из Windows-а</translation>

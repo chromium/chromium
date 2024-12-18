@@ -1906,6 +1906,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">მხარდაუჭერელია შემდეგი კლავიშები: Tab, Shift, Control, Escape, Caps lock, ხმის კლავიშები</translation>
 <translation id="2309620859903500144">ამ საიტს აეკრძალა მოძრაობისა თუ განათების სენსორებზე წვდომა.</translation>
+<translation id="2310414604104802967">შეამოწმეთ, რომ შესული ხართ...</translation>
 <translation id="2310923358723722542">ჩვენება და გადიდება</translation>
 <translation id="2312219318583366810">გვერდის URL</translation>
 <translation id="2314165183524574721">ხილვადობის პარამეტრად ამჟამად მითითებულია დამალული</translation>
@@ -8022,6 +8023,7 @@
 <translation id="672208878794563299">ეს საიტი შემდეგში ხელახლა გკითხავთ.</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> შეგიძლიათ აღადგინოთ, თუმცა ადგილობრივი მონაცემები წაიშლება.</translation>
 <translation id="6723661294526996303">სანიშნეების და პარამეტრების იმპორტი…</translation>
+<translation id="6723740634201835758">თქვენს Google ანგარიშში</translation>
 <translation id="6723839827191551955">გააკონტროლეთ მედიაკონტენტი, რომლის ტრანსლიერებასაც ახორციელებთ</translation>
 <translation id="6723839937902243910">ენერგია</translation>
 <translation id="6725073593266469338">UI სერვისი</translation>
@@ -10187,6 +10189,7 @@
 <translation id="8263228331881858381">წვდომის გასაღები შენახულია</translation>
 <translation id="8263336784344783289">დაარქვით სახელი ამ ჯგუფს</translation>
 <translation id="8264024885325823677">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
+<translation id="8265018477030547118">მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="826511437356419340">შესულია ფანჯრების მიმოხილვის რეჟიმში. ნავიგაციისთვის გადაფურცლეთ ან დააჭირეთ Tab-კლავიშს, თუ კლავიატურას იყენებთ.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{ხელახლა გაშვების შემდეგ თქვენი ინკოგნიტო ფანჯარა აღარ გაიხსნება თავიდან}other{ხელახლა გაშვების შემდეგ თქვენი {COUNT} ინკოგნიტო ფანჯარა აღარ გაიხსნება თავიდან}}</translation>
 <translation id="8266947622852630193">შეყვანის ყველა მეთოდი</translation>
@@ -11249,6 +11252,7 @@
 <translation id="9007688236643268728">ხელახლა შ&amp;ესვლა</translation>
 <translation id="9008201768610948239">იგნორირება</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> დეტალების გვერდის უკან დაბრუნების ღილაკი</translation>
+<translation id="9008425116680857079">Chrome-ს შეეძლება თქვენი პაროლის შეცვლა, როცა სისტემაში შეხვალთ.</translation>
 <translation id="9008828754342192581">ადრე აირჩიეთ, დაგეშვათ ყველა გაფართოება <ph name="ORIGIN" />-ზე</translation>
 <translation id="9009369504041480176">ატვირთვა (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009707268312089299">დაიმპორტებულია Windows-იდან</translation>

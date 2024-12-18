@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">¿Activar la sincronización?</translation>
 <translation id="1253032109800629289">Ocultar Recibe notificaciones de seguimiento de precios</translation>
 <translation id="1258491128795710625">Novedades</translation>
+<translation id="1259210743048744967">Tus datos de navegación actuales estarán disponibles cuando cierres la sesión de <ph name="USER_EMAIL" />. No se guardarán en esta cuenta.</translation>
 <translation id="1262724000444746916">Ocultar Añadir a marcadores</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263433075299269530">Tu última pestaña abierta</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">¿Eliminar la pestaña y el grupo?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1709916727352927457">Eliminar llave de acceso</translation>
+<translation id="1712341189152602203">Los datos de navegación actuales se vincularán a <ph name="USER_EMAIL" />. Es posible que tu organización pueda verlos.</translation>
 <translation id="1713777106376424209">Entregado por</translation>
 <translation id="1715515772563243997">Si confías en <ph name="SITE" />, puedes usar una contraseña guardada para iniciar sesión.</translation>
 <translation id="1728549374069268714">Pegar y acceder</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">En un sitio en el que hayas guardado una contraseña, toca el campo de la contraseña de inicio de sesión.</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Elige qué hacer con los datos de navegación que hay en este dispositivo, como contraseñas, el historial y más.</translation>
 <translation id="1881621406744213161">Invita a miembros de la familia</translation>
 <translation id="188237709236611317">Barra de menú con ordenación inteligente</translation>
 <translation id="1883255238294161206">Contraer lista</translation>
@@ -512,6 +515,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="333229797575847124">Cómo habilitar esta función</translation>
+<translation id="3333566504534692948">No, moverlos al espacio de trabajo</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado en {title} de tu cuenta {email}}other{Marcadores guardados en {title} de tu cuenta {email}}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>
 <translation id="3348387552617855658">Esta tarjeta te ayuda a hacer un seguimiento de tus paquetes y te ofrece información importante sobre las entregas.</translation>

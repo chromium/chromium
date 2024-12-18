@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">همگام‌سازی روشن شود؟</translation>
 <translation id="1253032109800629289">پنهان کردن «اعلان‌های دریافت پیگیری قیمت»</translation>
 <translation id="1258491128795710625">ویژگی‌های جدید</translation>
+<translation id="1259210743048744967">داده‌های مرور موجود درصورت خروج از سیستم <ph name="USER_EMAIL" /> باقی خواهد ماند. داده‌ها در این حساب ذخیره نخواهد شد.</translation>
 <translation id="1262724000444746916">پنهان کردن «افزودن به نشانک‌ها»</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1263433075299269530">آخرین برگه باز شما</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">برگه برداشته و گروه حذف شود؟</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> نشانک انتخاب شده است</translation>
 <translation id="1709916727352927457">حذف گذرکلید</translation>
+<translation id="1712341189152602203">داده‌های مرور موجود به <ph name="USER_EMAIL" /> پیوند داده خواهد شد. ممکن است سازمانتان بتواند این داده‌ها را مشاهده کند.</translation>
 <translation id="1713777106376424209">تحویل‌دهنده:</translation>
 <translation id="1715515772563243997">اگر به <ph name="SITE" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای ورود به سیستم استفاده کنید.</translation>
 <translation id="1728549374069268714">جای‌گذاری کردن و رفتن</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">در سایتی که گذرواژه را ذخیره کرده‌اید، روی فیلد گذرواژه ورود به سیستم تک‌ضرب بزنید.</translation>
 <translation id="1872096359983322073">چراغ‌قوه</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">انتخاب کنید چه اقدامی روی داده‌های مرور موجود در این دستگاه، مثل گذرواژه‌ها، سابقه، و موارد دیگر، انجام شود.</translation>
 <translation id="1881621406744213161">دعوت از اعضای خانواده</translation>
 <translation id="188237709236611317">مرتب کردن هوشمند نوار منو</translation>
 <translation id="1883255238294161206">کوچک کردن فهرست</translation>
@@ -512,6 +515,7 @@
 <translation id="3324193307694657476">آدرس ۲</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
 <translation id="333229797575847124">نحوه فعال کردن این ویژگی</translation>
+<translation id="3333566504534692948">نه، به فضای کاری منتقل شود</translation>
 <translation id="3344485292736684439">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{نشانک‌ها در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="334690320928261823">برگه‌های اخیر</translation>
 <translation id="3348387552617855658">این کارت به شما کمک می‌کند بسته‌های پستی را پیگیری کنید و اخبار مهم تحویل را به شما ارائه می‌دهد.</translation>

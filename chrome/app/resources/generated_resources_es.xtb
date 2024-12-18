@@ -2325,6 +2325,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2606568927909309675">Crea subtítulos de forma automática para contenido de audio y vídeo en inglés. El audio y los subtítulos no saldrán de tu dispositivo en ningún momento.</translation>
 <translation id="2606890864830643943">Exportando datos de diagnóstico</translation>
 <translation id="2607101320794533334">Información de clave pública de la entidad receptora</translation>
+<translation id="2608837922830967145">No volver a mostrar este mensaje</translation>
 <translation id="2609896558069604090">Crear accesos directos...</translation>
 <translation id="2609980095400624569">No se ha podido establecer conexión</translation>
 <translation id="2610157865375787051">Suspensión</translation>
@@ -3703,7 +3704,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3607671391978830431">Para un menor</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> quiere verificar que eres tú</translation>
 <translation id="3608460311600621471">Introduce un motivo para imprimir estos datos:</translation>
-<translation id="3608730769702025110">Paso 3 de 4: Revisa la información personal identificable</translation>
+<translation id="3608730769702025110">Paso 3 de 4: Revisa la información de identificación personal</translation>
 <translation id="3609277884604412258">Búsqueda rápida</translation>
 <translation id="3610241585790874201">No tienen permiso para guardar datos en tu dispositivo</translation>
 <translation id="3610369246614755442">El ventilador de la base necesita reparación</translation>
@@ -8019,6 +8020,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="672208878794563299">Este sitio volverá a preguntar la próxima vez.</translation>
 <translation id="6722744767592605627">Puedes recuperar <ph name="EMAIL" />, pero se eliminarán los datos locales.</translation>
 <translation id="6723661294526996303">Importar marcadores y configuración...</translation>
+<translation id="6723740634201835758">De tu cuenta de Google</translation>
 <translation id="6723839827191551955">Controla el contenido multimedia que envías</translation>
 <translation id="6723839937902243910">Encendido</translation>
 <translation id="6725073593266469338">Servicio de UI</translation>
@@ -9971,7 +9973,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8101409298456377967">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Color personalizado</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>
-<translation id="8102139037507939978">Quita la información personal identificable del archivo system_logs.txt.</translation>
+<translation id="8102139037507939978">Quita la información de identificación personal del archivo system_logs.txt.</translation>
 <translation id="810362914482827094">Buscar claves de acceso</translation>
 <translation id="8104088837833760645">Descargar perfil de eSIM</translation>
 <translation id="8105273883928376822">Inicia sesión para continuar.</translation>
@@ -10187,6 +10189,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8263228331881858381">Llave de acceso guardada</translation>
 <translation id="8263336784344783289">Ponle un nombre a este grupo</translation>
 <translation id="8264024885325823677">Este ajuste lo gestiona tu administrador.</translation>
+<translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="826511437356419340">Se ha cambiado al modo de vista general de ventanas. Desliza el dedo para desplazarte o pulsa el tabulador si estás utilizando un teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{1 ventana de Incógnito no se abrirá después de reiniciar}other{{COUNT} ventanas de Incógnito no se volverán a abrir después de reiniciar}}</translation>
 <translation id="8266947622852630193">Todos los métodos de introducción de texto</translation>

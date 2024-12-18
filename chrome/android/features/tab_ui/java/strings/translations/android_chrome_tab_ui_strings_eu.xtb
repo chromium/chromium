@@ -98,6 +98,7 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fitxa gehitu da}other{<ph name="MANY_ADDED" /> fitxa gehitu dira}}</translation>
 <translation id="5161254044473106830">Izena behar da</translation>
 <translation id="5339733443032484186">Azken fitxa</translation>
+<translation id="5380159289133845234">Artxibatu fitxa bikoiztuak</translation>
 <translation id="5400836586163650660">Grisa</translation>
 <translation id="5490235265819901748">Fitxa taldea zabalduta</translation>
 <translation id="5494920125229734069">Hautatu guztiak</translation>
@@ -117,6 +118,7 @@ Irteten bazara, berehala galduko duzu "<ph name="TITLE_OF_GROUP" />" fitxa talde
 <translation id="6051432659151380973">Fitxa taldeak automatikoki gordetzen dira</translation>
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
 <translation id="6082313992897617440">Berehala galduko duzu <ph name="GROUP_NAME" /> fitxa talderako sarbidea</translation>
+<translation id="6109251075362363230">Orain, fitxa bikoiztu guztiak ere artxibatuko dira, erabilitako azken kopia izan ezik.</translation>
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
 <translation id="6271513594716432922">Itxi fitxa inaktibo guztiak</translation>

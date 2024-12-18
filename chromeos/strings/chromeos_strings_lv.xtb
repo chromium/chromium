@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Atspējot tumšo motīvu</translation>
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1808803439260407870">klasiskā māksla</translation>
+<translation id="181434555916624618">Pagaidām netiek rādīti rezultāti, kuros redzamas personas. Izmēģiniet citu uzvedni.</translation>
 <translation id="1815850098929213707">Ir atlasīts taustiņš <ph name="KEYS" />. Lai rediģētu vadīklu, pieskarieties pogai.</translation>
 <translation id="1823120442877418684">Objekti</translation>
 <translation id="1827738518074806965">Mākslas galerija</translation>
@@ -769,6 +770,7 @@
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4744944742468440486">Ar atlasīto saturu saistīta informācija</translation>
+<translation id="4750394297954878236">Ieteikumi</translation>
 <translation id="4771607256327216405">palielināt tastatūras spilgtumu</translation>
 <translation id="4771923071974529837">rīt</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
@@ -1295,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
 <translation id="7135814714616751706">Meklēt īsinājumtaustiņus</translation>
 <translation id="7138614237884624401">Vienkāršots teksts</translation>
+<translation id="7138668887584231801">Tekstā nav pietiekams vārdu skaits, lai apkopotu tā saturu.</translation>
 <translation id="7141470099673912333">Satura pārsūtīšana</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>

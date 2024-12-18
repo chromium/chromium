@@ -1919,6 +1919,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Följande tangenter stöds inte: Tabb, Skift, Ctrl, Escape, Caps Lock, Volym</translation>
 <translation id="2309620859903500144">Den här webbplatsen får inte använda enhetens rörelse- eller ljussensor.</translation>
+<translation id="2310414604104802967">Kontrollerar om du är inloggad …</translation>
 <translation id="2310923358723722542">Skärm och förstoring</translation>
 <translation id="2312219318583366810">Sidans webbadress</translation>
 <translation id="2314165183524574721">Den aktuella synlighetsinställningen är Dold</translation>
@@ -2337,6 +2338,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2606568927909309675">Ljud- och videouppspelning på engelska textas automatiskt. Ljudet och textningen lämnar aldrig enheten.</translation>
 <translation id="2606890864830643943">Exportera diagnostikdata</translation>
 <translation id="2607101320794533334">Information om mottagarens publika nyckel</translation>
+<translation id="2608837922830967145">Visa inte det här meddelandet igen</translation>
 <translation id="2609896558069604090">Skapa genvägar ...</translation>
 <translation id="2609980095400624569">Det gick inte att upprätta anslutningen</translation>
 <translation id="2610157865375787051">Viloläge</translation>
@@ -8034,6 +8036,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="672208878794563299">Frågan visas igen nästa gång du besöker webbplatsen.</translation>
 <translation id="6722744767592605627">Du kan återställa <ph name="EMAIL" />, men lokala uppgifter raderas.</translation>
 <translation id="6723661294526996303">Importera bokmärken och inställningar...</translation>
+<translation id="6723740634201835758">I Google-kontot</translation>
 <translation id="6723839827191551955">Styr den media du castar</translation>
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="6725073593266469338">Gränssnittstjänst</translation>
@@ -10202,6 +10205,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8263228331881858381">Nyckeln har sparats</translation>
 <translation id="8263336784344783289">Namnge den här gruppen</translation>
 <translation id="8264024885325823677">Den här inställningen hanteras av administratören.</translation>
+<translation id="8265018477030547118">Bara på den här enheten</translation>
 <translation id="826511437356419340">Fönsteröversiktsläget har startats. Navigera genom att svepa, eller tryck på tabb om du använder ett tangentbord.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Du har ett inkognitofönster öppet. Det öppnas inte på nytt när programmet startas om}other{Du har {COUNT} inkognitofönster öppna. De öppnas inte på nytt när programmet startas om}}</translation>
 <translation id="8266947622852630193">Alla inmatningsmetoder</translation>
@@ -11264,6 +11268,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9007688236643268728">&amp;Logga in igen</translation>
 <translation id="9008201768610948239">Ignorera</translation>
 <translation id="9008201858626224558">Bakåtknapp på informationssida om <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008425116680857079">Du kan ändra ditt lösenord i Chrome när du har loggat in.</translation>
 <translation id="9008828754342192581">Du har tidigare valt att ge alla tillägg behörighet på <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Överför (<ph name="PROGRESS_PERCENT" /> %)...</translation>
 <translation id="9009707268312089299">Importerade från Windows</translation>

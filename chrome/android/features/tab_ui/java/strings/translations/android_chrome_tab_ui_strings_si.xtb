@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />ක් පටිත්තක් එක් කර ඇත}one{පටිති <ph name="MANY_ADDED" />ක් එක් කර ඇත}other{පටිති <ph name="MANY_ADDED" />ක් එක් කර ඇත}}</translation>
 <translation id="5161254044473106830">මාතෘකාව අවශ්‍යයි</translation>
 <translation id="5339733443032484186">ඔබේ අවසන් පටිත්ත</translation>
+<translation id="5380159289133845234">අනුපත් පටිති ලේඛනාරක්ෂණය කරන්න</translation>
 <translation id="5400836586163650660">අළු</translation>
 <translation id="5490235265819901748">ටැබ සමූහය දිග හරින ලදි</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">ඔබේ පටිති සමූහ ස්වයංක්‍රීයව සුරකියි</translation>
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
 <translation id="6082313992897617440">ඔබට වහාම <ph name="GROUP_NAME" /> පටිති සමූහයට ප්‍රවේශය අහිමි වනු ඇත</translation>
+<translation id="6109251075362363230">මෑතක දී භාවිතා කළ පිටපත ව්‍යතිරේකය හැර, සියලු ම අනුපත් පටිති දැන් ලේඛනාරක්ෂණය කරනු ලැබේ.</translation>
 <translation id="6193448654517602979">පටිති තෝරන්න</translation>
 <translation id="6228793724645064692">(වෙළඳසැල් ඇගයීම)</translation>
 <translation id="6271513594716432922">සියලුම අක්‍රිය පටිති වසන්න</translation>

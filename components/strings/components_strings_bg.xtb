@@ -1141,6 +1141,7 @@
 <translation id="306573536155379004">Играта е стартирана.</translation>
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3068118691172921711">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след 1 минута</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} елемент}other{{ITEMS} елемента}}</translation>
 <translation id="3076865167425975822">Операционни системи</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3082007635241601060">Позволете на Google да използва кошниците ви, за да намира персонализирани отстъпки, когато са налични</translation>
@@ -2832,6 +2833,7 @@
 <translation id="6106989379647458772">Уеб страницата на адрес <ph name="PAGE" /> може временно да не е налице или да е била преместена на нов уеб адрес.</translation>
 <translation id="6107012941649240045">Издаден на</translation>
 <translation id="6107924765192360631">За да получите предложения за писане, трябва само да започнете с няколко думи или първоначална чернова.</translation>
+<translation id="6108508372809181847">Сравняване на <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Подробности за сертификата</translation>
 <translation id="6108702513636120202">Вашата търсеща машина в Chromium</translation>
 <translation id="6108849843016142864">Влечуги и земноводни</translation>

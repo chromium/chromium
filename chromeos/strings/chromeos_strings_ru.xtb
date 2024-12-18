@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
+<translation id="4750394297954878236">Предложения</translation>
 <translation id="4771607256327216405">клавиатура сделать ярче</translation>
 <translation id="4771923071974529837">завтра</translation>
 <translation id="4773299976671772492">Остановлено</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
 <translation id="7135814714616751706">Быстрые клавиши для поиска</translation>
 <translation id="7138614237884624401">Упрощенный текст</translation>
+<translation id="7138668887584231801">Для краткого пересказа выбрано недостаточно слов</translation>
 <translation id="7141470099673912333">Перенос контента</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>

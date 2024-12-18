@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">同期を ON にしますか？</translation>
 <translation id="1253032109800629289">[価格トラッキングの通知を受け取る] を表示しない</translation>
 <translation id="1258491128795710625">最新情報</translation>
+<translation id="1259210743048744967">既存の閲覧データは、<ph name="USER_EMAIL" /> からログアウトすると利用できるようになります。このアカウントには保存されません。</translation>
 <translation id="1262724000444746916">[ブックマークに追加] を非表示</translation>
 <translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1263433075299269530">最後に開いたタブ</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">タブとグループを削除しますか？</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件選択しました</translation>
 <translation id="1709916727352927457">パスキーの削除</translation>
+<translation id="1712341189152602203">既存の閲覧データは <ph name="USER_EMAIL" /> にリンクされます。このデータは組織によって閲覧される可能性があります。</translation>
 <translation id="1713777106376424209">配送会社:</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> を信頼できる場合は、保存済みのパスワードを使用してログインできます。</translation>
 <translation id="1728549374069268714">貼り付けて移動</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">パスワードを保存したサイトで、ログイン用パスワードの欄をタップします。</translation>
 <translation id="1872096359983322073">照明</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
+<translation id="1879793121657209834">このデバイスの既存の閲覧データ（パスワードや履歴など）の処理方法を選択してください。</translation>
 <translation id="1881621406744213161">ファミリー メンバーの招待</translation>
 <translation id="188237709236611317">スマートソート メニューバー</translation>
 <translation id="1883255238294161206">リストを折りたたむ</translation>
@@ -512,6 +515,7 @@
 <translation id="3324193307694657476">住所2行目</translation>
 <translation id="3328801116991980348">サイト情報</translation>
 <translation id="333229797575847124">この機能を有効にする方法</translation>
+<translation id="3333566504534692948">いいえ、ワークスペースに移動します</translation>
 <translation id="3344485292736684439">{count,plural, =1{ブックマークをアカウント（{email}）の「{title}」に保存しました}other{ブックマークをアカウント（{email}）の「{title}」に保存しました}}</translation>
 <translation id="334690320928261823">最近使ったタブ</translation>
 <translation id="3348387552617855658">このカードでは、荷物を追跡して配送に関する重要な最新情報を入手できます。</translation>

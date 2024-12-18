@@ -2312,6 +2312,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2606568927909309675">Automatycznie tworzy napisy dla dźwięku i wideo w języku angielskim. Dźwięk ani napisy nie są wysyłane poza urządzenie.</translation>
 <translation id="2606890864830643943">Eksportuję dane diagnostyczne</translation>
 <translation id="2607101320794533334">Informacje o kluczu publicznym podmiotu</translation>
+<translation id="2608837922830967145">Nie pokazuj więcej tej wiadomości</translation>
 <translation id="2609896558069604090">Utwórz skróty...</translation>
 <translation id="2609980095400624569">Nie udało się nawiązać połączenia</translation>
 <translation id="2610157865375787051">Uśpienie</translation>
@@ -8006,6 +8007,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="672208878794563299">Następnym razem ta strona znów o to poprosi.</translation>
 <translation id="6722744767592605627">Możesz przywrócić konto <ph name="EMAIL" />, ale dane lokalne zostaną usunięte.</translation>
 <translation id="6723661294526996303">Importuj zakładki i ustawienia...</translation>
+<translation id="6723740634201835758">Na Twoim koncie Google</translation>
 <translation id="6723839827191551955">Steruj multimediami, które przesyłasz</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="6725073593266469338">Usługa UI</translation>
@@ -10171,6 +10173,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8263228331881858381">Klucz dostępu został zapisany</translation>
 <translation id="8263336784344783289">Nazwij grupę</translation>
 <translation id="8264024885325823677">Tym ustawieniem zarządza Twój administrator.</translation>
+<translation id="8265018477030547118">Tylko na tym urządzeniu</translation>
 <translation id="826511437356419340">Jesteś w trybie przeglądu okien. Aby przechodzić między nimi, przesuwaj je palcem lub naciskaj Tab (jeśli używasz klawiatury).</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Okno incognito nie otworzy się po ponownym uruchomieniu przeglądarki}few{{COUNT} okna incognito nie otworzą się po ponownym uruchomieniu przeglądarki}many{{COUNT} okien incognito nie otworzy się po ponownym uruchomieniu przeglądarki}other{{COUNT} okna incognito nie otworzy się po ponownym uruchomieniu przeglądarki}}</translation>
 <translation id="8266947622852630193">Wszystkie metody wprowadzania</translation>

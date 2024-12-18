@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">USB デバイスに接続されています</translation>
 <translation id="4194328954146351878">サイトが NFC デバイスの情報を参照および変更することを許可する前に確認する（推奨）</translation>
 <translation id="4200726100658658164">位置情報の設定を開く</translation>
+<translation id="4213239715282467974">Chrome で最近使ったタブがデバイスと共有され、デバイスのアプリリストや検索結果からすばやくアクセスできるようになりました。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="4226663524361240545">通知を受け取るとデバイスが振動します</translation>
 <translation id="4259722352634471385"><ph name="URL" /> へのアクセスがブロックされました</translation>
 <translation id="4278390842282768270">許可されています</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">保存したあなたに関する情報の使用をサイトが求めることをブロックする</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
 <translation id="5403592356182871684">名前</translation>
+<translation id="5408906274948600065">Chrome で最近使ったタブをデバイスと共有して、デバイスのアプリリストや検索結果に表示できます。この機能は Chrome の設定でいつでもオンまたはオフにできます。</translation>
 <translation id="5438097262470833822">これを選択すると、<ph name="WEBSITE" /> の権限がリセットされます</translation>
 <translation id="5459413148890178711">オンにすると、サイトは位置情報を要求できます。オフにすると、サイトは位置情報を参照できません。</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> のうち <ph name="ELAPSED_TIME" /> 経過しました。</translation>

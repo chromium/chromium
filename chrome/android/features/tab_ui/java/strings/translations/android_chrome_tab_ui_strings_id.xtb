@@ -100,6 +100,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="5339733443032484186">Tab terakhir Anda</translation>
 <translation id="5380159289133845234">Arsipkan tab duplikat</translation>
 <translation id="5400836586163650660">Grey</translation>
+<translation id="5446043142172831860">Hapus tab dan keluar dari grup</translation>
 <translation id="5490235265819901748">Grup tab diperluas</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tutup grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>

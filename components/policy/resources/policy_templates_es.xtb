@@ -4270,6 +4270,11 @@ Esta política se usaba para inhabilitar la actualización automática de conten
 
       Ten en cuenta que esta función solo es compatible dentro del entorno de red de Google.</translation>
 <translation id="4269859918103560644">Permitir que el usuario decida</translation>
+<translation id="4271245613154024710">Si se define esta política, se especificará qué aplicaciones web aisladas (IWAs) pueden conectarse a tarjetas inteligentes mediante la API Web Smart Card sin pedir permiso al usuario. Esta política no acepta comodines.
+
+Esta política anula la política <ph name="POLICY_NAME" />. En concreto, si se asigna el valor <ph name="ALL_ISOLATED_WEB_APPS" /> a la lista de bloqueados, significa que las IWAs no podrán conectarse a lectores de tarjetas inteligentes (ni siquiera se solicitará permiso a los usuarios) excepto las que se indiquen en esta política.
+
+De forma predeterminada, las IWAs que especifican permisos de tarjetas inteligentes en su archivo de manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario conceda el permiso de forma interactiva por lector.</translation>
 <translation id="4274691295133617461">Si se asigna el valor "3" a esta política, los sitios web podrán solicitar acceso de lectura a los archivos y directorios del sistema de archivos del sistema operativo del host a través de la API File System. Si se le asigna el valor "2", se denegará el acceso.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
@@ -5855,6 +5860,11 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite est
       </translation>
 <translation id="5448022937220253000">Elige qué ocurrirá con los datos de usuario después de que se inhabilite <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API Event.path estará disponible.</translation>
+<translation id="5450507908812118425">Si se define esta política, se especificará qué aplicaciones web aisladas (IWAs) no podrán conectarse a lectores de tarjetas inteligentes (ni siquiera se pedirá permiso a los usuarios). Esta política acepta comodines. Por ejemplo, <ph name="ALL_ISOLATED_WEB_APPS" /> bloqueará el acceso a todas las IWAs.
+
+Esta política se anula con <ph name="POLICY_NAME" />. En concreto, si se le asigna el valor <ph name="ALL_ISOLATED_WEB_APPS" /> a la lista de bloqueados, significa que las IWAs no podrán conectarse a los lectores de tarjetas inteligentes (ni siquiera se pedirá permiso a los usuarios) excepto las que se indiquen en <ph name="POLICY_NAME" />.
+
+De forma predeterminada, las IWAs que especifican permisos de tarjetas inteligentes en su archivo de manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario conceda el permiso de forma interactiva por lector.</translation>
 <translation id="5452024130413254050">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es false y, si no se establece, es <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />.</translation>
 <translation id="5454128917282602937">Cuando un usuario cambie de un dispositivo <ph name="PRODUCT_OS_NAME" /> a otro, la versión 2 del servicio <ph name="PRODUCT_NAME" /> abrirá las ventanas de navegador y de aplicaciones del dispositivo anterior en el nuevo.
 Si se habilita esta política, se abrirán las ventanas de navegador y de aplicaciones del último dispositivo <ph name="PRODUCT_OS_NAME" /> utilizado por el usuario actual automáticamente al iniciar sesión.

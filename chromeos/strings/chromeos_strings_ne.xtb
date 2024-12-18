@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">अँध्यारो थिम अफ गर्नुहोस्</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1808803439260407870">क्लासिक आर्ट</translation>
+<translation id="181434555916624618">अहिलेका लागि मान्छेहरूसहितका परिणामहरू देखाइने छैनन्। अर्कै प्रम्प्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="1815850098929213707">चयन गरिएको की <ph name="KEYS" /> हो। कन्ट्रोल सम्पादन गर्न बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="1823120442877418684">वर्णहरू</translation>
 <translation id="1827738518074806965">आर्ट ग्यालेरी</translation>
@@ -769,6 +770,7 @@
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4744944742468440486">तपाईंले चयन गर्नुभएको पाठसम्बन्धी जानकारी</translation>
+<translation id="4750394297954878236">सुझावहरू</translation>
 <translation id="4771607256327216405">किबोर्डको ब्याकलाइटको चमक बढाउनुहोस्</translation>
 <translation id="4771923071974529837">भोलि</translation>
 <translation id="4773299976671772492">रोकियो</translation>
@@ -1295,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्भर}other{नेम सेभरहरू}}</translation>
 <translation id="7135814714616751706">सर्टकटहरू खोज्नुहोस्</translation>
 <translation id="7138614237884624401">सरलीकृत टेक्स्ट</translation>
+<translation id="7138668887584231801">अत्यन्तै थोरै शब्द भएकाले सारांश बनाउन मिल्दैन</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>

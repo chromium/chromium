@@ -1141,6 +1141,7 @@
 <translation id="306573536155379004">Το παιχνίδι ξεκίνησε.</translation>
 <translation id="3067505415088964188">Η τιμή είναι χαμηλή</translation>
 <translation id="3068118691172921711">Η μεταφόρτωση του αρχείου σας στο <ph name="CLOUD_PROVIDER" /> θα ξεκινήσει σε 1 λεπτό</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} στοιχείο}other{{ITEMS} στοιχεία}}</translation>
 <translation id="3076865167425975822">Λειτουργικά συστήματα</translation>
 <translation id="3080254622891793721">Γραφικά</translation>
 <translation id="3082007635241601060">Να επιτρέπεται στην Google να χρησιμοποιεί τα καλάθια σας για να βρίσκει εξατομικευμένες εκπτώσεις όταν είναι διαθέσιμες</translation>
@@ -2834,6 +2835,7 @@
 <translation id="6106989379647458772">Η ιστοσελίδα στη διεύθυνση <ph name="PAGE" /> μπορεί να βρίσκεται προσωρινά εκτός λειτουργίας ή ίσως έχει μεταφερθεί μόνιμα σε μια νέα διεύθυνση ιστού.</translation>
 <translation id="6107012941649240045">Εκδόθηκε σε</translation>
 <translation id="6107924765192360631">Απλώς ξεκινήστε με μερικές λέξεις ή με ένα πρώτο πρόχειρο, για να λάβετε προτάσεις γραφής.</translation>
+<translation id="6108508372809181847">Σύγκριση <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Λεπτομέρειες πιστοποιητικού</translation>
 <translation id="6108702513636120202">Η μηχανή αναζήτησής σας στο Chromium</translation>
 <translation id="6108849843016142864">Ερπετά και αμφίβια</translation>

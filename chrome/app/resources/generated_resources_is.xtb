@@ -2338,6 +2338,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2606568927909309675">Býr sjálfkrafa til skjátexta fyrir hljóð- og myndefni á ensku. Hljóð og skjátextar fara aldrei úr tækinu.</translation>
 <translation id="2606890864830643943">Greiningargögn flutt út</translation>
 <translation id="2607101320794533334">Upplýsingar opinbers lykils viðfangs</translation>
+<translation id="2608837922830967145">Ekki sýna þessi skilaboð aftur</translation>
 <translation id="2609896558069604090">Búa til flýtileiðir...</translation>
 <translation id="2609980095400624569">Tenging mistókst</translation>
 <translation id="2610157865375787051">Hvíld</translation>
@@ -8037,6 +8038,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="672208878794563299">Þetta vefsvæði mun spyrja aftur næst.</translation>
 <translation id="6722744767592605627">Þú getur endurheimt <ph name="EMAIL" /> en staðbundnum gögnum verður eytt.</translation>
 <translation id="6723661294526996303">Flytja inn bókamerki og stillingar...</translation>
+<translation id="6723740634201835758">Á Google reikningnum þínum</translation>
 <translation id="6723839827191551955">Stjórnaðu efninu sem þú sendir út</translation>
 <translation id="6723839937902243910">Orka</translation>
 <translation id="6725073593266469338">Notendaviðmótsþjónusta</translation>
@@ -10203,6 +10205,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8263228331881858381">Aðgangslykill vistaður</translation>
 <translation id="8263336784344783289">Nefna hóp</translation>
 <translation id="8264024885325823677">Kerfisstjórinn þinn stjórnar þessari stillingu.</translation>
+<translation id="8265018477030547118">Aðeins í þessu tæki</translation>
 <translation id="826511437356419340">Gluggayfirlitsstilling opnuð. Strjúktu til að fletta eða ýttu á dálkalykilinn ef þú notar lyklaborð.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Huliðsgluggi opnast ekki eftir endurræsingu}one{{COUNT} huliðsgluggi opnast ekki eftir endurræsingu}other{{COUNT} huliðsgluggar opnast ekki eftir endurræsingu}}</translation>
 <translation id="8266947622852630193">Allar innsláttaraðferðir</translation>

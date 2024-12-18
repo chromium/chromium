@@ -1915,6 +1915,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Следните клавиши не се поддържат: Tab, Shift, Control, Escape, Caps lock, клавишите за силата на звука</translation>
 <translation id="2309620859903500144">Достъпът на този сайт до сензорите ви за движение или светлина е блокиран.</translation>
+<translation id="2310414604104802967">Проверява се дали сте влезли в профила си...</translation>
 <translation id="2310923358723722542">Екран и увеличение</translation>
 <translation id="2312219318583366810">URL адрес на страницата</translation>
 <translation id="2314165183524574721">Текущата настройка за видимост е „Скрито“</translation>
@@ -2333,6 +2334,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2606568927909309675">Автоматично създава надписи за аудио- и видеосъдържание на английски. Аудиозаписите и надписите остават на устройството ви.</translation>
 <translation id="2606890864830643943">Диагностичните данни се експортират</translation>
 <translation id="2607101320794533334">Информация за публичен ключ на субект</translation>
+<translation id="2608837922830967145">Това съобщение да не се показва отново</translation>
 <translation id="2609896558069604090">Създаване на преки пътища...</translation>
 <translation id="2609980095400624569">Не бе установена връзка</translation>
 <translation id="2610157865375787051">Спящ режим</translation>
@@ -8032,6 +8034,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="672208878794563299">Този сайт ще изведе запитване отново следващия път.</translation>
 <translation id="6722744767592605627">Можете да възстановите <ph name="EMAIL" />, но локалните данни ще бъдат изтрити.</translation>
 <translation id="6723661294526996303">Импортиране на отметки и настройки...</translation>
+<translation id="6723740634201835758">В профила ви в Google</translation>
 <translation id="6723839827191551955">Контролирайте предаваната от вас мултимедия</translation>
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="6725073593266469338">Услуга за управление на ПИ</translation>
@@ -10200,6 +10203,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8263228331881858381">Ключът за достъп е запазен</translation>
 <translation id="8263336784344783289">Наименувайте тази група</translation>
 <translation id="8264024885325823677">Тази настройка се управлява от администратора ви.</translation>
+<translation id="8265018477030547118">Само на това устройство</translation>
 <translation id="826511437356419340">Влязохте в режим на общ преглед на прозорците. Навигирайте с прекарване на пръст или натиснете клавиша Tab, ако използвате клавиатура.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Прозорецът ви в режим „инкогнито“ няма да бъде отворен след рестартиране}other{Вашите {COUNT} прозореца в режим „инкогнито“ няма да бъдат отворени след рестартиране}}</translation>
 <translation id="8266947622852630193">Всички методи на въвеждане</translation>
@@ -11262,6 +11266,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9007688236643268728">&amp;Вход отново</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9008201858626224558">Бутон за връщане назад на страницата с подробности за <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008425116680857079">Chrome може да промени паролата ви, след като влезете в профила си.</translation>
 <translation id="9008828754342192581">По-рано избрахте да разрешите всички разширения на <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Качва се... (<ph name="PROGRESS_PERCENT" />%)</translation>
 <translation id="9009707268312089299">Импортирани от Windows</translation>

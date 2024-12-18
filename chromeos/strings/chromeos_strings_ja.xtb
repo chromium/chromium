@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>
+<translation id="4750394297954878236">候補</translation>
 <translation id="4771607256327216405">キーボードを明るく</translation>
 <translation id="4771923071974529837">明日</translation>
 <translation id="4773299976671772492">停止しました</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7135814714616751706">ショートカットの検索</translation>
 <translation id="7138614237884624401">簡略化したテキスト</translation>
+<translation id="7138668887584231801">単語数が十分でないため要約できません</translation>
 <translation id="7141470099673912333">コンテンツ転送</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>

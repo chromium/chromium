@@ -4252,6 +4252,11 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 
       Deze functie wordt alleen ondersteund binnen de interne netwerkomgeving van Google.</translation>
 <translation id="4269859918103560644">Toestaan dat gebruikers dit bepalen</translation>
+<translation id="4271245613154024710">Als je het beleid instelt, geef je aan welke geïsoleerde web-apps (GWA's) verbinding kunnen maken met smartcards via de Web Smart Card API zonder dat de gebruiker om toestemming wordt gevraagd. Dit beleid accepteert geen jokertekens.
+
+Dit beleid overschrijft <ph name="POLICY_NAME" />. Een blokkeerlijstwaarde van <ph name="ALL_ISOLATED_WEB_APPS" /> betekent bijvoorbeeld dat alle GWA's geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming), behalve de lezers die zijn vermeld in dit beleid.
+
+GWA's die smartcardrechten aangeven in hun manifest, kunnen standaard verbinding maken met smartcards, op voorwaarde dat de gebruiker de rechten interactief per lezer verleent.</translation>
 <translation id="4274691295133617461">Als je het beleid instelt op 3, kunnen websites leestoegang vragen tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API. Als je het beleid instelt op 2, wordt toegang geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
@@ -5796,6 +5801,11 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
       </translation>
 <translation id="5448022937220253000">Kies wat er gebeurt met gebruikersgegevens nadat <ph name="LACROS_NAME" /> is uitgezet</translation>
 <translation id="5449690328792750354">Event.path API komt beschikbaar.</translation>
+<translation id="5450507908812118425">Als je het beleid instelt, geef je aan welke geïsoleerde web-apps (GWA's) geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming). Dit beleid accepteert jokertekens. <ph name="ALL_ISOLATED_WEB_APPS" /> blokkeert bijvoorbeeld de toegang voor alle GWA's.
+
+Dit beleid wordt overschreven door <ph name="POLICY_NAME" />. Een blokkeerlijstwaarde van <ph name="ALL_ISOLATED_WEB_APPS" /> betekent bijvoorbeeld dat alle GWA's geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming), behalve de lezers die zijn vermeld in <ph name="POLICY_NAME" />.
+
+GWA's die smartcardrechten aangeven in hun manifest, kunnen standaard verbinding maken met smartcards, op voorwaarde dat de gebruiker de rechten interactief per lezer verleent.</translation>
 <translation id="5452024130413254050">Bepaalt of VM's die deze configuratie gebruiken toegang hebben tot een vTPM. Dit beleid wordt standaard ingesteld op False en <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> als het niet is ingesteld.</translation>
 <translation id="5454128917282602937">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, start de <ph name="PRODUCT_NAME" /> V2-service de browser- en app-vensters van het vorige apparaat op het nieuwe apparaat.
 Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser- en app-vensters geopend van het <ph name="PRODUCT_OS_NAME" />-apparaat dat de huidige gebruiker het laatst heeft gebruikt.

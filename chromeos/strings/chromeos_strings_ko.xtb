@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>
+<translation id="4750394297954878236">추천</translation>
 <translation id="4771607256327216405">키보드 밝게</translation>
 <translation id="4771923071974529837">내일</translation>
 <translation id="4773299976671772492">중지됨</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{네임서버}other{네임서버}}</translation>
 <translation id="7135814714616751706">바로가기 검색</translation>
 <translation id="7138614237884624401">간략한 텍스트</translation>
+<translation id="7138668887584231801">단어가 너무 적어 요약할 수 없음</translation>
 <translation id="7141470099673912333">콘텐츠 전송</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>

@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">마지막 탭</translation>
 <translation id="5380159289133845234">중복 탭 보관처리</translation>
 <translation id="5400836586163650660">그레이</translation>
+<translation id="5446043142172831860">탭 삭제 및 그룹 나가기</translation>
 <translation id="5490235265819901748">탭 그룹 펼침</translation>
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 닫습니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 닫습니다.}}</translation>

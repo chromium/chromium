@@ -1142,6 +1142,7 @@
 <translation id="306573536155379004">Гульня пачалася.</translation>
 <translation id="3067505415088964188">Нізкая цана</translation>
 <translation id="3068118691172921711">Запампоўванне файлаў у <ph name="CLOUD_PROVIDER" /> пачнецца праз 1 хвіліну</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} элемент}one{{ITEMS} элемент}few{{ITEMS} элементы}many{{ITEMS} элементаў}other{{ITEMS} элемента}}</translation>
 <translation id="3076865167425975822">Аперацыйныя сістэмы</translation>
 <translation id="3080254622891793721">Графіка</translation>
 <translation id="3082007635241601060">Дайце Google доступ да вашых кошыкаў, каб вам паказваліся персаналізаваныя скідкі пры іх з’яўленні</translation>
@@ -2831,6 +2832,7 @@
 <translation id="6106989379647458772">Магчыма, вэб-старонка па адрасе <ph name="PAGE" /> часова недаступная або была перамешчана на новы вэб-адрас.</translation>
 <translation id="6107012941649240045">Каму выдадзена</translation>
 <translation id="6107924765192360631">Каб пабачыць прапановы напісання, увядзіце некалькі слоў або стварыце першую версію чарнавіка.</translation>
+<translation id="6108508372809181847">Параўнаць: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Падрабязныя звесткі пра сертыфікат</translation>
 <translation id="6108702513636120202">Пошукавая сістэма ў Chromium</translation>
 <translation id="6108849843016142864">Рэптыліі і земнаводныя</translation>

@@ -317,7 +317,7 @@
 <translation id="2348630484974447747">الطرد</translation>
 <translation id="2351097562818989364">تم إعادة ضبط إعداداتك للترجمة.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏يمكنك حفظ كلمة المرور الخاصة بنطاق {DOMAIN_ONE} في حسابك على Google ({EMAIL}).}=2{‏يمكنك حفظ كلمتَي المرور الخاصتين بالنطاقين {DOMAIN_ONE} و{DOMAIN_TWO} في حسابك على Google ({EMAIL}).}=3{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}zero{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}few{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقات أخرى في حسابك على Google ({EMAIL}).}many{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقًا آخر في حسابك على Google ({EMAIL}).}other{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}}</translation>
-<translation id="2353953000228441783">طريقة العرض التلقائية للمواقع الإلكترونية</translation>
+<translation id="2353953000228441783">العرض التلقائي للمواقع الإلكترونية</translation>
 <translation id="235789365079050412">‏سياسة خصوصية Google</translation>
 <translation id="2359043044084662842">الترجمة</translation>
 <translation id="2359808026110333948">متابعة</translation>
@@ -342,7 +342,7 @@
 <translation id="2461070143328828326">إعدادات كلمات المرور</translation>
 <translation id="2462736546165239215">يمكنك العثور على سجلّ التصفُّح كاملاً هنا.</translation>
 <translation id="2466518891828668184">يمكنك حفظ كلمات المرور لتسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات.</translation>
-<translation id="2468132863574325555">‏تنزيل إلى Drive</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">متصفّحك يبدو آمنًا</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
@@ -1211,7 +1211,7 @@
 <translation id="6449554712554071184">سيؤدي هذا الإجراء إلى حذف المجموعة نهائيًا من جهازك.</translation>
 <translation id="6459307836338400162">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على كلٍّ من <ph name="BEGIN_LINK" />المزامنة<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">تم إخفاء التفاصيل.</translation>
-<translation id="646394917185284261">‏تنزيل إلى Files</translation>
+<translation id="646394917185284261">‏الملفات (Files)</translation>
 <translation id="6464397691496239022">يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط لتحسين تجربة التصفُّح، مثل إبقائك مُسجِّلاً الدخول أو تذكُّر عناصر في سلة التسوق.
 
 لن يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفّح على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً.</translation>
@@ -1658,7 +1658,7 @@
 <translation id="8428045167754449968">المدينة/البلدة</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428634594422941299">حسنًا</translation>
-<translation id="8430694217306051839">اختَر مكانًا لحفظ "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />).</translation>
+<translation id="8430694217306051839">يُرجى اختيار مكان لحفظ "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="8438566539970814960">تحسين عمليات البحث والتصفُّح</translation>
 <translation id="8439758443371991593">إخفاء خيار "الإضافة إلى قائمة القراءة"</translation>
 <translation id="8449869326050867919">تمت مشاركة كلمة المرور</translation>
@@ -1673,7 +1673,7 @@
 <translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">تعذّر إنشاء الرابط</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
-<translation id="8505361906966222822">حفظ في…</translation>
+<translation id="8505361906966222822">الحفظ في…</translation>
 <translation id="850600235656508448">الفتح في وضع التصفح المتخفي</translation>
 <translation id="8511141513131731477">الانتقال إلى علامة التبويب الأولى</translation>
 <translation id="852075982791215701">الانتقال إلى علامة التبويب الأخيرة</translation>

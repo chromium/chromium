@@ -4449,6 +4449,11 @@ Kebijakan ini digunakan untuk menonaktifkan upgrade otomatis konten campuran di 
 
       Perhatikan bahwa fitur ini hanya didukung di dalam lingkungan jaringan internal Google.</translation>
 <translation id="4269859918103560644">Izinkan pengguna untuk memutuskan</translation>
+<translation id="4271245613154024710">Menyetel kebijakan ini akan menentukan Aplikasi Web Terisolasi (IWA) mana yang dapat terhubung ke kartu smart menggunakan Web Smart Card API tanpa meminta izin kepada pengguna. Kebijakan ini tidak menerima karakter pengganti.
+
+Kebijakan ini menggantikan <ph name="POLICY_NAME" />; khususnya, nilai daftar yang tidak diizinkan <ph name="ALL_ISOLATED_WEB_APPS" /> berarti bahwa semua IWA tidak akan dapat terhubung ke pembaca kartu smart (pengguna bahkan tidak akan dimintai izin) kecuali untuk IWA yang tercantum dalam kebijakan ini.
+
+Secara default, IWA yang menentukan izin Kartu Smart dalam manifesnya dapat terhubung ke kartu smart asalkan pengguna memberikan izin secara interaktif untuk masing-masing pembaca.</translation>
 <translation id="4274691295133617461">Jika kebijakan disetel ke 3, situs web akan diizinkan meminta akses baca ke file, dan direktori, di sistem file pada sistem operasi host melalui File System API. Jika kebijakan disetel ke 2, akses akan ditolak.
 
       Jika tidak disetel, situs dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
@@ -6073,6 +6078,11 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
       </translation>
 <translation id="5448022937220253000">Memilih apa yang akan terjadi pada data pengguna setelah <ph name="LACROS_NAME" /> dinonaktifkan</translation>
 <translation id="5449690328792750354">Event.path API akan tersedia.</translation>
+<translation id="5450507908812118425">Menyetel kebijakan ini akan menentukan Aplikasi Web Terisolasi (IWA) yang tidak dapat terhubung ke pembaca kartu smart (pengguna bahkan tidak akan dimintai izin). Kebijakan ini menerima karakter pengganti - misalnya, <ph name="ALL_ISOLATED_WEB_APPS" /> akan memblokir akses untuk semua IWA.
+
+Kebijakan ini diganti dengan <ph name="POLICY_NAME" />; khususnya, nilai daftar yang tidak diizinkan <ph name="ALL_ISOLATED_WEB_APPS" /> berarti bahwa semua IWA tidak akan dapat terhubung ke pembaca kartu smart (pengguna bahkan tidak akan dimintai izin) kecuali untuk IWA yang tercantum di <ph name="POLICY_NAME" />.
+
+Secara default, IWA yang menentukan izin Kartu Smart dalam manifesnya dapat terhubung ke kartu smart asalkan pengguna memberikan izin secara interaktif untuk masing-masing pembaca.</translation>
 <translation id="5452024130413254050">Mengontrol apakah VM yang menggunakan konfigurasi ini memiliki akses ke vTPM. Setelan defaultnya adalah salah (false), dan <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> jika tidak disetel.</translation>
 <translation id="5454128917282602937">Saat pengguna beralih antar-perangkat <ph name="PRODUCT_OS_NAME" />, Layanan <ph name="PRODUCT_NAME" /> V2 akan meluncurkan jendela aplikasi dan browser dari perangkat sebelumnya ke perangkat baru.
 Jika kebijakan disetel ke Aktif, jendela aplikasi dan browser dari perangkat <ph name="PRODUCT_OS_NAME" /> yang terakhir digunakan oleh pengguna saat ini akan otomatis diluncurkan saat login.

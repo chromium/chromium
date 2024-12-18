@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
 <translation id="1253032109800629289">Sembunyikan "Dapatkan Notifikasi Pemantauan Harga"</translation>
 <translation id="1258491128795710625">Yang Baru</translation>
+<translation id="1259210743048744967">Data penjelajahan yang ada akan tersedia setelah Anda logout dari <ph name="USER_EMAIL" />. Data ini tidak akan disimpan di akun ini.</translation>
 <translation id="1262724000444746916">Sembunyikan Tambahkan ke Bookmark</translation>
 <translation id="1263231323834454256">Daftar bacaan</translation>
 <translation id="1263433075299269530">Tab terakhir yang dibuka</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Hapus tab dan grup?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
 <translation id="1709916727352927457">Hapus kunci sandi</translation>
+<translation id="1712341189152602203">Data penjelajahan yang ada akan ditautkan ke <ph name="USER_EMAIL" />. Data ini mungkin dapat dilihat oleh organisasi Anda.</translation>
 <translation id="1713777106376424209">Dikirim oleh</translation>
 <translation id="1715515772563243997">Jika Anda memercayai <ph name="SITE" />, Anda dapat menggunakan sandi tersimpan untuk login.</translation>
 <translation id="1728549374069268714">Tempel lalu buka</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Di situs tempat Anda menyimpan sandi, ketuk kolom sandi login.</translation>
 <translation id="1872096359983322073">Senter</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Pilih tindakan yang akan dilakukan pada data penjelajahan yang ada di perangkat ini, seperti sandi, histori, dan lainnya.</translation>
 <translation id="1881621406744213161">Undang anggota keluarga</translation>
 <translation id="188237709236611317">Panel menu urutkan pintar</translation>
 <translation id="1883255238294161206">Ciutkan daftar</translation>
@@ -512,6 +515,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
 <translation id="333229797575847124">Cara mengaktifkan fitur ini</translation>
+<translation id="3333566504534692948">Tidak, pindahkan ke profil kerja Anda</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaru</translation>
 <translation id="3348387552617855658">Kartu ini membantu Anda melacak paket dan memberi Anda info terbaru dan penting terkait pengiriman paket.</translation>

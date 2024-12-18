@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">Elternzugang</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
+<translation id="4750394297954878236">Vorschläge</translation>
 <translation id="4771607256327216405">Tastatur aufhellen</translation>
 <translation id="4771923071974529837">morgen</translation>
 <translation id="4773299976671772492">Angehalten</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Nameserver}other{Nameserver}}</translation>
 <translation id="7135814714616751706">Tastenkombinationen suchen</translation>
 <translation id="7138614237884624401">Vereinfachter Text</translation>
+<translation id="7138668887584231801">Nicht genügend Wörter für eine Zusammenfassung</translation>
 <translation id="7141470099673912333">Inhaltsübertragung</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>

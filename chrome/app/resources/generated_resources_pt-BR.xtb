@@ -8039,6 +8039,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="672208878794563299">Este site perguntará novamente na próxima vez.</translation>
 <translation id="6722744767592605627">É possível recuperar a conta <ph name="EMAIL" />, mas os dados locais vão ser excluídos.</translation>
 <translation id="6723661294526996303">Importar favoritos e configurações...</translation>
+<translation id="6723740634201835758">Na Conta do Google</translation>
 <translation id="6723839827191551955">Controlar a mídia que está sendo transmitida</translation>
 <translation id="6723839937902243910">Energia</translation>
 <translation id="6725073593266469338">Serviço de interface</translation>
@@ -10207,6 +10208,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8263228331881858381">Chave de acesso salva</translation>
 <translation id="8263336784344783289">Dê um nome para este grupo</translation>
 <translation id="8264024885325823677">Essas configurações são gerenciadas pelo administrador.</translation>
+<translation id="8265018477030547118">Somente neste dispositivo</translation>
 <translation id="826511437356419340">Iniciado modo de visão geral da janela. Deslize para navegar ou pressione Tab se estiver usando um teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Sua janela anônima não será aberta novamente após a reinicialização}one{Sua {COUNT} janela anônima não será aberta novamente após a reinicialização}other{Suas {COUNT} janelas anônimas não serão abertas novamente após a reinicialização}}</translation>
 <translation id="8266947622852630193">Todos os métodos de entrada</translation>

@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Yhdistetty USB-laitteeseen</translation>
 <translation id="4194328954146351878">Kysy, saavatko sivustot nähdä ja muuttaa NFC-laitteiden tietoja (suositeltu)</translation>
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
+<translation id="4213239715282467974">Chrome jakaa nyt viimeaikaiset välilehdet laitteelle. Voit avata ne nopeasti laitteen sovelluslistasta ja hakutuloksista. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Sallittu</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Sivustoja estetään pyytämästä lupaa sinusta tallennettujen tietojen käytölle</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 muu)}other{(+ # muuta)}}</translation>
 <translation id="5403592356182871684">Nimet</translation>
+<translation id="5408906274948600065">Salli Chromen jakaa viimeaikaiset välilehdet laitteelle, jotta näet ne laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän päälle tai pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="5438097262470833822">Valinta nollaa luvat osoitteessa <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kun tämä on päällä, sivustot voivat kysyä sijaintiasi. Kun tämä on pois päältä, sivustot eivät voi nähdä sijaintiasi.</translation>
 <translation id="5489227211564503167">Kulunut aika: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" /></translation>

@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">સિંક કરવાનું ચાલુ કરીએ?</translation>
 <translation id="1253032109800629289">"કિંમતને ટ્રૅક કરતા નોટિફિકેશન મેળવો" છુપાવો</translation>
 <translation id="1258491128795710625">નવું શું છે</translation>
+<translation id="1259210743048744967"><ph name="USER_EMAIL" />માંથી સાઇન આઉટ કરવા પર તમારો વર્તમાન બ્રાઉઝિંગ ડેટા ઉપલબ્ધ થશે. તેને આ એકાઉન્ટમાં સાચવવામાં આવશે નહીં.</translation>
 <translation id="1262724000444746916">'બુકમાર્કમાં ઉમેરો' છુપાવો</translation>
 <translation id="1263231323834454256">વાચન સૂચિ</translation>
 <translation id="1263433075299269530">તમે છેલ્લે ખોલેલું ટૅબ</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> પસંદ કર્યાં</translation>
 <translation id="1709916727352927457">પાસકી ડિલીટ કરો</translation>
+<translation id="1712341189152602203">વર્તમાન બ્રાઉઝિંગ ડેટાને <ph name="USER_EMAIL" /> સાથે લિંક કરવામાં આવશે. તમારી સંસ્થા આ ડેટાને જોઈ શકે છે.</translation>
 <translation id="1713777106376424209">આમના દ્વારા ડિલિવર કરવામાં આવ્યું</translation>
 <translation id="1715515772563243997">જો <ph name="SITE" /> તમારા માટે વિશ્વસનીય હોય, તો તમે સાઇન ઇન કરવા માટે સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="1728549374069268714">પેસ્ટ કરો અને જાઓ</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">તમે જે સાઇટ પર પાસવર્ડ સાચવ્યો છે, તેના પર સાઇન ઇન પાસવર્ડ ફીલ્ડ પર ટૅપ કરો.</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">પાસવર્ડ, ઇતિહાસ અને બીજી ઘણી બાબતો જેવા આ ડિવાઇસ પરના વર્તમાન બ્રાઉઝિંગ ડેટા સાથે શું કરવું તે પસંદ કરો.</translation>
 <translation id="1881621406744213161">કુટુંબના સભ્યોને આમંત્રિત કરો</translation>
 <translation id="188237709236611317">સ્માર્ટ સૉર્ટ મેનૂ બાર</translation>
 <translation id="1883255238294161206">સૂચિ સંકુચિત કરો</translation>
@@ -512,6 +515,7 @@
 <translation id="3324193307694657476">સરનામાં 2</translation>
 <translation id="3328801116991980348">સાઇટ માહિતી</translation>
 <translation id="333229797575847124">આ સુવિધા ચાલુ કરવાની રીત</translation>
+<translation id="3333566504534692948">ના, તેને તમારી ઑફિસની સ્પેસમાં ખસેડો</translation>
 <translation id="3344485292736684439">{count,plural, =1{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="334690320928261823">તાજેતરના ટૅબ</translation>
 <translation id="3348387552617855658">આ કાર્ડ તમને તમારા પૅકેજને ટ્રૅક કરવામાં સહાય કરે છે તેમજ તમને ડિલિવરી સંબંધિત મહત્ત્વપૂર્ણ અપડેટ આપે છે.</translation>

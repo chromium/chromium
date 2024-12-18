@@ -98,7 +98,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> वटा ट्याब हालियो}other{<ph name="MANY_ADDED" /> वटा ट्याब हालिए}}</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
 <translation id="5339733443032484186">तपाईंको अन्तिम ट्याब</translation>
+<translation id="5380159289133845234">दोहोरिएका ट्याबहरू अभिलेखमा राख्नुहोस्</translation>
 <translation id="5400836586163650660">खरानी रङ्ग</translation>
+<translation id="5446043142172831860">ट्याब हटाउनुहोस् र समूह छाड्नुहोस्</translation>
 <translation id="5490235265819901748">ट्याब समूह विस्तृत गरियो</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}}</translation>
@@ -117,6 +119,7 @@
 <translation id="6051432659151380973">तपाईंका ट्याब समूहहरू स्वतः सेभ हुन्छन्</translation>
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
 <translation id="6082313992897617440">तपाईं तत्कालै <ph name="GROUP_NAME" /> नामक ट्याब समूहको एक्सेस गुमाउनु हुने छ</translation>
+<translation id="6109251075362363230">सबैभन्दा हालसालै प्रयोग गरिएको दोहोरिएको ट्याबबाहेक दोहोरिएका सबै ट्याबहरू अब अभिलेखमा राखिने छन्।</translation>
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
 <translation id="6271513594716432922">सबै निष्क्रिय ट्याबहरू बन्द गर्नुहोस्</translation>

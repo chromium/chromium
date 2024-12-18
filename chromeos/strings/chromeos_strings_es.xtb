@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada con tu selección</translation>
+<translation id="4750394297954878236">Sugerencias</translation>
 <translation id="4771607256327216405">aumentar brillo de teclado</translation>
 <translation id="4771923071974529837">mañana</translation>
 <translation id="4773299976671772492">Detenido</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
 <translation id="7135814714616751706">Buscar accesos directos</translation>
 <translation id="7138614237884624401">Texto simplificado</translation>
+<translation id="7138668887584231801">No hay suficientes palabras para resumir</translation>
 <translation id="7141470099673912333">Transferencia de contenido</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Reintentar</translation>

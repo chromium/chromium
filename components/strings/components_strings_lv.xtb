@@ -1141,6 +1141,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="306573536155379004">Spēle sākta.</translation>
 <translation id="3067505415088964188">Cena ir zema</translation>
 <translation id="3068118691172921711">Failu augšupielāde pakalpojumā <ph name="CLOUD_PROVIDER" /> sāksies pēc vienas minūtes</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} vienums}zero{{ITEMS} vienumu}one{{ITEMS} vienums}other{{ITEMS} vienumi}}</translation>
 <translation id="3076865167425975822">Operētājsistēmas</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Ļaujiet uzņēmumam Google izmantot jūsu grozus, lai atrastu personalizētas atlaides, kad tās pieejamas.</translation>
@@ -2830,6 +2831,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6106989379647458772">Tīmekļa lapa <ph name="PAGE" /> var būt īslaicīgi nepieejama, vai tā var būt pārvietota uz jaunu tīmekļa adresi.</translation>
 <translation id="6107012941649240045">Izsniegts</translation>
 <translation id="6107924765192360631">Sāciet ar dažiem vārdiem vai melnraksta pirmo versiju, lai saņemtu rakstīšanas ieteikumus.</translation>
+<translation id="6108508372809181847">Salīdzināt: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Sertifikāta informācija</translation>
 <translation id="6108702513636120202">Jūsu meklētājprogramma pārlūkā Chromium</translation>
 <translation id="6108849843016142864">Rāpuļi un abinieki</translation>

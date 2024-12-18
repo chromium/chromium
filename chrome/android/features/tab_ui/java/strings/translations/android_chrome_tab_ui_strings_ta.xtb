@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன}}</translation>
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
 <translation id="5339733443032484186">உங்கள் கடைசிப் பக்கம்</translation>
+<translation id="5380159289133845234">நகல் பக்கங்களைக் காப்பிடு</translation>
 <translation id="5400836586163650660">கிரே</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">உங்கள் பக்கக் குழுக்கள் தானாகச் சேமிக்கப்படும்</translation>
 <translation id="6054741997831917303">இந்தப் பொருளின் விலை சமீபத்தில் <ph name="PREVIOUS_PRICE" /> இல் இருந்து <ph name="NEW_PRICE" /> ஆகக் குறைந்துள்ளது</translation>
 <translation id="6082313992897617440"><ph name="GROUP_NAME" /> பக்கக் குழுவிற்கான அணுகலை உடனடியாக இழந்துவிடுவீர்கள்</translation>
+<translation id="6109251075362363230">மிகச் சமீபத்தில் பயன்படுத்தப்பட்ட நகல் தவிர்த்து, பிற எல்லா நகல் பக்கங்களும் இப்போது காப்பிடப்படும்.</translation>
 <translation id="6193448654517602979">தாவல்களைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6228793724645064692">(ஸ்டோர் ரேட்டிங்)</translation>
 <translation id="6271513594716432922">செயலில் இல்லாத பக்கங்களை மூடு</translation>

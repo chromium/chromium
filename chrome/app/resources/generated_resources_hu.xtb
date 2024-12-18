@@ -2336,6 +2336,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2606568927909309675">Automatikus feliratkészítés az angol nyelvű audio- és videótartalmakhoz. A hanganyagok és a feliratok sosem kerülnek ki az eszközről.</translation>
 <translation id="2606890864830643943">Diagnosztikai adatok exportálása folyamatban</translation>
 <translation id="2607101320794533334">Nyilvános kulcs adatai</translation>
+<translation id="2608837922830967145">Ne jelenjen meg legközelebb ez az üzenet</translation>
 <translation id="2609896558069604090">Parancsikonok létrehozása...</translation>
 <translation id="2609980095400624569">Nem sikerült létrehozni a kapcsolatot</translation>
 <translation id="2610157865375787051">Alvó mód</translation>
@@ -8033,6 +8034,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="672208878794563299">A webhely a következő alkalommal újból rákérdez.</translation>
 <translation id="6722744767592605627">A(z) <ph name="EMAIL" /> helyreállítható, de a helyi adatok törlődnek.</translation>
 <translation id="6723661294526996303">Könyvjelzők és beállítások importálása...</translation>
+<translation id="6723740634201835758">Google-fiókban</translation>
 <translation id="6723839827191551955">Vezérelheti az átküldött médiatartalmakat</translation>
 <translation id="6723839937902243910">Energiaellátás</translation>
 <translation id="6725073593266469338">Kezelőfelület-szolgáltatás</translation>
@@ -10200,6 +10202,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8263228331881858381">Azonosítókulcs mentve</translation>
 <translation id="8263336784344783289">Nevezze el a csoportot</translation>
 <translation id="8264024885325823677">Ezt a beállítást a rendszergazdája kezeli.</translation>
+<translation id="8265018477030547118">Csak erre az eszközre</translation>
 <translation id="826511437356419340">Ablakáttekintési módba lépett. A navigáció csúsztatással, illetve billentyűzet használata esetén a Tab gombbal lehetséges.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Az inkognitóablak nem fog megnyílni az újraindítás után.}other{{COUNT} inkognitóablak nem fog újra megnyílni az újraindítás után.}}</translation>
 <translation id="8266947622852630193">Minden beviteli módszer</translation>

@@ -8021,6 +8021,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="672208878794563299">Ce site redemandera votre avis la prochaine fois.</translation>
 <translation id="6722744767592605627">Vous pouvez récupérer <ph name="EMAIL" />, mais les données locales seront supprimées.</translation>
 <translation id="6723661294526996303">Importer les favoris et les paramètres...</translation>
+<translation id="6723740634201835758">Dans votre compte Google</translation>
 <translation id="6723839827191551955">Contrôlez le contenu multimédia que vous castez</translation>
 <translation id="6723839937902243910">Marche/Arrêt</translation>
 <translation id="6725073593266469338">Service de gestion de l'interface utilisateur</translation>
@@ -10189,6 +10190,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8263228331881858381">Clé d'accès enregistrée</translation>
 <translation id="8263336784344783289">Attribuer un nom à ce groupe</translation>
 <translation id="8264024885325823677">Ce paramètre est géré par votre administrateur.</translation>
+<translation id="8265018477030547118">Uniquement sur cet appareil</translation>
 <translation id="826511437356419340">Mode de présentation de la fenêtre activé. Balayez l'écran pour naviguer, ou appuyez sur Tabulation si vous utilisez un clavier.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Votre fenêtre de navigation privée ne se rouvrira pas après le redémarrage}one{Vous avez {COUNT} fenêtre de navigation privée ouverte. Elle ne se rouvrira pas après le redémarrage}other{Les {COUNT} fenêtres de navigation privée ne se rouvriront pas après le redémarrage}}</translation>
 <translation id="8266947622852630193">Tous les modes de saisie</translation>

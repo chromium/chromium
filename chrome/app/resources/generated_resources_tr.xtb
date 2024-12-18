@@ -8017,6 +8017,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="672208878794563299">Bu site bir dahaki sefer tekrar soracak.</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> hesabını kurtarabilirsiniz, ancak yerel veriler silinir.</translation>
 <translation id="6723661294526996303">Yer işaretlerini ve ayarları içe aktar...</translation>
+<translation id="6723740634201835758">Google Hesabınızda</translation>
 <translation id="6723839827191551955">Yayınladığınız medyayı kontrol edin</translation>
 <translation id="6723839937902243910">Güç</translation>
 <translation id="6725073593266469338">Kullanıcı arayüzü hizmeti</translation>
@@ -10184,6 +10185,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8263228331881858381">Geçiş anahtarı kaydedildi</translation>
 <translation id="8263336784344783289">Bu Gruba Bir Ad Verin</translation>
 <translation id="8264024885325823677">Bu ayar, yöneticiniz tarafından yönetilir.</translation>
+<translation id="8265018477030547118">Yalnızca bu cihazda</translation>
 <translation id="826511437356419340">Pencere genel bakış moduna girildi. Gezinmek için kaydırın veya klavye kullanıyorsanız sekme tuşuna basın.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Yeniden başlatırsanız gizli pencereniz açılmaz}other{Yeniden başlatırsanız {COUNT} gizli pencereniz tekrar açılmaz}}</translation>
 <translation id="8266947622852630193">Tüm giriş yöntemleri</translation>

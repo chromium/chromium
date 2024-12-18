@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>
+<translation id="4750394297954878236">Санал зөвлөмж</translation>
 <translation id="4771607256327216405">гарыг илүү гэрэлтүүлэх</translation>
 <translation id="4771923071974529837">маргааш</translation>
 <translation id="4773299976671772492">Зогссон</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
 <translation id="7135814714616751706">Товчлолууд хайх</translation>
 <translation id="7138614237884624401">Хялбарчилсан текст</translation>
+<translation id="7138668887584231801">Хураангуйлахад хангалттай үг байхгүй байна</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>

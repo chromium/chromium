@@ -98,6 +98,7 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি ট্যাব যোগ করা হয়েছে}one{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে}other{<ph name="MANY_ADDED" />টি ট্যাব যোগ করা হয়েছে}}</translation>
 <translation id="5161254044473106830">শিরোনাম প্রয়োজন</translation>
 <translation id="5339733443032484186">আপনার শেষ ট্যাব</translation>
+<translation id="5380159289133845234">ডুপ্লিকেট ট্যাব আর্কাইভ করুন</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="5490235265819901748">ট্যাব গ্রুপ বড় করে দেখানো হয়েছে</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">আপনার ট্যাব গ্রুপ অটোমেটিক সেভ হবে</translation>
 <translation id="6054741997831917303">এই আইটেমের দাম সম্প্রতি <ph name="PREVIOUS_PRICE" /> থেকে কমে <ph name="NEW_PRICE" /> হয়েছে</translation>
 <translation id="6082313992897617440">আপনি অবিলম্বে <ph name="GROUP_NAME" /> ট্যাব গ্রুপের অ্যাক্সেস হারাবেন</translation>
+<translation id="6109251075362363230">সবচেয়ে সাম্প্রতিক ব্যবহৃত ডুপ্লিকেট ট্যাব ছাড়া সব ডুপ্লিকেট ট্যাব এখন আর্কাইভ করা হবে।</translation>
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6228793724645064692">(স্টোর রেটিং)</translation>
 <translation id="6271513594716432922">সব ইনঅ্যাক্টিভ ট্যাব বন্ধ করুন</translation>

@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Ansluten till en USB-enhet</translation>
 <translation id="4194328954146351878">Fråga innan webbplatser tillåts att visa och ändra information på NFC-enheter (rekommenderas)</translation>
 <translation id="4200726100658658164">Öppna platsinställningarna</translation>
+<translation id="4213239715282467974">Chrome delar nu dina senaste flikar med enheten. Du kan snabbt komma åt dem i enhetens applista och sökresultat. Du kan inaktivera detta när som helst i Chrome-inställningarna.</translation>
 <translation id="4226663524361240545">Aviseringar kan göra att enheten vibrerar</translation>
 <translation id="4259722352634471385">Webbadressen har blockerats: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tillåts</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Webbplatser hindras från att be dig använda information som de har sparat om dig</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 till)}other{(+ # till)}}</translation>
 <translation id="5403592356182871684">Namn</translation>
+<translation id="5408906274948600065">Låt Chrome dela dina senaste flikar med enheten så att du kan se dem i enhetens applista och sökresultat. Du kan aktivera eller inaktivera detta när som helst i Chrome-inställningarna.</translation>
 <translation id="5438097262470833822">Detta återställer behörigheter för <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">När detta är aktiverat kan webbplatser fråga efter din plats. När detta är inaktiverat får webbplatser inte se din plats.</translation>
 <translation id="5489227211564503167">Förfluten tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>

@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Synchronisierung aktivieren?</translation>
 <translation id="1253032109800629289">„Benachrichtigungen zum Preis-Tracking erhalten“ ausblenden</translation>
 <translation id="1258491128795710625">Neue Funktionen</translation>
+<translation id="1259210743048744967">Deine vorhandenen Browserdaten sind verfügbar, sobald du dich von <ph name="USER_EMAIL" /> abmeldest. Sie werden nicht in diesem Konto gespeichert.</translation>
 <translation id="1262724000444746916">„Zu Lesezeichen hinzufügen“ ausblenden</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1263433075299269530">Zuletzt geöffneter Tab</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Tab entfernen und Gruppe löschen?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ausgewählt</translation>
 <translation id="1709916727352927457">Passkey löschen</translation>
+<translation id="1712341189152602203">Vorhandene Browserdaten werden mit <ph name="USER_EMAIL" /> verknüpft. Diese Daten können möglicherweise von deiner Organisation eingesehen werden.</translation>
 <translation id="1713777106376424209">Geliefert von</translation>
 <translation id="1715515772563243997">Wenn du <ph name="SITE" /> vertraust, kannst du ein gespeichertes Passwort zur Anmeldung verwenden.</translation>
 <translation id="1728549374069268714">Einfügen und los</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Tippe auf einer Website, für die du ein Passwort gespeichert hast, auf das Feld für das Anmeldepasswort.</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Wähle aus, was mit den Browserdaten auf diesem Gerät – wie deinen Passwörtern und dem Verlauf – geschehen soll.</translation>
 <translation id="1881621406744213161">Familienmitglieder einladen</translation>
 <translation id="188237709236611317">Menüleiste mit intelligenter Sortierung</translation>
 <translation id="1883255238294161206">Liste ausblenden</translation>
@@ -512,6 +515,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
 <translation id="333229797575847124">So aktivierst du diese Funktion</translation>
+<translation id="3333566504534692948">Nein, in mein Arbeitsprofil verschieben</translation>
 <translation id="3344485292736684439">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="334690320928261823">Letzte Tabs</translation>
 <translation id="3348387552617855658">Auf dieser Karte hast du alle deine Pakete im Blick und siehst wichtige Updates zur Zustellung.</translation>

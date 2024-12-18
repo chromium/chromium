@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Vill du aktivera synkronisering?</translation>
 <translation id="1253032109800629289">Dölj Få aviseringar om prisbevakning</translation>
 <translation id="1258491128795710625">Nyheter</translation>
+<translation id="1259210743048744967">Din befintliga webbinformation blir tillgänglig när du loggar ut från <ph name="USER_EMAIL" />. Den sparas inte på det här kontot.</translation>
 <translation id="1262724000444746916">Dölj Lägg till i bokmärken</translation>
 <translation id="1263231323834454256">Läslista</translation>
 <translation id="1263433075299269530">Din senast öppna flik</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Vill du ta bort fliken och radera gruppen?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
 <translation id="1709916727352927457">Radera nyckel</translation>
+<translation id="1712341189152602203">Befintlig webbinformation kopplas till <ph name="USER_EMAIL" />. Denna data kan vara synlig för organisationen.</translation>
 <translation id="1713777106376424209">Levereras av</translation>
 <translation id="1715515772563243997">Om du litar på <ph name="SITE" /> kan du använda ett sparat lösenord när du loggar in.</translation>
 <translation id="1728549374069268714">Klistra in och öppna</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Tryck på fältet för inloggningslösenord på en webbplats där du har sparat ett lösenord.</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Välj vad du vill göra med befintlig webbinformation på den här enheten, till exempel lösenord, historik med mera.</translation>
 <translation id="1881621406744213161">Bjud in familjemedlemmar</translation>
 <translation id="188237709236611317">Menyrad med smart sortering</translation>
 <translation id="1883255238294161206">Komprimera lista</translation>
@@ -512,6 +515,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3324193307694657476">Adressrad 2</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="333229797575847124">Så här aktiverar du den här funktionen</translation>
+<translation id="3333566504534692948">Nej, flytta den till arbetsytan</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{Bokmärkena har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="334690320928261823">Senaste flikarna</translation>
 <translation id="3348387552617855658">Med det här kortet kan du hålla koll på dina paket och få viktiga leveransuppdateringar.</translation>

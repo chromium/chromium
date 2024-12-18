@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="473775607612524610">อัปเดต</translation>
 <translation id="4744944742468440486">ข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก</translation>
+<translation id="4750394297954878236">คำแนะนำ</translation>
 <translation id="4771607256327216405">เพิ่มความสว่างของแป้นพิมพ์</translation>
 <translation id="4771923071974529837">พรุ่งนี้</translation>
 <translation id="4773299976671772492">หยุดแล้ว</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7135814714616751706">ค้นหาทางลัด</translation>
 <translation id="7138614237884624401">ข้อความอย่างง่าย</translation>
+<translation id="7138668887584231801">มีคำไม่เพียงพอที่จะสรุป</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>

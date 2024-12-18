@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Izveidots savienojums ar USB ierīci.</translation>
 <translation id="4194328954146351878">Vaicāt, pirms ļaut vietnēm NFC ierīcēs piekļūt informācijai un to mainīt (ieteicams)</translation>
 <translation id="4200726100658658164">Atvērt atrašanās vietu iestatījumus</translation>
+<translation id="4213239715282467974">Tagad Chrome kopīgo jūsu nesen atvērtās cilnes ar jūsu ierīci. Varat ātri piekļūt tām ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="4226663524361240545">Saņemot paziņojumu, ierīce var vibrēt.</translation>
 <translation id="4259722352634471385">Navigācija ir bloķēta: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Atļauts</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Vietnēm ir liegts lūgt atļauju izmantot informāciju, kas tajās ir saglabāta par jums</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(un vēl 1)}zero{(un vēl #)}one{(un vēl #)}other{(un vēl #)}}</translation>
 <translation id="5403592356182871684">Nosaukumi</translation>
+<translation id="5408906274948600065">Ļaujiet pārlūkam Chrome kopīgot ar jūsu ierīci cilnes, ko nesen atvērāt, lai tās būtu redzamas ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā ieslēgt vai izslēgt šo funkciju.</translation>
 <translation id="5438097262470833822">Veicot šo darbību, tiks atiestatītas vietnes <ph name="WEBSITE" /> atļaujas.</translation>
 <translation id="5459413148890178711">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt informāciju par jūsu atrašanās vietu. Kad šis slēdzis ir izslēgts, vietnes nevar skatīt jūsu atrašanās vietu.</translation>
 <translation id="5489227211564503167">Pagājušais laiks: <ph name="ELAPSED_TIME" /> (no <ph name="TOTAL_TIME" />)</translation>

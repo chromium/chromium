@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Imeunganishwa kwenye kifaa cha USB</translation>
 <translation id="4194328954146351878">Uliza kabla ya kuruhusu tovuti zione na zibadilishe maelezo kwenye vifaa vya NFC (inapendekezwa)</translation>
 <translation id="4200726100658658164">Fungua Mipangilio ya Mahali</translation>
+<translation id="4213239715282467974">Sasa Chrome inaruhusu vichupo vyako vya hivi majuzi vifikiwe na kifaa chako. Unaweza kuvifikia kwa haraka kwenye orodha ya programu ya kifaa chako na matokeo ya utafutaji. Unaweza kuzima hali hii wakati wowote kwenye mipangilio ya Chrome.</translation>
 <translation id="4226663524361240545">Arifa huenda zitatetemesha kifaa</translation>
 <translation id="4259722352634471385">Kudurusu kumezuiwa: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Imeruhusiwa</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Tovuti zimezuiwa ili zisiombe ruhusa ya kutumia maelezo ambayo zimehifadhi kukuhusu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 zaidi)}other{(+ # zaidi)}}</translation>
 <translation id="5403592356182871684">Majina</translation>
+<translation id="5408906274948600065">Ruhusu Chrome ifikie vichupo vyako vya hivi majuzi kwenye kifaa chako ili vionekane kwenye orodha ya programu ya kifaa chako na matokeo ya utafutaji. Unaweza kuwasha au kuzima kipengele hiki wakati wowote kwenye mipangilio ya Chrome.</translation>
 <translation id="5438097262470833822">Chaguo hili litabadilisha ruhusa za <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kufikia data ya mahali ulipo. Kikizimwa, tovuti haziwezi kuona data ya mahali ulipo.</translation>
 <translation id="5489227211564503167">Muda uliopita ni <ph name="ELAPSED_TIME" /> kati ya <ph name="TOTAL_TIME" />.</translation>

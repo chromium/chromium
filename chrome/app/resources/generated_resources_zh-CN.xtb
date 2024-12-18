@@ -2316,6 +2316,7 @@
 <translation id="2606568927909309675">自动为英文版音频和视频创建字幕。音频和字幕绝不会从设备中泄露出去。</translation>
 <translation id="2606890864830643943">正在导出诊断数据</translation>
 <translation id="2607101320794533334">证书持有者的公共密钥信息</translation>
+<translation id="2608837922830967145">不再显示此消息</translation>
 <translation id="2609896558069604090">创建快捷方式...</translation>
 <translation id="2609980095400624569">无法建立连接</translation>
 <translation id="2610157865375787051">休眠</translation>
@@ -8005,6 +8006,7 @@
 <translation id="672208878794563299">此网站下次仍会请求您授权。</translation>
 <translation id="6722744767592605627">您可以恢复 <ph name="EMAIL" />，但本地数据将被删除。</translation>
 <translation id="6723661294526996303">导入书签和设置...</translation>
+<translation id="6723740634201835758">在您的 Google 账号中</translation>
 <translation id="6723839827191551955">控制您正在投放的媒体</translation>
 <translation id="6723839937902243910">电源</translation>
 <translation id="6725073593266469338">界面服务</translation>
@@ -10173,6 +10175,7 @@
 <translation id="8263228331881858381">已保存通行密钥</translation>
 <translation id="8263336784344783289">为此组命名</translation>
 <translation id="8264024885325823677">此设置由您的管理员管理。</translation>
+<translation id="8265018477030547118">仅在该设备上</translation>
 <translation id="826511437356419340">已进入窗口概览模式。您可以滑动手指或（若使用键盘）按 Tab 键进行浏览。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{当您重新启动后，您先前打开的那个无痕式窗口不会自动打开}other{当您重新启动后，您先前打开的那 {COUNT} 个无痕式窗口不会自动打开}}</translation>
 <translation id="8266947622852630193">所有输入法</translation>
@@ -11298,7 +11301,7 @@
 <translation id="9041692268811217999">您的管理员已禁止访问您计算机上的本地文件</translation>
 <translation id="904224458472510106">此操作无法撤消</translation>
 <translation id="9042827002460091668">请检查互联网连接，然后重试</translation>
-<translation id="9042893549633094279">隐私和安全</translation>
+<translation id="9042893549633094279">隐私与安全</translation>
 <translation id="9043264199499366189">订阅 ChromeOS Flex 系统事件</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>

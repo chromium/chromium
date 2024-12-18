@@ -1141,6 +1141,7 @@
 <translation id="306573536155379004">ಗೇಮ್ ಪ್ರಾರಂಭವಾಗಿದೆ.</translation>
 <translation id="3067505415088964188">ಕಡಿಮೆ ದರ</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> ಗೆ ನಿಮ್ಮ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ 1 ನಿಮಿಷದಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ಐಟಂ}one{{ITEMS} ಐಟಂಗಳು}other{{ITEMS} ಐಟಂಗಳು}}</translation>
 <translation id="3076865167425975822">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
 <translation id="3080254622891793721">ಗ್ರಾಫಿಕ್</translation>
 <translation id="3082007635241601060">ಲಭ್ಯವಿರುವ ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ರಿಯಾಯಿತಿಗಳನ್ನು ಹುಡುಕಲು ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳನ್ನು ಬಳಸಲು Google ಗೆ ಅನುಮತಿಸಿ</translation>
@@ -2829,6 +2830,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> ನಲ್ಲಿರುವ ವೆಬ್‌ಪುಟ ತಾತ್ಕಾಲಿಕವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ ಅಥವಾ ಅದನ್ನು ಶಾಶ್ವತವಾಗಿ ಹೊಸ ವೆಬ್ ವಿಳಾಸಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="6107012941649240045">ಇವರಿಗೆ ನೀಡಲಾಗಿದೆ</translation>
 <translation id="6107924765192360631">ಬರವಣಿಗೆಯ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಲು ಕೆಲವು ಪದಗಳು ಅಥವಾ ಮೊದಲ ಡ್ರಾಫ್ಟ್‌ನೊಂದಿಗೆ ಪ್ರಾರಂಭಿಸಿ.</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" /> ಅನ್ನು ಹೋಲಿಸಿ</translation>
 <translation id="6108580855199168381">ಪ್ರಮಾಣಪತ್ರದ ವಿವರಗಳು</translation>
 <translation id="6108702513636120202">Chromium ನಲ್ಲಿ ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್</translation>
 <translation id="6108849843016142864">ಸರೀಸೃಪಗಳು ಮತ್ತು ಉಭಯಚರಗಳು</translation>

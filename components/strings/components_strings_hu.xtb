@@ -169,7 +169,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="129553762522093515">Mostanában bezárt</translation>
 <translation id="1296930489679394997">Értékesítés</translation>
 <translation id="1297814096526086484">Zárolja a billentyűzetet és az egeret?</translation>
-<translation id="1297832388362139384">1-es zöld</translation>
+<translation id="1297832388362139384">Zöld 1</translation>
 <translation id="1301227606947843452">„Legal Extra” méret</translation>
 <translation id="1301324364792935241">Ellenőrizze a biztonságos DNS beállításait</translation>
 <translation id="1302418742166945866">A(z) <ph name="URL" /> vezérelni és újraprogramozni szeretné az Ön MIDI-eszközeit</translation>
@@ -229,7 +229,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1384725838384960382">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja</translation>
 <translation id="1386623374109090026">Annotációk</translation>
 <translation id="138810468159004008">Engedélyezés a webhely felkeresésekor</translation>
-<translation id="139161720020179799">1-es sötétszürke</translation>
+<translation id="139161720020179799">Sötétszürke 1</translation>
 <translation id="1391625539203220400">Menti az IBAN-t erre az eszközre?</translation>
 <translation id="139305205187523129">A(z) <ph name="HOST_NAME" /> nem küldött adatokat.</translation>
 <translation id="1393071644879491291">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók ráveszik Önt valamilyen szoftver telepítésére, illetve olyan adatok megadására, mint a jelszavai, a telefonszámai vagy a bankkártyaszámai. A Chrome kifejezetten javasolja, hogy térjen vissza biztonságos webhelyre. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
@@ -705,7 +705,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2227758700723188171">Tanulmányi ösztöndíjak</translation>
 <translation id="2228057197024893428">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Figyelmen kívül hagyott nem egyedi billentyűparancs: <ph name="SHORTCUT_NAME" /></translation>
-<translation id="222962001646502673">2-es sötétszürke</translation>
+<translation id="222962001646502673">Sötétszürke 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 lap}other{# lap}}</translation>
 <translation id="2233745931693710080">Kompakt lemez</translation>
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
@@ -1141,6 +1141,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="306573536155379004">A játék elindult.</translation>
 <translation id="3067505415088964188">Alacsony ár</translation>
 <translation id="3068118691172921711">A fájlok feltöltése a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba 1 perc múlva kezdődik</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elem}other{{ITEMS} elem}}</translation>
 <translation id="3076865167425975822">Operációs rendszer</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">A Google használhatja a kosarait személyre szabott kedvezmények keresésére</translation>
@@ -1729,7 +1730,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4084219288110917128">C1 boríték</translation>
 <translation id="4085326869263783566">Segítség az íráshoz. A megnyitáshoz nyomja meg a Tab billentyűt, majd az Entert.</translation>
 <translation id="4085769736382018559">Termék-összehasonlítás</translation>
-<translation id="4085778582400064057">2-es kék</translation>
+<translation id="4085778582400064057">Kék 2</translation>
 <translation id="4088981014127559358">1. oldali kép Y-eltolása</translation>
 <translation id="4089152113577680600">14. tálca</translation>
 <translation id="4092349052316400070">Cím kitöltése</translation>
@@ -1974,7 +1975,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt az oldalnak a Google Fordítóval történő lefordításához</translation>
 <translation id="4515275063822566619">A kártyák és a címek a Chrome-ból és az Ön Google-fiókjából (<ph name="ACCOUNT_EMAIL" />) származnak. A <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" /> kezelheti őket.</translation>
 <translation id="4515847625438516456">Kisautók és szubkompakt autók</translation>
-<translation id="451601984112574365">3-as zöld</translation>
+<translation id="451601984112574365">Zöld 3</translation>
 <translation id="4519245469315452746">A frissítési folyamat során megszakadt eszközével a kapcsolat.</translation>
 <translation id="4520048001084013693">A fájl letöltését rendszergazdai házirend tiltja</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
@@ -2181,7 +2182,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4901952598169637881">Cipők mindennapi viseletre</translation>
 <translation id="4905659621780993806">Rendszergazdája a következő időpontban automatikusan újra fogja indítani az eszközét: <ph name="DATE" /> <ph name="TIME" />. Az eszköz újraindítása előtt mentse az összes megnyitott elemet.</translation>
 <translation id="4913987521957242411">Lyuk balra fent</translation>
-<translation id="4914727764832832057">1-es kék</translation>
+<translation id="4914727764832832057">Kék 1</translation>
 <translation id="4916389289686916969">Televíziós valóságshow-k</translation>
 <translation id="4917064667437236721">Képkezelő henger</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> telepítése (nincs szükség letöltésre)</translation>
@@ -2254,7 +2255,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5040262127954254034">Adatvédelem</translation>
 <translation id="5043480802608081735">Vágólapra másolt link</translation>
-<translation id="5043753287208271200">3-as sárga</translation>
+<translation id="5043753287208271200">Sárga 3</translation>
 <translation id="5045550434625856497">Helytelen jelszó</translation>
 <translation id="5048293684454354469">A hirdetéstéma csupán egy azon számos dolog közül, amelyet a webhelyek a hirdetések személyre szabásához használhatnak. A webhelyek a hirdetéstémák nélkül is megjeleníthetnek Önnek hirdetéseket, de előfordulhat, hogy ezek a hirdetések kevésbé lesznek személyre szabottak. További információ a <ph name="BEGIN_LINK" />hirdetésekhez kapcsolódó adatvédelem kezeléséről<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Aktív témák</translation>
@@ -2561,7 +2562,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5593640815048812868">Laptopok és notebookok</translation>
 <translation id="5595485650161345191">Cím szerkesztése</translation>
 <translation id="5596939519753369075">2 × 3,5 hüvelyk</translation>
-<translation id="5597254438174353289">3-as kék</translation>
+<translation id="5597254438174353289">Kék 3</translation>
 <translation id="560412284261940334">A kezelés nem támogatott</translation>
 <translation id="5605249000617390290">További információ az árkövetésről</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -2617,7 +2618,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5701381305118179107">Középre</translation>
 <translation id="5707154300732650394">Utazás folytatása</translation>
 <translation id="57094364128775171">Erős jelszó ajánlása…</translation>
-<translation id="570953204696852961">3-as piros</translation>
+<translation id="570953204696852961">Piros 3</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Állatorvosok</translation>
 <translation id="5715150588940290235">Törli a mentett biztonsági kódokat?</translation>
@@ -2818,7 +2819,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6085149458302186532">Címkék (színes)</translation>
 <translation id="6087312102907839798">Kapcsolódó keresések</translation>
 <translation id="6089505343295765444">A Chrome-előzményekből törölt lapok továbbra is meg fognak jelenni az összehasonlító táblázatokban</translation>
-<translation id="6093599771645355227">1-es sárga</translation>
+<translation id="6093599771645355227">Sárga 1</translation>
 <translation id="6093795393556121384">Kártyáját ellenőriztük</translation>
 <translation id="6094273045989040137">Jegyzetelés</translation>
 <translation id="6094290315941448991">Rendszergazdai házirend tiltja felvétel készítését a képernyőről, ha bizalmas tartalom látható rajta.</translation>
@@ -2829,6 +2830,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6106989379647458772">Előfordulhat, hogy a(z) <ph name="PAGE" /> webhelyen található oldal ideiglenesen nem érhető el, vagy véglegesen új címre költözött.</translation>
 <translation id="6107012941649240045">Tulajdonos</translation>
 <translation id="6107924765192360631">Kezdje el néhány szóval vagy az első piszkozattal, hogy írási javaslatokat kaphasson.</translation>
+<translation id="6108508372809181847">A következő összehasonlítása: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Tanúsítványadatok</translation>
 <translation id="6108702513636120202">Az Ön keresőmotorja a Chromiumban</translation>
 <translation id="6108849843016142864">Hüllők és kétéltűek</translation>
@@ -3357,7 +3359,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7058774143982824355">Jelszavakat tartalmazó CSV-fájlt elemző szolgáltatás</translation>
 <translation id="7062635574500127092">Pávakék</translation>
 <translation id="706295145388601875">Címek hozzáadása és kezelése a Chrome-beállítások között</translation>
-<translation id="7063157783216323487">2-es zöld</translation>
+<translation id="7063157783216323487">Zöld 2</translation>
 <translation id="7064443976734085921">Kompakt autók</translation>
 <translation id="7064851114919012435">Kapcsolatfelvételi adatok</translation>
 <translation id="7067633076996245366">Soul és R&amp;B</translation>
@@ -3912,7 +3914,7 @@ További részletek:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új űrlap gyors létrehozásához a Google Űrlapok szolgáltatással</translation>
 <translation id="8028892419725165118">Egyszerű játékok</translation>
 <translation id="8028960012888758725">Vágás a munka végén</translation>
-<translation id="8029829038322015001">1-es piros</translation>
+<translation id="8029829038322015001">Piros 1</translation>
 <translation id="8030729864112325446">Szakképzés és folyamatos képzés</translation>
 <translation id="8032546467100845887">Átláthatóság</translation>
 <translation id="8035152190676905274">Toll</translation>
@@ -3920,7 +3922,7 @@ További részletek:
 <translation id="8037117624646282037">Ki használta az eszközt a közelmúltban?</translation>
 <translation id="8037357227543935929">Kérdezzen rá (alapértelmezés szerint)</translation>
 <translation id="803771048473350947">Fájl</translation>
-<translation id="8038182528865038593">2-es piros</translation>
+<translation id="8038182528865038593">Piros 2</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8041940743680923270">Globális alapértelmezés használata (Megkérdezés)</translation>
 <translation id="8043255123207491407">Az eladó általános szerződési feltételeinek megtekintése</translation>
@@ -4323,7 +4325,7 @@ További részletek:
 <translation id="8767881944435256294">{COUNT,plural, =1{1 fizetési mód}other{# fizetési mód}}</translation>
 <translation id="8768225988514678921">Prezentáció létrehozása gomb. A gombot megnyomva gyorsan új Google-prezentációt hozhat létre a Diák szolgáltatás segítségével.</translation>
 <translation id="8769662576926275897">Kártyaadatok</translation>
-<translation id="8769858749286369844">2-es cserszín</translation>
+<translation id="8769858749286369844">Barna 2</translation>
 <translation id="8770286973007342895">Fűnyírók</translation>
 <translation id="8772387130037509473">Jóga és Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Biztosan áthelyezi a bizalmas fájlt?}other{Biztosan áthelyezi a bizalmas fájlokat?}}</translation>
@@ -4415,7 +4417,7 @@ További részletek:
 <translation id="8956124158020778855">A beállítás bekapcsolása után térjen vissza erre a lapra az írás elkezdéséhez.</translation>
 <translation id="8957210676456822347">Hitelesítés hitelesítési portállal</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_MAX" />/<ph name="NICKNAME_COUNT" /></translation>
-<translation id="8959288490306482616">3-as cserszín</translation>
+<translation id="8959288490306482616">Barna 3</translation>
 <translation id="8963117664422609631">A webhely beállításainak megnyitása</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Javaslatok:<ph name="MARKUP_2" />Ellenőrizze, hogy van-e adatkapcsolata<ph name="MARKUP_3" />Töltse be újra a weboldalt később<ph name="MARKUP_4" />Ellenőrizze a beírt internetcímet<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Kártya mentése</translation>
@@ -4478,7 +4480,7 @@ További részletek:
 <translation id="90695670378604968">Műanyag (matt)</translation>
 <translation id="9069693763241529744">Bővítmény tiltja</translation>
 <translation id="9073799351042754113">Ön kikapcsolta a biztonsági figyelmeztetéseket ezen a webhelyen.</translation>
-<translation id="9075717835386447447">1-es cserszín</translation>
+<translation id="9075717835386447447">Barna 1</translation>
 <translation id="9076283476770535406">Lehet, hogy felnőtt tartalommal rendelkezik</translation>
 <translation id="9078912659001679888">Mixerek és gyümölcscentrifugák</translation>
 <translation id="9078964945751709336">Több információra van szükség</translation>
@@ -4588,7 +4590,7 @@ További részletek:
 <translation id="949314938206378263">A webhely felkeresését kérelmezted. Szülőd a Family Linkben reagálhat rá.</translation>
 <translation id="950736567201356821">Három lyuk felül</translation>
 <translation id="950926967802086924">Azonosítókulcs • Google Jelszókezelő</translation>
-<translation id="95721182352849470">2-es sárga</translation>
+<translation id="95721182352849470">Sárga 2</translation>
 <translation id="961663415146723894">Kötés alul</translation>
 <translation id="961856697154696964">Böngészési adatok törlése</translation>
 <translation id="961930410699694996">A helyadatok erre az alkalomra engedélyezve vannak</translation>

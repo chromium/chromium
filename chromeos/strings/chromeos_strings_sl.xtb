@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Onemogočanje temne teme</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1808803439260407870">Klasična umetnost</translation>
+<translation id="181434555916624618">Rezultati z osebami za zdaj ne bodo prikazani. Poskusite uporabiti drug poziv.</translation>
 <translation id="1815850098929213707">Izbrani ključ je <ph name="KEYS" />. Dotaknite se gumba, če želite urediti kontrolnik.</translation>
 <translation id="1823120442877418684">Znaki</translation>
 <translation id="1827738518074806965">Umetnostna galerija</translation>
@@ -769,6 +770,7 @@
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4744944742468440486">Podatki, povezani z vašim izborom</translation>
+<translation id="4750394297954878236">Predlogi</translation>
 <translation id="4771607256327216405">posvetlitev osvetlitve tipkovnice</translation>
 <translation id="4771923071974529837">jutri</translation>
 <translation id="4773299976671772492">Ustavljeno</translation>
@@ -1295,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
 <translation id="7135814714616751706">Iskanje bližnjic</translation>
 <translation id="7138614237884624401">Poenostavljeno besedilo</translation>
+<translation id="7138668887584231801">Premalo besed za povzetek</translation>
 <translation id="7141470099673912333">Prenos vsebine</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>

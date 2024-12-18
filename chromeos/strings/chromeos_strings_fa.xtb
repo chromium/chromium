@@ -770,6 +770,7 @@
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
+<translation id="4750394297954878236">پیشنهادات</translation>
 <translation id="4771607256327216405">صفحه‌کلید روشن‌تر</translation>
 <translation id="4771923071974529837">فردا</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
@@ -1296,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{سرور نام}one{سرور نام}other{سرورهای نام}}</translation>
 <translation id="7135814714616751706">جستجوی میان‌برها</translation>
 <translation id="7138614237884624401">نوشتار ساده‌شده</translation>
+<translation id="7138668887584231801">تعداد کلمات برای خلاصه کردن کافی نیست</translation>
 <translation id="7141470099673912333">انتقال محتوا</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>

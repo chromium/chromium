@@ -8023,6 +8023,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="672208878794563299">Dette nettstedet kommer til å spørre på nytt neste gang.</translation>
 <translation id="6722744767592605627">Du kan gjenopprette <ph name="EMAIL" />, men lokale data slettes.</translation>
 <translation id="6723661294526996303">Importér bokmerker og innstillinger...</translation>
+<translation id="6723740634201835758">I Google-kontoen din</translation>
 <translation id="6723839827191551955">Kontroller mediene du caster</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6725073593266469338">UI-tjeneste</translation>
@@ -10191,6 +10192,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8263228331881858381">Passnøkkelen er lagret</translation>
 <translation id="8263336784344783289">Gi denne gruppen navn</translation>
 <translation id="8264024885325823677">Denne innstillingen administreres av administratoren.</translation>
+<translation id="8265018477030547118">Bare på denne enheten</translation>
 <translation id="826511437356419340">Du er i modusen for vindusoversikt. Sveip for å navigere, eller trykk på Tab hvis du bruker tastatur.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Inkognitovinduet ditt blir ikke gjenåpnet når du starter nettleseren på nytt}other{De {COUNT} inkognitovinduene dine blir ikke gjenåpnet når du starter nettleseren på nytt}}</translation>
 <translation id="8266947622852630193">Alle inndatametoder</translation>

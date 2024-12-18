@@ -98,6 +98,7 @@ As jy dit uitvee sal almal onmiddellik toegang tot die “<ph name="TITLE_OF_GRO
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> oortjie is bygevoeg}other{<ph name="MANY_ADDED" /> oortjies is bygevoeg}}</translation>
 <translation id="5161254044473106830">Titel word vereis</translation>
 <translation id="5339733443032484186">Jou jongste oortjie</translation>
+<translation id="5380159289133845234">Argiveer duplikaatoortjies</translation>
 <translation id="5400836586163650660">Grys</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
@@ -117,6 +118,7 @@ As jy dit verlaat, sal jy onmiddellik toegang tot die “<ph name="TITLE_OF_GROU
 <translation id="6051432659151380973">Jou oortjiegroepe stoor outomaties</translation>
 <translation id="6054741997831917303">Hierdie item se prys het onlangs van <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /> gedaal</translation>
 <translation id="6082313992897617440">Jy sal onmiddellik toegang tot die <ph name="GROUP_NAME" />-oortjiegroep verloor</translation>
+<translation id="6109251075362363230">Alle duplikaatoortjies sal nou ook geargiveer word, met die uitsondering van die mees onlangse kopie.</translation>
 <translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
 <translation id="6271513594716432922">Maak alle onaktiewe oortjies toe</translation>

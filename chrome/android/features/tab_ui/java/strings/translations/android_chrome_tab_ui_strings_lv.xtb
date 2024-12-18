@@ -98,7 +98,9 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> cilne pievienota}zero{<ph name="MANY_ADDED" /> cilnes pievienotas}one{<ph name="MANY_ADDED" /> cilne pievienota}other{<ph name="MANY_ADDED" /> cilnes pievienotas}}</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>
+<translation id="5380159289133845234">Ciļņu dublikātu arhivēšana</translation>
 <translation id="5400836586163650660">Pelēka</translation>
+<translation id="5446043142172831860">Noņemt cilni un pamest grupu</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +119,7 @@ Ja pametīsiet grupu, jūs nekavējoties zaudēsiet piekļuvi ciļņu grupai “
 <translation id="6051432659151380973">Ciļņu grupas tiek automātiski saglabātas.</translation>
 <translation id="6054741997831917303">Šai precei nesen tika pazemināta cena no <ph name="PREVIOUS_PRICE" /> uz <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Jūs nekavējoties zaudēsiet piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”.</translation>
+<translation id="6109251075362363230">Tagad tiks arhivētas arī visas dublētās cilnes, atstājot tikai to, kuru izmantojāt pēdējo.</translation>
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
 <translation id="6228793724645064692">(veikala vērtējums)</translation>
 <translation id="6271513594716432922">Aizvērt visas neaktīvās cilnes</translation>

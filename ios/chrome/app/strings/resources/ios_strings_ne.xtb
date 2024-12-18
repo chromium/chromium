@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">सिंक गर्ने सुविधा सक्रिय गर्ने हो?</translation>
 <translation id="1253032109800629289">"मूल्यको ट्र्याकिङसम्बन्धी नोटिफिकेसन प्राप्त गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="1258491128795710625">नयाँ के छ</translation>
+<translation id="1259210743048744967">तपाईंले <ph name="USER_EMAIL" /> बाट साइन आउट गरेपछि तपाईंको हालको ब्राउजिङ डेटा उपलब्ध हुने छ। यो डेटा यो खातामा सेभ गरिने छैन।</translation>
 <translation id="1262724000444746916">"बुकमार्कहरूको सूचीमा हाल्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1263433075299269530">तपाईंले पछिल्लो पटक खोल्नुभएको ट्याब</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">ट्याब हटाउने र समूह मेटाउने हो?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> चयन गरियो</translation>
 <translation id="1709916727352927457">पासकी मेटाउनुहोस्</translation>
+<translation id="1712341189152602203">हालको ब्राउजिङ डेटा <ph name="USER_EMAIL" /> सँग लिंक गरिने छ। तपाईंको सङ्गठनले यो डेटा हेर्न सक्ने सम्भावना हुन्छ।</translation>
 <translation id="1713777106376424209">डेलिभर गर्ने सेवा प्रदायक</translation>
 <translation id="1715515772563243997">तपाईंलाई <ph name="SITE" /> माथि विश्वास छ भने तपाईं सेभ गरिएको पासवर्ड प्रयोग गरेर साइन इन गर्न सक्नुहुन्छ।</translation>
 <translation id="1728549374069268714">पेस्ट गर्नुहोस् र अघि बढ्नुहोस्</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">तपाईंले पासवर्ड सेभ गर्नुभएको साइटमा "साइन इन पासवर्ड" फिल्डमा ट्याप गर्नुहोस्।</translation>
 <translation id="1872096359983322073">टर्च</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />।</translation>
+<translation id="1879793121657209834">हाल यो डिभाइसमा भएका पासवर्ड र हिस्ट्रीलगायतका ब्राउजिङ डेटा के गर्ने भन्ने कुरा चयन गर्नुहोस्।</translation>
 <translation id="1881621406744213161">परिवारका सदस्यहरूलाई निम्तो गर्नुहोस्</translation>
 <translation id="188237709236611317">स्मार्ट सर्ट मेनु बार</translation>
 <translation id="1883255238294161206">संक्षिप्त सूची</translation>
@@ -512,6 +515,7 @@
 <translation id="3324193307694657476">ठेगाना 2</translation>
 <translation id="3328801116991980348">साइट जानकारी</translation>
 <translation id="333229797575847124">यो सुविधा अन गर्ने तरिका</translation>
+<translation id="3333566504534692948">अहँ, यसलाई सारेर आफ्नो वर्क स्पेसमा लैजानुहोस्</translation>
 <translation id="3344485292736684439">{count,plural, =1{यो बुकमार्क तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरियो}other{यी बुकमार्कहरू तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरिए}}</translation>
 <translation id="334690320928261823">हालसालै बन्द गरिएका ट्याबहरू</translation>
 <translation id="3348387552617855658">तपाईं यो कार्डका सहायताले आफ्ना प्याकेजहरू ट्रयाक गर्न र डेलिभरीसम्बन्धी महत्त्वपूर्ण अद्यावधिक जानकारी प्राप्त गर्न सक्नुहुन्छ।</translation>
@@ -736,7 +740,7 @@
 <translation id="4402672425188312225">{COUNT,plural, =1{एउटा ट्याब}other{# वटा ट्याब}}</translation>
 <translation id="4405320213589929829">स्थानीय जानकारी र जाने बाटो प्राप्त गर्न वेबपेजमा ठेगानाहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="441218095371040430">किबोर्ड प्रयोग गर्नुहोस्</translation>
-<translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="4415276339145661267">आफ्नो Google खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4430277756566635951">अहिले <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="4431224949908513835">आफूले हाल्न चाहेको भुक्तानी विधि चयन गर्नुहोस्।</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />सेटिङ<ph name="END_BOLD" /> खोल्नुहोस्</translation>

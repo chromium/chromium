@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Ungependa kuwasha usawazishaji?</translation>
 <translation id="1253032109800629289">Ficha sehemu ya "Pata Arifa za Ufuatiliaji wa Bei"</translation>
 <translation id="1258491128795710625">Mapya</translation>
+<translation id="1259210743048744967">Data yako iliyopo ya kuvinjari itapatikana ukishaondoka kwenye akaunti ya <ph name="USER_EMAIL" />. Haitahifadhiwa kwenye akaunti hii.</translation>
 <translation id="1262724000444746916">Ficha Chaguo la Weka kwenye Alamisho</translation>
 <translation id="1263231323834454256">Orodha ya kusoma</translation>
 <translation id="1263433075299269530">Kichupo ulichofungua mara ya mwisho</translation>
@@ -168,6 +169,7 @@
 <translation id="169048873465870056">Ungependa kuondoa kichupo na ufute kikundi?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> vimechaguliwa</translation>
 <translation id="1709916727352927457">Futa ufunguo wa siri</translation>
+<translation id="1712341189152602203">Data iliyopo ya kuvinjari itaunganishwa kwenye <ph name="USER_EMAIL" />. Huenda data hii ikaonekana kwenye shirika lako.</translation>
 <translation id="1713777106376424209">Unaletewa na</translation>
 <translation id="1715515772563243997">Ikiwa unaiamini tovuti ya <ph name="SITE" />, unaweza kutumia nenosiri ulilohifadhi ili uingie katika akaunti.</translation>
 <translation id="1728549374069268714">Bandika na utafute</translation>
@@ -203,6 +205,7 @@
 <translation id="1864266050569350424">Kwenye tovuti ambako umehifadhi nenosiri, gusa sehemu ya kuingia katika akaunti kwa kutumia nenosiri.</translation>
 <translation id="1872096359983322073">Tochi</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Chagua hatua za kuchukua kuhusu data iliyopo ya kuvinjari kwenye kifaa hiki, kama vile manenosiri, historia na mengineyo.</translation>
 <translation id="1881621406744213161">Alika wanafamilia</translation>
 <translation id="188237709236611317">Kupanga upau wa menyu kiotomatiki</translation>
 <translation id="1883255238294161206">Kunja orodha</translation>
@@ -512,6 +515,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3324193307694657476">Anwani ya 2</translation>
 <translation id="3328801116991980348">Maelezo ya tovuti</translation>
 <translation id="333229797575847124">Jinsi ya kuwasha kipengele hiki</translation>
+<translation id="3333566504534692948">Hapana, ihamishie kwenye nafasi yako ya kazi</translation>
 <translation id="3344485292736684439">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}" katika akaunti yako, {email}}other{Alamisho zimehifadhiwa kwenye "{title}" katika akaunti yako, {email}}}</translation>
 <translation id="334690320928261823">Vichupo vya Hivi Majuzi</translation>
 <translation id="3348387552617855658">Kadi hii hukusaidia kufuatilia vifurushi vyako na kukupa taarifa muhimu za ufikishaji.</translation>

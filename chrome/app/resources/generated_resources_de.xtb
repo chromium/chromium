@@ -2321,6 +2321,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2606568927909309675">Erstellt automatisch Untertitel für englischsprachige Audioinhalte und Videos. Audioinhalte und Untertitel werden ausschließlich auf dem Gerät gespeichert.</translation>
 <translation id="2606890864830643943">Diagnosedaten werden exportiert</translation>
 <translation id="2607101320794533334">Informationen zum öffentlichen Schlüssel des Antragstellers</translation>
+<translation id="2608837922830967145">Diese Meldung nicht mehr anzeigen</translation>
 <translation id="2609896558069604090">Verknüpfungen erstellen...</translation>
 <translation id="2609980095400624569">Es konnte keine Verbindung hergestellt werden</translation>
 <translation id="2610157865375787051">Ruhezustand</translation>
@@ -8011,6 +8012,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="672208878794563299">Diese Website fragt beim nächsten Mal wieder.</translation>
 <translation id="6722744767592605627">Du kannst <ph name="EMAIL" /> wiederherstellen, lokale Daten werden jedoch gelöscht.</translation>
 <translation id="6723661294526996303">Lesezeichen und Einstellungen importieren...</translation>
+<translation id="6723740634201835758">Im Google-Konto</translation>
 <translation id="6723839827191551955">Gestreamte Medien steuern</translation>
 <translation id="6723839937902243910">Leistung</translation>
 <translation id="6725073593266469338">UI-Dienst</translation>
@@ -10179,6 +10181,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8263228331881858381">Passkey gespeichert</translation>
 <translation id="8263336784344783289">Gruppe benennen</translation>
 <translation id="8264024885325823677">Diese Einstellung wird von deinem Administrator verwaltet.</translation>
+<translation id="8265018477030547118">Nur auf diesem Gerät</translation>
 <translation id="826511437356419340">Du befindest dich jetzt im Modus "Fensterübersicht". Um zwischen Fenstern zu wechseln, kannst du wischen oder auf der Tastatur die Tabulatortaste drücken.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Dein Inkognitofenster wird nach dem Neustart nicht wieder geöffnet}other{Deine {COUNT} Inkognitofenster werden nach dem Neustart nicht wieder geöffnet}}</translation>
 <translation id="8266947622852630193">Alle Eingabemethoden</translation>

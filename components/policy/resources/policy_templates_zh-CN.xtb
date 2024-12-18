@@ -4240,6 +4240,11 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       请注意，此功能目前只适用于 Google 内部网络环境。</translation>
 <translation id="4269859918103560644">允许用户决定</translation>
+<translation id="4271245613154024710">设置此政策可指定哪些独立式 Web 应用 (IWA) 可以使用 Web Smart Card API 连接到智能卡，而无需提示用户授予权限。此政策不接受通配符。
+
+<ph name="POLICY_NAME" /> 可覆盖此政策；具体而言，如果屏蔽名单的值为 <ph name="ALL_ISOLATED_WEB_APPS" />，则所有 IWA 都将无法连接到智能卡读卡器（用户甚至不会收到请求授权的提示），但此政策中列出的 IWA 除外。
+
+默认情况下，如果用户以交互方式为每个读卡器授予权限，则在清单文件中指定智能卡权限的 IWA 可以连接到智能卡。</translation>
 <translation id="4274691295133617461">如果此政策设为 3，系统会允许网站通过 File System API 请求对主机操作系统的文件系统中的文件和目录的读取权限。如果此政策设为 2，系统会禁止网站请求访问。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
@@ -5785,6 +5790,11 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       </translation>
 <translation id="5448022937220253000">选择在 <ph name="LACROS_NAME" /> 停用后如何处理用户数据</translation>
 <translation id="5449690328792750354">Event.path API 将可用。</translation>
+<translation id="5450507908812118425">通过设置此政策，您可以指定哪些独立式 Web 应用 (IWA) 无法连接到智能卡读卡器（用户甚至不会收到请求授权的提示）。此政策接受通配符，例如，<ph name="ALL_ISOLATED_WEB_APPS" /> 将阻止所有 IWA 的访问。
+
+<ph name="POLICY_NAME" /> 可覆盖此政策；具体而言，如果屏蔽名单的值为 <ph name="ALL_ISOLATED_WEB_APPS" />，则所有 IWA 都将无法连接到智能卡读卡器（用户甚至不会收到请求授权的提示），但 <ph name="POLICY_NAME" /> 中列出的 IWA 除外。
+
+默认情况下，如果用户以交互方式为每个读卡器授予权限，则在清单文件中指定智能卡权限的 IWA 可以连接到智能卡。</translation>
 <translation id="5452024130413254050">控制使用该配置的虚拟机能否访问 vTPM，默认是 false 和 <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />（如未设置此政策）。</translation>
 <translation id="5454128917282602937">当用户在 <ph name="PRODUCT_OS_NAME" /> 设备之间切换时，<ph name="PRODUCT_NAME" /> V2 服务会在新设备上启动先前所用设备上的浏览器窗口和应用窗口。
 如果此政策已启用，系统会在登录时自动启动当前用户上次所用 <ph name="PRODUCT_OS_NAME" /> 设备上的浏览器窗口和应用窗口。如果此政策已停用或未设置，系统在登录时启动的项目将取决于默认设置。</translation>
