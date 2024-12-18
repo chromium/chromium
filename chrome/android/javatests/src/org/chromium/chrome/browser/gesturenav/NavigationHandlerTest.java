@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 
+import androidx.activity.BackEventCompat;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -77,6 +78,10 @@ import java.util.concurrent.TimeoutException;
 public class NavigationHandlerTest {
     private static final String RENDERED_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
+    private static final String INCORRECT_EDGE_SWIPE_HISTOGRAM =
+            "Android.BackPress.IncorrectEdgeSwipe";
+    private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
+            "Android.BackPress.IncorrectEdgeSwipe.CountChained";
     private static final boolean LEFT_EDGE = true;
     private static final boolean RIGHT_EDGE = false;
 
@@ -386,6 +391,47 @@ public class NavigationHandlerTest {
         Assert.assertEquals(
                 mTestServer.getURL(RENDERED_PAGE),
                 ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Device(DeviceFormFactor.TABLET)
+    public void testIncorrectEdgeSwipes() {
+        // Swipe incorrectly 3 times and correctly once.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                INCORRECT_EDGE_SWIPE_HISTOGRAM, BackEventCompat.EDGE_RIGHT, 3)
+                        .expectIntRecord(INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM, 3)
+                        .build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mNavUtils.swipeFromEdge(RIGHT_EDGE);
+        mNavUtils.swipeFromEdge(RIGHT_EDGE);
+        mNavUtils.swipeFromEdge(RIGHT_EDGE);
+        mNavUtils.swipeFromEdge(LEFT_EDGE);
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Device(DeviceFormFactor.TABLET)
+    public void testNoIncorrectEdgeSwipes() {
+        // Perform only correct swipes, should not see any incorrect edge swipe histograms.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(INCORRECT_EDGE_SWIPE_HISTOGRAM)
+                        .expectNoRecords(INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM)
+                        .build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.RECENT_TABS_URL);
+        mNavUtils.swipeFromEdge(LEFT_EDGE);
+        mNavUtils.swipeFromEdge(LEFT_EDGE);
+
+        histogramWatcher.assertExpected("Wrong histogram recording");
     }
 
     @Test

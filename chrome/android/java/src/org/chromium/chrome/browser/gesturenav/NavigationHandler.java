@@ -121,6 +121,7 @@ class NavigationHandler implements TouchEventObserver {
 
     private @TriggerUiCallSource int mTriggerUiCallSource;
 
+    private int mIncorrectEdgeSwipeCount;
     private boolean mBackGestureForTabHistoryInProgress;
     private boolean mStartNavDuringOngoingGesture;
     private TabObserver mTabObserver =
@@ -175,6 +176,7 @@ class NavigationHandler implements TouchEventObserver {
                     }
                 };
         parentView.addOnAttachStateChangeListener(mAttachStateListener);
+        mIncorrectEdgeSwipeCount = 0;
     }
 
     void setTab(Tab tab) {
@@ -292,6 +294,13 @@ class NavigationHandler implements TouchEventObserver {
         mModel.set(DIRECTION, forward);
         mModel.set(EDGE, mInitiatingEdge);
         if (canNavigate(forward)) {
+            // Correct swipe, reset mIncorrectEdgeSwipeCount.
+            // Only record metrics if mIncorrectEdgeSwipeCount > 0.
+            if (mIncorrectEdgeSwipeCount > 0) {
+                BackPressMetrics.recordIncorrectEdgeSwipeCountChained(mIncorrectEdgeSwipeCount);
+                mIncorrectEdgeSwipeCount = 0;
+            }
+
             if (mState != GestureState.STARTED) mModel.set(ACTION, GestureAction.RESET_BUBBLE);
             mModel.set(CLOSE_INDICATOR, getCloseIndicator(forward));
             mModel.set(ACTION, GestureAction.SHOW_ARROW);
@@ -317,6 +326,10 @@ class NavigationHandler implements TouchEventObserver {
             }
             mBackActionDelegate.onGestureHandled();
         } else {
+            // Incorrect swipe.
+            // Record the initiating edge (left or right).
+            mIncorrectEdgeSwipeCount += 1;
+            BackPressMetrics.recordIncorrectEdgeSwipe(mInitiatingEdge);
             mBackActionDelegate.onGestureUnhandled();
         }
 
@@ -340,6 +353,7 @@ class NavigationHandler implements TouchEventObserver {
 
     /**
      * Perform navigation back or forward.
+     *
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      */
     void navigate(boolean forward) {

@@ -28,6 +28,10 @@ public class BackPressMetrics {
             "Android.BackPress.Intercept.LeftEdge";
     private static final String INTERCEPT_FROM_RIGHT_HISTOGRAM =
             "Android.BackPress.Intercept.RightEdge";
+    private static final String INCORRECT_EDGE_SWIPE_HISTOGRAM =
+            "Android.BackPress.IncorrectEdgeSwipe";
+    private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
+            "Android.BackPress.IncorrectEdgeSwipe.CountChained";
 
     @IntDef({
         PredictiveGestureNavPhase.ACTIVATED,
@@ -41,6 +45,21 @@ public class BackPressMetrics {
         int COMPLETED = 2;
 
         int NUM_ENTRIES = 3;
+    }
+
+    /**
+     * @param edge The edge from which the gesture is swiped from {@link BackEventCompat}.
+     */
+    public static void recordIncorrectEdgeSwipe(int edge) {
+        RecordHistogram.recordEnumeratedHistogram(INCORRECT_EDGE_SWIPE_HISTOGRAM, edge, 2);
+    }
+
+    /**
+     * @param count The consecutive number of incorrect edge swipes the user has performed.
+     */
+    public static void recordIncorrectEdgeSwipeCountChained(int count) {
+        RecordHistogram.recordCount100Histogram(
+                INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM, count);
     }
 
     /**

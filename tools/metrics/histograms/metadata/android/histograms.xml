@@ -824,6 +824,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BackPress.IncorrectEdgeSwipe" enum="SwipeEdge"
+    expires_after="2025-04-27">
+  <owner>eleanorlee@google.com</owner>
+  <owner>lazzzis@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records any incorrect edge swipes the user tries to perform. Recorded in
+    3-button mode when the user tries to swipe from the forward edge and the
+    page is not navigable, such as when the forward stack is empty. Android
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Android.BackPress.IncorrectEdgeSwipe.CountChained"
+    units="count" expires_after="2025-04-27">
+  <owner>eleanorlee@google.com</owner>
+  <owner>lazzzis@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the consecutive number of incorrect edge swipes the user tries to
+    perform if the number of incorrect edge swipes are greater than zero.
+    Recorded in 3-button mode when the user makes a correct edge swipe, which is
+    when the user swipes from either the right edge or the left edge and the
+    page is navigable. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Android.BackPress.Intercept.CustomTab{Task}"
     enum="BackPressConsumer" expires_after="2025-05-15">
   <owner>lazzzis@chromium.org</owner>
