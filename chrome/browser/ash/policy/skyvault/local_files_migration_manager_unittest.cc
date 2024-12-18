@@ -302,8 +302,7 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
       "Enterprise.SkyVault.Migration.OneDrive.FailureDuration", 1);
 }
 
-// TODO(crbug.com/377696464): Fix this flaky test.
-TEST_F(LocalFilesMigrationManagerTest, DISABLED_RetriesIfAllowed) {
+TEST_F(LocalFilesMigrationManagerTest, RetriesIfAllowed) {
   SetUpMyFiles();
   base::FilePath test_file_path = CreateTestFile(kTestFile);
   SetPrefs(State::kInProgress);
