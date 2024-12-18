@@ -2249,8 +2249,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // -webkit-appearance utility functions.
-  static bool HasEffectiveAppearance(ControlPart effective_appearance) {
-    return effective_appearance != kNoControlPart;
+  static bool HasEffectiveAppearance(AppearanceValue effective_appearance) {
+    return effective_appearance != AppearanceValue::kNone;
   }
   bool HasEffectiveAppearance() const {
     return HasEffectiveAppearance(EffectiveAppearance());
@@ -2489,7 +2489,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;
 
-  bool HasAppearance() const { return Appearance() != kNoControlPart; }
+  bool HasAppearance() const { return Appearance() != AppearanceValue::kNone; }
 
   void ApplyMotionPathTransform(float origin_x,
                                 float origin_y,
@@ -2715,7 +2715,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     return ComputedStyle::HasEffectiveAppearance(EffectiveAppearance());
   }
   bool HasBaseSelectAppearance() const {
-    return Appearance() == ControlPart::kBaseSelectPart;
+    return Appearance() == AppearanceValue::kBaseSelect;
   }
 
   // backdrop-filter

@@ -189,7 +189,7 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
   void DidRecalcStyle(const StyleRecalcChange change) override {
     HTMLDivElement::DidRecalcStyle(change);
     if (auto* style = GetComputedStyle()) {
-      if (style->EffectiveAppearance() == ControlPart::kBaseSelectPart) {
+      if (style->EffectiveAppearance() == AppearanceValue::kBaseSelect) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kSelectElementPickerAppearanceBaseSelect);
       }
@@ -665,7 +665,7 @@ bool MenuListSelectType::IsAppearanceBaseButton() const {
   // TODO(crbug.com/364348901): Update style and layout here.
   DCHECK(select_);
   if (auto* style = select_->GetComputedStyle()) {
-    return style->EffectiveAppearance() == ControlPart::kBaseSelectPart;
+    return style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
   }
   return false;
 }
@@ -682,7 +682,7 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
   // computation, sometimes at bad times.
   DCHECK(popover_);
   if (auto* style = popover_->GetComputedStyle()) {
-    return style->EffectiveAppearance() == ControlPart::kBaseSelectPart;
+    return style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
   }
   return false;
 }
@@ -907,7 +907,7 @@ void MenuListSelectType::DidDetachLayoutTree() {
 void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
   if (auto* style = select_->GetComputedStyle()) {
     bool is_appearance_base_select =
-        style->EffectiveAppearance() == ControlPart::kBaseSelectPart;
+        style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
     if (is_appearance_base_select_ != is_appearance_base_select) {
       is_appearance_base_select_ = is_appearance_base_select;
       // Switching appearance needs layout to be rebuilt because of special

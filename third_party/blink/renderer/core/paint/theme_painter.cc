@@ -97,14 +97,14 @@ bool ThemePainter::Paint(const LayoutObject& o,
                          const gfx::Rect& r) {
   Document& doc = o.GetDocument();
   const ComputedStyle& style = o.StyleRef();
-  ControlPart part = o.StyleRef().EffectiveAppearance();
+  AppearanceValue appearance = o.StyleRef().EffectiveAppearance();
   // LayoutTheme::AdjustAppearanceWithElementType() ensures |node| is a
   // non-null Element.
   DCHECK(o.GetNode());
-  DCHECK_NE(part, kNoControlPart);
+  DCHECK_NE(appearance, AppearanceValue::kNone);
   const Element& element = *To<Element>(o.GetNode());
 
-  if (part == kButtonPart) {
+  if (appearance == AppearanceValue::kButton) {
     if (IsA<HTMLButtonElement>(element)) {
       UseCounter::Count(doc, WebFeature::kCSSValueAppearanceButtonForButton);
     } else if (auto* input_element = DynamicTo<HTMLInputElement>(element);
@@ -119,84 +119,84 @@ bool ThemePainter::Paint(const LayoutObject& o,
   }
 
   // Call the appropriate paint method based off the appearance value.
-  switch (part) {
-    case kCheckboxPart: {
+  switch (appearance) {
+    case AppearanceValue::kCheckbox: {
       COUNT_APPEARANCE(doc, Checkbox);
       return PaintCheckbox(element, o.GetDocument(), style, paint_info, r);
     }
-    case kRadioPart: {
+    case AppearanceValue::kRadio: {
       COUNT_APPEARANCE(doc, Radio);
       return PaintRadio(element, o.GetDocument(), style, paint_info, r);
     }
-    case kPushButtonPart: {
+    case AppearanceValue::kPushButton: {
       COUNT_APPEARANCE(doc, PushButton);
       return PaintButton(element, o.GetDocument(), style, paint_info, r);
     }
-    case kSquareButtonPart: {
+    case AppearanceValue::kSquareButton: {
       COUNT_APPEARANCE(doc, SquareButton);
       return PaintButton(element, o.GetDocument(), style, paint_info, r);
     }
-    case kButtonPart:
+    case AppearanceValue::kButton:
       // UseCounter for this is handled at the beginning of the function.
       return PaintButton(element, o.GetDocument(), style, paint_info, r);
-    case kInnerSpinButtonPart: {
+    case AppearanceValue::kInnerSpinButton: {
       COUNT_APPEARANCE(doc, InnerSpinButton);
       return PaintInnerSpinButton(element, style, paint_info, r);
     }
-    case kMenulistPart:
+    case AppearanceValue::kMenulist:
       COUNT_APPEARANCE(doc, MenuList);
       return PaintMenuList(element, o.GetDocument(), style, paint_info, r);
-    case kMeterPart:
+    case AppearanceValue::kMeter:
       return true;
-    case kProgressBarPart:
+    case AppearanceValue::kProgressBar:
       COUNT_APPEARANCE(doc, ProgressBar);
       // Note that |-webkit-appearance: progress-bar| works only for <progress>.
       return PaintProgressBar(element, o, paint_info, r, style);
-    case kSliderHorizontalPart: {
+    case AppearanceValue::kSliderHorizontal: {
       COUNT_APPEARANCE(doc, SliderHorizontal);
       return PaintSliderTrack(element, o, paint_info, r, style);
     }
-    case kSliderVerticalPart: {
+    case AppearanceValue::kSliderVertical: {
       COUNT_APPEARANCE(doc, SliderVertical);
       return PaintSliderTrack(element, o, paint_info, r, style);
     }
-    case kSliderThumbHorizontalPart: {
+    case AppearanceValue::kSliderThumbHorizontal: {
       COUNT_APPEARANCE(doc, SliderThumbHorizontal);
       return PaintSliderThumb(element, style, paint_info, r);
     }
-    case kSliderThumbVerticalPart: {
+    case AppearanceValue::kSliderThumbVertical: {
       COUNT_APPEARANCE(doc, SliderThumbVertical);
       return PaintSliderThumb(element, style, paint_info, r);
     }
-    case kMediaSliderPart:
+    case AppearanceValue::kMediaSlider:
       COUNT_APPEARANCE(doc, MediaSlider);
       return true;
-    case kMediaSliderThumbPart:
+    case AppearanceValue::kMediaSliderThumb:
       COUNT_APPEARANCE(doc, MediaSliderThumb);
       return true;
-    case kMediaVolumeSliderPart:
+    case AppearanceValue::kMediaVolumeSlider:
       COUNT_APPEARANCE(doc, MediaVolumeSlider);
       return true;
-    case kMediaVolumeSliderThumbPart:
+    case AppearanceValue::kMediaVolumeSliderThumb:
       COUNT_APPEARANCE(doc, MediaVolumeSliderThumb);
       return true;
-    case kMenulistButtonPart:
+    case AppearanceValue::kMenulistButton:
       return true;
-    case kTextFieldPart:
+    case AppearanceValue::kTextField:
       CountAppearanceTextFieldPart(element);
       return PaintTextField(element, style, paint_info, r);
-    case kTextAreaPart:
+    case AppearanceValue::kTextArea:
       COUNT_APPEARANCE(doc, TextArea);
       return PaintTextArea(element, style, paint_info, r);
-    case kSearchFieldPart: {
+    case AppearanceValue::kSearchField: {
       COUNT_APPEARANCE(doc, SearchField);
       return PaintSearchField(element, style, paint_info, r);
     }
-    case kSearchFieldCancelButtonPart: {
+    case AppearanceValue::kSearchFieldCancelButton: {
       COUNT_APPEARANCE(doc, SearchCancel);
       return PaintSearchFieldCancelButton(o, paint_info, r);
     }
-    case kListboxPart:
+    case AppearanceValue::kListbox:
       return true;
     default:
       break;
@@ -216,44 +216,44 @@ bool ThemePainter::PaintBorderOnly(const Node* node,
   const Element& element = *To<Element>(node);
   // Call the appropriate paint method based off the appearance value.
   switch (style.EffectiveAppearance()) {
-    case kTextFieldPart:
-    case kTextAreaPart:
+    case AppearanceValue::kTextField:
+    case AppearanceValue::kTextArea:
       return false;
-    case kMenulistButtonPart:
-    case kSearchFieldPart:
-    case kListboxPart:
+    case AppearanceValue::kMenulistButton:
+    case AppearanceValue::kSearchField:
+    case AppearanceValue::kListbox:
       return true;
-    case kButtonPart:
-    case kCheckboxPart:
-    case kInnerSpinButtonPart:
-    case kMenulistPart:
-    case kProgressBarPart:
-    case kPushButtonPart:
-    case kRadioPart:
-    case kSearchFieldCancelButtonPart:
-    case kSliderHorizontalPart:
-    case kSliderThumbHorizontalPart:
-    case kSliderThumbVerticalPart:
-    case kSliderVerticalPart:
-    case kSquareButtonPart:
+    case AppearanceValue::kButton:
+    case AppearanceValue::kCheckbox:
+    case AppearanceValue::kInnerSpinButton:
+    case AppearanceValue::kMenulist:
+    case AppearanceValue::kProgressBar:
+    case AppearanceValue::kPushButton:
+    case AppearanceValue::kRadio:
+    case AppearanceValue::kSearchFieldCancelButton:
+    case AppearanceValue::kSliderHorizontal:
+    case AppearanceValue::kSliderThumbHorizontal:
+    case AppearanceValue::kSliderThumbVertical:
+    case AppearanceValue::kSliderVertical:
+    case AppearanceValue::kSquareButton:
       // Supported appearance values don't need CSS border painting.
       return false;
-    case kBaseSelectPart:
+    case AppearanceValue::kBaseSelect:
       return true;
-    case kNoControlPart:
-    case kAutoPart:
-      // kNoControlPart isn't possible because callers should only call this
-      // function when HasEffectiveAppearance is true.
-      // kAutoPart isn't possible because it can't be an effective appearance.
+    case AppearanceValue::kNone:
+    case AppearanceValue::kAuto:
+      // AppearanceValue::kNone isn't possible because callers should only
+      // call this function when HasEffectiveAppearance is true. kAutoPart isn't
+      // possible because it can't be an effective appearance.
       NOTREACHED();
     // TODO(dbaron): The following values were previously covered by a
     // default: case and should be classified correctly:
-    case kMediaControlPart:
-    case kMeterPart:
-    case kMediaSliderPart:
-    case kMediaSliderThumbPart:
-    case kMediaVolumeSliderPart:
-    case kMediaVolumeSliderThumbPart:
+    case AppearanceValue::kMediaControl:
+    case AppearanceValue::kMeter:
+    case AppearanceValue::kMediaSlider:
+    case AppearanceValue::kMediaSliderThumb:
+    case AppearanceValue::kMediaVolumeSlider:
+    case AppearanceValue::kMediaVolumeSliderThumb:
       UseCounter::Count(
           element.GetDocument(),
           WebFeature::kCSSValueAppearanceNoImplementationSkipBorder);
@@ -271,26 +271,26 @@ bool ThemePainter::PaintDecorations(const Node* node,
   DCHECK(node);
   // Call the appropriate paint method based off the appearance value.
   switch (style.EffectiveAppearance()) {
-    case kMenulistButtonPart:
+    case AppearanceValue::kMenulistButton:
       COUNT_APPEARANCE(document, MenuListButton);
       return PaintMenuListButton(*To<Element>(node), document, style,
                                  paint_info, r);
-    case kTextFieldPart:
-    case kTextAreaPart:
-    case kCheckboxPart:
-    case kRadioPart:
-    case kPushButtonPart:
-    case kSquareButtonPart:
-    case kButtonPart:
-    case kMenulistPart:
-    case kMeterPart:
-    case kProgressBarPart:
-    case kSliderHorizontalPart:
-    case kSliderVerticalPart:
-    case kSliderThumbHorizontalPart:
-    case kSliderThumbVerticalPart:
-    case kSearchFieldPart:
-    case kSearchFieldCancelButtonPart:
+    case AppearanceValue::kTextField:
+    case AppearanceValue::kTextArea:
+    case AppearanceValue::kCheckbox:
+    case AppearanceValue::kRadio:
+    case AppearanceValue::kPushButton:
+    case AppearanceValue::kSquareButton:
+    case AppearanceValue::kButton:
+    case AppearanceValue::kMenulist:
+    case AppearanceValue::kMeter:
+    case AppearanceValue::kProgressBar:
+    case AppearanceValue::kSliderHorizontal:
+    case AppearanceValue::kSliderVertical:
+    case AppearanceValue::kSliderThumbHorizontal:
+    case AppearanceValue::kSliderThumbVertical:
+    case AppearanceValue::kSearchField:
+    case AppearanceValue::kSearchFieldCancelButton:
     default:
       break;
   }
@@ -322,14 +322,15 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
     return;
 
   const ComputedStyle& style = o.StyleRef();
-  ControlPart part = style.EffectiveAppearance();
+  AppearanceValue appearance = style.EffectiveAppearance();
   // We don't support ticks on alternate sliders like MediaVolumeSliders.
   bool is_slider_vertical =
       RuntimeEnabledFeatures::
           NonStandardAppearanceValueSliderVerticalEnabled() &&
-      part == kSliderVerticalPart;
+      appearance == AppearanceValue::kSliderVertical;
   bool is_writing_mode_vertical = !style.IsHorizontalWritingMode();
-  if (!(part == kSliderHorizontalPart || is_slider_vertical)) {
+  if (!(appearance == AppearanceValue::kSliderHorizontal ||
+        is_slider_vertical)) {
     return;
   }
   bool is_horizontal = !is_writing_mode_vertical && !is_slider_vertical;

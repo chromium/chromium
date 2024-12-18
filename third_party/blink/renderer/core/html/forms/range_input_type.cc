@@ -102,7 +102,7 @@ void RangeInputType::DidRecalcStyle(const StyleRecalcChange) {
   if (const ComputedStyle* style = GetElement().GetComputedStyle()) {
     if (RuntimeEnabledFeatures::
             NonStandardAppearanceValueSliderVerticalEnabled() &&
-        style->EffectiveAppearance() == kSliderVerticalPart) {
+        style->EffectiveAppearance() == AppearanceValue::kSliderVertical) {
       UseCounter::Count(GetElement().GetDocument(),
                         WebFeature::kInputTypeRangeVerticalAppearance);
     } else {
@@ -225,7 +225,7 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
     if (RuntimeEnabledFeatures::
             NonStandardAppearanceValueSliderVerticalEnabled() &&
         writing_direction.IsHorizontal() &&
-        style->EffectiveAppearance() == kSliderVerticalPart) {
+        style->EffectiveAppearance() == AppearanceValue::kSliderVertical) {
       writing_direction = {WritingMode::kVerticalRl, TextDirection::kRtl};
     }
   }
@@ -332,8 +332,8 @@ void RangeInputType::DidSetValue(const String&, bool value_changed) {
     GetElement().UpdateView();
 }
 
-ControlPart RangeInputType::AutoAppearance() const {
-  return kSliderHorizontalPart;
+AppearanceValue RangeInputType::AutoAppearance() const {
+  return AppearanceValue::kSliderHorizontal;
 }
 
 void RangeInputType::UpdateView() {

@@ -60,20 +60,19 @@ AccessibilityOrientation AXSlider::Orientation() const {
   }
 
   // Else, look at the CSS appearance property for slider orientation.
-  ControlPart style_appearance = style->EffectiveAppearance();
-  switch (style_appearance) {
-    case kSliderThumbHorizontalPart:
-    case kSliderHorizontalPart:
-    case kMediaSliderPart:
+  switch (style->EffectiveAppearance()) {
+    case AppearanceValue::kSliderThumbHorizontal:
+    case AppearanceValue::kSliderHorizontal:
+    case AppearanceValue::kMediaSlider:
       return kAccessibilityOrientationHorizontal;
 
-    case kSliderVerticalPart:
+    case AppearanceValue::kSliderVertical:
       return RuntimeEnabledFeatures::
                      NonStandardAppearanceValueSliderVerticalEnabled()
                  ? kAccessibilityOrientationVertical
                  : kAccessibilityOrientationHorizontal;
-    case kSliderThumbVerticalPart:
-    case kMediaVolumeSliderPart:
+    case AppearanceValue::kSliderThumbVertical:
+    case AppearanceValue::kMediaVolumeSlider:
       return kAccessibilityOrientationVertical;
 
     default:

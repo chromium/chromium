@@ -102,8 +102,8 @@ void ImageInputType::HandleDOMActivateEvent(Event& event) {
   event.SetDefaultHandled();
 }
 
-ControlPart ImageInputType::AutoAppearance() const {
-  return kNoControlPart;
+AppearanceValue ImageInputType::AutoAppearance() const {
+  return AppearanceValue::kNone;
 }
 
 LayoutObject* ImageInputType::CreateLayoutObject(

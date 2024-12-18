@@ -477,8 +477,8 @@
       field_group: "*",
       field_size: 5,
       field_template: "primitive",
-      default_value: "kNoControlPart",
-      type_name: "ControlPart",
+      default_value: "AppearanceValue::kNone",
+      type_name: "AppearanceValue",
     },
     {
       name: "TextEmphasisCustomMark",

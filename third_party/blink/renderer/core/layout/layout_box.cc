@@ -1229,11 +1229,11 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
       return SliderIntrinsicInlineSize(*this);
     }
     auto effective_appearance = StyleRef().EffectiveAppearance();
-    if (effective_appearance == kCheckboxPart) {
+    if (effective_appearance == AppearanceValue::kCheckbox) {
       return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartCheckbox)
           .inline_size;
     }
-    if (effective_appearance == kRadioPart) {
+    if (effective_appearance == AppearanceValue::kRadio) {
       return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartRadio)
           .inline_size;
     }
@@ -1253,11 +1253,11 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   NOT_DESTROYED();
 
   auto effective_appearance = StyleRef().EffectiveAppearance();
-  if (effective_appearance == kCheckboxPart) {
+  if (effective_appearance == AppearanceValue::kCheckbox) {
     return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartCheckbox)
         .block_size;
   }
-  if (effective_appearance == kRadioPart) {
+  if (effective_appearance == AppearanceValue::kRadio) {
     return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartRadio).block_size;
   }
 

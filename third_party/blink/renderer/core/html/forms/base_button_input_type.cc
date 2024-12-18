@@ -79,8 +79,8 @@ bool BaseButtonInputType::IsAutoDirectionalityFormAssociated() const {
 
 void BaseButtonInputType::AppendToFormData(FormData&) const {}
 
-ControlPart BaseButtonInputType::AutoAppearance() const {
-  return kPushButtonPart;
+AppearanceValue BaseButtonInputType::AutoAppearance() const {
+  return AppearanceValue::kPushButton;
 }
 
 LayoutObject* BaseButtonInputType::CreateLayoutObject(

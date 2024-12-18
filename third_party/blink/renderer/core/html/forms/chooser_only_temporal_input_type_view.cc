@@ -75,8 +75,8 @@ void ChooserOnlyTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
   OpenPopupView();
 }
 
-ControlPart ChooserOnlyTemporalInputTypeView::AutoAppearance() const {
-  return kMenulistPart;
+AppearanceValue ChooserOnlyTemporalInputTypeView::AutoAppearance() const {
+  return AppearanceValue::kMenulist;
 }
 
 void ChooserOnlyTemporalInputTypeView::OpenPopupView() {

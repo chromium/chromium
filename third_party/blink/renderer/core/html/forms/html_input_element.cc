@@ -1724,7 +1724,7 @@ bool HTMLInputElement::MatchesReadWritePseudoClass() const {
   return input_type_->SupportsReadOnly() && !IsDisabledOrReadOnly();
 }
 
-ControlPart HTMLInputElement::AutoAppearance() const {
+AppearanceValue HTMLInputElement::AutoAppearance() const {
   return input_type_view_->AutoAppearance();
 }
 

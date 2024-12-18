@@ -271,10 +271,10 @@ const AtomicString& SliderThumbElement::ShadowPseudoId() const {
 
   const ComputedStyle& slider_style = input->GetLayoutObject()->StyleRef();
   switch (slider_style.EffectiveAppearance()) {
-    case kMediaSliderPart:
-    case kMediaSliderThumbPart:
-    case kMediaVolumeSliderPart:
-    case kMediaVolumeSliderThumbPart:
+    case AppearanceValue::kMediaSlider:
+    case AppearanceValue::kMediaSliderThumb:
+    case AppearanceValue::kMediaVolumeSlider:
+    case AppearanceValue::kMediaVolumeSliderThumb:
       return shadow_element_names::kPseudoMediaSliderThumb;
     default:
       return shadow_element_names::kPseudoSliderThumb;
@@ -286,16 +286,19 @@ void SliderThumbElement::AdjustStyle(ComputedStyleBuilder& builder) {
   DCHECK(host);
   const ComputedStyle& host_style = host->ComputedStyleRef();
 
-  if (host_style.EffectiveAppearance() == kSliderVerticalPart &&
+  if (host_style.EffectiveAppearance() == AppearanceValue::kSliderVertical &&
       RuntimeEnabledFeatures::
           NonStandardAppearanceValueSliderVerticalEnabled()) {
-    builder.SetEffectiveAppearance(kSliderThumbVerticalPart);
-  } else if (host_style.EffectiveAppearance() == kSliderHorizontalPart) {
-    builder.SetEffectiveAppearance(kSliderThumbHorizontalPart);
-  } else if (host_style.EffectiveAppearance() == kMediaSliderPart) {
-    builder.SetEffectiveAppearance(kMediaSliderThumbPart);
-  } else if (host_style.EffectiveAppearance() == kMediaVolumeSliderPart) {
-    builder.SetEffectiveAppearance(kMediaVolumeSliderThumbPart);
+    builder.SetEffectiveAppearance(AppearanceValue::kSliderThumbVertical);
+  } else if (host_style.EffectiveAppearance() ==
+             AppearanceValue::kSliderHorizontal) {
+    builder.SetEffectiveAppearance(AppearanceValue::kSliderThumbHorizontal);
+  } else if (host_style.EffectiveAppearance() ==
+             AppearanceValue::kMediaSlider) {
+    builder.SetEffectiveAppearance(AppearanceValue::kMediaSliderThumb);
+  } else if (host_style.EffectiveAppearance() ==
+             AppearanceValue::kMediaVolumeSlider) {
+    builder.SetEffectiveAppearance(AppearanceValue::kMediaVolumeSliderThumb);
   }
   if (builder.HasEffectiveAppearance())
     LayoutTheme::GetTheme().AdjustSliderThumbSize(builder);
@@ -418,10 +421,10 @@ const AtomicString& SliderContainerElement::ShadowPseudoId() const {
   const ComputedStyle& slider_style =
       OwnerShadowHost()->GetLayoutObject()->StyleRef();
   switch (slider_style.EffectiveAppearance()) {
-    case kMediaSliderPart:
-    case kMediaSliderThumbPart:
-    case kMediaVolumeSliderPart:
-    case kMediaVolumeSliderThumbPart:
+    case AppearanceValue::kMediaSlider:
+    case AppearanceValue::kMediaSliderThumb:
+    case AppearanceValue::kMediaVolumeSlider:
+    case AppearanceValue::kMediaVolumeSliderThumb:
       return shadow_element_names::kPseudoMediaSliderContainer;
     default:
       return shadow_element_names::kPseudoSliderContainer;

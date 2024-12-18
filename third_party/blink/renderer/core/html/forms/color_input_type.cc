@@ -167,10 +167,10 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
   event.SetDefaultHandled();
 }
 
-ControlPart ColorInputType::AutoAppearance() const {
+AppearanceValue ColorInputType::AutoAppearance() const {
   return GetElement().FastHasAttribute(html_names::kListAttr)
-             ? kMenulistPart
-             : kSquareButtonPart;
+             ? AppearanceValue::kMenulist
+             : AppearanceValue::kSquareButton;
 }
 
 void ColorInputType::OpenPopupView() {

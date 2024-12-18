@@ -102,8 +102,8 @@ LayoutObject* InputTypeView::CreateLayoutObject(
   return LayoutObject::CreateObject(&GetElement(), style);
 }
 
-ControlPart InputTypeView::AutoAppearance() const {
-  return kNoControlPart;
+AppearanceValue InputTypeView::AutoAppearance() const {
+  return AppearanceValue::kNone;
 }
 
 TextDirection InputTypeView::ComputedTextDirection() {

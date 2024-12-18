@@ -6063,8 +6063,8 @@
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/theme_types.h"],
       computed_style_protected_functions: ["getter"],
-      default_value: "kNoControlPart",
-      type_name: "ControlPart",
+      default_value: "AppearanceValue::kNone",
+      type_name: "AppearanceValue",
       // appearance needs to be computed before
       // -internal-appearance-auto-base-select() can be resolved.
       priority: 1,

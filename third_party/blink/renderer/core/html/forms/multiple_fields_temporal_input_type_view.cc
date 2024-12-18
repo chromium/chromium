@@ -615,8 +615,8 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
   UpdateClearButtonVisibility();
 }
 
-ControlPart MultipleFieldsTemporalInputTypeView::AutoAppearance() const {
-  return kTextFieldPart;
+AppearanceValue MultipleFieldsTemporalInputTypeView::AutoAppearance() const {
+  return AppearanceValue::kTextField;
 }
 
 void MultipleFieldsTemporalInputTypeView::OpenPopupView() {

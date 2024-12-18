@@ -248,69 +248,69 @@ inline CompositingOperator CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
+inline CSSIdentifierValue::CSSIdentifierValue(AppearanceValue e)
     : CSSValue(kIdentifierClass) {
   switch (e) {
-    case kNoControlPart:
+    case AppearanceValue::kNone:
     // Non standard appearance values that are not listed as
     // compat-auto must be rendered as none.
     // https://drafts.csswg.org/css-ui/#appearance-switching
-    case kInnerSpinButtonPart:
-    case kMediaSliderPart:
-    case kMediaSliderThumbPart:
-    case kMediaVolumeSliderPart:
-    case kMediaVolumeSliderThumbPart:
-    case kPushButtonPart:
-    case kSearchFieldCancelButtonPart:
-    case kSliderThumbHorizontalPart:
-    case kSliderThumbVerticalPart:
-    case kSliderHorizontalPart:
-    case kSquareButtonPart:
+    case AppearanceValue::kInnerSpinButton:
+    case AppearanceValue::kMediaSlider:
+    case AppearanceValue::kMediaSliderThumb:
+    case AppearanceValue::kMediaVolumeSlider:
+    case AppearanceValue::kMediaVolumeSliderThumb:
+    case AppearanceValue::kPushButton:
+    case AppearanceValue::kSearchFieldCancelButton:
+    case AppearanceValue::kSliderThumbHorizontal:
+    case AppearanceValue::kSliderThumbVertical:
+    case AppearanceValue::kSliderHorizontal:
+    case AppearanceValue::kSquareButton:
       value_id_ = CSSValueID::kNone;
       break;
-    case kAutoPart:
+    case AppearanceValue::kAuto:
       value_id_ = CSSValueID::kAuto;
       break;
-    case kCheckboxPart:
+    case AppearanceValue::kCheckbox:
       value_id_ = CSSValueID::kCheckbox;
       break;
-    case kRadioPart:
+    case AppearanceValue::kRadio:
       value_id_ = CSSValueID::kRadio;
       break;
-    case kButtonPart:
+    case AppearanceValue::kButton:
       value_id_ = CSSValueID::kButton;
       break;
-    case kListboxPart:
+    case AppearanceValue::kListbox:
       value_id_ = CSSValueID::kListbox;
       break;
-    case kMediaControlPart:
+    case AppearanceValue::kMediaControl:
       value_id_ = CSSValueID::kInternalMediaControl;
       break;
-    case kMenulistPart:
+    case AppearanceValue::kMenulist:
       value_id_ = CSSValueID::kMenulist;
       break;
-    case kMenulistButtonPart:
+    case AppearanceValue::kMenulistButton:
       value_id_ = CSSValueID::kMenulistButton;
       break;
-    case kMeterPart:
+    case AppearanceValue::kMeter:
       value_id_ = CSSValueID::kMeter;
       break;
-    case kProgressBarPart:
+    case AppearanceValue::kProgressBar:
       value_id_ = CSSValueID::kProgressBar;
       break;
-    case kSliderVerticalPart:
+    case AppearanceValue::kSliderVertical:
       value_id_ = CSSValueID::kSliderVertical;
       break;
-    case kSearchFieldPart:
+    case AppearanceValue::kSearchField:
       value_id_ = CSSValueID::kSearchfield;
       break;
-    case kTextFieldPart:
+    case AppearanceValue::kTextField:
       value_id_ = CSSValueID::kTextfield;
       break;
-    case kTextAreaPart:
+    case AppearanceValue::kTextArea:
       value_id_ = CSSValueID::kTextarea;
       break;
-    case kBaseSelectPart:
+    case AppearanceValue::kBaseSelect:
       CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
       value_id_ = CSSValueID::kBaseSelect;
       break;
@@ -318,40 +318,40 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
 }
 
 template <>
-inline ControlPart CSSIdentifierValue::ConvertTo() const {
+inline AppearanceValue CSSIdentifierValue::ConvertTo() const {
   switch (value_id_) {
     case CSSValueID::kNone:
-      return kNoControlPart;
+      return AppearanceValue::kNone;
     case CSSValueID::kAuto:
-      return kAutoPart;
+      return AppearanceValue::kAuto;
     case CSSValueID::kCheckbox:
-      return kCheckboxPart;
+      return AppearanceValue::kCheckbox;
     case CSSValueID::kRadio:
-      return kRadioPart;
+      return AppearanceValue::kRadio;
     case CSSValueID::kButton:
-      return kButtonPart;
+      return AppearanceValue::kButton;
     case CSSValueID::kListbox:
-      return kListboxPart;
+      return AppearanceValue::kListbox;
     case CSSValueID::kInternalMediaControl:
-      return kMediaControlPart;
+      return AppearanceValue::kMediaControl;
     case CSSValueID::kMenulist:
-      return kMenulistPart;
+      return AppearanceValue::kMenulist;
     case CSSValueID::kMenulistButton:
-      return kMenulistButtonPart;
+      return AppearanceValue::kMenulistButton;
     case CSSValueID::kMeter:
-      return kMeterPart;
+      return AppearanceValue::kMeter;
     case CSSValueID::kProgressBar:
-      return kProgressBarPart;
+      return AppearanceValue::kProgressBar;
     case CSSValueID::kSliderVertical:
-      return kSliderVerticalPart;
+      return AppearanceValue::kSliderVertical;
     case CSSValueID::kSearchfield:
-      return kSearchFieldPart;
+      return AppearanceValue::kSearchField;
     case CSSValueID::kTextfield:
-      return kTextFieldPart;
+      return AppearanceValue::kTextField;
     case CSSValueID::kTextarea:
-      return kTextAreaPart;
+      return AppearanceValue::kTextArea;
     case CSSValueID::kBaseSelect:
-      return kBaseSelectPart;
+      return AppearanceValue::kBaseSelect;
     default:
       NOTREACHED();
   }

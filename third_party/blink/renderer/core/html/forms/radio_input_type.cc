@@ -56,8 +56,8 @@ void RadioInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeRadio);
 }
 
-ControlPart RadioInputType::AutoAppearance() const {
-  return kRadioPart;
+AppearanceValue RadioInputType::AutoAppearance() const {
+  return AppearanceValue::kRadio;
 }
 
 bool RadioInputType::ValueMissing(const String&) const {
