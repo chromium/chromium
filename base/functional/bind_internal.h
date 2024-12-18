@@ -21,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/raw_scoped_refptr_mismatch_checker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/types/always_false.h"
@@ -331,7 +330,7 @@ class UnretainedRefWrapperReceiver {
 template <typename T>
 struct MethodReceiverStorage {
   using Type = std::
-      conditional_t<IsRawPointer<T>, scoped_refptr<RemoveRawPointerT<T>>, T>;
+      conditional_t<IsPointerOrRawPtr<T>, scoped_refptr<RemovePointerT<T>>, T>;
 };
 
 template <typename T, typename UnretainedTrait, RawPtrTraits PtrTraits>
@@ -596,12 +595,6 @@ concept HasOverloadedCallOp = requires {
   // * Block pointer (doesn't have `operator()()`)
   requires !IsObjCArcBlockPointer<std::decay_t<Functor>>;
 };
-
-// `HasRefCountedTypeAsRawPtr` is true when any of the `Args` is a raw pointer
-// to a `RefCounted` type.
-template <typename... Ts>
-concept HasRefCountedTypeAsRawPtr =
-    std::disjunction_v<NeedsScopedRefptrButGetsRawPtr<Ts>...>;
 
 // `ForceVoidReturn<>` converts a signature to have a `void` return type.
 template <typename Sig>
@@ -1079,8 +1072,8 @@ void VerifyMethodReceiver(Unused&&...) {}
 template <typename Receiver, typename... Unused>
 void VerifyMethodReceiver(Receiver&& receiver, Unused&&...) {
   // Asserts that a callback is not the first owner of a ref-counted receiver.
-  if constexpr (IsRawPointer<std::decay_t<Receiver>> &&
-                IsRefCountedType<RemoveRawPointerT<std::decay_t<Receiver>>>) {
+  if constexpr (IsPointerOrRawPtr<std::decay_t<Receiver>> &&
+                IsRefCountedType<RemovePointerT<std::decay_t<Receiver>>>) {
     DCHECK(receiver);
 
     // It's error prone to make the implicit first reference to ref-counted
@@ -1214,6 +1207,31 @@ struct BindState final : BindStateBase {
   }
 };
 
+template <typename... BoundArgs>
+struct ValidateBindStateTypeCommonChecks {
+ private:
+  // Refcounted parameters must be passed as `scoped_refptr` instead of raw
+  // pointers, to ensure they are not deleted before use.
+  // TODO(danakj): Ban native references and `std::reference_wrapper` too.
+  template <typename T,
+            bool v =
+                (IsRawRef<T> && IsRefCountedType<base::RemoveRawRefT<T>>) ||
+                (IsPointerOrRawPtr<T> &&
+                 IsRefCountedType<base::RemovePointerT<T>>)>
+  struct RefCountedTypeNotPassedByRawPointer {
+    static constexpr bool value = [] {
+      static_assert(
+          !v, "A parameter is a refcounted type and needs scoped_refptr.");
+      return !v;
+    }();
+  };
+
+ public:
+  using CommonCheckResult = std::conjunction<
+      RefCountedTypeNotPassedByRawPointer<std::decay_t<BoundArgs>>...,
+      ValidateStorageTraits<BoundArgs>...>;
+};
+
 // Used to determine and validate the appropriate `BindState`. The
 // specializations below cover all cases. The members are similar in intent to
 // those in `StorageTraits`; see comments there.
@@ -1233,25 +1251,13 @@ struct ValidateBindStateType<false,
                              is_callback,
                              Functor,
                              BoundArgs...> {
- private:
-  template <bool v = !HasRefCountedTypeAsRawPtr<std::decay_t<BoundArgs>...>>
-  struct NoRawPtrsToRefCountedTypes {
-    static constexpr bool value = [] {
-      static_assert(
-          v, "A parameter is a refcounted type and needs scoped_refptr.");
-      return v;
-    }();
-  };
-
- public:
   using Type = BindState<false,
                          is_nullable,
                          is_callback,
                          std::decay_t<Functor>,
                          typename ValidateStorageTraits<BoundArgs>::Type...>;
   static constexpr bool value =
-      std::conjunction_v<NoRawPtrsToRefCountedTypes<>,
-                         ValidateStorageTraits<BoundArgs>...>;
+      ValidateBindStateTypeCommonChecks<BoundArgs...>::CommonCheckResult::value;
 };
 
 template <bool is_nullable, bool is_callback, typename Functor>
@@ -1284,7 +1290,7 @@ struct ValidateBindStateType<true,
     }();
   };
 
-  template <bool v = !IsRawRefV<DecayedReceiver>>
+  template <bool v = !IsRawRef<DecayedReceiver>>
   struct ReceiverIsNotRawRef {
     static constexpr bool value = [] {
       static_assert(v, "Receivers may not be raw_ref<T>. If using a raw_ref<T> "
@@ -1294,23 +1300,14 @@ struct ValidateBindStateType<true,
     }();
   };
 
-  template <bool v = !IsRawPointer<DecayedReceiver> ||
-                     IsRefCountedType<RemoveRawPointerT<DecayedReceiver>>>
+  template <bool v = !IsPointerOrRawPtr<DecayedReceiver> ||
+                     IsRefCountedType<RemovePointerT<DecayedReceiver>>>
   struct ReceiverIsNotRawPtr {
     static constexpr bool value = [] {
       static_assert(v,
                     "Receivers may not be raw pointers. If using a raw pointer "
                     "here is safe and has no lifetime concerns, use "
                     "base::Unretained() and document why it's safe.");
-      return v;
-    }();
-  };
-
-  template <bool v = !HasRefCountedTypeAsRawPtr<std::decay_t<BoundArgs>...>>
-  struct NoRawPtrsToRefCountedTypes {
-    static constexpr bool value = [] {
-      static_assert(
-          v, "A parameter is a refcounted type and needs scoped_refptr.");
       return v;
     }();
   };
@@ -1326,8 +1323,8 @@ struct ValidateBindStateType<true,
       std::conjunction_v<FirstBoundArgIsNotArray<>,
                          ReceiverIsNotRawRef<>,
                          ReceiverIsNotRawPtr<>,
-                         NoRawPtrsToRefCountedTypes<>,
-                         ValidateStorageTraits<BoundArgs>...>;
+                         typename ValidateBindStateTypeCommonChecks<
+                             BoundArgs...>::CommonCheckResult>;
 };
 
 // Transforms `T` into an unwrapped type, which is passed to the target
@@ -1441,9 +1438,9 @@ struct BindArgument {
   struct ForwardedAs {
     template <typename FunctorParamType>
     struct ToParamWithType {
-      static constexpr bool kRawPtr = IsRawPtrV<FunctorParamType>;
+      static constexpr bool kRawPtr = IsRawPtr<FunctorParamType>;
       static constexpr bool kRawPtrMayBeDangling =
-          IsRawPtrMayDangleV<FunctorParamType>;
+          IsRawPtrMayDangle<FunctorParamType>;
       static constexpr bool kCanBeForwardedToBoundFunctor =
           std::is_convertible_v<ForwardingType, FunctorParamType>;
 

@@ -249,7 +249,7 @@ concept IsIteratorOfStandardContainer =
 
 template <typename T>
 concept IsKnownNonAllocatingType =
-    std::is_trivially_destructible_v<T> || base::IsRawPtrV<T> ||
+    std::is_trivially_destructible_v<T> || base::IsRawPtr<T> ||
     IsIteratorOfStandardContainer<T>;
 
 }  // namespace internal

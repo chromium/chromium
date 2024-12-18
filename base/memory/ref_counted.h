@@ -250,6 +250,16 @@ class BASE_EXPORT RefCountedThreadSafeBase {
 
 }  // namespace subtle
 
+template <typename T>
+concept IsRefCountedType = requires(T& x) {
+  // There are no additional constraints on `AddRef()` and `Release()` since
+  // `scoped_refptr`, for better or worse, seamlessly interoperates with other
+  // non-base types that happen to implement the same signatures (e.g. COM's
+  // `IUnknown`).
+  x.AddRef();
+  x.Release();
+};
+
 // ScopedAllowCrossThreadRefCountAccess disables the check documented on
 // RefCounted below for rare pre-existing use cases where thread-safety was
 // guaranteed through other means (e.g. explicit sequencing of calls across
@@ -440,9 +450,9 @@ class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
 // A thread-safe wrapper for some piece of data so we can place other
 // things in scoped_refptrs<>.
 //
-template<typename T>
+template <typename T>
 class RefCountedData
-    : public base::RefCountedThreadSafe< base::RefCountedData<T> > {
+    : public base::RefCountedThreadSafe<base::RefCountedData<T>> {
  public:
   RefCountedData() : data() {}
   RefCountedData(const T& in_value) : data(in_value) {}

@@ -1066,51 +1066,32 @@ PA_ALWAYS_INLINE constexpr bool operator>=(const raw_ptr<U, Traits1>& lhs,
 #endif
 
 template <typename T>
-struct IsRawPtr : std::false_type {};
-
+inline constexpr bool IsRawPtr = false;
 template <typename T, RawPtrTraits Traits>
-struct IsRawPtr<raw_ptr<T, Traits>> : std::true_type {};
+inline constexpr bool IsRawPtr<raw_ptr<T, Traits>> = true;
 
 template <typename T>
-inline constexpr bool IsRawPtrV = IsRawPtr<T>::value;
-
-template <typename T>
-inline constexpr bool IsRawPtrMayDangleV = false;
-
+inline constexpr bool IsRawPtrMayDangle = false;
 template <typename T, RawPtrTraits Traits>
-inline constexpr bool IsRawPtrMayDangleV<raw_ptr<T, Traits>> =
+inline constexpr bool IsRawPtrMayDangle<raw_ptr<T, Traits>> =
     partition_alloc::internal::ContainsFlags(Traits, RawPtrTraits::kMayDangle);
 
-// Template helpers for working with T* or raw_ptr<T>.
 template <typename T>
-struct IsRawPointerHelper : std::false_type {};
-
-template <typename T>
-struct IsRawPointerHelper<T*> : std::true_type {};
-
+inline constexpr bool IsPointerOrRawPtr = std::is_pointer_v<T>;
 template <typename T, RawPtrTraits Traits>
-struct IsRawPointerHelper<raw_ptr<T, Traits>> : std::true_type {};
+inline constexpr bool IsPointerOrRawPtr<raw_ptr<T, Traits>> = true;
 
+// Like `std::remove_pointer_t<>`, but also converts `raw_ptr<T>` => `T`.
 template <typename T>
-inline constexpr bool IsRawPointer = IsRawPointerHelper<T>::value;
-
-template <typename T>
-struct RemoveRawPointer {
-  using type = T;
+struct RemovePointer {
+  using type = std::remove_pointer_t<T>;
 };
-
-template <typename T>
-struct RemoveRawPointer<T*> {
-  using type = T;
-};
-
 template <typename T, RawPtrTraits Traits>
-struct RemoveRawPointer<raw_ptr<T, Traits>> {
+struct RemovePointer<raw_ptr<T, Traits>> {
   using type = T;
 };
-
 template <typename T>
-using RemoveRawPointerT = typename RemoveRawPointer<T>::type;
+using RemovePointerT = typename RemovePointer<T>::type;
 
 }  // namespace base
 

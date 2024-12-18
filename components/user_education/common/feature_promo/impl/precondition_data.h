@@ -16,13 +16,6 @@
 
 namespace user_education::internal {
 
-// Base already has an is_raw_ref, but there is no is_raw_ptr, so implement it
-// here.
-template <typename T>
-struct is_raw_ptr : std::false_type {};
-template <typename T, base::RawPtrTraits Traits>
-struct is_raw_ptr<raw_ptr<T, Traits>> : std::true_type {};
-
 // A value is cacheable if:
 //  - it is moveable
 //  - it is default-constructable
@@ -32,8 +25,8 @@ struct is_raw_ptr<raw_ptr<T, Traits>> : std::true_type {};
 // To hold polymorphic or non-moveable objects, use std::unique_ptr.
 template <typename T>
 concept PreconditionCacheable =
-    std::movable<T> && std::default_initializable<T> && !std::is_pointer_v<T> &&
-    !is_raw_ptr<T>::value && !base::internal::is_raw_ref_v<T>;
+    std::movable<T> && std::default_initializable<T> &&
+    !base::IsPointerOrRawPtr<T> && !base::IsRawRef<T>;
 
 template <typename T>
   requires PreconditionCacheable<T>

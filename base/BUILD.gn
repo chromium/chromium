@@ -375,7 +375,6 @@ component("base") {
     "memory/raw_ptr_cast.h",
     "memory/raw_ptr_exclusion.h",
     "memory/raw_ref.h",
-    "memory/raw_scoped_refptr_mismatch_checker.h",
     "memory/raw_span.h",
     "memory/read_only_shared_memory_region.cc",
     "memory/read_only_shared_memory_region.h",
