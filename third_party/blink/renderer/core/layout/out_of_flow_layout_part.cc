@@ -360,9 +360,9 @@ const Element* GetPositionAnchorElement(
   }
   if (const ScopedCSSName* specifier = style.PositionAnchor()) {
     if (const PhysicalAnchorReference* reference =
-            anchor_query->AnchorReference(*node.GetLayoutBox(), specifier);
-        reference && reference->layout_object) {
-      return DynamicTo<Element>(reference->layout_object->GetNode());
+            anchor_query->AnchorReference(*node.GetLayoutBox(), specifier)) {
+      DCHECK(!reference->element || reference->GetLayoutObject());
+      return reference->element;
     }
     return nullptr;
   }

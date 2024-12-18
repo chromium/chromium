@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
@@ -26,7 +27,7 @@ class LayoutObject;
 class StitchedAnchorQueries;
 class PaintLayer;
 
-using AnchorKey = absl::variant<const ScopedCSSName*, const LayoutObject*>;
+using AnchorKey = absl::variant<const ScopedCSSName*, const Element*>;
 
 // This class is conceptually a concatenation of two hash maps with different
 // key types but the same value type. To save memory, we don't implement it as
@@ -37,7 +38,7 @@ class AnchorQueryBase : public GarbageCollectedMixin {
   using NamedAnchorMap =
       HeapHashMap<Member<const ScopedCSSName>, Member<AnchorReference>>;
   using ImplicitAnchorMap =
-      HeapHashMap<Member<const LayoutObject>, Member<AnchorReference>>;
+      HeapHashMap<Member<const Element>, Member<AnchorReference>>;
 
  public:
   bool IsEmpty() const {
@@ -50,7 +51,7 @@ class AnchorQueryBase : public GarbageCollectedMixin {
       return GetAnchorReference(named_anchors_, *name);
     }
     return GetAnchorReference(implicit_anchors_,
-                              absl::get<const LayoutObject*>(key));
+                              absl::get<const Element*>(key));
   }
 
   struct AddResult {
@@ -63,8 +64,7 @@ class AnchorQueryBase : public GarbageCollectedMixin {
             absl::get_if<const ScopedCSSName*>(&key)) {
       return insert(named_anchors_, *name, reference);
     }
-    return insert(implicit_anchors_, absl::get<const LayoutObject*>(key),
-                  reference);
+    return insert(implicit_anchors_, absl::get<const Element*>(key), reference);
   }
 
   class Iterator {
@@ -147,14 +147,16 @@ class AnchorQueryBase : public GarbageCollectedMixin {
 
 struct CORE_EXPORT PhysicalAnchorReference
     : public GarbageCollected<PhysicalAnchorReference> {
-  PhysicalAnchorReference(const LayoutObject& layout_object,
+  PhysicalAnchorReference(const Element& element,
                           const PhysicalRect& rect,
                           bool is_out_of_flow,
                           HeapHashSet<Member<Element>>* display_locks)
       : rect(rect),
-        layout_object(&layout_object),
+        element(&element),
         display_locks(display_locks),
         is_out_of_flow(is_out_of_flow) {}
+
+  LayoutObject* GetLayoutObject() const { return element->GetLayoutObject(); }
 
   // Insert |this| into the given singly linked list in the reverse tree order.
   void InsertInReverseTreeOrderInto(Member<PhysicalAnchorReference>* head_ptr);
@@ -162,7 +164,7 @@ struct CORE_EXPORT PhysicalAnchorReference
   void Trace(Visitor* visitor) const;
 
   PhysicalRect rect;
-  Member<const LayoutObject> layout_object;
+  Member<const Element> element;
   // A singly linked list in the reverse tree order. There can be at most one
   // in-flow reference, which if exists must be at the end of the list.
   Member<PhysicalAnchorReference> next;
@@ -183,8 +185,12 @@ class CORE_EXPORT PhysicalAnchorQuery
     kOutOfFlow,
   };
 
+  // Find and return a valid anchor reference for the specified anchor key.
+  // Unless nullptr is returned, the returned anchor reference is guaranteed to
+  // have a valid LayoutObject.
   const PhysicalAnchorReference* AnchorReference(const LayoutBox& query_box,
                                                  const AnchorKey&) const;
+
   const LayoutObject* AnchorLayoutObject(const LayoutBox& query_box,
                                          const AnchorKey&) const;
 
@@ -303,9 +309,12 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   }
 
  private:
+  // Unless nullptr is returned, the returned anchor reference is guaranteed to
+  // have a valid LayoutObject.
   const PhysicalAnchorReference* ResolveAnchorReference(
       const AnchorSpecifierValue& anchor_specifier,
       const ScopedCSSName* position_anchor) const;
+
   bool ShouldUseScrollAdjustmentFor(const LayoutObject* anchor,
                                     const ScopedCSSName* position_anchor) const;
 

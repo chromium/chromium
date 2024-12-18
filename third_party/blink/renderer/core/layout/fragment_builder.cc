@@ -223,8 +223,9 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
       }
     }
     if (child.IsImplicitAnchor()) {
-      EnsureAnchorQuery().Set(child.GetLayoutObject(), *child.GetLayoutObject(),
-                              rect, *options, context);
+      EnsureAnchorQuery().Set(To<Element>(child.GetNode()),
+                              *child.GetLayoutObject(), rect, *options,
+                              context);
     }
   }
 

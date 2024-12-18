@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment_link.h"
@@ -30,10 +31,10 @@ struct FragmentainerContext {
 // coordinate system for the block-fragmented out-of-flow positioned objects.
 struct StitchedAnchorReference
     : public GarbageCollected<StitchedAnchorReference> {
-  StitchedAnchorReference(const LayoutObject& layout_object,
+  StitchedAnchorReference(const Element& element,
                           const LogicalRect& rect,
                           const FragmentainerContext& fragmentainer)
-      : layout_object(&layout_object),
+      : element(&element),
         rect_in_first_fragmentainer(rect),
         first_fragmentainer_offset(fragmentainer.offset),
         first_fragmentainer_stitched_offset(fragmentainer.stitched_offset) {}
@@ -46,11 +47,10 @@ struct StitchedAnchorReference
 
   PhysicalAnchorReference* GetStitchedAnchorReference(
       const WritingModeConverter& converter) const {
-    DCHECK(layout_object);
     PhysicalRect physical_rect = converter.ToPhysical(StitchedRect());
 
     return MakeGarbageCollected<PhysicalAnchorReference>(
-        *layout_object, physical_rect, /* is_out_of_flow */ false, nullptr);
+        *element, physical_rect, /* is_out_of_flow */ false, nullptr);
   }
 
   void Unite(const LogicalRect& other_rect,
@@ -64,9 +64,9 @@ struct StitchedAnchorReference
     rect_in_first_fragmentainer.Unite(other_rect_in_first_fragmentainer);
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
+  void Trace(Visitor* visitor) const { visitor->Trace(element); }
 
-  Member<const LayoutObject> layout_object;
+  Member<const Element> element;
   // The |rect_in_first_fragmentainer| is relative to the first fragmentainer,
   // so that it can a) unite following fragments in the physical coordinate
   // system, and b) compute the result in the stitched coordinate system.
@@ -109,8 +109,8 @@ struct StitchedAnchorQuery : public GarbageCollected<StitchedAnchorQuery>,
     if (!anchor_query)
       return;
     for (auto entry : *anchor_query) {
-      DCHECK(entry.value->layout_object);
-      AddAnchorReference(entry.key, *entry.value->layout_object,
+      DCHECK(entry.value->GetLayoutObject());
+      AddAnchorReference(entry.key, *entry.value->GetLayoutObject(),
                          entry.value->rect + offset_from_fragmentainer,
                          fragmentainer, Conflict::kLastInCallOrder);
     }
@@ -124,16 +124,18 @@ struct StitchedAnchorQuery : public GarbageCollected<StitchedAnchorQuery>,
     const LogicalRect rect_in_fragmentainer =
         fragmentainer.converter.ToLogical(physical_rect_in_fragmentainer);
     auto* new_value = MakeGarbageCollected<StitchedAnchorReference>(
-        new_object, rect_in_fragmentainer, fragmentainer);
+        *To<Element>(new_object.GetNode()), rect_in_fragmentainer,
+        fragmentainer);
     const auto result = Base::insert(key, new_value);
     if (result.is_new_entry)
       return;
 
     // If this is a fragment of the existing box, unite it with other fragments.
     StitchedAnchorReference* existing = *result.stored_value;
-    const LayoutObject* existing_object = existing->layout_object;
+    const Element* existing_element = existing->element;
+    const LayoutObject* existing_object = existing_element->GetLayoutObject();
     DCHECK(existing_object);
-    if (existing_object == &new_object) {
+    if (existing_element == new_object.GetNode()) {
       existing->Unite(rect_in_fragmentainer, fragmentainer.offset);
       return;
     }
@@ -312,7 +314,7 @@ struct StitchedAnchorQueryCollector {
       }
       if (fragment.IsImplicitAnchor()) {
         query.AddAnchorReference(
-            layout_object, *fragment.GetLayoutObject(),
+            To<Element>(layout_object->GetNode()), *fragment.GetLayoutObject(),
             {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
             StitchedAnchorQuery::Conflict::kOverwriteIfAfter);
       }

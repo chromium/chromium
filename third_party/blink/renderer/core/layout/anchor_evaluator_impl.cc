@@ -89,8 +89,10 @@ void PhysicalAnchorReference::InsertInReverseTreeOrderInto(
     Member<PhysicalAnchorReference>* head_ptr) {
   for (;;) {
     PhysicalAnchorReference* const head = *head_ptr;
-    DCHECK(!head || head->layout_object);
-    if (!head || head->layout_object->IsBeforeInPreOrder(*layout_object)) {
+    DCHECK(!head || head->GetLayoutObject());
+    DCHECK(GetLayoutObject());
+    if (!head ||
+        head->GetLayoutObject()->IsBeforeInPreOrder(*GetLayoutObject())) {
       next = head;
       *head_ptr = this;
       break;
@@ -156,9 +158,13 @@ const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
           Base::GetAnchorReference(key)) {
     for (const PhysicalAnchorReference* result = reference; result;
          result = result->next) {
-      if ((!result->is_out_of_flow ||
-           result->layout_object->IsBeforeInPreOrder(query_box)) &&
-          InSameAnchorScope(key, query_box, *result->layout_object)) {
+      const LayoutObject* layout_object = result->GetLayoutObject();
+      // TODO(crbug.com/384523570): If the layout object has been detached, we
+      // really shouldn't be here.
+      if (layout_object &&
+          (!result->is_out_of_flow ||
+           layout_object->IsBeforeInPreOrder(query_box)) &&
+          InSameAnchorScope(key, query_box, *layout_object)) {
         return result;
       }
     }
@@ -171,7 +177,7 @@ const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
     const AnchorKey& key) const {
   if (const PhysicalAnchorReference* reference =
           AnchorReference(query_box, key)) {
-    return reference->layout_object.Get();
+    return reference->GetLayoutObject();
   }
   return nullptr;
 }
@@ -187,8 +193,8 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
     display_locks->insert(element_for_display_lock);
   }
   Set(key, MakeGarbageCollected<PhysicalAnchorReference>(
-               layout_object, rect, options == SetOptions::kOutOfFlow,
-               display_locks));
+               *To<Element>(layout_object.GetNode()), rect,
+               options == SetOptions::kOutOfFlow, display_locks));
 }
 
 void PhysicalAnchorQuery::Set(const AnchorKey& key,
@@ -202,15 +208,12 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
   // If this is a fragment of the existing |LayoutObject|, unite the rect.
   Member<PhysicalAnchorReference>* const existing_head_ptr =
       result.stored_value;
-  PhysicalAnchorReference* const existing_head = *existing_head_ptr;
-  DCHECK(existing_head);
-  const LayoutObject* new_object = reference->layout_object;
-  DCHECK(new_object);
-  for (PhysicalAnchorReference* existing = existing_head; existing;
+  DCHECK(*existing_head_ptr);
+  DCHECK(reference->GetLayoutObject());
+  for (PhysicalAnchorReference* existing = *existing_head_ptr; existing;
        existing = existing->next) {
-    const LayoutObject* existing_object = existing->layout_object;
-    DCHECK(existing_object);
-    if (existing_object == new_object) {
+    DCHECK(existing->GetLayoutObject());
+    if (existing->GetLayoutObject() == reference->GetLayoutObject()) {
       existing->rect.Unite(reference->rect);
       return;
     }
@@ -248,8 +251,9 @@ void PhysicalAnchorQuery::SetFromChild(
       if (element_for_display_lock) {
         display_locks->insert(element_for_display_lock);
       }
+      DCHECK(reference->GetLayoutObject());
       Set(entry.key, MakeGarbageCollected<PhysicalAnchorReference>(
-                         *reference->layout_object, rect,
+                         *reference->element, rect,
                          options == SetOptions::kOutOfFlow, display_locks));
     }
   }
@@ -431,7 +435,8 @@ const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
   if (anchor_specifier.IsDefault() && position_anchor) {
     return anchor_query->AnchorReference(*query_box_, position_anchor);
   }
-  return anchor_query->AnchorReference(*query_box_, implicit_anchor_);
+  return anchor_query->AnchorReference(
+      *query_box_, To<Element>(implicit_anchor_->GetNode()));
 }
 
 const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(
@@ -439,7 +444,7 @@ const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(
   return cached_default_anchor_.Get(position_anchor, [&]() {
     const PhysicalAnchorReference* reference = ResolveAnchorReference(
         *AnchorSpecifierValue::Default(), position_anchor);
-    return reference ? reference->layout_object : nullptr;
+    return reference ? reference->GetLayoutObject() : nullptr;
   });
 }
 
@@ -520,7 +525,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     return std::nullopt;
   }
 
-  UpdateAccessibilityAnchor(anchor_reference->layout_object);
+  UpdateAccessibilityAnchor(anchor_reference->GetLayoutObject());
 
   if (anchor_reference->display_locks) {
     for (auto& display_lock : *anchor_reference->display_locks) {
@@ -544,7 +549,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
                                               : needs_scroll_adjustment_in_x_;
     if (!needs_scroll_adjustment &&
-        ShouldUseScrollAdjustmentFor(anchor_reference->layout_object,
+        ShouldUseScrollAdjustmentFor(anchor_reference->GetLayoutObject(),
                                      position_anchor)) {
       needs_scroll_adjustment = true;
     }
@@ -574,7 +579,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     return std::nullopt;
   }
 
-  UpdateAccessibilityAnchor(anchor_reference->layout_object);
+  UpdateAccessibilityAnchor(anchor_reference->GetLayoutObject());
 
   if (anchor_reference->display_locks) {
     for (auto& display_lock : *anchor_reference->display_locks) {
@@ -764,7 +769,7 @@ PhysicalRect AnchorEvaluatorImpl::PositionAreaModifiedContainingBlock(
 }
 
 void PhysicalAnchorReference::Trace(Visitor* visitor) const {
-  visitor->Trace(layout_object);
+  visitor->Trace(element);
   visitor->Trace(next);
   visitor->Trace(display_locks);
 }
