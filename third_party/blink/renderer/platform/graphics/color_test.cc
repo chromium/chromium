@@ -903,4 +903,17 @@ TEST(BlinkColor, SubstituteMissingParameters) {
     EXPECT_FALSE(Color::SubstituteMissingParameters(c1, c2));
   }
 }
+
+TEST(BlinkColor, Blend) {
+  // Small alpha (yields 0 from AlphaAsInteger()).
+  constexpr float kSmallAlpha = 0.0018f;
+  const Color color = Color::FromRGBAFloat(0, 0, 0, kSmallAlpha);
+  const Color result = color.Blend(color);
+  EXPECT_EQ(kSmallAlpha * (1.0f - kSmallAlpha) + kSmallAlpha, result.Alpha());
+  EXPECT_EQ(Color::ColorSpace::kSRGBLegacy, result.GetColorSpace());
+  EXPECT_EQ(0, result.Param0());
+  EXPECT_EQ(0, result.Param1());
+  EXPECT_EQ(0, result.Param2());
+}
+
 }  // namespace blink
