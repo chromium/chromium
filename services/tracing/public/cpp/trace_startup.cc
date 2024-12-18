@@ -15,7 +15,6 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -70,9 +69,6 @@ void EnableStartupTracingIfNeeded() {
   auto& startup_config = TraceStartupConfig::GetInstance();
 
   if (startup_config.IsEnabled()) {
-    // Ensure that data sources are created and registered.
-    TraceEventAgent::GetInstance();
-
     auto perfetto_config = startup_config.GetPerfettoConfig();
 
     perfetto::Tracing::SetupStartupTracingOpts opts;

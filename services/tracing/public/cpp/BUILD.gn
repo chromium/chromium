@@ -58,8 +58,6 @@ target(tracing_lib_type, "cpp") {
 
   if (!is_nacl && use_blink) {
     sources += [
-      "base_agent.cc",
-      "base_agent.h",
       "perfetto/custom_event_recorder.cc",
       "perfetto/custom_event_recorder.h",
       "perfetto/interning_index.h",
@@ -90,8 +88,6 @@ target(tracing_lib_type, "cpp") {
       "stack_sampling/tracing_sampler_profiler.h",
       "system_metrics_sampler.cc",
       "system_metrics_sampler.h",
-      "trace_event_agent.cc",
-      "trace_event_agent.h",
       "trace_event_args_allowlist.cc",
       "trace_event_args_allowlist.h",
       "trace_startup.cc",

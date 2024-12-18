@@ -52,7 +52,6 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_metadata_source.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
@@ -187,7 +186,7 @@ TracingControllerImpl::TracingControllerImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Deliberately leaked, like this class.
   base::FileTracing::SetProvider(new FileTracingProviderImpl);
-  AddAgents();
+  InitializeDataSources();
   g_tracing_controller = this;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -204,18 +203,15 @@ TracingControllerImpl::TracingControllerImpl() {
 
 TracingControllerImpl::~TracingControllerImpl() = default;
 
-void TracingControllerImpl::AddAgents() {
+void TracingControllerImpl::InitializeDataSources() {
   tracing::TracedProcessImpl::GetInstance()->SetTaskRunner(
       base::SequencedTaskRunner::GetCurrentDefault());
 
 #if BUILDFLAG(IS_CHROMEOS)
-  agents_.push_back(std::make_unique<CrOSTracingAgent>());
+  RegisterCrOSTracingDataSource();
 #elif defined(CAST_TRACING_AGENT)
-  agents_.push_back(std::make_unique<CastTracingAgent>());
+  RegisterCastTracingDataSource();
 #endif
-
-  // Ensure the TraceEventAgent has been created.
-  tracing::TraceEventAgent::GetInstance();
 
   // For adding general CPU, network, OS, and other system information to the
   // metadata.

@@ -10,9 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "services/tracing/public/cpp/base_agent.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
 
 namespace tracing {
@@ -90,18 +88,6 @@ void TracedProcessImpl::SetTaskRunner(
   task_runner_ = task_runner;
 }
 
-void TracedProcessImpl::RegisterAgent(BaseAgent* agent) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock lock(agents_lock_);
-  agents_.insert(agent);
-}
-
-void TracedProcessImpl::UnregisterAgent(BaseAgent* agent) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock lock(agents_lock_);
-  agents_.erase(agent);
-}
-
 void TracedProcessImpl::ConnectToTracingService(
     mojom::ConnectToTracingRequestPtr request,
     ConnectToTracingServiceCallback callback) {
@@ -117,18 +103,8 @@ void TracedProcessImpl::ConnectToTracingService(
     return;
   }
 
-  // Ensure the TraceEventAgent has been created.
-  TraceEventAgent::GetInstance();
-
   PerfettoTracedProcess::Get().ConnectProducer(
       std::move(request->perfetto_service));
-}
-
-void TracedProcessImpl::GetCategories(std::set<std::string>* category_set) {
-  base::AutoLock lock(agents_lock_);
-  for (BaseAgent* agent : agents_) {
-    agent->GetCategories(category_set);
-  }
 }
 
 }  // namespace tracing

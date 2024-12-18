@@ -271,16 +271,8 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
 }  // namespace
 
-CastTracingAgent::CastTracingAgent() {
+void RegisterCastTracingDataSource() {
   CastDataSource::GetInstance();
-}
-
-CastTracingAgent::~CastTracingAgent() = default;
-
-void CastTracingAgent::GetCategories(std::set<std::string>* category_set) {
-  for (const char* category : chromecast::tracing::kCategories) {
-    category_set->insert(category);
-  }
 }
 
 }  // namespace content

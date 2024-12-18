@@ -221,9 +221,8 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
 }  // namespace
 
-CrOSTracingAgent::CrOSTracingAgent() {
+void RegisterCrOSTracingDataSource() {
   CrOSDataSource::GetInstance();
 }
-CrOSTracingAgent::~CrOSTracingAgent() = default;
 
 }  // namespace content

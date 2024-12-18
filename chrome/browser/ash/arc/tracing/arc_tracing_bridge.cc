@@ -284,7 +284,7 @@ ArcTracingBridge* ArcTracingBridge::GetForBrowserContextForTesting(
 
 ArcTracingBridge::ArcTracingBridge(content::BrowserContext* context,
                                    ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service), agent_(this) {
+    : arc_bridge_service_(bridge_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->tracing()->AddObserver(this);
   ArcTracingDataSource::GetInstance()->RegisterBridgeOnUI(this);
@@ -407,16 +407,6 @@ void ArcTracingBridge::OnArcTracingStopped(StopCallback callback,
     LOG(ERROR) << "Failed to stop tracing";
   }
   std::move(callback).Run();
-}
-
-ArcTracingBridge::ArcTracingAgent::ArcTracingAgent(ArcTracingBridge* bridge)
-    : bridge_(bridge) {}
-
-ArcTracingBridge::ArcTracingAgent::~ArcTracingAgent() = default;
-
-void ArcTracingBridge::ArcTracingAgent::GetCategories(
-    std::set<std::string>* category_set) {
-  bridge_->GetCategories(category_set);
 }
 
 // static

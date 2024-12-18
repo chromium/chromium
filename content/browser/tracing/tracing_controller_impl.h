@@ -32,10 +32,6 @@ namespace base::trace_event {
 class TraceConfig;
 }  // namespace base::trace_event
 
-namespace tracing {
-class BaseAgent;
-}  // namespace tracing
-
 namespace content {
 
 class TracingControllerImpl : public TracingController,
@@ -79,7 +75,7 @@ class TracingControllerImpl : public TracingController,
   friend std::default_delete<TracingControllerImpl>;
 
   ~TracingControllerImpl() override;
-  void AddAgents();
+  void InitializeDataSources();
   void ConnectToServiceIfNeeded();
   std::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataPacket(perfetto::protos::pbzero::TracePacket* packet,
@@ -107,7 +103,6 @@ class TracingControllerImpl : public TracingController,
   mojo::Receiver<tracing::mojom::TracingSessionClient> receiver_{this};
   StartTracingDoneCallback start_tracing_callback_;
 
-  std::vector<std::unique_ptr<tracing::BaseAgent>> agents_;
   std::unique_ptr<base::trace_event::TraceConfig> trace_config_;
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
   scoped_refptr<TraceDataEndpoint> trace_data_endpoint_;

@@ -45,7 +45,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/network_change_notifier.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/zlib/google/compression_utils.h"
