@@ -3033,6 +3033,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   new_accounts_.clear();
   accounts_.clear();
   idp_login_infos_.clear();
+  downloaded_images_.clear();
   idp_infos_.clear();
   idp_data_for_display_.clear();
   account_ids_before_login_.clear();
