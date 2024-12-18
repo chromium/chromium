@@ -36,7 +36,7 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
-  DOMHighResTimeStamp executionStart() const;
+  DOMHighResTimeStamp executionStart() const { return execution_start_; }
   DOMHighResTimeStamp forcedStyleAndLayoutDuration() const;
   DOMHighResTimeStamp pauseDuration() const;
   LocalDOMWindow* window() const;
@@ -51,10 +51,9 @@ class PerformanceScriptTiming final : public PerformanceEntry {
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;
   DOMHighResTimeStamp ToMonotonicTime(base::TimeTicks) const;
-  base::TimeTicks time_origin_;
-  bool cross_origin_isolated_capability_;
   Member<ScriptTimingInfo> info_;
   V8ScriptWindowAttribution::Enum window_attribution_;
+  DOMHighResTimeStamp execution_start_;
 };
 
 }  // namespace blink
