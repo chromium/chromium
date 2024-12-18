@@ -235,6 +235,11 @@ const base::FeatureParam<bool> kEraseNonAsciiCharacters(
     "EraseNonAsciiCharacters",
     false);
 
+const base::FeatureParam<bool> kWordMatchSearchNonAsciiPassages(
+    &kHistoryEmbeddings,
+    "WordMatchSearchNonAsciiPassages",
+    false);
+
 FeatureParameters::FeatureParameters(bool load_finch) {
   if (!load_finch) {
     return;
@@ -284,6 +289,7 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   word_match_required_term_ratio = kWordMatchRequiredTermRatio.Get();
   scroll_tags_enabled = kScrollTagsEnabled.Get();
   erase_non_ascii_characters = kEraseNonAsciiCharacters.Get();
+  word_match_search_non_ascii_passages = kWordMatchSearchNonAsciiPassages.Get();
 }
 
 FeatureParameters::FeatureParameters(const FeatureParameters&) = default;

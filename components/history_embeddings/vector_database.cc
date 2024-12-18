@@ -217,12 +217,14 @@ UrlScore UrlData::BestScoreWith(SearchInfo& search_info,
     passage = &passages.passages(i);
 
     // Skip non-ASCII strings to avoid scoring problems with the model.
-    // Note that if `erase_non_ascii` is true then the embeddings have
-    // already be recomputed with non-ASCII characters excluded from
-    // the source passages, and are thus usable for search. In such
-    // cases, we can also modify the passage for term search.
+    // Note that if `erase_non_ascii_characters` is true then the embeddings
+    // have already be recomputed with non-ASCII characters excluded from the
+    // source passages, and are thus usable for search. In such cases, we can
+    // also modify the passage for term search.
+    bool skip_similarity_scoring = false;
     if (!base::IsStringASCII(*passage)) {
-      if (search_params.erase_non_ascii) {
+      if (search_params.erase_non_ascii_characters ||
+          search_params.word_match_search_non_ascii_passages) {
         search_info.modified_nonascii_passage_count++;
         if (word_match_required_score != kMaxFloat) {
           // Copy and modify the passage to exclude the non-ASCII characters.
@@ -231,6 +233,11 @@ UrlScore UrlData::BestScoreWith(SearchInfo& search_info,
           modified_passage = *passage;
           EraseNonAsciiCharacters(modified_passage);
           passage = &modified_passage;
+          if (!search_params.erase_non_ascii_characters) {
+            // The embedding for this passage is not valid, but the passage
+            // can still be word match text searched.
+            skip_similarity_scoring = true;
+          }
         }
       } else {
         search_info.skipped_nonascii_passage_count++;
@@ -238,11 +245,12 @@ UrlScore UrlData::BestScoreWith(SearchInfo& search_info,
       }
     }
 
-    float score = embedding.GetPassageWordCount() < min_passage_word_count
+    float score = skip_similarity_scoring || embedding.GetPassageWordCount() <
+                                                 min_passage_word_count
                       ? 0.0f
                       : query_embedding.ScoreWith(embedding);
 
-    if (score >= word_match_required_score) {
+    if (score >= word_match_required_score || skip_similarity_scoring) {
       // Since the ASCII check above processed the whole passage string, it is
       // likely ready in CPU cache. Scan text again to count terms in passage.
       base::ElapsedTimer timer;

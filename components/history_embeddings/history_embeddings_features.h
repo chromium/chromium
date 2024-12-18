@@ -183,6 +183,11 @@ struct FeatureParameters {
   // then will be skipped during search. When true, passages are embedded with
   // non-ASCII characters removed, but are then included in search.
   bool erase_non_ascii_characters = false;
+
+  // Whether to use word match text search for passages containing non-ASCII
+  // characters. See also `word_match_min_embedding_score`, which this bypasses.
+  // Note, when `erase_non_ascii_characters` is true, this will have no effect.
+  bool word_match_search_non_ascii_passages = false;
 };
 
 // Use this to apply changes for testing only while an instance lives.

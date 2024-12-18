@@ -85,7 +85,12 @@ struct SearchParams {
 
   // If true, any non-ASCII characters in queries or passages will be erased
   // instead of ignoring such queries or passages entirely.
-  bool erase_non_ascii = false;
+  bool erase_non_ascii_characters = false;
+
+  // If true, word match text search can still be applied for passages with
+  // non-ASCII characters; similar to `erase_non_ascii_characters` but for word
+  // match text search only.
+  bool word_match_search_non_ascii_passages = false;
 
   // If true, answering step will be skipped even if the query is answerable.
   bool skip_answering = false;

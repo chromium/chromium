@@ -209,6 +209,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   search_params.word_match_score_boost_factor = 0.1;
   search_params.word_match_max_term_count = 8;
   search_params.word_match_required_term_ratio = 0.0f;
+  search_params.query_terms = {"gets", "skipped"};
 
   // Basic embedding search with no query terms produces flat embedding score.
   Embedding query_embedding = DeterministicEmbedding(0);
@@ -219,6 +220,18 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   EXPECT_FLOAT_EQ(scored_urls[0].score, 1.0f);
   EXPECT_FLOAT_EQ(scored_urls[1].score, 1.0f);
   EXPECT_FLOAT_EQ(scored_urls[2].score, 0.0f);
+  EXPECT_FLOAT_EQ(scored_urls[2].word_match_score, 0.0f);
+
+  // Even with zero embedding similarity score, word match text search can
+  // still be applied when enabled.
+  search_params.word_match_search_non_ascii_passages = true;
+  scored_urls = database.FindNearest({}, 3, search_params, query_embedding, no)
+                    .scored_urls;
+  EXPECT_FLOAT_EQ(scored_urls[0].score, 1.0f);
+  EXPECT_FLOAT_EQ(scored_urls[1].score, 1.0f);
+  EXPECT_GT(scored_urls[2].score, 0.0f);
+  EXPECT_GT(scored_urls[2].word_match_score, 0.0f);
+  search_params.word_match_search_non_ascii_passages = false;
 
   // Set up some query terms to boost score with word matches against passage.
   // Additional unmatched terms provide no boost. N occurrences of a matching

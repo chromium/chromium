@@ -362,9 +362,11 @@ SearchResult HistoryEmbeddingsService::Search(
 
   // Set search parameters, kept within result for caller convenience.
   result.search_params.skip_answering = skip_answering;
-  result.search_params.erase_non_ascii =
+  result.search_params.erase_non_ascii_characters =
       GetFeatureParameters().erase_non_ascii_characters;
-  if (result.search_params.erase_non_ascii) {
+  result.search_params.word_match_search_non_ascii_passages =
+      GetFeatureParameters().word_match_search_non_ascii_passages;
+  if (result.search_params.erase_non_ascii_characters) {
     EraseNonAsciiCharacters(query);
   }
   result.search_params.word_match_minimum_embedding_score =
