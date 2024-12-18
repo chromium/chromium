@@ -26,6 +26,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/device_bound_sessions/registration_request_param.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -228,7 +229,14 @@ class UnauthorizedThenSuccessResponseContainer {
 TEST_F(RegistrationTest, BasicSuccess) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+      base::BindRepeating([](const test_server::HttpRequest& request) {
+        auto resp_iter = request.headers.find("Sec-Session-Response");
+        EXPECT_TRUE(resp_iter != request.headers.end());
+        if (resp_iter != request.headers.end()) {
+          EXPECT_TRUE(VerifyEs256Jwt(resp_iter->second));
+        }
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
