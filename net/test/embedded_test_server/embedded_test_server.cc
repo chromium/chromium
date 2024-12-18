@@ -387,8 +387,10 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
 
   listen_socket_->DetachFromThread();
 
-  if (is_using_ssl_ && !InitializeSSLServerContext())
+  if (is_using_ssl_ && !InitializeSSLServerContext()) {
+    LOG(ERROR) << "Unable to initialize SSL";
     return false;
+  }
 
   return true;
 }
@@ -574,11 +576,15 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
 
 bool EmbeddedTestServer::InitializeSSLServerContext() {
   if (UsingStaticCert()) {
-    if (!InitializeCertAndKeyFromFile())
+    if (!InitializeCertAndKeyFromFile()) {
+      LOG(ERROR) << "Unable to initialize cert and key from file";
       return false;
+    }
   } else {
-    if (!GenerateCertAndKey())
+    if (!GenerateCertAndKey()) {
+      LOG(ERROR) << "Unable to generate cert and key";
       return false;
+    }
   }
 
   if (protocol_ == HttpConnection::Protocol::kHttp2) {
