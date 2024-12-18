@@ -1,3 +1,4 @@
+// META: script=resources/utils.js
 // META: script=resources/workaround-for-382640509.js
 
 promise_test(async t => {
@@ -8,7 +9,7 @@ promise_test(async t => {
   document.childNodes[document.childNodes.length - 1].appendChild(iframe);
 
   const session = await iframe.contentWindow.ai.languageModel.create();
-  session.prompt('hello');
+  session.prompt(kTestPrompt);
   // Detach the iframe.
   iframe.remove();
-}, 'Detaching iframe while runing prompt() should not cause memory leak');
+}, 'Detaching iframe while running prompt() should not cause memory leak');

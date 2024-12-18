@@ -21,9 +21,7 @@ promise_test(async (t) => {
 promise_test(async (t) => {
   const session = await ai.languageModel.create();
   testAbort(t, (signal) => {
-    return session.prompt(
-      "Write a poem", { signal: signal }
-    );
+    return session.prompt(kTestPrompt, { signal: signal });
   });
 }, "Aborting AILanguageModel.prompt().");
 

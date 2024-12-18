@@ -1,3 +1,4 @@
+// META: script=resources/utils.js
 // META: script=resources/workaround-for-382640509.js
 
 promise_test(async t => {
@@ -12,7 +13,7 @@ promise_test(async t => {
 
   // Calling `session.destroy()` immediately after `session.prompt()` will
   // trigger the "The model execution session has been destroyed." exception.
-  let result = session.prompt("What is 1+2?");
+  let result = session.prompt(kTestPrompt);
   session.destroy();
   await promise_rejects_dom(
     t, "InvalidStateError", result,
@@ -22,7 +23,7 @@ promise_test(async t => {
   // Calling `session.prompt()` after `session.destroy()` will trigger the
   // "The model execution session has been destroyed." exception.
   await promise_rejects_dom(
-    t, "InvalidStateError", session.prompt("What is 2+3?"),
+    t, "InvalidStateError", session.prompt(kTestPrompt),
     "The model execution session has been destroyed."
   );
 

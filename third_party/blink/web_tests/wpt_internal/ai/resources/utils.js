@@ -1,3 +1,5 @@
+const kTestPrompt = 'Please write a sentence in English.';
+
 const testSession = async (session) => {
   if (typeof session.topK !== 'number') {
     return {success: false, error: 'session topK property is not properly set'};
@@ -30,7 +32,7 @@ const testSession = async (session) => {
   const prevTokenSoFar = session.tokensSoFar;
   const prevTokensLeft = session.tokensLeft;
 
-  const result = await session.prompt("Please write a sentence in English.");
+  const result = await session.prompt(kTestPrompt);
   if (typeof result !== "string" || result.length === 0) {
     return {
       success: false,

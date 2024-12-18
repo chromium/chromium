@@ -1,3 +1,4 @@
+// META: script=resources/utils.js
 // META: script=resources/workaround-for-382640509.js
 // META: timeout=long
 
@@ -12,7 +13,7 @@ promise_test(async t => {
   const session = await ai.languageModel.create();
   // Test the streaming prompt API.
   const streamingResponse =
-    session.promptStreaming("Please write a sentence in English.");
+    session.promptStreaming(kTestPrompt);
   // Run GC.
   gc();
   assert_true(Object.prototype.toString.call(streamingResponse) === "[object ReadableStream]");
