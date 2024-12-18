@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
 #include "components/printing/common/print_params.h"
@@ -86,7 +85,7 @@ const char kMultipageHTML[] =
     "<div>page3</div>"
     "</body></html>";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // A simple webpage with a button to print itself with.
 const char kPrintOnUserAction[] =
     "<body>"
@@ -149,7 +148,7 @@ const char kHTMLWithManyLinesOfText[] =
     "<p>The quick brown fox jumped over the lazy dog.</p>"
     "</body></html>";
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class FakePrintPreviewUI : public mojom::PrintPreviewUI {
@@ -1711,7 +1710,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 // These print preview tests do not work on Chrome OS yet.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class PrintRenderFrameHelperPreviewTest
@@ -1740,7 +1739,7 @@ class PrintRenderFrameHelperPreviewTest
     PrintRenderFrameHelper* print_render_frame_helper =
         GetPrintRenderFrameHelper();
     print_render_frame_helper->InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         mojo::NullAssociatedRemote(),
 #endif
         /*has_selection=*/false);
@@ -1775,7 +1774,7 @@ class PrintRenderFrameHelperPreviewTest
         GetPrintRenderFrameHelperForFrame(render_frame);
     print_render_frame_helper->SetPrintPreviewUI(preview_ui->BindReceiver());
     print_render_frame_helper->InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         mojo::NullAssociatedRemote(),
 #endif
         has_selection);
@@ -3652,6 +3651,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

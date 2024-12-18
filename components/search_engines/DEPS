@@ -1,6 +1,4 @@
 include_rules = [
-  "+chromeos/lacros",
-  "+chromeos/crosapi/mojom",
   "+components/country_codes",
   "+components/database_utils",
   "+components/google/core",

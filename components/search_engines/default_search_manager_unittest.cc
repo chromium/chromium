@@ -107,10 +107,6 @@ class DefaultSearchManagerTest : public testing::Test {
     return std::make_unique<DefaultSearchManager>(
         pref_service(), search_engine_choice_service(),
         DefaultSearchManager::ObserverCallback()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-            ,
-        /*for_lacros_main_profile=*/false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
   }
 

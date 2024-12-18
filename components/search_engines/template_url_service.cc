@@ -374,12 +374,7 @@ TemplateURLService::TemplateURLService(
     std::unique_ptr<SearchTermsData> search_terms_data,
     const scoped_refptr<KeywordWebDataService>& web_data_service,
     std::unique_ptr<TemplateURLServiceClient> client,
-    const base::RepeatingClosure& dsp_change_callback
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    ,
-    bool for_lacros_main_profile
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    )
+    const base::RepeatingClosure& dsp_change_callback)
     : prefs_(prefs),
       search_engine_choice_service_(search_engine_choice_service),
       search_terms_data_(std::move(search_terms_data)),
@@ -391,12 +386,7 @@ TemplateURLService::TemplateURLService(
           &prefs,
           &search_engine_choice_service,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
-                              base::Unretained(this))
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-              ,
-          for_lacros_main_profile
-#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
-          ),
+                              base::Unretained(this))),
       enterprise_search_manager_(GetEnterpriseSearchManager(&prefs)) {
   DCHECK(search_terms_data_);
   Init();
@@ -412,12 +402,7 @@ TemplateURLService::TemplateURLService(
           /*search_terms_data=*/std::make_unique<SearchTermsData>(),
           /*web_data_service=*/nullptr,
           /*client=*/nullptr,
-          /*dsp_change_callback=*/base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-              ,
-          /*for_lacros_main_profile=*/false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      ) {
+          /*dsp_change_callback=*/base::RepeatingClosure()) {
   // This constructor is not intended to be used outside of tests.
   CHECK_IS_TEST();
   ApplyInitializersForTesting(initializers);  // IN-TEST

@@ -41,7 +41,7 @@ ReduceAcceptLanguageService::ReduceAcceptLanguageService(
     : settings_map_(settings_map), is_incognito_(is_incognito) {
   DCHECK(settings_map_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::string& key = language::prefs::kPreferredLanguages;
 #else
   const std::string& key = language::prefs::kAcceptLanguages;

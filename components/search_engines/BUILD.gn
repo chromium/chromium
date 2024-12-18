@@ -144,13 +144,6 @@ static_library("search_engines") {
       "enterprise/site_search_policy_handler.h",
     ]
   }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
 }
 
 source_set("search_engine_utils") {
