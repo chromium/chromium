@@ -10,6 +10,7 @@
 class Browser;
 @protocol DiscoverFeedManageDelegate;
 @protocol DiscoverFeedPreviewDelegate;
+@protocol FeedControlDelegate;
 @protocol FeedSignInPromoDelegate;
 @protocol UIScrollViewDelegate;
 
@@ -31,6 +32,9 @@ class Browser;
 
 // FeedSignInPromoDelegate used by Discover Feed ViewController.
 @property(nonatomic, weak) id<FeedSignInPromoDelegate> signInPromoDelegate;
+
+// FeedControlDelegate used by Discover Feed ViewController.
+@property(nonatomic, weak) id<FeedControlDelegate> controlDelegate;
 
 @end
 
