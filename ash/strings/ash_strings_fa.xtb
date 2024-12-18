@@ -305,7 +305,7 @@
 <translation id="2018630726571919839">‏Tell me a joke (لطیفه‌ای بگو)</translation>
 <translation id="2021864487439853900">قفل‌گشایی با کلیک کردن</translation>
 <translation id="2034971124472263449">درهرصورت ذخیره شود</translation>
-<translation id="2041220428661959602">‏مقدار شارژ باتری: ‎<ph name="BATTERY_PERCENTAGE" />٪</translation>
+<translation id="2041220428661959602">‏سطح باتری: ‎<ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="204259843076055848">میان‌بر <ph name="SIX_PACK_KEY_NAME" /> درحال‌حاضر خاموش است</translation>
 <translation id="2049240716062114887">نام میز کار به <ph name="DESK_NAME" /> تغییر کرد</translation>
 <translation id="2064048859448024834">پیش‌نمای دوربین روشن است</translation>
@@ -1662,7 +1662,7 @@
 <translation id="6574622320167699133">قفل با تلفنتان باز شد. برای ورود، تک‌ضرب بزنید یا کلیک کنید.</translation>
 <translation id="6578407462441924264">بدون نام</translation>
 <translation id="6582012689384648647">‏برای فهرست‌های پخش تمرکز که برای شما شخصی‌سازی شده است، دسترسی به YouTube Music را مجاز کنید</translation>
-<translation id="6582034443359256692">درحال محاسبه سطح شارژ باتری.</translation>
+<translation id="6582034443359256692">درحال محاسبه سطح باتری.</translation>
 <translation id="6585808820553845416">جلسه در <ph name="SESSION_TIME_REMAINING" /> به پایان می‌رسد.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">دوربین به گوشه پایین سمت چپ چسبید. تداخلی با سطح سیستم روی داد.</translation>
