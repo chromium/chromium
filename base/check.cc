@@ -238,8 +238,6 @@ class DCheckErrnoLogMessage : public ErrnoLogMessage {
 
 }  // namespace
 
-CheckError::CheckError(LogMessage* log_message) : log_message_(log_message) {}
-
 CheckError CheckError::Check(const char* condition,
                              base::NotFatalUntil fatal_milestone,
                              const base::Location& location) {
@@ -249,14 +247,14 @@ CheckError CheckError::Check(const char* condition,
   return CheckError(log_message);
 }
 
-LogMessage* CheckError::CheckOp(char* log_message_str,
-                                base::NotFatalUntil fatal_milestone,
-                                const base::Location& location) {
+CheckError CheckError::CheckOp(char* log_message_str,
+                               base::NotFatalUntil fatal_milestone,
+                               const base::Location& location) {
   auto* const log_message = new CheckLogMessage(
       location, GetCheckSeverity(fatal_milestone), fatal_milestone);
   log_message->stream() << log_message_str;
   free(log_message_str);
-  return log_message;
+  return CheckError(log_message);
 }
 
 CheckError CheckError::DCheck(const char* condition,
@@ -266,12 +264,12 @@ CheckError CheckError::DCheck(const char* condition,
   return CheckError(log_message);
 }
 
-LogMessage* CheckError::DCheckOp(char* log_message_str,
-                                 const base::Location& location) {
+CheckError CheckError::DCheckOp(char* log_message_str,
+                                const base::Location& location) {
   auto* const log_message = new DCheckLogMessage(location);
   log_message->stream() << log_message_str;
   free(log_message_str);
-  return log_message;
+  return CheckError(log_message);
 }
 
 CheckError CheckError::DumpWillBeCheck(const char* condition,
@@ -283,14 +281,14 @@ CheckError CheckError::DumpWillBeCheck(const char* condition,
   return CheckError(log_message);
 }
 
-LogMessage* CheckError::DumpWillBeCheckOp(char* log_message_str,
-                                          const base::Location& location) {
+CheckError CheckError::DumpWillBeCheckOp(char* log_message_str,
+                                         const base::Location& location) {
   auto* const log_message =
       new CheckLogMessage(location, GetDumpSeverity(),
                           base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   log_message->stream() << log_message_str;
   free(log_message_str);
-  return log_message;
+  return CheckError(log_message);
 }
 
 CheckError CheckError::DPCheck(const char* condition,
@@ -337,6 +335,8 @@ CheckError::~CheckError() {
   }
 }
 
+CheckError::CheckError(LogMessage* log_message) : log_message_(log_message) {}
+
 // Note: This function ends up in crash stack traces. If its full name changes,
 // the crash server's magic signature logic needs to be updated. See
 // cl/306632920.
@@ -359,14 +359,14 @@ CheckNoreturnError CheckNoreturnError::Check(const char* condition,
   return CheckNoreturnError(log_message);
 }
 
-LogMessage* CheckNoreturnError::CheckOp(char* log_message_str,
-                                        const base::Location& location) {
+CheckNoreturnError CheckNoreturnError::CheckOp(char* log_message_str,
+                                               const base::Location& location) {
   auto* const log_message =
       new CheckLogMessage(location, LOGGING_FATAL,
                           base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   log_message->stream() << log_message_str;
   free(log_message_str);
-  return log_message;
+  return CheckNoreturnError(log_message);
 }
 
 CheckNoreturnError CheckNoreturnError::PCheck(const char* condition,
