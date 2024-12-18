@@ -274,6 +274,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
     options->recognizer_client_type =
         media::mojom::RecognizerClientType::kLiveCaption;
     options->skip_continuously_empty_audio = true;
+    options->recognition_context = config.recognition_context;
 
     speech_recognition_context_->BindWebSpeechRecognizer(
         std::move(session_receiver), std::move(client_remote),

@@ -51,7 +51,7 @@ class SpeechRecognitionRecognizerImplTest
   }
 
   media::mojom::SpeechRecognitionOptionsPtr CreateOptions(
-      std::optional<media::mojom::SpeechRecognitionRecognitionContextPtr>
+      std::optional<media::SpeechRecognitionRecognitionContext>
           recognition_context = std::nullopt) {
     media::mojom::SpeechRecognitionOptionsPtr options =
         media::mojom::SpeechRecognitionOptions::New();
@@ -95,15 +95,11 @@ TEST_F(SpeechRecognitionRecognizerImplTest, OnLanguagePackInstalledTest) {
 
 TEST_F(SpeechRecognitionRecognizerImplTest,
        SpeechRecognitionRecognitionContextTest) {
-  auto recognition_context =
-      media::mojom::SpeechRecognitionRecognitionContext::New();
-  std::vector<media::mojom::SpeechRecognitionPhrasePtr> phrases;
-  phrases.push_back(
-      media::mojom::SpeechRecognitionPhrase::New("test-phrase", 2.0));
-  recognition_context->phrases = std::move(phrases);
+  std::vector<media::SpeechRecognitionPhrase> phrases;
+  phrases.push_back(media::SpeechRecognitionPhrase("test phrase", 2.0));
 
-  auto recognizer =
-      CreateRecognizer(CreateOptions(std::move(recognition_context)));
+  auto recognizer = CreateRecognizer(
+      CreateOptions(media::SpeechRecognitionRecognitionContext(phrases)));
   recognizer->SetSodaClientForTesting(
       std::make_unique<NiceMock<::soda::MockSodaClient>>());
   recognizer->OnLanguagePackInstalled(config_paths());
@@ -115,7 +111,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest,
   EXPECT_EQ("android-speech-api-generic-phrases", context_input.name());
   EXPECT_EQ(1, context_input.phrases().phrase().size());
   auto phrase = context_input.phrases().phrase().Get(0);
-  EXPECT_EQ("test-phrase", phrase.phrase());
+  EXPECT_EQ("test phrase", phrase.phrase());
   EXPECT_EQ(2.0, phrase.boost());
 }
 

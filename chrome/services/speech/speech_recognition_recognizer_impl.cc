@@ -498,14 +498,14 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
     base::UmaHistogramCounts100(kLiveCaptionLanguageCountHistogramName,
                                 config_paths_.size());
   }
-  if (!options_->recognition_context.is_null()) {
+  if (options_->recognition_context.has_value()) {
     auto* context_input =
         config_msg_.mutable_recognition_context()->add_context();
     context_input->set_name(kContextInputName);
-    for (const auto& phrase : options_->recognition_context->phrases) {
+    for (const auto& phrase : options_->recognition_context.value().phrases) {
       auto* p = context_input->mutable_phrases()->add_phrase();
-      p->set_phrase(phrase->phrase);
-      p->set_boost(phrase->boost);
+      p->set_phrase(phrase.phrase);
+      p->set_boost(phrase.boost);
     }
   }
 
