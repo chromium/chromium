@@ -4672,17 +4672,17 @@ public class StripLayoutHelperTest {
         assertNotEquals(
                 "Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
 
-        // Hover between 2nd and 3rd tab:
+        // Drag - Hover between 2nd and 3rd tab:
         // 2 * (tabWidth(265) - overlapWidth(28)) = 474
-        mStripLayoutHelper.updateReorderPositionForTabDrop(474.f);
+        mStripLayoutHelper.drag(TIMESTAMP, 474.f, 0, 0);
 
         // Verify.
         assertNotEquals(
                 "Should be tab margin after tab 1.", 0, tabs[1].getTrailingMargin(), EPSILON);
 
-        // Now hover between 1st and 2nd tab:
+        // Now drag - hover between 1st and 2nd tab:
         // tabWidth(265) - overlapWidth(28) = 237
-        mStripLayoutHelper.updateReorderPositionForTabDrop(237.f);
+        mStripLayoutHelper.drag(TIMESTAMP, 237.f, 0, 0);
 
         // Verify.
         assertNotEquals(
@@ -4718,8 +4718,8 @@ public class StripLayoutHelperTest {
         assertNotEquals(
                 "Should be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
 
-        // Hover in start gap:
-        mStripLayoutHelper.updateReorderPositionForTabDrop(50);
+        // Drag - Hover in start gap:
+        mStripLayoutHelper.drag(TIMESTAMP, 50, 0, 0);
 
         // Verify first tab is not impacted.
         assertEquals(
@@ -4728,8 +4728,8 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Should not be tab margin after tab 2.", 0, tabs[2].getTrailingMargin(), EPSILON);
 
-        // Hover in end gap:
-        mStripLayoutHelper.updateReorderPositionForTabDrop(1100);
+        // Drag - Hover in end gap:
+        mStripLayoutHelper.drag(TIMESTAMP, 1100, 0, 0);
 
         // When hovering in edge gaps, last tab margin is reset (since hoveredTab == lastTab)
         assertEquals(

@@ -32,12 +32,14 @@ interface ReorderStrategy {
      * @param stripViews The list of {@link StripLayoutView}.
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param endX The x position where this update ended.
      * @param deltaX The change in position for the reordering tab based on dragging and scrolling.
      */
     void updateReorderPosition(
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
+            float endX,
             float deltaX);
 
     /**

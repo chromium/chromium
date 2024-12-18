@@ -1751,13 +1751,6 @@ public class StripLayoutHelper
         mTouchableRect.set(touchableRect);
     }
 
-    private int getStripTabRootId(StripLayoutTab stripTab) {
-        if (mModel == null || stripTab == null || getTabById(stripTab.getTabId()) == null) {
-            return Tab.INVALID_TAB_ID;
-        }
-        return getTabById(stripTab.getTabId()).getRootId();
-    }
-
     /**
      * Checks whether a tab at the edge of the strip is partially hidden, in which case the close
      * button will be hidden to avoid accidental clicks.
@@ -1876,12 +1869,8 @@ public class StripLayoutHelper
                 }
 
                 mReorderDelegate.setLastReorderX(x);
-                if (mReorderDelegate.getReorderingForTabDrop()) {
-                    updateReorderPositionForTabDrop(x);
-                } else {
-                    mReorderDelegate.updateReorderPosition(
-                            mStripViews, mStripGroupTitles, mStripTabs, accumulatedDeltaX);
-                }
+                mReorderDelegate.updateReorderPosition(
+                        mStripViews, mStripGroupTitles, mStripTabs, x, accumulatedDeltaX);
             }
         } else if (!isViewContextMenuShowing()) {
             // 3.b. Handle scroll if the tab group context menu is not showing.
@@ -2756,12 +2745,12 @@ public class StripLayoutHelper
         float delta = mScrollDelegate.setScrollOffset(pos);
 
         if (mReorderDelegate.getInReorderMode() && mScrollDelegate.isFinished()) {
-            if (mReorderDelegate.getReorderingForTabDrop()) {
-                updateReorderPositionForTabDrop(mReorderDelegate.getLastReorderX());
-            } else {
-                mReorderDelegate.updateReorderPosition(
-                        mStripViews, mStripGroupTitles, mStripTabs, delta);
-            }
+            mReorderDelegate.updateReorderPosition(
+                    mStripViews,
+                    mStripGroupTitles,
+                    mStripTabs,
+                    mReorderDelegate.getLastReorderX(),
+                    delta);
         }
     }
 
@@ -3860,16 +3849,6 @@ public class StripLayoutHelper
         mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
     }
 
-    /** See {@link ReorderDelegate#setTrailingMarginForTab} */
-    private boolean setTrailingMarginForTab(
-            StripLayoutTab tab,
-            boolean shouldHaveTrailingMargin,
-            @NonNull List<Animator> animationList) {
-        StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
-        return mReorderDelegate.setTrailingMarginForTab(
-                tab, groupTitle, shouldHaveTrailingMargin, animationList);
-    }
-
     private void setCompositorButtonsVisible(boolean visible) {
         float endOpacity = visible ? 1.f : 0.f;
 
@@ -3936,60 +3915,6 @@ public class StripLayoutHelper
                         || stripLayoutTab.getContainerOpacity() == TAB_OPACITY_VISIBLE);
     }
 
-    private float adjustXForTabDrop(float x) {
-        if (LocalizationUtils.isLayoutRtl()) {
-            return x + (mCachedTabWidthSupplier.get() / 2);
-        } else {
-            return x - (mCachedTabWidthSupplier.get() / 2);
-        }
-    }
-
-    void updateReorderPositionForTabDrop(float x) {
-        // 1. Adjust by a half tab-width so that we target the nearest tab gap.
-        x = adjustXForTabDrop(x);
-
-        // 2. Clear previous "interacting" tab if inserting at the start of the strip.
-        boolean inStartGap =
-                LocalizationUtils.isLayoutRtl()
-                        ? x > mStripTabs[0].getTouchTargetRight()
-                        : x < mStripTabs[0].getTouchTargetLeft();
-        StripLayoutTab interactingTab = mReorderDelegate.getInteractingTab();
-        if (inStartGap && interactingTab != null) {
-            mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ getEffectiveTabWidth() / 2);
-
-            finishAnimations();
-            ArrayList<Animator> animationList = new ArrayList<>();
-            setTrailingMarginForTab(
-                    interactingTab, /* shouldHaveTrailingMargin= */ false, animationList);
-            mReorderDelegate.setInteractingTab(null);
-            startAnimations(animationList);
-
-            // 2.a. Early-out if we just entered the start gap.
-            return;
-        }
-
-        // 3. Otherwise, update drop indicator if necessary.
-        StripLayoutTab hoveredTab = getTabAtPosition(x);
-        if (hoveredTab != null && hoveredTab != interactingTab) {
-            finishAnimations();
-
-            // 3.a. Reset the state for the previous "interacting" tab.
-            ArrayList<Animator> animationList = new ArrayList<>();
-            if (interactingTab != null) {
-                setTrailingMarginForTab(
-                        interactingTab, /* shouldHaveTrailingMargin= */ false, animationList);
-            }
-
-            // 3.b. Set state for the new "interacting" tab.
-            setTrailingMarginForTab(
-                    hoveredTab, /* shouldHaveTrailingMargin= */ true, animationList);
-            mReorderDelegate.setInteractingTab(hoveredTab);
-
-            // 3.c. Animate.
-            startAnimations(animationList);
-        }
-    }
-
     private void handleReorderAutoScrolling(long time) {
         if (!mReorderDelegate.getInReorderMode()) return;
 
@@ -4006,7 +3931,7 @@ public class StripLayoutHelper
         // than the interacting tab's drawX.
         final float x =
                 mReorderDelegate.getReorderingForTabDrop()
-                        ? adjustXForTabDrop(mReorderDelegate.getLastReorderX())
+                        ? mReorderDelegate.adjustXForTabDrop(mReorderDelegate.getLastReorderX())
                         : mReorderDelegate.getInteractingView().getDrawX();
 
         // 2. Calculate the gutters for accelerating the scroll speed.
@@ -4486,7 +4411,7 @@ public class StripLayoutHelper
 
             // 2. StartX indicates where the external drag enters the  tab strip.
             // Adjust by a half tab-width so that we target the nearest tab gap.
-            float startX = adjustXForTabDrop(currX);
+            float startX = mReorderDelegate.adjustXForTabDrop(currX);
 
             // 3. Mark the "interacting" view. This is not the DnD dragged tab, but rather the tab
             // in the strip that is currently being hovered by the DnD drag.
