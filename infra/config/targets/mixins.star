@@ -1288,8 +1288,7 @@ targets.mixin(
     generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
-            "cpu": "arm64",
-            "mac_model": "VirtualMac2,1",
+            "cpu": "Apple_(Virtual)",
             "os": "Mac-14",
             "pool": "chromium.tests.macvm",
         },
