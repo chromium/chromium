@@ -16,24 +16,15 @@
   ::logging::CheckError::NotImplemented(__PRETTY_FUNCTION__)
 
 // The lambda returns false the first time it is run, and true every other time.
-// Note that the `static const bool call_once` trickery is used for thread
-// safety (C++11 guarantees that `call_once` is only initialized once, no UB
-// even if two threads enter concurrently).
-#define NOTIMPLEMENTED_LOG_ONCE()                                      \
-  switch (0)                                                           \
-  case 0:                                                              \
-  default:                                                             \
-    if ([] {                                                           \
-          bool old_value = true;                                       \
-          [[maybe_unused]] static const bool call_once = [](bool* b) { \
-            *b = false;                                                \
-            return true;                                               \
-          }(&old_value);                                               \
-          return old_value;                                            \
-        }())                                                           \
-      ;                                                                \
-    else                                                               \
-      NOTIMPLEMENTED()
+#define NOTIMPLEMENTED_LOG_ONCE()                                \
+  LOGGING_CHECK_FUNCTION_IMPL(NOTIMPLEMENTED(), [] {             \
+    bool old_value = true;                                       \
+    [[maybe_unused]] static const bool call_once = [](bool* b) { \
+      *b = false;                                                \
+      return true;                                               \
+    }(&old_value);                                               \
+    return old_value;                                            \
+  }())
 
 #else
 #define NOTIMPLEMENTED() EAT_CHECK_STREAM_PARAMS()
