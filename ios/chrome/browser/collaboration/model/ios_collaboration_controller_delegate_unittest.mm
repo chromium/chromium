@@ -80,7 +80,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   void InitShareFlowDelegate() {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
         browser_.get(), base_view_controller_,
-        std::make_unique<CollaborationFlowConfigurationShare>(
+        std::make_unique<CollaborationFlowConfigurationShareOrManage>(
             tab_group_->GetWeakPtr()));
   }
 

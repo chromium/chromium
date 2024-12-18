@@ -13,18 +13,20 @@
 
 namespace collaboration {
 
-#pragma mark - CollaborationFlowConfigurationShare
+#pragma mark - CollaborationFlowConfigurationShareOrManage
 
-CollaborationFlowConfigurationShare::CollaborationFlowConfigurationShare(
-    base::WeakPtr<const TabGroup> tab_group)
+CollaborationFlowConfigurationShareOrManage::
+    CollaborationFlowConfigurationShareOrManage(
+        base::WeakPtr<const TabGroup> tab_group)
     : tab_group_(tab_group) {
   CHECK(tab_group_);
 }
 
-CollaborationFlowConfigurationShare::~CollaborationFlowConfigurationShare() {}
+CollaborationFlowConfigurationShareOrManage::
+    ~CollaborationFlowConfigurationShareOrManage() {}
 
-CollaborationFlowConfiguration::Type CollaborationFlowConfigurationShare::type()
-    const {
+CollaborationFlowConfiguration::Type
+CollaborationFlowConfigurationShareOrManage::type() const {
   return kType;
 }
 

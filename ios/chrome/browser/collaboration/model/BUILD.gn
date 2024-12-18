@@ -13,6 +13,7 @@ source_set("collaboration_delegate") {
     "//base",
     "//components/collaboration/public",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/model/browser",

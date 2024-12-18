@@ -49,7 +49,7 @@ class IOSCollaborationControllerDelegate
   raw_ptr<ShareKitService> share_kit_service_;
   raw_ptr<Browser> browser_;
   __weak UIViewController* base_view_controller_;
-  std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow_;
+  std::unique_ptr<CollaborationFlowConfiguration> flow_config_;
   NSString* session_id_ = nil;
 };
 

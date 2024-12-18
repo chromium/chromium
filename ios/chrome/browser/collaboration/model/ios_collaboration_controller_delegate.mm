@@ -7,9 +7,14 @@
 #import "base/check.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
@@ -29,7 +34,7 @@ IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
     std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow)
     : browser_(browser),
       base_view_controller_(base_view_controller),
-      collaboration_flow_(std::move(collaboration_flow)) {
+      flow_config_(std::move(collaboration_flow)) {
   CHECK(browser_);
   CHECK(base_view_controller_);
   share_kit_service_ =
@@ -101,10 +106,9 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     const data_sharing::GroupToken& token,
     const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
-  CHECK_EQ(collaboration_flow_->type(),
-           CollaborationFlowConfiguration::Type::kJoin);
+  CHECK_EQ(flow_config_->type(), CollaborationFlowConfiguration::Type::kJoin);
   const CollaborationFlowConfigurationJoin& join_flow =
-      collaboration_flow_->As<CollaborationFlowConfigurationJoin>();
+      flow_config_->As<CollaborationFlowConfigurationJoin>();
 
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
   config.URL = join_flow.url();
@@ -122,19 +126,20 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
     ResultCallback result) {
-  CHECK_EQ(collaboration_flow_->type(),
-           CollaborationFlowConfiguration::Type::kShare);
-  const CollaborationFlowConfigurationShare& share_flow =
-      collaboration_flow_->As<CollaborationFlowConfigurationShare>();
+  CHECK_EQ(flow_config_->type(),
+           CollaborationFlowConfiguration::Type::kShareOrManage);
+  const CollaborationFlowConfigurationShareOrManage& share_flow =
+      flow_config_->As<CollaborationFlowConfigurationShareOrManage>();
 
-  if (!share_flow.tab_group()) {
+  base::WeakPtr<const TabGroup> tab_group = share_flow.tab_group();
+  if (!tab_group) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
     return;
   }
 
   ShareKitShareGroupConfiguration* config =
       [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = share_flow.tab_group().get();
+  config.tabGroup = tab_group.get();
   config.baseViewController = base_view_controller_;
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
@@ -151,7 +156,34 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
 
 void IOSCollaborationControllerDelegate::ShowManageDialog(
     ResultCallback result) {
-  // TODO(crbug.com/377306986): Implement this.
+  CHECK_EQ(flow_config_->type(),
+           CollaborationFlowConfiguration::Type::kShareOrManage);
+  const CollaborationFlowConfigurationShareOrManage& manage_configuration =
+      flow_config_->As<CollaborationFlowConfigurationShareOrManage>();
+
+  base::WeakPtr<const TabGroup> tab_group = manage_configuration.tab_group();
+  if (!tab_group) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    return;
+  }
+
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  tab_groups::CollaborationId collaboration_id =
+      tab_groups::utils::GetTabGroupCollabID(tab_group.get(), sync_service);
+  if (collaboration_id->empty()) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    return;
+  }
+
+  ShareKitManageConfiguration* config =
+      [[ShareKitManageConfiguration alloc] init];
+  config.baseViewController = base_view_controller_;
+  config.collabID = base::SysUTF8ToNSString(collaboration_id.value());
+  config.applicationHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  share_kit_service_->ManageTabGroup(config);
 }
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(

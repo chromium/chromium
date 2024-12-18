@@ -86,8 +86,9 @@ bool IsTabGroupShared(const TabGroup* tab_group,
 
 // Returns the collabID of the given `tab_group` if it's shared.
 // Otherwise returns an empty collabID.
-CollaborationId GetTabGroupCollabID(const TabGroup* tab_group,
-                                    TabGroupSyncService* sync_service);
+CollaborationId GetTabGroupCollabID(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service);
 
 }  // namespace utils
 }  // namespace tab_groups

@@ -9,19 +9,20 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "components/saved_tab_groups/public/types.h"
 #import "url/gurl.h"
 
 class TabGroup;
 
 namespace collaboration {
 
-// Represents a generic collaboration flow configuration.
+// This class is a generic configuration for a collaboration flow.
 class CollaborationFlowConfiguration {
  public:
   // The type of collaboration flow.
   enum class Type {
-    // Share flow.
-    kShare,
+    // Share or manage flow.
+    kShareOrManage,
     // Join flow.
     kJoin,
   };
@@ -50,16 +51,16 @@ class CollaborationFlowConfiguration {
  private:
 };
 
-// Represents the share flow configuration.
-class CollaborationFlowConfigurationShare final
+// This class is the configuration for a share or a manage flow.
+class CollaborationFlowConfigurationShareOrManage final
     : public CollaborationFlowConfiguration {
  public:
-  static constexpr Type kType = Type::kShare;
+  static constexpr Type kType = Type::kShareOrManage;
 
-  // Constructs a new CollaborationFlowConfigurationShare object.
-  explicit CollaborationFlowConfigurationShare(
+  // Constructs a new CollaborationFlowConfigurationShareOrManage object.
+  explicit CollaborationFlowConfigurationShareOrManage(
       base::WeakPtr<const TabGroup> tab_group);
-  ~CollaborationFlowConfigurationShare() override;
+  ~CollaborationFlowConfigurationShareOrManage() override;
 
   // CollaborationFlowConfiguration.
   Type type() const final;
@@ -71,13 +72,13 @@ class CollaborationFlowConfigurationShare final
   base::WeakPtr<const TabGroup> tab_group_;
 };
 
-// Represents the join flow configuration.
+// This class is the configuration for a join flow.
 class CollaborationFlowConfigurationJoin final
     : public CollaborationFlowConfiguration {
  public:
   static constexpr Type kType = Type::kJoin;
 
-  // Constructs a new CollaborationFlowConfigurationShare object.
+  // Constructs a new CollaborationFlowConfigurationJoin object.
   explicit CollaborationFlowConfigurationJoin(
       const GURL& url);
   ~CollaborationFlowConfigurationJoin() override;

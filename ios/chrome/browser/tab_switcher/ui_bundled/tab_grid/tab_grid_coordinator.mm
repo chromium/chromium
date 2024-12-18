@@ -1604,8 +1604,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
-          std::make_unique<collaboration::CollaborationFlowConfigurationShare>(
-
+          std::make_unique<
+              collaboration::CollaborationFlowConfigurationShareOrManage>(
               tabGroup->GetWeakPtr()));
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                tabGroup->tab_group_id());
