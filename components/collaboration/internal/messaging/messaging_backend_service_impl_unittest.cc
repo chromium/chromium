@@ -1282,4 +1282,41 @@ TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
   std::move(succes_callback).Run(false);
 }
 
+TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+
+  data_sharing::GroupData group_data;
+  group_data.group_token.group_id = data_sharing::GroupId("my group id");
+  data_sharing::GroupMember member1;
+  member1.gaia_id = GaiaId("abc");
+  member1.display_name = "Provided Diplay Name 1";
+  member1.given_name = "Provided Given Name 1";
+  group_data.members.emplace_back(member1);
+
+  data_sharing::GroupMember member2;
+  member2.gaia_id = GaiaId("def");
+  member2.display_name = "Provided Display Name 2";
+  member2.given_name = "";  // No given name available.
+  group_data.members.emplace_back(member2);
+
+  base::Time now = base::Time::Now();
+
+  collaboration_pb::Message db_message;
+  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage(_))
+      .WillRepeatedly(SaveArg<0>(&db_message));
+
+  // Save the last invocation of calls to the InstantMessageDelegate.
+  InstantMessage message;
+  EXPECT_CALL(*mock_instant_message_delegate_,
+              DisplayInstantaneousMessage(_, _))
+      .WillRepeatedly(SaveArg<0>(&message));
+
+  ds_notifier_observer_->OnGroupMemberAdded(group_data, member2.gaia_id, now);
+
+  EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
+            message.collaboration_event);
+  EXPECT_EQ(member2.gaia_id, message.attribution.affected_user->gaia_id);
+}
+
 }  // namespace collaboration::messaging

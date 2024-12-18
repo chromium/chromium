@@ -723,6 +723,26 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
         *user_display_name);
   }
   store_->AddMessage(message);
+
+  if (instant_message_delegate_) {
+    InstantMessage instant_message;
+    instant_message.attribution.collaboration_id =
+        group_data.group_token.group_id;
+    instant_message.collaboration_event =
+        CollaborationEvent::COLLABORATION_MEMBER_ADDED;
+
+    // Look for the member in the provided data.
+    for (const data_sharing::GroupMember& member : group_data.members) {
+      if (member.gaia_id == member_gaia_id) {
+        instant_message.attribution.affected_user = member;
+        break;
+      }
+    }
+
+    DisplayInstantMessage(
+        base::Uuid::ParseLowercase(message.uuid()), instant_message,
+        {InstantNotificationLevel::SYSTEM, InstantNotificationLevel::BROWSER});
+  }
 }
 
 void MessagingBackendServiceImpl::OnGroupMemberRemoved(
