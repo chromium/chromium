@@ -155,8 +155,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
           views::kCrossAxisAlignmentKey, views::LayoutAlignment::kCenter);
     }
     if (features::IsTabstripComboButtonEnabled()) {
-      tab_glic_container =
-          std::make_unique<TabGlicContainer>(tab_strip_->controller());
+      tab_glic_container = std::make_unique<TabGlicContainer>(
+          tab_strip_->controller(),
+          browser->GetFeatures().tab_declutter_controller());
       tab_glic_container->SetProperty(views::kCrossAxisAlignmentKey,
                                       views::LayoutAlignment::kCenter);
       tab_glic_container->SetProperty(
@@ -377,6 +378,10 @@ TabSearchContainer* TabStripRegionView::GetTabSearchContainer() {
   } else {
     return tab_search_container_;
   }
+}
+
+TabGlicContainer* TabStripRegionView::GetTabGlicContainer() {
+  return tab_glic_container_;
 }
 
 views::View::Views TabStripRegionView::GetChildrenInZOrder() {

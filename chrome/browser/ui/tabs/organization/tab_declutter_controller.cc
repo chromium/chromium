@@ -379,11 +379,19 @@ bool TabDeclutterController::DeclutterDuplicateTabsNudgeCriteriaMet(
          kMinDeclutterableDuplicateTabCountForNudge;
 }
 
-void TabDeclutterController::OnActionUIDismissed(
-    base::PassKey<TabSearchContainer>) {
+void TabDeclutterController::ResetAndDoubleNudgeTimer() {
   nudge_timer_interval_ = nudge_timer_interval_ * 2;
   next_nudge_valid_time_ticks_ =
       usage_tick_clock_->NowTicks() + nudge_timer_interval_;
+}
+void TabDeclutterController::OnActionUIDismissed(
+    base::PassKey<TabSearchContainer>) {
+  ResetAndDoubleNudgeTimer();
+}
+
+void TabDeclutterController::OnActionUIDismissed(
+    base::PassKey<TabGlicContainer>) {
+  ResetAndDoubleNudgeTimer();
 }
 
 void TabDeclutterController::SetTimerForTesting(

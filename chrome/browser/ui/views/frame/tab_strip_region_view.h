@@ -63,6 +63,8 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   TabSearchContainer* GetTabSearchContainer();
 
+  TabGlicContainer* GetTabGlicContainer();
+
   TabStripComboButton* tab_strip_combo_button() {
     return tab_strip_combo_button_;
   }

@@ -21,6 +21,7 @@
 #include "url/gurl.h"
 
 class TabStripModel;
+class TabGlicContainer;
 class TabSearchContainer;
 class BrowserWindowInterface;
 
@@ -78,6 +79,7 @@ class TabDeclutterController {
   base::TimeDelta nudge_timer_interval() const { return nudge_timer_interval_; }
 
   void OnActionUIDismissed(base::PassKey<TabSearchContainer>);
+  void OnActionUIDismissed(base::PassKey<TabGlicContainer>);
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -132,6 +134,8 @@ class TabDeclutterController {
   void StartNudgeTimer();
 
   bool IsTabExcluded(tabs::TabInterface* tab) const;
+
+  void ResetAndDoubleNudgeTimer();
 
   // Duration of inactivity after which a tab is considered stale.
   base::TimeDelta stale_tab_threshold_duration_;
