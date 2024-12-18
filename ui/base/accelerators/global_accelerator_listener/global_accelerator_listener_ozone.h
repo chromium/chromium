@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_OZONE_H_
-#define CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_OZONE_H_
+#ifndef UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_OZONE_H_
+#define UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_OZONE_H_
 
 #include <memory>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/extensions/global_shortcut_listener.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/ozone/public/platform_global_shortcut_listener.h"
 
@@ -18,35 +18,37 @@ namespace ui {
 class Accelerator;
 }  // namespace ui
 
-namespace extensions {
+namespace ui {
 
-// Ozone-specific implementation of the GlobalShortcutListener interface.
+// Ozone-specific implementation of the GlobalAcceleratorListener interface.
 //
 // Connects Aura with the platform implementation, and manages data conversions
 // required on the way: Aura operates with ui::Accelerator while the platform is
 // only aware of the basic components such as the key code and modifiers.
-class GlobalShortcutListenerOzone
-    : public GlobalShortcutListener,
+class GlobalAcceleratorListenerOzone
+    : public GlobalAcceleratorListener,
       public ui::PlatformGlobalShortcutListenerDelegate {
  public:
-  static std::unique_ptr<GlobalShortcutListener> Create();
+  static std::unique_ptr<GlobalAcceleratorListener> Create();
 
   // Clients should use Create() instead of using this constructor.
-  explicit GlobalShortcutListenerOzone(
-      base::PassKey<GlobalShortcutListenerOzone>);
+  explicit GlobalAcceleratorListenerOzone(
+      base::PassKey<GlobalAcceleratorListenerOzone>);
 
-  GlobalShortcutListenerOzone(const GlobalShortcutListenerOzone&) = delete;
-  GlobalShortcutListenerOzone& operator=(const GlobalShortcutListenerOzone&) =
+  GlobalAcceleratorListenerOzone(const GlobalAcceleratorListenerOzone&) =
       delete;
+  GlobalAcceleratorListenerOzone& operator=(
+      const GlobalAcceleratorListenerOzone&) = delete;
 
-  ~GlobalShortcutListenerOzone() override;
+  ~GlobalAcceleratorListenerOzone() override;
 
  private:
-  // GlobalShortcutListener:
+  // GlobalAcceleratorListener:
   void StartListening() override;
   void StopListening() override;
-  bool RegisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
-  void UnregisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
+  bool StartListeningForAccelerator(
+      const ui::Accelerator& accelerator) override;
+  void StopListeningForAccelerator(const ui::Accelerator& accelerator) override;
 
   // ui::PlatformGlobalShortcutListenerDelegate:
   void OnKeyPressed(ui::KeyboardCode key_code,
@@ -63,6 +65,6 @@ class GlobalShortcutListenerOzone
       platform_global_shortcut_listener_ = nullptr;
 };
 
-}  // namespace extensions
+}  // namespace ui
 
-#endif  // CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_OZONE_H_
+#endif  // UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_OZONE_H_

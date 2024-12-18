@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/global_shortcut_listener_ozone.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener_ozone.h"
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
@@ -12,49 +12,38 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-#include "base/feature_list.h"
-#include "chrome/browser/extensions/global_shortcut_listener_linux.h"
-#endif
-
 using content::BrowserThread;
 
-namespace extensions {
-
-namespace {
-
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-BASE_FEATURE(kGlobalShortcutsPortal,
-             "GlobalShortcutsPortal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-}  // namespace
+namespace ui {
 
 // static
-std::unique_ptr<GlobalShortcutListener> GlobalShortcutListenerOzone::Create() {
-  auto listener = std::make_unique<GlobalShortcutListenerOzone>(
-      base::PassKey<GlobalShortcutListenerOzone>());
+GlobalAcceleratorListener* GlobalAcceleratorListener::GetInstance() {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  static const base::NoDestructor<std::unique_ptr<GlobalAcceleratorListener>>
+      instance(GlobalAcceleratorListenerOzone::Create());
+  return instance->get();
+}
+
+// static
+std::unique_ptr<GlobalAcceleratorListener>
+GlobalAcceleratorListenerOzone::Create() {
+  auto listener = std::make_unique<GlobalAcceleratorListenerOzone>(
+      base::PassKey<GlobalAcceleratorListenerOzone>());
   if (listener->platform_global_shortcut_listener_) {
     return listener;
   }
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-  if (base::FeatureList::IsEnabled(kGlobalShortcutsPortal)) {
-    return std::make_unique<GlobalShortcutListenerLinux>(nullptr);
-  }
-#endif
   return nullptr;
 }
 
-GlobalShortcutListenerOzone::GlobalShortcutListenerOzone(
-    base::PassKey<GlobalShortcutListenerOzone>) {
+GlobalAcceleratorListenerOzone::GlobalAcceleratorListenerOzone(
+    base::PassKey<GlobalAcceleratorListenerOzone>) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   platform_global_shortcut_listener_ =
       ui::OzonePlatform::GetInstance()->GetPlatformGlobalShortcutListener(this);
 }
 
-GlobalShortcutListenerOzone::~GlobalShortcutListenerOzone() {
+GlobalAcceleratorListenerOzone::~GlobalAcceleratorListenerOzone() {
   if (is_listening_) {
     StopListening();
   }
@@ -64,7 +53,7 @@ GlobalShortcutListenerOzone::~GlobalShortcutListenerOzone() {
   }
 }
 
-void GlobalShortcutListenerOzone::StartListening() {
+void GlobalAcceleratorListenerOzone::StartListening() {
   DCHECK(!is_listening_);
   DCHECK(!registered_hot_keys_.empty());
 
@@ -75,7 +64,7 @@ void GlobalShortcutListenerOzone::StartListening() {
   is_listening_ = true;
 }
 
-void GlobalShortcutListenerOzone::StopListening() {
+void GlobalAcceleratorListenerOzone::StopListening() {
   DCHECK(is_listening_);
   DCHECK(registered_hot_keys_.empty());
 
@@ -86,7 +75,7 @@ void GlobalShortcutListenerOzone::StopListening() {
   is_listening_ = false;
 }
 
-bool GlobalShortcutListenerOzone::RegisterAcceleratorImpl(
+bool GlobalAcceleratorListenerOzone::StartListeningForAccelerator(
     const ui::Accelerator& accelerator) {
   DCHECK(!base::Contains(registered_hot_keys_, accelerator));
 
@@ -104,7 +93,7 @@ bool GlobalShortcutListenerOzone::RegisterAcceleratorImpl(
   return registered;
 }
 
-void GlobalShortcutListenerOzone::UnregisterAcceleratorImpl(
+void GlobalAcceleratorListenerOzone::StopListeningForAccelerator(
     const ui::Accelerator& accelerator) {
   DCHECK(base::Contains(registered_hot_keys_, accelerator));
   // Otherwise how could the accelerator be registered?
@@ -116,10 +105,10 @@ void GlobalShortcutListenerOzone::UnregisterAcceleratorImpl(
   registered_hot_keys_.erase(accelerator);
 }
 
-void GlobalShortcutListenerOzone::OnKeyPressed(ui::KeyboardCode key_code,
-                                               bool is_alt_down,
-                                               bool is_ctrl_down,
-                                               bool is_shift_down) {
+void GlobalAcceleratorListenerOzone::OnKeyPressed(ui::KeyboardCode key_code,
+                                                  bool is_alt_down,
+                                                  bool is_ctrl_down,
+                                                  bool is_shift_down) {
   int modifiers = 0;
   if (is_alt_down) {
     modifiers |= ui::EF_ALT_DOWN;
@@ -134,16 +123,8 @@ void GlobalShortcutListenerOzone::OnKeyPressed(ui::KeyboardCode key_code,
   NotifyKeyPressed(ui::Accelerator(key_code, modifiers));
 }
 
-void GlobalShortcutListenerOzone::OnPlatformListenerDestroyed() {
+void GlobalAcceleratorListenerOzone::OnPlatformListenerDestroyed() {
   platform_global_shortcut_listener_ = nullptr;
 }
 
-// static
-GlobalShortcutListener* GlobalShortcutListener::GetInstance() {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  static const base::NoDestructor<std::unique_ptr<GlobalShortcutListener>>
-      instance(GlobalShortcutListenerOzone::Create());
-  return instance->get();
-}
-
-}  // namespace extensions
+}  // namespace ui

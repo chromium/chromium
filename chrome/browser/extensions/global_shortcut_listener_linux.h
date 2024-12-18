@@ -86,10 +86,6 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   using SessionMapPair = std::pair<SessionKey, std::unique_ptr<SessionContext>>;
 
   // GlobalShortcutListener:
-  void StartListening() override;
-  void StopListening() override;
-  bool RegisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
-  void UnregisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
   void UnregisterAccelerators(Observer* observer) override;
   bool IsRegistrationHandledExternally() const override;
   void OnCommandsChanged(const std::string& accelerator_group_id,
