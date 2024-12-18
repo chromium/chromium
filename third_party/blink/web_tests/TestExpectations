@@ -8867,3 +8867,6 @@ crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-ima
 
 # Gardener 2024-12-17
 crbug.com/384549646 virtual/threaded/external/wpt/css/css-view-transitions/navigation/chromium-paint-holding-timeout.html [ Failure Pass Timeout ]
+
+# Gardener 2024-12-18
+crbug.com/352331034 [ Debug Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-svg-only-for-print.html [ Failure Pass ]
