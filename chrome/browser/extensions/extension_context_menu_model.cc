@@ -268,6 +268,8 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
+                                      kHomePageMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
                                       kToggleVisibilityMenuItem);
 
 ExtensionContextMenuModel::ExtensionContextMenuModel(
@@ -564,6 +566,8 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
   // mnemonics in the menu.
   base::ReplaceChars(extension_name, "&", "&&", &extension_name);
   AddItem(HOME_PAGE, base::UTF8ToUTF16(extension_name));
+  SetElementIdentifierAt(GetIndexOfCommandId(HOME_PAGE).value(),
+                         kHomePageMenuItem);
   AppendExtensionItems();
 
   // Site permissions section.

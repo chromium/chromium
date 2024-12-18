@@ -929,6 +929,72 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       CheckPoppedOutAction(std::nullopt));
 }
 
+// Tests that right clicking on an extension's popped-out action in the toolbar
+// keeps the action popped out and opens the extension's context menu.
+// TODO(crbug.com/384759463): Disabled on mac because context menus on Mac take
+// over the main message loop, which means the right-click mouse event release
+// is sent asynchronously causing the test to be flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RightClickOnPoppedOutExtension \
+  DISABLED_RightClickOnPoppedOutExtension
+#else
+#define MAYBE_RightClickOnPoppedOutExtension RightClickOnPoppedOutExtension
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       MAYBE_RightClickOnPoppedOutExtension) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ExtensionHostObserver,
+                                      kExtensionHostState);
+  constexpr char kExtensionMenuItemActionButton[] =
+      "extension_menu_item_action_button";
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
+
+  RunTestSequence(
+      InstrumentTab(kTab), OpenExtensionsMenu(),
+
+      // Trigger the extension's action by clicking on its menu entry.
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<ExtensionsMenuButton>(
+          kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
+      ObserveState(kExtensionHostState,
+                   extensions::ExtensionHostRegistry::Get(profile()),
+                   extension->id()),
+      PressButton(kExtensionMenuItemActionButton),
+
+      // Verify extension's action is popped out and its popup is loaded.
+      WaitForShow(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
+      CheckPoppedOutAction(extension->id()),
+      WaitForState(kExtensionHostState, ExtensionHostState::kLoaded),
+
+      // Right click on the extension's action to open the context menu.
+      MoveMouseTo(kToolbarActionViewElementId), ClickMouse(ui_controls::RIGHT),
+
+      // Verify extension's popup is destroyed, its context menu is visible and
+      // its action is still popped out.
+      WaitForState(kExtensionHostState, ExtensionHostState::kDestroyed),
+      WaitForShow(extensions::ExtensionContextMenuModel::kHomePageMenuItem),
+      CheckResult(
+          [&]() {
+            return extensions_container()
+                ->GetExtensionWithOpenContextMenuForTesting();
+          },
+          extension->id()),
+      EnsurePresent(kToolbarActionViewElementId),
+      // Note: This is misleading. The action is no longer labeled as "popped
+      // out" in the extensions container when it's showing the context menu
+      // instead of the popup, even though the action is popped out and visible.
+      // It's not a bug because the action visibility also looks whether the
+      // context menu is opened. However, we may look into updating the logic so
+      // it's more correct.
+      CheckPoppedOutAction(std::nullopt));
+}
+
 // Test that an extension's context menu shows the correct label when the
 // extension is pinned.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
