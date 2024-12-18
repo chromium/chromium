@@ -370,7 +370,7 @@ build_webui_tests("build") {
     "os_settings_ui/os_settings_ui_hats_test.ts",
     "os_settings_ui/os_settings_ui_menu_test.ts",
     "os_settings_ui/os_settings_ui_page_availability_test.ts",
-    "os_settings_ui/os_settings_ui_page_visibility_revamp_test.ts",
+    "os_settings_ui/os_settings_ui_page_visibility_test.ts",
     "os_settings_ui/os_settings_ui_pref_sync_test.ts",
     "os_settings_ui/os_settings_ui_test.ts",
     "os_settings_ui/os_settings_ui_toolbar_test.ts",

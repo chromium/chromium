@@ -14,8 +14,6 @@ import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
 suite('<os-settings-ui> toolbar', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let ui: OsSettingsUiElement;
   let fakeNearbySettings: FakeNearbyShareSettings;
   let testAccountManagerBrowserProxy: TestAccountManagerBrowserProxy;
@@ -48,24 +46,6 @@ suite('<os-settings-ui> toolbar', () => {
     testAccountManagerBrowserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
-
-  if (!isRevampWayfindingEnabled) {
-    test('Toolbar shadow is always shown for subpages', async () => {
-      ui = await createElement();
-      const shadowEl = ui.shadowRoot!.querySelector('#cr-container-shadow-top');
-      assertTrue(!!shadowEl, 'Shadow container element should exist');
-
-      assertFalse(
-          shadowEl.classList.contains('has-shadow'),
-          'Main page should not show shadow ' + shadowEl.className);
-
-      Router.getInstance().navigateTo(routes.POWER);
-      flush();
-      assertTrue(
-          shadowEl.classList.contains('has-shadow'),
-          'Sub-page should show shadow ' + shadowEl.className);
-    });
-  }
 
   test('Menu icon shows only in narrow mode', async () => {
     ui = await createElement();

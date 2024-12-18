@@ -5,9 +5,6 @@
 /**
  * @fileoverview
  * Browser tests for the System preferences page.
- *
- * - This suite expects the OsSettingsRevampWayfinding feature flag to be
- *   enabled.
  */
 
 import 'chrome://os-settings/os_settings.js';

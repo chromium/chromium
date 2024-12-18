@@ -155,10 +155,6 @@ suite('<os-settings-ui> page visibility', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Document body has feature class when feature flag is enabled', () => {
-    assertTrue(document.body.classList.contains('revamp-wayfinding-enabled'));
-  });
-
   test('Network page should be the default visible page', () => {
     assertIsOnlyActiveAndVisiblePage(routesMojom.Section.kNetwork);
   });
@@ -166,10 +162,9 @@ suite('<os-settings-ui> page visibility', () => {
   // Sort by order of menu items
   const routeNames: Array<keyof OsSettingsRoutes> = [
     'INTERNET',
-    // Currently in the revamp, the Bluetooth L1 page automatically
-    // redirects to the Bluetooth devices subpage.
-    // TODO(b/309808834) Uncomment the line for the Bluetooth route below once
-    // the L1 page is revamped and re-implemented.
+    // TODO(b/309808834) Currently the Bluetooth L1 page automatically redirects
+    // to the Bluetooth devices subpage. Uncomment the line for the Bluetooth
+    // route below once the L1 page is revamped and re-implemented.
     // 'BLUETOOTH',
     'MULTIDEVICE',
     'OS_PEOPLE',
