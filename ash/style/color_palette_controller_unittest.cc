@@ -30,6 +30,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/user_manager/known_user.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
@@ -39,7 +40,8 @@ namespace ash {
 namespace {
 
 const char kUser[] = "user@gmail.com";
-const AccountId kAccountId = AccountId::FromUserEmailGaiaId(kUser, kUser);
+const AccountId kAccountId =
+    AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUser));
 const style::mojom::ColorScheme kLocalColorScheme =
     style::mojom::ColorScheme::kVibrant;
 const style::mojom::ColorScheme kDefaultColorScheme =
