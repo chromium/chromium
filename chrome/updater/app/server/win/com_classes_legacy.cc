@@ -1132,11 +1132,6 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
   return E_NOTIMPL;
 }
 
-namespace {
-
-
-}  // namespace
-
 STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                                               VARIANT substitution2,
                                               VARIANT substitution3,
