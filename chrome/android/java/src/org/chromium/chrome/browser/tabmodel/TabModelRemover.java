@@ -324,8 +324,12 @@ class TabModelRemover {
         }
         List<Tab> placeholderTabs =
                 doCreatePlaceholderTabsInGroups(handler, collaborationGroupsDestroyed);
-        assert placeholderTabs.size() == 1;
-        maybeSelectPlaceholderTab(placeholderTabs.get(0));
+        // TODO(crbug.com/383509750): Stale data in TabGroupSyncService may cause this assertion to
+        // not hold. Restore this assert once fixed.
+        // assert placeholderTabs.size() == 1;
+        if (!placeholderTabs.isEmpty()) {
+            maybeSelectPlaceholderTab(placeholderTabs.get(0));
+        }
 
         handler.performAction();
     }
