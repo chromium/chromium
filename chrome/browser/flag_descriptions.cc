@@ -952,6 +952,12 @@ const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";
 
+const char kClientSideDetectionBrandAndIntentForScamDetectionName[] =
+    "Client Side Detection Brand and  Intent for Scam Detection";
+const char kClientSideDetectionBrandAndIntentForScamDetectionDescription[] =
+    "Enables on device LLM output on pages to inquire for brand and intent of "
+    "the page.";
+
 const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
     "Clear window name in top-level cross-site cross-browsing-context-group "
     "navigation";

@@ -1480,6 +1480,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "client-side-detection-brand-and-page-intent",
+    "owners": [
+      "andysjlim@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "clipboard-history-longpress",
     "owners": ["newcomer@google.com", "multipaste@google.com"],
     "expiry_milestone": 125

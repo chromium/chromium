@@ -154,6 +154,10 @@ extern const char kClearUndecryptablePasswordsDescription[];
 extern const char kClickToCallName[];
 extern const char kClickToCallDescription[];
 
+extern const char kClientSideDetectionBrandAndIntentForScamDetectionName[];
+extern const char
+    kClientSideDetectionBrandAndIntentForScamDetectionDescription[];
+
 extern const char kClipboardMaximumAgeName[];
 extern const char kClipboardMaximumAgeDescription[];
 
