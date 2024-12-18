@@ -6,11 +6,15 @@ package org.chromium.printing;
 
 import android.print.PrintDocumentAdapter;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This interface describes a class which is responsible of talking to the printing backend.
  *
  * Such class communicates with a {@link PrintingContext}, which in turn talks to the native side.
  */
+@NullMarked
 public interface PrintingController {
     /**
      * @return Dots Per Inch (DPI) of the currently selected printer.
@@ -37,7 +41,7 @@ public interface PrintingController {
      * @return The individual page numbers of the document to be printed, of null if all pages are
      *         to be printed.  The numbers are zero indexed.
      */
-    int[] getPageNumbers();
+    int @Nullable [] getPageNumbers();
 
     /**
      * @return If the controller is busy.
