@@ -101,6 +101,18 @@ public class TabUiUtilsUnitTest {
     }
 
     @Test
+    public void testCloseTabGroup_NoTab() {
+        TabUiUtils.closeTabGroup(
+                mFilter,
+                mActionConfirmationManager,
+                Tab.INVALID_TAB_ID,
+                /* hideTabGroups= */ false,
+                /* isSyncEnabled= */ true,
+                mDidCloseTabsCallback);
+        verify(mDidCloseTabsCallback).onResult(false);
+    }
+
+    @Test
     public void testCloseTabGroup_Incognito() {
         boolean hideTabGroups = false;
         when(mFilter.isIncognitoBranded()).thenReturn(true);
