@@ -457,35 +457,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.DataTransfer.{Action}"
-    enum="ServiceWorkerRaceNetworkRequestDataTransferMojoResult"
-    expires_after="2025-05-11">
-  <owner>sisidovski@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The result of {Action} mojo data pipe operation while transfering data from
-    RaceNetworkRequest result. RaceNetworkRequest runs a race between the
-    network request which bypasses ServiceWorker, and the other request which
-    goes through the fetch handler. This metric is recorded for {Resource}.
-
-    ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.DataTransfer.Read was
-    broken from 2024-03-05 and 2024-03-25.
-  </summary>
-  <token key="Resource">
-    <variant name="MainResource" summary="main resource"/>
-    <variant name="Subresource" summary="subresource"/>
-  </token>
-  <token key="Action">
-    <variant name="Initial"
-        summary="the value passed as a callback value in SimpleWatcher"/>
-    <variant name="Read" summary="read"/>
-    <variant name="WriteForFetchHandler" summary="write for fetch handler"/>
-    <variant name="WriteForRaceNetworkRequset"
-        summary="write for race network request"/>
-  </token>
-</histogram>
-
-<histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.Redirect"
     enum="Boolean" expires_after="2025-01-26">
   <owner>sisidovski@chromium.org</owner>

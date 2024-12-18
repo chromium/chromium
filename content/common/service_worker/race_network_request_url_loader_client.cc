@@ -445,7 +445,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "url", request_.url, "read_data_result", read_result);
-  RecordMojoResultForDataTransfer(read_result, "Read");
   switch (read_result) {
     case MOJO_RESULT_OK:
       write_buffer_manager_for_race_network_request_.ArmOrNotify();
@@ -482,7 +481,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
     // If both data pipes are watched, write data to both pipes. Cancel writing
     // process if one of them is failed.
     result = write_buffer_manager_for_race_network_request_.BeginWriteData();
-    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -499,7 +497,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
         return;
     }
     result = write_buffer_manager_for_fetch_handler_.BeginWriteData();
-    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -541,7 +538,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
     // If the data pipe for RaceNetworkRequest is the only watcher, don't write
     // data to the data pipe for the fetch handler.
     result = write_buffer_manager_for_race_network_request_.BeginWriteData();
-    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -561,7 +557,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
     // If the data pipe for the fetch handler is the only watcher, don't write
     // data to the data pipe for RaceNetworkRequest.
     result = write_buffer_manager_for_fetch_handler_.BeginWriteData();
-    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -590,17 +585,11 @@ bool ServiceWorkerRaceNetworkRequestURLLoaderClient::IsReadyToHandleReadWrite(
     return false;
   }
 
-  RecordMojoResultForDataTransfer(result, "Initial");
   if (result != MOJO_RESULT_OK) {
     return false;
   }
 
   return true;
-}
-
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::RecordMojoResultForWrite(
-    MojoResult result) {
-  RecordMojoResultForDataTransfer(result, "WriteForRaceNetworkRequset");
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteReadData(
@@ -657,16 +646,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
                     is_fetch_handler_fallback_ ? "WithoutServiceWorker"
                                                : "ServiceWorker"}),
       fetch_handler_end_time_.value() - response_received_time_.value());
-}
-
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::
-    RecordMojoResultForDataTransfer(MojoResult result,
-                                    const std::string& suffix) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ServiceWorker.FetchEvent",
-                    is_main_resource_ ? ".MainResource" : ".Subresource",
-                    ".RaceNetworkRequest.DataTransfer.", suffix}),
-      ConvertMojoResultForUMA(result));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CloneResponse() {

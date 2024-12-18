@@ -215,9 +215,6 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // Record the time between the response received time and the fetch handler
   // end time iff both events are already reached.
   void MaybeRecordResponseReceivedToFetchHandlerEndTiming();
-  void RecordMojoResultForDataTransfer(MojoResult result,
-                                       const std::string& suffix);
-  void RecordMojoResultForWrite(MojoResult result);
 
   void SetFetchHandlerEndTiming(base::TimeTicks fetch_handler_end_time,
                                 bool is_fallback);
