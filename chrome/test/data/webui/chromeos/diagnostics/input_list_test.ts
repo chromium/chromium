@@ -10,7 +10,7 @@ import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_brow
 import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeKeyboards, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
+import {BottomLeftLayout, BottomRightLayout, ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
 import {InputCardElement} from 'chrome://diagnostics/input_card.js';
 import {TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {InputListElement} from 'chrome://diagnostics/input_list.js';
@@ -158,6 +158,9 @@ suite('inputListTestSuite', function() {
         TopRowKey.kVolumeUp,
       ],
       topRightKey: TopRightKey.kUnknown,
+      bottomLeftLayout: BottomLeftLayout.kUnknown,
+      bottomRightLayout: BottomRightLayout.kUnknown,
+      numpadLayout: NumpadLayout.kUnknown,
     };
     await initializeInputList();
     const keyboardCard = getCardByDeviceType('keyboard');

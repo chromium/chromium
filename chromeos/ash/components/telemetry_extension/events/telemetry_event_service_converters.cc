@@ -388,6 +388,10 @@ crosapi::mojom::TelemetryKeyboardTopRowKey Convert(
       return crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenMirror;
     case diagnostics::mojom::TopRowKey::kDelete:
       return crosapi::mojom::TelemetryKeyboardTopRowKey::kDelete;
+    case diagnostics::mojom::TopRowKey::kAccessibility:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kUnknown;
+    case diagnostics::mojom::TopRowKey::kDictation:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kUnknown;
   }
   NOTREACHED();
 }

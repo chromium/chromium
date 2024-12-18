@@ -5,7 +5,7 @@
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
 import {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
+import {BottomLeftLayout, BottomRightLayout, ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
 import {TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {AuthenticationType, LockType, NetworkState, NetworkType, RoamingState, SecurityType, WiFiStateProperties} from './network_health_provider.mojom-webui.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ExternalPowerSource, MemoryUsage, SystemInfo} from './system_data_provider.mojom-webui.js';
@@ -606,6 +606,9 @@ export const fakeKeyboards: KeyboardInfo[] = [
     ],
     topRightKey: TopRightKey.kPower,
     numberPadPresent: NumberPadPresence.kPresent,
+    bottomLeftLayout: BottomLeftLayout.kUnknown,
+    bottomRightLayout: BottomRightLayout.kUnknown,
+    numpadLayout: NumpadLayout.kUnknown,
   },
 ];
 
