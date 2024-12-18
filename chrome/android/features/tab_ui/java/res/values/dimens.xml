@@ -23,10 +23,14 @@ found in the LICENSE file.
     <dimen name="tab_grid_thumbnail_favicon_padding_from_frame">4dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_background_radius">3dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_background_down_shift">2dp</dimen>
-    <dimen name="share_button_padding_top_bottom">6dp</dimen>
     <dimen name="share_button_padding_start_end">12dp</dimen>
     <dimen name="share_button_height">32dp</dimen>
-    <dimen name="share_button_corner_radius">16dp</dimen>
+    <!--
+      Far in excess of min height to allow for rounding to a circle even if
+      the view needs to be larger to accommodate for increased text size for
+      accessibility. Radii above 50% height are treated the same as 50% height.
+    -->
+    <dimen name="share_button_corner_radius">100dp</dimen>
     <dimen name="tab_group_toolbar_title_margin_start">8dp</dimen>
     <dimen name="tab_strip_fading_edge_width">8dp</dimen>
     <dimen name="tab_strip_fading_edge_width_negative">-8dp</dimen>
