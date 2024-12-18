@@ -4,7 +4,7 @@
 
 #include "components/collaboration/internal/metrics.h"
 
-#include "base/metrics/histogram_functions_internal_overloads.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace collaboration::metrics {
 

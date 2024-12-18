@@ -5,6 +5,8 @@
 #ifndef BASE_METRICS_HISTOGRAM_FUNCTIONS_INTERNAL_OVERLOADS_H_
 #define BASE_METRICS_HISTOGRAM_FUNCTIONS_INTERNAL_OVERLOADS_H_
 
+// IWYU pragma: private, include "base/metrics/histogram_functions.h"
+
 #include <stdint.h>
 
 #include <string>
@@ -17,6 +19,8 @@
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
 
+// Do not include this header directly.
+//
 // This file provides overloads for the functions defined in
 // histogram_functions.h. These functions are duplicated to also support both
 // std::string and char* for the name. This avoids ctor/dtor instantiation for
