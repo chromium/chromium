@@ -30514,7 +30514,9 @@ Called by update_net_error_codes.py.-->
   <int value="109"
       label="IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES"/>
   <int value="110" label="IDC_CONTENT_CONTEXT_GENERATE_QR_CODE"/>
-  <int value="111" label="IDC_CONTENT_CLIPBOARD_HISTORY_MENU"/>
+  <int value="111"
+      label="(Obsolete) IDC_CONTENT_CLIPBOARD_HISTORY_MENU. Removed in
+             2024/12."/>
   <int value="112" label="IDC_CONTENT_CONTEXT_COPYLINKTOTEXT"/>
   <int value="113" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE"/>
   <int value="114" label="IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT"/>

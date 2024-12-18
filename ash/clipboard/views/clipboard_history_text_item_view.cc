@@ -12,7 +12,6 @@
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -35,10 +34,7 @@ gfx::ElideBehavior GetDisplayTextElideBehavior(
 
 // NOTE: Returns default display text max lines if `item` is `nullptr`.
 size_t GetDisplayTextMaxLines(const ClipboardHistoryItem* item) {
-  const size_t default_value =
-      chromeos::features::IsClipboardHistoryRefreshEnabled()
-          ? ClipboardHistoryViews::kTextItemMaxLines
-          : 1u;
+  const size_t default_value = ClipboardHistoryViews::kTextItemMaxLines;
   return item ? item->display_text_max_lines().value_or(default_value)
               : default_value;
 }
@@ -100,8 +96,7 @@ class ClipboardHistoryTextItemView::TextContentsView
  private:
   // ContentsView:
   SkPath GetClipPath() override {
-    if (!chromeos::features::IsClipboardHistoryRefreshEnabled() ||
-        !is_delete_button_visible()) {
+    if (!is_delete_button_visible()) {
       return SkPath();
     }
 

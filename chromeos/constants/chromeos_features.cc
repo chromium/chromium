@@ -32,12 +32,6 @@ BASE_FEATURE(kBluetoothWifiQSPodRefresh,
              "BluetoothWifiQSPodRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables updated UI for the clipboard history menu and new system behavior
-// related to clipboard history.
-BASE_FEATURE(kClipboardHistoryRefresh,
-             "ClipboardHistoryRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables cloud game features.
 BASE_FEATURE(kCloudGamingDevice,
              "CloudGamingDevice",
@@ -372,15 +366,6 @@ bool IsBatteryBadgeIconEnabled() {
 
 bool IsBluetoothWifiQSPodRefreshEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
-}
-
-bool IsClipboardHistoryRefreshEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->EnableClipboardHistoryRefresh();
-#else
-  return base::FeatureList::IsEnabled(kClipboardHistoryRefresh) &&
-         IsJellyEnabled();
-#endif
 }
 
 bool IsCloudGamingDeviceEnabled() {

@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -80,10 +79,8 @@ ui::ImageModel GetIconForDescriptor(
   switch (descriptor.display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
       // TODO(http://b/275629173): Consider a new display format for URLs.
-      icon = (features::IsClipboardHistoryRefreshEnabled() &&
-              IsUrl(descriptor.display_text))
-                 ? &vector_icons::kLinkIcon
-                 : &kTextIcon;
+      icon = IsUrl(descriptor.display_text) ? &vector_icons::kLinkIcon
+                                            : &kTextIcon;
       break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
       icon = &kFiletypeImageIcon;

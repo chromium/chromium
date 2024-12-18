@@ -408,7 +408,6 @@
   E(kActionContentContextGenerateQrCode, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE) \
   E(kActionContentContextSharingSubmenu, IDC_CONTENT_CONTEXT_SHARING_SUBMENU) \
   /* Context menu item to show the clipboard history menu */ \
-  E(kActionContentClipboardHistoryMenu, IDC_CONTENT_CLIPBOARD_HISTORY_MENU) \
   E(kActionContentPasteFromClipboard, IDC_CONTENT_PASTE_FROM_CLIPBOARD) \
   /* Context menu items in the status tray */ \
   E(kActionStatusTrayKeepChromeRunningInBackground, \

@@ -455,8 +455,8 @@
 #define IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES 51033
 #define IDC_CONTENT_CONTEXT_GENERATE_QR_CODE 51034
 #define IDC_CONTENT_CONTEXT_SHARING_SUBMENU 51035
-// Context menu item to show the clipboard history menu
-#define IDC_CONTENT_CLIPBOARD_HISTORY_MENU 51036
+
+// ChromeOS clipboard history
 #define IDC_CONTENT_PASTE_FROM_CLIPBOARD 51037
 
 // Context menu items in the status tray

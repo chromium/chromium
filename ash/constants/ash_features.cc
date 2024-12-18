@@ -3416,8 +3416,7 @@ bool IsClipboardHistoryLongpressEnabled() {
 }
 
 bool IsClipboardHistoryUrlTitlesEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryUrlTitles) &&
-         chromeos::features::IsClipboardHistoryRefreshEnabled();
+  return base::FeatureList::IsEnabled(kClipboardHistoryUrlTitles);
 }
 
 bool IsContinuousOverviewScrollAnimationEnabled() {

@@ -295,7 +295,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/read_write_card_observer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #endif
@@ -488,7 +487,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE, 108},
        {IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES, 109},
        {IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, 110},
-       {IDC_CONTENT_CLIPBOARD_HISTORY_MENU, 111},
+       // Removed: {IDC_CONTENT_CLIPBOARD_HISTORY_MENU, 111},
        {IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 112},
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, 113},
        {IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT, 114},
@@ -792,20 +791,6 @@ std::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-
-// Returns the string ID of the clipboard history menu option.
-int GetClipboardHistoryStringId() {
-  return chromeos::features::IsClipboardHistoryRefreshEnabled()
-             ? IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD
-             : IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU;
-}
-
-// Returns the command ID of the clipboard history menu option.
-int GetClipboardHistoryCommandId() {
-  return chromeos::features::IsClipboardHistoryRefreshEnabled()
-             ? IDC_CONTENT_PASTE_FROM_CLIPBOARD
-             : IDC_CONTENT_CLIPBOARD_HISTORY_MENU;
-}
 
 bool IsCaptivePortalProfile(Profile* profile) {
   return profile->IsOffTheRecord() &&
@@ -2539,26 +2524,19 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   if (need_clipboard_history_menu) {
-    // If the clipboard history refresh feature is enabled, insert a submenu of
-    // clipboard history descriptors; otherwise, insert a menu option to trigger
-    // the clipboard history menu.
-    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-      // `submenu_model_` is a class member. Therefore, it is safe to use `this`
-      // pointer in the callback.
-      submenu_model_ = chromeos::clipboard_history::
-          ClipboardHistorySubmenuModel::CreateClipboardHistorySubmenuModel(
-              crosapi::mojom::ClipboardHistoryControllerShowSource::
-                  kRenderViewContextSubmenu,
-              base::BindRepeating(
-                  &RenderViewContextMenu::ShowClipboardHistoryMenu,
-                  base::Unretained(this)));
-      menu_model_.AddSubMenuWithStringId(GetClipboardHistoryCommandId(),
-                                         GetClipboardHistoryStringId(),
-                                         submenu_model_.get());
-    } else {
-      menu_model_.AddItemWithStringId(GetClipboardHistoryCommandId(),
-                                      GetClipboardHistoryStringId());
-    }
+    // Insert a submenu of clipboard history descriptors.
+    // `submenu_model_` is a class member. Therefore, it is safe to use `this`
+    // pointer in the callback.
+    submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
+        CreateClipboardHistorySubmenuModel(
+            crosapi::mojom::ClipboardHistoryControllerShowSource::
+                kRenderViewContextSubmenu,
+            base::BindRepeating(
+                &RenderViewContextMenu::ShowClipboardHistoryMenu,
+                base::Unretained(this)));
+    menu_model_.AddSubMenuWithStringId(IDC_CONTENT_PASTE_FROM_CLIPBOARD,
+                                       IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD,
+                                       submenu_model_.get());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -3098,7 +3076,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION5:
       return true;
 
-    case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
     case IDC_CONTENT_PASTE_FROM_CLIPBOARD:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       return ash::ClipboardHistoryController::Get()->HasAvailableHistoryItems();
@@ -3115,8 +3092,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
           !IsPasteEnabled()) {
         return false;
       }
-      return !chromeos::features::IsClipboardHistoryRefreshEnabled() ||
-             !chromeos::clipboard_history::QueryItemDescriptors().empty();
+      return !chromeos::clipboard_history::QueryItemDescriptors().empty();
     }
 #else
       NOTREACHED() << "Unhandled id: " << id;
@@ -3583,20 +3559,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
     }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
-
-    case IDC_CONTENT_CLIPBOARD_HISTORY_MENU: {
-#if BUILDFLAG(IS_CHROMEOS)
-      // If the clipboard history refresh feature is enabled, we add a submenu
-      // instead of a command item. The following code should not be executed
-      // for a submenu.
-      CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
-
-      ShowClipboardHistoryMenu(event_flags);
-      break;
-#else
-      NOTREACHED() << "Unhandled id: " << id;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    }
 
     default:
       DUMP_WILL_BE_NOTREACHED() << "Unhandled id: " << id;

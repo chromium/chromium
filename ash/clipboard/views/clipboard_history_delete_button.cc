@@ -13,7 +13,6 @@
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -26,38 +25,6 @@
 #include "ui/views/rect_based_targeting_utils.h"
 
 namespace ash {
-namespace {
-
-// Helpers ---------------------------------------------------------------------
-
-std::reference_wrapper<const gfx::VectorIcon> GetIcon() {
-  return chromeos::features::IsClipboardHistoryRefreshEnabled()
-             ? kRemoveOutlineIcon
-             : kSmallCloseButtonIcon;
-}
-
-int GetIconSize() {
-  return chromeos::features::IsClipboardHistoryRefreshEnabled()
-             ? ClipboardHistoryViews::kDeleteButtonV2IconSize
-             : ClipboardHistoryViews::kDeleteButtonIconSize;
-}
-
-gfx::Size GetSize() {
-  return chromeos::features::IsClipboardHistoryRefreshEnabled()
-             ? ClipboardHistoryViews::kDeleteButtonV2Size
-             : ClipboardHistoryViews::kDeleteButtonSize;
-}
-
-std::unique_ptr<views::Background> CreateBackground() {
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    return nullptr;
-  }
-  const gfx::Size size = GetSize();
-  return views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSurface, std::min(size.width(), size.height()) / 2);
-}
-
-}  // namespace
 
 // ClipboardHistoryDeleteButton ------------------------------------------------
 
@@ -68,20 +35,20 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   views::Builder<views::ImageButton>(this)
       .SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_CLIPBOARD_HISTORY_DELETE_ITEM_TEXT, item_text))
-      .SetBackground(CreateBackground())
+      .SetBackground(nullptr)
       .SetCallback(base::BindRepeating(
           &ClipboardHistoryItemView::HandleDeleteButtonPressEvent,
           base::Unretained(listener)))
       .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
       .SetID(clipboard_history_util::kDeleteButtonViewID)
       .SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER)
-      .SetImageModel(
-          views::Button::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(
-              GetIcon(), cros_tokens::kCrosSysSecondary, GetIconSize()))
+      .SetImageModel(views::Button::STATE_NORMAL,
+                     ui::ImageModel::FromVectorIcon(
+                         kRemoveOutlineIcon, cros_tokens::kCrosSysSecondary,
+                         ClipboardHistoryViews::kDeleteButtonV2IconSize))
       .SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE)
       .SetPaintToLayer()
-      .SetPreferredSize(GetSize())
+      .SetPreferredSize(ClipboardHistoryViews::kDeleteButtonV2Size)
       .SetTooltipText(l10n_util::GetStringUTF16(
           IDS_CLIPBOARD_HISTORY_DELETE_BUTTON_HOVER_TEXT))
       .SetVisible(false)

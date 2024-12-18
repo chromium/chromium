@@ -13155,10 +13155,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <!-- Clipboard History Menu feature. -->
-      <message name="IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU"
-          desc="Show the clipboard history menu.">
-          Clipboard
-      </message>
       <message name="IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD"
           desc="Open the context menu submenu that shows clipboard history items the user can paste.">
           Paste from clipboard

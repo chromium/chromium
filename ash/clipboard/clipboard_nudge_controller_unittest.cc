@@ -27,7 +27,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -303,21 +302,9 @@ class ClipboardNudgeMetricTest
     : public ClipboardNudgeControllerTestBase,
       public testing::WithParamInterface<ClipboardNudgeType> {
  public:
-  ClipboardNudgeMetricTest() {
-    // Enable the clipboard history refresh feature if the duplicate copy nudge
-    // is being tested.
-    if (GetNudgeType() == ClipboardNudgeType::kDuplicateCopyNudge) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kClipboardHistoryRefresh,
-                                chromeos::features::kJelly},
-          /*disabled_features=*/{});
-    }
-  }
+  ClipboardNudgeMetricTest() = default;
 
   ClipboardNudgeType GetNudgeType() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -462,8 +449,7 @@ TEST_P(ClipboardNudgeMetricTest, NotLogForNonAcceleratorMenuShown) {
 }
 
 class ClipboardHistoryRefreshNudgeTest
-    : public ClipboardNudgeControllerTestBase,
-      public testing::WithParamInterface</*enable_refresh=*/bool> {
+    : public ClipboardNudgeControllerTestBase {
  public:
   // Time deltas that are less/more than the minimum time interval required to
   // show a capped nudge.
@@ -472,23 +458,11 @@ class ClipboardHistoryRefreshNudgeTest
   static constexpr base::TimeDelta kMoreThanMinInterval =
       kCappedNudgeMinInterval + base::Hours(1);
 
-  ClipboardHistoryRefreshNudgeTest() {
-    std::vector<base::test::FeatureRef> refresh_features = {
-        chromeos::features::kClipboardHistoryRefresh,
-        chromeos::features::kJelly};
-
-    if (IsClipboardHistoryRefreshEnabled()) {
-      scoped_feature_list_.InitWithFeatures(refresh_features, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, refresh_features);
-    }
-  }
+  ClipboardHistoryRefreshNudgeTest() = default;
 
   void HideClipboardNudge() {
     AnchoredNudgeManager::Get()->Cancel(kClipboardNudgeId);
   }
-
-  bool IsClipboardHistoryRefreshEnabled() const { return GetParam(); }
 
   void WaitForClipboardWriteConfirmed() {
     EXPECT_TRUE(operation_confirmed_future_.Take());
@@ -504,17 +478,12 @@ class ClipboardHistoryRefreshNudgeTest
             operation_confirmed_future_.GetRepeatingCallback());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TestFuture<bool> operation_confirmed_future_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClipboardHistoryRefreshNudgeTest,
-                         /*enable_refresh=*/testing::Bool());
-
 // Verifies that the duplicate copy nudge is able to show after the onboarding
 // nudge hits the shown count limit.
-TEST_P(ClipboardHistoryRefreshNudgeTest,
+TEST_F(ClipboardHistoryRefreshNudgeTest,
        DuplicateCopyAfterOnboardingNudgesHitLimit) {
   // Show the onboarding nudge three times.
   base::HistogramTester histogram_tester;
@@ -539,17 +508,17 @@ TEST_P(ClipboardHistoryRefreshNudgeTest,
   WaitForClipboardWriteConfirmed();
 
   // Check the existence of the system nudge.
-  EXPECT_EQ(IsClipboardNudgeShown(), IsClipboardHistoryRefreshEnabled());
+  EXPECT_TRUE(IsClipboardNudgeShown());
 
   // Check the show count of the clipboard history duplicate copy nudge.
   histogram_tester.ExpectUniqueSample(
       kClipboardHistoryDuplicateCopyNudgeShowCount,
       /*sample=*/true,
-      /*expected_bucket_count=*/IsClipboardHistoryRefreshEnabled() ? 1 : 0);
+      /*expected_bucket_count=*/1);
 }
 
 // Verifies the show count limit of the duplicate copy nudge.
-TEST_P(ClipboardHistoryRefreshNudgeTest, DuplicateCopyShowCountLimit) {
+TEST_F(ClipboardHistoryRefreshNudgeTest, DuplicateCopyShowCountLimit) {
   base::HistogramTester histogram_tester;
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(u"text");
   WaitForClipboardWriteConfirmed();
@@ -573,7 +542,7 @@ TEST_P(ClipboardHistoryRefreshNudgeTest, DuplicateCopyShowCountLimit) {
   histogram_tester.ExpectUniqueSample(
       kClipboardHistoryDuplicateCopyNudgeShowCount,
       /*sample=*/true,
-      /*expected_bucket_count=*/IsClipboardHistoryRefreshEnabled() ? 3 : 0);
+      /*expected_bucket_count=*/3);
 
   // Write duplicate text to clipboard history for the forth time.
   HideClipboardNudge();
@@ -587,12 +556,12 @@ TEST_P(ClipboardHistoryRefreshNudgeTest, DuplicateCopyShowCountLimit) {
   histogram_tester.ExpectUniqueSample(
       kClipboardHistoryDuplicateCopyNudgeShowCount,
       /*sample=*/true,
-      /*expected_bucket_count=*/IsClipboardHistoryRefreshEnabled() ? 3 : 0);
+      /*expected_bucket_count=*/3);
 }
 
 // Ensure that the duplicate copy nudge is not shown too soon after the previous
 // showing.
-TEST_P(ClipboardHistoryRefreshNudgeTest, DuplicateCopyTimeIntervalThreshold) {
+TEST_F(ClipboardHistoryRefreshNudgeTest, DuplicateCopyTimeIntervalThreshold) {
   base::HistogramTester histogram_tester;
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(u"text");
   WaitForClipboardWriteConfirmed();
@@ -603,7 +572,7 @@ TEST_P(ClipboardHistoryRefreshNudgeTest, DuplicateCopyTimeIntervalThreshold) {
   histogram_tester.ExpectUniqueSample(
       kClipboardHistoryDuplicateCopyNudgeShowCount,
       /*sample=*/true,
-      /*expected_bucket_count=*/IsClipboardHistoryRefreshEnabled() ? 1 : 0);
+      /*expected_bucket_count=*/1);
   HideClipboardNudge();
 
   // Advance the time with an interval less than the threshold.
@@ -620,11 +589,11 @@ TEST_P(ClipboardHistoryRefreshNudgeTest, DuplicateCopyTimeIntervalThreshold) {
   histogram_tester.ExpectUniqueSample(
       kClipboardHistoryDuplicateCopyNudgeShowCount,
       /*sample=*/true,
-      /*expected_bucket_count=*/IsClipboardHistoryRefreshEnabled() ? 1 : 0);
+      /*expected_bucket_count=*/1);
 }
 
 // Checks that showing onboarding nudges after duplicate copy works as expected.
-TEST_P(ClipboardHistoryRefreshNudgeTest,
+TEST_F(ClipboardHistoryRefreshNudgeTest,
        ShowOnboardingNudgeAfterDuplicateCopy) {
   base::HistogramTester histogram_tester;
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(u"text");
@@ -636,7 +605,7 @@ TEST_P(ClipboardHistoryRefreshNudgeTest,
   histogram_tester.ExpectUniqueSample(
       kClipboardHistoryDuplicateCopyNudgeShowCount,
       /*sample=*/true,
-      /*expected_bucket_count=*/IsClipboardHistoryRefreshEnabled() ? 1 : 0);
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kClipboardHistoryOnboardingNudgeShowCount,
                                       /*sample=*/true,
                                       /*expected_bucket_count=*/0);
@@ -653,10 +622,9 @@ TEST_P(ClipboardHistoryRefreshNudgeTest,
 
   // The onboarding nudge should NOT show if the duplicate copy nudge showed
   // before due to the time interval threshold.
-  histogram_tester.ExpectUniqueSample(
-      kClipboardHistoryOnboardingNudgeShowCount,
-      /*sample=*/true,
-      /*expected_bucket_count=*/IsClipboardHistoryRefreshEnabled() ? 0 : 1);
+  histogram_tester.ExpectUniqueSample(kClipboardHistoryOnboardingNudgeShowCount,
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/0);
 }
 
 }  // namespace ash

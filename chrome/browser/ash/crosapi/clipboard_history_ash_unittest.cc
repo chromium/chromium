@@ -11,11 +11,9 @@
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom-shared.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,11 +86,6 @@ class ClipboardHistoryAshWithClientTest : public ash::AshTestBase {
  public:
   // ash::AshTestBase:
   void SetUp() override {
-    // Enable the clipboard history refresh feature.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kClipboardHistoryRefresh,
-                              chromeos::features::kJelly},
-        /*disabled_features=*/{});
     ash::AshTestBase::SetUp();
 
     // `clipboard_history_ash_` should be created after Ash.
@@ -117,7 +110,6 @@ class ClipboardHistoryAshWithClientTest : public ash::AshTestBase {
         mock_client_.receiver_.BindNewPipeAndPassRemote());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   MockedClipboardHistoryClient mock_client_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
 };

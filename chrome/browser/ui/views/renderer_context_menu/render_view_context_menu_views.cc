@@ -261,13 +261,6 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       return false;
 #endif
 
-    case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
-#if BUILDFLAG(IS_CHROMEOS)
-      *accel = ui::Accelerator(ui::VKEY_V, ui::EF_COMMAND_DOWN);
-      return true;
-#else
-      NOTREACHED();
-#endif
     default:
       return false;
   }
