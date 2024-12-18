@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "build/build_config.h"
+#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -531,6 +532,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
                                      const GpuPreferences& gpu_preferences,
                                      base::CommandLine* command_line,
                                      bool* needs_more_info) {
+  GPU_STARTUP_TRACE_EVENT("gpu_util::ComputeGpuFeatureInfo");
   bool use_swift_shader = false;
   bool blocklist_needs_more_info = false;
 

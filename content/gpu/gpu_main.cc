@@ -463,7 +463,6 @@ namespace {
 bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
                        const gpu::GPUInfo* gpu_info,
                        const gpu::GpuPreferences& gpu_prefs) {
-  TRACE_EVENT0("gpu,startup", "Initialize sandbox");
   GPU_STARTUP_TRACE_EVENT("Initialize sandbox");
 
   if (watchdog_thread) {
@@ -527,7 +526,6 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
 
 #if BUILDFLAG(IS_WIN)
 bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo* sandbox_info) {
-  TRACE_EVENT0("gpu,startup", "Lower token");
   GPU_STARTUP_TRACE_EVENT("Lower token");
 
   // For Windows, if the target_services interface is not zero, the process

@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_export.h"
 
 namespace base {
@@ -83,10 +84,13 @@ class GL_EXPORT StartupTrace {
 #define GPU_STARTUP_TRACE_UID(prefix) \
   GPU_STARTUP_TRACE_INTERNAL_CONCAT(prefix, __LINE__)
 
-#define GPU_STARTUP_TRACE_EVENT(name)                                     \
-  gl::StartupTrace::ScopedStage GPU_STARTUP_TRACE_UID(scoped_gpu_trace) = \
-      gl::StartupTrace::IsEnabled()                                       \
-          ? gl::StartupTrace::GetInstance()->AddStage(name)               \
-          : gl::StartupTrace::ScopedStage(0);
+#define GPU_STARTUP_TRACE_EVENT(name)                                       \
+  gl::StartupTrace::ScopedStage GPU_STARTUP_TRACE_UID(scoped_gpu_trace){0}; \
+  if (gl::StartupTrace::IsEnabled()) {                                      \
+    GPU_STARTUP_TRACE_UID(scoped_gpu_trace) =                               \
+        gl::StartupTrace::GetInstance()->AddStage(name);                    \
+  } else {                                                                  \
+    TRACE_EVENT0("gpu,startup", name);                                      \
+  }
 
 #endif  // UI_GL_STARTUP_TRACE_H_
