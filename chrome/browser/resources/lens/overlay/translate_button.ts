@@ -857,8 +857,18 @@ export class TranslateButtonElement extends PolymerElement {
   }
 
   private getSourceLanguageButtonAriaLabel(): string {
+    let sourceLanguageAriaLabel = this.getSourceLanguageDisplayName();
+    // If the source language is set to auto detect language, the label should
+    // have both the source language display name (if found) and detect language
+    // string.
+    if (this.sourceLanguage === null &&
+        sourceLanguageAriaLabel !== loadTimeData.getString('detectLanguage')) {
+      sourceLanguageAriaLabel = `${this.getSourceLanguageDisplayName()}, ${
+          loadTimeData.getString('detectLanguage')}`;
+    }
+
     return loadTimeData.getStringF(
-        'sourceLanguageAriaLabel', this.getSourceLanguageDisplayName());
+        'sourceLanguageAriaLabel', sourceLanguageAriaLabel);
   }
 
   private getTargetLanguageButtonAriaLabel(): string {

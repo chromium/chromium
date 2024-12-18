@@ -532,7 +532,8 @@
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
         on-click="onSourceLanguageButtonClick"
         aria-hidden="[[!languagePickerButtonsVisible]]"
-        aria-label="[[getSourceLanguageButtonAriaLabel(sourceLanguage)]]"
+        aria-label="[[getSourceLanguageButtonAriaLabel(sourceLanguage,
+                    contentLanguage)]]"
         tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
                     sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
       <span id="starsIcon" slot="prefix-icon"></span>
