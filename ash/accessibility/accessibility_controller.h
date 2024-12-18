@@ -55,6 +55,7 @@ namespace ash {
 class AccessibilityConfirmationDialog;
 class AccessibilityControllerClient;
 class AccessibilityEventRewriter;
+class AccessibilityFeatureDisableDialog;
 class AccessibilityHighlightController;
 class AccessibilityObserver;
 enum class AccessibilityPanelState;
@@ -644,6 +645,12 @@ class ASH_EXPORT AccessibilityController
       std::optional<int> timeout_seconds = std::nullopt);
   gfx::Rect GetConfirmationDialogBoundsInScreen();
 
+  // Shows a dialog to disable a feature with the given text, and calls the
+  // relevant callback when the dialog is accepted or cancelled.
+  void ShowFeatureDisableDialog(int window_title_text_id,
+                                base::OnceClosure on_accept_callback,
+                                base::OnceClosure on_cancel_callback);
+
   void PreviewFlashNotification() const;
 
   // SessionObserver:
@@ -678,6 +685,9 @@ class ASH_EXPORT AccessibilityController
   }
   AccessibilityConfirmationDialog* GetConfirmationDialogForTest() {
     return confirmation_dialog_.get();
+  }
+  AccessibilityFeatureDisableDialog* GetFeatureDisableDialogForTest() {
+    return disable_dialog_.get();
   }
 
   bool enable_chromevox_volume_slide_gesture() {
@@ -716,6 +726,9 @@ class ASH_EXPORT AccessibilityController
       base::RepeatingCallback<void(AccessibilityToastType)> callback);
 
   void AddShowConfirmationDialogCallbackForTesting(
+      base::RepeatingCallback<void()> callback);
+
+  void AddFeatureDisableDialogCallbackForTesting(
       base::RepeatingCallback<void()> callback);
 
   bool VerifyFeaturesDataForTesting();
@@ -812,6 +825,12 @@ class ASH_EXPORT AccessibilityController
   void OnDisableTouchpadDialogAccepted();
   void OnDisableTouchpadDialogDismissed();
   void ExternalDeviceConnected();
+
+  void OnFaceGazeSentinelChanged(const std::string& sentinel_pref,
+                                 const std::string& behavior_pref);
+  void OnFaceGazeDisableDialogClosed(const std::string& sentinel_pref,
+                                     const std::string& behavior_pref,
+                                     bool dialog_accepted);
 
   void RecordSelectToSpeakSpeechDuration(SelectToSpeakState old_state,
                                          SelectToSpeakState new_state);
@@ -911,6 +930,11 @@ class ASH_EXPORT AccessibilityController
 
   base::RepeatingCallback<void()>
       show_confirmation_dialog_callback_for_testing_;
+
+  // The current AccessibilityFeatureDisableDialog, if one exists.
+  base::WeakPtr<AccessibilityFeatureDisableDialog> disable_dialog_;
+
+  base::RepeatingCallback<void()> show_disable_dialog_callback_for_testing_;
 
   base::Time select_to_speak_speech_start_time_;
 

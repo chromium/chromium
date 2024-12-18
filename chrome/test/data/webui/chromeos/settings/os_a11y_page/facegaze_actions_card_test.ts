@@ -149,8 +149,8 @@ suite('<facegaze-actions-card>', () => {
 
   test('actions enabled button syncs to pref', async () => {
     await initPage();
-    assertTrue(faceGazeActionsCard.prefs.settings.a11y.face_gaze.actions_enabled
-                   .value);
+    assertTrue(faceGazeActionsCard.prefs.settings.a11y.face_gaze
+                   .actions_enabled_sentinel.value);
 
     const button = faceGazeActionsCard.shadowRoot!
                        .querySelector<SettingsToggleButtonElement>(
@@ -164,7 +164,7 @@ suite('<facegaze-actions-card>', () => {
 
     assertFalse(button.checked);
     assertFalse(faceGazeActionsCard.prefs.settings.a11y.face_gaze
-                    .actions_enabled.value);
+                    .actions_enabled_sentinel.value);
   });
 
   test('actions disables controls if feature is disabled', async () => {

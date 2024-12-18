@@ -11,9 +11,15 @@ export enum PrefNames {
   ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED =
       'settings.a11y.face_gaze.accelerator_dialog_has_been_accepted',
   ACTIONS_ENABLED = 'settings.a11y.face_gaze.actions_enabled',
+  ACTIONS_ENABLED_SENTINEL = 'settings.a11y.face_gaze.actions_enabled_sentinel',
   CURSOR_CONTROL_ENABLED = 'settings.a11y.face_gaze.cursor_control_enabled',
+  CURSOR_CONTROL_ENABLED_SENTINEL =
+      'settings.a11y.face_gaze.cursor_control_enabled_sentinel',
   CURSOR_USE_ACCELERATION = 'settings.a11y.face_gaze.cursor_use_acceleration',
   FACE_GAZE_ENABLED = 'settings.a11y.face_gaze.enabled',
+  FACE_GAZE_ENABLED_SENTINEL = 'settings.a11y.face_gaze.enabled_sentinel',
+  FACE_GAZE_ENABLED_SENTINEL_SHOW_DIALOG =
+      'settings.a11y.face_gaze.enabled_sentinel_show_dialog',
   GESTURE_TO_CONFIDENCE = 'settings.a11y.face_gaze.gestures_to_confidence',
   GESTURE_TO_KEY_COMBO = 'settings.a11y.face_gaze.gestures_to_key_combos',
   GESTURE_TO_MACRO = 'settings.a11y.face_gaze.gestures_to_macros',

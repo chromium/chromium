@@ -115,8 +115,13 @@ export class FaceGaze {
     chrome.settingsPrivate.setPref(
         PrefNames.ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, accepted);
     if (!accepted) {
-      // If the dialog was rejected, then disable the FaceGaze feature.
-      chrome.settingsPrivate.setPref(PrefNames.FACE_GAZE_ENABLED, false);
+      // If the dialog was rejected, then disable the FaceGaze feature and do
+      // not show the confirmation dialog for disabling.
+      chrome.settingsPrivate.setPref(
+          PrefNames.FACE_GAZE_ENABLED_SENTINEL_SHOW_DIALOG, false, undefined,
+          () => chrome.settingsPrivate.setPref(
+              PrefNames.FACE_GAZE_ENABLED_SENTINEL, false));
+
       return;
     }
 

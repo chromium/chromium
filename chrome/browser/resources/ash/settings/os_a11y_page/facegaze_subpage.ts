@@ -46,7 +46,7 @@ export class SettingsFaceGazeSubpageElement extends
       toggleLabel_: {
         type: String,
         computed:
-            'getToggleLabel_(prefs.settings.a11y.face_gaze.enabled.value)',
+            'getToggleLabel_(prefs.settings.a11y.face_gaze.enabled_sentinel.value)',
       },
 
       supportedSettingIds: {
@@ -59,7 +59,7 @@ export class SettingsFaceGazeSubpageElement extends
   }
 
   private getToggleLabel_(): string {
-    return this.getPref('settings.a11y.face_gaze.enabled').value ?
+    return this.getPref('settings.a11y.face_gaze.enabled_sentinel').value ?
         this.i18n('deviceOn') :
         this.i18n('deviceOff');
   }
