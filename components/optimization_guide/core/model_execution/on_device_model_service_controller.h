@@ -243,9 +243,6 @@ class OnDeviceModelServiceController
   base::flat_map<ModelBasedCapabilityKey, OnDeviceModelAdaptationMetadata>
       model_adaptation_metadata_;
 
-  // Whether a session has been started for the most recently updated model.
-  bool has_started_session_ = false;
-
   std::unique_ptr<OnDeviceModelValidator> model_validator_;
 
   std::map<ModelBasedCapabilityKey,

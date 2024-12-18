@@ -197,7 +197,6 @@ OnDeviceModelServiceController::CreateSession(
            ? nullptr
            : model_quality_uploader_service);
 
-  has_started_session_ = true;
   return std::make_unique<SessionImpl>(
       feature, std::move(opts), std::move(execute_remote_fn),
       optimization_guide_logger, log_uploader, config_params);
@@ -315,7 +314,6 @@ void OnDeviceModelServiceController::UpdateModel(
   base_model_remote_.reset();
   base_model_scoped_weak_ptr_factory_.InvalidateWeakPtrs();
   model_metadata_ = std::move(model_metadata);
-  has_started_session_ = false;
   model_validator_ = nullptr;
 
   if (did_model_change) {
@@ -343,8 +341,8 @@ void OnDeviceModelServiceController::UpdateModel(
 }
 
 void OnDeviceModelServiceController::StartValidation() {
-  // Skip validation if a session has started to avoid interrupting.
-  if (has_started_session_) {
+  // Skip validation if the base model is already in use to avoid interrupting.
+  if (base_model_remote_) {
     return;
   }
 
