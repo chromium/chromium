@@ -3786,11 +3786,25 @@ AutofillSaveCreditCardPromptDestination.
     expires_after="2025-06-08">
   <owner>schwering@google.com</owner>
   <owner>jkeitel@google.com</owner>
+  <owner>vincb@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records the maximum number of simultaneously existing drivers that a factory
-    saw over its lifetime. Recorded on all platforms except for iOS. Recorded on
-    destruction of the factory, which happens on destruction of the WebContents.
+    saw over its lifetime. Recorded on all platforms. Recorded on destruction of
+    the factory, which happens on destruction of the WebContents / WebState.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.NumberOfFramesPerFormForest" units="count"
+    expires_after="2025-06-08">
+  <owner>schwering@google.com</owner>
+  <owner>vincb@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the maximum number of simultaneously existing
+    `FormForest::FrameData` objects that a `AutofillDriverRouter` saw over its
+    lifetime. Recorded on all platforms. Recorded on destruction of the router,
+    which happens on destruction of the WebContents.
   </summary>
 </histogram>
 

@@ -8,6 +8,7 @@
 #import <ranges>
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 
@@ -47,6 +48,8 @@ AutofillDriverIOSFactory::AutofillDriverIOSFactory(
 
 AutofillDriverIOSFactory::~AutofillDriverIOSFactory() {
   TearDown();
+  base::UmaHistogramCounts1000("Autofill.NumberOfDriversPerFactory",
+                               max_drivers_);
 }
 
 void AutofillDriverIOSFactory::TearDown() {
@@ -129,6 +132,7 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
     SetLifecycleStateAndNotifyObservers(*driver, LifecycleState::kActive);
     DCHECK_EQ(&driver_map_[web_frame_id], &driver);
   }
+  max_drivers_ = std::max(max_drivers_, driver_map_.size());
   // `driver` may be null if WebFrameBecameUnavailable() has been called for its
   // `web_frame` already.
   return driver.get();

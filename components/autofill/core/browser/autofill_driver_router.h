@@ -318,6 +318,11 @@ class AutofillDriverRouter {
   // conditions. We use these members to correct the order of the events.
   LocalFrameToken focused_frame_;
   bool focus_no_longer_on_form_has_fired_ = true;
+
+  // The maximum number of coexisting FormForest::FrameDatas over the lifetime
+  // of this factory.
+  // TODO: crbug.com/342132628 - Remove the counter and the metric.
+  size_t max_frame_datas_ = 0;
 };
 
 }  // namespace autofill

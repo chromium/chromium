@@ -118,6 +118,10 @@ class AutofillDriverIOSFactory final
   // references. Otherwise, recursive DriverForFrame() calls are unsafe.
   std::map<std::string, std::unique_ptr<AutofillDriverIOS>> driver_map_;
 
+  // The maximum number of coexisting drivers over the lifetime of this factory.
+  // TODO: crbug.com/365097975 - Remove the counter and the metric.
+  size_t max_drivers_ = 0;
+
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 

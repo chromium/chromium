@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -34,10 +35,14 @@ void ForEachFrame(internal::FormForest& form_forest,
 }  // namespace
 
 AutofillDriverRouter::AutofillDriverRouter() = default;
-AutofillDriverRouter::~AutofillDriverRouter() = default;
+AutofillDriverRouter::~AutofillDriverRouter() {
+  base::UmaHistogramCounts1000("Autofill.NumberOfFramesPerFormForest",
+                               max_frame_datas_);
+}
 
 AutofillDriver* AutofillDriverRouter::DriverOfFrame(LocalFrameToken frame) {
   const auto& frames = form_forest_.frame_datas();
+  max_frame_datas_ = std::max(max_frame_datas_, frames.size());
   auto it = frames.find(frame);
   return it != frames.end() ? static_cast<AutofillDriver*>((*it)->driver.get())
                             : nullptr;
