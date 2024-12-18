@@ -3093,7 +3093,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.RgbKeyboard.RgbKeyboardCapabilityType"
-    enum="RgbKeyboardCapabilityType" expires_after="2025-01-26">
+    enum="RgbKeyboardCapabilityType" expires_after="2026-01-26">
   <owner>michaelcheco@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
