@@ -168,9 +168,6 @@ EvictionHandler::CreateTransferableResourceFromCopyOutputResult(
         {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
          gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
          "CopyOutputResultAsSoftwareSharedImage"});
-    if (!shared_image) {
-      return std::nullopt;
-    }
     output_software_shared_image = shared_image;
 
     SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
