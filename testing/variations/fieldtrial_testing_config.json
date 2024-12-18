@@ -21278,6 +21278,25 @@
             ]
         }
     ],
+    "SelfFreeze": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_10_100",
+                    "params": {
+                        "delay_after_tasks": "10",
+                        "max_chunk_size": "100"
+                    },
+                    "enable_features": [
+                        "ShouldFreezeSelf"
+                    ]
+                }
+            ]
+        }
+    ],
     "SendTabToSelfIOSPushNotifications": [
         {
             "platforms": [
