@@ -243,11 +243,11 @@ void GlicWindowController::HandleBrowserPinning(gfx::Vector2d mouse_location) {
     }
     auto* tab_strip_region_view =
         browser->window()->AsBrowserView()->tab_strip_region_view();
-    if (!tab_strip_region_view || !tab_strip_region_view->glic_button()) {
+    if (!tab_strip_region_view || !tab_strip_region_view->GetGlicButton()) {
       continue;
     }
     gfx::Rect glic_button_rect =
-        tab_strip_region_view->glic_button()->GetBoundsInScreen();
+        tab_strip_region_view->GetGlicButton()->GetBoundsInScreen();
 
     float glic_button_mouse_distance =
         (glic_button_rect.CenterPoint() -
@@ -280,7 +280,7 @@ void GlicWindowController::MoveToBrowserPinTarget(Browser* browser) {
   gfx::Rect glic_button_rect = browser->window()
                                    ->AsBrowserView()
                                    ->tab_strip_region_view()
-                                   ->glic_button()
+                                   ->GetGlicButton()
                                    ->GetBoundsInScreen();
   gfx::Point top_right = glic_button_rect.top_right();
   int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);

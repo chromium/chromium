@@ -129,9 +129,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   std::unique_ptr<TabGlicContainer> tab_glic_container;
   std::unique_ptr<TabStripComboButton> tab_strip_combo_button;
   std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
-#if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicButton> glic_button;
-#endif  // BUILDFLAG(ENABLE_GLIC)
   if (browser &&
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
     if (features::IsTabstripComboButtonEnabled() &&
@@ -165,21 +162,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       tab_glic_container->SetProperty(
           views::kMarginsKey,
           gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
-
-      tab_glic_container_ = AddChildView(std::move(tab_glic_container));
-
-    } else {
-#if BUILDFLAG(ENABLE_GLIC)
-      if (GlicEnabling::IsEnabledByFlags()) {
-        glic_button =
-            std::make_unique<glic::GlicButton>(tab_strip_->controller());
-        glic_button->SetProperty(views::kCrossAxisAlignmentKey,
-                                 views::LayoutAlignment::kCenter);
-        glic_button->SetProperty(
-            views::kMarginsKey,
-            gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
-      }
-#endif  // BUILDFLAG(ENABLE_GLIC)
     }
   }
 
@@ -284,12 +266,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic_button) {
-    glic_button_ = AddChildView(std::move(glic_button));
+  if (tab_glic_container) {
+    tab_glic_container_ = AddChildView(std::move(tab_glic_container));
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
   UpdateTabStripMargin();
 }
 
@@ -383,6 +362,15 @@ views::Button* TabStripRegionView::GetNewTabButton() {
   }
 }
 
+glic::GlicButton* TabStripRegionView::GetGlicButton() {
+  if (tab_glic_container_) {
+#if BUILDFLAG(ENABLE_GLIC)
+    return tab_glic_container_->GetGlicButton();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+  }
+  return nullptr;
+}
+
 TabSearchContainer* TabStripRegionView::GetTabSearchContainer() {
   if (features::IsTabstripComboButtonEnabled()) {
     return tab_strip_combo_button_->tab_search_container();
@@ -417,11 +405,6 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
   if (tab_glic_container_) {
     children.emplace_back(tab_glic_container_.get());
   }
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic_button_) {
-    children.emplace_back(glic_button_.get());
-  }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   if (reserved_grab_handle_space_) {
     children.emplace_back(reserved_grab_handle_space_.get());
