@@ -722,10 +722,15 @@
   if ([self shouldFeedBeVisible]) {
     if ([self isFollowingFeedAvailable] &&
         self.selectedFeed == FeedTypeFollowing) {
-      self.feedViewController = [self.componentFactory
-              followingFeedForBrowser:self.browser
-          viewControllerConfiguration:[self feedViewControllerConfiguration]
-                             sortType:self.followingFeedSortType];
+      if (IsNewFollowingFeedEntryPointsEnabled()) {
+        // TODO(crbug.com/359325090): Configure the following feed in an overlay
+        // view.
+      } else {
+        self.feedViewController = [self.componentFactory
+                followingFeedForBrowser:self.browser
+            viewControllerConfiguration:[self feedViewControllerConfiguration]
+                               sortType:self.followingFeedSortType];
+      }
     } else {
       self.feedViewController = [self.componentFactory
                discoverFeedForBrowser:self.browser
