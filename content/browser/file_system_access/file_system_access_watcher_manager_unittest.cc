@@ -1241,8 +1241,12 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   FileSystemAccessObservationGroup* foo_file_observation1_group =
       foo_file_observation1->GetObservationGroupForTesting();
 
+  // Passing a `FileSystemURL` pointing to some path should be treated by the
+  // `FileSystemAccessWatcherManager` the same as any `FileSystemURL` pointing
+  // to that path.
+  auto file_url2 = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
   std::unique_ptr<Observation> foo_file_observation2 =
-      std::move(ObserveFile(foo_storage_key, file_url)).value();
+      std::move(ObserveFile(foo_storage_key, file_url2)).value();
   FileSystemAccessObservationGroup* foo_file_observation2_group =
       foo_file_observation2->GetObservationGroupForTesting();
 
