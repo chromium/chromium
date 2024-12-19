@@ -90,7 +90,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
 
     stub_browser_interface_provider_ =
         [[StubBrowserProviderInterface alloc] init];
-    stub_browser_interface_provider_.mainBrowserProvider.browser =
+    stub_browser_interface_provider_.currentBrowserProvider.browser =
         browser_.get();
     scene_state_mock_ = OCMPartialMock(scene_state_);
     OCMStub([scene_state_mock_ browserProviderInterface])

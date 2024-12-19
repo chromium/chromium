@@ -44,7 +44,7 @@
 - (void)executeWithSceneState:(SceneState*)sceneState
                    completion:(ProceduralBlock)completion {
   Browser* browser =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+      sceneState.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
 
   id<SnackbarCommands> snackbarCommandsHandler =
