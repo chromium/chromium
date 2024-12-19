@@ -23,8 +23,11 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_bucket_lookup.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/partition_alloc_config.h"   // nogncheck
+#include "partition_alloc/partition_bucket_lookup.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
@@ -45,7 +48,7 @@
 #endif
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #endif
 
 namespace base {

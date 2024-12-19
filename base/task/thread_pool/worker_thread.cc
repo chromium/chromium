@@ -26,7 +26,10 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_config.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/partition_alloc_config.h"  // nogncheck
+#endif
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -38,7 +41,7 @@
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
-#include "partition_alloc/thread_cache.h"
+#include "partition_alloc/thread_cache.h"  // nogncheck
 #endif
 
 namespace base::internal {

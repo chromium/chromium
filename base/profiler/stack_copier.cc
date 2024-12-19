@@ -16,7 +16,7 @@
 #include "base/profiler/stack_buffer.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/tagging.h"
+#include "partition_alloc/tagging.h"  // nogncheck
 #endif
 
 namespace base {

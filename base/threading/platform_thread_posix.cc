@@ -46,7 +46,7 @@
 #endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "partition_alloc/stack/stack.h"
+#include "partition_alloc/stack/stack.h"  // nogncheck
 #endif
 
 namespace base {

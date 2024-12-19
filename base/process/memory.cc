@@ -14,7 +14,7 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)

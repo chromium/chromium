@@ -24,7 +24,7 @@
 #include "base/task/thread_pool.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/tagging.h"
+#include "partition_alloc/tagging.h"  // nogncheck
 #endif
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while

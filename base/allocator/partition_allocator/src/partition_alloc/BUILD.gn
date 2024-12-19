@@ -789,8 +789,6 @@ if (is_clang_or_gcc) {
   }
 
   component("allocator_shim") {
-    visibility = [ ":*" ]
-
     sources = []
     deps = []
     all_dependent_configs = []

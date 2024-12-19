@@ -16,7 +16,7 @@
 #endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/partition_alloc_hooks.h"
+#include "partition_alloc/partition_alloc_hooks.h"  // nogncheck
 #endif
 
 namespace base::allocator::dispatcher {

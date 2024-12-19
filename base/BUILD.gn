@@ -176,8 +176,6 @@ component("base") {
     "allocator/dispatcher/internal/dispatch_data.h",
     "allocator/dispatcher/internal/dispatcher_internal.h",
     "allocator/dispatcher/internal/tools.h",
-    "allocator/dispatcher/memory_tagging.cc",
-    "allocator/dispatcher/memory_tagging.h",
     "allocator/dispatcher/notification_data.h",
     "allocator/dispatcher/reentry_guard.cc",
     "allocator/dispatcher/reentry_guard.h",
@@ -1709,8 +1707,12 @@ component("base") {
       ]
     }
     if (use_partition_alloc) {
-      # Add stuff that doesn't work in NaCl.
+      # Add stuff that doesn't work in NaCl or other environments that disable
+      # partition_alloc.
       sources += [
+        "allocator/dispatcher/memory_tagging.cc",
+        "allocator/dispatcher/memory_tagging.h",
+
         # PartitionAlloc uses SpinLock, which doesn't work in NaCl (see below).
         "allocator/miracle_parameter.cc",
         "allocator/miracle_parameter.h",
@@ -1720,15 +1722,9 @@ component("base") {
         "allocator/partition_alloc_support.h",
       ]
     }
-
-    # Need this to pass gn check, because gn check doesn't see
-    # BUILDFLAG(USE_PARTITION_ALLOC). A linker will remove all
-    # partition_alloc code if use_partition_alloc = false because no code uses
-    # partition_alloc.
-    public_deps += [
-      "allocator/partition_allocator:partition_alloc",
-      "allocator/partition_allocator:raw_ptr",
-    ]
+    if (use_allocator_shim) {
+      public_deps += [ "allocator/partition_allocator:allocator_shim" ]
+    }
   }
 
   # Windows.

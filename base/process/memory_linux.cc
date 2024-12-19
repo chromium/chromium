@@ -16,10 +16,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/shim/allocator_shim.h"
 
-#if !PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(LIBC_GLIBC)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "partition_alloc/shim/allocator_shim.h"  // nogncheck
+#elif !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(LIBC_GLIBC)
 extern "C" {
 void* __libc_malloc(size_t);
 void __libc_free(void*);

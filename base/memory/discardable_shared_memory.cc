@@ -19,7 +19,10 @@
 #include "base/numerics/safe_math.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-#include "partition_alloc/page_allocator.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/page_allocator.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 // For madvise() which is available on all POSIX compatible systems.
