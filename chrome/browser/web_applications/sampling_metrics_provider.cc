@@ -67,7 +67,6 @@ void EmitUkmMetricsForTab(tabs::TabInterface* tab) {
 #else
   interaction.captures_links = registrar.CapturesLinksInScope(*app_id);
 #endif
-
   interaction.promotable = !registrar.IsDiyApp(*app_id);
 
   if (tab->IsInForeground() && browser->IsActive()) {
@@ -187,6 +186,12 @@ void SamplingMetricsProvider::EmitMetrics() {
   for (BrowserWindowInterface* browser : GetAllBrowserWindowInterfaces()) {
     // If this is a standalone app window.
     if (browser->GetAppBrowserController()) {
+      // A browser may be being closed due to empty tabs. See
+      // https://crbug.com/378020140.
+      if (!browser->GetActiveTabInterface()) {
+        continue;
+      }
+
       ++standalone_pwas_count;
 
       // TODO(https://crbug.com/358404364): This function does not work on macOS
