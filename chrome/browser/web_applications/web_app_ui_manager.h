@@ -150,8 +150,10 @@ class WebAppUiManager {
   virtual void AddAppToQuickLaunchBar(const webapps::AppId& app_id) = 0;
   virtual bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const = 0;
 
-  virtual bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
-                                         bool shortcut_created) const = 0;
+  virtual bool CanReparentAppTabToWindow(
+      const webapps::AppId& app_id,
+      bool shortcut_created,
+      content::WebContents* web_contents) const = 0;
   // Reparents the |contents| to a new browser window, returns a nullptr if the
   // operation failed.
   virtual Browser* ReparentAppTabToWindow(content::WebContents* contents,

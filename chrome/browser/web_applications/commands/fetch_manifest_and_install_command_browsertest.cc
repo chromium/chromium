@@ -32,7 +32,9 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -356,6 +358,62 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       app_view->toolbar()->custom_tab_bar()->IsShowingOriginForTesting());
   EXPECT_TRUE(
       app_view->toolbar()->custom_tab_bar()->IsShowingCloseButtonForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
+                       InstallFromPwaWindowDoesNotReparent) {
+  GURL test_url = https_server()->GetURL("/banners/manifest_test_page.html");
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  base::WeakPtr<content::WebContents> active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr();
+  // Install the app that will be used to try to install from.
+  webapps::AppId app_id;
+  {
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        install_future;
+    provider().scheduler().FetchManifestAndInstall(
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, active_web_contents,
+        CreateDialogCallback(), install_future.GetCallback(),
+        FallbackBehavior::kCraftedManifestOnly);
+    ASSERT_TRUE(install_future.Wait());
+    EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+              webapps::InstallResultCode::kSuccessNewInstall);
+    app_id = install_future.Get<webapps::AppId>();
+    EXPECT_EQ(WebAppTabHelper::FromWebContents(active_web_contents.get())
+                  ->window_app_id(),
+              app_id);
+  }
+  Browser* app_browser =
+      AppBrowserController::FindForWebApp(*profile(), app_id);
+  ASSERT_TRUE(app_browser);
+
+  // Navigate to another installable page, and verify that installing from this
+  // page (which shouldn't be possible in our UX, but is 'valid' for the
+  // command) does not reparent the current web contents into the installed app.
+  webapps::AppId other_app_id;
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(
+      app_browser, https_server()->GetURL("/web_apps/simple/index.html")));
+  {
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        install_future;
+    ASSERT_TRUE(active_web_contents);
+    provider().scheduler().FetchManifestAndInstall(
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, active_web_contents,
+        CreateDialogCallback(), install_future.GetCallback(),
+        FallbackBehavior::kCraftedManifestOnly);
+    ASSERT_TRUE(install_future.Wait());
+    EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+              webapps::InstallResultCode::kSuccessNewInstall);
+    other_app_id = install_future.Get<webapps::AppId>();
+  }
+
+  EXPECT_NE(other_app_id, app_id);
+  EXPECT_FALSE(AppBrowserController::FindForWebApp(*profile(), other_app_id));
+  ASSERT_TRUE(active_web_contents);
+  EXPECT_EQ(WebAppTabHelper::FromWebContents(active_web_contents.get())
+                ->window_app_id(),
+            app_id);
 }
 
 // Tests that when an SVG icon is passed in the manifest with a size of |any|,

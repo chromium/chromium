@@ -79,8 +79,10 @@ class WebAppUiManagerImpl : public BrowserListObserver,
   bool CanAddAppToQuickLaunchBar() const override;
   void AddAppToQuickLaunchBar(const webapps::AppId& app_id) override;
   bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const override;
-  bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
-                                 bool shortcut_created) const override;
+  bool CanReparentAppTabToWindow(
+      const webapps::AppId& app_id,
+      bool shortcut_created,
+      content::WebContents* web_contents) const override;
   Browser* ReparentAppTabToWindow(content::WebContents* contents,
                                   const webapps::AppId& app_id,
                                   bool shortcut_created) override;
