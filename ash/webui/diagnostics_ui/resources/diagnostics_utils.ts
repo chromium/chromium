@@ -79,7 +79,6 @@ export function getNetworkState(state: NetworkState): string {
     case NetworkState.kDisabled:
       return loadTimeData.getString('networkStateDisabledText');
   }
-  assertNotReached();
 }
 
 export function getLockType(lockType: LockType): string {
@@ -93,7 +92,6 @@ export function getLockType(lockType: LockType): string {
     case LockType.kNone:
       return '';
   }
-  assertNotReached();
 }
 
 /**

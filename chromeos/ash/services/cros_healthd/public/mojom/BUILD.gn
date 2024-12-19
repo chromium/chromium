@@ -37,9 +37,11 @@ mojom("mojom") {
       traits_public_deps = [ "//components/policy/proto" ]
     },
   ]
+  cpp_only = true
 }
 
 mojom("event_reporter") {
   sources = [ "cros_healthd_event_reporters.mojom" ]
   public_deps = [ "//ash/system/diagnostics/mojom" ]
+  cpp_only = true
 }

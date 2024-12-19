@@ -98,7 +98,8 @@ export class InputCardElement extends InputCardElementBase {
    * (e.g. "Bluetooth keyboard", "Internal touchpad").
    */
   private getDeviceDescription(device: KeyboardInfo|TouchDeviceInfo): string {
-    if (device.connectionType === ConnectionType.kUnknown) {
+    if (device.connectionType === ConnectionType.kUnknown ||
+        device.connectionType === ConnectionType.kUnmappedEnumField) {
       return '';
     }
     const connectionTypeString = {
