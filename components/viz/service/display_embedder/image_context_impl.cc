@@ -61,33 +61,18 @@ const char* CreateFallbackImageResultToString(
 }
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
-bool DawnYCbCrVkDescriptorsAreEqual(wgpu::YCbCrVkDescriptor left,
-                                    wgpu::YCbCrVkDescriptor right) {
+bool DawnYCbCrVkDescriptorsAreCompatible(const wgpu::YCbCrVkDescriptor& left,
+                                         const wgpu::YCbCrVkDescriptor& right) {
   // NOTE: We deliberately do not compare the swizzle components as those
   // components are not plumbed through the Chrome-level information and thus
   // could cause spurious equality failures. By the Vulkan spec, those
   // components should not be set for external formats, but some drivers do not
   // adhere to the spec here.
-  // TODO(crbug.com/346282342): Plumb that information through the Chrome level
-  // and do equality checks for the swizzle componetns. Once that is complete,
-  // add an equality operator to this struct in Dawn and remove this method
-  // entirely.
+  // Mismatch of model, range and chroma fields happens often enough to be
+  // problematic if we skip drawing the video for those frames. While the video
+  // may not draw 100% correctly it will still be better than not drawing it at
+  // all.
   if (left.vkFormat != right.vkFormat) {
-    return false;
-  }
-  if (left.vkYCbCrModel != right.vkYCbCrModel) {
-    return false;
-  }
-  if (left.vkYCbCrRange != right.vkYCbCrRange) {
-    return false;
-  }
-  if (left.vkXChromaOffset != right.vkXChromaOffset) {
-    return false;
-  }
-  if (left.vkYChromaOffset != right.vkYChromaOffset) {
-    return false;
-  }
-  if (left.vkChromaFilter != right.vkChromaFilter) {
     return false;
   }
   if (left.forceExplicitReconstruction != right.forceExplicitReconstruction) {
@@ -438,8 +423,8 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
     wgpu::YCbCrVkDescriptor fulfillment_texture_ycbcr_desc =
         fulfillment_texture_info.fYcbcrVkDescriptor;
 
-    if (!DawnYCbCrVkDescriptorsAreEqual(promise_texture_ycbcr_desc,
-                                        fulfillment_texture_ycbcr_desc)) {
+    if (!DawnYCbCrVkDescriptorsAreCompatible(promise_texture_ycbcr_desc,
+                                             fulfillment_texture_ycbcr_desc)) {
       graphite_ycbcr_info_mismatch_ = true;
       representation_scoped_read_access_.reset();
       return false;
