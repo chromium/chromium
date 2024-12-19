@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -68,7 +69,11 @@ void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
 
   using TabSwitchMeasurement = perfetto::protos::pbzero::TabSwitchMeasurement;
   DCHECK_GE(end_time, start_time);
-  const auto track = perfetto::Track(base::trace_event::GetNextGlobalTraceId());
+  const auto track =
+      perfetto::Track::Global(base::trace_event::GetNextGlobalTraceId());
+  const auto duration = end_time - start_time;
+  const auto flow = base::trace_event::TriggerFlow(
+      "Browser.Tabs.TotalSwitchDuration3", duration.InMilliseconds());
   TRACE_EVENT_BEGIN(
       "latency", "TabSwitching::Latency", track, start_time,
       [&](perfetto::EventContext ctx) {
@@ -98,7 +103,7 @@ void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
               TabSwitchMeasurement::STATE_NOT_LOADED_NO_SAVED_FRAMES);
         }
       });
-  TRACE_EVENT_END("latency", track, end_time);
+  TRACE_EVENT_END("latency", track, end_time, flow);
 }
 
 // Records histogram and trace event for the unfolding latency.

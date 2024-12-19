@@ -341,6 +341,9 @@ _CONFIG = [
             'base::UnsafeSharedMemoryRegion',
             'base::WritableSharedMemoryMapping',
             'base::subtle::SharedAtomic',
+
+            # tracing
+            'perfetto::.+',
         ]
     },
     {
@@ -721,7 +724,6 @@ _CONFIG = [
             # are OK.
             'icu::.+',
             'inspector_protocol_encoding::.+',
-            'perfetto::.+',  # tracing
             'snappy::.+',
             'testing::.+',  # googlemock / googletest
             'v8::.+',
