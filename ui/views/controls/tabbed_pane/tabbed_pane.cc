@@ -24,7 +24,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -35,6 +34,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -96,10 +96,12 @@ TabbedPaneTab::TabbedPaneTab(TabbedPaneTabStrip* tab_strip,
   if (tab_strip_->HasIconStyle()) {
     auto icon = std::make_unique<views::ImageView>(
         GetImageModelForTab(GetIconTitleColor()));
-    icon->SetProperty(views::kMarginsKey,
-                      gfx::Insets::TLBR(0, 0, 0, kIconRightMargin));
     icon_view_ = icon.get();
     AddChildView(std::move(icon));
+
+    // If there is a icon, there should be spacing between the icon & title.
+    title_->SetProperty(views::kMarginsKey,
+                        gfx::Insets::TLBR(0, kDefaultTitleLeftMargin, 0, 0));
   }
 
   AddChildView(std::move(title_label));
@@ -155,6 +157,16 @@ void TabbedPaneTab::SetTitleText(const std::u16string& text) {
   PreferredSizeChanged();
 }
 
+void TabbedPaneTab::SetTitleMargin(const gfx::Insets& margin) {
+  title_->SetProperty(views::kMarginsKey, margin);
+}
+
+void TabbedPaneTab::SetIconMargin(const gfx::Insets& margin) {
+  if (icon_view_) {
+    icon_view_->SetProperty(views::kMarginsKey, margin);
+  }
+}
+
 bool TabbedPaneTab::OnMousePressed(const ui::MouseEvent& event) {
   if (GetEnabled() && event.IsOnlyLeftMouseButton())
     tab_strip_->SelectTab(this);
@@ -206,7 +218,7 @@ gfx::Size TabbedPaneTab::CalculatePreferredSize(
   // horizontal orientation.
   if (tab_strip_->HasIconStyle() &&
       tab_strip_->GetOrientation() == TabbedPane::Orientation::kHorizontal) {
-    width += icon_view_->GetPreferredSize({}).width() + kIconRightMargin;
+    width += icon_view_->GetPreferredSize({}).width() + kDefaultTitleLeftMargin;
   }
 
   if (tab_strip_->GetStyle() == TabbedPane::TabStripStyle::kHighlight &&
@@ -385,7 +397,8 @@ void TabbedPaneTab::UpdateAccessibleSelection() {
 
 ui::ImageModel TabbedPaneTab::GetImageModelForTab(ui::ColorId color_id) const {
   DCHECK(icon_for_tab_);
-  return ui::ImageModel::FromVectorIcon(*icon_for_tab_, color_id, kIconSize);
+  return ui::ImageModel::FromVectorIcon(*icon_for_tab_, color_id,
+                                        kDefaultIconSize);
 }
 
 ui::ColorId TabbedPaneTab::GetIconTitleColor() const {
@@ -444,21 +457,25 @@ TabbedPaneTabStrip::TabbedPaneTabStrip(TabbedPane::Orientation orientation,
 
 TabbedPaneTabStrip::~TabbedPaneTabStrip() = default;
 
-void TabbedPaneTabStrip::AddTab(const std::u16string& title,
-                                const gfx::VectorIcon* tab_icon) {
-  AddTabAt(title, tab_icon, GetTabCount());
+TabbedPaneTab* TabbedPaneTabStrip::AddTab(const std::u16string& title,
+                                          const gfx::VectorIcon* tab_icon) {
+  auto* tab = AddTabAt(title, tab_icon, GetTabCount());
 
   // Always select the first tab.
   if (!GetSelectedTab()) {
     SelectTab(GetTabAtIndex(0));
   }
+
+  return tab;
 }
 
-void TabbedPaneTabStrip::AddTabAt(const std::u16string& title,
-                                  const gfx::VectorIcon* tab_icon,
-                                  size_t index) {
-  AddChildViewAt(std::make_unique<TabbedPaneTab>(this, title, tab_icon), index);
+TabbedPaneTab* TabbedPaneTabStrip::AddTabAt(const std::u16string& title,
+                                            const gfx::VectorIcon* tab_icon,
+                                            size_t index) {
+  auto* tab = AddChildViewAt(
+      std::make_unique<TabbedPaneTab>(this, title, tab_icon), index);
   PreferredSizeChanged();
+  return tab;
 }
 
 void TabbedPaneTabStrip::AnimationProgressed(const gfx::Animation* animation) {
@@ -657,6 +674,11 @@ size_t TabbedPaneTabStrip::GetTabCount() const {
 
 void TabbedPaneTabStrip::SetDefaultFlex(int flex) {
   static_cast<BoxLayout*>(GetLayoutManager())->SetDefaultFlex(flex);
+}
+
+void TabbedPaneTabStrip::SetTabSpacing(int spacing) {
+  static_cast<BoxLayout*>(GetLayoutManager())
+      ->set_between_child_spacing(spacing);
 }
 
 TabbedPane::Orientation TabbedPaneTabStrip::GetOrientation() const {

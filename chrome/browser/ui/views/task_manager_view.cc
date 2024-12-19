@@ -406,16 +406,25 @@ void TaskManagerView::TabSelectedAt(int index) {
   PerformFilter(kTabDefinitions[index].associated_category);
 }
 
-std::unique_ptr<views::TabbedPaneTabStrip> TaskManagerView::CreateTabbedPane() {
+std::unique_ptr<views::TabbedPaneTabStrip> TaskManagerView::CreateTabbedPane(
+    const gfx::Insets& tab_strip_margin,
+    const gfx::Insets& title_margin,
+    const gfx::Insets& icon_margin,
+    int spacing_between_tabs) {
   auto tabs = std::make_unique<views::TabbedPaneTabStrip>(
       views::TabbedPane::Orientation::kHorizontal,
       views::TabbedPane::TabStripStyle::kCompactWithIcon,
       /*tabbed_pane=*/nullptr);
   tabs->SetDefaultFlex(0);
   tabs->SetDrawTabDivider(false);
+  tabs->SetProperty(views::kMarginsKey, tab_strip_margin);
+  tabs->SetTabSpacing(spacing_between_tabs);
 
-  for (const auto& tab : kTabDefinitions) {
-    tabs->AddTab(l10n_util::GetStringUTF16(tab.title_id), tab.icon);
+  for (const auto& tab_definition : kTabDefinitions) {
+    auto* tab = tabs->AddTab(l10n_util::GetStringUTF16(tab_definition.title_id),
+                             tab_definition.icon);
+    tab->SetTitleMargin(title_margin);
+    tab->SetIconMargin(icon_margin);
   }
   tabs->set_listener(this);
 
@@ -437,7 +446,16 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
   const int separator_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
 
-  auto tabs = CreateTabbedPane();
+  const int tab_spacing =
+      provider->GetDistanceMetric(DISTANCE_TASK_MANAGER_TAB_SPACING);
+
+  auto tabs = CreateTabbedPane(
+      /*tab_strip_margin=*/gfx::Insets::TLBR(0, 10, 0, 0),
+      /*title_margin=*/
+      gfx::Insets::TLBR(0, views::TabbedPaneTab::kDefaultTitleLeftMargin,
+                        horizontal_spacing, 0),
+      /*icon_margin=*/gfx::Insets::TLBR(0, 0, horizontal_spacing, 0),
+      /*spacing_between_tabs=*/tab_spacing);
 
   // Empty Container, Search Bar, End Task Button, and Separator
   auto empty_view = std::make_unique<views::View>();

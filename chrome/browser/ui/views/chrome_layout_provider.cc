@@ -168,6 +168,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 4;
     case DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE:
       return 20;
+    case DISTANCE_TASK_MANAGER_TAB_SPACING:
+      return 16;
     case DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING:
     case DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN:
       return 4;

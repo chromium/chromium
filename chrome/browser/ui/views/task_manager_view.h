@@ -148,7 +148,11 @@ class TaskManagerView : public TableViewDelegate,
   void PerformFilter(DisplayCategory category);
 
   // Creates all corresponding subcomponents for the header.
-  std::unique_ptr<views::TabbedPaneTabStrip> CreateTabbedPane();
+  std::unique_ptr<views::TabbedPaneTabStrip> CreateTabbedPane(
+      const gfx::Insets& tab_strip_margin,
+      const gfx::Insets& title_margin,
+      const gfx::Insets& icon_margin,
+      int spacing_between_tabs);
   std::unique_ptr<views::View> CreateSearchBar(
       const ChromeLayoutProvider* provider);
   std::unique_ptr<views::MdTextButton> CreateEndProcessButton(
