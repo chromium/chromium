@@ -948,15 +948,6 @@ BASE_FEATURE(kFederatedService,
              "FederatedService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the federated service to schedule tasks. If disabled, federated
-// service works as a simple example receiver and storage.
-// This is useful when we want to disable the federated tasks only and allow the
-// customers to report examples, because e.g. the tensorflow graphs cost too
-// much resources while example storage is supposed to be cheap and safe.
-BASE_FEATURE(kFederatedServiceScheduleTasks,
-             "FederatedServiceScheduleTasks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the federated strings service.
 BASE_FEATURE(kFederatedStringsService,
              "FederatedStringsService",
@@ -3603,11 +3594,6 @@ bool IsFastPairSavedDevicesStrictOptInEnabled() {
 
 bool IsFederatedServiceEnabled() {
   return base::FeatureList::IsEnabled(kFederatedService);
-}
-
-bool IsFederatedServiceScheduleTasksEnabled() {
-  return IsFederatedServiceEnabled() &&
-         base::FeatureList::IsEnabled(kFederatedServiceScheduleTasks);
 }
 
 bool IsFederatedStringsServiceEnabled() {

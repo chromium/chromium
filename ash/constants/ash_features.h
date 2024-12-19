@@ -309,8 +309,6 @@ BASE_DECLARE_FEATURE(kFeatureManagementTimeOfDayScreenSaver);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementTimeOfDayWallpaper);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFederatedService);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kFederatedServiceScheduleTasks);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFederatedStringsService);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFederatedStringsServiceScheduleTasks);
@@ -1111,7 +1109,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesStrictOptInEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairDevicesBluetoothSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceScheduleTasksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedStringsServiceEnabled();
 
 // TODO revisit structure of feature flags w.r.t. gating task scheduling.
