@@ -780,6 +780,9 @@
     'chrome_intelligence_feature_protos': {
       'filepath': 'components/optimization_guide/proto/features/'
     },
+    'chrome_obsolete_system': {
+      'filepath': 'chrome/browser/obsolete_system/',
+    },
     'chrome_performance_manager': {
       'filepath': 'chrome/browser/performance_manager/'\
                   '|chrome/renderer/performance_manager/'\
@@ -2730,6 +2733,7 @@
     'chrome_intelligence': ['chrome-intelligence-reviews@chromium.org',
                             'chrome-intelligence-team-chromium-cl-reviews@google.com'],
     'chrome_intelligence_feature_protos': ['moqati-team+chromium-watchlist@google.com'],
+    'chrome_obsolete_system': ['chromium-watchlist+obsolete@island.io'],
     'chrome_performance_manager': ['performance-manager-reviews@chromium.org'],
     'chromecast': ['halliwell+watch@chromium.org',
                    'lcwu+watch@chromium.org'],
