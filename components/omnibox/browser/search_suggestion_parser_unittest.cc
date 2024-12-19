@@ -196,6 +196,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
                                  omnibox::NAV_INTENT_LOW,
                                  omnibox::NAV_INTENT_HIGH}) +
       R"(,
+        "google:suggesteventid": "-223372036854775808",
         "google:suggestrelevance": [607, 606, 605],
         "google:suggesttype": ["QUERY", "ENTITY", "NAVIGATION"],
         "google:verbatimrelevance": 851,
@@ -266,6 +267,9 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     ASSERT_EQ(10003, experiment_stats_v2.type_int());
     ASSERT_EQ("0:54", experiment_stats_v2.string_value());
   }
+  ASSERT_EQ(1U, results.gws_event_id_hashes.size());
+  int64_t expected = -223372036854775808;
+  ASSERT_EQ(expected, results.gws_event_id_hashes[0]);
 }
 
 // Tests that prerender hints can be parsed correctly.

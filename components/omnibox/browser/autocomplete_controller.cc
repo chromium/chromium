@@ -957,9 +957,9 @@ void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(
   // can stop logging this deprecated field.
   search_terms_args.searchbox_stats.set_experiment_stats(experiment_stats);
 
-  // Append the ExperimentStatsV2 to the searchbox stats parameter to be logged
-  // in searchbox_stats.proto's experiment_stats_v2 field.
   if (zero_suggest_provider_) {
+    // Append the ExperimentStatsV2 to the searchbox stats parameter to be
+    // logged in searchbox_stats.proto's `experiment_stats_v2` field.
     for (const auto& experiment_stat_v2 :
          zero_suggest_provider_->experiment_stats_v2s()) {
       // The string value consists of suggestion type/subtype pairs delimited
@@ -1805,6 +1805,19 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
       result->num_zero_prefix_suggestions_shown_in_session());
   searchbox_stats.set_zero_prefix_enabled(
       result->zero_prefix_enabled_in_session());
+
+  // Append the GWS event ID hashes to the searchbox stats parameter to be
+  // logged in searchbox_stats.proto's `gws_event_id_hash` field.
+  if (zero_suggest_provider_) {
+    for (const auto& gws_event_id_hash :
+         zero_suggest_provider_->gws_event_id_hashes()) {
+      result->add_gws_event_id_hash_in_session(gws_event_id_hash);
+    }
+  }
+  for (const auto& gws_event_id_hash :
+       result->gws_event_id_hashes_in_session()) {
+    searchbox_stats.add_gws_event_id_hash(gws_event_id_hash);
+  }
 
   // Go over all matches and set searchbox stats if the match supports it.
   for (size_t index = 0; index < result->size(); ++index) {

@@ -1115,9 +1115,14 @@ void AutocompleteResult::ClearMatches() {
 #endif
 }
 
+AutocompleteResult::SessionData::SessionData() = default;
+
+AutocompleteResult::SessionData::~SessionData() = default;
+
 void AutocompleteResult::SessionData::Reset() {
   zero_prefix_enabled_ = false;
   num_zero_prefix_suggestions_shown_ = 0u;
+  gws_event_id_hashes_.clear();
 }
 
 void AutocompleteResult::SwapMatchesWith(AutocompleteResult* other) {

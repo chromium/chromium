@@ -250,6 +250,18 @@ class AutocompleteResult {
     session_.num_zero_prefix_suggestions_shown_ = number;
   }
 
+  const std::vector<int64_t>& gws_event_id_hashes_in_session() const {
+    return session_.gws_event_id_hashes_;
+  }
+
+  void add_gws_event_id_hash_in_session(int64_t gws_event_id_hash) {
+    session_.gws_event_id_hashes_.push_back(gws_event_id_hash);
+  }
+
+  void clear_gws_event_id_hashes_in_session() {
+    session_.gws_event_id_hashes_.clear();
+  }
+
   // Clears this result set - i.e., `matches_` and `suggestion_groups_map_`.
   void ClearMatches();
 
@@ -369,6 +381,9 @@ class AutocompleteResult {
 #endif
 
   struct SessionData {
+    SessionData();
+    ~SessionData();
+
     void Reset();
 
     // Whether zero-prefix suggestions could have been shown in the session.
@@ -376,6 +391,9 @@ class AutocompleteResult {
 
     // The number of zero-prefix suggestions shown in the session.
     size_t num_zero_prefix_suggestions_shown_ = 0u;
+
+    // List of GWS event ID hashes accumulated during the course of the session.
+    std::vector<int64_t> gws_event_id_hashes_;
   };
 
   // Swaps this result set - i.e., `matches_` and `suggestion_groups_map_` -

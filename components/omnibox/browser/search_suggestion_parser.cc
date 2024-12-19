@@ -682,6 +682,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
       results->verbatim_relevance = *relevance;
     }
 
+    if (const std::string* gws_event_id_hash_str =
+            extras.FindString("google:suggesteventid")) {
+      int64_t gws_event_id_hash;
+      if (base::StringToInt64(*gws_event_id_hash_str, &gws_event_id_hash)) {
+        results->gws_event_id_hashes.push_back(gws_event_id_hash);
+      }
+    }
+
     // Check if the active suggest field trial (if any) has triggered either
     // for the default provider or keyword provider.
     std::optional<bool> field_trial_triggered =

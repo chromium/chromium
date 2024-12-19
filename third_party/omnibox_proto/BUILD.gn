@@ -24,6 +24,7 @@ _proto_files = [
 proto_library("omnibox_proto") {
   sources = _proto_files
   proto_in_dir = "."
+  generate_py_runtime = true
 }
 
 if (is_android) {
