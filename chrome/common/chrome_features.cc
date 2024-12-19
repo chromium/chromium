@@ -283,12 +283,6 @@ BASE_FEATURE(kShortcutsNotAppsRevealDesktop,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-// Enables notification permission revocation for origins that may send
-// disruptive notifications.
-BASE_FEATURE(kDisruptiveNotificationPermissionRevocation,
-             "DisruptiveNotificationPermissionRevocation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable WebUSB on extension service workers.
 BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",

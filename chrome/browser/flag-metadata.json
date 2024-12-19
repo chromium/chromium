@@ -2127,11 +2127,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "disruptive-notification-permission-revocation",
-    "owners": [ "engedy@chromium.org", "ravjit@chromium.org", "andypaicu@chromium.org", "hkamila@chromium.org", "elklm@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "document-picture-in-picture-animate-resize",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 150

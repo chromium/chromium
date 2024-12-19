@@ -579,9 +579,6 @@ extern const char kDisableProcessReuseDescription[];
 extern const char kDiscountConsentV2Name[];
 extern const char kDiscountConsentV2Description[];
 
-extern const char kDisruptiveNotificationPermissionRevocationName[];
-extern const char kDisruptiveNotificationPermissionRevocationDescription[];
-
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
 

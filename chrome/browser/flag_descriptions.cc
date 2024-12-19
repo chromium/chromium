@@ -989,13 +989,6 @@ const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[] =
 const char kDiscountConsentV2Name[] = "Discount Consent V2";
 const char kDiscountConsentV2Description[] = "Enables Discount Consent V2";
 
-const char kDisruptiveNotificationPermissionRevocationName[] =
-    "Disruptive notification permission revocation";
-const char kDisruptiveNotificationPermissionRevocationDescription[] =
-    "Enables revoking the notification permission on sites that send "
-    "disruptive notifications unless the permission was granted through a "
-    "prompt that informed the user about this possibility.";
-
 const char kDoubleBufferCompositingName[] = "Double buffered compositing";
 const char kDoubleBufferCompositingDescription[] =
     "Use double buffer for compositing (instead of triple-buffering). "

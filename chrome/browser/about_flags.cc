@@ -8378,11 +8378,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsCrOS,
      FEATURE_VALUE_TYPE(features::kRunVideoCaptureServiceInBrowserProcess)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-    {"disruptive-notification-permission-revocation",
-     flag_descriptions::kDisruptiveNotificationPermissionRevocationName,
-     flag_descriptions::kDisruptiveNotificationPermissionRevocationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kDisruptiveNotificationPermissionRevocation)},
     {"double-buffer-compositing",
      flag_descriptions::kDoubleBufferCompositingName,
      flag_descriptions::kDoubleBufferCompositingDescription, kOsCrOS,
