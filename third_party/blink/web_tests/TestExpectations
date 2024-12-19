@@ -2699,7 +2699,6 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 # ====== New tests from wpt-importer added here ======
 crbug.com/384980894 [ Mac13 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
 crbug.com/384980894 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-crbug.com/384972937 [ Mac13 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html [ Timeout ]
 crbug.com/384773801 [ Mac13 ] external/wpt/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Timeout ]
 crbug.com/384773801 [ Mac14 ] external/wpt/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Timeout ]
 crbug.com/384549263 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-constructor.html [ Timeout ]
@@ -3225,10 +3224,6 @@ crbug.com/338457111 [ Mac12 ] external/wpt/fs/FileSystemFileHandle-move.https.an
 crbug.com/338457111 [ Win11-arm64 ] external/wpt/fs/FileSystemFileHandle-move.https.any.worker.html [ Timeout ]
 crbug.com/338457112 [ Mac12 ] external/wpt/workers/Worker-terminate-forever-during-evaluation.html [ Timeout ]
 crbug.com/338457112 [ Win11-arm64 ] external/wpt/workers/Worker-terminate-forever-during-evaluation.html [ Timeout ]
-crbug.com/338513293 [ Linux ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
-crbug.com/338513293 [ Mac13 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
-crbug.com/338513293 [ Win10.20h2 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
-crbug.com/338513293 [ Win11-arm64 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
 crbug.com/338437452 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-type-only.html [ Timeout ]
 crbug.com/338350366 [ Win11-arm64 ] external/wpt/preload/delaying-onload-link-preload-after-discovery.html [ Timeout ]
 crbug.com/337115047 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/fence-report-event-sub-fencedframe.https.html [ Timeout ]
@@ -7902,7 +7897,6 @@ crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBi
 [ Debug Mac14 ] http/tests/webfont/font-display-intervention.html [ Failure Pass ]
 [ Debug Mac14 ] media/controls/closed-captions-dynamic-update.html [ Failure Pass ]
 [ Debug Mac14 ] scrollbars/scrollbar-iframe-click-does-not-blur-content.html [ Failure Pass ]
-[ Debug Mac14 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Failure Pass Timeout ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/disallowed-navigations-dangling-markup-urn.https.html [ Failure Pass ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?13-last [ Failure Pass ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?8-8 [ Failure ]
@@ -8894,3 +8888,6 @@ crbug.com/381387467 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/vali
 crbug.com/352331034 [ Debug Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-svg-only-for-print.html [ Failure Pass ]
 crbug.com/384875218 external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Pass Timeout ]
 crbug.com/384904807 [ Mac ] http/tests/inspector-protocol/tracing/image-decoding.js [ Failure Pass Timeout ]
+crbug.com/384863732 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html [ Timeout ]
+crbug.com/384863733 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
+
