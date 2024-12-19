@@ -5021,6 +5021,17 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.RefillTriggerReason" enum="RefillTriggerReason"
+    expires_after="2025-12-12">
+  <owner>jsobiech@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the reason for triggering a refill operation after a filling
+    operation. This metric is recording each time a refill is triggered.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.RendererFillSkipReason" enum="RendererFillSkipReason"
     expires_after="2025-12-12">
   <owner>jihadghanna@chromium.org</owner>

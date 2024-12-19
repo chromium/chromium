@@ -25,10 +25,14 @@ namespace autofill {
 class BrowserAutofillManager;
 
 // Denotes the reason for triggering a refill attempt.
+// These values are persisted to UMA logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep this enum up to date with the one
+// in tools/metrics/histograms/metadata/autofill/enums.xml.
 enum class RefillTriggerReason {
-  kFormChanged,
-  kSelectOptionsChanged,
-  kExpirationDateFormatted,
+  kFormChanged = 0,
+  kSelectOptionsChanged = 1,
+  kExpirationDateFormatted = 2,
+  kMaxValue = kExpirationDateFormatted
 };
 
 using AutofillAiFillingPayload = base::flat_map<FieldGlobalId, std::u16string>;

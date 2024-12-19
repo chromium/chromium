@@ -5064,6 +5064,12 @@ Called by update_autofill_enums.py.-->
   <int value="14" label="Server and heuristic type, autocomplete=off"/>
 </enum>
 
+<enum name="RefillTriggerReason">
+  <int value="0" label="Form Changed"/>
+  <int value="1" label="Select Options Changed"/>
+  <int value="2" label="Expiration Date Formatted"/>
+</enum>
+
 <enum name="RelativePosition">
   <int value="0" label="Ranked higher"/>
   <int value="1" label="Ranked lower"/>
