@@ -43,26 +43,11 @@ namespace sharing {
 
 // static
 std::unique_ptr<Advertisement> Advertisement::NewInstance(
-    std::vector<uint8_t> salt,
-    std::vector<uint8_t> encrypted_metadata_key,
+    base::span<const uint8_t, kSaltSize> salt,
+    base::span<const uint8_t, kMetadataEncryptionKeyHashByteSize>
+        encrypted_metadata_key,
     nearby_share::mojom::ShareTargetType device_type,
     std::optional<std::string> device_name) {
-  if (salt.size() != sharing::Advertisement::kSaltSize) {
-    LOG(ERROR) << "Failed to create advertisement because the salt did "
-                  "not match the expected length "
-               << salt.size();
-    return nullptr;
-  }
-
-  if (encrypted_metadata_key.size() !=
-      sharing::Advertisement::kMetadataEncryptionKeyHashByteSize) {
-    LOG(ERROR) << "Failed to create advertisement because the encrypted "
-                  "metadata key did "
-                  "not match the expected length "
-               << encrypted_metadata_key.size();
-    return nullptr;
-  }
-
   if (device_name && device_name->size() > UINT8_MAX) {
     LOG(ERROR) << "Failed to create advertisement because device name "
                   "was over UINT8_MAX: "
@@ -102,15 +87,18 @@ std::vector<uint8_t> Advertisement::ToEndpointInfo() {
 }
 
 // private
-Advertisement::Advertisement(int version,
-                             std::vector<uint8_t> salt,
-                             std::vector<uint8_t> encrypted_metadata_key,
-                             nearby_share::mojom::ShareTargetType device_type,
-                             std::optional<std::string> device_name)
+Advertisement::Advertisement(
+    int version,
+    base::span<const uint8_t, kSaltSize> salt,
+    base::span<const uint8_t, kMetadataEncryptionKeyHashByteSize>
+        encrypted_metadata_key,
+    nearby_share::mojom::ShareTargetType device_type,
+    std::optional<std::string> device_name)
     : version_(version),
-      salt_(std::move(salt)),
-      encrypted_metadata_key_(std::move(encrypted_metadata_key)),
       device_type_(device_type),
-      device_name_(std::move(device_name)) {}
+      device_name_(std::move(device_name)) {
+  base::span(salt_).copy_from(salt);
+  base::span(encrypted_metadata_key_).copy_from(encrypted_metadata_key);
+}
 
 }  // namespace sharing

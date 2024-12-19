@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 
+#include <array>
 #include <utility>
 
 #include "ash/public/cpp/new_window_delegate.h"
@@ -294,6 +295,15 @@ bool isVisibleForAdvertising(nearby_share::mojom::Visibility visibility) {
   return visibility == nearby_share::mojom::Visibility::kAllContacts ||
          visibility == nearby_share::mojom::Visibility::kSelectedContacts ||
          visibility == nearby_share::mojom::Visibility::kYourDevices;
+}
+
+NearbyShareEncryptedMetadataKey AdvertisementToKey(
+    const sharing::mojom::AdvertisementPtr& advertisement) {
+  return NearbyShareEncryptedMetadataKey(
+      base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>(
+          advertisement->salt),
+      base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>(
+          advertisement->encrypted_metadata_key));
 }
 
 }  // namespace
@@ -1584,16 +1594,22 @@ bool NearbySharingServiceImpl::IsVisibleInBackground(
 const std::optional<std::vector<uint8_t>>
 NearbySharingServiceImpl::CreateEndpointInfo(
     const std::optional<std::string>& device_name) {
-  std::vector<uint8_t> salt;
-  std::vector<uint8_t> encrypted_key;
+  std::array<uint8_t, sharing::Advertisement::kSaltSize> salt;
+  salt = GenerateRandomBytes<sharing::Advertisement::kSaltSize>();
+  std::array<uint8_t,
+             sharing::Advertisement::kMetadataEncryptionKeyHashByteSize>
+      encrypted_key;
+  encrypted_key = GenerateRandomBytes<
+      sharing::Advertisement::kMetadataEncryptionKeyHashByteSize>();
 
   nearby_share::mojom::Visibility visibility = settings_.GetVisibility();
   if (isVisibleForAdvertising(visibility)) {
     std::optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
         certificate_manager_->EncryptPrivateCertificateMetadataKey(visibility);
     if (encrypted_metadata_key) {
-      salt = encrypted_metadata_key->salt();
-      encrypted_key = encrypted_metadata_key->encrypted_key();
+      base::span(salt).copy_from(encrypted_metadata_key->salt());
+      base::span(encrypted_key)
+          .copy_from(encrypted_metadata_key->encrypted_key());
     } else {
       CD_LOG(WARNING, Feature::NS)
           << __func__ << ": Failed to encrypt private certificate metadata key "
@@ -1601,24 +1617,14 @@ NearbySharingServiceImpl::CreateEndpointInfo(
     }
   }
 
-  if (salt.empty() || encrypted_key.empty()) {
-    // Generate random metadata key.
-    salt = GenerateRandomBytes(sharing::Advertisement::kSaltSize);
-    encrypted_key = GenerateRandomBytes(
-        sharing::Advertisement::kMetadataEncryptionKeyHashByteSize);
-  }
-
   nearby_share::mojom::ShareTargetType device_type =
       nearby_share::mojom::ShareTargetType::kLaptop;
 
   std::unique_ptr<sharing::Advertisement> advertisement =
-      sharing::Advertisement::NewInstance(
-          std::move(salt), std::move(encrypted_key), device_type, device_name);
-  if (advertisement) {
-    return advertisement->ToEndpointInfo();
-  } else {
-    return std::nullopt;
-  }
+      sharing::Advertisement::NewInstance(salt, encrypted_key, device_type,
+                                          device_name);
+  return advertisement ? std::make_optional(advertisement->ToEndpointInfo())
+                       : std::nullopt;
 }
 
 void NearbySharingServiceImpl::GetBluetoothAdapter() {
@@ -1822,8 +1828,8 @@ void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
 
   // Once we get the advertisement, the first thing to do is decrypt the
   // certificate.
-  NearbyShareEncryptedMetadataKey encrypted_metadata_key(
-      advertisement->salt, advertisement->encrypted_metadata_key);
+  NearbyShareEncryptedMetadataKey encrypted_metadata_key =
+      AdvertisementToKey(advertisement);
   GetCertificateManager()->GetDecryptedPublicCertificate(
       std::move(encrypted_metadata_key),
       base::BindOnce(&NearbySharingServiceImpl::OnOutgoingDecryptedCertificate,
@@ -3324,8 +3330,8 @@ void NearbySharingServiceImpl::OnIncomingAdvertisementDecoded(
   transfer_profiler_->OnIncomingEndpointDecoded(endpoint_id,
                                                 IsInHighVisibility());
 
-  NearbyShareEncryptedMetadataKey encrypted_metadata_key(
-      advertisement->salt, advertisement->encrypted_metadata_key);
+  NearbyShareEncryptedMetadataKey encrypted_metadata_key =
+      AdvertisementToKey(advertisement);
   GetCertificateManager()->GetDecryptedPublicCertificate(
       std::move(encrypted_metadata_key),
       base::BindOnce(&NearbySharingServiceImpl::OnIncomingDecryptedCertificate,

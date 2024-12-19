@@ -8,7 +8,6 @@ source_set("certificates") {
   sources = [
     "common.cc",
     "common.h",
-    "constants.cc",
     "constants.h",
     "nearby_share_certificate_manager.cc",
     "nearby_share_certificate_manager.h",

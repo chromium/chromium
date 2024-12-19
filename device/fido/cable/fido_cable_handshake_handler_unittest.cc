@@ -125,15 +125,15 @@ constexpr char kIncorrectHandshakeKey[] = "INCORRECT_HANDSHAKE_KEY_12345678";
 // factors (i.e. authenticator session random, session pre key, and nonce) are
 // |kAuthenticatorSessionRandom|, |kTestSessionPreKey|, and |kTestNonce|,
 // respectively.
-std::vector<uint8_t> GetExpectedEncryptionKey(
+std::array<uint8_t, 32> GetExpectedEncryptionKey(
     base::span<const uint8_t> client_random_nonce) {
   std::vector<uint8_t> nonce_message =
       fido_parsing_utils::Materialize(kTestNonce);
   fido_parsing_utils::Append(&nonce_message, client_random_nonce);
   fido_parsing_utils::Append(&nonce_message, kAuthenticatorSessionRandom);
-  return crypto::HkdfSha256(kTestSessionPreKey,
-                            crypto::SHA256Hash(nonce_message),
-                            kCableDeviceEncryptionKeyInfo, 32);
+  return crypto::HkdfSha256<32>(kTestSessionPreKey,
+                                crypto::SHA256Hash(nonce_message),
+                                kCableDeviceEncryptionKeyInfo);
 }
 
 // Given a hello message and handshake key from the authenticator, construct

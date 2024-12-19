@@ -1005,9 +1005,9 @@ std::vector<uint8_t> EncryptWrappedPIN(
       0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
       0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
       0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
-  const std::vector<uint8_t> derived_key = crypto::HkdfSha256(
+  const std::array<uint8_t, 32> derived_key = crypto::HkdfSha256<32>(
       security_domain_secret, /*salt=*/base::span<const uint8_t>(),
-      kKeyPurposePinDataKey, 32);
+      kKeyPurposePinDataKey);
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(derived_key);
   uint8_t nonce[12];

@@ -4,6 +4,7 @@
 
 #include "components/enterprise/obfuscation/core/utils.h"
 
+#include <array>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -20,8 +21,11 @@
 namespace enterprise_obfuscation {
 
 HeaderData::HeaderData() = default;
-HeaderData::HeaderData(std::vector<uint8_t> key, std::vector<uint8_t> prefix)
-    : derived_key(std::move(key)), nonce_prefix(std::move(prefix)) {}
+HeaderData::HeaderData(base::span<const uint8_t, kKeySize> key,
+                       std::vector<uint8_t> prefix)
+    : nonce_prefix(std::move(prefix)) {
+  base::span(derived_key).copy_from(key);
+}
 
 HeaderData::HeaderData(const HeaderData& other) = default;
 HeaderData& HeaderData::operator=(const HeaderData& other) = default;
@@ -70,7 +74,7 @@ bool IsFileObfuscationEnabled() {
 }
 
 base::expected<std::vector<uint8_t>, Error> CreateHeader(
-    std::vector<uint8_t>* derived_key,
+    std::array<uint8_t, kKeySize>* derived_key,
     std::vector<uint8_t>* nonce_prefix) {
   if (!IsFileObfuscationEnabled()) {
     return base::unexpected(Error::kDisabled);
@@ -90,8 +94,8 @@ base::expected<std::vector<uint8_t>, Error> CreateHeader(
   header.insert(header.end(), salt.begin(), salt.end());
 
   // Generate file-specific key.
-  *derived_key = crypto::HkdfSha256(GetSymmetricKey(), salt,
-                                    base::span<uint8_t>(), kKeySize);
+  *derived_key = crypto::HkdfSha256<kKeySize>(GetSymmetricKey(), salt,
+                                              base::span<uint8_t>());
 
   // Generate nonce prefix.
   *nonce_prefix = crypto::RandBytesAsVector(kNoncePrefixSize);
@@ -170,8 +174,8 @@ base::expected<HeaderData, Error> GetHeaderData(
   const auto& [salt, nonce_prefix] = header.split_at<kSaltSize>();
 
   // Generate file-specific key.
-  std::vector<uint8_t> derived_key =
-      crypto::HkdfSha256(GetSymmetricKey(), salt, {}, kKeySize);
+  std::array<uint8_t, kKeySize> derived_key =
+      crypto::HkdfSha256<kKeySize>(GetSymmetricKey(), salt, {});
 
   return base::ok(
       HeaderData(std::move(derived_key), base::ToVector(nonce_prefix)));

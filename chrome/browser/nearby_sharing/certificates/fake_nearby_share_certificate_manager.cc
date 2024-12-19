@@ -77,7 +77,7 @@ std::optional<NearbySharePrivateCertificate>
 FakeNearbyShareCertificateManager::GetValidPrivateCertificate(
     nearby_share::mojom::Visibility visibility) const {
   auto cert = GetNearbyShareTestPrivateCertificate(visibility);
-  cert.next_salts_for_testing() = base::queue<std::vector<uint8_t>>();
+  cert.next_salts_for_testing() = {};
   cert.next_salts_for_testing().push(next_salt_);
   return cert;
 }
