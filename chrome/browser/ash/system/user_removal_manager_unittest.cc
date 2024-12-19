@@ -19,6 +19,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -38,9 +39,12 @@ class UserRemovalManagerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user1", "1"));
-    fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user2", "2"));
-    fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user3", "3"));
+    fake_user_manager()->AddUser(
+        AccountId::FromUserEmailGaiaId("user1", GaiaId("1")));
+    fake_user_manager()->AddUser(
+        AccountId::FromUserEmailGaiaId("user2", GaiaId("2")));
+    fake_user_manager()->AddUser(
+        AccountId::FromUserEmailGaiaId("user3", GaiaId("3")));
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;

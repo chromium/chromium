@@ -29,6 +29,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -48,7 +49,7 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        testing_profile_->GetProfileUserName(), ""));
+        testing_profile_->GetProfileUserName(), GaiaId()));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 

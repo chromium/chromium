@@ -79,6 +79,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -176,7 +177,8 @@ class FakeAuthInstance : public mojom::AuthInstance {
   void GetGoogleAccounts(GetGoogleAccountsCallback callback) override {
     std::vector<mojom::ArcAccountInfoPtr> accounts;
     accounts.emplace_back(mojom::ArcAccountInfo::New(
-        kFakeUserName, signin::GetTestGaiaIdForEmail(kFakeUserName)));
+        kFakeUserName,
+        signin::GetTestGaiaIdForEmail(kFakeUserName).ToString()));
     std::move(callback).Run(std::move(accounts));
   }
 
@@ -271,7 +273,7 @@ class AccountAppsAvailabilitySetter {
     run_loop.Run();
 
     for (auto account : result) {
-      if (account.key.id() == gaia_id) {
+      if (GaiaId(account.key.id()) == gaia_id) {
         account_apps_availability_->SetIsAccountAvailableInArc(account,
                                                                is_available);
         return true;
@@ -438,9 +440,9 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
         ash::ProfileHelper::Get()->GetUserByProfile(profile())));
   }
 
-  bool SetIsAccountAvailableInArc(std::string gaia, bool is_available) {
+  bool SetIsAccountAvailableInArc(const GaiaId& gaia_id, bool is_available) {
     DCHECK(arc_availability_setter_);
-    return arc_availability_setter_->SetIsAccountAvailableInArc(gaia,
+    return arc_availability_setter_->SetIsAccountAvailableInArc(gaia_id,
                                                                 is_available);
   }
 
@@ -868,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, FetchGoogleAccountsFromArc) {
   ASSERT_EQ(1u, arc_google_accounts().size());
   EXPECT_EQ(kFakeUserName, arc_google_accounts()[0]->email);
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kFakeUserName),
-            arc_google_accounts()[0]->gaia_id);
+            GaiaId(arc_google_accounts()[0]->gaia_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
@@ -891,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   ASSERT_EQ(1u, arc_google_accounts().size());
   EXPECT_EQ(kFakeUserName, arc_google_accounts()[0]->email);
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kFakeUserName),
-            arc_google_accounts()[0]->gaia_id);
+            GaiaId(arc_google_accounts()[0]->gaia_id));
 }
 
 IN_PROC_BROWSER_TEST_F(

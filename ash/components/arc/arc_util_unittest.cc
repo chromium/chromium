@@ -34,6 +34,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
@@ -330,16 +331,21 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   user_manager::TypedScopedUserManager fake_user_manager(
       std::make_unique<user_manager::FakeUserManager>(&local_state));
 
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddUser(
-      AccountId::FromUserEmailGaiaId("user1@test.com", "1234567890-1"))));
-  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddGuestUser(
-      AccountId::FromUserEmailGaiaId("user2@test.com", "1234567890-2"))));
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddPublicAccountUser(
-      AccountId::FromUserEmailGaiaId("user3@test.com", "1234567890-3"))));
-  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddKioskAppUser(
-      AccountId::FromUserEmailGaiaId("user4@test.com", "1234567890-4"))));
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddChildUser(
-      AccountId::FromUserEmailGaiaId("user5@test.com", "1234567890-5"))));
+  EXPECT_TRUE(IsArcAllowedForUser(
+      fake_user_manager->AddUser(AccountId::FromUserEmailGaiaId(
+          "user1@test.com", GaiaId("1234567890-1")))));
+  EXPECT_FALSE(IsArcAllowedForUser(
+      fake_user_manager->AddGuestUser(AccountId::FromUserEmailGaiaId(
+          "user2@test.com", GaiaId("1234567890-2")))));
+  EXPECT_TRUE(IsArcAllowedForUser(
+      fake_user_manager->AddPublicAccountUser(AccountId::FromUserEmailGaiaId(
+          "user3@test.com", GaiaId("1234567890-3")))));
+  EXPECT_FALSE(IsArcAllowedForUser(
+      fake_user_manager->AddKioskAppUser(AccountId::FromUserEmailGaiaId(
+          "user4@test.com", GaiaId("1234567890-4")))));
+  EXPECT_TRUE(IsArcAllowedForUser(
+      fake_user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
+          "user5@test.com", GaiaId("1234567890-5")))));
 
   // An ephemeral user is a logged in user but unknown to UserManager when
   // ephemeral policy is set.
@@ -349,7 +355,7 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
           /* include_list= */ std::vector<AccountId>{},
           /* exclude_list= */ std::vector<AccountId>{}));
   fake_user_manager->UserLoggedIn(
-      AccountId::FromUserEmailGaiaId("test@test.com", "9876543210"),
+      AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("9876543210")),
       "test@test.com-hash", false /* browser_restart */, false /* is_child */);
   const user_manager::User* ephemeral_user = fake_user_manager->GetActiveUser();
   ASSERT_TRUE(ephemeral_user);

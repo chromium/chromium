@@ -41,6 +41,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -201,7 +202,7 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
 
   // Shared account ID usable in each test.
   const AccountId account_id_ =
-      AccountId::FromUserEmailGaiaId("email", "123456");
+      AccountId::FromUserEmailGaiaId("email", GaiaId("123456"));
 
   // The uptime is read in the blocking thread pool and then processed on the
   // UI thread. This causes the UI thread to start processing the uptime when it

@@ -55,6 +55,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -223,7 +224,7 @@ class ArcPolicyBridgeTestBase {
     // Set up user profile for ReportCompliance() tests.
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, "1111111111"));
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId("1111111111")));
     fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
     fake_user_manager_->LoginUser(account_id);
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(

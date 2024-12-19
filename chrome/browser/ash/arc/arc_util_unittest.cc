@@ -47,6 +47,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -179,7 +180,7 @@ class ChromeArcUtilTest : public testing::Test {
 
   void LogIn() {
     const auto account_id = AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), kTestGaiaId);
+        profile()->GetProfileUserName(), GaiaId(kTestGaiaId));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
   }
@@ -204,7 +205,7 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile) {
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 
   // false for nullptr.
@@ -219,7 +220,7 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfileLegacy) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"", "--enable-arc"});
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 
   // false for nullptr.
@@ -234,7 +235,7 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_DisableArc) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({""});
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -243,10 +244,10 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_NonPrimaryProfile) {
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login2(
       GetFakeUserManager(),
-      AccountId::FromUserEmailGaiaId("user2@gmail.com", "0123456789"));
+      AccountId::FromUserEmailGaiaId("user2@gmail.com", GaiaId("0123456789")));
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -296,7 +297,7 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_UnmanagedDevice_Reven) {
   SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/true);
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
@@ -309,7 +310,7 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ManagedDeviceAccount_Reven) {
   SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/true);
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
       "example.com", "fake-device-id");
@@ -330,7 +331,7 @@ TEST_F(ChromeArcUtilTest, IsArcBlockedDueToIncompatibleFileSystem) {
   SetArcBlockedDueToIncompatibleFileSystemForTesting(true);
 
   const AccountId user_id(AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), kTestGaiaId));
+      profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   const AccountId robot_id(
       AccountId::FromUserEmail(profile()->GetProfileUserName()));
 
@@ -354,7 +355,7 @@ TEST_F(ChromeArcUtilTest, IsArcCompatibleFileSystemUsedForProfile) {
       {"", "--arc-availability=officially-supported"});
 
   const AccountId id(AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), kTestGaiaId));
+      profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   ScopedLogIn login(GetFakeUserManager(), id);
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile());
@@ -385,7 +386,7 @@ TEST_F(ChromeArcUtilTest, ArcPlayStoreEnabledForProfile) {
   // Ensure IsAllowedForProfile() true.
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   ASSERT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 
   // By default, Google Play Store is disabled.
@@ -420,7 +421,7 @@ TEST_F(ChromeArcUtilTest, ArcPlayStoreEnabledForProfile_Managed) {
   // Ensure IsAllowedForProfile() true.
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   ASSERT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 
   // By default it is not managed.
@@ -532,7 +533,7 @@ TEST_F(ChromeArcUtilTest, TermsOfServiceNegotiationNeededForAlreadyAccepted) {
   DisableDBusForProfileManager();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_TRUE(IsArcTermsOfServiceNegotiationNeeded(profile()));
   EXPECT_TRUE(IsArcTermsOfServiceOobeNegotiationNeeded());
   profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);
@@ -548,7 +549,7 @@ TEST_F(ChromeArcUtilTest, TermsOfServiceNegotiationNeededForManagedUser) {
   DisableDBusForProfileManager();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
 
   EXPECT_TRUE(IsArcTermsOfServiceNegotiationNeeded(profile()));
 
@@ -570,7 +571,7 @@ TEST_F(ChromeArcUtilTest,
   DisableDBusForProfileManager();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_FALSE(IsArcTermsOfServiceOobeNegotiationNeeded());
 }
 
@@ -581,7 +582,7 @@ TEST_F(ChromeArcUtilTest, TermsOfServiceOobeNegotiationNeededNoPlayStore) {
   DisableDBusForProfileManager();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_FALSE(IsArcTermsOfServiceOobeNegotiationNeeded());
 }
 
@@ -590,7 +591,7 @@ TEST_F(ChromeArcUtilTest, IsArcStatsReportingEnabled) {
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_FALSE(IsArcStatsReportingEnabled());
 }
 
@@ -709,7 +710,7 @@ TEST_P(ArcOobeTest, TermsOfServiceOobeNegotiationNeededForManagedUser) {
   DisableDBusForProfileManager();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
 
   CreateLoginDisplayHost();
   EXPECT_TRUE(IsArcOobeOptInActive());
@@ -762,7 +763,7 @@ TEST_P(ArcOobeTest, ShouldStartArcSilentlyForManagedProfile) {
   DisableDBusForProfileManager();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
 
   CreateLoginDisplayHost();
   EXPECT_TRUE(IsArcOobeOptInActive());
@@ -813,7 +814,7 @@ TEST_P(ArcOobeOptInActiveInTest, OobeOptInActive) {
   CreateLoginDisplayHost();
 
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), kTestGaiaId);
+      profile()->GetProfileUserName(), GaiaId(kTestGaiaId));
 
   // OOBE OptIn can only start if Onboarding is not completed yet.
   EXPECT_TRUE(IsArcOobeOptInActive());
@@ -878,7 +879,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(true, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
                                     true);
@@ -892,7 +893,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
                                     true);
@@ -906,7 +907,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
                                     true);
 
@@ -919,7 +920,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(true, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
                                     false);
@@ -933,7 +934,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
                                     false);
@@ -947,7 +948,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
                                     false);
 
@@ -961,7 +962,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(true, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcEnabled, std::make_unique<base::Value>(true));
@@ -979,7 +980,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(false, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcEnabled, std::make_unique<base::Value>(true));
@@ -997,7 +998,7 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
       prefs::kArcEnabled, std::make_unique<base::Value>(true));
   ScopedLogIn login(false, GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   SetProfileIsManagedForTesting(profile());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcEnabled, std::make_unique<base::Value>(true));

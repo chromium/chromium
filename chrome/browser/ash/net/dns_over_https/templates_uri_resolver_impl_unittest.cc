@@ -30,6 +30,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -277,13 +278,13 @@ class TemplatesUriResolverImplTest : public testing::Test {
 
   const user_manager::User* SetUpAffiliatedUser() {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        "test-user@testdomain.com", "1234567890"));
+        "test-user@testdomain.com", GaiaId("1234567890")));
     return fake_user_manager_->AddUserWithAffiliation(account_id, true);
   }
 
   const user_manager::User* SetUpUnaffiliatedUser() {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        "test-user@testdomain.com", "1234567890"));
+        "test-user@testdomain.com", GaiaId("1234567890")));
     return fake_user_manager_->AddUser(account_id);
   }
 

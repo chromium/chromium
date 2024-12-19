@@ -57,6 +57,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -138,7 +139,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
+        AccountId::FromUserEmailGaiaId(kFakeUserName, GaiaId(kFakeGaiaId)));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
@@ -184,7 +185,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     // TODO(nya): Consider removing all users from ProfileHelper in the
     // destructor of ash::FakeChromeUserManager.
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
+        AccountId::FromUserEmailGaiaId(kFakeUserName, GaiaId(kFakeGaiaId)));
     fake_user_manager_->RemoveUserFromList(account_id);
     // Since ArcServiceLauncher is (re-)set up with profile() in
     // SetUpOnMainThread() it is necessary to Shutdown() before the profile()

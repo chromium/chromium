@@ -27,6 +27,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -199,7 +200,7 @@ class SecureDnsManagerTest : public testing::Test {
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
     const AccountId account_id = AccountId::FromUserEmailGaiaId(
-        "test-user@testdomain.com", "1234567890");
+        "test-user@testdomain.com", GaiaId("1234567890"));
     user_ = fake_user_manager_->AddUser(account_id);
     ASSERT_TRUE(user_);
 
@@ -241,7 +242,7 @@ class SecureDnsManagerTest : public testing::Test {
 
     fake_user_manager_->OnUserProfileWillBeDestroyed(
         AccountId::FromUserEmailGaiaId("test-user@testdomain.com",
-                                       "1234567890"));
+                                       GaiaId("1234567890")));
     user_ = nullptr;
     fake_user_manager_.Reset();
   }

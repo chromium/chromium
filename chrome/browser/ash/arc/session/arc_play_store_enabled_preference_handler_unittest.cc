@@ -39,6 +39,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,7 +92,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
             profile_.get(), arc_session_manager_.get());
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), kTestGaiaId));
+        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
