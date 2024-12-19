@@ -1207,6 +1207,6 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
                        InvokeUi_MerchantTrustSubpage) {
-  set_baseline("6097145");
+  set_baseline("6105190");
   ShowAndVerifyUi();
 }

@@ -49,6 +49,8 @@ aggregate_vector_icons("components_vector_icons") {
     "celebration.icon",
     "certificate.icon",
     "certificate_off.icon",
+    "chat.icon",
+    "chat_spark.icon",
     "check_circle.icon",
     "close.icon",
     "close_chrome_refresh.icon",

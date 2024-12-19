@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/star_rating_view.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -106,8 +107,8 @@ PageInfoMerchantTrustContentView::CreateReviewsSummarySection() {
 
   auto* icon =
       container->AddChildView(std::make_unique<NonAccessibleImageView>());
-  // TODO(crbug.com/383361518): Add proper icon.
-  icon->SetImage(PageInfoViewFactory::GetMerchantTrustIcon());
+  icon->SetImage(
+      PageInfoViewFactory::GetImageModel(vector_icons::kChatSparkIcon));
 
   auto* labels_wrapper =
       container->AddChildView(PageInfoViewFactory::CreateLabelWrapper());
@@ -130,13 +131,12 @@ PageInfoMerchantTrustContentView::CreateReviewsSummarySection() {
 
 std::unique_ptr<RichHoverButton>
 PageInfoMerchantTrustContentView::CreateViewReviewsButton() {
-  // TODO(crbug.com/383361518): Add proper icons.
   auto merchant_trust_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(
           &PageInfoMerchantTrustContentView::NotifyViewReviewsPressed,
           base::Unretained(this)),
-      PageInfoViewFactory::GetMerchantTrustIcon(), std::u16string(),
-      std::u16string(), PageInfoViewFactory::GetLaunchIcon());
+      PageInfoViewFactory::GetImageModel(vector_icons::kChatIcon),
+      std::u16string(), std::u16string(), PageInfoViewFactory::GetLaunchIcon());
   merchant_trust_button->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
   merchant_trust_button->SetProperty(views::kElementIdentifierKey,
