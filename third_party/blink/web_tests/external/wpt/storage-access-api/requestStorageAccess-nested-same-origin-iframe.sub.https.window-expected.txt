@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] [nested-same-origin-frame] document.requestStorageAccess() should resolve in top-level frame or same-site iframe, otherwise reject with a NotAllowedError with no user gesture.
+  assert_unreached: document.requestStorageAccess() call should resolve in top-level frame or same-site iframe. Reached unreachable code
+[FAIL] [nested-same-origin-frame] document.requestStorageAccess() should resolve without permission grant or user gesture
+  promise_test: Unhandled rejection with value: object "NotAllowedError: requestStorageAccess not allowed"
+[FAIL] [nested-same-origin-frame] document.requestStorageAccess() should resolve with denied permission
+  promise_test: Unhandled rejection with value: object "NotAllowedError: requestStorageAccess not allowed"
+Harness: the test ran to completion.

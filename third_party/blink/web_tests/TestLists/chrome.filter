@@ -24,6 +24,10 @@ virtual/split-http-cache/external/wpt/signed-exchange/reporting/*
 # Translator API is implemented in the `//chrome` layer.
 external/wpt/ai/translator/*
 
+# Storage Access API is implemented in the `//chrome` layer.
+external/wpt/storage-access-api/*
+external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
+
 # Tests fail on headless shell so run them on Chrome
 external/wpt/client-hints/accept-ch/answers.sub.https.html
 external/wpt/client-hints/accept-ch/feature-policy-navigation/feature-policy.https.html
@@ -33,7 +37,6 @@ external/wpt/client-hints/accept-ch/no-feature-policy.sub.https.html
 external/wpt/client-hints/sandbox/iframe-csp-same-origin.https.html
 external/wpt/client-hints/sandbox/iframe-same-origin.https.html
 external/wpt/cookies/attributes/max-age.html
-external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
 external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html
 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html
 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html
@@ -46,7 +49,6 @@ external/wpt/notifications/shownotification.https.window.html
 external/wpt/permissions-policy/reporting/report-only-single-endpoint.https.sub.html
 external/wpt/service-workers/service-worker/controller-on-reload.https.html
 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html
-external/wpt/storage-access-api/storageAccess.testdriver.sub.html
 virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cache-storage.https.tentative.window.html?document
 virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cache.tentative.window.html
 virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cross-origin-isolated.tentative.window.html
