@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -25,6 +27,7 @@ import java.util.Arrays;
  * <p>In SecurePaymentConfirmation get assertion requests, a browser bound key can be used to
  * provide an additional signature over the client data.
  */
+@NullMarked
 public class BrowserBoundKey {
 
     /** The logging tag for this class. */
@@ -40,7 +43,7 @@ public class BrowserBoundKey {
     }
 
     @CalledByNative
-    public byte[] sign(byte[] clientData) {
+    public byte @Nullable [] sign(byte[] clientData) {
         Signature signature;
         try {
             signature = Signature.getInstance(SHA256_WITH_ECDSA);
@@ -72,7 +75,7 @@ public class BrowserBoundKey {
      */
     @CalledByNative
     @JniType("std::vector<uint8_t>")
-    public byte[] getPublicKeyAsCoseKey() {
+    public byte @Nullable [] getPublicKeyAsCoseKey() {
         if (!(mKeyPair.getPublic() instanceof ECPublicKey)) {
             return null;
         }
@@ -96,7 +99,8 @@ public class BrowserBoundKey {
      *
      * @param ecPublicKey An elliptic curve public key. The bit size must be 256.
      */
-    private static byte[] encodeCoseKeyWithEs256SignatureAlgorithm(ECPublicKey ecPublicKey) {
+    private static byte @Nullable [] encodeCoseKeyWithEs256SignatureAlgorithm(
+            ECPublicKey ecPublicKey) {
         try {
             final int coseKeySizeForEs256 = 77;
             ByteBuffer coseKeyBuffer = ByteBuffer.allocate(coseKeySizeForEs256);

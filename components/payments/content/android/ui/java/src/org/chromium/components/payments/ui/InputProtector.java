@@ -7,8 +7,10 @@ package org.chromium.components.payments.ui;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** An InputProtector is used in payments UIs to prevent potentially unintended user interaction. */
+@NullMarked
 public class InputProtector {
     // Amount of time in ms for which we ignore inputs. Note this is typically timed from when we
     // invoke the method to show the UI, so it may include time spent animating the sheet into view.

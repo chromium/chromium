@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Locale;
 
 /**
@@ -16,6 +18,7 @@ import java.util.Locale;
  * https://w3c.github.io/browser-payment-api/specs/paymentrequest.html#currencyamount
  */
 @JNINamespace("payments")
+@NullMarked
 public class CurrencyFormatter {
     /** Pointer to the native implementation. */
     private long mCurrencyFormatterAndroid;
