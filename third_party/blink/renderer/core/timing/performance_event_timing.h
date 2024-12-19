@@ -109,6 +109,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   bool HasKnownEndTime() const;
 
+  bool IsReadyForReporting() const;
+
   base::TimeTicks GetEndTime() const;
 
   void UpdateFallbackTime(base::TimeTicks fallback_time);

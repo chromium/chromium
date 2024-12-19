@@ -208,6 +208,15 @@ const char kHistogramEventQueueTimeToProcessingStartPerAnimationFrame[] =
 const char kHistogramEventCreationTimeToEventQueueTimePerAnimationFrame[] =
     "Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime";
 
+const char kHistogramProcessingEndToRenderStartTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.ProcessingEndToRenderStartTime";
+const char kHistogramRenderStartTimeToCommitTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.RenderStartTimeToCommitTime";
+const char kHistogramCommitToPresentationTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.CommitToPresentationTime";
+const char kHistogramProcessingEndToPresentationTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.ProcessingEndToPresentationTime";
+
 base::TimeTicks WindowPerformance::GetTimeOrigin(LocalDOMWindow* window) {
   DocumentLoader* loader = window->GetFrame()->Loader().GetDocumentLoader();
   return loader->GetTiming().ReferenceMonotonicTime();
@@ -859,17 +868,31 @@ void WindowPerformance::ReportEventTimings() {
     // Today: only a known EndTime is needed.
     // Soon: also enforce interactionID to know Known.
     if (!std::all_of(first, last,
-                     [](auto entry) { return entry->HasKnownEndTime(); })) {
+                     [](auto entry) { return entry->IsReadyForReporting(); })) {
       break;
     }
 
     auto* first_event_reporting_info =
         first->Get()->GetEventTimingReportingInfo();
-    auto first_event_creation_time = first_event_reporting_info->creation_time;
-    auto first_event_enqueued_to_main_thread_time =
+    auto* last_event_reporting_info =
+        std::prev(last)->Get()->GetEventTimingReportingInfo();
+    const auto& first_event_creation_time =
+        first_event_reporting_info->creation_time;
+    const auto& first_event_enqueued_to_main_thread_time =
         first_event_reporting_info->enqueued_to_main_thread_time;
-    auto first_event_processing_start =
+    const auto& first_event_processing_start =
         first_event_reporting_info->processing_start_time;
+    const auto& last_event_processing_end_time =
+        last_event_reporting_info->processing_end_time;
+    const auto& last_event_render_start_time =
+        last_event_reporting_info->render_start_time;
+    const auto& last_event_commit_finish_time =
+        last_event_reporting_info->commit_finish_time;
+    const auto& last_event_presentation_time =
+        last_event_reporting_info->presentation_time;
+    const auto& frame_end_time = !last_event_commit_finish_time.is_null()
+                                     ? last_event_commit_finish_time
+                                     : last_event_reporting_info->fallback_time;
 
     if (tracing_enabled) {
       auto scope = perfetto::Track::ThreadScoped(this);
@@ -895,19 +918,11 @@ void WindowPerformance::ReportEventTimings() {
       auto scope = perfetto::Track::ThreadScoped(this);
       auto flowid = perfetto::Flow::ProcessScoped(presentation_index);
 
-      auto* last_event_reporting_info =
-          std::prev(last)->Get()->GetEventTimingReportingInfo();
-      auto frame_end_time =
-          !last_event_reporting_info->commit_finish_time.is_null()
-              ? last_event_reporting_info->commit_finish_time
-              : last_event_reporting_info->fallback_time;
-
       TRACE_EVENT_END("devtools.timeline", scope, frame_end_time);
 
-      if (!last_event_reporting_info->presentation_time.is_null()) {
+      if (!last_event_presentation_time.is_null()) {
         TRACE_EVENT_INSTANT("devtools.timeline", "EventPresentation", scope,
-                            last_event_reporting_info->presentation_time,
-                            flowid);
+                            last_event_presentation_time, flowid);
       }
 
       if (auto first_entry_with_fallback =
@@ -926,6 +941,7 @@ void WindowPerformance::ReportEventTimings() {
     }
 
     // Report INP breakdown metrics into UMA per animation frame.
+    // Input delay breakdown.
     if (had_interaction_in_animation_frame) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           kHistogramEventCreationTimeToProcessingStartPerAnimationFrame,
@@ -940,6 +956,28 @@ void WindowPerformance::ReportEventTimings() {
           first_event_processing_start -
               first_event_enqueued_to_main_thread_time,
           base::Milliseconds(1), base::Seconds(60), 50);
+
+      // Presentation delay breakdown.
+      if (!last_event_presentation_time.is_null() &&
+          !last_event_commit_finish_time.is_null() &&
+          !last_event_render_start_time.is_null()) {
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            kHistogramProcessingEndToRenderStartTimePerAnimationFrame,
+            last_event_render_start_time - last_event_processing_end_time,
+            base::Milliseconds(1), base::Seconds(60), 50);
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            kHistogramRenderStartTimeToCommitTimePerAnimationFrame,
+            last_event_commit_finish_time - last_event_render_start_time,
+            base::Milliseconds(1), base::Seconds(60), 50);
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            kHistogramCommitToPresentationTimePerAnimationFrame,
+            last_event_presentation_time - last_event_commit_finish_time,
+            base::Milliseconds(1), base::Seconds(60), 50);
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            kHistogramProcessingEndToPresentationTimePerAnimationFrame,
+            last_event_presentation_time - last_event_processing_end_time,
+            base::Milliseconds(1), base::Seconds(60), 50);
+      }
     }
 
     // Remove reported EventData objects.
