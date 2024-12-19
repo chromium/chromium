@@ -5,23 +5,69 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
 
-class BnplManagerTest : public testing::Test {
+using testing::_;
+using testing::FieldsAre;
+using testing::Test;
+
+namespace {
+class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
  public:
+  PaymentsNetworkInterfaceMock()
+      : PaymentsNetworkInterface(nullptr, nullptr, nullptr) {}
+
+  MOCK_METHOD(
+      void,
+      GetBnplPaymentInstrumentForFetchingVcn,
+      (GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                               const BnplFetchVcnResponseDetails&)> callback));
+};
+}  // namespace
+
+class BnplManagerTest : public Test {
+ public:
+  const std::string kBillingCustomerNumber = "BILLING_CUSTOMER_NUMBER";
+  const std::string kRiskData = "RISK_DATA";
+  const std::string kInstrumentId = "INSTRUMENT_ID";
+  const std::string kContextToken = "CONTEXT_TOKEN";
+  const GURL kRedirectUrl = GURL("REDIRECT_URL");
+
   void SetUp() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
+
+    std::unique_ptr<PaymentsNetworkInterfaceMock> payments_network_interface =
+        std::make_unique<PaymentsNetworkInterfaceMock>();
+    payments_network_interface_ = payments_network_interface.get();
+
+    autofill_client_->GetPaymentsAutofillClient()
+        ->set_payments_network_interface(std::move(payments_network_interface));
+
     bnpl_manager_ = std::make_unique<BnplManager>(
         autofill_client_->GetPaymentsAutofillClient());
+  }
+
+  void PopulateManagerWithUserAndBnplIssuerDetails() {
+    bnpl_manager_->billing_customer_number_ = kBillingCustomerNumber;
+    bnpl_manager_->risk_data_ = kRiskData;
+    bnpl_manager_->instrument_id_ = kInstrumentId;
+    bnpl_manager_->context_token_ = kContextToken;
+    bnpl_manager_->redirect_url_ = kRedirectUrl;
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
   std::unique_ptr<BnplManager> bnpl_manager_;
+  raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
 };
 
 // Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
@@ -131,6 +177,21 @@ TEST_F(BnplManagerTest, AmountParser_OverflowValue) {
   EXPECT_EQ(
       bnpl_manager_->MaybeParseAmountToMonetaryMicroUnits("$19000000000000.00"),
       std::nullopt);
+}
+
+// Tests that FetchVcnDetails calls the payments network interface with the
+// request details filled out correctly.
+TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
+  PopulateManagerWithUserAndBnplIssuerDetails();
+
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingVcn(
+                  /*request_details=*/
+                  FieldsAre(kBillingCustomerNumber, kRiskData, kInstrumentId,
+                            kContextToken, kRedirectUrl),
+                  /*callback=*/_));
+
+  bnpl_manager_->FetchVcnDetails();
 }
 
 }  // namespace autofill::payments

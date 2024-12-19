@@ -214,4 +214,11 @@ void PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument(
           std::move(callback)));
 }
 
+void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingVcn(
+    GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                            const BnplFetchVcnResponseDetails&)> callback) {
+  // TODO(crbug.com/378518641): Implement GetBnplPaymentInstrument() in payments
+  // network interface.
+}
 }  // namespace autofill::payments

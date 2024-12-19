@@ -12,6 +12,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill::payments {
@@ -51,6 +53,28 @@ std::optional<uint64_t> BnplManager::MaybeParseAmountToMonetaryMicroUnits(
     return std::nullopt;
   }
   return micro_amount;
+}
+
+void BnplManager::FetchVcnDetails() {
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
+  request_details.billing_customer_number = billing_customer_number_;
+  request_details.risk_data = risk_data_;
+  request_details.instrument_id = instrument_id_;
+  request_details.context_token = context_token_;
+  request_details.redirect_url = redirect_url_;
+
+  payments_autofill_client_->GetPaymentsNetworkInterface()
+      ->GetBnplPaymentInstrumentForFetchingVcn(
+          std::move(request_details),
+          base::BindOnce(&BnplManager::OnVcnDetailsFetched,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void BnplManager::OnVcnDetailsFetched(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    const BnplFetchVcnResponseDetails& response_details) {
+  // TODO(crbug.com/378518604): Implement OnVcnDetailsFetched() to fill the form
+  // from the VCN details that were fetched.
 }
 
 }  // namespace autofill::payments

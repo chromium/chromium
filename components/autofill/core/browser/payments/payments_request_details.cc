@@ -212,4 +212,33 @@ GetDetailsForCreateBnplPaymentInstrumentRequestDetails::operator=(
 GetDetailsForCreateBnplPaymentInstrumentRequestDetails::
     ~GetDetailsForCreateBnplPaymentInstrumentRequestDetails() = default;
 
+GetBnplPaymentInstrumentForFetchingVcnRequestDetails::
+    GetBnplPaymentInstrumentForFetchingVcnRequestDetails() = default;
+GetBnplPaymentInstrumentForFetchingVcnRequestDetails::
+    GetBnplPaymentInstrumentForFetchingVcnRequestDetails(
+        const GetBnplPaymentInstrumentForFetchingVcnRequestDetails&) = default;
+GetBnplPaymentInstrumentForFetchingVcnRequestDetails&
+GetBnplPaymentInstrumentForFetchingVcnRequestDetails::operator=(
+    const GetBnplPaymentInstrumentForFetchingVcnRequestDetails& other) =
+    default;
+GetBnplPaymentInstrumentForFetchingVcnRequestDetails::
+    GetBnplPaymentInstrumentForFetchingVcnRequestDetails(
+        GetBnplPaymentInstrumentForFetchingVcnRequestDetails&&) = default;
+GetBnplPaymentInstrumentForFetchingVcnRequestDetails&
+GetBnplPaymentInstrumentForFetchingVcnRequestDetails::operator=(
+    GetBnplPaymentInstrumentForFetchingVcnRequestDetails&&) = default;
+GetBnplPaymentInstrumentForFetchingVcnRequestDetails::
+    ~GetBnplPaymentInstrumentForFetchingVcnRequestDetails() = default;
+
+BnplFetchVcnResponseDetails::BnplFetchVcnResponseDetails() = default;
+BnplFetchVcnResponseDetails::BnplFetchVcnResponseDetails(
+    const BnplFetchVcnResponseDetails& other) = default;
+BnplFetchVcnResponseDetails::BnplFetchVcnResponseDetails(
+    BnplFetchVcnResponseDetails&&) = default;
+BnplFetchVcnResponseDetails& BnplFetchVcnResponseDetails::operator=(
+    const BnplFetchVcnResponseDetails& other) = default;
+BnplFetchVcnResponseDetails& BnplFetchVcnResponseDetails::operator=(
+    BnplFetchVcnResponseDetails&&) = default;
+BnplFetchVcnResponseDetails::~BnplFetchVcnResponseDetails() = default;
+
 }  // namespace autofill::payments
