@@ -451,13 +451,15 @@ void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 }
 
 void HTMLOptionElement::UpdateLabel() {
-  // For appearance:base-select <select> we also need to render all children. We
-  // only check UsesMenuList and not computed style because we don't want to
-  // change DOM content based on computed style and because appearance:auto/none
-  // don't render the UA shadowroot when UsesMenuList is true.
+  // For appearance:base-select <select> without a label attribute we also
+  // need to render all children. We only check UsesMenuList and not computed
+  // style because we don't want to change DOM content based on computed style
+  // and because appearance:auto/none don't render the UA shadowroot when
+  // UsesMenuList is true.
   if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     if (auto* select = OwnerSelectElement()) {
-      if (select->UsesMenuList()) {
+      if (select->UsesMenuList() &&
+          FastGetAttribute(html_names::kLabelAttr).empty()) {
         return;
       }
     }
