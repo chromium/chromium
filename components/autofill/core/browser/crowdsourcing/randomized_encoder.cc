@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <string_view>
 
@@ -28,27 +29,24 @@ namespace autofill {
 
 namespace {
 
-const RandomizedEncoder::EncodingInfo kEncodingInfo[] = {
-    // One bit per byte. These all require 8 bytes to encode and have 8-bit
-    // strides, starting from a different initial bit offset.
-    {AutofillRandomizedValue_EncodingType_BIT_0, 8, 0, 8},
-    {AutofillRandomizedValue_EncodingType_BIT_1, 8, 1, 8},
-    {AutofillRandomizedValue_EncodingType_BIT_2, 8, 2, 8},
-    {AutofillRandomizedValue_EncodingType_BIT_3, 8, 3, 8},
-    {AutofillRandomizedValue_EncodingType_BIT_4, 8, 4, 8},
-    {AutofillRandomizedValue_EncodingType_BIT_5, 8, 5, 8},
-    {AutofillRandomizedValue_EncodingType_BIT_6, 8, 6, 8},
-    {AutofillRandomizedValue_EncodingType_BIT_7, 8, 7, 8},
-
-    // Four bits per byte. These require 32 bytes to encode and have 2-bit
-    // strides/
-    {AutofillRandomizedValue_EncodingType_EVEN_BITS, 32, 0, 2},
-    {AutofillRandomizedValue_EncodingType_ODD_BITS, 32, 1, 2},
-
-    // All bits per byte. This require 64 bytes to encode and has a 1-bit
-    // stride.
-    {AutofillRandomizedValue_EncodingType_ALL_BITS, 64, 0, 1},
-};
+constexpr auto kEncodingInfo = std::to_array<RandomizedEncoder::EncodingInfo>(
+    {// One bit per byte. These all require 8 bytes to encode and have 8-bit
+     // strides, starting from a different initial bit offset.
+     {AutofillRandomizedValue_EncodingType_BIT_0, 8, 0, 8},
+     {AutofillRandomizedValue_EncodingType_BIT_1, 8, 1, 8},
+     {AutofillRandomizedValue_EncodingType_BIT_2, 8, 2, 8},
+     {AutofillRandomizedValue_EncodingType_BIT_3, 8, 3, 8},
+     {AutofillRandomizedValue_EncodingType_BIT_4, 8, 4, 8},
+     {AutofillRandomizedValue_EncodingType_BIT_5, 8, 5, 8},
+     {AutofillRandomizedValue_EncodingType_BIT_6, 8, 6, 8},
+     {AutofillRandomizedValue_EncodingType_BIT_7, 8, 7, 8},
+     // Four bits per byte. These require 32 bytes to encode and have 2-bit
+     // strides/
+     {AutofillRandomizedValue_EncodingType_EVEN_BITS, 32, 0, 2},
+     {AutofillRandomizedValue_EncodingType_ODD_BITS, 32, 1, 2},
+     // All bits per byte. This require 64 bytes to encode and has a 1-bit
+     // stride.
+     {AutofillRandomizedValue_EncodingType_ALL_BITS, 64, 0, 1}});
 
 // Size related constants.
 constexpr size_t kBitsPerByte = 8;
@@ -56,24 +54,18 @@ constexpr size_t kEncodedChunkLengthInBytes = 64;
 constexpr size_t kMaxChunks = 8;
 
 // Find the EncodingInfo struct for |encoding_type|, else return nullptr.
-const RandomizedEncoder::EncodingInfo* GetEncodingInfo(
+constexpr const RandomizedEncoder::EncodingInfo* GetEncodingInfo(
     AutofillRandomizedValue_EncodingType encoding_type) {
-  DCHECK(std::is_sorted(std::begin(kEncodingInfo), std::end(kEncodingInfo),
-                        [](const RandomizedEncoder::EncodingInfo& lhs,
-                           const RandomizedEncoder::EncodingInfo& rhs) {
-                          return lhs.encoding_type < rhs.encoding_type;
-                        }));
+  static_assert(
+      std::ranges::is_sorted(kEncodingInfo, std::less<>{},
+                             &RandomizedEncoder::EncodingInfo::encoding_type));
 
-  const auto* encode_info = std::lower_bound(
-      std::begin(kEncodingInfo), std::end(kEncodingInfo), encoding_type,
-      [](const RandomizedEncoder::EncodingInfo& lhs,
-         AutofillRandomizedValue_EncodingType encoding_type) {
-        return lhs.encoding_type < encoding_type;
-      });
-
-  return (encode_info != std::end(kEncodingInfo) &&
+  const auto encode_info =
+      std::ranges::lower_bound(kEncodingInfo, encoding_type, std::less<>{},
+                               &RandomizedEncoder::EncodingInfo::encoding_type);
+  return (encode_info != kEncodingInfo.end() &&
           encode_info->encoding_type == encoding_type)
-             ? encode_info
+             ? &*encode_info
              : nullptr;
 }
 
@@ -155,34 +147,6 @@ std::string GetEncodingSeed(PrefService* pref_service) {
 }
 
 }  // namespace
-
-const char RandomizedEncoder::FORM_ID[] = "form-id";
-const char RandomizedEncoder::FORM_NAME[] = "form-name";
-const char RandomizedEncoder::FORM_ACTION[] = "form-action";
-const char RandomizedEncoder::FORM_URL[] = "form-url";
-const char RandomizedEncoder::FORM_CSS_CLASS[] = "form-css-class";
-const char RandomizedEncoder::FORM_BUTTON_TITLES[] = "button-titles";
-
-const char RandomizedEncoder::FIELD_ID[] = "field-id";
-const char RandomizedEncoder::FIELD_NAME[] = "field-name";
-const char RandomizedEncoder::FIELD_CONTROL_TYPE[] = "field-control-type";
-const char RandomizedEncoder::FIELD_LABEL[] = "field-label";
-const char RandomizedEncoder::FIELD_ARIA_LABEL[] = "field-aria-label";
-const char RandomizedEncoder::FIELD_ARIA_DESCRIPTION[] =
-    "field-aria-description";
-const char RandomizedEncoder::FIELD_CSS_CLASS[] = "field-css-classes";
-const char RandomizedEncoder::FIELD_PLACEHOLDER[] = "field-placeholder";
-const char RandomizedEncoder::FIELD_INITIAL_VALUE_HASH[] =
-    "field-initial-hash-value";
-const char RandomizedEncoder::FIELD_AUTOCOMPLETE[] = "field-autocomplete";
-
-// Copy of components/unified_consent/pref_names.cc
-// We could not use the constant from components/unified_constants because of a
-// circular dependency.
-// TODO(crbug.com/40570965): resolve circular dependency and remove
-// hardcoded constant
-const char RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled[] =
-    "url_keyed_anonymized_data_collection.enabled";
 
 // static
 std::unique_ptr<RandomizedEncoder> RandomizedEncoder::Create(
@@ -314,7 +278,7 @@ std::string RandomizedEncoder::GetNoise(FormSignature form_signature,
 
 int RandomizedEncoder::GetChunkCount(std::string_view data_value,
                                      std::string_view data_type) const {
-  if (data_type == RandomizedEncoder::FORM_URL) {
+  if (data_type == RandomizedEncoder::kFormUrl) {
     // ceil(data_value.length / kEncodedChunkLengthInBytes).
     int chunks = (data_value.length() + kEncodedChunkLengthInBytes - 1) /
                  kEncodedChunkLengthInBytes;

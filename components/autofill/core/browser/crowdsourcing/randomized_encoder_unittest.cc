@@ -116,7 +116,7 @@ TEST(RandomizedEncoderTest, CorrectUrlConsentFlag) {
 TEST_P(RandomizedEncoderTest, Encode) {
   const FormSignature form_signature(0x1234567812345678);
   const FieldSignature field_signature(0xCAFEBABE);
-  const std::string data_type = TestRandomizedEncoder::FORM_CSS_CLASS;
+  const std::string data_type = TestRandomizedEncoder::kFormCssClass;
   const EncodeParams& params = GetParam();
   const std::string value("This is some text for testing purposes.");
 
@@ -146,8 +146,8 @@ TEST_P(RandomizedEncoderTest, Encode) {
 }
 
 TEST_P(RandomizedEncoderTest, EncodeLarge) {
-  const std::string data_types[] = {TestRandomizedEncoder::FORM_NAME,
-                                    TestRandomizedEncoder::FORM_URL};
+  const std::string data_types[] = {TestRandomizedEncoder::kFormName,
+                                    TestRandomizedEncoder::kFormUrl};
   for (std::string data_type : data_types) {
     const FormSignature form_signature(0x8765432187654321);
     const FieldSignature field_signature(0xDEADBEEF);
@@ -164,13 +164,13 @@ TEST_P(RandomizedEncoderTest, EncodeLarge) {
     size_t chunk_count = encoder.GetChunkCount(value, data_type);
     size_t padded_input_length = chunk_count * kEncodedChunkLengthInBytes;
 
-    EXPECT_EQ(data_type == TestRandomizedEncoder::FORM_URL, chunk_count > 1);
+    EXPECT_EQ(data_type == TestRandomizedEncoder::kFormUrl, chunk_count > 1);
 
     // Encode the output string.
     std::string actual_result =
         encoder.Encode(form_signature, field_signature, data_type, value);
 
-    if (data_type == TestRandomizedEncoder::FORM_URL) {
+    if (data_type == TestRandomizedEncoder::kFormUrl) {
       EXPECT_LE(value.length(), actual_result.length() * params.bit_stride);
     } else {
       EXPECT_GT(value.length(), actual_result.length() * params.bit_stride);
@@ -283,7 +283,7 @@ TEST(RandomizedEncoderTest, GetChunkCount) {
   TestRandomizedEncoder encoder(
       "secret", AutofillRandomizedValue_EncodingType_ALL_BITS, true);
 
-  std::string_view url_type = TestRandomizedEncoder::FORM_URL;
+  std::string_view url_type = TestRandomizedEncoder::kFormUrl;
   EXPECT_EQ(encoder.GetChunkCount("", url_type), 0);
   EXPECT_EQ(encoder.GetChunkCount("1", url_type), 1);
   EXPECT_EQ(encoder.GetChunkCount(std::string(33, '-'), url_type), 1);
@@ -293,7 +293,7 @@ TEST(RandomizedEncoderTest, GetChunkCount) {
   EXPECT_EQ(encoder.GetChunkCount(std::string(513, '-'), url_type), 8);
   EXPECT_EQ(encoder.GetChunkCount(std::string(1000, '-'), url_type), 8);
 
-  std::string_view name_type = TestRandomizedEncoder::FORM_NAME;
+  std::string_view name_type = TestRandomizedEncoder::kFormName;
   EXPECT_EQ(encoder.GetChunkCount("", name_type), 1);
   EXPECT_EQ(encoder.GetChunkCount("1", name_type), 1);
   EXPECT_EQ(encoder.GetChunkCount(std::string(33, '-'), name_type), 1);
@@ -311,7 +311,7 @@ TEST_P(RandomizedDecoderTest, Decode) {
   for (std::string_view common_prefix : prefixes) {
     static const FormSignature form_signature(0x8765432187654321);
     static const FieldSignature field_signature(0xDEADBEEF);
-    static const std::string data_type = TestRandomizedEncoder::FORM_URL;
+    static const std::string data_type = TestRandomizedEncoder::kFormUrl;
 
     const size_t num_votes = GetParam().num_votes;
     const double lower_bound = GetParam().lower_bound;

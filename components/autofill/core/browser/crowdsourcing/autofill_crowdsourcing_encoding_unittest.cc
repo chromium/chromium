@@ -1166,7 +1166,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   } else {
     EXPECT_EQ(upload.randomized_form_metadata().id().encoded_bits(),
               encoder.EncodeForTesting(form_signature, FieldSignature(),
-                                       RandomizedEncoder::FORM_ID,
+                                       RandomizedEncoder::kFormId,
                                        form_structure.id_attribute()));
   }
 
@@ -1175,14 +1175,14 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   } else {
     EXPECT_EQ(upload.randomized_form_metadata().name().encoded_bits(),
               encoder.EncodeForTesting(form_signature, FieldSignature(),
-                                       RandomizedEncoder::FORM_NAME,
+                                       RandomizedEncoder::kFormName,
                                        form_structure.name_attribute()));
   }
 
   auto full_url = form_structure.full_source_url().spec();
   EXPECT_EQ(upload.randomized_form_metadata().url().encoded_bits(),
             encoder.Encode(form_signature, FieldSignature(),
-                           RandomizedEncoder::FORM_URL, full_url));
+                           RandomizedEncoder::kFormUrl, full_url));
   ASSERT_EQ(static_cast<size_t>(upload.field_data_size()),
             std::size(kFieldMetadata));
 
@@ -1192,7 +1192,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
                 .title()
                 .encoded_bits(),
             encoder.EncodeForTesting(form_signature, FieldSignature(),
-                                     RandomizedEncoder::FORM_BUTTON_TITLES,
+                                     RandomizedEncoder::kFormButtonTitles,
                                      form.button_titles()[0].first));
   EXPECT_EQ(ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE,
             upload.randomized_form_metadata().button_title()[0].type());
@@ -1206,7 +1206,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     } else {
       EXPECT_EQ(metadata.id().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
-                                         RandomizedEncoder::FIELD_ID,
+                                         RandomizedEncoder::kFieldId,
                                          field.id_attribute()));
     }
     if (field.name().empty()) {
@@ -1214,20 +1214,20 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     } else {
       EXPECT_EQ(metadata.name().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
-                                         RandomizedEncoder::FIELD_NAME,
+                                         RandomizedEncoder::kFieldName,
                                          field.name_attribute()));
     }
     EXPECT_EQ(
         metadata.type().encoded_bits(),
         encoder.Encode(form_signature, field_signature,
-                       RandomizedEncoder::FIELD_CONTROL_TYPE,
+                       RandomizedEncoder::kFieldControlType,
                        FormControlTypeToString(field.form_control_type())));
     if (field.label().empty()) {
       EXPECT_FALSE(metadata.has_label());
     } else {
       EXPECT_EQ(metadata.label().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
-                                         RandomizedEncoder::FIELD_LABEL,
+                                         RandomizedEncoder::kFieldLabel,
                                          field.label()));
     }
     if (field.aria_label().empty()) {
@@ -1235,7 +1235,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     } else {
       EXPECT_EQ(metadata.aria_label().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
-                                         RandomizedEncoder::FIELD_ARIA_LABEL,
+                                         RandomizedEncoder::kFieldAriaLabel,
                                          field.aria_label()));
     }
     if (field.aria_description().empty()) {
@@ -1244,7 +1244,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
       EXPECT_EQ(
           metadata.aria_description().encoded_bits(),
           encoder.EncodeForTesting(form_signature, field_signature,
-                                   RandomizedEncoder::FIELD_ARIA_DESCRIPTION,
+                                   RandomizedEncoder::kFieldAriaDescription,
                                    field.aria_description()));
     }
     if (field.css_classes().empty()) {
@@ -1252,7 +1252,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     } else {
       EXPECT_EQ(metadata.css_class().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
-                                         RandomizedEncoder::FIELD_CSS_CLASS,
+                                         RandomizedEncoder::kFieldCssClasses,
                                          field.css_classes()));
     }
     if (field.placeholder().empty()) {
@@ -1260,7 +1260,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     } else {
       EXPECT_EQ(metadata.placeholder().encoded_bits(),
                 encoder.EncodeForTesting(form_signature, field_signature,
-                                         RandomizedEncoder::FIELD_PLACEHOLDER,
+                                         RandomizedEncoder::kFieldPlaceholder,
                                          field.placeholder()));
     }
     if (field.autocomplete_attribute().empty()) {
@@ -1269,7 +1269,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
       EXPECT_EQ(metadata.autocomplete().encoded_bits(),
                 encoder.EncodeForTesting(
                     form_signature, field_signature,
-                    RandomizedEncoder::FIELD_AUTOCOMPLETE,
+                    RandomizedEncoder::kFieldAutocomplete,
                     base::UTF8ToUTF16(field.autocomplete_attribute())));
     }
   }
