@@ -116,8 +116,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.Cold.TimeToFirstContentfulPaint3" units="ms"
-    expires_after="2025-01-26">
+<histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint3"
+    units="ms" expires_after="2025-07-26">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <summary>

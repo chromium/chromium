@@ -167,7 +167,8 @@ public class StartupLoadingMetricsTest {
         Assert.assertTrue(coldStartFirstCommit4Samples < 2);
 
         int coldStartFirstContentfulPaintSamples =
-                RecordHistogram.getHistogramTotalCountForTesting(FIRST_CONTENTFUL_PAINT_HISTOGRAM3);
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        FIRST_CONTENTFUL_PAINT_HISTOGRAM3 + histogramSuffix);
         Assert.assertTrue(coldStartFirstContentfulPaintSamples < 2);
 
         int firstCommitSamples =

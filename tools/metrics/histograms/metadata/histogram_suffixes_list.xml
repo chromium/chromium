@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
       label="Chrome starts up with intent to ChromeTabbedActivity"/>
   <suffix name="WebApk" label="Chrome starts up with intent to WebApkActivity"/>
   <affected-histogram name="Startup.Android.Cold.TimeToFirstContentfulPaint"/>
+  <affected-histogram name="Startup.Android.Cold.TimeToFirstContentfulPaint3"/>
   <affected-histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit"/>
 </histogram_suffixes>
 
