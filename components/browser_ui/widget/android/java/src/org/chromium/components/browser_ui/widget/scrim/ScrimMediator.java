@@ -83,7 +83,6 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         }
         mModel = model;
         mIsHidingOrHidden = false;
-        int fadeDurationMs = getAnimationDuration(animDurationMs);
 
         // Pass the current scrim color to the SystemUiScrimDelegate.
         if (mSystemUiScrimDelegate != null
@@ -98,7 +97,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
         if (mOverlayFadeInAnimator == null) {
             mOverlayFadeInAnimator = ValueAnimator.ofFloat(0, 1);
-            mOverlayFadeInAnimator.setDuration(fadeDurationMs);
+
             mOverlayFadeInAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
             mOverlayFadeInAnimator.addListener(
                     new CancelAwareAnimatorListener() {
@@ -118,6 +117,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
                         setAlphaInternal((float) animation.getAnimatedValue());
                     });
         }
+        mOverlayFadeInAnimator.setDuration(getAnimationDuration(animDurationMs));
 
         if (model.getAllSetProperties().contains(ScrimProperties.GESTURE_DETECTOR)) {
             mIsNewEventFilter = model.get(ScrimProperties.GESTURE_DETECTOR) != null;
@@ -151,11 +151,8 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             return;
         }
 
-        int fadeDurationMs = getAnimationDuration(animDurationMs);
-
         if (mOverlayFadeOutAnimator == null) {
             mOverlayFadeOutAnimator = ValueAnimator.ofFloat(1, 0);
-            mOverlayFadeOutAnimator.setDuration(fadeDurationMs);
             mOverlayFadeOutAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
             mOverlayFadeOutAnimator.addListener(
                     new CancelAwareAnimatorListener() {
@@ -187,6 +184,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
                         }
                     });
         }
+        mOverlayFadeOutAnimator.setDuration(getAnimationDuration(animDurationMs));
 
         mIsHidingOrHidden = true;
         mOverlayFadeOutAnimator.setFloatValues(mModel.get(ScrimProperties.ALPHA), 0f);
