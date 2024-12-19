@@ -58,7 +58,7 @@ TEST_F(PageAggregatorTest, WebLocksAggregation) {
   EXPECT_FALSE(page->IsHoldingWebLock());
 }
 
-TEST_F(PageAggregatorTest, IndexedDBLocksAggregation) {
+TEST_F(PageAggregatorTest, BlockingIndexedDBLocksAggregation) {
   // Creates a page containing 2 frames.
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -67,27 +67,27 @@ TEST_F(PageAggregatorTest, IndexedDBLocksAggregation) {
   TestNodeWrapper<FrameNodeImpl> frame_1 =
       graph()->CreateFrameNodeAutoId(process.get(), page.get());
 
-  // By default the page shouldn't hold any IndexedDB lock.
-  EXPECT_FALSE(page->IsHoldingIndexedDBLock());
+  // By default the page shouldn't hold any blocking IndexedDB lock.
+  EXPECT_FALSE(page->IsHoldingBlockingIndexedDBLock());
 
-  // |frame_0| now holds an IndexedDB lock, the corresponding property should be
-  // set on the page node.
-  frame_0->SetIsHoldingIndexedDBLock(true);
-  EXPECT_TRUE(page->IsHoldingIndexedDBLock());
+  // |frame_0| now holds a blocking IndexedDB lock, the corresponding property
+  // should be set on the page node.
+  frame_0->SetIsHoldingBlockingIndexedDBLock(true);
+  EXPECT_TRUE(page->IsHoldingBlockingIndexedDBLock());
 
-  // |frame_1| also holding an IndexedDB lock shouldn't affect the page
+  // |frame_1| also holding a blocking IndexedDB lock shouldn't affect the page
   // property.
-  frame_1->SetIsHoldingIndexedDBLock(true);
-  EXPECT_TRUE(page->IsHoldingIndexedDBLock());
+  frame_1->SetIsHoldingBlockingIndexedDBLock(true);
+  EXPECT_TRUE(page->IsHoldingBlockingIndexedDBLock());
 
-  // |frame_1| still holds an IndexedDB lock after this.
-  frame_0->SetIsHoldingIndexedDBLock(false);
-  EXPECT_TRUE(page->IsHoldingIndexedDBLock());
+  // |frame_1| still holds a blocking IndexedDB lock after this.
+  frame_0->SetIsHoldingBlockingIndexedDBLock(false);
+  EXPECT_TRUE(page->IsHoldingBlockingIndexedDBLock());
 
-  // Destroying |frame_1| without explicitly releasing the IndexedDB lock it's
-  // holding should update the corresponding page property.
+  // Destroying |frame_1| without explicitly releasing the blocking IndexedDB
+  // lock it's holding should update the corresponding page property.
   frame_1.reset();
-  EXPECT_FALSE(page->IsHoldingIndexedDBLock());
+  EXPECT_FALSE(page->IsHoldingBlockingIndexedDBLock());
 }
 
 TEST_F(PageAggregatorTest, WebRTCAggregation) {

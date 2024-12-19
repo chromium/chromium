@@ -169,8 +169,8 @@ class PageNode : public TypedNode<PageNode> {
   virtual bool IsHoldingWebLock() const = 0;
 
   // Returns true if at least one of the frame in this page is currently
-  // holding an IndexedDB lock.
-  virtual bool IsHoldingIndexedDBLock() const = 0;
+  // holding an IndexedDB lock that is blocking another client.
+  virtual bool IsHoldingBlockingIndexedDBLock() const = 0;
 
   // Returns whether at least one frame on this page currently uses WebRTC.
   virtual bool UsesWebRTC() const = 0;
@@ -340,8 +340,9 @@ class PageNodeObserver : public base::CheckedObserver {
   // Invoked when the IsHoldingWebLock property changes.
   virtual void OnPageIsHoldingWebLockChanged(const PageNode* page_node) {}
 
-  // Invoked when the IsHoldingIndexedDBLock property changes.
-  virtual void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) {}
+  // Invoked when the IsHoldingBlockingIndexedDBLock property changes.
+  virtual void OnPageIsHoldingBlockingIndexedDBLockChanged(
+      const PageNode* page_node) {}
 
   // Invoked when the UsesWebRTC property changes.
   virtual void OnPageUsesWebRTCChanged(const PageNode* page_node) {}

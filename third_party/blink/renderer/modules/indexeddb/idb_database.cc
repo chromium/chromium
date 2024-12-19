@@ -100,13 +100,11 @@ IDBDatabase::IDBDatabase(
     ExecutionContext* context,
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
         callbacks_receiver,
-    mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime,
     mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
     int connection_priority)
     : ActiveScriptWrappable<IDBDatabase>({}),
       ExecutionContextLifecycleStateObserver(context),
       database_remote_(context),
-      connection_lifetime_(std::move(connection_lifetime)),
       scheduling_priority_(connection_priority),
       callbacks_receiver_(this, context) {
   database_remote_.Bind(std::move(pending_database),
@@ -432,7 +430,6 @@ void IDBDatabase::close() {
     return;
   }
 
-  connection_lifetime_.reset();
   close_pending_ = true;
 
   if (transactions_.empty()) {
@@ -545,7 +542,6 @@ void IDBDatabase::ContextDestroyed() {
   if (database_remote_.is_bound()) {
     database_remote_.reset();
   }
-  connection_lifetime_.reset();
 }
 
 void IDBDatabase::ContextEnteredBackForwardCache() {

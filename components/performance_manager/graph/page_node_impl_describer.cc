@@ -82,8 +82,8 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   result.Set("lifecycle_state",
              MojoEnumToString(page_node_impl->lifecycle_state_.value()));
   result.Set("is_holding_weblock", page_node_impl->is_holding_weblock_.value());
-  result.Set("is_holding_indexeddb_lock",
-             page_node_impl->is_holding_indexeddb_lock_.value());
+  result.Set("is_holding_blocking_indexeddb_lock",
+             page_node_impl->is_holding_blocking_indexeddb_lock_.value());
   result.Set("had_form_interaction",
              page_node_impl->had_form_interaction_.value());
   result.Set("had_user_edits", page_node_impl->had_user_edits_.value());

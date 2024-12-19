@@ -103,7 +103,7 @@ class FrameNodeImpl
   bool GetNetworkAlmostIdle() const override;
   bool IsAdFrame() const override;
   bool IsHoldingWebLock() const override;
-  bool IsHoldingIndexedDBLock() const override;
+  bool IsHoldingBlockingIndexedDBLock() const override;
   bool UsesWebRTC() const override;
   bool HadUserActivation() const override;
   bool HadFormInteraction() const override;
@@ -139,7 +139,8 @@ class FrameNodeImpl
                                  GraphImpl* graph);
   void SetHadUserActivation();
   void SetIsHoldingWebLock(bool is_holding_weblock);
-  void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
+  void SetIsHoldingBlockingIndexedDBLock(
+      bool is_holding_blocking_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetIsCapturingMediaStream(bool is_capturing_media_stream);
   void SetViewportIntersection(const blink::mojom::ViewportIntersectionState&
@@ -371,8 +372,8 @@ class FrameNodeImpl
       is_holding_weblock_{false};
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
-      &FrameNodeObserver::OnFrameIsHoldingIndexedDBLockChanged>
-      is_holding_indexeddb_lock_{false};
+      &FrameNodeObserver::OnFrameIsHoldingBlockingIndexedDBLockChanged>
+      is_holding_blocking_indexeddb_lock_{false};
 
   bool is_current_{false};
 

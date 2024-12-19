@@ -25,11 +25,11 @@ class PageAggregatorData : public SparseNodeInlineData<PageAggregatorData> {
   PageAggregatorData(PageAggregatorData&&) = delete;
   PageAggregatorData& operator=(PageAggregatorData&&) = delete;
 
-  // Updates the counter of frames holding a Web Lock, holding an IndexedDB lock
-  // or using WebRTC. Sets the corresponding page property.
+  // Updates the counter of frames using various web features. Sets the
+  // corresponding page property.
   void UpdateFrameCountForWebLockUsage(bool frame_is_holding_weblock);
-  void UpdateFrameCountForIndexedDBLockUsage(
-      bool frame_is_holding_indexeddb_lock);
+  void UpdateFrameCountForBlockingIndexedDBLockUsage(
+      bool frame_is_holding_blocking_indexeddb_lock);
   void UpdateFrameCountForWebRTCUsage(bool frame_uses_web_rtc);
 
   // Updates the counter of *current* frames with form interaction,
@@ -46,10 +46,9 @@ class PageAggregatorData : public SparseNodeInlineData<PageAggregatorData> {
  private:
   raw_ptr<PageNodeImpl> page_node_;
 
-  // The number of frames holding a Web Lock, holding an IndexedDB lock or using
-  // WebRTC. This counts all frames, not just the current ones.
+  // The number of frames using various web features.
   int num_frames_holding_web_lock_ = 0;
-  int num_frames_holding_indexeddb_lock_ = 0;
+  int num_frames_holding_blocking_indexeddb_lock_ = 0;
   int num_frames_using_web_rtc_ = 0;
 
   // The number of *current* frames which with form interaction, user-initiated

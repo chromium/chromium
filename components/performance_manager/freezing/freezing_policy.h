@@ -150,7 +150,8 @@ class FreezingPolicy : public PageNodeObserver,
   void OnPageHasFreezingOriginTrialOptOutChanged(
       const PageNode* page_node) override;
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override;
-  void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
+  void OnPageIsHoldingBlockingIndexedDBLockChanged(
+      const PageNode* page_node) override;
   void OnPageUsesWebRTCChanged(const PageNode* page_node) override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;

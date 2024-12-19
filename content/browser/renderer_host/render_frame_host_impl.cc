@@ -185,6 +185,7 @@
 #include "content/public/browser/document_ref.h"
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/feature_observer_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/network_service_util.h"
@@ -5479,6 +5480,22 @@ BackForwardCacheDisablingFeatureHandle::BackForwardCacheDisablingFeatureHandle(
   render_frame_host_->OnBackForwardCacheDisablingFeatureUsed(feature_);
 }
 
+BackForwardCacheDisablingFeatureHandle::
+    ~BackForwardCacheDisablingFeatureHandle() {
+  Reset();
+}
+
+bool BackForwardCacheDisablingFeatureHandle::IsValid() const {
+  return render_frame_host_.get();
+}
+
+void BackForwardCacheDisablingFeatureHandle::Reset() {
+  if (render_frame_host_) {
+    render_frame_host_->OnBackForwardCacheDisablingFeatureRemoved(feature_);
+  }
+  render_frame_host_ = nullptr;
+}
+
 void RenderFrameHostImpl::RecordBackForwardCacheDisablingReason(
     BackForwardCacheDisablingFeature feature) {
   ++browser_reported_bfcache_disabling_features_counts_[feature];
@@ -5545,9 +5562,74 @@ RenderFrameHostImpl::RegisterBackForwardCacheDisablingNonStickyFeature(
   return BackForwardCacheDisablingFeatureHandle(this, feature);
 }
 
+using HoldingBlockingIDBLockHandle =
+    RenderFrameHostImpl::HoldingBlockingIDBLockHandle;
+
+HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle() = default;
+
+HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle(
+    HoldingBlockingIDBLockHandle&& other) = default;
+
+HoldingBlockingIDBLockHandle::HoldingBlockingIDBLockHandle(
+    RenderFrameHostImpl* render_frame_host)
+    : render_frame_host_(render_frame_host->GetWeakPtr()) {
+  CHECK(render_frame_host_);
+  render_frame_host_->OnStartHoldingBlockingIDBLock();
+}
+
+HoldingBlockingIDBLockHandle::~HoldingBlockingIDBLockHandle() {
+  Reset();
+}
+
+bool HoldingBlockingIDBLockHandle::IsValid() const {
+  return render_frame_host_.get();
+}
+
+void HoldingBlockingIDBLockHandle::Reset() {
+  if (render_frame_host_) {
+    render_frame_host_->OnStopHoldingBlockingIDBLock();
+  }
+  render_frame_host_ = nullptr;
+}
+
+HoldingBlockingIDBLockHandle
+RenderFrameHostImpl::RegisterHoldingBlockingIDBLockHandle() {
+  return HoldingBlockingIDBLockHandle(this);
+}
+
+void RenderFrameHostImpl::OnStartHoldingBlockingIDBLock() {
+  CHECK_GE(holding_blocking_idb_lock_count_, 0);
+  if (++holding_blocking_idb_lock_count_ != 1) {
+    return;
+  }
+
+  if (auto* client =
+          GetContentClient()->browser()->GetFeatureObserverClient()) {
+    client->OnStartUsing(
+        GetGlobalId(),
+        blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock);
+  }
+}
+
+void RenderFrameHostImpl::OnStopHoldingBlockingIDBLock() {
+  CHECK_GT(holding_blocking_idb_lock_count_, 0);
+  if (--holding_blocking_idb_lock_count_ != 0) {
+    return;
+  }
+
+  if (auto* client =
+          GetContentClient()->browser()->GetFeatureObserverClient()) {
+    client->OnStopUsing(
+        GetGlobalId(),
+        blink::mojom::ObservedFeatureType::kBlockingIndexedDBLock);
+  }
+}
+
 bool RenderFrameHostImpl::IsFrozen() {
-  // TODO(crbug.com/40691610): Account for non-bfcache freezing here as well.
-  return lifecycle_state() == LifecycleStateImpl::kInBackForwardCache;
+  auto state = render_view_host()
+                   ->GetPageLifecycleStateManager()
+                   ->CalculatePageLifecycleState();
+  return state->is_frozen;
 }
 
 void RenderFrameHostImpl::DidCommitProvisionalLoad(
@@ -14866,6 +14948,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   renderer_reported_bfcache_blocking_details_.clear();
   browser_reported_bfcache_disabling_features_counts_.clear();
+  holding_blocking_idb_lock_count_ = 0;
 
   TakeNewDocumentPropertiesFromNavigation(navigation_request);
 

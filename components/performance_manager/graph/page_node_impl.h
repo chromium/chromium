@@ -98,7 +98,7 @@ class PageNodeImpl
   ukm::SourceId GetUkmSourceID() const override;
   LifecycleState GetLifecycleState() const override;
   bool IsHoldingWebLock() const override;
-  bool IsHoldingIndexedDBLock() const override;
+  bool IsHoldingBlockingIndexedDBLock() const override;
   bool UsesWebRTC() const override;
   int64_t GetNavigationID() const override;
   const std::string& GetContentsMimeType() const override;
@@ -177,8 +177,9 @@ class PageNodeImpl
     SetIsHoldingWebLock(is_holding_weblock);
   }
 
-  void SetIsHoldingIndexedDBLockForTesting(bool is_holding_weblock) {
-    SetIsHoldingIndexedDBLock(is_holding_weblock);
+  void SetIsHoldingBlockingIndexedDBLockForTesting(
+      bool is_holding_blocking_indexeddb_lock) {
+    SetIsHoldingBlockingIndexedDBLock(is_holding_blocking_indexeddb_lock);
   }
 
   void SetUsesWebRTCForTesting(bool uses_webrtc) { SetUsesWebRTC(uses_webrtc); }
@@ -209,9 +210,10 @@ class PageNodeImpl
                            bool is_holding_weblock) {
     SetIsHoldingWebLock(is_holding_weblock);
   }
-  void SetIsHoldingIndexedDBLock(base::PassKey<PageAggregatorData>,
-                                 bool is_holding_indexeddb_lock) {
-    SetIsHoldingIndexedDBLock(is_holding_indexeddb_lock);
+  void SetIsHoldingBlockingIndexedDBLock(
+      base::PassKey<PageAggregatorData>,
+      bool is_holding_blocking_indexeddb_lock) {
+    SetIsHoldingBlockingIndexedDBLock(is_holding_blocking_indexeddb_lock);
   }
   void SetUsesWebRTC(base::PassKey<PageAggregatorData>, bool uses_web_rtc) {
     SetUsesWebRTC(uses_web_rtc);
@@ -246,7 +248,8 @@ class PageNodeImpl
 
   void SetLifecycleState(LifecycleState lifecycle_state);
   void SetIsHoldingWebLock(bool is_holding_weblock);
-  void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
+  void SetIsHoldingBlockingIndexedDBLock(
+      bool is_holding_blocking_indexeddb_lock);
   void SetUsesWebRTC(bool uses_web_rtc);
   void SetHadFormInteraction(bool had_form_interaction);
   void SetHadUserEdits(bool had_user_edits);
@@ -384,11 +387,12 @@ class PageNodeImpl
       &PageNodeObserver::OnPageIsHoldingWebLockChanged>
       is_holding_weblock_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // Indicates if at least one frame of the page is currently holding an
-  // IndexedDB lock.
+  // IndexedDB lock that is blocking another client.
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
-      &PageNodeObserver::OnPageIsHoldingIndexedDBLockChanged>
-      is_holding_indexeddb_lock_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+      &PageNodeObserver::OnPageIsHoldingBlockingIndexedDBLockChanged>
+      is_holding_blocking_indexeddb_lock_ GUARDED_BY_CONTEXT(sequence_checker_){
+          false};
   // Indicates if at least one frame of the page currently uses WebRTC.
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnPageUsesWebRTCChanged>

@@ -53,7 +53,7 @@ class LenientMockFrameNodeObserver : public FrameNodeObserver {
               (const FrameNode*),
               (override));
   MOCK_METHOD(void,
-              OnFrameIsHoldingIndexedDBLockChanged,
+              OnFrameIsHoldingBlockingIndexedDBLockChanged,
               (const FrameNode*),
               (override));
   MOCK_METHOD(void,

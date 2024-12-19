@@ -544,29 +544,29 @@ TEST_F(FreezingPolicyTest, AcquiresWebLockWhenFrozen) {
   VerifyFreezerExpectations();
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
-  page_node()->SetIsHoldingIndexedDBLockForTesting(true);
+  page_node()->SetIsHoldingWebLockForTesting(true);
   VerifyFreezerExpectations();
 }
 
-TEST_F(FreezingPolicyTest, FreezeVoteWhenHoldingIndexedDBLock) {
-  page_node()->SetIsHoldingIndexedDBLockForTesting(true);
+TEST_F(FreezingPolicyTest, FreezeVoteWhenHoldingBlockingIndexedDBLock) {
+  page_node()->SetIsHoldingBlockingIndexedDBLockForTesting(true);
 
   // Don't expect freezing.
   policy()->AddFreezeVote(page_node());
 
-  // Expect freezing after releasing the lock.
+  // Expect freezing after the transaction completes.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
-  page_node()->SetIsHoldingIndexedDBLockForTesting(false);
+  page_node()->SetIsHoldingBlockingIndexedDBLockForTesting(false);
   VerifyFreezerExpectations();
 }
 
-TEST_F(FreezingPolicyTest, AcquiresIndexedDBLockWhenFrozen) {
+TEST_F(FreezingPolicyTest, AcquiresBlockingIndexedDBLockWhenFrozen) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   policy()->AddFreezeVote(page_node());
   VerifyFreezerExpectations();
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
-  page_node()->SetIsHoldingIndexedDBLockForTesting(true);
+  page_node()->SetIsHoldingBlockingIndexedDBLockForTesting(true);
   VerifyFreezerExpectations();
 }
 

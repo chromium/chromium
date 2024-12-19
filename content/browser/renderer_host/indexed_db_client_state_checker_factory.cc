@@ -116,30 +116,74 @@ class DocumentIndexedDBClientStateChecker final
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
       DisallowInactiveClientCallback callback) override {
+    // This client is currently blocking another client, for example because it
+    // has a transaction that holds locks needed by the another client or
+    // because it has a connection that prevents a version change in another
+    // client. There are 2 situations that could prevent this client from
+    // continuing its work and unblocking the other client: freezing and
+    // back-forward cache. They are handled differently.
+    //
+    // In both cases, if the document is neither frozen nor in the back-forward
+    // cache, there is nothing to do. If either situations happen in the future,
+    // `DisallowInactiveClient()` will be called again for it and then take
+    // action, by either unfreezing or evicting the document from the
+    // back-forward cache.
+    //
+    // In the case of a frozen document, we register a
+    // HoldingBlockingIDBLockHandle that will unfreeze and prevent the document
+    // from being frozen for the lifetime of the handle.
+    //
+    // In the case the document is in the back-forward cache, the call to
+    // `CheckIfClientWasActive()` below will evict it.
+    //
+    // In addition, if `reason` is kVersionChangeEvent, then we register both
+    // a HoldingBlockingIDBLockHandle and a
+    // BackForwardCacheDisablingFeatureHandle to prevent the document from going
+    // into an inactive state until the IndexedDB connection is successfully
+    // closed and the context is automatically destroyed.
+    bool is_version_change_event =
+        reason ==
+        storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent;
+
     CHECK(keep_active.is_valid());
     bool was_active = CheckIfClientWasActive(reason);
+    if (!was_active) {
+      std::move(callback).Run(was_active);
+      return;
+    }
 
-    // If the client is still active, the `keep_active` is usually dropped.
-    // That's because we always first allow a client to enter BFCache, and then
-    // evict it afterwards if we've determined it is blocking another client.
-    // The only exception is for the kVersionChangeEvent reason, which is called
-    // preemptively to ensure the client doesn't enter BFCache while the version
-    // change event is being handled.
-    // TODO(362464956): Add support for unfreezing frozen clients as well.
-    if (was_active &&
-        reason ==
-            storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent) {
-      // If the document is active, we need to register a non sticky feature to
-      // prevent putting it into BFCache until the IndexedDB connection is
-      // successfully closed and the context is automatically destroyed.
-      // Since `kClientEventIsTriggered` is the only reason that should be
-      // passed to this function, the non-sticky feature will always be
-      // `kIndexedDBEvent`.
-      KeepActiveReceiverContext context(
-          static_cast<RenderFrameHostImpl&>(render_frame_host())
-              .RegisterBackForwardCacheDisablingNonStickyFeature(
+    RenderFrameHostImpl* render_frame_host_impl =
+        RenderFrameHostImpl::From(&render_frame_host());
+
+    // If the client was in the BFCache, it should have been evicted with the
+    // check above. Note that until crbug.com/40691610 is fixed, a
+    // RenderFrameHost that is frozen for any other reasons than BFCache is
+    // considered active.
+    CHECK_NE(render_frame_host_impl->GetLifecycleState(),
+             RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+    RenderFrameHostImpl::HoldingBlockingIDBLockHandle
+        holding_blocking_idb_lock_handle;
+    if (render_frame_host_impl->IsFrozen() || is_version_change_event) {
+      holding_blocking_idb_lock_handle =
+          render_frame_host_impl->RegisterHoldingBlockingIDBLockHandle();
+    }
+
+    RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
+        bfcache_feature_handle;
+    if (is_version_change_event) {
+      bfcache_feature_handle =
+          render_frame_host_impl
+              ->RegisterBackForwardCacheDisablingNonStickyFeature(
                   blink::scheduler::WebSchedulerTrackedFeature::
-                      kIndexedDBEvent));
+                      kIndexedDBEvent);
+    }
+
+    if (bfcache_feature_handle.IsValid() ||
+        holding_blocking_idb_lock_handle.IsValid()) {
+      KeepActiveReceiverContext context(
+          std::move(bfcache_feature_handle),
+          std::move(holding_blocking_idb_lock_handle));
       keep_active_receivers_.Add(this, std::move(keep_active),
                                  std::move(context));
     }
@@ -154,21 +198,31 @@ class DocumentIndexedDBClientStateChecker final
   }
 
  private:
-  // Keep the association between the receiver and the feature handle it
+  // Keep the association between the receiver and the feature handles it
   // registered.
   class KeepActiveReceiverContext {
    public:
     KeepActiveReceiverContext() = default;
-    explicit KeepActiveReceiverContext(
-        RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle handle)
-        : feature_handle(std::move(handle)) {}
+    KeepActiveReceiverContext(
+        RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
+            bfcache_feature_handle,
+        RenderFrameHostImpl::HoldingBlockingIDBLockHandle
+            holding_blocking_idb_lock_handle)
+        : bfcache_feature_handle_(std::move(bfcache_feature_handle)),
+          holding_blocking_idb_lock_handle_(
+              std::move(holding_blocking_idb_lock_handle)) {}
     KeepActiveReceiverContext(KeepActiveReceiverContext&& context) noexcept
-        : feature_handle(std::move(context.feature_handle)) {}
+        : bfcache_feature_handle_(std::move(context.bfcache_feature_handle_)),
+          holding_blocking_idb_lock_handle_(
+              std::move(context.holding_blocking_idb_lock_handle_)) {}
 
     ~KeepActiveReceiverContext() = default;
 
    private:
-    RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle feature_handle;
+    RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
+        bfcache_feature_handle_;
+    RenderFrameHostImpl::HoldingBlockingIDBLockHandle
+        holding_blocking_idb_lock_handle_;
   };
 
   explicit DocumentIndexedDBClientStateChecker(RenderFrameHost* rfh)

@@ -146,9 +146,9 @@ bool PageNodeImpl::IsHoldingWebLock() const {
   return is_holding_weblock_.value();
 }
 
-bool PageNodeImpl::IsHoldingIndexedDBLock() const {
+bool PageNodeImpl::IsHoldingBlockingIndexedDBLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_indexeddb_lock_.value();
+  return is_holding_blocking_indexeddb_lock_.value();
 }
 
 bool PageNodeImpl::UsesWebRTC() const {
@@ -567,9 +567,11 @@ void PageNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
   is_holding_weblock_.SetAndMaybeNotify(this, is_holding_weblock);
 }
 
-void PageNodeImpl::SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock) {
+void PageNodeImpl::SetIsHoldingBlockingIndexedDBLock(
+    bool is_holding_blocking_indexeddb_lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_holding_indexeddb_lock_.SetAndMaybeNotify(this, is_holding_indexeddb_lock);
+  is_holding_blocking_indexeddb_lock_.SetAndMaybeNotify(
+      this, is_holding_blocking_indexeddb_lock);
 }
 
 void PageNodeImpl::SetUsesWebRTC(bool uses_web_rtc) {

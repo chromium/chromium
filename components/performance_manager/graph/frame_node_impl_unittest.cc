@@ -580,7 +580,7 @@ TEST_F(FrameNodeImplTest, IsHoldingWebLock) {
   graph()->RemoveFrameNodeObserver(&obs);
 }
 
-TEST_F(FrameNodeImplTest, IsHoldingIndexedDBLock) {
+TEST_F(FrameNodeImplTest, IsHoldingBlockingIndexedDBLock) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
@@ -588,12 +588,14 @@ TEST_F(FrameNodeImplTest, IsHoldingIndexedDBLock) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
-  EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(frame_node.get()));
-  frame_node->SetIsHoldingIndexedDBLock(true);
-  EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock());
-  EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(frame_node.get()));
-  frame_node->SetIsHoldingIndexedDBLock(false);
-  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock());
+  EXPECT_CALL(obs,
+              OnFrameIsHoldingBlockingIndexedDBLockChanged(frame_node.get()));
+  frame_node->SetIsHoldingBlockingIndexedDBLock(true);
+  EXPECT_TRUE(frame_node->IsHoldingBlockingIndexedDBLock());
+  EXPECT_CALL(obs,
+              OnFrameIsHoldingBlockingIndexedDBLockChanged(frame_node.get()));
+  frame_node->SetIsHoldingBlockingIndexedDBLock(false);
+  EXPECT_FALSE(frame_node->IsHoldingBlockingIndexedDBLock());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }

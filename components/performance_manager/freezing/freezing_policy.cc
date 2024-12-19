@@ -392,7 +392,7 @@ void FreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
   }
 
   DCHECK(!page_node->IsHoldingWebLock());
-  DCHECK(!page_node->IsHoldingIndexedDBLock());
+  DCHECK(!page_node->IsHoldingBlockingIndexedDBLock());
   DCHECK(!IsPageConnectedToUSBDevice(page_node));
   DCHECK(!IsPageConnectedToBluetoothDevice(page_node));
   DCHECK(!IsPageCapturingVideo(page_node));
@@ -493,11 +493,12 @@ void FreezingPolicy::OnPageUsesWebRTCChanged(const PageNode* page_node) {
                              CannotFreezeReason::kWebRTC);
 }
 
-void FreezingPolicy::OnPageIsHoldingIndexedDBLockChanged(
+void FreezingPolicy::OnPageIsHoldingBlockingIndexedDBLockChanged(
     const PageNode* page_node) {
-  OnCannotFreezeReasonChange(page_node,
-                             /*add=*/page_node->IsHoldingIndexedDBLock(),
-                             CannotFreezeReason::kHoldingIndexedDBLock);
+  OnCannotFreezeReasonChange(
+      page_node,
+      /*add=*/page_node->IsHoldingBlockingIndexedDBLock(),
+      CannotFreezeReason::kHoldingBlockingIndexedDBLock);
 }
 
 void FreezingPolicy::OnLoadingStateChanged(

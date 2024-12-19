@@ -50,7 +50,7 @@ class LenientMockPageNodeObserver : public PageNodeObserver {
               (const PageNode*),
               (override));
   MOCK_METHOD(void,
-              OnPageIsHoldingIndexedDBLockChanged,
+              OnPageIsHoldingBlockingIndexedDBLockChanged,
               (const PageNode*),
               (override));
   MOCK_METHOD(void, OnPageUsesWebRTCChanged, (const PageNode*), (override));

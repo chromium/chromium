@@ -22,6 +22,8 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "holding Web Lock";
     case CannotFreezeReason::kHoldingIndexedDBLock:
       return "holding IndexedDB lock";
+    case CannotFreezeReason::kHoldingBlockingIndexedDBLock:
+      return "holding blocking indexedDB lock";
     case CannotFreezeReason::kConnectedToUsbDevice:
       return "connected to USB device";
     case CannotFreezeReason::kConnectedToBluetoothDevice:

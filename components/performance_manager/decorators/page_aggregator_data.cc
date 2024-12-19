@@ -14,7 +14,7 @@ PageAggregatorData::PageAggregatorData(PageNodeImpl* page_node)
 
 PageAggregatorData::~PageAggregatorData() {
   DCHECK_EQ(num_frames_holding_web_lock_, 0);
-  DCHECK_EQ(num_frames_holding_indexeddb_lock_, 0);
+  DCHECK_EQ(num_frames_holding_blocking_indexeddb_lock_, 0);
   DCHECK_EQ(num_frames_using_web_rtc_, 0);
   DCHECK_EQ(num_current_frames_with_form_interaction_, 0);
   DCHECK_EQ(num_current_frames_with_user_edits_, 0);
@@ -32,17 +32,17 @@ void PageAggregatorData::UpdateFrameCountForWebLockUsage(
   page_node_->SetIsHoldingWebLock(PassKey(), num_frames_holding_web_lock_ > 0);
 }
 
-void PageAggregatorData::UpdateFrameCountForIndexedDBLockUsage(
-    bool frame_is_holding_indexeddb_lock) {
-  if (frame_is_holding_indexeddb_lock) {
-    ++num_frames_holding_indexeddb_lock_;
+void PageAggregatorData::UpdateFrameCountForBlockingIndexedDBLockUsage(
+    bool frame_is_holding_blocking_indexeddb_lock) {
+  if (frame_is_holding_blocking_indexeddb_lock) {
+    ++num_frames_holding_blocking_indexeddb_lock_;
   } else {
-    DCHECK_GT(num_frames_holding_indexeddb_lock_, 0);
-    --num_frames_holding_indexeddb_lock_;
+    DCHECK_GT(num_frames_holding_blocking_indexeddb_lock_, 0);
+    --num_frames_holding_blocking_indexeddb_lock_;
   }
 
-  page_node_->SetIsHoldingIndexedDBLock(PassKey(),
-                                        num_frames_holding_indexeddb_lock_ > 0);
+  page_node_->SetIsHoldingBlockingIndexedDBLock(
+      PassKey(), num_frames_holding_blocking_indexeddb_lock_ > 0);
 }
 
 void PageAggregatorData::UpdateFrameCountForWebRTCUsage(
@@ -98,16 +98,14 @@ void PageAggregatorData::UpdateCurrentFrameCountForFreezingOriginTrialOptOut(
 
 base::Value::Dict PageAggregatorData::Describe() {
   base::Value::Dict ret;
-  ret.Set("num_frames_holding_web_lock",
-          static_cast<int>(num_frames_holding_web_lock_));
-  ret.Set("num_frames_holding_indexeddb_lock",
-          static_cast<int>(num_frames_holding_indexeddb_lock_));
-  ret.Set("num_frames_using_web_rtc",
-          static_cast<int>(num_frames_using_web_rtc_));
+  ret.Set("num_frames_holding_web_lock", num_frames_holding_web_lock_);
+  ret.Set("num_frames_holding_blocking_indexeddb_lock",
+          num_frames_holding_blocking_indexeddb_lock_);
+  ret.Set("num_frames_using_web_rtc", num_frames_using_web_rtc_);
   ret.Set("num_current_frames_with_form_interaction",
-          static_cast<int>(num_current_frames_with_form_interaction_));
+          num_current_frames_with_form_interaction_);
   ret.Set("num_current_frames_with_user_edits",
-          static_cast<int>(num_current_frames_with_user_edits_));
+          num_current_frames_with_user_edits_);
   return ret;
 }
 

@@ -23,6 +23,7 @@ enum class CannotFreezeReason {
   kFreezingOriginTrialOptOut,
   kHoldingWebLock,
   kHoldingIndexedDBLock,
+  kHoldingBlockingIndexedDBLock,
   kConnectedToUsbDevice,
   kConnectedToBluetoothDevice,
   kConnectedToHidDevice,

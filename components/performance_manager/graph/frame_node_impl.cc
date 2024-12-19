@@ -237,9 +237,9 @@ bool FrameNodeImpl::IsHoldingWebLock() const {
   return is_holding_weblock_.value();
 }
 
-bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
+bool FrameNodeImpl::IsHoldingBlockingIndexedDBLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_indexeddb_lock_.value();
+  return is_holding_blocking_indexeddb_lock_.value();
 }
 
 bool FrameNodeImpl::UsesWebRTC() const {
@@ -431,10 +431,13 @@ void FrameNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
   is_holding_weblock_.SetAndMaybeNotify(this, is_holding_weblock);
 }
 
-void FrameNodeImpl::SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock) {
+void FrameNodeImpl::SetIsHoldingBlockingIndexedDBLock(
+    bool is_holding_blocking_indexeddb_lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(is_holding_indexeddb_lock, is_holding_indexeddb_lock_.value());
-  is_holding_indexeddb_lock_.SetAndMaybeNotify(this, is_holding_indexeddb_lock);
+  DCHECK_NE(is_holding_blocking_indexeddb_lock,
+            is_holding_blocking_indexeddb_lock_.value());
+  is_holding_blocking_indexeddb_lock_.SetAndMaybeNotify(
+      this, is_holding_blocking_indexeddb_lock);
 }
 
 void FrameNodeImpl::SetIsAudible(bool is_audible) {

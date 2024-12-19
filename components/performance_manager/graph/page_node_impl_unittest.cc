@@ -479,4 +479,24 @@ TEST_F(PageNodeImplTest, GetMainFrameNodes) {
                                                     ToPublic(frame2.get())));
 }
 
+TEST_F(PageNodeImplTest, IsHoldingBlockingIndexedDBLock) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page_node = CreateNode<PageNodeImpl>();
+  CreateFrameNodeAutoId(process.get(), page_node.get());
+  const PageNode* raw_page_node = page_node.get();
+
+  MockObserver obs;
+  graph()->AddPageNodeObserver(&obs);
+
+  EXPECT_CALL(obs, OnPageIsHoldingBlockingIndexedDBLockChanged(raw_page_node));
+  page_node->SetIsHoldingBlockingIndexedDBLockForTesting(true);
+  EXPECT_TRUE(page_node->IsHoldingBlockingIndexedDBLock());
+
+  EXPECT_CALL(obs, OnPageIsHoldingBlockingIndexedDBLockChanged(raw_page_node));
+  page_node->SetIsHoldingBlockingIndexedDBLockForTesting(false);
+  EXPECT_FALSE(page_node->IsHoldingBlockingIndexedDBLock());
+
+  graph()->RemovePageNodeObserver(&obs);
+}
+
 }  // namespace performance_manager

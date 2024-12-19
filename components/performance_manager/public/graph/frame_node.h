@@ -186,9 +186,9 @@ class FrameNode : public TypedNode<FrameNode> {
   // Returns true if this frame holds at least one Web Lock.
   virtual bool IsHoldingWebLock() const = 0;
 
-  // Returns true if this frame holds at least one IndexedDB lock. An IndexedDB
-  // lock is held by an active transaction or an active DB open request.
-  virtual bool IsHoldingIndexedDBLock() const = 0;
+  // Returns true if this frame holds at least one IndexedDB lock that is
+  // blocking another client.
+  virtual bool IsHoldingBlockingIndexedDBLock() const = 0;
 
   // Returns true if this frame currently uses WebRTC.
   virtual bool UsesWebRTC() const = 0;
@@ -356,8 +356,8 @@ class FrameNodeObserver : public base::CheckedObserver {
   // Invoked when the IsHoldingWebLock() property changes.
   virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) {}
 
-  // Invoked when the IsHoldingIndexedDBLock() property changes.
-  virtual void OnFrameIsHoldingIndexedDBLockChanged(
+  // Invoked when the IsHoldingBlockingIndexedDBLock() property changes.
+  virtual void OnFrameIsHoldingBlockingIndexedDBLockChanged(
       const FrameNode* frame_node) {}
 
   // Invoked when the frame priority and reason changes.

@@ -91,8 +91,8 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("lifecycle_state", MojoEnumToString(impl->lifecycle_state_.value()));
   ret.Set("is_ad_frame", impl->is_ad_frame_.value());
   ret.Set("is_holding_weblock", impl->is_holding_weblock_.value());
-  ret.Set("is_holding_indexeddb_lock",
-          impl->is_holding_indexeddb_lock_.value());
+  ret.Set("is_holding_blocking_indexeddb_lock",
+          impl->is_holding_blocking_indexeddb_lock_.value());
   ret.Set("is_current", impl->IsCurrent());
   ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
   ret.Set("is_audible", impl->is_audible_.value());
