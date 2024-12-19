@@ -23,11 +23,9 @@ using content::BrowserContext;
 using content::OpenURLParams;
 using content::WebContents;
 
-ChromeWebContentsHandler::ChromeWebContentsHandler() {
-}
+ChromeWebContentsHandler::ChromeWebContentsHandler() = default;
 
-ChromeWebContentsHandler::~ChromeWebContentsHandler() {
-}
+ChromeWebContentsHandler::~ChromeWebContentsHandler() = default;
 
 // Opens a new URL inside |source|. |context| is the browser context that the
 // browser should be owned by. |params| contains the URL to open and various

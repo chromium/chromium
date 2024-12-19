@@ -48,8 +48,7 @@ BrailleDisplayPrivateAPI::BrailleDisplayPrivateAPI(
     : profile_(Profile::FromBrowserContext(context)),
       event_delegate_(new DefaultEventDelegate(this, profile_)) {}
 
-BrailleDisplayPrivateAPI::~BrailleDisplayPrivateAPI() {
-}
+BrailleDisplayPrivateAPI::~BrailleDisplayPrivateAPI() = default;
 
 void BrailleDisplayPrivateAPI::Shutdown() {
   event_delegate_.reset();

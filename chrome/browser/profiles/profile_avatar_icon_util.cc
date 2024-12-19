@@ -196,8 +196,7 @@ AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
                         position,
                         profiles::SHAPE_SQUARE) {}
 
-AvatarImageSource::~AvatarImageSource() {
-}
+AvatarImageSource::~AvatarImageSource() = default;
 
 void AvatarImageSource::Draw(gfx::Canvas* canvas) {
   // Center the avatar horizontally.

@@ -558,8 +558,7 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
                           base::Unretained(this)));
 }
 
-DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() {
-}
+DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() = default;
 
 void DeveloperPrivateEventRouter::AddExtensionId(
     const ExtensionId& extension_id) {
@@ -911,8 +910,7 @@ void DeveloperPrivateAPI::OnListenerRemoved(
 
 namespace api {
 
-DeveloperPrivateAPIFunction::~DeveloperPrivateAPIFunction() {
-}
+DeveloperPrivateAPIFunction::~DeveloperPrivateAPIFunction() = default;
 
 const Extension* DeveloperPrivateAPIFunction::GetExtensionById(
     const ExtensionId& id) {
@@ -948,12 +946,10 @@ void DeveloperPrivateAutoUpdateFunction::OnComplete() {
 }
 
 DeveloperPrivateGetExtensionsInfoFunction::
-DeveloperPrivateGetExtensionsInfoFunction() {
-}
+    DeveloperPrivateGetExtensionsInfoFunction() = default;
 
 DeveloperPrivateGetExtensionsInfoFunction::
-~DeveloperPrivateGetExtensionsInfoFunction() {
-}
+    ~DeveloperPrivateGetExtensionsInfoFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetExtensionsInfoFunction::Run() {
@@ -985,12 +981,10 @@ void DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated(
 }
 
 DeveloperPrivateGetExtensionInfoFunction::
-DeveloperPrivateGetExtensionInfoFunction() {
-}
+    DeveloperPrivateGetExtensionInfoFunction() = default;
 
 DeveloperPrivateGetExtensionInfoFunction::
-~DeveloperPrivateGetExtensionInfoFunction() {
-}
+    ~DeveloperPrivateGetExtensionInfoFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetExtensionInfoFunction::Run() {
@@ -1044,8 +1038,7 @@ void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
 }
 
 DeveloperPrivateGetProfileConfigurationFunction::
-~DeveloperPrivateGetProfileConfigurationFunction() {
-}
+    ~DeveloperPrivateGetProfileConfigurationFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetProfileConfigurationFunction::Run() {
@@ -1065,8 +1058,7 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
 }
 
 DeveloperPrivateUpdateProfileConfigurationFunction::
-~DeveloperPrivateUpdateProfileConfigurationFunction() {
-}
+    ~DeveloperPrivateUpdateProfileConfigurationFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
@@ -1619,8 +1611,8 @@ ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
   return RespondLater();
 }
 
-DeveloperPrivatePackDirectoryFunction::DeveloperPrivatePackDirectoryFunction() {
-}
+DeveloperPrivatePackDirectoryFunction::DeveloperPrivatePackDirectoryFunction() =
+    default;
 
 DeveloperPrivatePackDirectoryFunction::
     ~DeveloperPrivatePackDirectoryFunction() = default;
@@ -1953,8 +1945,7 @@ DeveloperPrivateIsProfileManagedFunction::Run() {
 }
 
 DeveloperPrivateIsProfileManagedFunction::
-    ~DeveloperPrivateIsProfileManagedFunction() {
-}
+    ~DeveloperPrivateIsProfileManagedFunction() = default;
 
 DeveloperPrivateRequestFileSourceFunction::
     DeveloperPrivateRequestFileSourceFunction() = default;

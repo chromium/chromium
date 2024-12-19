@@ -55,9 +55,8 @@ ChromeSpeechRecognitionManagerDelegate
 ::ChromeSpeechRecognitionManagerDelegate() {
 }
 
-ChromeSpeechRecognitionManagerDelegate
-::~ChromeSpeechRecognitionManagerDelegate() {
-}
+ChromeSpeechRecognitionManagerDelegate ::
+    ~ChromeSpeechRecognitionManagerDelegate() = default;
 
 void ChromeSpeechRecognitionManagerDelegate::OnRecognitionStart(
     int session_id) {

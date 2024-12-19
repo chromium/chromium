@@ -42,8 +42,7 @@ const ui::ColorProvider* GetColorProviderFor(Browser* browser) {
 
 class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  ThemeServiceBrowserTest() {
-  }
+  ThemeServiceBrowserTest() = default;
 
   ThemeServiceBrowserTest(const ThemeServiceBrowserTest&) = delete;
   ThemeServiceBrowserTest& operator=(const ThemeServiceBrowserTest&) = delete;

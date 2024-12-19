@@ -407,8 +407,7 @@ ChromeInternalLogSource::ChromeInternalLogSource()
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-ChromeInternalLogSource::~ChromeInternalLogSource() {
-}
+ChromeInternalLogSource::~ChromeInternalLogSource() = default;
 
 void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

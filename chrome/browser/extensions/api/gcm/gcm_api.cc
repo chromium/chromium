@@ -207,8 +207,7 @@ bool GcmSendFunction::ValidateMessageData(const gcm::MessageData& data) const {
 GcmJsEventRouter::GcmJsEventRouter(Profile* profile) : profile_(profile) {
 }
 
-GcmJsEventRouter::~GcmJsEventRouter() {
-}
+GcmJsEventRouter::~GcmJsEventRouter() = default;
 
 void GcmJsEventRouter::OnMessage(const std::string& app_id,
                                  const gcm::IncomingMessage& message) {

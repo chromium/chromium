@@ -283,8 +283,8 @@ TestAutomaticRebootManagerTaskRunner::TestAutomaticRebootManagerTaskRunner()
     : uptime_provider_(new MockUptimeProvider(this)) {
 }
 
-TestAutomaticRebootManagerTaskRunner::~TestAutomaticRebootManagerTaskRunner() {
-}
+TestAutomaticRebootManagerTaskRunner::~TestAutomaticRebootManagerTaskRunner() =
+    default;
 
 void TestAutomaticRebootManagerTaskRunner::OnBeforeSelectingTask() {
   base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -329,8 +329,7 @@ AutomaticRebootManagerBasicTest::AutomaticRebootManagerBasicTest()
       single_thread_task_runner_current_default_handle_override_(task_runner_),
       user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
-AutomaticRebootManagerBasicTest::~AutomaticRebootManagerBasicTest() {
-}
+AutomaticRebootManagerBasicTest::~AutomaticRebootManagerBasicTest() = default;
 
 void AutomaticRebootManagerBasicTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -626,8 +625,7 @@ AutomaticRebootManagerTest::AutomaticRebootManagerTest() {
   }
 }
 
-AutomaticRebootManagerTest::~AutomaticRebootManagerTest() {
-}
+AutomaticRebootManagerTest::~AutomaticRebootManagerTest() = default;
 
 // Chrome is showing the login screen. The current uptime is 12 hours.
 // Verifies that the idle timer is running. Further verifies that when a kiosk

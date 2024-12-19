@@ -138,8 +138,7 @@ SettingsOverridesAPI::SettingsOverridesAPI(content::BrowserContext* context)
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
-SettingsOverridesAPI::~SettingsOverridesAPI() {
-}
+SettingsOverridesAPI::~SettingsOverridesAPI() = default;
 
 BrowserContextKeyedAPIFactory<SettingsOverridesAPI>*
 SettingsOverridesAPI::GetFactoryInstance() {

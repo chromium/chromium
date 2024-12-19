@@ -106,8 +106,7 @@ base::CommandLine* ShellLinkItem::GetCommandLine() {
 JumpListUpdater::JumpListUpdater(const std::wstring& app_user_model_id)
     : app_user_model_id_(app_user_model_id), user_max_items_(0) {}
 
-JumpListUpdater::~JumpListUpdater() {
-}
+JumpListUpdater::~JumpListUpdater() = default;
 
 // static
 bool JumpListUpdater::IsEnabled() {

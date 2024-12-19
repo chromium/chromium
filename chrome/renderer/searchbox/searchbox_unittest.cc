@@ -39,8 +39,7 @@ MockIconURLHelper::MockIconURLHelper() {
   rid_to_url_string_[3] = kUrlString3;
 }
 
-MockIconURLHelper::~MockIconURLHelper() {
-}
+MockIconURLHelper::~MockIconURLHelper() = default;
 
 std::string MockIconURLHelper::GetMainFrameToken() const {
   return "0123456789ABCDEF0123456789ABCDEF";

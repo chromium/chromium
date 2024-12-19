@@ -10,8 +10,7 @@
 
 namespace extensions {
 
-IdentityMintRequestQueue::IdentityMintRequestQueue() {
-}
+IdentityMintRequestQueue::IdentityMintRequestQueue() = default;
 
 IdentityMintRequestQueue::~IdentityMintRequestQueue() {
   for (RequestQueueMap::const_iterator

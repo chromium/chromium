@@ -34,15 +34,13 @@ FileSystemProviderCapabilities::FileSystemProviderCapabilities(
       source_(source) {
 }
 
-FileSystemProviderCapabilities::~FileSystemProviderCapabilities() {
-}
+FileSystemProviderCapabilities::~FileSystemProviderCapabilities() = default;
 
-FileSystemProviderCapabilitiesHandler::FileSystemProviderCapabilitiesHandler() {
-}
+FileSystemProviderCapabilitiesHandler::FileSystemProviderCapabilitiesHandler() =
+    default;
 
 FileSystemProviderCapabilitiesHandler::
-    ~FileSystemProviderCapabilitiesHandler() {
-}
+    ~FileSystemProviderCapabilitiesHandler() = default;
 
 // static
 const FileSystemProviderCapabilities* FileSystemProviderCapabilities::Get(

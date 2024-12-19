@@ -40,8 +40,7 @@ const int kSubMenuBaseId = 200;
 //  virtual std::u16string GetLabelAt(int index) const = 0;
 class CommonMenuModel : public ui::MenuModel {
  public:
-  CommonMenuModel() {
-  }
+  CommonMenuModel() = default;
 
   CommonMenuModel(const CommonMenuModel&) = delete;
   CommonMenuModel& operator=(const CommonMenuModel&) = delete;
@@ -122,8 +121,7 @@ class SubMenuModel final : public CommonMenuModel {
 
 class TopMenuModel final : public CommonMenuModel {
  public:
-  TopMenuModel() {
-  }
+  TopMenuModel() = default;
 
   TopMenuModel(const TopMenuModel&) = delete;
   TopMenuModel& operator=(const TopMenuModel&) = delete;

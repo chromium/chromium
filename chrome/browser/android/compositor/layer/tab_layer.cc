@@ -446,7 +446,6 @@ TabLayer::TabLayer(bool incognito,
   front_border_->SetFillCenter(false);
 }
 
-TabLayer::~TabLayer() {
-}
+TabLayer::~TabLayer() = default;
 
 }  //  namespace android

@@ -21,8 +21,7 @@ KeywordEditorController::KeywordEditorController(Profile* profile)
   table_model_ = std::make_unique<TemplateURLTableModel>(url_model_);
 }
 
-KeywordEditorController::~KeywordEditorController() {
-}
+KeywordEditorController::~KeywordEditorController() = default;
 
 int KeywordEditorController::AddTemplateURL(const std::u16string& title,
                                             const std::u16string& keyword,

@@ -26,8 +26,7 @@ CacheCounter::CacheResult::~CacheResult() = default;
 
 CacheCounter::CacheCounter(Profile* profile) : profile_(profile) {}
 
-CacheCounter::~CacheCounter() {
-}
+CacheCounter::~CacheCounter() = default;
 
 const char* CacheCounter::GetPrefName() const {
   return GetTab() == browsing_data::ClearBrowsingDataTab::BASIC

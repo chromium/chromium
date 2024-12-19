@@ -29,8 +29,7 @@ ShowTranslateBubbleResult ShowDefault(BrowserWindow* window,
 
 }  // namespace
 
-TranslateBubbleFactory::~TranslateBubbleFactory() {
-}
+TranslateBubbleFactory::~TranslateBubbleFactory() = default;
 
 // static
 ShowTranslateBubbleResult TranslateBubbleFactory::Show(

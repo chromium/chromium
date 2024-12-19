@@ -83,8 +83,7 @@ namespace system_logs {
 CommandLineLogSource::CommandLineLogSource() : SystemLogsSource("CommandLine") {
 }
 
-CommandLineLogSource::~CommandLineLogSource() {
-}
+CommandLineLogSource::~CommandLineLogSource() = default;
 
 void CommandLineLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

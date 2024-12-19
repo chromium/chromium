@@ -19,8 +19,7 @@ BinaryIntegrityIncident::BinaryIntegrityIncident(
       binary_integrity_incident.release());
 }
 
-BinaryIntegrityIncident::~BinaryIntegrityIncident() {
-}
+BinaryIntegrityIncident::~BinaryIntegrityIncident() = default;
 
 IncidentType BinaryIntegrityIncident::GetType() const {
   return IncidentType::BINARY_INTEGRITY;

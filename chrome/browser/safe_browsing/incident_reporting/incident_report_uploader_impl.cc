@@ -62,8 +62,7 @@ constexpr net::NetworkTrafficAnnotationTag
 
 }  // namespace
 
-IncidentReportUploaderImpl::~IncidentReportUploaderImpl() {
-}
+IncidentReportUploaderImpl::~IncidentReportUploaderImpl() = default;
 
 // static
 std::unique_ptr<IncidentReportUploader>

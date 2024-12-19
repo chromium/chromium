@@ -309,8 +309,7 @@ ChromeZoomLevelPrefs* Profile::GetZoomLevelPrefs() {
   return nullptr;
 }
 
-Profile::Delegate::~Delegate() {
-}
+Profile::Delegate::~Delegate() = default;
 
 // static
 const char Profile::kProfileKey[] = "__PROFILE__";

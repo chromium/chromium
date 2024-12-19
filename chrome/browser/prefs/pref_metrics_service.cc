@@ -25,8 +25,7 @@ PrefMetricsService::PrefMetricsService(Profile* profile)
   RecordLaunchPrefs();
 }
 
-PrefMetricsService::~PrefMetricsService() {
-}
+PrefMetricsService::~PrefMetricsService() = default;
 
 // static
 void PrefMetricsService::RecordHomePageLaunchMetrics(bool show_home_button,
@@ -120,8 +119,7 @@ PrefMetricsService::Factory::Factory()
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
-PrefMetricsService::Factory::~Factory() {
-}
+PrefMetricsService::Factory::~Factory() = default;
 
 std::unique_ptr<KeyedService>
 PrefMetricsService::Factory::BuildServiceInstanceForBrowserContext(

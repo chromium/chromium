@@ -231,8 +231,7 @@ class CrOSUIControllerDelegate : public DownloadUIController::Delegate {
 
 } // namespace
 
-DownloadUIController::Delegate::~Delegate() {
-}
+DownloadUIController::Delegate::~Delegate() = default;
 
 void DownloadUIController::Delegate::OnButtonClicked() {}
 

@@ -104,8 +104,7 @@ ArcAppIcon::Source::Source(const base::WeakPtr<ArcAppIcon>& host,
       resource_size_in_dip_(resource_size_in_dip) {
 }
 
-ArcAppIcon::Source::~Source() {
-}
+ArcAppIcon::Source::~Source() = default;
 
 gfx::ImageSkiaRep ArcAppIcon::Source::GetImageForScale(float scale) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

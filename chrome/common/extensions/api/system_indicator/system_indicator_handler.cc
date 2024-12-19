@@ -34,11 +34,9 @@ SystemIndicatorInfo::~SystemIndicatorInfo() = default;
 
 }  // namespace
 
-SystemIndicatorHandler::SystemIndicatorHandler() {
-}
+SystemIndicatorHandler::SystemIndicatorHandler() = default;
 
-SystemIndicatorHandler::~SystemIndicatorHandler() {
-}
+SystemIndicatorHandler::~SystemIndicatorHandler() = default;
 
 const ExtensionIconSet* SystemIndicatorHandler::GetSystemIndicatorIcon(
     const Extension& extension) {

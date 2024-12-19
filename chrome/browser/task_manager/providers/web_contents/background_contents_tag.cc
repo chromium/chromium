@@ -48,7 +48,6 @@ BackgroundContentsTag::BackgroundContentsTag(
   DCHECK(background_contents);
 }
 
-BackgroundContentsTag::~BackgroundContentsTag() {
-}
+BackgroundContentsTag::~BackgroundContentsTag() = default;
 
 }  // namespace task_manager

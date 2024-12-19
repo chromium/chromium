@@ -146,11 +146,11 @@ ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
       ArgumentList(echo_api::GetOfferInfo::Results::Create(result)));
 }
 
-EchoPrivateGetOobeTimestampFunction::EchoPrivateGetOobeTimestampFunction() {
-}
+EchoPrivateGetOobeTimestampFunction::EchoPrivateGetOobeTimestampFunction() =
+    default;
 
-EchoPrivateGetOobeTimestampFunction::~EchoPrivateGetOobeTimestampFunction() {
-}
+EchoPrivateGetOobeTimestampFunction::~EchoPrivateGetOobeTimestampFunction() =
+    default;
 
 ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
   chromeos::echo_util::GetOobeTimestamp(base::BindOnce(

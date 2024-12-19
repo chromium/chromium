@@ -115,8 +115,7 @@ IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
   iframe_url_ = GURL(RunScript(web_contents->GetPrimaryMainFrame(), script));
 }
 
-IFrameLoader::~IFrameLoader() {
-}
+IFrameLoader::~IFrameLoader() = default;
 
 void IFrameLoader::DidStopLoading() {
   navigation_completed_ = true;

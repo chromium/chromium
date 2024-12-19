@@ -55,8 +55,7 @@ ChromeBrowserMainPartsLinux::ChromeBrowserMainPartsLinux(
     StartupData* startup_data)
     : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
-ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
-}
+ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() = default;
 
 void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

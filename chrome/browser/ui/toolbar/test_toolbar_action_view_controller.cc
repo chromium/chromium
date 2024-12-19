@@ -17,8 +17,7 @@ TestToolbarActionViewController::TestToolbarActionViewController(
   SetAccessibleName(u"Default name");
 }
 
-TestToolbarActionViewController::~TestToolbarActionViewController() {
-}
+TestToolbarActionViewController::~TestToolbarActionViewController() = default;
 
 std::string TestToolbarActionViewController::GetId() const {
   return id_;

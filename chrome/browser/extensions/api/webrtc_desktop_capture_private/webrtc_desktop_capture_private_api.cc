@@ -24,12 +24,10 @@ const char kUrlNotSecure[] =
 }  // namespace
 
 WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::
-    WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() {
-}
+    WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() = default;
 
 WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::
-    ~WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() {
-}
+    ~WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() = default;
 
 ExtensionFunction::ResponseAction
 WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {

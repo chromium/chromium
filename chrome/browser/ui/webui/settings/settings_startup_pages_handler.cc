@@ -23,8 +23,7 @@ StartupPagesHandler::StartupPagesHandler(content::WebUI* webui)
     : startup_custom_pages_table_model_(Profile::FromWebUI(webui)) {
 }
 
-StartupPagesHandler::~StartupPagesHandler() {
-}
+StartupPagesHandler::~StartupPagesHandler() = default;
 
 void StartupPagesHandler::RegisterMessages() {
   if (Profile::FromWebUI(web_ui())->IsOffTheRecord())

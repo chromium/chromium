@@ -17,8 +17,7 @@ namespace system_logs {
 DBusLogSource::DBusLogSource() : SystemLogsSource("DBus") {
 }
 
-DBusLogSource::~DBusLogSource() {
-}
+DBusLogSource::~DBusLogSource() = default;
 
 void DBusLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

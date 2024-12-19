@@ -85,8 +85,7 @@ V8UnitTest::V8UnitTest()
   InitPathsAndLibraries();
 }
 
-V8UnitTest::~V8UnitTest() {
-}
+V8UnitTest::~V8UnitTest() = default;
 
 void V8UnitTest::AddLibrary(const base::FilePath& library_path) {
   user_libraries_.push_back(library_path);

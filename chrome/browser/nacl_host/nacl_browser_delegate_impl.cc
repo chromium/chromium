@@ -46,8 +46,7 @@ NaClBrowserDelegateImpl::NaClBrowserDelegateImpl(
   DCHECK(profile_manager_);
 }
 
-NaClBrowserDelegateImpl::~NaClBrowserDelegateImpl() {
-}
+NaClBrowserDelegateImpl::~NaClBrowserDelegateImpl() = default;
 
 void NaClBrowserDelegateImpl::ShowMissingArchInfobar(int render_process_id,
                                                      int render_frame_id) {

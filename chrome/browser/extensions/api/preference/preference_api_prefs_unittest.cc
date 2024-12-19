@@ -87,8 +87,7 @@ ExtensionControlledPrefsTest::ExtensionControlledPrefsTest()
   content_settings_->OnExtensionPrefsAvailable(prefs_.prefs());
 }
 
-ExtensionControlledPrefsTest::~ExtensionControlledPrefsTest() {
-}
+ExtensionControlledPrefsTest::~ExtensionControlledPrefsTest() = default;
 
 void ExtensionControlledPrefsTest::RegisterPreferences(
     user_prefs::PrefRegistrySyncable* registry) {

@@ -293,7 +293,6 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
   layer_->AddChild(end_divider_);
 }
 
-TabHandleLayer::~TabHandleLayer() {
-}
+TabHandleLayer::~TabHandleLayer() = default;
 
 }  // namespace android

@@ -49,8 +49,7 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
   Init(hostname, slot_name, reason);
 }
 
-CryptoModulePasswordDialogView::~CryptoModulePasswordDialogView() {
-}
+CryptoModulePasswordDialogView::~CryptoModulePasswordDialogView() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // CryptoModulePasswordDialogView, private:

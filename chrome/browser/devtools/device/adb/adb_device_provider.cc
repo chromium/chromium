@@ -67,5 +67,4 @@ void AdbDeviceProvider::OpenSocket(const std::string& serial,
                                   std::move(callback));
 }
 
-AdbDeviceProvider::~AdbDeviceProvider() {
-}
+AdbDeviceProvider::~AdbDeviceProvider() = default;

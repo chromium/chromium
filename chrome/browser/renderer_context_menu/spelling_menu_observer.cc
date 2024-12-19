@@ -57,8 +57,7 @@ SpellingMenuObserver::SpellingMenuObserver(RenderViewContextMenuProxy* proxy)
   }
 }
 
-SpellingMenuObserver::~SpellingMenuObserver() {
-}
+SpellingMenuObserver::~SpellingMenuObserver() = default;
 
 void SpellingMenuObserver::InitMenu(const content::ContextMenuParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

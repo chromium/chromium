@@ -8,14 +8,12 @@
 
 namespace local_discovery {
 
-ServiceDescription::ServiceDescription() {
-}
+ServiceDescription::ServiceDescription() = default;
 
 ServiceDescription::ServiceDescription(const ServiceDescription& other) =
     default;
 
-ServiceDescription::~ServiceDescription() {
-}
+ServiceDescription::~ServiceDescription() = default;
 
 std::string ServiceDescription::instance_name() const {
   // TODO(noamsml): Once we have escaping working, get this to

@@ -111,11 +111,9 @@ PrintPreviewDataService* PrintPreviewDataService::GetInstance() {
   return base::Singleton<PrintPreviewDataService>::get();
 }
 
-PrintPreviewDataService::PrintPreviewDataService() {
-}
+PrintPreviewDataService::PrintPreviewDataService() = default;
 
-PrintPreviewDataService::~PrintPreviewDataService() {
-}
+PrintPreviewDataService::~PrintPreviewDataService() = default;
 
 void PrintPreviewDataService::GetDataEntry(
     int32_t preview_ui_id,

@@ -54,8 +54,7 @@ ProtectedMediaIdentifierPermissionContext::
           blink::mojom::PermissionsPolicyFeature::kEncryptedMedia) {}
 
 ProtectedMediaIdentifierPermissionContext::
-    ~ProtectedMediaIdentifierPermissionContext() {
-}
+    ~ProtectedMediaIdentifierPermissionContext() = default;
 
 ContentSetting
 ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(

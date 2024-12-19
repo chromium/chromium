@@ -17,8 +17,8 @@ ChromeWebContentsViewDelegateAndroid::ChromeWebContentsViewDelegateAndroid(
     : web_contents_(web_contents) {
 }
 
-ChromeWebContentsViewDelegateAndroid::~ChromeWebContentsViewDelegateAndroid() {
-}
+ChromeWebContentsViewDelegateAndroid::~ChromeWebContentsViewDelegateAndroid() =
+    default;
 
 content::WebDragDestDelegate*
 ChromeWebContentsViewDelegateAndroid::GetDragDestDelegate() {

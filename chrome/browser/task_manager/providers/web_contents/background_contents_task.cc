@@ -52,8 +52,7 @@ BackgroundContentsTask::BackgroundContentsTask(
           FetchIcon(IDR_PLUGINS_FAVICON, &s_icon_),
           background_contents->web_contents()) {}
 
-BackgroundContentsTask::~BackgroundContentsTask() {
-}
+BackgroundContentsTask::~BackgroundContentsTask() = default;
 
 void BackgroundContentsTask::UpdateTitle() {
   // TODO(afakhry): At the time of integration testing figure out whether we

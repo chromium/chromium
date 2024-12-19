@@ -416,8 +416,7 @@ ExtensionInfoGenerator::ExtensionInfoGenerator(
       pending_image_loads_(0u) {
 }
 
-ExtensionInfoGenerator::~ExtensionInfoGenerator() {
-}
+ExtensionInfoGenerator::~ExtensionInfoGenerator() = default;
 
 void ExtensionInfoGenerator::CreateExtensionInfo(
     const ExtensionId& id,

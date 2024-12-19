@@ -60,11 +60,9 @@ void RecordBadSyncData(BadSyncDataReason reason) {
 
 }  // namespace
 
-ExtensionSyncData::LinkedAppIconInfo::LinkedAppIconInfo() {
-}
+ExtensionSyncData::LinkedAppIconInfo::LinkedAppIconInfo() = default;
 
-ExtensionSyncData::LinkedAppIconInfo::~LinkedAppIconInfo() {
-}
+ExtensionSyncData::LinkedAppIconInfo::~LinkedAppIconInfo() = default;
 
 ExtensionSyncData::ExtensionSyncData()
     : is_app_(false),

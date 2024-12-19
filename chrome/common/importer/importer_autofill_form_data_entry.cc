@@ -7,5 +7,4 @@
 ImporterAutofillFormDataEntry::ImporterAutofillFormDataEntry() : times_used(0) {
 }
 
-ImporterAutofillFormDataEntry::~ImporterAutofillFormDataEntry() {
-}
+ImporterAutofillFormDataEntry::~ImporterAutofillFormDataEntry() = default;

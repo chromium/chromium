@@ -76,8 +76,7 @@ TabIconView::TabIconView() {
   SetFocusBehavior(FocusBehavior::NEVER);
 }
 
-TabIconView::~TabIconView() {
-}
+TabIconView::~TabIconView() = default;
 
 void TabIconView::SetModel(TabIconViewModel* model) {
   model_ = model;

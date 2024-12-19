@@ -287,8 +287,7 @@ InstalledLoader::InstalledLoader(ExtensionService* extension_service)
       extension_registry_(ExtensionRegistry::Get(extension_service->profile())),
       extension_prefs_(ExtensionPrefs::Get(extension_service->profile())) {}
 
-InstalledLoader::~InstalledLoader() {
-}
+InstalledLoader::~InstalledLoader() = default;
 
 void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
   // TODO(asargent): add a test to confirm that we can't load extensions if

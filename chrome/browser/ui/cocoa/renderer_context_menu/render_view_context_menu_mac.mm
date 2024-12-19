@@ -58,8 +58,7 @@ RenderViewContextMenuMac::RenderViewContextMenuMac(
   set_toolkit_delegate(std::move(delegate));
 }
 
-RenderViewContextMenuMac::~RenderViewContextMenuMac() {
-}
+RenderViewContextMenuMac::~RenderViewContextMenuMac() = default;
 
 void RenderViewContextMenuMac::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_CONTENT_CONTEXT_LOOK_UP)

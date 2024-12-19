@@ -87,8 +87,7 @@ UserPolicySigninService::UserPolicySigninService(
   }
 }
 
-UserPolicySigninService::~UserPolicySigninService() {
-}
+UserPolicySigninService::~UserPolicySigninService() = default;
 
 void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {

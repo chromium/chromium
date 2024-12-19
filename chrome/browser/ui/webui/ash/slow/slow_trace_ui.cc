@@ -25,8 +25,7 @@ namespace ash {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-SlowTraceSource::SlowTraceSource() {
-}
+SlowTraceSource::SlowTraceSource() = default;
 
 std::string SlowTraceSource::GetSource() {
   return chrome::kChromeUISlowTraceHost;

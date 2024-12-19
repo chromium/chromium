@@ -98,8 +98,7 @@ FirstRunDialog::FirstRunDialog(base::RepeatingClosure learn_more_callback,
   report_crashes_->SetChecked(true);
 }
 
-FirstRunDialog::~FirstRunDialog() {
-}
+FirstRunDialog::~FirstRunDialog() = default;
 
 void FirstRunDialog::Done() {
   CHECK(!quit_runloop_.is_null());

@@ -27,8 +27,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsElementId);
 
 class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  HelpBubbleHandlerInteractiveUiTest() {
-  }
+  HelpBubbleHandlerInteractiveUiTest() = default;
   ~HelpBubbleHandlerInteractiveUiTest() override = default;
 
   // Opens the side panel and instruments the Read Later WebContents as

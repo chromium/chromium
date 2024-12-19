@@ -31,8 +31,7 @@ InspectableViewsFinder::InspectableViewsFinder(Profile* profile)
     : profile_(profile) {
 }
 
-InspectableViewsFinder::~InspectableViewsFinder() {
-}
+InspectableViewsFinder::~InspectableViewsFinder() = default;
 
 api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
   api::developer_private::ViewType developer_private_type =

@@ -126,8 +126,7 @@ RenderViewContextMenuViews::RenderViewContextMenuViews(
   set_toolkit_delegate(std::move(delegate));
 }
 
-RenderViewContextMenuViews::~RenderViewContextMenuViews() {
-}
+RenderViewContextMenuViews::~RenderViewContextMenuViews() = default;
 
 // static
 RenderViewContextMenuViews* RenderViewContextMenuViews::Create(

@@ -62,8 +62,7 @@ CriticalNotificationBubbleView::CriticalNotificationBubbleView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
 }
 
-CriticalNotificationBubbleView::~CriticalNotificationBubbleView() {
-}
+CriticalNotificationBubbleView::~CriticalNotificationBubbleView() = default;
 
 base::TimeDelta CriticalNotificationBubbleView::GetRemainingTime() const {
   // How long to give the user until auto-restart if no action is taken.

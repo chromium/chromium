@@ -11,11 +11,9 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #endif
 
-BrowserProcessPlatformPartBase::BrowserProcessPlatformPartBase() {
-}
+BrowserProcessPlatformPartBase::BrowserProcessPlatformPartBase() = default;
 
-BrowserProcessPlatformPartBase::~BrowserProcessPlatformPartBase() {
-}
+BrowserProcessPlatformPartBase::~BrowserProcessPlatformPartBase() = default;
 
 void BrowserProcessPlatformPartBase::StartTearDown() {
 }

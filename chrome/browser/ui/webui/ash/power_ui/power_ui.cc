@@ -56,11 +56,9 @@ class PowerMessageHandler : public content::WebUIMessageHandler {
   base::Value::List GetJsSystemResumedData();
 };
 
-PowerMessageHandler::PowerMessageHandler() {
-}
+PowerMessageHandler::PowerMessageHandler() = default;
 
-PowerMessageHandler::~PowerMessageHandler() {
-}
+PowerMessageHandler::~PowerMessageHandler() = default;
 
 void PowerMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -241,7 +239,6 @@ PowerUI::PowerUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   html->SetDefaultResource(IDR_ABOUT_POWER_HTML);
 }
 
-PowerUI::~PowerUI() {
-}
+PowerUI::~PowerUI() = default;
 
 }  // namespace ash

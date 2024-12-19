@@ -208,7 +208,6 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
   debug_layer_->SetOpacity(0.5f);
 }
 
-ToolbarLayer::~ToolbarLayer() {
-}
+ToolbarLayer::~ToolbarLayer() = default;
 
 }  //  namespace android

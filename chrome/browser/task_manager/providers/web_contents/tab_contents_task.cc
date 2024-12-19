@@ -37,8 +37,7 @@ TabContentsTask::TabContentsTask(content::WebContents* web_contents)
   set_title(GetCurrentTitle());
 }
 
-TabContentsTask::~TabContentsTask() {
-}
+TabContentsTask::~TabContentsTask() = default;
 
 void TabContentsTask::UpdateTitle() {
   set_title(GetCurrentTitle());

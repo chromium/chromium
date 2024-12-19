@@ -7,11 +7,9 @@
 #include <memory>
 #include "chrome/browser/ui/views/status_icons/status_icon_linux_wrapper.h"
 
-StatusTrayLinux::StatusTrayLinux() {
-}
+StatusTrayLinux::StatusTrayLinux() = default;
 
-StatusTrayLinux::~StatusTrayLinux() {
-}
+StatusTrayLinux::~StatusTrayLinux() = default;
 
 std::unique_ptr<StatusIcon> StatusTrayLinux::CreatePlatformStatusIcon(
     StatusIconType type,

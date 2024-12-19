@@ -130,8 +130,7 @@ class TestChangeProcessor : public syncer::SyncChangeProcessor {
 TestChangeProcessor::TestChangeProcessor() : erroneous_(false) {
 }
 
-TestChangeProcessor::~TestChangeProcessor() {
-}
+TestChangeProcessor::~TestChangeProcessor() = default;
 
 std::optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
     const base::Location& from_here,

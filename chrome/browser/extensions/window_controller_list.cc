@@ -25,11 +25,9 @@ WindowControllerList* WindowControllerList::GetInstance() {
   return base::Singleton<WindowControllerList>::get();
 }
 
-WindowControllerList::WindowControllerList() {
-}
+WindowControllerList::WindowControllerList() = default;
 
-WindowControllerList::~WindowControllerList() {
-}
+WindowControllerList::~WindowControllerList() = default;
 
 void WindowControllerList::AddExtensionWindow(WindowController* window) {
   windows_.push_back(window);

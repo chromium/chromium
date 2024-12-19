@@ -13,8 +13,7 @@ WebContentsCloseHandler::WebContentsCloseHandler(
       tab_changed_after_clone_(false) {
 }
 
-WebContentsCloseHandler::~WebContentsCloseHandler() {
-}
+WebContentsCloseHandler::~WebContentsCloseHandler() = default;
 
 void WebContentsCloseHandler::TabInserted() {
   // Tests may end up reviving a TabStrip that is empty.

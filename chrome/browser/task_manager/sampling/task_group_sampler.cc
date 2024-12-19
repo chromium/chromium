@@ -114,8 +114,7 @@ void TaskGroupSampler::Refresh(int64_t refresh_flags) {
   }
 }
 
-TaskGroupSampler::~TaskGroupSampler() {
-}
+TaskGroupSampler::~TaskGroupSampler() = default;
 
 double TaskGroupSampler::RefreshCpuUsage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);

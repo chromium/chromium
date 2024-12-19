@@ -30,8 +30,7 @@ const char kEndState[] = "/find_in_page/end_state.html";
 
 class FindInPageInteractiveTest : public InProcessBrowserTest {
  public:
-  FindInPageInteractiveTest() {
-  }
+  FindInPageInteractiveTest() = default;
 
   // Platform independent FindInPage that takes |const wchar_t*|
   // as an input.

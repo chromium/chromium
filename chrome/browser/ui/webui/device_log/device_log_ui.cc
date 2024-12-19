@@ -118,7 +118,6 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
   html->SetDefaultResource(IDR_DEVICE_LOG_DEVICE_LOG_UI_HTML);
 }
 
-DeviceLogUI::~DeviceLogUI() {
-}
+DeviceLogUI::~DeviceLogUI() = default;
 
 }  // namespace chromeos

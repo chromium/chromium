@@ -196,8 +196,7 @@ ExtensionActionStorageManager::ExtensionActionStorageManager(
     store->RegisterKey(kBrowserActionStorageKey);
 }
 
-ExtensionActionStorageManager::~ExtensionActionStorageManager() {
-}
+ExtensionActionStorageManager::~ExtensionActionStorageManager() = default;
 
 void ExtensionActionStorageManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,

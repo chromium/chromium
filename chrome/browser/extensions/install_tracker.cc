@@ -32,8 +32,7 @@ InstallTracker::InstallTracker(content::BrowserContext* browser_context,
   }
 }
 
-InstallTracker::~InstallTracker() {
-}
+InstallTracker::~InstallTracker() = default;
 
 // static
 InstallTracker* InstallTracker::Get(content::BrowserContext* context) {

@@ -23,8 +23,7 @@ TabStripModelStatsRecorder::TabStripModelStatsRecorder()
   browser_tab_strip_tracker_->Init();
 }
 
-TabStripModelStatsRecorder::~TabStripModelStatsRecorder() {
-}
+TabStripModelStatsRecorder::~TabStripModelStatsRecorder() = default;
 
 class TabStripModelStatsRecorder::TabInfo
     : public base::SupportsUserData::Data {

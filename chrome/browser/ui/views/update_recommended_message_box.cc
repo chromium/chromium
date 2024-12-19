@@ -67,8 +67,7 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
           views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
-UpdateRecommendedMessageBox::~UpdateRecommendedMessageBox() {
-}
+UpdateRecommendedMessageBox::~UpdateRecommendedMessageBox() = default;
 
 bool UpdateRecommendedMessageBox::Accept() {
   chrome::AttemptRelaunch();

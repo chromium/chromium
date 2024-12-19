@@ -141,8 +141,7 @@ ExtensionPrinterSettings ParseExtensionPrinterSettings(
 ExtensionPrinterHandler::ExtensionPrinterHandler(Profile* profile)
     : profile_(profile) {}
 
-ExtensionPrinterHandler::~ExtensionPrinterHandler() {
-}
+ExtensionPrinterHandler::~ExtensionPrinterHandler() = default;
 
 void ExtensionPrinterHandler::Reset() {
   // TODO(tbarzic): Keep track of pending request ids issued by |this| and

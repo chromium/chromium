@@ -556,8 +556,7 @@ MockAndroidConnection::MockAndroidConnection(
   ProcessCommand(command);
 }
 
-MockAndroidConnection::~MockAndroidConnection() {
-}
+MockAndroidConnection::~MockAndroidConnection() = default;
 
 void MockAndroidConnection::Receive(const std::string& data) {
   request_ += data;

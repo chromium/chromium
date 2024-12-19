@@ -115,8 +115,7 @@ class ThemeService::ThemeObserver
   ThemeObserver(const ThemeObserver&) = delete;
   ThemeObserver& operator=(const ThemeObserver&) = delete;
 
-  ~ThemeObserver() override {
-  }
+  ~ThemeObserver() override = default;
 
  private:
   // extensions::ExtensionRegistryObserver:

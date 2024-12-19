@@ -23,8 +23,8 @@ AppWindowDesktopWindowTreeHostWin::AppWindowDesktopWindowTreeHostWin(
       app_window_(app_window) {
 }
 
-AppWindowDesktopWindowTreeHostWin::~AppWindowDesktopWindowTreeHostWin() {
-}
+AppWindowDesktopWindowTreeHostWin::~AppWindowDesktopWindowTreeHostWin() =
+    default;
 
 bool AppWindowDesktopWindowTreeHostWin::GetClientAreaInsets(
     gfx::Insets* insets,

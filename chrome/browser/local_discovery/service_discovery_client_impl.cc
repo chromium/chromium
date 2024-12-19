@@ -32,8 +32,7 @@ ServiceDiscoveryClientImpl::ServiceDiscoveryClientImpl(
     net::MDnsClient* mdns_client) : mdns_client_(mdns_client) {
 }
 
-ServiceDiscoveryClientImpl::~ServiceDiscoveryClientImpl() {
-}
+ServiceDiscoveryClientImpl::~ServiceDiscoveryClientImpl() = default;
 
 std::unique_ptr<ServiceWatcher>
 ServiceDiscoveryClientImpl::CreateServiceWatcher(
@@ -78,8 +77,7 @@ void ServiceWatcherImpl::Start() {
     ReadCachedServices();
 }
 
-ServiceWatcherImpl::~ServiceWatcherImpl() {
-}
+ServiceWatcherImpl::~ServiceWatcherImpl() = default;
 
 void ServiceWatcherImpl::DiscoverNewServices() {
   DCHECK(started_);
@@ -198,8 +196,7 @@ ServiceWatcherImpl::ServiceListeners::ServiceListeners(
       net::dns_protocol::kTypeTXT, service_name, watcher);
 }
 
-ServiceWatcherImpl::ServiceListeners::~ServiceListeners() {
-}
+ServiceWatcherImpl::ServiceListeners::~ServiceListeners() = default;
 
 bool ServiceWatcherImpl::ServiceListeners::Start() {
   return srv_listener_->Start() && txt_listener_->Start();
@@ -349,8 +346,7 @@ void ServiceResolverImpl::StartResolving() {
   }
 }
 
-ServiceResolverImpl::~ServiceResolverImpl() {
-}
+ServiceResolverImpl::~ServiceResolverImpl() = default;
 
 bool ServiceResolverImpl::CreateTxtTransaction() {
   txt_transaction_ = mdns_client_->CreateTransaction(

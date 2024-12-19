@@ -50,8 +50,7 @@ CustomHomePagesTableModel::CustomHomePagesTableModel(Profile* profile)
       observer_(nullptr),
       num_outstanding_title_lookups_(0) {}
 
-CustomHomePagesTableModel::~CustomHomePagesTableModel() {
-}
+CustomHomePagesTableModel::~CustomHomePagesTableModel() = default;
 
 void CustomHomePagesTableModel::SetURLs(const std::vector<GURL>& urls) {
   entries_.resize(urls.size());

@@ -16,8 +16,7 @@ HoverTabSelector::HoverTabSelector(TabStripModel* tab_strip_model)
   DCHECK(tab_strip_model_);
 }
 
-HoverTabSelector::~HoverTabSelector() {
-}
+HoverTabSelector::~HoverTabSelector() = default;
 
 void HoverTabSelector::StartTabTransition(int index) {
   // If there is a transition underway already, only start a new

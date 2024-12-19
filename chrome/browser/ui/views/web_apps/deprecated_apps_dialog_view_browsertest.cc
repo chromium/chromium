@@ -83,8 +83,7 @@ class DeprecatedAppDialogWidgetObserver : public views::WidgetObserver {
 class DeprecatedAppsDialogViewBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  DeprecatedAppsDialogViewBrowserTest() {
-  }
+  DeprecatedAppsDialogViewBrowserTest() = default;
 
   DeprecatedAppsDialogViewBrowserTest(
       const DeprecatedAppsDialogViewBrowserTest&) = delete;

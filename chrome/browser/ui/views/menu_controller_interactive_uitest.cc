@@ -11,15 +11,13 @@
 template<ui::KeyboardCode KEYCODE, int EXPECTED_COMMAND>
 class MenuControllerMnemonicTest : public MenuTestBase {
  public:
-  MenuControllerMnemonicTest() {
-  }
+  MenuControllerMnemonicTest() = default;
 
   MenuControllerMnemonicTest(const MenuControllerMnemonicTest&) = delete;
   MenuControllerMnemonicTest& operator=(const MenuControllerMnemonicTest&) =
       delete;
 
-  ~MenuControllerMnemonicTest() override {
-  }
+  ~MenuControllerMnemonicTest() override = default;
 
   // MenuTestBase overrides:
   void BuildMenu(views::MenuItemView* menu) override {

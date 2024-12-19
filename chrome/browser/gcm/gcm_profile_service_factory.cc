@@ -126,8 +126,7 @@ GCMProfileServiceFactory::GCMProfileServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-GCMProfileServiceFactory::~GCMProfileServiceFactory() {
-}
+GCMProfileServiceFactory::~GCMProfileServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(

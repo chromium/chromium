@@ -50,8 +50,7 @@ ExtensionKeybindingRegistry::ExtensionKeybindingRegistry(
       this, ui::MediaKeysListener::Scope::kFocused);
 }
 
-ExtensionKeybindingRegistry::~ExtensionKeybindingRegistry() {
-}
+ExtensionKeybindingRegistry::~ExtensionKeybindingRegistry() = default;
 
 void ExtensionKeybindingRegistry::SetShortcutHandlingSuspended(bool suspended) {
   shortcut_handling_suspended_ = suspended;

@@ -200,11 +200,9 @@ bool NotificationsApiFunction::IsNotificationsApiAvailable() {
   return extension()->is_platform_app() || extension()->is_extension();
 }
 
-NotificationsApiFunction::NotificationsApiFunction() {
-}
+NotificationsApiFunction::NotificationsApiFunction() = default;
 
-NotificationsApiFunction::~NotificationsApiFunction() {
-}
+NotificationsApiFunction::~NotificationsApiFunction() = default;
 
 bool NotificationsApiFunction::CreateNotification(
     const std::string& id,
@@ -570,11 +568,9 @@ NotificationsApiFunction::MapApiTemplateTypeToType(
   }
 }
 
-NotificationsCreateFunction::NotificationsCreateFunction() {
-}
+NotificationsCreateFunction::NotificationsCreateFunction() = default;
 
-NotificationsCreateFunction::~NotificationsCreateFunction() {
-}
+NotificationsCreateFunction::~NotificationsCreateFunction() = default;
 
 ExtensionFunction::ResponseAction
 NotificationsCreateFunction::RunNotificationsApi() {
@@ -604,11 +600,9 @@ NotificationsCreateFunction::RunNotificationsApi() {
   return RespondNow(WithArguments(notification_id));
 }
 
-NotificationsUpdateFunction::NotificationsUpdateFunction() {
-}
+NotificationsUpdateFunction::NotificationsUpdateFunction() = default;
 
-NotificationsUpdateFunction::~NotificationsUpdateFunction() {
-}
+NotificationsUpdateFunction::~NotificationsUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction
 NotificationsUpdateFunction::RunNotificationsApi() {
@@ -645,11 +639,9 @@ NotificationsUpdateFunction::RunNotificationsApi() {
   return RespondNow(WithArguments(true));
 }
 
-NotificationsClearFunction::NotificationsClearFunction() {
-}
+NotificationsClearFunction::NotificationsClearFunction() = default;
 
-NotificationsClearFunction::~NotificationsClearFunction() {
-}
+NotificationsClearFunction::~NotificationsClearFunction() = default;
 
 ExtensionFunction::ResponseAction
 NotificationsClearFunction::RunNotificationsApi() {

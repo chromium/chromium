@@ -75,8 +75,7 @@ void ServiceTypePrinter::Start() {
   watcher_->DiscoverNewServices();
 }
 
-ServiceTypePrinter::~ServiceTypePrinter() {
-}
+ServiceTypePrinter::~ServiceTypePrinter() = default;
 
 void ServiceTypePrinter::OnServiceUpdated(ServiceWatcher::UpdateType update,
                                           const std::string& service_name) {

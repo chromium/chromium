@@ -26,8 +26,7 @@ StubCrosSettingsProvider::StubCrosSettingsProvider()
   SetDefaults();
 }
 
-StubCrosSettingsProvider::~StubCrosSettingsProvider() {
-}
+StubCrosSettingsProvider::~StubCrosSettingsProvider() = default;
 
 const base::Value* StubCrosSettingsProvider::Get(std::string_view path) const {
   DCHECK(HandlesSetting(path));

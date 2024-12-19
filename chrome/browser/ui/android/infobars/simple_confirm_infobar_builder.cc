@@ -85,8 +85,7 @@ SimpleConfirmInfoBarDelegate::SimpleConfirmInfoBarDelegate(
   java_listener_.Reset(j_listener);
 }
 
-SimpleConfirmInfoBarDelegate::~SimpleConfirmInfoBarDelegate() {
-}
+SimpleConfirmInfoBarDelegate::~SimpleConfirmInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 SimpleConfirmInfoBarDelegate::GetIdentifier() const {

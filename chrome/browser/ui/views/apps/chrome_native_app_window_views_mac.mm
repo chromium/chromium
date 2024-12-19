@@ -97,7 +97,7 @@ bool NSWindowIsMaximized(NSWindow* window) {
 
 }  // namespace
 
-ChromeNativeAppWindowViewsMac::ChromeNativeAppWindowViewsMac() {}
+ChromeNativeAppWindowViewsMac::ChromeNativeAppWindowViewsMac() = default;
 
 ChromeNativeAppWindowViewsMac::~ChromeNativeAppWindowViewsMac() {
   [nswindow_observer_ stopObserving];

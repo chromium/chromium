@@ -128,8 +128,7 @@ ExtensionSyncService::ExtensionSyncService(Profile* profile)
   prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
 }
 
-ExtensionSyncService::~ExtensionSyncService() {
-}
+ExtensionSyncService::~ExtensionSyncService() = default;
 
 // static
 ExtensionSyncService* ExtensionSyncService::Get(

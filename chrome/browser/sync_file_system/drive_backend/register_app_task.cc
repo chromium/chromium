@@ -39,8 +39,7 @@ RegisterAppTask::RegisterAppTask(SyncEngineContext* sync_context,
       create_folder_retry_count_(0),
       app_id_(app_id) {}
 
-RegisterAppTask::~RegisterAppTask() {
-}
+RegisterAppTask::~RegisterAppTask() = default;
 
 bool RegisterAppTask::CanFinishImmediately() {
   return metadata_database() &&

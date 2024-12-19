@@ -117,8 +117,7 @@ DomMessageListener::DomMessageListener(content::WebContents* web_contents)
     : observer_(web_contents, this) {
 }
 
-DomMessageListener::~DomMessageListener() {
-}
+DomMessageListener::~DomMessageListener() = default;
 
 void DomMessageListener::Wait() {
   observer_.Run();

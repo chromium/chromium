@@ -46,8 +46,7 @@ struct Export {
 Export::Export(const void* addr, const std::string& name)
     : addr(addr), name(name) {}
 
-Export::~Export() {
-}
+Export::~Export() = default;
 
 struct ModuleVerificationState {
   STACK_ALLOCATED();
@@ -111,8 +110,7 @@ ModuleVerificationState::ModuleVerificationState(HMODULE hModule)
       bytes_different(0),
       module_state(nullptr) {}
 
-ModuleVerificationState::~ModuleVerificationState() {
-}
+ModuleVerificationState::~ModuleVerificationState() = default;
 
 // Find which export a modification at address |mem_address| is in. Looks for
 // the largest export address still smaller than |mem_address|. |start| and

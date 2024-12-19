@@ -18,8 +18,8 @@
 // clipboard copy in a Lacros Google Doc.
 class AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction() override {
-  }
+  ~AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction() override =
+      default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION(
       "accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc",

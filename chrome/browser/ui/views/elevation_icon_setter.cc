@@ -60,8 +60,7 @@ ElevationIconSetter::ElevationIconSetter(views::LabelButton* button)
 #endif
 }
 
-ElevationIconSetter::~ElevationIconSetter() {
-}
+ElevationIconSetter::~ElevationIconSetter() = default;
 
 void ElevationIconSetter::SetButtonIcon(const SkBitmap& icon) {
   if (!icon.isNull()) {

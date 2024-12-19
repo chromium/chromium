@@ -17,8 +17,7 @@ using content::WebContents;
 WebDragBookmarkHandlerAura::WebDragBookmarkHandlerAura()
     : bookmark_tab_helper_(nullptr), web_contents_(nullptr) {}
 
-WebDragBookmarkHandlerAura::~WebDragBookmarkHandlerAura() {
-}
+WebDragBookmarkHandlerAura::~WebDragBookmarkHandlerAura() = default;
 
 void WebDragBookmarkHandlerAura::DragInitialize(WebContents* contents) {
   // Ideally we would want to initialize the the BookmarkTabHelper member in
