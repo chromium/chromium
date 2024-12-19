@@ -1984,15 +1984,9 @@ public class StripLayoutHelper
             }
         } else {
             StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)) {
-                showTabGroupContextMenu(groupTitle);
-                mDelayedReorderView = groupTitle;
-                mDelayedReorderInitialX = x;
-            } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER)) {
-                // Should be obsolete, since context menu has launched. Code path will be
-                // unreachable, then removed once the context menu flag has been cleaned up.
-                startReorderMode(x, y, groupTitle, ReorderType.VIEW_IN_STRIP);
-            }
+            showTabGroupContextMenu(groupTitle);
+            mDelayedReorderView = groupTitle;
+            mDelayedReorderInitialX = x;
         }
     }
 

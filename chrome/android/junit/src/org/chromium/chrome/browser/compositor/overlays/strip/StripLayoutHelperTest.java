@@ -1347,7 +1347,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     @Feature("Advanced Peripherals Support")
     public void testCloseButtonHoverOnDown() {
         // Setup
@@ -1871,7 +1870,6 @@ public class StripLayoutHelperTest {
     @Test
     @DisableFeatures({
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
-        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU
     })
     public void testOnLongPress_OnTab() {
         onLongPress_OnTab();
@@ -1896,7 +1894,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Group Context Menu")
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
     public void testOnLongPress_OnGroupTitle() {
         // Initialize.
         initializeTest(false, false, 0);
@@ -1926,7 +1923,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Group Context Menu")
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
     public void testDragToScroll_WithoutContextMenu() {
         // Initialize.
         initializeTest(false, false, 0);
@@ -1942,7 +1938,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Group Context Menu")
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
     public void testDragToScroll_WithContextMenu() {
         // Initialize.
         initializeTest(false, false, 0);
@@ -1959,10 +1954,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Group Context Menu")
-    @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU,
-        ChromeFeatureList.TAB_STRIP_GROUP_REORDER
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_REORDER})
     public void testDrag_DismissContextMenu() {
         // Initialize.
         initializeTest(false, false, 0);
@@ -1980,7 +1972,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     public void testOnLongPress_WithDragDrop_OnTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
@@ -2033,17 +2024,13 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
-        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU
-    })
+    @DisableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     public void testOnLongPress_OffTab() {
         onLongPress_OffTab();
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     public void testOnLongPress_WithDragDrop_OffTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
@@ -3856,7 +3843,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Group Context Menu")
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
     public void testFling_WithContextMenu() {
         // Arrange
         initializeTest(false, false, 10, 11);
@@ -4411,7 +4397,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_sendMoveWindowBroadcast_success() {
         // Setup with tabs and select first tab.

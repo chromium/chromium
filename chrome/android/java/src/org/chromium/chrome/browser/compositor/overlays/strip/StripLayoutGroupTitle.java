@@ -154,11 +154,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         return ChromeFeatureList.sTabStripGroupCollapse.isEnabled();
     }
 
-    @Override
-    public boolean hasLongClickAction() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU);
-    }
-
     /**
      * @return DrawX accounting for padding.
      */

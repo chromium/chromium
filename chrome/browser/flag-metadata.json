@@ -8592,11 +8592,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "tab-strip-group-context-menu-android",
-    "owners": [ "skavuluru@google.com", "zheliooo@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "tab-strip-group-reorder-android",
     "owners": [ "skavuluru@google.com", "zheliooo@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 140

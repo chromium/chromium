@@ -64,7 +64,6 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({
     ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-    ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU
 })
 @Restriction(DeviceFormFactor.TABLET)
 public class TabStripGroupContextMenuTest {

@@ -528,7 +528,6 @@ public abstract class ChromeFeatureList {
             "TabGroupSyncAutoOpenKillSwitch";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_STRIP_GROUP_COLLAPSE = "TabStripGroupCollapseAndroid";
-    public static final String TAB_STRIP_GROUP_CONTEXT_MENU = "TabStripGroupContextMenuAndroid";
     public static final String TAB_STRIP_GROUP_REORDER = "TabStripGroupReorderAndroid";
     public static final String TAB_STRIP_INCOGNITO_MIGRATION = "TabStripIncognitoMigration";
     public static final String TAB_STRIP_LAYOUT_OPTIMIZATION = "TabStripLayoutOptimization";

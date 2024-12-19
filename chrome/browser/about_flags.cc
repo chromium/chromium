@@ -9749,11 +9749,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripGroupCollapseAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupCollapseAndroid)},
 
-    {"tab-strip-group-context-menu-android",
-     flag_descriptions::kTabStripGroupContextMenuAndroidName,
-     flag_descriptions::kTabStripGroupContextMenuAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupContextMenuAndroid)},
-
     {"tab-strip-group-reorder-android",
      flag_descriptions::kTabStripGroupReorderAndroidName,
      flag_descriptions::kTabStripGroupReorderAndroidDescription, kOsAndroid,
