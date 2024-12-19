@@ -6,14 +6,19 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/graph/graph_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
@@ -27,12 +32,15 @@
 #include "content/public/browser/browsing_instance_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace performance_manager {
 
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Mock;
 
 // Mock version of a Freezer.
@@ -81,7 +89,8 @@ class FreezingPolicyTest : public GraphTestHarness {
     auto discarder = std::make_unique<MockDiscarder>();
     discarder_ = discarder.get();
     // Create the policy and pass it to the graph.
-    auto policy = std::make_unique<FreezingPolicy>(std::move(discarder));
+    auto policy = std::make_unique<FreezingPolicy>(std::move(discarder),
+                                                   CreateTestOptOutChecker());
     policy_ = policy.get();
     auto freezer = std::make_unique<MockFreezer>();
     freezer_ = freezer.get();
@@ -91,6 +100,11 @@ class FreezingPolicyTest : public GraphTestHarness {
     process_node_ = CreateNode<ProcessNodeImpl>();
     std::tie(page_node_, frame_node_) =
         CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  }
+
+  // Override to create an OptOutChecker for the test.
+  virtual std::unique_ptr<freezing::OptOutChecker> CreateTestOptOutChecker() {
+    return nullptr;
   }
 
   // Reports private memory footprint for `context` to the freezing policy, with
@@ -112,8 +126,10 @@ class FreezingPolicyTest : public GraphTestHarness {
 
   std::pair<TestNodeWrapper<PageNodeImpl>, TestNodeWrapper<FrameNodeImpl>>
   CreatePageAndFrameWithBrowsingInstanceId(
-      content::BrowsingInstanceId browsing_instance_id) {
-    auto page = CreateNode<PageNodeImpl>();
+      content::BrowsingInstanceId browsing_instance_id,
+      const std::string& browsing_context_id = "") {
+    auto page =
+        CreateNode<PageNodeImpl>(/*web_contents=*/nullptr, browsing_context_id);
     auto frame = CreateFrameNodeAutoId(process_node(), page.get(),
                                        /* parent_frame_node=*/nullptr,
                                        browsing_instance_id);
@@ -1266,5 +1282,205 @@ TEST_F(FreezingPolicyBatterySaverTest, ActivateBatterySaverAfterHighCPU) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
   policy()->ToggleFreezingOnBatterySaverMode(true);
 }
+
+namespace {
+
+constexpr char kOptOutUrl1[] = "http://a.com/";
+constexpr char kOptOutUrl2[] = "http://b.com/";
+constexpr char kBrowsingContext1[] = "browsing-context-1";
+constexpr char kBrowsingContext2[] = "browsing-context-2";
+
+// A test implementation of OptOutChecker that opts out a single URL.
+class TestOptOutChecker final : public freezing::OptOutChecker {
+ public:
+  TestOptOutChecker() = default;
+  ~TestOptOutChecker() final = default;
+
+  TestOptOutChecker(const TestOptOutChecker&) = delete;
+  TestOptOutChecker& operator=(const TestOptOutChecker&) = delete;
+
+  // Sets the opted out url to `url`, and notifies `browser_contexts_to_notify`
+  // of the change.
+  void SetOptedOutUrl(
+      const std::string& url,
+      const std::vector<std::string>& browser_contexts_to_notify);
+
+  // OptOutChecker:
+  void SetOptOutPolicyChangedCallback(
+      OnPolicyChangedForBrowserContextCallback callback) final;
+  bool IsPageOptedOutOfFreezing(std::string_view browser_context_id,
+                                const GURL& main_frame_url) final;
+
+ private:
+  OnPolicyChangedForBrowserContextCallback on_policy_changed_callback_;
+  GURL opted_out_url_;
+};
+
+void TestOptOutChecker::SetOptedOutUrl(
+    const std::string& url,
+    const std::vector<std::string>& browser_contexts_to_notify = {}) {
+  ASSERT_TRUE(on_policy_changed_callback_);
+  opted_out_url_ = GURL(url);
+  for (const std::string& browser_context_id : browser_contexts_to_notify) {
+    on_policy_changed_callback_.Run(browser_context_id);
+  }
+}
+
+void TestOptOutChecker::SetOptOutPolicyChangedCallback(
+    OnPolicyChangedForBrowserContextCallback callback) {
+  on_policy_changed_callback_ = std::move(callback);
+}
+
+bool TestOptOutChecker::IsPageOptedOutOfFreezing(
+    std::string_view browser_context_id,
+    const GURL& main_frame_url) {
+  return opted_out_url_.is_valid() && main_frame_url == opted_out_url_;
+}
+
+class FreezingPolicyOptOutTest : public FreezingPolicyTest {
+ public:
+  std::unique_ptr<freezing::OptOutChecker> CreateTestOptOutChecker() override {
+    auto opt_out_checker = std::make_unique<TestOptOutChecker>();
+    opt_out_checker_ = opt_out_checker.get();
+    return opt_out_checker;
+  }
+
+  void TearDown() override {
+    // Prevent dangling raw_ptr.
+    opt_out_checker_ = nullptr;
+    FreezingPolicyTest::TearDown();
+  }
+
+  void NavigateToUrl(PageNodeImpl* page_node, std::string_view url) {
+    page_node->OnMainFrameNavigationCommitted(
+        /*same_document=*/false, base::TimeTicks::Now(), next_navigation_id_++,
+        GURL(url), /*contents_mime_type=*/"",
+        /*notification_permission_status=*/std::nullopt);
+  }
+
+ protected:
+  raw_ptr<TestOptOutChecker> opt_out_checker_ = nullptr;
+
+  // page_node() navigates once when the GraphTestHarness is set up.
+  int next_navigation_id_ = 2;
+};
+
+TEST_F(FreezingPolicyOptOutTest, MainFrameUrlChanges) {
+  ASSERT_TRUE(opt_out_checker_.get());
+  opt_out_checker_->SetOptedOutUrl(kOptOutUrl1);
+
+  // Can freeze before an URL is set.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  policy()->AddFreezeVote(page_node());
+  VerifyFreezerExpectations();
+  EXPECT_THAT(policy()->GetCannotFreezeReasons(page_node()), IsEmpty());
+
+  // Stays frozen when navigating to an URL that's not opted out.
+  NavigateToUrl(page_node(), kOptOutUrl2);
+  VerifyFreezerExpectations();
+  EXPECT_THAT(policy()->GetCannotFreezeReasons(page_node()), IsEmpty());
+
+  // Unfreezes when navigating to an URL that's opted out.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  NavigateToUrl(page_node(), kOptOutUrl1);
+  VerifyFreezerExpectations();
+  EXPECT_THAT(policy()->GetCannotFreezeReasons(page_node()),
+              ElementsAre("opted out"));
+
+  // Navigating to the same URL does nothing.
+  NavigateToUrl(page_node(), kOptOutUrl1);
+  VerifyFreezerExpectations();
+  EXPECT_THAT(policy()->GetCannotFreezeReasons(page_node()),
+              ElementsAre("opted out"));
+
+  // Freezes when navigating away from the opted out URL.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  NavigateToUrl(page_node(), kOptOutUrl2);
+  VerifyFreezerExpectations();
+  EXPECT_THAT(policy()->GetCannotFreezeReasons(page_node()), IsEmpty());
+}
+
+TEST_F(FreezingPolicyOptOutTest, OptOutPolicyChanges) {
+  ASSERT_TRUE(opt_out_checker_.get());
+  opt_out_checker_->SetOptedOutUrl(kOptOutUrl1);
+
+  // Give each page a unique browsing instance so that there are no connected
+  // pages. kBrowsingInstanceA is already used by page_node().
+  auto [page1, frame1] = CreatePageAndFrameWithBrowsingInstanceId(
+      content::BrowsingInstanceId(10), kBrowsingContext1);
+  auto [page2, frame2] = CreatePageAndFrameWithBrowsingInstanceId(
+      content::BrowsingInstanceId(11), kBrowsingContext1);
+  auto [page3, frame3] = CreatePageAndFrameWithBrowsingInstanceId(
+      content::BrowsingInstanceId(12), kBrowsingContext2);
+
+  // Each VerifyFreezerExpectations() call is inside a SCOPED_TRACE to help
+  // interpret StrictMock "unexpected function call" failures, which don't
+  // include line numbers. Also dump the PageNode pointers for each failure to
+  // help interpret the arguments of unexpected functions.
+  SCOPED_TRACE(::testing::Message()
+               << "page1: " << page1.get() << ", page2: " << page2.get()
+               << ", page3: " << page3.get());
+
+  NavigateToUrl(page1.get(), kOptOutUrl1);
+  NavigateToUrl(page2.get(), kOptOutUrl2);
+  NavigateToUrl(page3.get(), kOptOutUrl2);
+
+  // Only page1's URL is opted out.
+  {
+    SCOPED_TRACE("add freeze votes");
+    EXPECT_CALL(*freezer(), MaybeFreezePageNode(page1.get())).Times(0);
+    EXPECT_CALL(*freezer(), MaybeFreezePageNode(page2.get()));
+    EXPECT_CALL(*freezer(), MaybeFreezePageNode(page3.get()));
+    policy()->AddFreezeVote(page1.get());
+    policy()->AddFreezeVote(page2.get());
+    policy()->AddFreezeVote(page3.get());
+    VerifyFreezerExpectations();
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page1.get()),
+                ElementsAre("opted out"));
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page2.get()), IsEmpty());
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page3.get()), IsEmpty());
+  }
+
+  // Change which URL is opted out. Notify kBrowsingContext1 of the change.
+  {
+    SCOPED_TRACE("change opted out URL");
+    EXPECT_CALL(*freezer(), UnfreezePageNode(page2.get()));
+    EXPECT_CALL(*freezer(), MaybeFreezePageNode(page1.get()));
+    opt_out_checker_->SetOptedOutUrl(kOptOutUrl2, {kBrowsingContext1});
+    VerifyFreezerExpectations();
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page1.get()), IsEmpty());
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page2.get()),
+                ElementsAre("opted out"));
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page3.get()), IsEmpty());
+  }
+
+  // Now notify kBrowsingContext2.
+  {
+    SCOPED_TRACE("notify other context");
+    EXPECT_CALL(*freezer(), UnfreezePageNode(page3.get()));
+    opt_out_checker_->SetOptedOutUrl(kOptOutUrl2, {kBrowsingContext2});
+    VerifyFreezerExpectations();
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page1.get()), IsEmpty());
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page2.get()),
+                ElementsAre("opted out"));
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page3.get()),
+                ElementsAre("opted out"));
+  }
+
+  // Remove the opt out and notify both contexts. Every page should freeze.
+  {
+    SCOPED_TRACE("remove opt outs");
+    EXPECT_CALL(*freezer(), MaybeFreezePageNode(page2.get()));
+    EXPECT_CALL(*freezer(), MaybeFreezePageNode(page3.get()));
+    opt_out_checker_->SetOptedOutUrl("",
+                                     {kBrowsingContext1, kBrowsingContext2});
+    VerifyFreezerExpectations();
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page1.get()), IsEmpty());
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page2.get()), IsEmpty());
+    EXPECT_THAT(policy()->GetCannotFreezeReasons(page3.get()), IsEmpty());
+  }
+}
+
+}  // namespace
 
 }  // namespace performance_manager

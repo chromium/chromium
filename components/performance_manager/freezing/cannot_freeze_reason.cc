@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
 
+#include "base/notreached.h"
+
 namespace performance_manager {
 
 const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
@@ -48,7 +50,10 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "loading";
     case CannotFreezeReason::kNotificationPermission:
       return "has notification permission";
+    case CannotFreezeReason::kOptedOut:
+      return "opted out";
   }
+  NOTREACHED();
 }
 
 }  // namespace performance_manager

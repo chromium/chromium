@@ -9,10 +9,12 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
@@ -54,10 +56,13 @@ class FreezingPolicy : public PageNodeObserver,
                        public GraphOwnedAndRegistered<FreezingPolicy>,
                        public NodeDataDescriberDefaultImpl {
  public:
-  explicit FreezingPolicy(std::unique_ptr<freezing::Discarder> discarder);
+  explicit FreezingPolicy(
+      std::unique_ptr<freezing::Discarder> discarder,
+      std::unique_ptr<freezing::OptOutChecker> opt_out_checker = nullptr);
+  ~FreezingPolicy() override;
+
   FreezingPolicy(const FreezingPolicy&) = delete;
   FreezingPolicy& operator=(const FreezingPolicy&) = delete;
-  ~FreezingPolicy() override;
 
   void SetFreezerForTesting(std::unique_ptr<Freezer> freezer) {
     freezer_ = std::move(freezer);
@@ -145,6 +150,7 @@ class FreezingPolicy : public PageNodeObserver,
   void OnPageNotificationPermissionStatusChange(
       const PageNode* page_node,
       std::optional<blink::mojom::PermissionStatus> previous_status) override;
+  void OnMainFrameUrlChanged(const PageNode* page_node) override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 
@@ -187,11 +193,18 @@ class FreezingPolicy : public PageNodeObserver,
   void UpdateFrozenStateOnCPUMeasurement(
       const resource_attribution::QueryResultMap& results);
 
+  // Invoked by the OptOutChecker when the opt-out policy for
+  // `browser_context_id` changes.
+  void OnOptOutPolicyChanged(std::string_view browser_context_id);
+
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
 
   // Used to discard pages.
   std::unique_ptr<freezing::Discarder> discarder_;
+
+  // Used to check whether pages are opted out of freezing by the embedder.
+  std::unique_ptr<freezing::OptOutChecker> opt_out_checker_;
 
   // State of each browsing instance.
   std::map<content::BrowsingInstanceId, BrowsingInstanceState>
@@ -214,6 +227,8 @@ class FreezingPolicy : public PageNodeObserver,
   // belong to the same [browsing instance, origin] over an interval, based on
   // cumulative measurements from `resource_usage_query_`.
   resource_attribution::CPUProportionTracker cpu_proportion_tracker_;
+
+  base::WeakPtrFactory<FreezingPolicy> weak_factory_{this};
 };
 
 }  // namespace performance_manager

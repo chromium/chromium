@@ -188,6 +188,10 @@ BASE_FEATURE(kFreezingOnBatterySaverForTesting,
              "FreezingOnBatterySaverForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFreezingFollowsDiscardOptOut,
+             "FreezingFollowsDiscardOptOut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kResourceAttributionIncludeOrigins,
              "ResourceAttributionIncludeOrigins",
              base::FEATURE_ENABLED_BY_DEFAULT);

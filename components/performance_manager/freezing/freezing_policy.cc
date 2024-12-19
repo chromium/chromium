@@ -5,6 +5,7 @@
 #include "components/performance_manager/freezing/freezing_policy.h"
 
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/check.h"
@@ -12,17 +13,21 @@
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 
@@ -107,9 +112,12 @@ bool IsPageCapturingDisplay(const PageNode* page_node) {
 
 }  // namespace
 
-FreezingPolicy::FreezingPolicy(std::unique_ptr<freezing::Discarder> discarder)
+FreezingPolicy::FreezingPolicy(
+    std::unique_ptr<freezing::Discarder> discarder,
+    std::unique_ptr<freezing::OptOutChecker> opt_out_checker)
     : freezer_(std::make_unique<Freezer>()),
       discarder_(std::move(discarder)),
+      opt_out_checker_(std::move(opt_out_checker)),
       cpu_proportion_tracker_(
           /*context_filter=*/base::NullCallback(),
           /*cpu_proportion_type=*/resource_attribution::CPUProportionTracker::
@@ -369,6 +377,10 @@ void FreezingPolicy::OnPassedToGraph(Graph* graph) {
   graph->AddPageNodeObserver(this);
   graph->AddFrameNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this, "Freezing");
+  if (opt_out_checker_) {
+    opt_out_checker_->SetOptOutPolicyChangedCallback(base::BindRepeating(
+        &FreezingPolicy::OnOptOutPolicyChanged, weak_factory_.GetWeakPtr()));
+  }
 }
 
 void FreezingPolicy::OnTakenFromGraph(Graph* graph) {
@@ -389,6 +401,13 @@ void FreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
 
   if (page_node->IsAudible()) {
     page_freezing_state.cannot_freeze_reasons.Put(CannotFreezeReason::kAudible);
+  }
+
+  if (opt_out_checker_ &&
+      opt_out_checker_->IsPageOptedOutOfFreezing(
+          page_node->GetBrowserContextID(), page_node->GetMainFrameUrl())) {
+    page_freezing_state.cannot_freeze_reasons.Put(
+        CannotFreezeReason::kOptedOut);
   }
 
   DCHECK(!page_node->HasFreezingOriginTrialOptOut());
@@ -517,6 +536,20 @@ void FreezingPolicy::OnPageNotificationPermissionStatusChange(
 void FreezingPolicy::OnPageIsHoldingWebLockChanged(const PageNode* page_node) {
   OnCannotFreezeReasonChange(page_node, /*add=*/page_node->IsHoldingWebLock(),
                              CannotFreezeReason::kHoldingWebLock);
+}
+
+void FreezingPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
+  const bool was_opted_out =
+      PageFreezingState::FromPage(page_node).cannot_freeze_reasons.Has(
+          CannotFreezeReason::kOptedOut);
+  const bool is_opted_out =
+      opt_out_checker_ &&
+      opt_out_checker_->IsPageOptedOutOfFreezing(
+          page_node->GetBrowserContextID(), page_node->GetMainFrameUrl());
+  if (was_opted_out != is_opted_out) {
+    OnCannotFreezeReasonChange(page_node, /*add=*/is_opted_out,
+                               CannotFreezeReason::kOptedOut);
+  }
 }
 
 void FreezingPolicy::OnPageIsHoldingBlockingIndexedDBLockChanged(
@@ -886,6 +919,27 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
     browsing_instance_state
         .had_cannot_freeze_reason_since_last_cpu_measurement =
         HasCannotFreezeReason(browsing_instance_state);
+  }
+}
+
+void FreezingPolicy::OnOptOutPolicyChanged(
+    std::string_view browser_context_id) {
+  CHECK(opt_out_checker_);
+  // Check all pages  with the given `browser_context_id` to see if they're
+  // opted out of freezing by the new policy.
+  for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
+    if (page_node->GetBrowserContextID() != browser_context_id) {
+      continue;
+    }
+    const bool was_opted_out =
+        PageFreezingState::FromPage(page_node).cannot_freeze_reasons.Has(
+            CannotFreezeReason::kOptedOut);
+    const bool is_opted_out = opt_out_checker_->IsPageOptedOutOfFreezing(
+        browser_context_id, page_node->GetMainFrameUrl());
+    if (was_opted_out != is_opted_out) {
+      OnCannotFreezeReasonChange(page_node, /*add=*/is_opted_out,
+                                 CannotFreezeReason::kOptedOut);
+    }
   }
 }
 

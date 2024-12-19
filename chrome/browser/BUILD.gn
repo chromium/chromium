@@ -3893,6 +3893,8 @@ static_library("browser") {
       "performance_manager/policies/background_tab_loading_policy.h",
       "performance_manager/policies/background_tab_loading_policy_helpers.cc",
       "performance_manager/policies/background_tab_loading_policy_helpers.h",
+      "performance_manager/policies/freezing_opt_out_checker.cc",
+      "performance_manager/policies/freezing_opt_out_checker.h",
       "performance_manager/policies/memory_saver_mode_policy.cc",
       "performance_manager/policies/memory_saver_mode_policy.h",
       "performance_manager/policies/page_discarding_helper.cc",

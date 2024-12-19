@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -280,15 +281,23 @@ void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
 void PageDiscardingHelper::SetNoDiscardPatternsForProfile(
     const std::string& browser_context_id,
     const std::vector<std::string>& patterns) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<url_matcher::URLMatcher>& entry =
       profiles_no_discard_patterns_[browser_context_id];
   entry = std::make_unique<url_matcher::URLMatcher>();
   url_matcher::util::AddAllowFiltersWithLimit(entry.get(), patterns);
+  if (opt_out_policy_changed_callback_) {
+    opt_out_policy_changed_callback_.Run(browser_context_id);
+  }
 }
 
 void PageDiscardingHelper::ClearNoDiscardPatternsForProfile(
     const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   profiles_no_discard_patterns_.erase(browser_context_id);
+  if (opt_out_policy_changed_callback_) {
+    opt_out_policy_changed_callback_.Run(browser_context_id);
+  }
 }
 
 void PageDiscardingHelper::SetMockDiscarderForTesting(
@@ -306,6 +315,12 @@ void PageDiscardingHelper::AddDiscardAttemptMarkerForTesting(
 void PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(
     PageNode* page_node) {
   DiscardAttemptMarker::Destroy(PageNodeImpl::FromNode(page_node));
+}
+
+void PageDiscardingHelper::SetOptOutPolicyChangedCallback(
+    base::RepeatingCallback<void(std::string_view)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  opt_out_policy_changed_callback_ = std::move(callback);
 }
 
 void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
@@ -494,9 +509,10 @@ CanDiscardResult PageDiscardingHelper::CanDiscard(
 bool PageDiscardingHelper::IsPageOptedOutOfDiscarding(
     const std::string& browser_context_id,
     const GURL& url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = profiles_no_discard_patterns_.find(browser_context_id);
   if (it == profiles_no_discard_patterns_.end()) {
-    // There's can be narrow window between profile creation and when prefs are
+    // There can be a narrow window between profile creation and when prefs are
     // read, which is when `profiles_no_discard_patterns_` is populated. During
     // that time assume that a page might be opted out of discarding.
     return true;
