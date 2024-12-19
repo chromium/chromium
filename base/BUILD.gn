@@ -1255,12 +1255,6 @@ component("base") {
     # well when doing a component build.
     public_configs = [ ":android_system_libs" ]
 
-    if (can_unwind_with_cfi_table) {
-      sources += [
-        "trace_event/cfi_backtrace_android.cc",
-        "trace_event/cfi_backtrace_android.h",
-      ]
-    }
     if (current_cpu == "arm") {
       sources += [
         "profiler/chrome_unwind_info_android_32.cc",
@@ -3838,9 +3832,6 @@ test("base_unittests") {
         configs += [ "//build/config/compiler:minimal_symbols" ]
       }
       add_unwind_tables_in_apk = true
-    }
-    if (can_unwind_with_cfi_table) {
-      sources += [ "trace_event/cfi_backtrace_android_unittest.cc" ]
     }
     if (current_cpu == "arm") {
       sources += [
