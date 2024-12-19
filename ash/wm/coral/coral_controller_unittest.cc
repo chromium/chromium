@@ -34,6 +34,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -395,6 +396,27 @@ TEST_F(CoralSavedGroupTest, SaveAppsInGroup) {
   EXPECT_TRUE(launch_list.contains("window1_app_id"));
   EXPECT_TRUE(launch_list.contains("window2_app_id"));
   EXPECT_FALSE(launch_list.contains("window3_app_id"));
+}
+
+// Tests that after saving a group, we show the saved desk library.
+TEST_F(CoralSavedGroupTest, ShowSavedDeskLibrary) {
+  // Prepare a coral response.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")}}, "Coral desk"));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Enter overview and click on the save as group menu item.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
+  LeftClickOn(save_as_group_item);
+
+  // Tests that the saved desk library is shown.
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    OverviewSession* session = OverviewController::Get()->overview_session();
+    return session && session->IsShowingSavedDeskLibrary();
+  }));
 }
 
 TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {

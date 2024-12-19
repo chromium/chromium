@@ -4,6 +4,8 @@
 
 #include "ash/wm/coral/coral_controller.h"
 
+#include <memory>
+
 #include "ash/birch/coral_util.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/coral_delegate.h"
@@ -16,6 +18,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "base/command_line.h"
@@ -26,6 +30,7 @@
 #include "components/desks_storage/core/desk_model.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
+#include "ui/aura/window_tracker.h"
 
 #undef ENABLED_VLOG_LEVEL
 #define ENABLED_VLOG_LEVEL 1
@@ -234,7 +239,8 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group,
   }
 }
 
-void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) {
+void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
+                                               aura::Window* root_window) {
   std::vector<GURL> tab_urls;
   base::flat_set<std::string> app_ids;
   for (const coral::mojom::EntityPtr& entity : group->entities) {
@@ -249,17 +255,20 @@ void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) {
   // which needs to be async. If there are no apps and just tabs, we can
   // directly trigger the callback, but we have to create the template
   // ourselves.
+  auto window_tracker = std::make_unique<aura::WindowTracker>(
+      aura::WindowTracker::WindowList{root_window});
   if (app_ids.empty()) {
-    OnTemplateCreated(tab_urls, /*desk_template=*/nullptr);
+    OnTemplateCreated(tab_urls, std::move(window_tracker),
+                      /*desk_template=*/nullptr);
     return;
   }
 
-  // TODO(crbug.com/365839564): Handle multi display case.
   DesksController::Get()->CaptureActiveDeskAsSavedDesk(
       base::BindOnce(&CoralController::OnTemplateCreated,
-                     weak_factory_.GetWeakPtr(), tab_urls),
+                     weak_factory_.GetWeakPtr(), tab_urls,
+                     std::move(window_tracker)),
       DeskTemplateType::kCoral,
-      /*root_window_to_show=*/Shell::GetPrimaryRootWindow(), app_ids);
+      /*root_window_to_show=*/root_window, app_ids);
 }
 
 CoralController::CoralService* CoralController::EnsureCoralService() {
@@ -318,6 +327,7 @@ void CoralController::HandleCacheEmbeddingsResult(
 
 void CoralController::OnTemplateCreated(
     const std::vector<GURL>& tab_urls,
+    std::unique_ptr<aura::WindowTracker> window_tracker,
     std::unique_ptr<DeskTemplate> desk_template) {
   std::unique_ptr<DeskTemplate> new_template = std::move(desk_template);
   // There is a chance the template is empty due to unsupported apps.
@@ -348,9 +358,28 @@ void CoralController::OnTemplateCreated(
     app_restore_data->browser_extra_info.urls = std::move(tab_urls);
   }
 
-  // TODO(crbug.com/365839564): Callback should show the templates library view.
   shell->saved_desk_delegate()->GetDeskModel()->AddOrUpdateEntry(
-      std::move(new_template), base::DoNothing());
+      std::move(new_template),
+      base::BindOnce(&CoralController::ShowSavedDeskLibrary,
+                     weak_factory_.GetWeakPtr(), std::move(window_tracker)));
+}
+
+void CoralController::ShowSavedDeskLibrary(
+    std::unique_ptr<aura::WindowTracker> window_tracker,
+    desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+    std::unique_ptr<DeskTemplate> saved_desk) {
+  if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk) {
+    return;
+  }
+
+  if (auto* overview_session = OverviewController::Get()->overview_session()) {
+    aura::Window* root_window = window_tracker->windows().empty()
+                                    ? Shell::GetPrimaryRootWindow()
+                                    : window_tracker->windows()[0].get();
+    overview_session->ShowSavedDeskLibrary(saved_desk->uuid(),
+                                           /*saved_desk_name=*/u"",
+                                           root_window);
+  }
 }
 
 }  // namespace ash

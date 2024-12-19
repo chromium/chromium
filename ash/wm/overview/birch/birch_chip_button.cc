@@ -400,10 +400,14 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
         return;
       }
 
+      // `CreateSavedDeskFromGroup()` will delete `this`.
+      aura::Window* root_window = GetWidget()->GetNativeWindow();
+
       auto* coral_provider = BirchCoralProvider::Get();
       Shell::Get()->coral_controller()->CreateSavedDeskFromGroup(
           coral_provider->ExtractGroupById(
-              static_cast<BirchCoralItem*>(item_)->group_id()));
+              static_cast<BirchCoralItem*>(item_)->group_id()),
+          root_window);
       break;
     }
     case base::to_underlying(CommandId::kProvideFeedback):

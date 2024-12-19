@@ -13,8 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "components/desks_storage/core/desk_model.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace aura {
+class Window;
+class WindowTracker;
+}  // namespace aura
 
 namespace ash {
 
@@ -117,7 +123,8 @@ class ASH_EXPORT CoralController {
                             const Desk* source_desk);
 
   // Creates a saved desk with up to one browser with tabs from `group`.
-  void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group);
+  void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
+                                aura::Window* root_window);
 
  private:
   using CoralService = coral::mojom::CoralService;
@@ -146,7 +153,18 @@ class ASH_EXPORT CoralController {
   // we create one if `tab_urls` is not empty, otherwise this function does
   // nothing.
   void OnTemplateCreated(const std::vector<GURL>& tab_urls,
+                         std::unique_ptr<aura::WindowTracker> window_tracker,
                          std::unique_ptr<DeskTemplate> desk_template);
+
+  // Callback that is run after a saved desk is saved. Shows the saved desk
+  // library if we are still in overview. `window_tracker` contains the root
+  // window that the `BirchChipButton` context menu was clicked from. Default to
+  // the primary root if the root was removed during the async callbacks for any
+  // reason.
+  void ShowSavedDeskLibrary(
+      std::unique_ptr<aura::WindowTracker> window_tracker,
+      desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+      std::unique_ptr<DeskTemplate> saved_desk);
 
   mojo::Remote<CoralService> coral_service_;
 
