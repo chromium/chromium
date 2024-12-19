@@ -22,10 +22,6 @@ BASE_FEATURE(kSkipCheckForAccountManagementOnSignin,
              "SkipCheckForAccountManagementOnSignin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHideSettingsSignInPromo,
-             "HideSettingsSignInPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref,
              "UseConsentLevelSigninForLegacyAccountEmailPref",
              base::FEATURE_ENABLED_BY_DEFAULT);

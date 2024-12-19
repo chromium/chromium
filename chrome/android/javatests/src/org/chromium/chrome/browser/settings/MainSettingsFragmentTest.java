@@ -110,8 +110,6 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
-import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
-import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
@@ -138,7 +136,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -155,7 +152,6 @@ import java.util.HashSet;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
-@EnableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
@@ -730,12 +726,6 @@ public class MainSettingsFragmentTest {
     public void testAccountSignIn() throws InterruptedException {
         startSettings();
 
-        SyncPromoPreference syncPromoPreference =
-                (SyncPromoPreference) mMainSettings.findPreference(MainSettings.PREF_SYNC_PROMO);
-        Assert.assertEquals(
-                "SyncPromoPreference should be at the personalized signin promo state. ",
-                syncPromoPreference.getState(),
-                State.PERSONALIZED_SIGNIN_PROMO);
         Assert.assertTrue(
                 "Account section header should be shown together with the promo.",
                 mMainSettings
@@ -765,8 +755,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
-    public void testSignInPromoHidden_HideSignInPromoEnabled() {
+    public void testSignInPromoHidden() {
         startSettings();
 
         onView(withText(R.string.sync_promo_title_settings)).check(doesNotExist());
@@ -902,65 +891,6 @@ public class MainSettingsFragmentTest {
         activity.finish();
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         Assert.assertNull(PasswordCheckFactory.getPasswordCheckInstance());
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({
-        SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO,
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-    })
-    public void testSyncPromoNotShownAfterBeingDismissed() throws Exception {
-        var dismissedCountHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncPromo.Dismissed.Count.Settings", 1);
-        startSettings();
-        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
-        onView(withId(R.id.sync_promo_close_button)).perform(click());
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-
-        // Close settings activity.
-        mSettingsActivityTestRule.finishActivity();
-
-        // Launch settings activity again.
-        mSettingsActivityTestRule.startSettingsActivity();
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-        dismissedCountHistogram.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({
-        SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO,
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-    })
-    public void testSyncPromoShownIsNotOverCounted() {
-        var showCountHistogram =
-                HistogramWatcher.newSingleRecordWatcher("Signin.SyncPromo.Shown.Count.Settings", 1);
-        int promoShowCount =
-                ChromeSharedPreferences.getInstance()
-                        .readInt(
-                                SyncPromoController.getPromoShowCountPreferenceName(
-                                        SigninAccessPoint.SETTINGS));
-        Assert.assertEquals(0, promoShowCount);
-        Assert.assertEquals(
-                0,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
-        startSettings();
-        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
-
-        promoShowCount =
-                ChromeSharedPreferences.getInstance()
-                        .readInt(
-                                SyncPromoController.getPromoShowCountPreferenceName(
-                                        SigninAccessPoint.SETTINGS));
-        Assert.assertEquals(1, promoShowCount);
-        Assert.assertEquals(
-                1,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
-        showCountHistogram.assertExpected();
     }
 
     @Test

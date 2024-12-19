@@ -21,7 +21,6 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kRestoreSignedInAccountAndSettingsFromBackup,
-    &switches::kHideSettingsSignInPromo,
     &switches::kUseConsentLevelSigninForLegacyAccountEmailPref,
     &switches::kCctSignInPrompt,
     &switches::kUnoForAuto,
