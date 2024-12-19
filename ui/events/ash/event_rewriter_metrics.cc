@@ -59,7 +59,7 @@ std::optional<std::string> GetModifierNameFromModifierKeyUsage(
       return "Assistant";
     case ModifierKeyUsageMetric::kFunction:
       return "Function";
-    case ModifierKeyUsageMetric::kRightAlt:
+    case ModifierKeyUsageMetric::kQuickInsert:
       return "RightAlt";
   }
 }
@@ -107,14 +107,14 @@ void RecordKeyUsageMetric(const KeyboardCapability& keyboard_capability,
   }
 
   const bool dom_codes_match = dom_code == original_dom_code;
-  const bool rewritten_to_right_alt =
-      dom_codes_match && modifier_key == ModifierKeyUsageMetric::kRightAlt &&
-      !keyboard_capability.HasRightAltKey(device_id);
+  const bool rewritten_to_quick_insert =
+      dom_codes_match && modifier_key == ModifierKeyUsageMetric::kQuickInsert &&
+      !keyboard_capability.HasQuickInsertKey(device_id);
   const bool rewritten_to_assistant =
       dom_codes_match && modifier_key == ModifierKeyUsageMetric::kAssistant &&
       !keyboard_capability.HasAssistantKey(device_id);
   const bool modifier_was_rewritten =
-      !dom_codes_match || rewritten_to_assistant || rewritten_to_right_alt;
+      !dom_codes_match || rewritten_to_assistant || rewritten_to_quick_insert;
   base::UmaHistogramEnumeration(
       base::StrCat({"ChromeOS.Inputs.KeyUsage.Internal.", *modifier_name}),
       modifier_was_rewritten ? KeyUsageCategory::kVirtuallyPressed
@@ -141,13 +141,13 @@ void RecordModifierKeyPressedBeforeRemapping(
   auto modifier_key = it->second;
 
   if (modifier_key == ModifierKeyUsageMetric::kAssistant &&
-      keyboard_capability.HasRightAltKey(device_id)) {
-    modifier_key = ModifierKeyUsageMetric::kRightAlt;
+      keyboard_capability.HasQuickInsertKey(device_id)) {
+    modifier_key = ModifierKeyUsageMetric::kQuickInsert;
   }
 
   if ((modifier_key == ModifierKeyUsageMetric::kFunction ||
-       modifier_key == ModifierKeyUsageMetric::kRightAlt) &&
-      !keyboard_capability.HasRightAltKey(device_id)) {
+       modifier_key == ModifierKeyUsageMetric::kQuickInsert) &&
+      !keyboard_capability.HasQuickInsertKey(device_id)) {
     return;
   }
 
@@ -161,7 +161,7 @@ void RecordModifierKeyPressedAfterRemapping(
     int device_id,
     DomCode dom_code,
     DomCode original_dom_code,
-    bool is_right_alt_key) {
+    bool is_quick_insert_key) {
   auto it = kModifierKeyUsageMappings.find(dom_code);
   if (it == kModifierKeyUsageMappings.end()) {
     return;
@@ -174,8 +174,9 @@ void RecordModifierKeyPressedAfterRemapping(
   }
 
   auto modifier_key = it->second;
-  if (modifier_key == ModifierKeyUsageMetric::kAssistant && is_right_alt_key) {
-    modifier_key = ModifierKeyUsageMetric::kRightAlt;
+  if (modifier_key == ModifierKeyUsageMetric::kAssistant &&
+      is_quick_insert_key) {
+    modifier_key = ModifierKeyUsageMetric::kQuickInsert;
   }
 
   base::UmaHistogramEnumeration(

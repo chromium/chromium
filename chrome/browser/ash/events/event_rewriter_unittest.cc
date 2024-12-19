@@ -114,9 +114,9 @@ constexpr int kMouseDeviceId = 456;
 constexpr char kKbdDefaultCustomTopRowLayout[] =
     "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
 
-// Tag used to mark events as being for right alt.
-constexpr std::pair<std::string, std::vector<uint8_t>> kPropertyRightAlt = {
-    "right_alt_event",
+// Tag used to mark events as being for quick insert.
+constexpr std::pair<std::string, std::vector<uint8_t>> kPropertyQuickInsert = {
+    "quick_insert_event",
     {}};
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -436,11 +436,11 @@ using KeyPrivacyScreenToggle =
 using KeyLaunchAssistant = TestKey<ui::DomCode::LAUNCH_ASSISTANT,
                                    ui::DomKey::LAUNCH_ASSISTANT,
                                    ui::VKEY_ASSISTANT>;
-using KeyRightAlt = TestKey<ui::DomCode::LAUNCH_ASSISTANT,
-                            ui::DomKey::LAUNCH_ASSISTANT,
-                            ui::VKEY_ASSISTANT,
-                            ui::EF_NONE,
-                            ui::DomKey::LAUNCH_ASSISTANT>;
+using KeyQuickInsert = TestKey<ui::DomCode::LAUNCH_ASSISTANT,
+                               ui::DomKey::LAUNCH_ASSISTANT,
+                               ui::VKEY_ASSISTANT,
+                               ui::EF_NONE,
+                               ui::DomKey::LAUNCH_ASSISTANT>;
 
 using KeyHangulMode =
     TestKey<ui::DomCode::ALT_RIGHT, ui::DomKey::HANGUL_MODE, ui::VKEY_HANGUL>;
@@ -1186,7 +1186,7 @@ TEST_P(EventRewriterTest, TestRewriteModifiersNoRemap) {
     // Press left Alt. Confirm the event is not rewritten.
     EXPECT_EQ(KeyLAlt::Typed(), RunRewriter(KeyLAlt::Typed()));
 
-    // Press right Alt. Confirm the event is not rewritten.
+    // Press quick insert. Confirm the event is not rewritten.
     EXPECT_EQ(KeyRAlt::Typed(), RunRewriter(KeyRAlt::Typed()));
   }
 }
@@ -1818,31 +1818,31 @@ TEST_P(EventRewriterTest, TestRewriteCapsLockMod3InUse) {
   input_method_manager_mock_->set_mod3_used(false);
 }
 
-TEST_P(EventRewriterTest, TestRewriteToRightAlt) {
-  // Remap RightAlt to Control
+TEST_P(EventRewriterTest, TestRewriteToQuickInsert) {
+  // Remap QuickInsert to Control
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
                       ui::mojom::ModifierKey::kControl,
-                      ui::mojom::ModifierKey::kRightAlt);
+                      ui::mojom::ModifierKey::kQuickInsert);
 
   IntegerPrefMember search;
   InitModifierKeyPref(&search, ::prefs::kLanguageRemapSearchKeyTo,
                       ui::mojom::ModifierKey::kMeta,
-                      ui::mojom::ModifierKey::kRightAlt);
+                      ui::mojom::ModifierKey::kQuickInsert);
 
   for (const auto& keyboard : kChromeKeyboardVariants) {
     SCOPED_TRACE(keyboard.name);
     SetUpKeyboard(keyboard);
 
-    EXPECT_EQ(KeyRightAlt::Typed(ui::EF_NONE, {kPropertyRightAlt}),
+    EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
               RunRewriter(KeyLControl::Typed()));
-    EXPECT_EQ(KeyRightAlt::Typed(ui::EF_NONE, {kPropertyRightAlt}),
+    EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
               RunRewriter(KeyLMeta::Typed()));
   }
 }
 
-TEST_P(EventRewriterTest, FnAndRightAltKeyPressedMetrics) {
+TEST_P(EventRewriterTest, FnAndQuickInsertKeyPressedMetrics) {
   if (!features::IsModifierSplitEnabled()) {
     GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
   }
@@ -1858,25 +1858,25 @@ TEST_P(EventRewriterTest, FnAndRightAltKeyPressedMetrics) {
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       ui::ModifierKeyUsageMetric::kFunction, 1);
 
-  SendKeyEvent(KeyRightAlt::Pressed());
+  SendKeyEvent(KeyQuickInsert::Pressed());
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
-      ui::ModifierKeyUsageMetric::kRightAlt, 1);
+      ui::ModifierKeyUsageMetric::kQuickInsert, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
-      ui::ModifierKeyUsageMetric::kRightAlt, 1);
+      ui::ModifierKeyUsageMetric::kQuickInsert, 1);
 
-  // Remap RightAlt to Assistant
-  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kRightAlt,
+  // Remap QuickInsert to Assistant
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kQuickInsert,
                       ui::mojom::ModifierKey::kAssistant);
 
-  RunRewriter(KeyRightAlt::Typed());
+  RunRewriter(KeyQuickInsert::Typed());
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
-      ui::ModifierKeyUsageMetric::kRightAlt, 2);
+      ui::ModifierKeyUsageMetric::kQuickInsert, 2);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
-      ui::ModifierKeyUsageMetric::kRightAlt, 1);
+      ui::ModifierKeyUsageMetric::kQuickInsert, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       ui::ModifierKeyUsageMetric::kAssistant, 1);
@@ -1890,7 +1890,7 @@ TEST_P(EventRewriterTest, TestRewriteToFunction) {
 
   SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
 
-  // Remap RightAlt to Control
+  // Remap QuickInsert to Control
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
   InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
@@ -1964,46 +1964,48 @@ TEST_P(EventRewriterTest, TestRewriteFromFunction) {
   scoped_feature_list_.Reset();
 }
 
-TEST_P(EventRewriterTest, TestRewriteFromRightAlt) {
+TEST_P(EventRewriterTest, TestRewriteFromQuickInsert) {
   if (!features::IsModifierSplitEnabled()) {
     GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
   }
 
-  // RightAlt is only available when InputDeviceSettingsSplit is enabled.
+  // QuickInsert is only available when InputDeviceSettingsSplit is enabled.
   scoped_feature_list_.InitAndEnableFeature(
       features::kInputDeviceSettingsSplit);
   SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
 
   // Test that identity is working as expected.
-  EXPECT_EQ(KeyRightAlt::Typed(ui::EF_NONE, {kPropertyRightAlt}),
+  EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
             RunRewriter(KeyLaunchAssistant::Typed()));
 
-  // Remap RightAlt to Control
-  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kRightAlt,
+  // Remap QuickInsert to Control
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kQuickInsert,
                       ui::mojom::ModifierKey::kControl);
 
-  EXPECT_EQ(KeyLControl::Typed(), RunRewriter(KeyRightAlt::Typed()));
+  EXPECT_EQ(KeyLControl::Typed(), RunRewriter(KeyQuickInsert::Typed()));
 
-  // Test RightAlt remapped to Control properly applies the flag to other
+  // Test QuickInsert remapped to Control properly applies the flag to other
   // events.
-  EXPECT_EQ((std::vector<TestKeyEvent>{KeyLControl::Pressed()}),
-            (RunRewriter(std::vector<TestKeyEvent>{KeyRightAlt::Pressed()})));
+  EXPECT_EQ(
+      (std::vector<TestKeyEvent>{KeyLControl::Pressed()}),
+      (RunRewriter(std::vector<TestKeyEvent>{KeyQuickInsert::Pressed()})));
   EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN), RunRewriter(KeyA::Typed()));
-  EXPECT_EQ((std::vector<TestKeyEvent>{KeyLControl::Released()}),
-            (RunRewriter(std::vector<TestKeyEvent>{KeyRightAlt::Released()})));
+  EXPECT_EQ(
+      (std::vector<TestKeyEvent>{KeyLControl::Released()}),
+      (RunRewriter(std::vector<TestKeyEvent>{KeyQuickInsert::Released()})));
 
-  // Remap RightAlt to CapsLock
-  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kRightAlt,
+  // Remap QuickInsert to CapsLock
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kQuickInsert,
                       ui::mojom::ModifierKey::kCapsLock);
   // Toggle CapsLock on/off
   EXPECT_EQ(KeyCapsLock::Typed(ui::EF_CAPS_LOCK_ON),
-            RunRewriter(KeyRightAlt::Typed(ui::EF_CAPS_LOCK_ON)));
-  EXPECT_EQ(KeyCapsLock::Typed(), RunRewriter(KeyRightAlt::Typed()));
+            RunRewriter(KeyQuickInsert::Typed(ui::EF_CAPS_LOCK_ON)));
+  EXPECT_EQ(KeyCapsLock::Typed(), RunRewriter(KeyQuickInsert::Typed()));
 
-  // Remap RightAlt to Void
-  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kRightAlt,
+  // Remap QuickInsert to Void
+  InitModifierKeyPref(nullptr, "", ui::mojom::ModifierKey::kQuickInsert,
                       ui::mojom::ModifierKey::kVoid);
-  EXPECT_EQ(KeyUnknown::Typed(), RunRewriter(KeyRightAlt::Typed()));
+  EXPECT_EQ(KeyUnknown::Typed(), RunRewriter(KeyQuickInsert::Typed()));
 
   scoped_feature_list_.Reset();
 }
@@ -4928,15 +4930,16 @@ TEST_P(EventRewriterTest, CapsLockRemappingFnBased) {
 
   for (const auto flag :
        {ui::EF_NONE, ui::EF_CONTROL_DOWN, ui::EF_SHIFT_DOWN, ui::EF_ALT_DOWN}) {
-    EXPECT_EQ(KeyCapsLock::Typed(flag | ui::EF_CAPS_LOCK_ON),
-              RunRewriter(KeyRightAlt::Typed(ui::EF_NONE, {kPropertyRightAlt}),
-                          ui::EF_FUNCTION_DOWN | flag));
+    EXPECT_EQ(
+        KeyCapsLock::Typed(flag | ui::EF_CAPS_LOCK_ON),
+        RunRewriter(KeyQuickInsert::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
+                    ui::EF_FUNCTION_DOWN | flag));
     EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
     EXPECT_EQ(KeyCapsLock::Typed(flag),
-              RunRewriter(
-                  KeyRightAlt::Typed(ui::EF_CAPS_LOCK_ON, {kPropertyRightAlt}),
-                  ui::EF_FUNCTION_DOWN | flag));
+              RunRewriter(KeyQuickInsert::Typed(ui::EF_CAPS_LOCK_ON,
+                                                {kPropertyQuickInsert}),
+                          ui::EF_FUNCTION_DOWN | flag));
     EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
   }
 }
@@ -4956,9 +4959,9 @@ TEST_P(EventRewriterTest, FnDiscarded) {
   EXPECT_EQ(std::vector<TestKeyEvent>(), RunRewriter(KeyFunction::Typed()));
 }
 
-// Tests that when you press Fn -> Right Alt -> Release Fn -> Release Right Alt
-// that the release of right alt is remapped to CapsLock to match the remapped
-// press.
+// Tests that when you press Fn -> Quick Insert -> Release Fn -> Release Quick
+// Insert that the release of Quick Insert is remapped to CapsLock to match the
+// remapped press.
 TEST_P(EventRewriterTest, CapsLockRemappingFnBasedReleaseOrdering) {
   if (!features::IsModifierSplitEnabled()) {
     GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
@@ -4970,15 +4973,15 @@ TEST_P(EventRewriterTest, CapsLockRemappingFnBasedReleaseOrdering) {
             RunRewriter(std::vector<TestKeyEvent>{KeyFunction::Pressed()}));
   EXPECT_EQ(
       std::vector<TestKeyEvent>({KeyCapsLock::Pressed(ui::EF_CAPS_LOCK_ON)}),
-      RunRewriter(std::vector<TestKeyEvent>{
-          KeyRightAlt::Pressed(ui::EF_FUNCTION_DOWN, {kPropertyRightAlt})}));
+      RunRewriter(std::vector<TestKeyEvent>{KeyQuickInsert::Pressed(
+          ui::EF_FUNCTION_DOWN, {kPropertyQuickInsert})}));
   EXPECT_EQ(std::vector<TestKeyEvent>(),
             RunRewriter(std::vector<TestKeyEvent>{
                 KeyFunction::Released(ui::EF_CAPS_LOCK_ON)}));
   EXPECT_EQ(
       std::vector<TestKeyEvent>({KeyCapsLock::Released(ui::EF_CAPS_LOCK_ON)}),
-      RunRewriter(std::vector<TestKeyEvent>{
-          KeyRightAlt::Released(ui::EF_CAPS_LOCK_ON, {kPropertyRightAlt})}));
+      RunRewriter(std::vector<TestKeyEvent>{KeyQuickInsert::Released(
+          ui::EF_CAPS_LOCK_ON, {kPropertyQuickInsert})}));
 }
 
 class ModifierPressedMetricsTest

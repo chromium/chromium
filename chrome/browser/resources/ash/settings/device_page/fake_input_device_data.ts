@@ -202,7 +202,7 @@ export const fakeKeyboards: Keyboard[] = [
       ModifierKey.kControl,
       ModifierKey.kEscape,
       ModifierKey.kMeta,
-      ModifierKey.kRightAlt,
+      ModifierKey.kQuickInsert,
       ModifierKey.kFunction,
     ],
     topRowActionKeys: [

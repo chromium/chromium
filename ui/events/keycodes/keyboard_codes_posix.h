@@ -258,7 +258,7 @@ enum KeyboardCode : unsigned short {
 
 #if BUILDFLAG(IS_CHROMEOS)
   VKEY_FUNCTION = 0xFF,
-  VKEY_RIGHT_ALT = 0x100,
+  VKEY_QUICK_INSERT = 0x100,
 #endif
 
   // System Accessibility Binding.

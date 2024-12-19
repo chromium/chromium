@@ -123,7 +123,7 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
       ui::mojom::SixPackShortcutModifier blocked_modifier);
 
   // Use to display a notification to remind users to press Fn key when users
-  // press search key or right-alt key with alt key to switch caps lock
+  // press search key or quick insert key with alt key to switch caps lock
   // and there is no matching.
   void ShowCapsLockRewritingNudge();
 

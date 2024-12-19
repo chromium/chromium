@@ -301,7 +301,7 @@ struct ASH_EXPORT QuickInsertCapsLockResult {
   enum class Shortcut {
     kAltLauncher,
     kAltSearch,
-    kFnRightAlt,
+    kFnQuickInsert,
   };
 
   bool enabled;

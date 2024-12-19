@@ -6185,11 +6185,6 @@
             that includes a top row key but does not include the search/launcher key">
           Shortcut with top row keys need to include the <ph name="meta_key">$1<ex>search</ex></ph> key.
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY"
-            desc="The status message that displays when user press a key combination
-            that includes right alt key." translateable="false">
-          Press a new shortcut without right alt.
-        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE" desc="The status message that displays when user press a key combination
             that includes right alt key.">
           Quick Insert can't be used for custom shortcuts.

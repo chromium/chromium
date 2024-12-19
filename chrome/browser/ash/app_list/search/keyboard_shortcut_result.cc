@@ -140,7 +140,7 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH;
     case ash::SearchResultTextItem::kKeyboardShortcutAccessibility:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY;
-    case ash::SearchResultTextItem::kKeyboardShortcutKeyboardRightAlt:
+    case ash::SearchResultTextItem::kKeyboardShortcutKeyboardQuickInsert:
       return IDS_KEYBOARD_QUICK_INSERT_LABEL;
   }
 }
@@ -275,8 +275,8 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     case (KeyboardCode::VKEY_ACCESSIBILITY):
       return IconCode::kKeyboardShortcutAccessibility;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case (KeyboardCode::VKEY_RIGHT_ALT):
-      return IconCode::kKeyboardShortcutKeyboardRightAlt;
+    case (KeyboardCode::VKEY_QUICK_INSERT):
+      return IconCode::kKeyboardShortcutKeyboardQuickInsert;
 #endif
     default:
       return std::nullopt;
@@ -328,7 +328,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"Power", IconCode::kKeyboardShortcutPower},
        {u"PrintScreen", IconCode::kKeyboardShortcutSnapshot},
        {u"PrivacyScreenToggle", IconCode::kKeyboardShortcutPrivacyScreenToggle},
-       {u"RightAlt", IconCode::kKeyboardShortcutKeyboardRightAlt},
+       {u"QuickInsert", IconCode::kKeyboardShortcutKeyboardQuickInsert},
        {u"Settings", IconCode::kKeyboardShortcutSettings},
        {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
        {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});

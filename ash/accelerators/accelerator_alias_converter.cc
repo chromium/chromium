@@ -262,7 +262,7 @@ ui::mojom::ExtendedFkeysModifier GetExtendedFkeysModifier(
   return settings->f12.value();
 }
 
-bool HasRightAltKeyViaModifierRemapping(const ui::KeyboardDevice& keyboard) {
+bool HasQuickInsertKeyViaModifierRemapping(const ui::KeyboardDevice& keyboard) {
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
     return false;
   }
@@ -274,14 +274,14 @@ bool HasRightAltKeyViaModifierRemapping(const ui::KeyboardDevice& keyboard) {
     return false;
   }
 
-  bool has_right_alt_key = false;
+  bool has_quick_insert_key = false;
   for (const auto& [_, to] : settings->modifier_remappings) {
-    if (to == ui::mojom::ModifierKey::kRightAlt) {
-      has_right_alt_key = true;
+    if (to == ui::mojom::ModifierKey::kQuickInsert) {
+      has_quick_insert_key = true;
       break;
     }
   }
-  return has_right_alt_key;
+  return has_quick_insert_key;
 }
 
 }  // namespace
@@ -531,7 +531,7 @@ std::optional<ui::Accelerator> AcceleratorAliasConverter::CreateCapsLockAliases(
   }
 
   if (Shell::Get()->keyboard_capability()->HasFunctionKey(keyboard)) {
-    return {ui::Accelerator(ui::VKEY_RIGHT_ALT, ui::EF_FUNCTION_DOWN)};
+    return {ui::Accelerator(ui::VKEY_QUICK_INSERT, ui::EF_FUNCTION_DOWN)};
   }
 
   return accelerator;
@@ -846,13 +846,13 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       continue;
     }
 
-    if (accelerator.key_code() == ui::VKEY_RIGHT_ALT) {
+    if (accelerator.key_code() == ui::VKEY_QUICK_INSERT) {
       if (internal_keyboard && IsSplitModifierKeyboard(internal_keyboard->id)) {
         filtered_accelerators.push_back(accelerator);
       } else if ((internal_keyboard &&
-                  HasRightAltKeyViaModifierRemapping(*internal_keyboard)) ||
+                  HasQuickInsertKeyViaModifierRemapping(*internal_keyboard)) ||
                  (priority_keyboard &&
-                  HasRightAltKeyViaModifierRemapping(*priority_keyboard))) {
+                  HasQuickInsertKeyViaModifierRemapping(*priority_keyboard))) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;

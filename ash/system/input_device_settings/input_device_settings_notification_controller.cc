@@ -1289,7 +1289,7 @@ void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
       kCapsLockNoMatchNudgeId, NudgeCatalogName::kCapsLockShortcutPressed,
       l10n_util::GetStringUTF16(
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION));
-  nudge_data.keyboard_codes = {ui::VKEY_FUNCTION, ui::VKEY_RIGHT_ALT};
+  nudge_data.keyboard_codes = {ui::VKEY_FUNCTION, ui::VKEY_QUICK_INSERT};
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
           IDR_KEYBOARD_CAPSLOCK_KEY_NUDGE_IMAGE);

@@ -819,7 +819,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 
-  html_source->AddLocalizedString("perDeviceKeyboardKeyRightAlt",
+  html_source->AddLocalizedString("perDeviceKeyboardKeyQuickInsert",
                                   IDS_KEYBOARD_QUICK_INSERT_LABEL);
 
   html_source->AddBoolean("enableModifierSplit",

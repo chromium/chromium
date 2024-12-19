@@ -2253,7 +2253,7 @@ TEST_F(InputDeviceSettingsControllerNoSignInTest, ModifierKeyRefresh) {
             ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kMeta,
             ui::mojom::ModifierKey::kEscape, ui::mojom::ModifierKey::kAlt,
             ui::mojom::ModifierKey::kFunction,
-            ui::mojom::ModifierKey::kRightAlt}),
+            ui::mojom::ModifierKey::kQuickInsert}),
         keyboard->modifier_keys);
   }
 }

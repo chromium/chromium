@@ -241,21 +241,10 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_VIEW_ALL_APPS},
       {"iconLabelZoomToggle",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE},
+      {"blockQuickInsertKey",
+       IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE},
+      {"iconLabelQuickInsert", IDS_KEYBOARD_QUICK_INSERT_LABEL},
   };
-
-  // For official builds, only add the real string if the feature is enabled.
-  if (features::IsModifierSplitEnabled()) {
-    source->AddLocalizedString(
-        "blockRightAltKey",
-        IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE);
-    source->AddLocalizedString("iconLabelRightAlt",
-                               IDS_KEYBOARD_QUICK_INSERT_LABEL);
-  } else {
-    source->AddLocalizedString("blockRightAltKey",
-                               IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
-    source->AddLocalizedString(
-        "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
-  }
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddString("shortcutCustomizationLearnMoreUrl",

@@ -2189,8 +2189,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     <variant name="PlayPause"/>
     <variant name="PreviousTrack"/>
     <variant name="PrivacyScreenToggle"/>
+    <variant name="QuickInsert"/>
     <variant name="Refresh"/>
-    <variant name="RightAlt"/>
     <variant name="ScreenBrightnessDown"/>
     <variant name="ScreenBrightnessUp"/>
     <variant name="Screenshot"/>

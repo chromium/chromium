@@ -19,7 +19,7 @@ QuickInsertCapsLockResult::Shortcut GetQuickInsertShortcutForCapsLock() {
   }
 
   if (Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard()) {
-    return QuickInsertCapsLockResult::Shortcut::kFnRightAlt;
+    return QuickInsertCapsLockResult::Shortcut::kFnQuickInsert;
   }
 
   switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {

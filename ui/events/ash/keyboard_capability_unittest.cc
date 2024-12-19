@@ -782,10 +782,10 @@ TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForSplitModifierKeyboard) {
   auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
 
   std::vector<mojom::ModifierKey> expected_modifier_keys = {
-      mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
-      mojom::ModifierKey::kMeta,      mojom::ModifierKey::kEscape,
-      mojom::ModifierKey::kAlt,       mojom::ModifierKey::kFunction,
-      mojom::ModifierKey::kRightAlt};
+      mojom::ModifierKey::kBackspace,  mojom::ModifierKey::kControl,
+      mojom::ModifierKey::kMeta,       mojom::ModifierKey::kEscape,
+      mojom::ModifierKey::kAlt,        mojom::ModifierKey::kFunction,
+      mojom::ModifierKey::kQuickInsert};
   base::ranges::sort(expected_modifier_keys);
   base::ranges::sort(modifier_keys);
   EXPECT_EQ(expected_modifier_keys, modifier_keys);

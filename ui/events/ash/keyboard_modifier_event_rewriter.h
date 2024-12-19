@@ -33,7 +33,7 @@ class KeyboardModifierEventRewriter : public EventRewriter {
   // UnmappedCode are keys which do not have a corresponding DomCode for their
   // meaning which are used for modifier remapping.
   enum class UnmappedCode {
-    kRightAlt,
+    kQuickInsert,
   };
 
   using PhysicalCode = std::variant<DomCode, UnmappedCode>;

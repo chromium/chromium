@@ -186,7 +186,7 @@ enum VKey {
   kPA1 = 0xFD,
   kOemClear = 0xFE,
   kFunction = 0xFF,
-  kRightAlt = 0x100,
+  kQuickInsert = 0x100,
   kAccessibility = 0x101,
   kUnknown = 0,
 

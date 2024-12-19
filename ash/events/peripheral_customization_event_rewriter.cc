@@ -29,7 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "ui/aura/env.h"
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -166,7 +166,7 @@ int ConvertModifierKeyToFlags(ui::mojom::ModifierKey modifier_key) {
     case ui::mojom::ModifierKey::kCapsLock:
     case ui::mojom::ModifierKey::kVoid:
     case ui::mojom::ModifierKey::kIsoLevel5ShiftMod3:
-    case ui::mojom::ModifierKey::kRightAlt:
+    case ui::mojom::ModifierKey::kQuickInsert:
       return ui::EF_NONE;
   }
 }
@@ -313,9 +313,10 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
     applied_modifier_key_flag = ui::EF_NONE;
   }
 
-  const bool is_rewrite_to_right_alt = key_event.vkey == ui::VKEY_RIGHT_ALT;
+  const bool is_rewrite_to_quick_insert =
+      key_event.vkey == ui::VKEY_QUICK_INSERT;
   ui::KeyboardCode key_code = key_event.vkey;
-  if (is_rewrite_to_right_alt) {
+  if (is_rewrite_to_quick_insert) {
     key_code = ui::VKEY_ASSISTANT;
   }
   // Use ui::DomKey::NONE so the DomKey is recomputed with applicable flags.
@@ -325,8 +326,8 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
           ui::EF_IS_CUSTOMIZED_FROM_BUTTON,
       ui::DomKey::NONE, event.time_stamp());
   rewritten_event->set_source_device_id(event.source_device_id());
-  if (is_rewrite_to_right_alt) {
-    ui::SetRightAltProperty(rewritten_event.get());
+  if (is_rewrite_to_quick_insert) {
+    ui::SetQuickInsertProperty(rewritten_event.get());
   }
 
   return GenerateFullKeyEventSequence(

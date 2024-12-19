@@ -524,7 +524,7 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Context menu.
     case kKeyboardShortcutContextMenu:
       return &kKsContextMenuIcon;
-    case kKeyboardShortcutKeyboardRightAlt:
+    case kKeyboardShortcutKeyboardQuickInsert:
       return &kQuickInsertIcon;
     default:
       return nullptr;

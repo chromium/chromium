@@ -346,8 +346,8 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
      AcceleratorAction::kAccessibilityAction},
 
     // Quick Insert.
-    {false, ui::VKEY_RIGHT_ALT, ui::EF_NONE, AcceleratorAction::kTogglePicker,
-     true},
+    {false, ui::VKEY_QUICK_INSERT, ui::EF_NONE,
+     AcceleratorAction::kTogglePicker, true},
     {true, ui::VKEY_F, ui::EF_COMMAND_DOWN, AcceleratorAction::kTogglePicker},
 
     // Game Dashboard shortcut.

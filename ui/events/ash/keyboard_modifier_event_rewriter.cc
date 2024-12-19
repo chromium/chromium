@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -49,7 +49,7 @@ DomCode GetDomCodeFromPhysicalCode(const PhysicalCode& physical_code) {
   if (const UnmappedCode* unmapped_code =
           std::get_if<UnmappedCode>(&physical_code)) {
     switch (*unmapped_code) {
-      case UnmappedCode::kRightAlt:
+      case UnmappedCode::kQuickInsert:
         return DomCode::LAUNCH_ASSISTANT;
     }
   }
@@ -94,7 +94,7 @@ EventDispatchDetails KeyboardModifierEventRewriter::RewriteEvent(
             *keyboard_capability_,
             GetKeyboardDeviceIdProperty(*event_for_record),
             event_for_record->code(), event.AsKeyEvent()->code(),
-            HasRightAltProperty(*event_for_record));
+            HasQuickInsertProperty(*event_for_record));
       }
       break;
     }
@@ -285,12 +285,12 @@ std::unique_ptr<KeyEvent> KeyboardModifierEventRewriter::BuildRewrittenEvent(
   if (const auto* properties = event.properties()) {
     rewritten_event->SetProperties(*properties);
   }
-  // Set property if the unmapped code is Right Alt.
+  // Set property if the unmapped code is Quick Insert.
   if (const UnmappedCode* unmapped_code =
           std::get_if<UnmappedCode>(&remapped.code)) {
     if (*unmapped_code ==
-        KeyboardModifierEventRewriter::UnmappedCode::kRightAlt) {
-      SetRightAltProperty(rewritten_event.get());
+        KeyboardModifierEventRewriter::UnmappedCode::kQuickInsert) {
+      SetQuickInsertProperty(rewritten_event.get());
     }
   }
   return rewritten_event;
@@ -398,8 +398,8 @@ KeyboardModifierEventRewriter::GetRemappedPhysicalCode(DomCode code,
     case DomCode::LAUNCH_ASSISTANT:
       // Right alt key must be checked explicitly on a per-device basis as it
       // shares the dom code.
-      if (keyboard_capability_->HasRightAltKey(device_id)) {
-        modifier_key = mojom::ModifierKey::kRightAlt;
+      if (keyboard_capability_->HasQuickInsertKey(device_id)) {
+        modifier_key = mojom::ModifierKey::kQuickInsert;
         break;
       }
       modifier_key = mojom::ModifierKey::kAssistant;
@@ -441,8 +441,8 @@ KeyboardModifierEventRewriter::GetRemappedPhysicalCode(DomCode code,
       LOG(FATAL) << "Unexpected IsoLevel5ShiftMod3 config";
     case mojom::ModifierKey::kFunction:
       return DomCode::FN;
-    case mojom::ModifierKey::kRightAlt:
-      return UnmappedCode::kRightAlt;
+    case mojom::ModifierKey::kQuickInsert:
+      return UnmappedCode::kQuickInsert;
   }
 }
 

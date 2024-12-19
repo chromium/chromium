@@ -683,7 +683,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutKeyboardBacklightToggle,
     kKeyboardShortcutKeyboardBrightnessDown,
     kKeyboardShortcutKeyboardBrightnessUp,
-    kKeyboardShortcutKeyboardRightAlt,
+    kKeyboardShortcutKeyboardQuickInsert,
     kKeyboardShortcutAccessibility,
     kKeyboardShortcutBrowserHome,
     kKeyboardShortcutMediaLaunchMail,

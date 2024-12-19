@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/event_property.h"
 #include "ui/events/event_constants.h"
@@ -77,10 +77,11 @@ std::unique_ptr<KeyEvent> CapsLockEventRewriter::RewritePressKeyEvent(
   RemappedKey remapped_key = {key_event.code(), key_event.GetDomKey(),
                               key_event.key_code()};
 
-  const bool is_right_alt_key = key_event.code() == DomCode::LAUNCH_ASSISTANT &&
-                                HasRightAltProperty(key_event);
+  const bool is_quick_insert_key =
+      key_event.code() == DomCode::LAUNCH_ASSISTANT &&
+      HasQuickInsertProperty(key_event);
   const bool is_function_down = (key_event.flags() & EF_FUNCTION_DOWN) != 0;
-  if (is_right_alt_key && is_function_down) {
+  if (is_quick_insert_key && is_function_down) {
     // Update DomKey and KeyboardCode respecting the current keyboard layout.
     const DomCode remapped_dom_code = DomCode::CAPS_LOCK;
     DomKey dom_key;

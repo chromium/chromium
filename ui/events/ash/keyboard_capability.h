@@ -334,13 +334,13 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasFunctionKey(int device_id) const;
   bool HasFunctionKeyOnAnyKeyboard() const;
 
-  // Check if the RightAlt key exists on the given keyboard.
-  bool HasRightAltKey(const KeyboardDevice& keyboard) const;
-  bool HasRightAltKey(int device_id) const;
+  // Check if the QuickInsert key exists on the given keyboard.
+  bool HasQuickInsertKey(const KeyboardDevice& keyboard) const;
+  bool HasQuickInsertKey(int device_id) const;
 
-  // Check if the RightAlt key exists, but only for on OOBE screen.
-  bool HasRightAltKeyForOobe(const KeyboardDevice& keyboard) const;
-  bool HasRightAltKeyForOobe(int device_id) const;
+  // Check if the QuickInsert key exists, but only for on OOBE screen.
+  bool HasQuickInsertKeyForOobe(const KeyboardDevice& keyboard) const;
+  bool HasQuickInsertKeyForOobe(int device_id) const;
 
   // Returns the appropriate meta key present on the given keyboard.
   ui::mojom::MetaKey GetMetaKey(const KeyboardDevice& keyboard) const;

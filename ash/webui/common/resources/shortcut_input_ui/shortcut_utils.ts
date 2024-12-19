@@ -117,7 +117,7 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'Settings': 'settings-icon',
   'Standby': 'lock',
   'ZoomToggle': 'fullscreen',
-  'RightAlt': 'quick-insert',
+  'QuickInsert': 'quick-insert',
 };
 
 /**
