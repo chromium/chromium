@@ -11,9 +11,9 @@
 #include "ui/gfx/geometry/rect.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
-                                       chromeos::AppType)
+                                       SkColor)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
-                                       chromeos::WindowPinType)
+                                       chromeos::AppType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::WindowStateType)
 

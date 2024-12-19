@@ -40,6 +40,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/type_conversion.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/style/typography.h"
@@ -1266,3 +1267,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView,
                                       kProgressIndicatorElementId);
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(
+    views::BubbleFrameView::PreferredArrowAdjustment,
+    {views::BubbleFrameView::PreferredArrowAdjustment::kMirror, u"kMirror"},
+    {views::BubbleFrameView::PreferredArrowAdjustment::kOffset, u"kOffset"})

@@ -9,6 +9,7 @@
 
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
 namespace ui {
@@ -29,5 +30,11 @@ AX_EXPORT extern const aura::WindowProperty<bool>* const
     kAXConsiderInvisibleAndIgnoreChildren;
 
 }  // namespace ui
+
+// Declare template specializations introduced here to make sure that the
+// compiler knows about them before the first template instance use. Using a
+// template instance before its specialization is declared in a translation unit
+// is an error.
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AX_EXPORT, ax::mojom::Role*)
 
 #endif  // UI_ACCESSIBILITY_AURA_AURA_WINDOW_PROPERTIES_H_

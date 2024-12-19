@@ -69,6 +69,15 @@ std::u16string TypeConverter<const char*>::ToString(const char* source_value) {
   return base::UTF8ToUTF16(source_value);
 }
 
+std::u16string TypeConverter<std::string_view>::ToString(
+    std::string_view source_value) {
+  return base::UTF8ToUTF16(source_value);
+}
+
+std::u16string TypeConverter<GURL>::ToString(const GURL& source_value) {
+  return base::ASCIIToUTF16(source_value.possibly_invalid_spec());
+}
+
 std::u16string TypeConverter<base::FilePath>::ToString(
     const base::FilePath& source_value) {
   return source_value.AsUTF16Unsafe();
@@ -573,6 +582,15 @@ std::optional<SkColor> TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ParseRgbString(
 }  // namespace metadata
 }  // namespace ui
 
+DEFINE_ENUM_CONVERTERS(gfx::ElideBehavior,
+                       {gfx::ElideBehavior::NO_ELIDE, u"NO_ELIDE"},
+                       {gfx::ElideBehavior::TRUNCATE, u"TRUNCATE"},
+                       {gfx::ElideBehavior::ELIDE_HEAD, u"ELIDE_HEAD"},
+                       {gfx::ElideBehavior::ELIDE_MIDDLE, u"ELIDE_MIDDLE"},
+                       {gfx::ElideBehavior::ELIDE_TAIL, u"ELIDE_TAIL"},
+                       {gfx::ElideBehavior::ELIDE_EMAIL, u"ELIDE_EMAIL"},
+                       {gfx::ElideBehavior::FADE_TAIL, u"FADE_TAIL"})
+
 DEFINE_ENUM_CONVERTERS(gfx::HorizontalAlignment,
                        {gfx::HorizontalAlignment::ALIGN_LEFT, u"ALIGN_LEFT"},
                        {gfx::HorizontalAlignment::ALIGN_CENTER,
@@ -586,14 +604,11 @@ DEFINE_ENUM_CONVERTERS(gfx::VerticalAlignment,
                        {gfx::VerticalAlignment::ALIGN_MIDDLE, u"ALIGN_MIDDLE"},
                        {gfx::VerticalAlignment::ALIGN_BOTTOM, u"ALIGN_BOTTOM"})
 
-DEFINE_ENUM_CONVERTERS(gfx::ElideBehavior,
-                       {gfx::ElideBehavior::NO_ELIDE, u"NO_ELIDE"},
-                       {gfx::ElideBehavior::TRUNCATE, u"TRUNCATE"},
-                       {gfx::ElideBehavior::ELIDE_HEAD, u"ELIDE_HEAD"},
-                       {gfx::ElideBehavior::ELIDE_MIDDLE, u"ELIDE_MIDDLE"},
-                       {gfx::ElideBehavior::ELIDE_TAIL, u"ELIDE_TAIL"},
-                       {gfx::ElideBehavior::ELIDE_EMAIL, u"ELIDE_EMAIL"},
-                       {gfx::ElideBehavior::FADE_TAIL, u"FADE_TAIL"})
+DEFINE_ENUM_CONVERTERS(ui::ButtonStyle,
+                       {ui::ButtonStyle::kDefault, u"kDefault"},
+                       {ui::ButtonStyle::kProminent, u"kProminent"},
+                       {ui::ButtonStyle::kTonal, u"kTonal"},
+                       {ui::ButtonStyle::kText, u"kText"})
 
 DEFINE_ENUM_CONVERTERS(
     ui::MenuSeparatorType,
@@ -605,8 +620,29 @@ DEFINE_ENUM_CONVERTERS(
     {ui::MenuSeparatorType::VERTICAL_SEPARATOR, u"VERTICAL_SEPARATOR"},
     {ui::MenuSeparatorType::PADDED_SEPARATOR, u"PADDED_SEPARATOR"})
 
-DEFINE_ENUM_CONVERTERS(ui::ButtonStyle,
-                       {ui::ButtonStyle::kDefault, u"kDefault"},
-                       {ui::ButtonStyle::kProminent, u"kProminent"},
-                       {ui::ButtonStyle::kTonal, u"kTonal"},
-                       {ui::ButtonStyle::kText, u"kText"})
+DEFINE_ENUM_CONVERTERS(
+    ui::TextInputType,
+    {ui::TextInputType::TEXT_INPUT_TYPE_NONE, u"TEXT_INPUT_TYPE_NONE"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_TEXT, u"TEXT_INPUT_TYPE_TEXT"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD, u"TEXT_INPUT_TYPE_PASSWORD"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_SEARCH, u"TEXT_INPUT_TYPE_SEARCH"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_EMAIL, u"EXT_INPUT_TYPE_EMAIL"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_NUMBER, u"TEXT_INPUT_TYPE_NUMBER"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_TELEPHONE,
+     u"TEXT_INPUT_TYPE_TELEPHONE"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_URL, u"TEXT_INPUT_TYPE_URL"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_DATE, u"TEXT_INPUT_TYPE_DATE"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME,
+     u"TEXT_INPUT_TYPE_DATE_TIME"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_LOCAL,
+     u"TEXT_INPUT_TYPE_DATE_TIME_LOCAL"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_MONTH, u"TEXT_INPUT_TYPE_MONTH"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_TIME, u"TEXT_INPUT_TYPE_TIME"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_WEEK, u"TEXT_INPUT_TYPE_WEEK"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_TEXT_AREA,
+     u"TEXT_INPUT_TYPE_TEXT_AREA"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_CONTENT_EDITABLE,
+     u"TEXT_INPUT_TYPE_CONTENT_EDITABLE"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_FIELD,
+     u"TEXT_INPUT_TYPE_DATE_TIME_FIELD"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_NULL, u"TEXT_INPUT_TYPE_NULL"})

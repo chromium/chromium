@@ -32,6 +32,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/type_conversion.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -1469,3 +1470,9 @@ VariableRowHeightScrollHelper::RowInfo FixedRowHeightScrollHelper::GetRowInfo(
 }
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(
+    views::ScrollView::ScrollBarMode,
+    {views::ScrollView::ScrollBarMode::kDisabled, u"kDisabled"},
+    {views::ScrollView::ScrollBarMode::kHiddenButEnabled, u"kHiddenButEnabled"},
+    {views::ScrollView::ScrollBarMode::kEnabled, u"kEnabled"})

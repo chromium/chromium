@@ -119,6 +119,8 @@ component("base") {
     "accelerators/accelerator.h",
     "accelerators/command.cc",
     "accelerators/command.h",
+    "class_properties.cc",
+    "class_properties.h",
     "class_property.cc",
     "class_property.h",
     "default_style.h",

@@ -159,16 +159,6 @@ END_METADATA
 
 }  // namespace views
 
-DEFINE_ENUM_CONVERTERS(views::LayoutOrientation,
-                       {views::LayoutOrientation::kHorizontal, u"kHorizontal"},
-                       {views::LayoutOrientation::kVertical, u"kVertical"})
-
-DEFINE_ENUM_CONVERTERS(views::LayoutAlignment,
-                       {views::LayoutAlignment::kStart, u"kStart"},
-                       {views::LayoutAlignment::kCenter, u"kCenter"},
-                       {views::LayoutAlignment::kEnd, u"kEnd"},
-                       {views::LayoutAlignment::kStretch, u"kStretch"})
-
 DEFINE_ENUM_CONVERTERS(views::FlexAllocationOrder,
                        {views::FlexAllocationOrder::kNormal, u"kNormal"},
                        {views::FlexAllocationOrder::kReverse, u"kReverse"})

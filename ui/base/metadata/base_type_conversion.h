@@ -28,6 +28,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
@@ -188,6 +189,18 @@ struct EnumStringsMap;
 COMPONENT_EXPORT(UI_BASE_METADATA)
 std::u16string PointerToString(const void* pointer_val);
 
+template <>
+struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<const char*>
+    : BaseTypeConverter<true, true> {
+  static std::u16string ToString(const char* source_value);
+};
+
+template <>
+struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<std::string_view>
+    : BaseTypeConverter<true, true> {
+  static std::u16string ToString(std::string_view source_value);
+};
+
 #define DECLARE_CONVERSIONS(T)                                              \
   template <>                                                               \
   struct COMPONENT_EXPORT(UI_BASE_METADATA)                                 \
@@ -209,9 +222,8 @@ DECLARE_CONVERSIONS(uint32_t)
 DECLARE_CONVERSIONS(uint64_t)
 DECLARE_CONVERSIONS(float)
 DECLARE_CONVERSIONS(double)
-DECLARE_CONVERSIONS(const char*)
+DECLARE_CONVERSIONS(GURL)
 DECLARE_CONVERSIONS(base::FilePath)
-DECLARE_CONVERSIONS(std::u16string)
 DECLARE_CONVERSIONS(base::TimeDelta)
 DECLARE_CONVERSIONS(gfx::Insets)
 DECLARE_CONVERSIONS(gfx::Point)
@@ -223,6 +235,7 @@ DECLARE_CONVERSIONS(gfx::ShadowValues)
 DECLARE_CONVERSIONS(gfx::Size)
 DECLARE_CONVERSIONS(gfx::SizeF)
 DECLARE_CONVERSIONS(std::string)
+DECLARE_CONVERSIONS(std::u16string)
 DECLARE_CONVERSIONS(url::Component)
 
 #undef DECLARE_CONVERSIONS
@@ -375,13 +388,14 @@ using SkColorConverter = TypeConverter<UNIQUE_TYPE_NAME(SkColor)>;
 }  // namespace metadata
 }  // namespace ui
 
+EXPORT_ENUM_CONVERTERS(gfx::ElideBehavior, COMPONENT_EXPORT(UI_BASE_METADATA))
 EXPORT_ENUM_CONVERTERS(gfx::HorizontalAlignment,
                        COMPONENT_EXPORT(UI_BASE_METADATA))
 EXPORT_ENUM_CONVERTERS(gfx::VerticalAlignment,
                        COMPONENT_EXPORT(UI_BASE_METADATA))
-EXPORT_ENUM_CONVERTERS(gfx::ElideBehavior, COMPONENT_EXPORT(UI_BASE_METADATA))
+EXPORT_ENUM_CONVERTERS(ui::ButtonStyle, COMPONENT_EXPORT(UI_BASE_METADATA))
 EXPORT_ENUM_CONVERTERS(ui::MenuSeparatorType,
                        COMPONENT_EXPORT(UI_BASE_METADATA))
-EXPORT_ENUM_CONVERTERS(ui::ButtonStyle, COMPONENT_EXPORT(UI_BASE_METADATA))
+EXPORT_ENUM_CONVERTERS(ui::TextInputType, COMPONENT_EXPORT(UI_BASE_METADATA))
 
 #endif  // UI_BASE_METADATA_BASE_TYPE_CONVERSION_H_

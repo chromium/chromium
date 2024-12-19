@@ -14,10 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/class_properties.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(const char*)
-DEFINE_UI_CLASS_PROPERTY_TYPE(int)
-DEFINE_UI_CLASS_PROPERTY_TYPE(float)
 
 namespace {
 

@@ -32,6 +32,7 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
+#include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/shadow_controller.h"
 
@@ -761,3 +762,20 @@ void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
 }
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(
+    views::BubbleBorder::Arrow,
+    {views::BubbleBorder::Arrow::TOP_LEFT, u"TOP_LEFT"},
+    {views::BubbleBorder::Arrow::TOP_RIGHT, u"TOP_RIGHT"},
+    {views::BubbleBorder::Arrow::BOTTOM_LEFT, u"BOTTOM_LEFT"},
+    {views::BubbleBorder::Arrow::BOTTOM_RIGHT, u"BOTTOM_RIGHT"},
+    {views::BubbleBorder::Arrow::LEFT_TOP, u"LEFT_TOP"},
+    {views::BubbleBorder::Arrow::RIGHT_TOP, u"RIGHT_TOP"},
+    {views::BubbleBorder::Arrow::LEFT_BOTTOM, u"LEFT_BOTTOM"},
+    {views::BubbleBorder::Arrow::RIGHT_BOTTOM, u"RIGHT_BOTTOM"},
+    {views::BubbleBorder::Arrow::TOP_CENTER, u"TOP_CENTER"},
+    {views::BubbleBorder::Arrow::BOTTOM_CENTER, u"BOTTOM_CENTER"},
+    {views::BubbleBorder::Arrow::LEFT_CENTER, u"LEFT_CENTER"},
+    {views::BubbleBorder::Arrow::RIGHT_CENTER, u"RIGHT_CENTER"},
+    {views::BubbleBorder::Arrow::NONE, u"NONE"},
+    {views::BubbleBorder::Arrow::FLOAT, u"FLOAT"})

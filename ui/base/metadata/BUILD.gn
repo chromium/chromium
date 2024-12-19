@@ -23,6 +23,7 @@ source_set("metadata_headers") {
     "//base:base",
     "//skia:skia",
     "//ui/base",
+    "//ui/base/ime:text_input_types",
     "//ui/gfx",
     "//url",
   ]

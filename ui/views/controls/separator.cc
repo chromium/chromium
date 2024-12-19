@@ -11,6 +11,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/metadata/type_conversion.h"
 
 namespace views {
 
@@ -128,3 +129,8 @@ ADD_PROPERTY_METADATA(int, BorderRadius)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::Separator::Orientation,
+                       {views::Separator::Orientation::kHorizontal,
+                        u"kHorizontal"},
+                       {views::Separator::Orientation::kVertical, u"kVertical"})

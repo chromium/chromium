@@ -216,8 +216,22 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<gfx::Rect*>* const
     kWindowPipResizeHandleBoundsKey;
 
-// Alphabetical sort.
-
 }  // namespace ash
+
+// Declare template specializations introduced by Ash here to make sure that the
+// compiler knows about them before the first template instance use. Using a
+// template instance before its specialization is declared in a translation unit
+// is an error.
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, SkRegion*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
+                                        ash::ArcGameControlsFlag)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
+                                        ash::ArcResizeLockType)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
+                                        ash::ResizeShadowType)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowBackdrop*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, bool*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, float*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, uint64_t)
 
 #endif  // ASH_PUBLIC_CPP_WINDOW_PROPERTIES_H_
