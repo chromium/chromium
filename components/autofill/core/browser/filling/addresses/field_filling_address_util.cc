@@ -5,12 +5,17 @@
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 
 #include <optional>
+#include <string>
 
+#include "base/i18n/char_iterator.h"
+#include "base/i18n/unicodestring.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -21,6 +26,7 @@
 #include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -322,6 +328,35 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
   return {};
 }
 
+// Returns true if there is at least one Katakana character present in the
+// `label`.
+bool AreKatakanaCharactersPresent(const std::u16string& label) {
+  UErrorCode error = U_ZERO_ERROR;
+  for (base::i18n::UTF16CharIterator iter(label); !iter.end(); iter.Advance()) {
+    if (uscript_getScript(iter.get(), &error) == USCRIPT_KATAKANA) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// If `country_code` is set to "JP" and Katakana characters are present in the
+// field label, the `value` will be transliterated from Hiragana to
+// Katakana. For other countries/characters nothing will change.
+std::u16string GetAlternativeNameForInput(
+    const std::u16string& value,
+    const AddressCountryCode& country_code,
+    const FormFieldData& field_data) {
+  if (country_code == AddressCountryCode("JP") &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP) &&
+      AreKatakanaCharactersPresent(field_data.label())) {
+    return TransliterateAlternativeName(value,
+                                        TransliterationId::kHiraganaToKatakana);
+  }
+  return value;
+}
+
 // Finds the best suitable option in the `field` that corresponds to the
 // `phone_country_code`. The strategy is:
 // - If a <select> menu has an option whose value or content exactly matches the
@@ -443,6 +478,10 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
     return GetStateTextForInput(
         value, data_util::GetCountryCodeWithFallback(profile, app_locale),
         field_data.max_length(), failure_to_fill);
+  }
+  if (IsAlternativeNameType(field_type.GetStorableType())) {
+    return GetAlternativeNameForInput(value, profile.GetAddressCountryCode(),
+                                      field_data);
   }
   return value;
 }

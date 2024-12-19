@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/path_service.h"
@@ -844,6 +845,83 @@ TEST_F(FieldFillingAddressUtilTest,
                                  /*address_normalizer=*/nullptr)
                   .empty());
 }
+
+// Tests that phonetic name is filled correctly.
+struct AlternativeNameFillingTestCase {
+  std::string field_label;
+  std::u16string value_to_fill;
+  std::u16string expected_value;
+  std::string country_code;
+};
+
+class AlternativeNameFillingTest
+    : public FieldFillingAddressUtilTest,
+      public testing::WithParamInterface<
+          std::tuple<FieldType, AlternativeNameFillingTestCase>> {};
+
+TEST_P(AlternativeNameFillingTest, FillAlternativeName) {
+  base::test::ScopedFeatureList features{
+      autofill::features::kAutofillSupportPhoneticNameForJP};
+  const FieldType& field_type = std::get<0>(GetParam());
+  const AlternativeNameFillingTestCase& test_case = std::get<1>(GetParam());
+
+  FormFieldData field = test::CreateTestFormField(test_case.field_label,
+                                                /*name=*/"", /*value=*/"",
+                                                FormControlType::kInputText);
+
+  AutofillProfile profile(AddressCountryCode(test_case.country_code));
+  profile.SetRawInfo(field_type, test_case.value_to_fill);
+
+  EXPECT_EQ(
+      test_case.expected_value,
+      GetValueForProfile(profile, kAppLocale, AutofillType(field_type), field,
+                         /*address_normalizer=*/nullptr));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AlternativeNameFillingConversionTest,
+    AlternativeNameFillingTest,
+    testing::Combine(
+        testing::Values(ALTERNATIVE_FULL_NAME,
+                        ALTERNATIVE_GIVEN_NAME,
+                        ALTERNATIVE_FAMILY_NAME),
+        testing::Values(
+            // Base case with latin name.
+            AlternativeNameFillingTestCase("label", u"john", u"john", "JP"),
+            // No characters present in the label.
+            AlternativeNameFillingTestCase("",
+                                           u"やまもと あおい",
+                                           u"やまもと あおい",
+                                           "JP"),
+            // Only latin characters in the label.
+            AlternativeNameFillingTestCase("Phonetic full name",
+                                           u"やまもと あおい",
+                                           u"やまもと あおい",
+                                           "JP"),
+            // Only Hiragana characters in the label.
+            AlternativeNameFillingTestCase("せい",
+                                           u"やまもと あおい",
+                                           u"やまもと あおい",
+                                           "JP"),
+            // Country code not equal to "JP".
+            AlternativeNameFillingTestCase("せい",
+                                           u"やまもと あおい",
+                                           u"やまもと あおい",
+                                           "US"),
+            // Only Katakana character present.
+            AlternativeNameFillingTestCase("セイ",
+                                           u"やまもと あおい",
+                                           u"ヤマモト アオイ",
+                                           "JP"),
+            // Both Katakana characters and other characters.
+            AlternativeNameFillingTestCase("name セイ",
+                                           u"やまもと あおい",
+                                           u"ヤマモト アオイ",
+                                           "JP"),
+            AlternativeNameFillingTestCase("せい(セイ)",
+                                           u"やまもと あおい",
+                                           u"ヤマモト アオイ",
+                                           "JP"))));
 
 }  // namespace
 
