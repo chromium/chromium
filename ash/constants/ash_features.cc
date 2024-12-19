@@ -1888,12 +1888,6 @@ BASE_FEATURE(kMultiZoneRgbKeyboard,
              "MultiZoneRgbKeyboard",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Nearby Connections to specificy KeepAlive interval and timeout while
-// also making the Nearby Connections WebRTC defaults longer.
-BASE_FEATURE(kNearbyKeepAliveFix,
-             "NearbyKeepAliveFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Nearby Presence for scanning and discovery of nearby devices.
 BASE_FEATURE(kNearbyPresence,
              "NearbyPresence",
@@ -4071,10 +4065,6 @@ bool AreEphemeralNetworkPoliciesEnabled() {
 
 bool CanEphemeralNetworkPoliciesBeEnabledByPolicy() {
   return base::FeatureList::IsEnabled(kEphemeralNetworkPoliciesEnabledPolicy);
-}
-
-bool IsNearbyKeepAliveFixEnabled() {
-  return base::FeatureList::IsEnabled(kNearbyKeepAliveFix);
 }
 
 bool IsNearbyPresenceEnabled() {
