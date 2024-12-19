@@ -48,10 +48,18 @@ config("fuzztest_internal_config") {
 config("fuzztest_public_config") {
   include_dirs = [ "src" ]
 
-  # Riegeli is a library which centipede can use to store data more
-  # efficiently. It's not yet available in Chromium, so disable
-  # for now.
-  defines = [ "CENTIPEDE_DISABLE_RIEGELI" ]
+  defines = [
+    # Riegeli is a library which centipede can use to store data more
+    # efficiently. It's not yet available in Chromium, so disable
+    # for now.
+    "CENTIPEDE_DISABLE_RIEGELI",
+
+    # In fuzztest's unit-test mode, coverage collection doesn't work
+    # with multiple DSOs, which Chromium needs even in non-component
+    # builds. Note that this doesn't impact actual fuzzing mode e.g.
+    # centipede.
+    "FUZZTEST_NO_LEGACY_COVERAGE",
+  ]
   if (use_centipede) {
     defines += [ "FUZZTEST_USE_CENTIPEDE" ]
   } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
@@ -76,8 +84,6 @@ if (use_centipede) {
       "src/centipede/byte_array_mutator.h",
       "src/centipede/command.cc",
       "src/centipede/control_flow.cc",
-      "src/centipede/stop.cc",
-      "src/centipede/stop.h",
       "src/centipede/execution_metadata.cc",
       "src/centipede/execution_metadata.h",
       "src/centipede/feature.cc",
@@ -94,6 +100,8 @@ if (use_centipede) {
       "src/centipede/runner_result.h",
       "src/centipede/shared_memory_blob_sequence.cc",
       "src/centipede/shared_memory_blob_sequence.h",
+      "src/centipede/stop.cc",
+      "src/centipede/stop.h",
       "src/centipede/symbol_table.cc",
       "src/centipede/util.cc",
     ]
