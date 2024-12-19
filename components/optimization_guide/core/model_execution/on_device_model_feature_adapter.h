@@ -61,7 +61,7 @@ class OnDeviceModelFeatureAdapter final
 
   bool CanSkipTextSafety() const { return config_.can_skip_text_safety(); }
 
-  std::optional<SamplingParams> MaybeSamplingParams() const;
+  std::optional<SamplingParamsConfig> MaybeSamplingParamsConfig() const;
 
   const proto::Any& GetFeatureMetadata() const;
 

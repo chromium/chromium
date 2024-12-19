@@ -99,8 +99,12 @@ SamplingParams ResolveSamplingParams(
     return config_params->sampling_params.value();
   }
   if (on_device_opts) {
-    if (auto feature_params = on_device_opts->adapter->MaybeSamplingParams()) {
-      return feature_params.value();
+    auto feature_params = on_device_opts->adapter->MaybeSamplingParamsConfig();
+    if (feature_params && feature_params->default_top_k.has_value() &&
+        feature_params->default_temperature.has_value()) {
+      return SamplingParams{
+          .top_k = feature_params->default_top_k.value(),
+          .temperature = feature_params->default_temperature.value()};
     }
   }
   return SamplingParams{

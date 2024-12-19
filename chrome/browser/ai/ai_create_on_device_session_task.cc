@@ -65,13 +65,13 @@ void CreateOnDeviceSessionTask::Start() {
     Finish(std::move(session));
     return;
   }
-  optimization_guide::OnDeviceModelEligibilityReason reason =
-      optimization_guide::OnDeviceModelEligibilityReason::kUnknown;
-  bool can_create = service->CanCreateOnDeviceSession(feature_, &reason);
-  CHECK(!can_create);
-  if (!kWaitableReasons.contains(reason)) {
+  auto eligibility = service->GetOnDeviceModelEligibility(feature_);
+  CHECK_NE(eligibility,
+           optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  if (!kWaitableReasons.contains(eligibility)) {
     BUILT_IN_AI_LOGGER() << "Cannot create session for feature '" << feature_
-                         << "'. " << "Reason: " << reason;
+                         << "'. " << "Reason: " << eligibility;
     Finish(nullptr);
     return;
   }

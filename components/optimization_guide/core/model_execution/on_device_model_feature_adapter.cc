@@ -170,14 +170,14 @@ OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
   return text_safety_request;
 }
 
-std::optional<SamplingParams> OnDeviceModelFeatureAdapter::MaybeSamplingParams()
-    const {
+std::optional<SamplingParamsConfig>
+OnDeviceModelFeatureAdapter::MaybeSamplingParamsConfig() const {
   if (!config_.has_sampling_params()) {
     return std::nullopt;
   }
-  return SamplingParams{
-      .top_k = config_.sampling_params().top_k(),
-      .temperature = config_.sampling_params().temperature(),
+  return SamplingParamsConfig{
+      .default_top_k = config_.sampling_params().top_k(),
+      .default_temperature = config_.sampling_params().temperature(),
   };
 }
 

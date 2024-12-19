@@ -58,6 +58,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -546,22 +547,6 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
                                                request_context_metadata);
 }
 
-bool OptimizationGuideKeyedService::CanCreateOnDeviceSession(
-    optimization_guide::ModelBasedCapabilityKey feature,
-    optimization_guide::OnDeviceModelEligibilityReason*
-        on_device_model_eligibility_reason) {
-  if (!model_execution_manager_) {
-    if (on_device_model_eligibility_reason) {
-      *on_device_model_eligibility_reason = optimization_guide::
-          OnDeviceModelEligibilityReason::kFeatureNotEnabled;
-    }
-    return false;
-  }
-
-  return model_execution_manager_->CanCreateOnDeviceSession(
-      feature, on_device_model_eligibility_reason);
-}
-
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 OptimizationGuideKeyedService::StartSession(
     optimization_guide::ModelBasedCapabilityKey feature,
@@ -792,4 +777,25 @@ void OptimizationGuideKeyedService::
       base::StrCat({"SyntheticModelExecutionFeature", feature_name}),
       ShouldFeatureBeCurrentlyEnabledForUser(feature) ? "Enabled" : "Disabled",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
+}
+
+optimization_guide::OnDeviceModelEligibilityReason
+OptimizationGuideKeyedService::GetOnDeviceModelEligibility(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!model_execution_manager_) {
+    return optimization_guide::OnDeviceModelEligibilityReason::
+        kFeatureNotEnabled;
+  }
+
+  return model_execution_manager_->GetOnDeviceModelEligibility(feature);
+}
+
+std::optional<optimization_guide::SamplingParamsConfig>
+OptimizationGuideKeyedService::GetSamplingParamsConfig(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!model_execution_manager_) {
+    return std::nullopt;
+  }
+
+  return model_execution_manager_->GetSamplingParamsConfig(feature);
 }

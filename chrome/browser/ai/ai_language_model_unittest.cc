@@ -208,36 +208,20 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
     // Set up mock service.
     SetupMockOptimizationGuideKeyedService();
-    // When the sampling param is not specified, `StartSession()` will run three
-    // times:
-    // 1. when getting the default sampling params.
-    // 2. when creating the session.
-    // 3. when cloning the session.
-    // Other wise, it will run twice as the first one is unnecessary.
-    auto& expectation =
-        EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-            .Times(sampling_params_copy ? 2 : 3);
+    // When the sampling param is not specified, `GetSamplingParamsConfig()`
+    // will be called.
     if (!sampling_params_copy) {
-      expectation.WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
-            auto session = std::make_unique<
-                testing::NiceMock<optimization_guide::MockSession>>();
-            SetUpMockSession(*session, options.use_prompt_api_proto,
-                             IsModelStreamingChunkByChunk());
-            ON_CALL(*session, GetSamplingParams())
-                .WillByDefault(
-                    [&]() -> const optimization_guide::SamplingParams {
-                      return optimization_guide::SamplingParams{
-                          .top_k = kDefaultTopK,
-                          .temperature = kDefaultTemperature};
-                    });
-
-            return session;
+      EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+                  GetSamplingParamsConfig(_))
+          .WillOnce([](optimization_guide::ModelBasedCapabilityKey feature) {
+            return optimization_guide::SamplingParamsConfig{
+                .default_top_k = kDefaultTopK,
+                .default_temperature = kDefaultTemperature};
           });
     }
-    expectation
+    // `StartSession()` will run twice when creating and cloning the session.
+    EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+        .Times(2)
         .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
                       const std::optional<
                           optimization_guide::SessionConfigParams>&

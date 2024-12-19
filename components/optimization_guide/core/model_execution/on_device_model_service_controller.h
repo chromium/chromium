@@ -132,6 +132,9 @@ class OnDeviceModelServiceController
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  OnDeviceModelAdaptationMetadata* GetFeatureMetadata(
+      ModelBasedCapabilityKey feature);
+
  protected:
   virtual ~OnDeviceModelServiceController();
 
@@ -201,9 +204,6 @@ class OnDeviceModelServiceController
 
   // Called when `base_model_remote_` is idle.
   void OnBaseModelRemoteIdle();
-
-  OnDeviceModelAdaptationMetadata* GetFeatureMetadata(
-      ModelBasedCapabilityKey feature);
 
   // Begins the on-device model validation flow.
   void StartValidation();

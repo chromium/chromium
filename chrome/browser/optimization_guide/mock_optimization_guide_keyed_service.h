@@ -60,12 +60,6 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
        std::optional<optimization_guide::proto::RequestContextMetadata>
            request_context_metadata),
       (override));
-  MOCK_METHOD(bool,
-              CanCreateOnDeviceSession,
-              (optimization_guide::ModelBasedCapabilityKey feature,
-               optimization_guide::OnDeviceModelEligibilityReason*
-                   on_device_model_eligibility_reason),
-              (override));
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (optimization_guide::ModelBasedCapabilityKey feature,
@@ -118,6 +112,16 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               (override));
 
   MOCK_METHOD(void, OnNavigationFinish, (const std::vector<GURL>&), (override));
+
+  MOCK_METHOD(optimization_guide::OnDeviceModelEligibilityReason,
+              GetOnDeviceModelEligibility,
+              (optimization_guide::ModelBasedCapabilityKey),
+              (override));
+
+  MOCK_METHOD(std::optional<optimization_guide::SamplingParamsConfig>,
+              GetSamplingParamsConfig,
+              (optimization_guide::ModelBasedCapabilityKey),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_MOCK_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

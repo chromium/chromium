@@ -260,14 +260,11 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanCreateOnDeviceSession(_, _))
+              GetOnDeviceModelEligibility(_))
       .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelEligibilityReason*
-                  on_device_model_eligibility_reason) {
-            *on_device_model_eligibility_reason = optimization_guide::
-                OnDeviceModelEligibilityReason::kModelNotEligible;
-            return false;
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            return optimization_guide::OnDeviceModelEligibilityReason::
+                kModelNotEligible;
           }));
 
   MockCreateRewriterClient mock_create_rewriter_client;
@@ -310,15 +307,12 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
           }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanCreateOnDeviceSession(_, _))
+              GetOnDeviceModelEligibility(_))
       .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelEligibilityReason*
-                  on_device_model_eligibility_reason) {
-            // Setting kConfigNotAvailableForFeature should trigger retry.
-            *on_device_model_eligibility_reason = optimization_guide::
-                OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
-            return false;
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            // Returning kConfigNotAvailableForFeature should trigger retry.
+            return optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature;
           }));
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
@@ -379,15 +373,12 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
                   config_params) { return nullptr; }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanCreateOnDeviceSession(_, _))
+              GetOnDeviceModelEligibility(_))
       .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelEligibilityReason*
-                  on_device_model_eligibility_reason) {
-            // Setting kConfigNotAvailableForFeature should trigger retry.
-            *on_device_model_eligibility_reason = optimization_guide::
-                OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
-            return false;
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            // Returning kConfigNotAvailableForFeature should trigger retry.
+            return optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature;
           }));
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =

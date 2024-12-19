@@ -42,15 +42,11 @@ class AIManagerTest : public AITestUtils::AITestBase {
     ON_CALL(session_, GetOnDeviceFeatureMetadata())
         .WillByDefault(AITestUtils::GetFakeFeatureMetadata);
     ON_CALL(*mock_optimization_guide_keyed_service_,
-            CanCreateOnDeviceSession(_, _))
-        .WillByDefault(
-            Invoke([](optimization_guide::ModelBasedCapabilityKey feature,
-                      optimization_guide::OnDeviceModelEligibilityReason*
-                          on_device_model_eligibility_reason) {
-              *on_device_model_eligibility_reason = optimization_guide::
-                  OnDeviceModelEligibilityReason::kFeatureNotEnabled;
-              return false;
-            }));
+            GetOnDeviceModelEligibility(_))
+        .WillByDefault([](optimization_guide::ModelBasedCapabilityKey feature) {
+          return optimization_guide::OnDeviceModelEligibilityReason::
+              kFeatureNotEnabled;
+        });
   }
 
  private:

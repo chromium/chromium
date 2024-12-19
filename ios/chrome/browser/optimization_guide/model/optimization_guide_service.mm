@@ -363,21 +363,6 @@ void OptimizationGuideService::RemoveObserverForOptimizationTargetModel(
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #pragma mark - optimization_guide::OptimizationGuideModelExecutor implementation
 
-bool OptimizationGuideService::CanCreateOnDeviceSession(
-    optimization_guide::ModelBasedCapabilityKey feature,
-    optimization_guide::OnDeviceModelEligibilityReason*
-        on_device_model_eligibility_reason) {
-  if (!model_execution_manager_) {
-    if (on_device_model_eligibility_reason) {
-      *on_device_model_eligibility_reason = optimization_guide::
-          OnDeviceModelEligibilityReason::kFeatureNotEnabled;
-    }
-    return false;
-  }
-  return model_execution_manager_->CanCreateOnDeviceSession(
-      feature, on_device_model_eligibility_reason);
-}
-
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 OptimizationGuideService::StartSession(
     optimization_guide::ModelBasedCapabilityKey feature,
@@ -442,5 +427,28 @@ void OptimizationGuideService::RemoveOnDeviceModelAvailabilityChangeObserver(
     service_controller->RemoveOnDeviceModelAvailabilityChangeObserver(feature,
                                                                       observer);
   }
+}
+
+#pragma mark - optimization_guide::OptimizationGuideOnDeviceCapabilityProvider implementation
+
+optimization_guide::OnDeviceModelEligibilityReason
+OptimizationGuideService::GetOnDeviceModelEligibility(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!model_execution_manager_) {
+    return optimization_guide::OnDeviceModelEligibilityReason::
+        kFeatureNotEnabled;
+  }
+
+  return model_execution_manager_->GetOnDeviceModelEligibility(feature);
+}
+
+std::optional<optimization_guide::SamplingParamsConfig>
+OptimizationGuideService::GetSamplingParamsConfig(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!model_execution_manager_) {
+    return std::nullopt;
+  }
+
+  return model_execution_manager_->GetSamplingParamsConfig(feature);
 }
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
