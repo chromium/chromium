@@ -159,6 +159,8 @@ public class ToolbarLongPressMenuHandler {
         mPopupMenu.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupMenu.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mPopupMenu.setContentView(menuListView);
+        mPopupMenu.setAnimationStyle(
+                onTop ? R.style.PopupWindowAnimDropdown : R.style.PopupWindowAnimRaiseup);
 
         boolean isRtl =
                 mContext.getResources().getConfiguration().getLayoutDirection()
