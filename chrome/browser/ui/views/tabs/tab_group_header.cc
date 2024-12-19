@@ -122,8 +122,9 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   SetGroup(group);
   auto* tab_group = tab_slot_controller_->GetTabGroup(group);
   if (tab_group) {
-    tab_group->SetTabGroupVisualsChangedCallback(base::BindRepeating(
-        &TabGroupHeader::UpdateAccessibleName, weak_ptr_factory_.GetWeakPtr()));
+    tab_group->SetTabGroupVisualsChangedCallback(
+        base::BindRepeating(&TabGroupHeader::OnTabGroupVisualsChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
   set_context_menu_controller(this);
 
@@ -152,6 +153,7 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
+  SetCollapsedState();
   UpdateIsCollapsed();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
@@ -386,6 +388,21 @@ int TabGroupHeader::GetDesiredWidth() const {
     return overlap_margin + title_chip_->width();
 }
 
+void TabGroupHeader::SetCollapsedState() {
+  const bool collapsed_state =
+      tab_slot_controller_->IsGroupCollapsed(group().value());
+  if (is_collapsed_ != collapsed_state) {
+    is_collapsed_ = collapsed_state;
+
+    const ui::ElementIdentifier element_id =
+        GetProperty(views::kElementIdentifierKey);
+    if (element_id) {
+      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(element_id,
+                                                                     this);
+    }
+  }
+}
+
 void TabGroupHeader::VisualsChanged() {
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
@@ -394,6 +411,9 @@ void TabGroupHeader::VisualsChanged() {
   color_ = tab_slot_controller_->GetPaintedGroupColor(
       tab_slot_controller_->GetGroupColorId(tab_group_id));
   should_show_header_icon_ = ShouldShowHeaderIcon();
+
+  // Update collapsed state before changing any UI.
+  SetCollapsedState();
 
   UpdateTitleView();
   UpdateSyncIconView();
@@ -408,17 +428,7 @@ void TabGroupHeader::VisualsChanged() {
     views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
   }
 
-  const bool collapsed_state =
-      tab_slot_controller_->IsGroupCollapsed(group().value());
-  if (is_collapsed_ != collapsed_state) {
-    const ui::ElementIdentifier element_id =
-        GetProperty(views::kElementIdentifierKey);
-    if (element_id) {
-      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(element_id,
-                                                                     this);
-      UpdateIsCollapsed();
-    }
-  }
+  UpdateIsCollapsed();
   UpdateAccessibleName();
 }
 
@@ -434,10 +444,9 @@ void TabGroupHeader::UpdateAccessibleName() {
 // will be reread with the updated state when the header's collapsed state is
 // toggled.
 #if !BUILDFLAG(IS_WIN)
-  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
   collapsed_state =
-      is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
-                   : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
+      is_collapsed_ ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
+                    : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
 #endif
   if (title.empty()) {
     GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
@@ -490,8 +499,6 @@ bool TabGroupHeader::ShouldShowHeaderIcon() const {
 }
 
 void TabGroupHeader::UpdateIsCollapsed() {
-  is_collapsed_ = tab_slot_controller_->IsGroupCollapsed(group().value());
-
   if (is_collapsed_) {
     GetViewAccessibility().SetIsCollapsed();
   } else {
@@ -654,20 +661,18 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   }
 }
 
+void TabGroupHeader::OnTabGroupVisualsChanged() {
+  SetCollapsedState();
+  UpdateAccessibleName();
+}
+
 void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {
   widget->RemoveObserver(&editor_bubble_tracker_);
 }
 
 bool TabGroupHeader::GetShowingAttentionIndicator() {
-  const bool collapsed_state =
-      tab_slot_controller_->IsGroupCollapsed(group().value());
-
-  // Override attention flag if group has become expanded.
-  if (!collapsed_state) {
-    needs_attention_ = false;
-  }
-
-  return needs_attention_;
+  // Attention should only be shown if the group is collapsed.
+  return is_collapsed_ && needs_attention_;
 }
 
 void TabGroupHeader::SetTabGroupNeedsAttention(bool needs_attention) {
@@ -677,18 +682,8 @@ void TabGroupHeader::SetTabGroupNeedsAttention(bool needs_attention) {
     return;
   }
 
-  // Expanded groups should not display the attention indicator. Trying
-  // to set needs_attention=true on an expanded group is disallowed.
-  if (!is_collapsed_ && needs_attention) {
-    return;
-  }
-
-  // Cache most recent state.
-  bool previous_attention_type = needs_attention_;
-  needs_attention_ = needs_attention;
-
-  if (needs_attention_ != previous_attention_type) {
-    // If state was changed, trigger change in visuals.
+  if (needs_attention_ != needs_attention) {
+    needs_attention_ = needs_attention;
     VisualsChanged();
   }
 }
