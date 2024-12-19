@@ -1375,7 +1375,6 @@ Catatan: Kebijakan ini tidak berlaku untuk URL JavaScript dalam halaman dengan d
 <translation id="2005506794355327448">Tindakan yang harus diambil saat penutup ditutup.</translation>
 <translation id="2006530844219044261">Pengelolaan daya</translation>
 <translation id="2006954055163088863">Anggap pengguna sebagai tidak ada aktivitas saat video diputar</translation>
-<translation id="2008514891623783266">Kebijakan penanganan IP WebRTC</translation>
 <translation id="201153120366509312">Jika kebijakan ini disetel ke diizinkan atau tidak disetel, pengumpulan metrik yang menyertakan URL akan diizinkan.
 Jika kebijakan ini disetel ke diizinkan dan pengumpulan metrik yang menyertakan URL diaktifkan oleh pengguna, pengumpulan metrik yang menyertakan URL akan mengirimkan informasi URL halaman yang dikunjungi oleh pengguna kepada Google untuk meningkatkan kualitas penelusuran dan penjelajahan beserta statistik penggunaan per halaman.
 Metrik yang menyertakan URL juga mencakup statistik penggunaan dan ID komponen browser lainnya yang dapat mengubah atau menyediakan konten, seperti ekstensi.
@@ -9684,7 +9683,6 @@ juga aman.</translation>
 <translation id="8056800559672904373">Akun terkelola harus berupa akun utama yang tidak memiliki akun sekunder, dan pengguna dapat mengimpor data penjelajahan yang ada pada saat pembuatan profilnya</translation>
 <translation id="8059164285174960932">URL tempat klien akses jarak jauh seharusnya memperoleh token autentikasi mereka</translation>
 <translation id="8059352177830050556">Aktifkan pelaporan info lampu latar perangkat</translation>
-<translation id="8062375903420954294">Kebijakan ini memungkinkan pembatasan alamat IP dan antarmuka yang dapat digunakan oleh WebRTC saat mencoba menemukan koneksi terbaik yang tersedia. Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Jika tidak disetel, semua antarmuka yang tersedia akan digunakan secara default.</translation>
 <translation id="8062485064082966327">Gunakan layanan Google anonim untuk memberikan deskripsi otomatis untuk gambar tanpa label</translation>
 <translation id="8066428282805800713">Kirim data hardware tambahan di ChromeOS Flex</translation>
 <translation id="8066532561081127944">Untuk alasan keamanan,

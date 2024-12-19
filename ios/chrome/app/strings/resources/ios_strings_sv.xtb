@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Inga öppna flikar</translation>
 <translation id="1469381646033328562">Ditt konto hanteras av din förälder.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Ändrade</translation>
 <translation id="1480152980057770392">Visa läslista</translation>
 <translation id="1484758781961275277">Få ut det bästa av din favoritwebbläsare på datorn – nu på din iPad.</translation>
 <translation id="1485907716209290998">Paketspårning</translation>
@@ -1211,6 +1212,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6445981559479772097">SMS skickat.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Detta raderar gruppen permanent från enheten.</translation>
+<translation id="6452534462676960500">Ny aktivitet</translation>
 <translation id="6459307836338400162">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synk<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Informationen har dolts</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1619,6 +1621,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8219424187226230983">Visa offlineversionen i en ny flik</translation>
 <translation id="8230355548492839438">Sök föregående</translation>
 <translation id="8232956427053453090">Behåll data</translation>
+<translation id="8258999165172757081">Tillagt</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="82619448491672958">Se andra flikar</translation>
 <translation id="8263228331881858381">Nyckeln har sparats</translation>

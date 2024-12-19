@@ -100,6 +100,7 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="5339733443032484186">Tu pestaña más reciente</translation>
 <translation id="5380159289133845234">Archivar pestañas duplicadas</translation>
 <translation id="5400836586163650660">Gris</translation>
+<translation id="5446043142172831860">Quitar pestaña y abandonar grupo</translation>
 <translation id="5490235265819901748">Se expandió el grupo de pestañas</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>

@@ -361,6 +361,7 @@
 <translation id="1615402009686901181">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಕಂಟೆಂಟ್‌ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1617276713587758852">ಕ್ರಾಸ್‌ಓವರ್‌ಗಳು</translation>
 <translation id="1619007254056372606">ಸಾಧನದಲ್ಲಿರುವ ಸೈಟ್ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1622966923835127638">ವ್ಯವಹಾರ ಹಣಕಾಸು</translation>
 <translation id="1623104350909869708">ಹೆಚ್ಚುವರಿ ಸಂವಾದಗಳನ್ನು ರಚಿಸದಂತೆ ಈ ಪುಟವನ್ನು ತಡೆಯಿರಿ</translation>
@@ -368,6 +369,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯ ಪ್ರಕಾರ ಈ ಫೈಲ್ ಅನ್ನು ತೆರೆಯುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯ ಪ್ರಕಾರ # ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯ ಪ್ರಕಾರ # ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1633941398432788136">ಈವೆಂಟ್ ಯೋಜನೆ</translation>
 <translation id="1634828734222219955">ಒಟ್ಟು</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಗುಂಪಿಗೆ ಸೇರಿಕೊಂಡಿದ್ದಾರೆ</translation>
 <translation id="163826442096818926">ಚಿಕ್ಕದಾಗಿ</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1640180200866533862">ಬಳಕೆದಾರನ ನೀತಿಗಳು</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">ಭದ್ರತೆಯನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ಸಹಾಯ ಮಾಡಲು, ಇದು ಸಾಧನದ OS, ಬ್ರೌಸರ್ ಆವೃತ್ತಿ ಮತ್ತು ಯಾವ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ ಎಂಬುದನ್ನು ಸಹ ನೋಡಬಹುದು</translation>
 <translation id="2573170131138724450">ದೂರದರ್ಶನಗಳು</translation>
 <translation id="257674075312929031">ಗುಂಪು</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿದ್ದಾರೆ</translation>
 <translation id="2586657967955657006">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್</translation>
 <translation id="2587841377698384444">ಡೈರೆಕ್ಟರಿ API ID:</translation>
 <translation id="2594318783181750337">ವೇಗದ ವೆಬ್ ವೀಕ್ಷಣೆ:</translation>
@@ -2399,6 +2402,7 @@
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
 <translation id="5305716236436927587">ಜಾಹೀರಾತು ಮತ್ತು ಮಾರ್ಕೆಟಿಂಗ್</translation>
 <translation id="5306593769196050043">ಎರಡೂ ಶೀಟ್‌ಗಳು</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಗುಂಪಿನ ಬಣ್ಣವನ್ನು ಬದಲಾಯಿಸಿದ್ದಾರೆ</translation>
 <translation id="5307166000025436103">ಸರಿ</translation>
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5308689395849655368">ಕ್ರ‍್ಯಾಶ್‌‌ ವರದಿಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
@@ -2430,6 +2434,7 @@
 <translation id="5363309033720083897">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸೀರಿಯಲ್ ಪೋರ್ಟ್ ಅನ್ನು ಅನುಮತಿಸಿದ್ದಾರೆ</translation>
 <translation id="5363532265530011914">ಕಾಲುಚೀಲ ಮತ್ತು ಹೆಣೆದ ಉಡುಪು</translation>
 <translation id="5371425731340848620">ಕಾರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಟ್ಯಾಬ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದಾರೆ</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"ನಿಮ್ಮ ಗಡಿಯಾರ ಹಿಂದಿದೆ" ಅಥವಾ "ನಿಮ್ಮ ಗಡಿಯಾರ ಮುಂದಿದೆ" ಅಥವಾ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪಡೆಯಲು, ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -2444,6 +2449,7 @@
 <translation id="5392506727170022660">ಲೋಹ (ಅರೆ ಹೊಳಪು)</translation>
 <translation id="5394069166371280357">TV ಕೌಟುಂಬಿಕ ಕಾರ್ಯಕ್ರಮಗಳು</translation>
 <translation id="5396631636586785122">ಬಲಭಾಗದ ಅಂಚನ್ನು ಹೊಲಿಯಿರಿ</translation>
+<translation id="5397794290049113714">ನೀವು</translation>
 <translation id="5398772614898833570">ಜಾಹೀರಾತುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5400836586163650660">ಬೂದು</translation>
 <translation id="5401344472773249513">ಸೆಲೆಬ್ರಿಟಿಗಳು ಮತ್ತು ಮನರಂಜನೆಯ ಸುದ್ದಿ</translation>
@@ -2829,6 +2835,7 @@
 <translation id="6105460996796456817">ಸೈಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> ನಲ್ಲಿರುವ ವೆಬ್‌ಪುಟ ತಾತ್ಕಾಲಿಕವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ ಅಥವಾ ಅದನ್ನು ಶಾಶ್ವತವಾಗಿ ಹೊಸ ವೆಬ್ ವಿಳಾಸಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="6107012941649240045">ಇವರಿಗೆ ನೀಡಲಾಗಿದೆ</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಗುಂಪಿನ ಹೆಸರನ್ನು ಬದಲಾಯಿಸಿದ್ದಾರೆ</translation>
 <translation id="6107924765192360631">ಬರವಣಿಗೆಯ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಲು ಕೆಲವು ಪದಗಳು ಅಥವಾ ಮೊದಲ ಡ್ರಾಫ್ಟ್‌ನೊಂದಿಗೆ ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> ಅನ್ನು ಹೋಲಿಸಿ</translation>
 <translation id="6108580855199168381">ಪ್ರಮಾಣಪತ್ರದ ವಿವರಗಳು</translation>
@@ -3714,6 +3721,7 @@
 <translation id="7660456820368115565">ಬೃಹತ್ ಮಲ್ಟಿಪ್ಲೇಯರ್ ಗೇಮ್‌ಗಳು</translation>
 <translation id="7661591871037163355">ನಿಮ್ಮ ಹೋಲಿಕೆಯ ಟೇಬಲ್ ಭರ್ತಿಯಾಗಿದೆ. ಹೊಸದನ್ನು ಸೇರಿಸಲು ಕಾಲಮ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="7662298039739062396">ವಿಸ್ತರಣೆಯ ಮೂಲಕ ಸೆಟ್ಟಿಂಗ್ ನಿಯಂತ್ರಿಸಲ್ಪಟ್ಟಿದೆ</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಗುಂಪನ್ನು ತೊರೆದಿದ್ದಾರೆ</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="7666397036351755929">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7667346355482952095">ಹಿಂತಿರುಗಿಸಲಾದ ನೀತಿಯ ಟೋಕನ್‌ ಖಾಲಿ ಇದೆ ಅಥವಾ ಪ್ರಸ್ತುತ ಟೋಕನ್‌ಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವುದಿಲ್ಲ</translation>

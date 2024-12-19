@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Nincs megnyitott lap</translation>
 <translation id="1469381646033328562">A fiókodat az egyik szülőd kezeli.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Módosítva</translation>
 <translation id="1480152980057770392">Olvasólista megjelenítése</translation>
 <translation id="1484758781961275277">Hozza ki a legtöbbet jól ismert és kedvelt asztali böngészőjéből iPad eszközén.</translation>
 <translation id="1485907716209290998">Csomagkövetés</translation>
@@ -1211,6 +1212,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6445981559479772097">Üzenet elküldve.</translation>
 <translation id="6447842834002726250">Cookie-k</translation>
 <translation id="6449554712554071184">Ezzel véglegesen törli a csoportot az eszközről.</translation>
+<translation id="6452534462676960500">Új tevékenység</translation>
 <translation id="6459307836338400162">A <ph name="BEGIN_LINK" />Szinkronizálás<ph name="END_LINK" /> és a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan.</translation>
 <translation id="6459411599807878608">Részletek elrejtve</translation>
 <translation id="646394917185284261">Fájlok</translation>
@@ -1619,6 +1621,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8219424187226230983">Offline verzió megtekintése új lapon</translation>
 <translation id="8230355548492839438">Előző keresése</translation>
 <translation id="8232956427053453090">Adatok megőrzése</translation>
+<translation id="8258999165172757081">Hozzáadva</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="82619448491672958">További lapok megtekintése</translation>
 <translation id="8263228331881858381">Azonosítókulcs mentve</translation>

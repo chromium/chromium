@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">ເປີດການຊິ້ງຂໍ້ມູນບໍ?</translation>
 <translation id="1253032109800629289">ເຊື່ອງ "ຮັບການແຈ້ງເຕືອນການຕິດຕາມລາຄາ"</translation>
 <translation id="1258491128795710625">ມີຫຍັງໃໝ່</translation>
+<translation id="1259210743048744967">ຂໍ້ມູນການທ່ອງເວັບທີ່ມີຢູ່ຂອງທ່ານຈະພ້ອມນຳໃຊ້ເມື່ອອອກຈາກລະບົບ <ph name="USER_EMAIL" />. ໂດຍລະບົບຈະບໍ່ບັນທຶກໄວ້ໃນບັນຊີນີ້.</translation>
 <translation id="1262724000444746916">ເຊື່ອງ ເພີ່ມໃສ່ບຸກມາກ</translation>
 <translation id="1263231323834454256">ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="1263433075299269530">ແຖບທີ່ເປີດຫຼ້າສຸດຂອງທ່ານ</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">ບໍ່ມີແຖບທີ່ເປີດຢູ່</translation>
 <translation id="1469381646033328562">ບັນຊີຂອງທ່ານໄດ້ຮັບການຈັດການໂດຍພໍ່ແມ່ຂອງທ່ານ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">ປ່ຽນແປງແລ້ວ</translation>
 <translation id="1480152980057770392">ສະແດງລາຍຊື່ການອ່ານ</translation>
 <translation id="1484758781961275277">ຮັບປະໂຫຍດສູງສຸດຈາກໂປຣແກຣມທ່ອງເວັບເດັສທັອບທີ່ທ່ານຮູ້ຈັກ ແລະ ມັກຢູ່ iPad ຂອງທ່ານ.</translation>
 <translation id="1485907716209290998">ການຕິດຕາມພັດສະດຸ</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">ລຶບແຖບອອກ ແລະ ລຶບກຸ່ມບໍ?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ຖືກ​ເລືອກ​ແລ້ວ</translation>
 <translation id="1709916727352927457">ລຶບກະແຈຜ່ານອອກ</translation>
+<translation id="1712341189152602203">ລະບົບຈະລິ້ງຂໍ້ມູນການທ່ອງເວັບທີ່ມີຢູ່ກັບ <ph name="USER_EMAIL" />. ອົງກອນຂອງທ່ານອາດເບິ່ງຂໍ້ມູນນີ້ໄດ້.</translation>
 <translation id="1713777106376424209">ຈັດສົ່ງແລ້ວໂດຍ</translation>
 <translation id="1715515772563243997">ຫາກທ່ານເຊື່ອຖື <ph name="SITE" />, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ເພື່ອເຂົ້າສູ່ລະບົບໄດ້.</translation>
 <translation id="1728549374069268714">ວາງ ແລະ ຊອກຫາ</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">ຢູ່ເວັບໄຊທີ່ທ່ານບັນທຶກລະຫັດຜ່ານໄວ້, ໃຫ້ແຕະຊ່ອງຂໍ້ມູນລະຫັດຜ່ານສຳລັບເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="1872096359983322073">ໄຟສາຍ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">ເລືອກວ່າຈະເຮັດແນວໃດກັບຂໍ້ມູນການທ່ອງເວັບທີ່ມີຢູ່ໃນອຸປະກອນນີ້ ເຊັ່ນ: ລະຫັດຜ່ານ, ປະຫວັດ ແລະ ອື່ນໆ.</translation>
 <translation id="1881621406744213161">ເຊີນສະມາຊິກຄອບຄົວ</translation>
 <translation id="188237709236611317">ແຖບເມນູຂອງການຈັດຮຽງອັດສະລິຍະ</translation>
 <translation id="1883255238294161206">ຫຍໍ້ລາຍການລົງ</translation>
@@ -512,6 +516,7 @@
 <translation id="3324193307694657476">ທີ່ຢູ່ 2</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
 <translation id="333229797575847124">ວິທີເປີດການນຳໃຊ້ຄຸນສົມບັດນີ້</translation>
+<translation id="3333566504534692948">ບໍ່, ຍ້າຍຂໍ້ມູນດັ່ງກ່າວໄປໃສ່ພື້ນທີ່ບ່ອນເຮັດວຽກຂອງທ່ານ</translation>
 <translation id="3344485292736684439">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}other{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}}</translation>
 <translation id="334690320928261823">ແຖບຫຼ້າສຸດ</translation>
 <translation id="3348387552617855658">ບັດນີ້ຈະຊ່ວຍທ່ານຕິດຕາມພັດສະດຸຂອງທ່ານ ແລະ ແຈ້ງອັບເດດການຈັດສົ່ງທີ່ສຳຄັນໃຫ້ທ່ານໄດ້.</translation>
@@ -1207,6 +1212,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6445981559479772097">ສົ່ງ​ຂໍ້​ຄວາມ​ແລ້ວ.</translation>
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
 <translation id="6449554712554071184">ການດຳເນີນການນີ້ຈະລຶບກຸ່ມອອກຈາກອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ.</translation>
+<translation id="6452534462676960500">ການເຄື່ອນໄຫວໃໝ່</translation>
 <translation id="6459307836338400162">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວ, ຄວາມປອດໄພ ແລະ ການເກັບກຳຂໍ້ມູນ, ກະລຸນາເບິ່ງທັງ <ph name="BEGIN_LINK" />ການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" /> ແລະ <ph name="BEGIN_LINK" />ບໍລິການ Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">ເຊື່ອງລາຍລະອຽດແລ້ວ</translation>
 <translation id="646394917185284261">ໄຟລ໌</translation>
@@ -1615,6 +1621,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8219424187226230983">ເບິ່ງເວີຊັນອອບລາຍໃນແຖບໃໝ່</translation>
 <translation id="8230355548492839438">ຊອກຫາກ່ອນໜ້າ</translation>
 <translation id="8232956427053453090">ຮັກສາຂໍ້ມູນໄວ້</translation>
+<translation id="8258999165172757081">ເພີ່ມແລ້ວ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="82619448491672958">ເບິ່ງແຖບອື່ນໆ</translation>
 <translation id="8263228331881858381">ບັນທຶກກະແຈຜ່ານແລ້ວ</translation>

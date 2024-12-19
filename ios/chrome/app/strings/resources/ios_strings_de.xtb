@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Keine geöffneten Tabs</translation>
 <translation id="1469381646033328562">Dein Konto wird von deinen Eltern verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Geändert</translation>
 <translation id="1480152980057770392">Leseliste anzeigen</translation>
 <translation id="1484758781961275277">Nutze die Vorteile des beliebten Desktop-Browsers auf deinem iPad.</translation>
 <translation id="1485907716209290998">Paketverfolgung</translation>
@@ -1211,6 +1212,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6445981559479772097">Nachricht gesendet</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht.</translation>
+<translation id="6452534462676960500">Neue Aktivitäten</translation>
 <translation id="6459307836338400162">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten findest du unter <ph name="BEGIN_LINK" />Synchronisierung<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Details ausgeblendet</translation>
 <translation id="646394917185284261">Dateien</translation>
@@ -1619,6 +1621,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8219424187226230983">Offlineversion in einem neuen Tab ansehen</translation>
 <translation id="8230355548492839438">Vorherige suchen</translation>
 <translation id="8232956427053453090">Daten aufbewahren</translation>
+<translation id="8258999165172757081">Hinzugefügt</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="82619448491672958">Andere Tabs anzeigen</translation>
 <translation id="8263228331881858381">Passkey gespeichert</translation>

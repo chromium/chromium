@@ -70,7 +70,7 @@
 <translation id="1296581780163690620">هل تريد تنزيل الملف؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏عليك إثبات هويتك للتأكُّد من أنّه يمكنك استخدام كلمات المرور في حسابك على Google في أي وقت.</translation>
 <translation id="1310362642333088424">لتنزيل الملفات والصور وغيرها، يجب أن تتوفّر لديك مساحة تخزين إضافية.</translation>
-<translation id="1312168552565502328">ملفات تعريف الارتباط، بيانات الموقع الإلكتروني</translation>
+<translation id="1312168552565502328">ملفات تعريف الارتباط، وبيانات الموقع الإلكتروني</translation>
 <translation id="1312721752506309252">ميزة الحماية المُحسَّنة مفعَّلة.</translation>
 <translation id="1317821187353201763">إغلاق علامة التبويب</translation>
 <translation id="1320164290882380380">{COUNT,plural, =1{تتبُّع هذا الطرد}zero{تتبّع كل الطرود}two{تتبّع كلّ الطرود}few{تتبّع كل الطرود}many{تتبّع كل الطرود}other{تتبّع كل الطرود}}</translation>
@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">ليست هناك أي علامات تبويب مفتوحة</translation>
 <translation id="1469381646033328562">يدير أحد والدَيك حسابك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">تم التغيير</translation>
 <translation id="1480152980057770392">إظهار قائمة القراءة</translation>
 <translation id="1484758781961275277">‏يمكنك الاستفادة إلى أقصى حد من المتصفّح المتوافق مع أجهزة الكمبيوتر المكتبي والمفضّل لديك على جهاز iPad.</translation>
 <translation id="1485907716209290998">تتبُّع الطرد</translation>
@@ -1209,6 +1210,7 @@
 <translation id="6445981559479772097">تم إرسال الرسالة.</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
 <translation id="6449554712554071184">سيؤدي هذا الإجراء إلى حذف المجموعة نهائيًا من جهازك.</translation>
+<translation id="6452534462676960500">نشاط جديد</translation>
 <translation id="6459307836338400162">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على كلٍّ من <ph name="BEGIN_LINK" />المزامنة<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">تم إخفاء التفاصيل.</translation>
 <translation id="646394917185284261">‏الملفات (Files)</translation>
@@ -1619,6 +1621,7 @@
 <translation id="8219424187226230983">عرض نسخة بلا إنترنت في علامة تبويب جديدة</translation>
 <translation id="8230355548492839438">العثور على النتيجة السابقة</translation>
 <translation id="8232956427053453090">حفظ البيانات</translation>
+<translation id="8258999165172757081">تمت الإضافة</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="82619448491672958">الانتقال إلى علامات التبويب الأخرى</translation>
 <translation id="8263228331881858381">تم حفظ مفتاح المرور</translation>

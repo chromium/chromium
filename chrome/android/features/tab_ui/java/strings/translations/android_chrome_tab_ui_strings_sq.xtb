@@ -100,6 +100,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="5339733443032484186">Skeda jote e fundit</translation>
 <translation id="5380159289133845234">Arkivo skedat dublikata</translation>
 <translation id="5400836586163650660">Gri</translation>
+<translation id="5446043142172831860">Hiq skeda dhe largohu nga grupi</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>

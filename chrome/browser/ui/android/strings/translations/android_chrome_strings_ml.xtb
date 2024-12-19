@@ -146,10 +146,8 @@
 <translation id="1594635596540195766">ചുവടെയുള്ള ലിസ്റ്റിൽ <ph name="SUGGESTIONS_COUNT" /> ഇനങ്ങൾ നിർദ്ദേശിച്ചിരിക്കുന്നു.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുക</translation>
 <translation id="160275202205869636">ഓണായിരിക്കുമ്പോൾ, നിങ്ങളുടെ Google Account-ലെ ഡാറ്റ ഉപയോഗിക്കുകയും സംരക്ഷിക്കുകയും ചെയ്യുക. ഓഫായിരിക്കുമ്പോൾ, ഡാറ്റ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ.</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ടാബ് നീക്കം ചെയ്തു</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{തിരഞ്ഞെടുത്ത ഒരു ഇനം നീക്കംചെയ്യുക}other{തിരഞ്ഞെടുത്ത # ഇനങ്ങൾ നീക്കംചെയ്യുക}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{ഒരു ബുക്ക്‌മാർക്കും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ നിങ്ങളുടെ Google Account ആയ <ph name="ACCOUNT_EMAIL" /> എന്നതിൽ ഇവ സംരക്ഷിക്കുക.}other{# ബുക്ക്‌മാർക്കുകളും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ നിങ്ങളുടെ Google Account ആയ <ph name="ACCOUNT_EMAIL" /> എന്നതിൽ ഇവ സംരക്ഷിക്കുക.}}</translation>
-<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പിൽ ചേർന്നു</translation>
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="164269334534774161">നിങ്ങൾ ഈ പേജിന്റെ <ph name="CREATION_TIME" /> മുതലുള്ള ഓഫ്‌ലൈൻ പകർപ്പാണ് കാണുന്നത്</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
@@ -349,7 +347,6 @@
 <translation id="2578337197553672982">പ്രായപൂർത്തിയാകാത്തവർക്കുള്ള Google ഉള്ളടക്കം</translation>
 <translation id="2579297619530305344">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലെയും പാസ്‌വേഡുകൾ സംബന്ധിച്ച ഷീറ്റ് പൂർണ്ണ വലുപ്പത്തിൽ തുറന്നു</translation>
 <translation id="2581165646603367611">ഇത്, Chrome പ്രധാനമായി കണക്കാക്കാത്ത സൈറ്റുകളുടെ കുക്കികളും കാഷെയും മറ്റ് വിവരങ്ങളും മായ്‌ക്കും.</translation>
-<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ടാബ് ചേർത്തു</translation>
 <translation id="2587052924345400782">ഏറ്റവും പുതിയ പതിപ്പ് ലഭ്യമാണ്</translation>
 <translation id="2593272815202181319">മോണോസ്പെ‌യ്‌സ്</translation>
 <translation id="2603212228005142861">മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -863,7 +860,6 @@
 <translation id="4912413785358399818">ടാബ് നീക്കുക</translation>
 <translation id="4913169188695071480">പുതുക്കിയെടുക്കുന്നത് നിർത്തുക</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
-<translation id="492284538114688557">വിലയിടിവ് കണ്ടെത്തി</translation>
 <translation id="4925120120285606924">സ്‌ക്രീൻഷോട്ട് <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">നിങ്ങളുടെ പാസ്‌വേഡുകൾ, ടെക്സ്റ്റ് ഫയൽ ആയി എക്സ്പോർട്ട് ചെയ്യുന്നതും ഡൗൺലോഡ് ചെയ്യുന്നതുമാണ്. ലക്ഷ്യസ്ഥാന ഫോൾഡറിലേക്ക് ആക്സസുള്ള ഏതൊരു വ്യക്തിക്കും ആപ്പിനും അവ ദൃശ്യമാവും.</translation>
 <translation id="4926901776383726965">ഓഫ്‌ലൈനിൽ കാണാനോ മറ്റ് ആപ്പുകളിൽ പങ്കിടാനോ നിങ്ങൾക്ക് ചിത്രങ്ങളും ഫയലുകളും സംരക്ഷിക്കാനാകും</translation>
@@ -944,7 +940,6 @@
 <translation id="5301876394151419436">നിങ്ങൾ <ph name="EMAIL" /> ആയി സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു. നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ ഏതുസമയത്തും സമന്വയിപ്പിക്കൽ നിർത്താം. നിങ്ങളുടെ ചരിത്രം അടിസ്ഥാനമാക്കി Search-ഉം മറ്റ് സേവനങ്ങളും Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
 <translation id="5304593522240415983">ഈ ഫീൽഡ് ശൂന്യമായിടാൻ കഴിയില്ല</translation>
 <translation id="5306014156308790439">'ശേഖരത്തിലേക്ക് ചേർക്കുക' പ്രവർത്തനരഹിതമാക്കി</translation>
-<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പിന്റെ നിറം മാറ്റി</translation>
 <translation id="5308380583665731573">കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="5310963254742922113">പാസ്‌വേഡ് ഉപയോഗിച്ചു.</translation>
 <translation id="5316947901395241499">പാസ്‌വേഡ് സംരക്ഷിക്കൽ നിങ്ങളുടെ അഡ്‌മിൻ ഓഫാക്കി</translation>
@@ -956,12 +951,10 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> കാലയളവിൽ സൈറ്റുകളൊന്നുമില്ല</translation>
 <translation id="5355191726083956201">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നു</translation>
 <translation id="5364112109233799727">നിങ്ങൾ ഫീഡ്ബാക്ക് നൽകുന്ന പേജിന്റെ URL, Google-ലേക്ക് അയയ്ക്കും, ഈ ഫീച്ചർ മെച്ചപ്പെടുത്താൻ മനുഷ്യർ അത് അവലോകനം ചെയ്തേക്കാം</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ടാബ് മാറ്റി</translation>
 <translation id="5375374982898812658">നിങ്ങൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്ക് ആക്‌സസ് നഷ്ടപ്പെടും, അത് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും</translation>
 <translation id="5375577065097716013">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയവ<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="5395376160638294582">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ Chrome ഡാറ്റ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
-<translation id="5397794290049113714">നിങ്ങള്‍</translation>
 <translation id="539881862970320163">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിച്ചു. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> എന്നതിൽ <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) എന്നയാൾ നിങ്ങൾ ഒരു കുടുംബ ഗ്രൂപ്പിൽ ചേരാൻ ആഗ്രഹിക്കുന്നു. ലിങ്കുള്ള ആർക്കും ടാബുകളെല്ലാം എഡിറ്റ് ചെയ്യാനാകും, അതിനാൽ ശ്രദ്ധാപൂർവ്വം ചേരുക. ലിങ്ക് 48 മണിക്കൂറിനുള്ളിൽ കാലഹരണപ്പെടും.</translation>
@@ -990,7 +983,6 @@
 <translation id="5515439363601853141">നിങ്ങളുടെ പാസ്‍വേഡ് കാണാൻ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="5517095782334947753">നിങ്ങൾക്ക് <ph name="FROM_ACCOUNT" /> എന്നയാളിൽ നിന്നുള്ള ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരണവുമുണ്ട്.</translation>
 <translation id="5517326820028369152">'സമീപകാല ആക്റ്റിവിറ്റി' ബോട്ടം ഷീറ്റ്</translation>
-<translation id="5524843473235508879">റീഡയറക്ട് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു.</translation>
 <translation id="5526281268548144413">ഒന്നിലധികം വിൻഡോകളിൽ അടയ്ക്കാൻ കഴിയില്ല</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# മി മുമ്പ്}other{# മി മുമ്പ്}}</translation>
 <translation id="5548606607480005320">സുരക്ഷാ പരിശോധന</translation>
@@ -1120,7 +1112,6 @@
 <translation id="60923314841986378"><ph name="HOURS" /> മണിക്കൂർ ശേഷിക്കുന്നു</translation>
 <translation id="6095578583683628124">Google നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രം കൂടെയാണെങ്കിൽ, മികച്ചതും സന്ദർഭോചിതവുമായ നിർദ്ദേശങ്ങൾ നിങ്ങൾ കാണും</translation>
 <translation id="610630277578876674">സന്ദേശങ്ങളിലെയും മറ്റും ലിങ്കുകൾ വേഗത്തിൽ തുറക്കുക</translation>
-<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പിന്റെ പേര് മാറ്റി</translation>
 <translation id="6108923351542677676">സജ്ജീകരണം പുരോഗതിയിലാണ്...</translation>
 <translation id="6112702117600201073">പേജ് പുതുക്കുന്നു</translation>
 <translation id="6122831415929794347">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാക്കണോ?</translation>
@@ -1233,7 +1224,6 @@
 <translation id="6565959834589222080">ലഭ്യമാകുമ്പോൾ വൈഫൈ ഉപയോഗിക്കും</translation>
 <translation id="6569373978618239158">പുതിയൊരു ടാബ് തുറക്കുമ്പോൾ നിങ്ങൾക്ക് ഇപ്പോൾ <ph name="SITE_NAME" /> എന്നതിൽ നിന്നുള്ള സ്റ്റോറികൾ കാണാം. നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നു. Discover ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് അവ മാനേജ് ചെയ്യാനാകും.</translation>
 <translation id="6570116402456758630">പേജ് സംഗ്രഹം</translation>
-<translation id="6573096386450695060">എല്ലായ്‌പ്പോഴും അനുവദിക്കുക</translation>
 <translation id="6573431926118603307">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലെ Chrome-ൽ തുറന്ന ടാബുകൾ ഇവിടെ ദൃശ്യമാകും.</translation>
 <translation id="6583199322650523874">നിലവിലെ പേജ് ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
 <translation id="6588043302623806746">സുരക്ഷിത DNS ഉപയോഗിക്കുക</translation>
@@ -1349,6 +1339,7 @@
 <translation id="6971862865055170158">അംഗീകരിക്കരുത്</translation>
 <translation id="6978717888677691380">നിങ്ങൾ ബ്ലോക്ക് ചെയ്ത സൈറ്റുകൾ</translation>
 <translation id="6979737339423435258">എല്ലാ സമയത്തും</translation>
+<translation id="6983306615164277634">വിലാസ ബാറിൽ സ്‌പർശിച്ചുപിടിച്ചും നിങ്ങൾക്കതിന്റെ സ്ഥാനം മാറ്റാം.</translation>
 <translation id="6987047470128880212">ഈ ഉപകരണത്തിൽ അദൃശ്യ മോഡ് ലഭ്യമല്ല</translation>
 <translation id="6991701761229081516">നിങ്ങളുടെ പാസ്‌വേഡുകൾ CSV ഫയലായി ഡൗൺലോഡ് ചെയ്യും. ആപ്പുകൾ ഉൾപ്പെടെ, ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ കഴിയുന്ന ആർക്കും അവ ദൃശ്യമാകും. എക്സ്പോർട്ട് ചെയ്ത പാസ്‌വേഡുകൾ Chrome-ൽ നിന്ന് ഇല്ലാതാക്കും.</translation>
 <translation id="6996145122199359148">ഈ പേജ് ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -1360,7 +1351,6 @@
 <translation id="7035701931849773472">മറ്റ് ഓപ്ഷനുകൾ</translation>
 <translation id="7053983685419859001">തടയുക</translation>
 <translation id="7054588988317389591">ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>
-<translation id="7055152154916055070">റീഡയറക്‌റ്റ് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="7057969023583258980">പൂർണമായ Chrome ചരിത്രം തുറക്കുക</translation>
 <translation id="7063006564040364415">സമന്വയ സെർവറിലേക്ക് കണക്‌റ്റ് ചെയ്യാനായില്ല.</translation>
 <translation id="7071521146534760487">അക്കൗണ്ട് മാനേജ് ചെയ്യുക</translation>
@@ -1505,7 +1495,6 @@
 <translation id="7656721520530864426">സൈറ്റുകളൊന്നുമില്ല</translation>
 <translation id="7656862631699126784">അദൃശ്യ മോഡിനുള്ള ലോക്ക് ഓണാക്കുക</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
-<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പ് വിട്ടു</translation>
 <translation id="7663320421139257046">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയം<ph name="END_LINK1" /> കാണുക.</translation>
 <translation id="7665369617277396874">അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="766587987807204883">ഇവിടെ ദൃശ്യമാകുന്ന ലേഖനങ്ങൾ നിങ്ങൾ ഓഫ്‌ലൈൻ ആകുന്ന സമയത്ത് പോലും വായിക്കാം</translation>

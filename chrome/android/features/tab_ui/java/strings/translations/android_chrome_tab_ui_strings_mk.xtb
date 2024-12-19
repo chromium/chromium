@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">Вашата последна картичка</translation>
 <translation id="5380159289133845234">Архивирање на дупликат картичките</translation>
 <translation id="5400836586163650660">Сива</translation>
+<translation id="5446043142172831860">Отстранете ја картичката и напуштете ја групата</translation>
 <translation id="5490235265819901748">Групата картички се прошири</translation>
 <translation id="5494920125229734069">Избери сè</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Затвори ја групата картички со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Затвори ја групата картички со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Затвори ја групата картички со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>

@@ -228,7 +228,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1382378825779654399">Bạn sẽ nhận được email thông báo nếu có chương trình giảm giá trên một trang web bất kỳ. Trang này sẽ được lưu vào <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1384725838384960382">Bảng xác thực thông tin thanh toán an toàn</translation>
 <translation id="1386623374109090026">Chú thích</translation>
-<translation id="138810468159004008">Cho phép mỗi khi bạn truy cập trang web</translation>
+<translation id="138810468159004008">Cho phép mỗi khi truy cập trang web</translation>
 <translation id="139161720020179799">Xám đậm 1</translation>
 <translation id="1391625539203220400">Lưu IBAN vào thiết bị này?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> không gửi bất kỳ dữ liệu nào.</translation>
@@ -362,6 +362,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1615402009686901181">Theo chính sách của quản trị viên, tính năng chụp ảnh màn hình bị tắt khi có nội dung bí mật</translation>
 <translation id="1617276713587758852">Xe lai đa dụng</translation>
 <translation id="1619007254056372606">Quản lý dữ liệu trang web trên thiết bị</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> đã xoá một thẻ</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622966923835127638">Tài chính doanh nghiệp</translation>
 <translation id="1623104350909869708">Ngăn trang này tạo hộp thoại bổ sung</translation>
@@ -369,6 +370,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1633137413609266904">{0,plural, =1{Chính sách của quản trị viên không cho phép mở tệp này}other{Chính sách của quản trị viên không cho phép mở # tệp}}</translation>
 <translation id="1633941398432788136">Lập kế hoạch sự kiện</translation>
 <translation id="1634828734222219955">Tổng cộng</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> đã tham gia nhóm</translation>
 <translation id="163826442096818926">Rút ngắn</translation>
 <translation id="1639239467298939599">Đang tải</translation>
 <translation id="1640180200866533862">Chính sách người dùng</translation>
@@ -904,6 +906,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2571488850200220306">Nhằm giúp bạn đảm bảo tính bảo mật, họ cũng có thể xem hệ điều hành, phiên bản trình duyệt của thiết bị và phần mềm đã cài đặt</translation>
 <translation id="2573170131138724450">Truyền hình</translation>
 <translation id="257674075312929031">Nhóm</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> đã thêm một thẻ</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2587841377698384444">Mã API Thư mục:</translation>
 <translation id="2594318783181750337">Chế độ xem nhanh trên web:</translation>
@@ -2402,6 +2405,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5305716236436927587">Quảng cáo và tiếp thị</translation>
 <translation id="5306593769196050043">Cả hai trang tính</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> đã thay đổi màu nhóm</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Kết nối</translation>
 <translation id="5308689395849655368">Báo cáo sự cố bị tắt.</translation>
@@ -2433,6 +2437,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5363309033720083897">Cổng nối tiếp được quản trị viên của bạn cho phép</translation>
 <translation id="5363532265530011914">Tất &amp; đồ dệt kim</translation>
 <translation id="5371425731340848620">Cập nhật thẻ</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> đã thay đổi một thẻ</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Đồng hồ của bạn chạy chậm" hoặc "Đồng hồ của bạn chạy nhanh" hay "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Để sử dụng mật khẩu này trên mọi thiết bị, hãy xác minh danh tính của bạn</translation>
@@ -2447,6 +2452,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5392506727170022660">Kim loại (Bán bóng)</translation>
 <translation id="5394069166371280357">Chương trình truyền hình dành cho gia đình</translation>
 <translation id="5396631636586785122">May viền ở bên phải</translation>
+<translation id="5397794290049113714">Bạn</translation>
 <translation id="5398772614898833570">Đã chặn quảng cáo</translation>
 <translation id="5400836586163650660">Màu xám</translation>
 <translation id="5401344472773249513">Người nổi tiếng và tin tức giải trí</translation>
@@ -2832,6 +2838,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6105460996796456817">Tạo trang web</translation>
 <translation id="6106989379647458772">Trang web tại <ph name="PAGE" /> có thể tạm thời không hoạt động hoặc có thể đã được chuyển vĩnh viễn sang địa chỉ web mới.</translation>
 <translation id="6107012941649240045">Cấp cho</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> đã thay đổi tên nhóm</translation>
 <translation id="6107924765192360631">Bạn chỉ cần nhập vài từ hoặc bản nháp đầu tiên là sẽ được gợi ý cách viết.</translation>
 <translation id="6108508372809181847">So sánh <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Chi tiết về chứng chỉ</translation>
@@ -3718,6 +3725,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7660456820368115565">Trò chơi cực nhiều người chơi</translation>
 <translation id="7661591871037163355">Bảng so sánh đã đầy. Hãy xoá bớt cột để thêm cột mới.</translation>
 <translation id="7662298039739062396">Cài đặt được một tiện ích kiểm soát</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> đã rời khỏi nhóm</translation>
 <translation id="7663736086183791259">Chứng chỉ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Không được phép ở chế độ Ẩn danh</translation>
 <translation id="7667346355482952095">Mã thông báo chính sách trả về trống hoặc không khớp với mã thông báo hiện tại</translation>

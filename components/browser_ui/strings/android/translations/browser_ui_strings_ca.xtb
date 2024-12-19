@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Connectat a un dispositiu USB</translation>
 <translation id="4194328954146351878">Pregunta abans de permetre que els llocs web vegin i canviïn la informació que hi ha als dispositius amb NFC (opció recomanada)</translation>
 <translation id="4200726100658658164">Obre la configuració d'ubicació</translation>
+<translation id="4213239715282467974">Ara Chrome comparteix les teves pestanyes recents amb el teu dispositiu. Pots accedir-hi ràpidament des dels resultats de la cerca i la llista d'aplicacions del dispositiu. Pots desactivar aquesta opció en qualsevol moment des de la configuració de Chrome.</translation>
 <translation id="4226663524361240545">És possible que les notificacions facin vibrar el dispositiu</translation>
 <translation id="4259722352634471385">S'ha bloquejat la navegació: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permès</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Els llocs web no poden demanar-te si poden utilitzar la informació que han desat sobre tu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i 1 més)}other{(i # més)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
+<translation id="5408906274948600065">Permet que Chrome comparteixi les pestanyes recents amb el teu dispositiu per veure-les als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots activar o desactivar aquesta opció en qualsevol moment a la configuració de Chrome.</translation>
 <translation id="5438097262470833822">Amb aquesta opció, es restabliran els permisos per a <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quan aquesta opció està activada, els llocs web poden demanar la teva ubicació. Quan aquesta opció està desactivada, els llocs web no poden veure la teva ubicació.</translation>
 <translation id="5489227211564503167">Temps transcorregut: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

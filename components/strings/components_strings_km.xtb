@@ -363,6 +363,7 @@
 <translation id="1615402009686901181">គោលការណ៍​របស់អ្នកគ្រប់គ្រង​បិទការថត​អេក្រង់ នៅពេលអាច​មើលឃើញខ្លឹមសារ​សម្ងាត់</translation>
 <translation id="1617276713587758852">រថយន្ត​ប្រភេទ Crossover</translation>
 <translation id="1619007254056372606">គ្រប់គ្រង​ទិន្នន័យ​គេហទំព័រ​នៅលើ​ឧបករណ៍</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> បានដក​ផ្ទាំងចេញ</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1622966923835127638">ហិរញ្ញវត្ថុ​អាជីវកម្ម</translation>
 <translation id="1623104350909869708">បង្ការទំព័រនេះពីការបង្កើតប្រអប់បន្ថែម។</translation>
@@ -370,6 +371,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ការបើក​ឯកសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​ដោយ​គោលការណ៍​របស់​អ្នក​គ្រប់គ្រង}other{ការបើក​ឯកសារ # ត្រូវបាន​ទប់ស្កាត់​ដោយ​គោលការណ៍​របស់​អ្នក​គ្រប់គ្រង}}</translation>
 <translation id="1633941398432788136">ការរៀបចំ​គម្រោង​ព្រឹត្តិការណ៍</translation>
 <translation id="1634828734222219955">សរុប</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> បានចូលរួម​ក្រុម</translation>
 <translation id="163826442096818926">សង្ខេបខ្លី</translation>
 <translation id="1639239467298939599">កំពុងដំណើរការ</translation>
 <translation id="1640180200866533862">គោលការណ៍អ្នកប្រើ</translation>
@@ -907,6 +909,7 @@
 <translation id="2571488850200220306">ដើម្បី​ជួយធានា​សុវត្ថិភាព អ្នកគ្រប់គ្រង​ក៏អាច​មើលឃើញ​កំណែ​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត ប្រព័ន្ធ​ប្រតិបត្តិការ​របស់​ឧបករណ៍នេះ និង​កម្មវិធី​ដែលត្រូវបាន​ដំឡើង​ផងដែរ</translation>
 <translation id="2573170131138724450">ទូរទស្សន៍</translation>
 <translation id="257674075312929031">ដាក់ជាក្រុម</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> បានបញ្ចូល​ផ្ទាំង</translation>
 <translation id="2586657967955657006">អង្គ​ចងចាំ</translation>
 <translation id="2587841377698384444">API ID ថតផ្ទុកឯកសារ៖</translation>
 <translation id="2594318783181750337">ការមើលបណ្ដាញ​រហ័ស៖</translation>
@@ -2406,6 +2409,7 @@
 <translation id="5300589172476337783">បង្ហាញ</translation>
 <translation id="5305716236436927587">ការផ្សាយពាណិជ្ជកម្ម និងការធ្វើទីផ្សារ</translation>
 <translation id="5306593769196050043">សន្លឹក​ទាំងពីរ</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> បានប្ដូរ​ពណ៌ក្រុម</translation>
 <translation id="5307166000025436103">យល់ព្រម</translation>
 <translation id="5308380583665731573">ភ្ជាប់</translation>
 <translation id="5308689395849655368">ការរាយការណ៍ការគាំងត្រូវបានបិទ។</translation>
@@ -2437,6 +2441,7 @@
 <translation id="5363309033720083897">​រន្ធស៊េរីដែលបានអនុញ្ញាតដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="5363532265530011914">ស្រោមជើង និង​ស្រោមបារ</translation>
 <translation id="5371425731340848620">ធ្វើបច្ចុប្បន្នភាពកាត</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> បានប្ដូរ​ផ្ទាំង</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"នាឡិកា​របស់អ្នក​ដើរយឺត" ឬ "នាឡិកា​របស់អ្នក​ដើរលឿន" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">ដើម្បីទទួលបានពាក្យសម្ងាត់នេះនៅលើឧបករណ៍ទាំងអស់របស់អ្នក សូមផ្ទៀងផ្ទាត់ថាជាអ្នក</translation>
@@ -2451,6 +2456,7 @@
 <translation id="5392506727170022660">លោហៈ (រលោងមធ្យម)</translation>
 <translation id="5394069166371280357">កម្មវិធី​ទូរទស្សន៍​សម្រាប់គ្រួសារ</translation>
 <translation id="5396631636586785122">ដេរគែម​ខាងស្ដាំ</translation>
+<translation id="5397794290049113714">អ្នក</translation>
 <translation id="5398772614898833570">បាន​ទប់ស្កាត់​ការផ្សាយពាណិជ្ជកម្ម</translation>
 <translation id="5400836586163650660">ប្រផេះ</translation>
 <translation id="5401344472773249513">ព័ត៌មាន​កម្សាន្ត និងមនុស្ស​ល្បីល្បាញ</translation>
@@ -2836,6 +2842,7 @@
 <translation id="6105460996796456817">បង្កើត​គេហទំព័រ</translation>
 <translation id="6106989379647458772">គេហទំព័រនៅ <ph name="PAGE" /> អាចមិនដំណើរការបណ្តោះអាសន្ន ឬវាអាចត្រូវបានផ្លាស់ទីទៅអាសយដ្ឋានគេហទំព័រថ្មី។</translation>
 <translation id="6107012941649240045">បោះផ្សាយជូន</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> បានប្ដូរ​ឈ្មោះក្រុម</translation>
 <translation id="6107924765192360631">គ្រាន់តែចាប់ផ្តើមដោយពីរបីពាក្យ ឬសេចក្តីព្រាងដំបូង ដើម្បីទទួលបានការណែនាំក្នុងការសរសេរ។</translation>
 <translation id="6108508372809181847">ប្រៀបធៀប <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">ព័ត៌មាន​លម្អិត​អំពី​វិញ្ញាបនបត្រ</translation>
@@ -3722,6 +3729,7 @@
 <translation id="7660456820368115565">ហ្គេមលេងគ្នាច្រើនខ្លាំង</translation>
 <translation id="7661591871037163355">តារាងប្រៀបធៀបរបស់អ្នកពេញហើយ។ សូមដកជួរឈរចេញ ដើម្បីបញ្ចូលជួរឈរថ្មីៗ។</translation>
 <translation id="7662298039739062396">ការកំណត់​គ្រប់គ្រង​ដោយ​កម្មវិធីបន្ថែម</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> បាន​ចាកចេញ​ពី​ក្រុម</translation>
 <translation id="7663736086183791259">វិញ្ញាបនបត្រ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">មិនអនុញ្ញាត​នៅក្នុង​មុខងារឯកជនទេ</translation>
 <translation id="7667346355482952095">និមិត្តសញ្ញាគោលការណ៍ដែលបានប្រគល់ត្រឡប់វិញគឺទទេ ឬមិនត្រូវគ្នាជាមួយនិមិត្តសញ្ញាបច្ចុប្បន្ន</translation>

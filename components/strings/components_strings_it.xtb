@@ -362,6 +362,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1615402009686901181">Il criterio dell'amministratore disattiva l'acquisizione schermo se sono visibili contenuti riservati</translation>
 <translation id="1617276713587758852">Crossover</translation>
 <translation id="1619007254056372606">Gestisci i dati dei siti sul dispositivo</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ha rimosso una scheda</translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1622966923835127638">Finanza aziendale</translation>
 <translation id="1623104350909869708">Impedisci la creazione di altre finestre di dialogo in questa pagina</translation>
@@ -369,6 +370,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1633137413609266904">{0,plural, =1{L'apertura di questo file è bloccata dal criterio dell'amministratore}other{L'apertura di # file è bloccata dal criterio dell'amministratore}}</translation>
 <translation id="1633941398432788136">Pianificazione eventi</translation>
 <translation id="1634828734222219955">Totale</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> fa ora parte del gruppo</translation>
 <translation id="163826442096818926">Abbrevia</translation>
 <translation id="1639239467298939599">Caricamento</translation>
 <translation id="1640180200866533862">Criteri utente</translation>
@@ -904,6 +906,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2571488850200220306">Per garantire la sicurezza, può anche vedere il sistema operativo del dispositivo, la versione del browser e il software installato</translation>
 <translation id="2573170131138724450">Televisori</translation>
 <translation id="257674075312929031">Gruppo</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ha aggiunto una scheda</translation>
 <translation id="2586657967955657006">Appunti</translation>
 <translation id="2587841377698384444">ID API Directory:</translation>
 <translation id="2594318783181750337">Visualizzazione web rapida:</translation>
@@ -2399,6 +2402,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5305716236436927587">Pubblicità e marketing</translation>
 <translation id="5306593769196050043">Entrambi i fogli</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ha modificato il colore del gruppo</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5308689395849655368">La segnalazione degli arresti anomali è disattivata.</translation>
@@ -2430,6 +2434,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5363309033720083897">Porta seriale consentita dal tuo amministratore</translation>
 <translation id="5363532265530011914">Calze e collant</translation>
 <translation id="5371425731340848620">Aggiorna carta</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ha modificato una scheda</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"L'orologio è indietro", "L'orologio è avanti" oppure "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Per avere questa password su tutti i tuoi dispositivi, verifica la tua identità</translation>
@@ -2444,6 +2449,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5392506727170022660">Metallo (semilucido)</translation>
 <translation id="5394069166371280357">Programmi TV per le famiglie</translation>
 <translation id="5396631636586785122">Impuntura a destra</translation>
+<translation id="5397794290049113714">Tu</translation>
 <translation id="5398772614898833570">Annunci bloccati</translation>
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="5401344472773249513">Notizie su celebrità e intrattenimento</translation>
@@ -2829,6 +2835,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6105460996796456817">Crea sito</translation>
 <translation id="6106989379647458772">La pagina web all'indirizzo <ph name="PAGE" /> potrebbe non essere momentaneamente disponibile o potrebbe essere stata trasferita definitivamente a un nuovo indirizzo web.</translation>
 <translation id="6107012941649240045">Rilasciato a</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ha modificato il nome del gruppo</translation>
 <translation id="6107924765192360631">Inizia con poche parole o una prima bozza per ottenere suggerimenti di scrittura.</translation>
 <translation id="6108508372809181847">Confronta <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Dettagli certificato</translation>
@@ -3714,6 +3721,7 @@ Ulteriori dettagli:
 <translation id="7660456820368115565">Giochi multiplayer di massa</translation>
 <translation id="7661591871037163355">La tabella di confronto è piena. Rimuovi le colonne per aggiungerne di nuove.</translation>
 <translation id="7662298039739062396">Impostazione controllata da un'estensione</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ha lasciato il gruppo</translation>
 <translation id="7663736086183791259">Certificato <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Non consentita in incognito</translation>
 <translation id="7667346355482952095">Il token della norma restituito è vuoto o non corrisponde al token corrente</translation>

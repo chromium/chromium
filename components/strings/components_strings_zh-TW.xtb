@@ -361,6 +361,7 @@
 <translation id="1615402009686901181">當畫面上出現機密內容，系統管理員政策就會停用螢幕畫面擷取功能</translation>
 <translation id="1617276713587758852">跨界車</translation>
 <translation id="1619007254056372606">管理裝置端網站資料</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />已移除分頁</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1622966923835127638">商業金融</translation>
 <translation id="1623104350909869708">防止這個網頁產生其他對話方塊</translation>
@@ -368,6 +369,7 @@
 <translation id="1633137413609266904">{0,plural, =1{根據系統管理員政策，你無法開啟這個檔案}other{根據系統管理員政策，你無法開啟這 # 個檔案}}</translation>
 <translation id="1633941398432788136">活動規劃</translation>
 <translation id="1634828734222219955">全部</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" />已加入群組</translation>
 <translation id="163826442096818926">精簡</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1640180200866533862">使用者政策</translation>
@@ -903,6 +905,7 @@
 <translation id="2571488850200220306">為確保安全，貴機構也可查看裝置的 OS、瀏覽器版本和已安裝的軟體</translation>
 <translation id="2573170131138724450">電視</translation>
 <translation id="257674075312929031">群組</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />已新增分頁</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2587841377698384444">Directory API ID：</translation>
 <translation id="2594318783181750337">快速網頁檢視：</translation>
@@ -1140,6 +1143,7 @@
 <translation id="306573536155379004">已啟動遊戲。</translation>
 <translation id="3067505415088964188">價格較低</translation>
 <translation id="3068118691172921711">1 分鐘後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} 個項目}other{{ITEMS} 個項目}}</translation>
 <translation id="3076865167425975822">作業系統</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3082007635241601060">允許 Google 使用你的購物車，尋找可用的個人化折扣</translation>
@@ -2399,6 +2403,7 @@
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5305716236436927587">廣告與行銷</translation>
 <translation id="5306593769196050043">兩份表單</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />已變更群組顏色</translation>
 <translation id="5307166000025436103">有效</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5308689395849655368">當機報告功能已停用。</translation>
@@ -2430,6 +2435,7 @@
 <translation id="5363309033720083897">管理員允許使用的序列埠</translation>
 <translation id="5363532265530011914">襪子與褲襪</translation>
 <translation id="5371425731340848620">更新信用卡</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />已變更分頁</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「你的時鐘時間過慢」、「你的時鐘時間過快」或 「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
 <translation id="5379618281582508161">如要在所有裝置上使用這個密碼，請驗證身分</translation>
@@ -2444,6 +2450,7 @@
 <translation id="5392506727170022660">金屬 (半光面)</translation>
 <translation id="5394069166371280357">適合闔家觀賞的電視節目</translation>
 <translation id="5396631636586785122">邊緣裝訂 (右側)</translation>
+<translation id="5397794290049113714">你</translation>
 <translation id="5398772614898833570">已封鎖廣告</translation>
 <translation id="5400836586163650660">灰</translation>
 <translation id="5401344472773249513">名人與娛樂新聞</translation>
@@ -2829,7 +2836,9 @@
 <translation id="6105460996796456817">建立網站</translation>
 <translation id="6106989379647458772">位於 <ph name="PAGE" /> 的網頁可能暫時無法使用，或是已永久移至新的網址。</translation>
 <translation id="6107012941649240045">核發對象</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />已變更群組名稱</translation>
 <translation id="6107924765192360631">只要輸入幾個字詞或初稿，就能取得撰寫建議。</translation>
+<translation id="6108508372809181847">比較「<ph name="TABLE_NAME" />」</translation>
 <translation id="6108580855199168381">憑證詳細資訊</translation>
 <translation id="6108702513636120202">你在 Chromium 中的搜尋引擎</translation>
 <translation id="6108849843016142864">爬蟲類與兩棲類</translation>
@@ -3714,6 +3723,7 @@
 <translation id="7660456820368115565">大型多人對戰遊戲</translation>
 <translation id="7661591871037163355">比較表資料欄數量已達上限。如要新增，請移除現有的資料欄。</translation>
 <translation id="7662298039739062396">由擴充功能控制的設定</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />已退出群組</translation>
 <translation id="7663736086183791259">憑證 <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">禁止用於無痕模式</translation>
 <translation id="7667346355482952095">傳回的政策憑證沒有任何內容，或是與目前的憑證不符</translation>

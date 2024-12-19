@@ -146,10 +146,8 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> (na) iminumungkahing item sa listahan sa ibaba.</translation>
 <translation id="1598163867407640634">Gamitin ang <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Kapag naka-on, gagamitin at ise-save ang data sa Google Account mo. Kapag naka-off, ise-save lang ang data sa device na ito.</translation>
-<translation id="1619648179761984213">Nag-alis ng tab si <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alisin ang 1 piniling item}one{Alisin ang # piniling item}other{Alisin ang # na piniling item}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{Naka-save lang ang 1 bookmark at iba pang item sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}one{Naka-save lang ang # bookmark at iba pang item sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}other{Naka-save lang ang # na bookmark at iba pang item sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}}</translation>
-<translation id="1637407510758033366">Sumali si <ph name="USER_DISPLAY_NAME" /> sa grupo</translation>
 <translation id="1641113438599504367">Ligtas na Pagba-browse</translation>
 <translation id="164269334534774161">Tinitingnan mo ang offline na kopya ng page na ito mula sa <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
@@ -349,7 +347,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2578337197553672982">Content ng Google para sa kabataan</translation>
 <translation id="2579297619530305344">Nakabukas ang Mga password sa lahat ng iyong device nang sakop ang buong screen</translation>
 <translation id="2581165646603367611">Iki-clear nito ang cookies, cache at iba pang data ng mga site na sa tingin ng Chrome ay hindi mahalaga.</translation>
-<translation id="258135245577667916">Nagdagdag ng tab si <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="2587052924345400782">May available na mas bagong bersyon</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Mag-sign in para pamahalaan ang iyong mga preference</translation>
@@ -863,7 +860,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4912413785358399818">Ilipat ang tab</translation>
 <translation id="4913169188695071480">Ihinto ang pag-refresh</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
-<translation id="492284538114688557">May nakitang pagbaba ng presyo</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ie-export ang iyong mga password at ida-download ang mga ito bilang text file. Magiging visible ang mga ito sa sinuman at sa anumang app na may access sa folder ng destinasyon.</translation>
 <translation id="4926901776383726965">Puwede kang mag-save ng mga larawan at file na titingnan offline o ishe-share sa iba pang app</translation>
@@ -944,7 +940,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5301876394151419436">Naka-sign in ka bilang si <ph name="EMAIL" /> Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5304593522240415983">Hindi maaaring maging blangko ang field na ito</translation>
 <translation id="5306014156308790439">Naka-disable ang Idagdag sa koleksyon</translation>
-<translation id="5307109011461144709">Binago ni <ph name="USER_DISPLAY_NAME" /> ang kulay ng grupo</translation>
 <translation id="5308380583665731573">Kumonekta</translation>
 <translation id="5310963254742922113">Ginamit ang password.</translation>
 <translation id="5316947901395241499">In-off ng iyong administrator ang pag-save ng password</translation>
@@ -956,12 +951,10 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="534580735623577507">Walang site mula sa <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Naka-on ang Enhanced Protection</translation>
 <translation id="5364112109233799727">Ipapadala sa Google ang URL ng page na bibigyan mo ng feedback at posibleng suriin ito ng mga tao para mapahusay ang feature na ito</translation>
-<translation id="537425196847960924">May binagong tab si <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="5375374982898812658">Mawawalan ka kaagad ng access sa grupo ng tab na “<ph name="GROUP_NAME" />,” at ide-delete ito sa lahat ng device mo</translation>
 <translation id="5375577065097716013">Hanapin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Umalis sa Incognito</translation>
 <translation id="5395376160638294582">Tiyaking magagamit mo sa anumang oras ang data ng Chrome sa iyong Google Account</translation>
-<translation id="5397794290049113714">Ikaw</translation>
 <translation id="539881862970320163">Iminumungkahi ang malakas na password. Naka-hide ang keyboard.</translation>
 <translation id="5409881200985013443">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176">Gusto ni <ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) na sumali ka sa isang grupo ng tab. Mae-edit ng sinumang may link ang lahat ng tab, kaya mag-ingat sa pagsali. Mag-e-expire ang link sa loob ng 48 oras.</translation>
@@ -990,7 +983,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5515439363601853141">I-unlock upang tingnan ang iyong password</translation>
 <translation id="5517095782334947753">Mayroon kang mga bookmark, history, password at iba pang mga setting mula sa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Bottom sheet ng kamakailang aktibidad</translation>
-<translation id="5524843473235508879">Na-block ang pag-redirect.</translation>
 <translation id="5526281268548144413">Hindi maisasara sa maraming window</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
 <translation id="5548606607480005320">Pag-check sa kaligtasan</translation>
@@ -1120,7 +1112,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="60923314841986378"><ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6095578583683628124">Kung Google din ang iyong default na search engine, makakakita ka ng mga suhestyong mas maganda at nauugnay sa konteksto</translation>
 <translation id="610630277578876674">Mabilis na magbukas ng mga link sa mga mensahe at higit pa</translation>
-<translation id="6107864469867367783">Binago ni <ph name="USER_DISPLAY_NAME" /> ang pangalan ng grupo</translation>
 <translation id="6108923351542677676">Kasalukuyang sine-setup…</translation>
 <translation id="6112702117600201073">Nire-refresh ang page</translation>
 <translation id="6122831415929794347">I-off ang Ligtas na Pag-browse?</translation>
@@ -1233,7 +1224,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6565959834589222080">Ginagamit ang Wi-Fi kapag available</translation>
 <translation id="6569373978618239158">Makakakita ka na ngayon ng mga kuwento mula sa <ph name="SITE_NAME" /> kapag nagbukas ka ng bagong tab. Mase-save sa iyong Google account ang mga site na sinusubaybayan mo. Puwede mong pamahalaan ang mga ito sa mga setting ng Discover.</translation>
 <translation id="6570116402456758630">Buod ng page</translation>
-<translation id="6573096386450695060">Payagan sa lahat ng oras</translation>
 <translation id="6573431926118603307">Dito lalabas ang mga nabuksan mong tab sa Chrome sa iba mo pang mga device.</translation>
 <translation id="6583199322650523874">I-bookmark ang kasalukuyang page</translation>
 <translation id="6588043302623806746">Gamitin ang secure na DNS</translation>
@@ -1349,6 +1339,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6971862865055170158">Huwag aprubahan</translation>
 <translation id="6978717888677691380">Ang mga site na na-block mo</translation>
 <translation id="6979737339423435258">Lahat ng oras</translation>
+<translation id="6983306615164277634">Puwede mo ring pindutin nang matagal ang address bar para baguhin ang posisyon.</translation>
 <translation id="6987047470128880212">Hindi available ang Incognito sa device na ito.</translation>
 <translation id="6991701761229081516">Ida-download ang iyong mga password bilang CSV file. Makikita ang mga ito ng sinumang makaka-access sa file, kasama na ang mga app. Ide-delete sa Chrome ang mga na-export na password.</translation>
 <translation id="6996145122199359148">I-download ang page na ito</translation>
@@ -1360,7 +1351,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7035701931849773472">Iba pang opsyon</translation>
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7054588988317389591">Makakuha ng mga paglalarawan ng larawan?</translation>
-<translation id="7055152154916055070">Na-block ang pag-redirect:</translation>
 <translation id="7057969023583258980">Buksan ang kumpletong history sa Chrome</translation>
 <translation id="7063006564040364415">Hindi makakonekta sa server ng pag-sync.</translation>
 <translation id="7071521146534760487">Pamahalaan ang account</translation>
@@ -1505,7 +1495,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7656721520530864426">Walang site</translation>
 <translation id="7656862631699126784">I-on ang lock ng Incognito</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
-<translation id="7662911501613893058">Umalis sa grupo si <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="7663320421139257046">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />patakaran sa privacy<ph name="END_LINK1" /> ng site na ito.</translation>
 <translation id="7665369617277396874">Magdagdag ng account</translation>
 <translation id="766587987807204883">Lalabas dito ang mga artikulong mababasa mo kahit offline ka</translation>

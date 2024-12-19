@@ -362,6 +362,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1615402009686901181">Järjestelmänvalvojakäytäntö poistaa kuvakaappauksen käytöstä, kun näkyvissä on luottamuksellista sisältöä</translation>
 <translation id="1617276713587758852">Crossover-autot</translation>
 <translation id="1619007254056372606">Hallinnoi laitepohjaista sivustodataa</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> poisti välilehden</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Yritysrahoitus</translation>
 <translation id="1623104350909869708">Estä tätä sivua luomasta muita viestejä</translation>
@@ -369,6 +370,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1633137413609266904">{0,plural, =1{Järjestelmänvalvojakäytäntö on estänyt tämän tiedoston avaamisen}other{Järjestelmänvalvojakäytäntö on estänyt # tiedoston avaamisen}}</translation>
 <translation id="1633941398432788136">Juhlien suunnittelu</translation>
 <translation id="1634828734222219955">Yhteensä</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> liittyi ryhmään</translation>
 <translation id="163826442096818926">Lyhennä</translation>
 <translation id="1639239467298939599">Ladataan</translation>
 <translation id="1640180200866533862">Käyttäjäkäytännöt</translation>
@@ -904,6 +906,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2571488850200220306">Turvallisuuden takaamiseksi se voi myös nähdä laitteen käyttöjärjestelmän, selainversion ja asennetut ohjelmistot</translation>
 <translation id="2573170131138724450">Televisiot</translation>
 <translation id="257674075312929031">Ryhmä</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> lisäsi välilehden</translation>
 <translation id="2586657967955657006">Leikepöytä</translation>
 <translation id="2587841377698384444">Hakemistosovellusliittymän tunnus:</translation>
 <translation id="2594318783181750337">Nopea verkkonäkymä:</translation>
@@ -2403,6 +2406,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5305716236436927587">Mainonta ja markkinointi</translation>
 <translation id="5306593769196050043">Molemmat taulukot</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> muutti ryhmän väriä</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Muodosta yhteys</translation>
 <translation id="5308689395849655368">Kaatumisraportit on poistettu käytöstä.</translation>
@@ -2434,6 +2438,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5363309033720083897">Järjestelmänvalvojan sallima sarjaportti</translation>
 <translation id="5363532265530011914">Sukat ja sukkatuotteet</translation>
 <translation id="5371425731340848620">Päivitä kortti</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> muutti välilehteä</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Kellosi jätättää", "Kellosi edistää" tai "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Vahvista henkilöllisyytesi, niin voit käyttää salasanaa kaikilla laitteillasi</translation>
@@ -2448,6 +2453,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5392506727170022660">Metalli (puolikiiltävä)</translation>
 <translation id="5394069166371280357">TV-perheohjelmat</translation>
 <translation id="5396631636586785122">Reunasidonta oikealla</translation>
+<translation id="5397794290049113714">Sinä</translation>
 <translation id="5398772614898833570">Mainokset estetty</translation>
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5401344472773249513">Julkkis- ja viihdeuutiset</translation>
@@ -2833,6 +2839,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6105460996796456817">Luo sivusto</translation>
 <translation id="6106989379647458772">Verkkosivu <ph name="PAGE" /> saattaa olla väliaikaisesti poissa käytöstä tai se on siirretty pysyvästi uuteen osoitteeseen.</translation>
 <translation id="6107012941649240045">Myönnetty kohteelle</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> vaihtoi ryhmän nimen</translation>
 <translation id="6107924765192360631">Aloita muutamalla sanalla tai ensimmäisellä luonnoksella, niin saat kirjoitusehdotuksia.</translation>
 <translation id="6108508372809181847">Vertaile: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Varmenteen tiedot</translation>
@@ -3719,6 +3726,7 @@ Lisätietoja:
 <translation id="7660456820368115565">Massiiviset moninpelit</translation>
 <translation id="7661591871037163355">Vertailutaulukko on täynnä. Poista sarakkeita, jotta voit lisätä uusia.</translation>
 <translation id="7662298039739062396">Laajennuksen hallinnoima asetus</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> lähti ryhmästä.</translation>
 <translation id="7663736086183791259">Varmenne <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Ei sallittu incognito-tilassa</translation>
 <translation id="7667346355482952095">Palautettu käytäntötunnus on tyhjä tai ei vastaa nykyistä tunnusta.</translation>

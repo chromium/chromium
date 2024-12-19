@@ -146,10 +146,8 @@
 <translation id="1594635596540195766">下列清單中有 <ph name="SUGGESTIONS_COUNT" /> 個建議項目。</translation>
 <translation id="1598163867407640634">透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存到這部裝置。</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />已移除分頁</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個選取的項目}other{移除 # 個選取的項目}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{這 # 個書籤和其他項目只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
-<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" />已加入群組</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您目前瀏覽的是這個網頁的離線複本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
@@ -349,7 +347,6 @@
 <translation id="2578337197553672982">Google 為兒少提供的內容</translation>
 <translation id="2579297619530305344">「在所有裝置上都能使用自己的密碼」說明已開啟，顯示於整個畫面</translation>
 <translation id="2581165646603367611">這項操作會清除不重要的網站 Cookie、快取等其他資料 (Chrome 會自動判斷資料的重要性)。</translation>
-<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />已新增分頁</translation>
 <translation id="2587052924345400782">已推出新版本</translation>
 <translation id="2593272815202181319">等寬</translation>
 <translation id="2603212228005142861">登入即可管理偏好設定</translation>
@@ -863,7 +860,6 @@
 <translation id="4912413785358399818">移動分頁</translation>
 <translation id="4913169188695071480">停止重新整理</translation>
 <translation id="4918086044614829423">接受</translation>
-<translation id="492284538114688557">有商品降價了</translation>
 <translation id="4925120120285606924">螢幕截圖 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系統會匯出你的密碼並下載為文字檔案。擁有目的地資料夾存取權的使用者和應用程式將可查看你的密碼。</translation>
 <translation id="4926901776383726965">你可以儲存圖片和檔案，方便離線查看或分享到其他應用程式</translation>
@@ -944,7 +940,6 @@
 <translation id="5301876394151419436">目前登入的帳戶是 <ph name="EMAIL" />。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="5304593522240415983">這個欄位不能留空</translation>
 <translation id="5306014156308790439">「新增到珍藏內容」功能已停用</translation>
-<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />已變更群組顏色</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5310963254742922113">已使用密碼。</translation>
 <translation id="5316947901395241499">系統管理員已關閉密碼儲存功能</translation>
@@ -956,12 +951,10 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />未造訪任何網站</translation>
 <translation id="5355191726083956201">已啟用強化防護功能</translation>
 <translation id="5364112109233799727">你要提供意見的網頁網址會傳送至 Google，且可能會交由人工審查，以便改進這項功能</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />已變更分頁</translation>
 <translation id="5375374982898812658">你將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，且該群組會從你的所有裝置中刪除</translation>
 <translation id="5375577065097716013">使用 Google 智慧鏡頭搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">關閉無痕模式</translation>
 <translation id="5395376160638294582">確保你隨時可以使用 Google 帳戶中的 Chrome 資料</translation>
-<translation id="5397794290049113714">你</translation>
 <translation id="539881862970320163">建議使用高強度密碼。鍵盤已隱藏。</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) 邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>
@@ -990,7 +983,6 @@
 <translation id="5515439363601853141">解鎖即可查看你的密碼</translation>
 <translation id="5517095782334947753">你有來自 <ph name="FROM_ACCOUNT" /> 的書籤、歷史記錄、密碼和其他設定。</translation>
 <translation id="5517326820028369152">近期活動底部功能表</translation>
-<translation id="5524843473235508879">已禁止重新導向。</translation>
 <translation id="5526281268548144413">無法關閉多個視窗中的分頁</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="5548606607480005320">安全檢查</translation>
@@ -1120,7 +1112,6 @@
 <translation id="60923314841986378">還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6095578583683628124">如果 Google 也是預設的搜尋引擎，你將能取得更實用、更符合需求的建議</translation>
 <translation id="610630277578876674">快速開啟訊息中的連結及其他項目</translation>
-<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />已變更群組名稱</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6112702117600201073">重新整理網頁</translation>
 <translation id="6122831415929794347">要停用安全瀏覽功能嗎？</translation>
@@ -1233,7 +1224,6 @@
 <translation id="6565959834589222080">有可用 Wi-Fi 時，系統會使用 Wi-Fi</translation>
 <translation id="6569373978618239158">往後開啟新分頁時，你就會看到「<ph name="SITE_NAME" />」的網路故事。你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
 <translation id="6570116402456758630">頁面摘要</translation>
-<translation id="6573096386450695060">一律允許</translation>
 <translation id="6573431926118603307">您在其他裝置上透過 Chrome 開啟的分頁會顯示在這裡。</translation>
 <translation id="6583199322650523874">將目前的網頁加入書籤</translation>
 <translation id="6588043302623806746">使用安全 DNS</translation>
@@ -1349,6 +1339,7 @@
 <translation id="6971862865055170158">拒絕</translation>
 <translation id="6978717888677691380">你封鎖的網站</translation>
 <translation id="6979737339423435258">不限時間</translation>
+<translation id="6983306615164277634">你也可以按住網址列來變更位置。</translation>
 <translation id="6987047470128880212">這部裝置不支援無痕模式</translation>
 <translation id="6991701761229081516">系統會以 CSV 檔案匯出密碼。凡是可以存取這個檔案的人 (包括應用程式)，都能查看你的密碼。Chrome 會刪除已匯出的密碼。</translation>
 <translation id="6996145122199359148">下載這個網頁</translation>
@@ -1360,7 +1351,6 @@
 <translation id="7035701931849773472">其他選項</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>
-<translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7057969023583258980">開啟完整的 Chrome 歷史記錄</translation>
 <translation id="7063006564040364415">無法連線至同步處理伺服器。</translation>
 <translation id="7071521146534760487">管理帳戶</translation>
@@ -1505,7 +1495,6 @@
 <translation id="7656721520530864426">未造訪任何網站</translation>
 <translation id="7656862631699126784">開啟無痕模式鎖定</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />已退出群組</translation>
 <translation id="7663320421139257046">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的<ph name="FIELDS_STRING" />提供給這個網站。詳情查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》。</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章會顯示在這裡，並可供離線閱讀</translation>

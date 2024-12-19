@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">USB cihazına qoşulub</translation>
 <translation id="4194328954146351878">Saytların NFC cihazlarındakı məlumatları görməsi və dəyişməsinə icazə verməzdən əvvəl soruşun (tövsiyə edilir)</translation>
 <translation id="4200726100658658164">Məkan Ayarlarını açın</translation>
+<translation id="4213239715282467974">Chrome artıq son tablarınızı cihazınızla paylaşır. Onlara cihazınızın tətbiqlər siyahısında və axtarış nəticələrində tez daxil ola bilərsiniz. Bunu istənilən vaxt Chrome ayarlarında söndürə bilərsiniz.</translation>
 <translation id="4226663524361240545">Bildirişlər cihazı titrədə bilər</translation>
 <translation id="4259722352634471385">Naviqasiya bloklandı: <ph name="URL" /></translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Saytların haqqınızda yadda saxlanan məlumatdan istifadə üçün icazə istəməsi bloklanıb</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+1)}other{(+ #)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
+<translation id="5408906274948600065">Chrome-un son tablarınızı cihazınızla paylaşmasına icazə verin, beləliklə tətbiq siyahısında və axtarış nəticələrində onları görə bilərsiniz. Bunu istənilən vaxt Chrome ayarlarında yandıra və ya söndürə bilərsiniz.</translation>
 <translation id="5438097262470833822">Bu seçim <ph name="WEBSITE" /> üçün icazələri sıfırlayacaq</translation>
 <translation id="5459413148890178711">Aktiv ediləndə saytlar məkan icazəsi istəyə bilər. Deaktiv ediləndə saytlar məkanı görə bilməz.</translation>
 <translation id="5489227211564503167">Keçən vaxt: <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />.</translation>

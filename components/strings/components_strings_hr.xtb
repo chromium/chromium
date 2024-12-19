@@ -362,6 +362,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1615402009686901181">Administratorska pravila onemogućuju snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="1617276713587758852">Crossover vozila</translation>
 <translation id="1619007254056372606">Upravljanje podacima web-lokacije na uređaju</translation>
+<translation id="1619648179761984213">Korisnik <ph name="USER_DISPLAY_NAME" /> uklonio je karticu</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1622966923835127638">Poslovne financije</translation>
 <translation id="1623104350909869708">Spriječi da ova stranica stvori dodatne dijaloške okvire</translation>
@@ -369,6 +370,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1633137413609266904">{0,plural, =1{Otvaranje te datoteke blokirano je prema administratorskim pravilima}one{Otvaranje # datoteke blokirano je prema administratorskim pravilima}few{Otvaranje # datoteke blokirano je prema administratorskim pravilima}other{Otvaranje # datoteka blokirano je prema administratorskim pravilima}}</translation>
 <translation id="1633941398432788136">Planiranje događaja</translation>
 <translation id="1634828734222219955">Ukupno</translation>
+<translation id="1637407510758033366">Korisnik <ph name="USER_DISPLAY_NAME" /> pridružio se grupi</translation>
 <translation id="163826442096818926">Skrati</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1640180200866533862">Korisnička pravila</translation>
@@ -904,6 +906,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2571488850200220306">Da bi se osigurala sigurnost, administrator može vidjeti i OS uređaja, verziju preglednika i koji je softver instaliran</translation>
 <translation id="2573170131138724450">Televizori</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="258135245577667916">Korisnik <ph name="USER_DISPLAY_NAME" /> dodao je karticu</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
 <translation id="2587841377698384444">ID API-ja direktorija:</translation>
 <translation id="2594318783181750337">Brzi web-prikaz:</translation>
@@ -1401,7 +1404,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="351522771072578657">Trenutačno ste na izborniku</translation>
 <translation id="3517264445792388751">Administrator je onemogućio datotečni sustav</translation>
 <translation id="3518941727116570328">Obrada više predmeta</translation>
-<translation id="3519670528214225835">Pitaj AI asistenta <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3519670528214225835">Pitajte <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
 <translation id="3525435918300186947">Želite li kontrolirati i reprogramirati MIDI uređaje?</translation>
 <translation id="3527181387426738155">Glazba i audiozapisi</translation>
@@ -2401,6 +2404,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5305716236436927587">Oglašavanje i marketing</translation>
 <translation id="5306593769196050043">Oba lista</translation>
+<translation id="5307109011461144709">Korisnik <ph name="USER_DISPLAY_NAME" /> promijenio je boju grupe</translation>
 <translation id="5307166000025436103">U redu</translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5308689395849655368">Onemogućeno je izvješćivanje o padu.</translation>
@@ -2432,6 +2436,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5363309033720083897">Serijski priključak koji dopušta vaš administrator</translation>
 <translation id="5363532265530011914">Čarape</translation>
 <translation id="5371425731340848620">Ažuriranje kartice</translation>
+<translation id="537425196847960924">Korisnik <ph name="USER_DISPLAY_NAME" /> promijenio je karticu</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Sat kasni" ili "Sat ide unaprijed" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Da biste tu zaporku dobili na svim svojim uređajima, potvrdite da ste to vi</translation>
@@ -2446,6 +2451,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5392506727170022660">Metal (polusjajno)</translation>
 <translation id="5394069166371280357">TV programi usmjereni na obitelj</translation>
 <translation id="5396631636586785122">Rubni šav s desne strane</translation>
+<translation id="5397794290049113714">Vi</translation>
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5401344472773249513">Vijesti o slavnima i showbusinessu</translation>
@@ -2831,6 +2837,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6105460996796456817">Izradite web-lokaciju</translation>
 <translation id="6106989379647458772">Web-stranica na <ph name="PAGE" /> možda privremeno nije dostupna ili je trajno premještena na novu web-adresu.</translation>
 <translation id="6107012941649240045">Izdano za</translation>
+<translation id="6107864469867367783">Korisnik <ph name="USER_DISPLAY_NAME" /> promijenio je naziv grupe</translation>
 <translation id="6107924765192360631">Jednostavno započnite s nekoliko riječi ili prvom skicom da biste dobili prijedloge za pisanje.</translation>
 <translation id="6108508372809181847">Usporedba: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Pojedinosti certifikata</translation>
@@ -3717,6 +3724,7 @@ Dodatne pojedinosti:
 <translation id="7660456820368115565">Igre za velik broj igrača</translation>
 <translation id="7661591871037163355">Vaša tablica za usporedbu je puna. Uklonite stupce da biste dodali nove.</translation>
 <translation id="7662298039739062396">Postavkom upravlja proširenje</translation>
+<translation id="7662911501613893058">Korisnik <ph name="USER_DISPLAY_NAME" /> napustio je grupu</translation>
 <translation id="7663736086183791259">Certifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nije dopušteno u anonimnom načinu</translation>
 <translation id="7667346355482952095">Vraćeni token pravila prazan je ili ne odgovara trenutačnom tokenu</translation>

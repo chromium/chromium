@@ -100,6 +100,7 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="5339733443032484186">Son sekmeniz</translation>
 <translation id="5380159289133845234">Kopya sekmeleri arşivle</translation>
 <translation id="5400836586163650660">Gri</translation>
+<translation id="5446043142172831860">Sekmeyi kaldır ve gruptan ayrıl</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu kapatın.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu kapatın.}}</translation>

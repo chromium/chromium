@@ -1316,7 +1316,6 @@ Hinweis: Diese Richtlinie gilt nicht für In-Page-JavaScript-URLs mit dynamisch 
 <translation id="2005506794355327448">Auszuführende Aktion, wenn das Gerät zugeklappt wird.</translation>
 <translation id="2006530844219044261">Energieverwaltung</translation>
 <translation id="2006954055163088863">Nutzer wird während der Videowiedergabe als inaktiv angesehen</translation>
-<translation id="2008514891623783266">Richtlinie für das IP-Handling von WebRTC</translation>
 <translation id="201153120366509312">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die URL-Messwerterfassung zulässig.
 Wenn der Nutzer die URL-Messwerterfassung zulässt und aktiviert hat, werden URLs von Seiten, die er besucht, an Google gesendet, um Suchanfragen, das Surfen und die Nutzungsstatistik für die Seiten zu verbessern.
 Zu den URL-Messwerten gehören auch die IDs und Nutzungsstatistiken anderer Browserkomponenten, die Inhalte ändern oder bereitstellen können, z. B. Erweiterungen.
@@ -9276,7 +9275,6 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="8056800559672904373">Ein verwaltetes Konto muss ein primäres Konto sein und darf nicht mit sekundären Konten verknüpft sein; das Importieren bestehender Browserdaten ist bei der Profilerstellung möglich</translation>
 <translation id="8059164285174960932">URL, unter der Remote-Zugriff-Clients ihr Authentifizierungs-Token abrufen sollten</translation>
 <translation id="8059352177830050556">Melden der Informationen zur Hintergrundbeleuchtung auf Geräten aktivieren</translation>
-<translation id="8062375903420954294">Mit dieser Richtlinie kannst du einschränken, welche IP-Adressen und Schnittstellen WebRTC bei der Suche nach der bestmöglichen Verbindung verwenden kann. Weitere Informationen findest du unter RFC 8828 Abschnitt 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Wenn diese Richtlinie nicht konfiguriert ist, werden standardmäßig alle verfügbaren Schnittstellen verwendet.</translation>
 <translation id="8062485064082966327">Einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder zu erhalten</translation>
 <translation id="8066428282805800713">Zusätzliche Hardwaredaten unter ChromeOS Flex senden</translation>
 <translation id="8066532561081127944">Aus Sicherheitsgründen erfordert die Web-API „<ph name="REQUEST_FULLSCREEN_API_NAME" />“ eine vorherige Nutzergeste („vorübergehende Aktivierung“); andernfalls tritt ein Fehler auf. Durch die persönlichen Einstellungen von Nutzern kann es bestimmten Ursprüngen erlaubt sein, diese API ohne vorherige Nutzergeste aufzurufen, wie unter <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" /> beschrieben.

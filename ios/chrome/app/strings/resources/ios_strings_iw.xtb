@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">אין כרטיסיות פתוחות</translation>
 <translation id="1469381646033328562">החשבון מנוהל על ידי ההורה שלך.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">השתנתה</translation>
 <translation id="1480152980057770392">הצגת רשימת הקריאה</translation>
 <translation id="1484758781961275277">מפיקים את המרב מדפדפן המחשב המוכר והאהוב גם באייפד.</translation>
 <translation id="1485907716209290998">מעקב אחר חבילה</translation>
@@ -1211,6 +1212,7 @@
 <translation id="6445981559479772097">ההודעה נשלחה.</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6449554712554071184">הקבוצה תימחק לתמיד מהמכשיר שלך.</translation>
+<translation id="6452534462676960500">פעילות חדשה</translation>
 <translation id="6459307836338400162">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדפים <ph name="BEGIN_LINK" />סנכרון<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">הפרטים מוסתרים</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1619,6 +1621,7 @@
 <translation id="8219424187226230983">הצגת גרסה אופליין בכרטיסייה חדשה</translation>
 <translation id="8230355548492839438">חיפוש של הקודם</translation>
 <translation id="8232956427053453090">שמירת הנתונים</translation>
+<translation id="8258999165172757081">נוסף</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="82619448491672958">הצגת כרטיסיות אחרות</translation>
 <translation id="8263228331881858381">מפתח הגישה נשמר</translation>

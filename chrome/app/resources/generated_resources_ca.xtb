@@ -1906,6 +1906,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">No s'admeten les tecles següents: Tab, Maj, Ctrl, Esc, Bloq Maj ni Volum</translation>
 <translation id="2309620859903500144">Aquest lloc web no té permís per accedir als sensors de llum o moviment.</translation>
+<translation id="2310414604104802967">S'està comprovant si has iniciat la sessió...</translation>
 <translation id="2310923358723722542">Visualització i ampliació</translation>
 <translation id="2312219318583366810">URL de la pàgina</translation>
 <translation id="2314165183524574721">L'opció de configuració de visibilitat actual és Amagat</translation>
@@ -2324,6 +2325,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2606568927909309675">Crea subtítols automàticament per a àudios i vídeos en anglès. L'àudio i els subtítols no surten mai del dispositiu.</translation>
 <translation id="2606890864830643943">S'estan exportant les dades de diagnòstic</translation>
 <translation id="2607101320794533334">Informació de clau pública del subjecte</translation>
+<translation id="2608837922830967145">No tornis a mostrar aquest missatge</translation>
 <translation id="2609896558069604090">Crea dreceres...</translation>
 <translation id="2609980095400624569">No s'ha pogut establir la connexió</translation>
 <translation id="2610157865375787051">Repòs</translation>
@@ -5755,7 +5757,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5063480226653192405">Ús</translation>
 <translation id="5064921774605267982">Obre el perfil de <ph name="PROFILE_NAME" />. El teu pare o mare gestiona aquest perfil.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
-<translation id="5066100345385738837">Gestiona el DNS segur a la configuració de Chrome OS</translation>
+<translation id="5066100345385738837">Gestiona el DNS segur a la configuració de ChromeOS</translation>
 <translation id="5066534201484101197">Fes overscroll per navegar entre les pàgines</translation>
 <translation id="5067399438976153555">Sempre activat</translation>
 <translation id="5067867186035333991">Pregunta si <ph name="HOST" /> vol accedir al micròfon</translation>
@@ -11248,6 +11250,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9007688236643268728">&amp;Torna a iniciar la sessió</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9008201858626224558">Botó Enrere de la pàgina de detalls de <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008425116680857079">Chrome pot canviar la teva contrasenya un cop hagis iniciat la sessió.</translation>
 <translation id="9008828754342192581">Havies triat l'opció de permetre totes les extensions a <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">S'està carregant (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Importats de Windows</translation>

@@ -362,6 +362,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1615402009686901181">Op basis van het beheerdersbeleid worden schermopnamen uitgezet als er vertrouwelijke content zichtbaar is</translation>
 <translation id="1617276713587758852">Crossovers</translation>
 <translation id="1619007254056372606">Sitegegevens op het apparaat beheren</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> heeft een tabblad verwijderd</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622966923835127638">Bedrijfsfinanciering</translation>
 <translation id="1623104350909869708">Voorkomen dat deze pagina extra dialoogvensters toont</translation>
@@ -369,6 +370,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1633137413609266904">{0,plural, =1{Dit bestand openen is geblokkeerd door het beheerdersbeleid}other{Deze # bestanden openen is geblokkeerd door het beheerdersbeleid}}</translation>
 <translation id="1633941398432788136">Evenementenplanning</translation>
 <translation id="1634828734222219955">Totaal</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> is lid geworden van de groep</translation>
 <translation id="163826442096818926">Inkorten</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1640180200866533862">Gebruikersbeleid</translation>
@@ -904,6 +906,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2571488850200220306">Uit beveiligingsoverwegingen kan de beheerder ook het OS, de browserversie en de geïnstalleerde software van het apparaat zien</translation>
 <translation id="2573170131138724450">Televisies</translation>
 <translation id="257674075312929031">Groep</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> heeft een tabblad toegevoegd</translation>
 <translation id="2586657967955657006">Klembord</translation>
 <translation id="2587841377698384444">Directory API-ID:</translation>
 <translation id="2594318783181750337">Snelle webweergave:</translation>
@@ -2396,6 +2399,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5305716236436927587">Adverteren en marketing</translation>
 <translation id="5306593769196050043">Beide bladen</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> heeft de groepskleur gewijzigd</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5308689395849655368">Crashrapportage staat uit.</translation>
@@ -2427,6 +2431,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5363309033720083897">Seriële poort toegestaan door je beheerder</translation>
 <translation id="5363532265530011914">Sokken en panty's</translation>
 <translation id="5371425731340848620">Pas updaten</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> heeft een tabblad gewijzigd</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'Je klok loopt achter', 'Je klok loopt voor' of '&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;'</translation>
 <translation id="5379618281582508161">Laat verifiëren dat jij het bent om dit wachtwoord op al je apparaten te gebruiken</translation>
@@ -2441,6 +2446,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5392506727170022660">Metaal (zijdeglans)</translation>
 <translation id="5394069166371280357">Tv-programma's voor het hele gezin</translation>
 <translation id="5396631636586785122">Inbinden met nietjes rechts</translation>
+<translation id="5397794290049113714">Jij</translation>
 <translation id="5398772614898833570">Advertenties geblokkeerd</translation>
 <translation id="5400836586163650660">Grijs</translation>
 <translation id="5401344472773249513">Entertainment- en celebritynieuws</translation>
@@ -2826,6 +2832,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6105460996796456817">Site maken</translation>
 <translation id="6106989379647458772">De webpagina op <ph name="PAGE" /> is mogelijk tijdelijk niet beschikbaar of is permanent verplaatst naar een nieuw webadres.</translation>
 <translation id="6107012941649240045">Verleend aan</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> heeft de groepsnaam gewijzigd</translation>
 <translation id="6107924765192360631">Begin met een paar woorden of een eerste concept om schrijfsuggesties te krijgen.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> vergelijken</translation>
 <translation id="6108580855199168381">Certificaatgegevens</translation>
@@ -3711,6 +3718,7 @@ Aanvullende informatie:
 <translation id="7660456820368115565">Massive multiplayer games</translation>
 <translation id="7661591871037163355">Je vergelijkingstabel is vol. Verwijder kolommen om nieuwe toe te voegen.</translation>
 <translation id="7662298039739062396">Instelling beheerd door een extensie</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> heeft de groep verlaten</translation>
 <translation id="7663736086183791259">Certificaat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Niet toegestaan in incognitomodus</translation>
 <translation id="7667346355482952095">Geretourneerde beleidstoken is leeg of komt niet overeen met huidige token</translation>

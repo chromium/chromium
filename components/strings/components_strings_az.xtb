@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Administrator siyasəti məxfi məzmun görünəndə ekran çəkimini deaktiv edir</translation>
 <translation id="1617276713587758852">Krossoverlər</translation>
 <translation id="1619007254056372606">Cihazda sayt datasını idarə edin</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> tabı sildi</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Biznes maliyyəsi</translation>
 <translation id="1623104350909869708">Bu səhifədə əlavə dialoqlar yaranmasın</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Bu faylın açılması administrator siyasəti əsasında bloklanıb}other{# faylın açılması administrator siyasəti əsasında bloklanıb}}</translation>
 <translation id="1633941398432788136">Tədbir planlama</translation>
 <translation id="1634828734222219955">Ümumi</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> qrupa qoşuldu</translation>
 <translation id="163826442096818926">Qısaldın</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
 <translation id="1640180200866533862">İstifadəçi siyasəti</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">Təhlükəsizliyi təmin etmək üçün o, cihazın əməliyyat sistemini, brauzer versiyasını və hansı proqram təminatının quraşdırıldığını da görə bilər</translation>
 <translation id="2573170131138724450">Televizorlar</translation>
 <translation id="257674075312929031">Qrup</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> tab əlavə etdi</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
 <translation id="2587841377698384444">Direktoriya API ID:</translation>
 <translation id="2594318783181750337">Sürətli veb görünüşü:</translation>
@@ -1141,6 +1144,7 @@
 <translation id="306573536155379004">Oyun başladı.</translation>
 <translation id="3067505415088964188">Qiymət aşağıdır</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> üzrə fayl yüklənməsi 1 dəqiqə sonra başlayacaq</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}other{{ITEMS} element}}</translation>
 <translation id="3076865167425975822">Əməliyyat Sistemləri</translation>
 <translation id="3080254622891793721">Qrafik</translation>
 <translation id="3082007635241601060">Əlçatan olduqda fərdiləşdirilmiş endirimlər tapmaq üçün Google'a səbətlərinizdən istifadə etməyə icazə verin</translation>
@@ -2397,6 +2401,7 @@
 <translation id="5300589172476337783">Göstərin</translation>
 <translation id="5305716236436927587">Reklam və Marketinq</translation>
 <translation id="5306593769196050043">Hər iki vərəq</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> qrup rəngini dəyişdi</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Qoşun</translation>
 <translation id="5308689395849655368">Xəta hesabatı deaktiv edildi.</translation>
@@ -2428,6 +2433,7 @@
 <translation id="5363309033720083897">Administratorunuz tərəfindən icazə verilən ardıcıl port</translation>
 <translation id="5363532265530011914">Corab və corab məmulatı</translation>
 <translation id="5371425731340848620">Kartı yeniləyin</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> tabı dəyişdi</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Saatınız geridədir" və ya "Saatınız qabaqdadır" və ya "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Bu parolu bütün cihazlarınızda əldə etmək üçün kimliyinizi doğrulayın</translation>
@@ -2442,6 +2448,7 @@
 <translation id="5392506727170022660">Metal (yarıparlaq)</translation>
 <translation id="5394069166371280357">Ailəvi TV şouları</translation>
 <translation id="5396631636586785122">Sağdan kənarını tikin</translation>
+<translation id="5397794290049113714">Siz</translation>
 <translation id="5398772614898833570">Reklamlar blok edildi</translation>
 <translation id="5400836586163650660">Boz</translation>
 <translation id="5401344472773249513">Məşhurlar və əyləncə xəbərləri</translation>
@@ -2827,7 +2834,9 @@
 <translation id="6105460996796456817">Sayt yaradın</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> veb səhifəsi müvəqqəti işləməyə bilər və ya yeni veb ünvana köçürülmüş ola bilər.</translation>
 <translation id="6107012941649240045">Verildi:</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> qrupun adını dəyişdi</translation>
 <translation id="6107924765192360631">Yazı təklifləri almaq üçün bir neçə söz və ya ilk qaralama ilə başlayın.</translation>
+<translation id="6108508372809181847">Müqayisə edin: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Sertifikat detalları</translation>
 <translation id="6108702513636120202">Chromium-da axtarış mexanizminiz</translation>
 <translation id="6108849843016142864">Kərtənkələ və Amfibiyalar</translation>
@@ -3711,6 +3720,7 @@
 <translation id="7660456820368115565">Kütləvi Çox-oyunçulu Oyunlar</translation>
 <translation id="7661591871037163355">Müqayisə cədvəliniz doludur. Yenilərini əlavə etmək üçün sütunları silin.</translation>
 <translation id="7662298039739062396">Ayara artırma tərəfindən nəzarət edildi</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> qrupu tərk etdi</translation>
 <translation id="7663736086183791259">Sertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Anonim rejimdə icazə verilmir</translation>
 <translation id="7667346355482952095">Qaytarılmış qaydalar nişanı boşdur və ya cari nişanla üst-üstə düşmür</translation>

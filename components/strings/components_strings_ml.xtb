@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ അഡ്‌മിൻ നയം സ്ക്രീൻ ക്യാപ്‌ചർ പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="1617276713587758852">ക്രോസ്ഓവറുകൾ</translation>
 <translation id="1619007254056372606">ഉപകരണത്തിലെ സൈറ്റ് ഡാറ്റ മാനേജ് ചെയ്യുക</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ടാബ് നീക്കം ചെയ്തു</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1622966923835127638">ബിസിനസ് ഫിനാൻസ്</translation>
 <translation id="1623104350909869708">കൂടുതൽ ഡയലോഗുകൾ സൃഷ്‌ടിക്കുന്നതിൽ നിന്നും ഈ പേജിനെ തടയുക</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ഈ ഫയൽ തുറക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}other{# ഫയലുകൾ തുറക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു}}</translation>
 <translation id="1633941398432788136">ഇവന്റ് പ്ലാനിംഗ്</translation>
 <translation id="1634828734222219955">മൊത്തം</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പിൽ ചേർന്നു</translation>
 <translation id="163826442096818926">ചെറുതാക്കുക</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1640180200866533862">ഉപയോക്തൃ നയങ്ങൾ</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">സുരക്ഷ ഉറപ്പാക്കാൻ സഹായിക്കുന്നതിന്, ഉപകരണത്തിന്റെ OS, ബ്രൗസറിന്റെ പതിപ്പ്, ഏതൊക്കെ സോഫ്‌റ്റ്‌വെയർ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്നു എന്നിവയും ഇതിന് കാണാൻ കഴിയും</translation>
 <translation id="2573170131138724450">ടെലിവിഷനുകൾ</translation>
 <translation id="257674075312929031">ഗ്രൂപ്പ്</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ടാബ് ചേർത്തു</translation>
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
 <translation id="2587841377698384444">ഡയറക്‌റ്ററി API ഐഡി:</translation>
 <translation id="2594318783181750337">വേഗത്തിലുള്ള വെബ് കാഴ്‌ച:</translation>
@@ -2401,6 +2404,7 @@
 <translation id="5300589172476337783">കാണിക്കുക</translation>
 <translation id="5305716236436927587">പരസ്യം ചെയ്യലും മാർക്കറ്റിംഗും</translation>
 <translation id="5306593769196050043">രണ്ട് ഷീറ്റുകളും</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പിന്റെ നിറം മാറ്റി</translation>
 <translation id="5307166000025436103">ശരി</translation>
 <translation id="5308380583665731573">കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="5308689395849655368">ക്രാഷ് റിപ്പോർട്ട് ചെയ്യൽ പ്രവർത്തനരഹിതമാക്കി.</translation>
@@ -2432,6 +2436,7 @@
 <translation id="5363309033720083897">നിങ്ങളുടെ അഡ്മിൻ അനുവദിച്ചിരിക്കുന്ന സീരിയൽ പോർട്ട്</translation>
 <translation id="5363532265530011914">സോക്‌സ്, ഹോസിയറി</translation>
 <translation id="5371425731340848620">കാർഡ് അപ്ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ടാബ് മാറ്റി</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"നിങ്ങളുടെ സമയം പിന്നിലാണ്" അല്ലെങ്കിൽ "നിങ്ങളുടെ സമയം മുന്നിലാണ്" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ഈ പാസ്‌വേഡ് ലഭിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കൂ</translation>
@@ -2446,6 +2451,7 @@
 <translation id="5392506727170022660">മെറ്റൽ (സെമി ഗ്ലോസ്)</translation>
 <translation id="5394069166371280357">കുടുംബ-കേന്ദ്രീകൃത ടിവി ഷോകൾ</translation>
 <translation id="5396631636586785122">വലതുവശത്ത് അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
+<translation id="5397794290049113714">നിങ്ങള്‍</translation>
 <translation id="5398772614898833570">പരസ്യങ്ങൾ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="5400836586163650660">ചാരനിറം</translation>
 <translation id="5401344472773249513">താരങ്ങളും വിനോദ വാർത്തകളും</translation>
@@ -2831,6 +2837,7 @@
 <translation id="6105460996796456817">സൈറ്റ് സൃഷ്ടിക്കുക</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> എന്നതിലെ വെബ്‌പേജ് താല്‍ക്കാലികമായി പ്രവർത്തനരഹിതമായിരിക്കാം, അല്ലെങ്കില്‍ അത് ശാശ്വതമായി ഒരു പുതിയ വെബ് വിലാസത്തിലേക്ക് മാറ്റിയിരിക്കാം.</translation>
 <translation id="6107012941649240045">ഇതിന് നല്‍‌കി</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പിന്റെ പേര് മാറ്റി</translation>
 <translation id="6107924765192360631">എഴുതലുമായി ബന്ധപ്പെട്ട നിർദ്ദേശങ്ങൾ ലഭിക്കുന്നതിന് കുറച്ച് വാക്കുകളോ ആദ്യത്തെ ഡ്രാഫ്റ്റോ നൽകി ആരംഭിക്കുക.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> താരതമ്യം ചെയ്യുക</translation>
 <translation id="6108580855199168381">സർട്ടിഫിക്കറ്റിന്റെ വിശദാംശങ്ങൾ</translation>
@@ -3715,6 +3722,7 @@
 <translation id="7660456820368115565">വിപുലമായ മൾട്ടിപ്ലേയർ ഗെയിമുകൾ</translation>
 <translation id="7661591871037163355">നിങ്ങളുടെ താരതമ്യ ടേബിൾ നിറഞ്ഞിരിക്കുന്നു. പുതിയവ ചേർക്കാൻ കോളങ്ങൾ നീക്കം ചെയ്യുക.</translation>
 <translation id="7662298039739062396">ക്രമീകരണം ഒരു വിപുലീകരണം മുഖേന നിയന്ത്രിച്ചിരിക്കുന്നു</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പ് വിട്ടു</translation>
 <translation id="7663736086183791259">സർട്ടിഫിക്കറ്റ് <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">അദൃശ്യ മോഡിൽ അനുവദനീയമല്ല</translation>
 <translation id="7667346355482952095">നൽകിയ നയ ടോക്കൺ ശൂന്യമാണ് അല്ലെങ്കിൽ നിലവിലെ ടോക്കണുമായി യോജിക്കുന്നില്ല</translation>

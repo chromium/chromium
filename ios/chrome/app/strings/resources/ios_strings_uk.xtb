@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Увімкнути синхронізацію?</translation>
 <translation id="1253032109800629289">Сховати пропозицію "Отримувати сповіщення про відстеження цін"</translation>
 <translation id="1258491128795710625">Що нового</translation>
+<translation id="1259210743048744967">Коли ви вийдете з облікового запису <ph name="USER_EMAIL" />, наявні дані вебперегляду будуть доступними, однак не зберігатимуться в цьому обліковому записі.</translation>
 <translation id="1262724000444746916">Сховати опцію "Додати в закладки"</translation>
 <translation id="1263231323834454256">Список читання</translation>
 <translation id="1263433075299269530">Остання відкрита вкладка</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">Немає відкритих вкладок</translation>
 <translation id="1469381646033328562">Обліковим записом керує один із твоїх батьків.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Змінено</translation>
 <translation id="1480152980057770392">Показати список читання</translation>
 <translation id="1484758781961275277">Користуйтесь усіма перевагами улюбленого вебпереглядача для комп’ютера на iPad.</translation>
 <translation id="1485907716209290998">Відстеження замовлень</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Вилучити вкладку й видалити групу?</translation>
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Видалити ключ доступу</translation>
+<translation id="1712341189152602203">Наявні дані вебперегляду буде зв’язано з обліковим записом <ph name="USER_EMAIL" />, і адміністратор вашої організації зможе переглядати їх.</translation>
 <translation id="1713777106376424209">Перевізник:</translation>
 <translation id="1715515772563243997">Якщо ви довіряєте сайту <ph name="SITE" />, то можете входити за допомогою збереженого пароля.</translation>
 <translation id="1728549374069268714">Вставити й перейти</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">Натисніть поле для введення пароля на сайті, для якого ви його зберегли.</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Укажіть, що робити з наявними даними вебперегляду на цьому пристрої, зокрема паролями, історією тощо.</translation>
 <translation id="1881621406744213161">Запросіть учасників у сімейну групу</translation>
 <translation id="188237709236611317">Панель меню розумного сортування</translation>
 <translation id="1883255238294161206">Згорнути список</translation>
@@ -512,6 +516,7 @@
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="333229797575847124">Як увімкнути цю функцію</translation>
+<translation id="3333566504534692948">Ні, перенести їх у робочий профіль</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладку збережено в папці "{title}" у вашому обліковому записі ({email})}one{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}few{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}many{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}other{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}}</translation>
 <translation id="334690320928261823">Останні вкладки</translation>
 <translation id="3348387552617855658">На цій картці показується інформація про доставку посилок і важливі сповіщення щодо неї.</translation>
@@ -800,7 +805,7 @@
 <translation id="4682496302933121474">Перекласти сторінку?</translation>
 <translation id="4682686630151240767">1. Відкрийте Параметри на iPhone</translation>
 <translation id="4684427112815847243">Синхронізувати все</translation>
-<translation id="4699172675775169585">Кешовані зображення та файли</translation>
+<translation id="4699172675775169585">Кешовані зображення й файли</translation>
 <translation id="4717844083556844785">Поточна сторінка в анонімному режимі</translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720530280568305198">Вибраний об’єкт відкрито в новій вкладці</translation>
@@ -1207,6 +1212,7 @@
 <translation id="6445981559479772097">Повідомлення надіслано.</translation>
 <translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6449554712554071184">Групу буде назавжди видалено з вашого пристрою.</translation>
+<translation id="6452534462676960500">Нова дія</translation>
 <translation id="6459307836338400162">Інші налаштування конфіденційності, безпеки й збору даних доступні в розділах <ph name="BEGIN_LINK" />Синхронізація<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Деталі приховано</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1522,7 +1528,7 @@
 <translation id="7846296061357476882">Сервіси Google</translation>
 <translation id="784934925303690534">Період часу</translation>
 <translation id="7851858861565204677">Інші пристрої</translation>
-<translation id="7853202427316060426">Активність</translation>
+<translation id="7853202427316060426">Дії</translation>
 <translation id="7859988229622350291">Мови, з яких не потрібно перекладати</translation>
 <translation id="7863211248337747225">Завантажити додаток</translation>
 <translation id="7865127013871431856">Параметри перекладу</translation>
@@ -1615,6 +1621,7 @@
 <translation id="8219424187226230983">Переглянути офлайн-версію в новій вкладці</translation>
 <translation id="8230355548492839438">Знайти попереднє</translation>
 <translation id="8232956427053453090">Зберігати дані</translation>
+<translation id="8258999165172757081">Додано</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="82619448491672958">Переглянути інші вкладки</translation>
 <translation id="8263228331881858381">Ключ доступу збережено</translation>

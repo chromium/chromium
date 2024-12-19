@@ -100,6 +100,7 @@ Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okam�
 <translation id="5339733443032484186">Vaše poslední karta</translation>
 <translation id="5380159289133845234">Aktivní duplicitní karty</translation>
 <translation id="5400836586163650660">Šedá</translation>
+<translation id="5446043142172831860">Odstranit kartu a opustit skupinu</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>
 <translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zavřít skupinu karet s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />.}few{Zavřít skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}many{Zavřít skupinu karet s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />.}other{Zavřít skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}}</translation>

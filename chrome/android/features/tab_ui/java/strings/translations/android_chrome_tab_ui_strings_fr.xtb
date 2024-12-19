@@ -100,6 +100,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="5339733443032484186">Votre dernier onglet</translation>
 <translation id="5380159289133845234">Archiver les onglets en double</translation>
 <translation id="5400836586163650660">Gris</translation>
+<translation id="5446043142172831860">Supprimer l'onglet et quitter le groupe</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>

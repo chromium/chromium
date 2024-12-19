@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">要開啟同步功能嗎？</translation>
 <translation id="1253032109800629289">隱藏「接收價格追蹤通知」</translation>
 <translation id="1258491128795710625">新功能</translation>
+<translation id="1259210743048744967">現有瀏覽資料可在登出 <ph name="USER_EMAIL" /> 後使用，不會儲存在這個帳戶中。</translation>
 <translation id="1262724000444746916">隱藏「加入書籤」</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1263433075299269530">上次開啟的分頁</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">沒有開啟的分頁</translation>
 <translation id="1469381646033328562">你的帳戶是由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">已變更</translation>
 <translation id="1480152980057770392">顯示閱讀清單</translation>
 <translation id="1484758781961275277">在 iPad 上就能使用你熟悉愛用的電腦版瀏覽器，盡情享受最佳體驗。</translation>
 <translation id="1485907716209290998">包裹追蹤</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">要移除分頁並刪除群組嗎？</translation>
 <translation id="1700629756560807968">已選取 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
 <translation id="1709916727352927457">刪除密碼金鑰</translation>
+<translation id="1712341189152602203">現有的瀏覽資料將連結至 <ph name="USER_EMAIL" />。貴機構可能會看到這項資料。</translation>
 <translation id="1713777106376424209">配送者</translation>
 <translation id="1715515772563243997">如果你信任 <ph name="SITE" />，可以使用已儲存的密碼登入。</translation>
 <translation id="1728549374069268714">貼上並前往</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">在已儲存密碼的網站上，輕觸「登入密碼」欄位。</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />。</translation>
+<translation id="1879793121657209834">請選擇如何處理這部裝置上的現有瀏覽資料，例如密碼、歷史記錄等等。</translation>
 <translation id="1881621406744213161">邀請家庭成員</translation>
 <translation id="188237709236611317">智慧排序選單列</translation>
 <translation id="1883255238294161206">收合清單</translation>
@@ -512,6 +516,7 @@
 <translation id="3324193307694657476">地址 2</translation>
 <translation id="3328801116991980348">網站資訊</translation>
 <translation id="333229797575847124">如何啟用這項功能</translation>
+<translation id="3333566504534692948">否，移到工作空間</translation>
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="334690320928261823">最近關閉的分頁</translation>
 <translation id="3348387552617855658">你可以透過這張資訊卡追蹤包裹及查看重要的配送動態。</translation>
@@ -1207,6 +1212,7 @@
 <translation id="6445981559479772097">訊息已送出。</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">這項操作會將群組從裝置中永久刪除。</translation>
+<translation id="6452534462676960500">新活動</translation>
 <translation id="6459307836338400162">如需更多有關隱私權、安全性和資料收集的設定，請參閱 <ph name="BEGIN_LINK" />Google Sync<ph name="END_LINK" /> 和 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="6459411599807878608">已隱藏詳細資料</translation>
 <translation id="646394917185284261">檔案</translation>
@@ -1615,6 +1621,7 @@
 <translation id="8219424187226230983">在新分頁中查看離線版本</translation>
 <translation id="8230355548492839438">尋找上一個項目</translation>
 <translation id="8232956427053453090">保留資料</translation>
+<translation id="8258999165172757081">已新增</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="82619448491672958">查看其他分頁</translation>
 <translation id="8263228331881858381">密碼金鑰已儲存</translation>

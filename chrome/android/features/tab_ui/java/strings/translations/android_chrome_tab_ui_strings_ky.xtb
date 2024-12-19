@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">Акыркы өтмөгүңүз</translation>
 <translation id="5380159289133845234">Кайталанма өтмөктөрдү архивдөө</translation>
 <translation id="5400836586163650660">Боз</translation>
+<translation id="5446043142172831860">Өтмөктү өчүрүп, топтон чыгуу</translation>
 <translation id="5490235265819901748">Өтмөктөр тобу жайылып көрсөтүлдү</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган өтмөктөр тобун жабуу, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобун жабуу, түсү: <ph name="COLOR_NAME" />.}}</translation>

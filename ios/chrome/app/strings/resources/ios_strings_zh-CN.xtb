@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">没有已打开的标签页</translation>
 <translation id="1469381646033328562">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">已更改</translation>
 <translation id="1480152980057770392">显示阅读清单</translation>
 <translation id="1484758781961275277">在 iPad 上使用您熟悉且喜爱的桌面浏览器畅享精彩功能。</translation>
 <translation id="1485907716209290998">包裹跟踪</translation>
@@ -1211,6 +1212,7 @@
 <translation id="6445981559479772097">短信已发送。</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">此操作会将该分组从您的设备中永久删除。</translation>
+<translation id="6452534462676960500">新活动</translation>
 <translation id="6459307836338400162">如需了解更多与隐私、安全和数据收集相关的设置，请前往<ph name="BEGIN_LINK" />同步<ph name="END_LINK" />和 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />这两个部分。</translation>
 <translation id="6459411599807878608">已隐藏详细信息</translation>
 <translation id="646394917185284261">Google 文件极客</translation>
@@ -1619,6 +1621,7 @@
 <translation id="8219424187226230983">在新标签页中查看离线版本</translation>
 <translation id="8230355548492839438">查找上一项</translation>
 <translation id="8232956427053453090">保留数据</translation>
+<translation id="8258999165172757081">已添加</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="82619448491672958">查看其他标签页</translation>
 <translation id="8263228331881858381">已保存通行密钥</translation>

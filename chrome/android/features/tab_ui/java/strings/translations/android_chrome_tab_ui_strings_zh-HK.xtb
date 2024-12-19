@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5380159289133845234">封存重複的分頁</translation>
 <translation id="5400836586163650660">灰色</translation>
+<translation id="5446043142172831860">移除分頁並離開群組</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{閂有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{閂有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>

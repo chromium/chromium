@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">সিঙ্ক চালু করবেন?</translation>
 <translation id="1253032109800629289">"প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তি পান" বিকল্প লুকান</translation>
 <translation id="1258491128795710625">নতুন কী আছে</translation>
+<translation id="1259210743048744967"><ph name="USER_EMAIL" /> থেকে সাইন-আউট করার পরেও আপনার আগে থেকে থাকা ব্রাউজ করা ডেটা উপলভ্য থাকবে। এটি এই অ্যাকাউন্টে সেভ করা হবে না।</translation>
 <translation id="1262724000444746916">'বুকমার্কে যোগ করুন' বিকল্পটি লুকান</translation>
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1263433075299269530">শেষবার যে ট্যাব খুলেছিলেন</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">কোন খোলা ট্যাব নেই</translation>
 <translation id="1469381646033328562">তোমার অ্যাকাউন্ট তোমার অভিভাবক ম্যানেজ করেন।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">পরিবর্তন করা হয়েছে</translation>
 <translation id="1480152980057770392">পড়ার তালিকা দেখুন</translation>
 <translation id="1484758781961275277">আপনার iPad-এ আপনার পরিচিত ও পছন্দের ডেস্কটপ ব্রাউজার থেকে সেরা অভিজ্ঞতা পান।</translation>
 <translation id="1485907716209290998">প্যাকেজ ট্র্যাকিং</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">ট্যাব সরিয়ে গ্রুপ মুছে ফেলবেন?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি নির্বাচিত</translation>
 <translation id="1709916727352927457">পাসকী মুছুন</translation>
+<translation id="1712341189152602203">আগে থেকে থাকা ব্রাউজ করা ডেটা <ph name="USER_EMAIL" />-এর সাথে লিঙ্ক করা হবে। আপনার সংস্থা এই ডেটা হয়ত দেখতে পাবেন।</translation>
 <translation id="1713777106376424209">ডেলিভার করছে:</translation>
 <translation id="1715515772563243997"><ph name="SITE" />-এর উপর ভরসা থাকলে, আপনি সেভ করা পাসওয়ার্ড সাইন-ইন করার জন্য ব্যবহার করতে পারেন।</translation>
 <translation id="1728549374069268714">পেস্ট করে শুরু করুন</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">আপনি পাসওয়ার্ড সেভ করেছেন এমন সাইটে সাইন-ইন পাসওয়ার্ড ফিল্ড ট্যাপ করুন।</translation>
 <translation id="1872096359983322073">টর্চ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">এই ডিভাইসে আগে থেকেই থাকা ব্রাউজ করা ডেটা, যেমন পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছুর ক্ষেত্রে কী করবেন তা বেছে নিন।</translation>
 <translation id="1881621406744213161">ফ্যামিলি মেম্বারদের আমন্ত্রণ জানান</translation>
 <translation id="188237709236611317">স্মার্ট সর্ট মেনু বার</translation>
 <translation id="1883255238294161206">তালিকা সঙ্কুচিত করুন</translation>
@@ -512,6 +516,7 @@
 <translation id="3324193307694657476">ঠিকানা ২</translation>
 <translation id="3328801116991980348">সাইট তথ্য</translation>
 <translation id="333229797575847124">কীভাবে এই ফিচার চালু করতে হয়</translation>
+<translation id="3333566504534692948">না, এটি আপনার অফিস প্রোফাইলে সরান</translation>
 <translation id="3344485292736684439">{count,plural, =1{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}other{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="334690320928261823">সাম্প্রতিক ট্যাব</translation>
 <translation id="3348387552617855658">এই কার্ড আপনার প্যাকেজ ট্র্যাক করতে এবং আপনাকে ডেলিভারি সংক্রান্ত গুরুত্বপূর্ণ আপডেট দিতে সাহায্য করে।</translation>
@@ -1208,6 +1213,7 @@
 <translation id="6445981559479772097">বার্তা পাঠানো হয়েছে৷</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6449554712554071184">এর ফলে আপনার ডিভাইস থেকে গ্রুপ স্থায়ীভাবে মুছে যাবে।</translation>
+<translation id="6452534462676960500">নতুন অ্যাক্টিভিটি</translation>
 <translation id="6459307836338400162">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />সিঙ্ক<ph name="END_LINK" /> এবং <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> উভয় বিকল্প দেখুন।</translation>
 <translation id="6459411599807878608">বিবরণ লুকানো আছে</translation>
 <translation id="646394917185284261">ফাইল</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8219424187226230983">নতুন ট্যাবে অফলাইন ভার্সন দেখুন</translation>
 <translation id="8230355548492839438">আগেরটি খুঁজুন</translation>
 <translation id="8232956427053453090">ডেটা রাখুন</translation>
+<translation id="8258999165172757081">যোগ করা্ হয়েছে</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="82619448491672958">অন্যান্য ট্যাব দেখুন</translation>
 <translation id="8263228331881858381">পাসকী সেভ করা হয়েছে</translation>

@@ -1315,7 +1315,6 @@ Nota: Esta política no se aplica a las URLs de JavaScript dentro de la página 
 <translation id="2005506794355327448">Acción que se debe llevar a cabo cuando la tapa esté cerrada</translation>
 <translation id="2006530844219044261">Gestión de la batería</translation>
 <translation id="2006954055163088863">Considerar que el usuario está inactivo durante la reproducción de vídeos</translation>
-<translation id="2008514891623783266">La política que gestiona la IP de WebRTC</translation>
 <translation id="201153120366509312">Si se permite esta política o no se define, se permitirá la recogida de métricas con clave de URL.
 Si se permite y el usuario habilita la recogida de métricas con clave de URL, esta función enviará las URLs de las páginas que el usuario visite a Google para mejorar las búsquedas y la navegación, junto con las estadísticas de uso por página.
 Las métricas con clave de URL también incluyen identificadores y estadísticas de uso de otros componentes del navegador que pueden modificar o proporcionar contenido, como las extensiones.
@@ -3295,6 +3294,7 @@ Si se establece esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NA
       ponerse en contacto con Quirks Server para descargar los archivos de configuración.
 
       Si a esta política se le asigna el valor "True" o no se le asigna ninguno, <ph name="PRODUCT_OS_NAME" /> se pondrá en contacto automáticamente con Quirks Server, descargará los archivos de configuración (si están disponibles) y los almacenará en el dispositivo.  Estos archivos pueden utilizarse, por ejemplo, para mejorar la calidad de la pantalla de los monitores conectados.</translation>
+<translation id="3513864752694608929">No implementar obligatoriamente el uso de métodos de introducción de texto habilitados</translation>
 <translation id="3515196503924273265">Permite habilitar la función NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Después de que se inhabilite <ph name="LACROS_NAME" />, no se realizará ninguna migración de datos. Se eliminará la carpeta <ph name="LACROS_NAME" /> y los usuarios seguirán utilizando los datos restantes.</translation>
 <translation id="3518293344797498431">Cargar la batería hasta aproximadamente el 80 % para maximizar su vida útil.</translation>
@@ -6704,6 +6704,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="6092073071805297119">Permitir el uso de filtros de rendimiento de accesibilidad.</translation>
 <translation id="60925735895026302">No permitir que ningún sitio solicite acceso a impresoras locales a través de la API WebPrinting</translation>
 <translation id="6093156968240188330">Permite que los usuarios remotos interactúen con ventanas con permisos de administrador en sesiones de asistencia remota</translation>
+<translation id="6093551397728373988">Forzar que se habiliten todos los métodos de introducción de texto permitidos en una sesión de usuario</translation>
 <translation id="6094314311474620462">Inhabilitar la impresión</translation>
 <translation id="6097601282776163274">Habilitar la recogida de datos anónima con clave de URL</translation>
 <translation id="6099853574908182288">Modo predeterminado de impresión en color</translation>
@@ -6902,6 +6903,11 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
       Si se inhabilita, los usuarios no podrán ejecutar Chrome for Testing. Los usuarios podrán seguir instalando Chrome for Testing, pero no se ejecutará con los perfiles en los que la política esté inhabilitada.</translation>
 <translation id="6258658183356534534">Controla la función User-Agent Client Hints GREASE Update.</translation>
 <translation id="6261643884958898336">Proporcionar información de identificación de equipos</translation>
+<translation id="6262668203803408414">Si se le asigna el valor True a la política, todos los métodos de introducción de texto de la política <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> se habilitarán en las sesiones de <ph name="PRODUCT_OS_NAME" />.
+No se pueden habilitar otros métodos de introducción de texto en las sesiones de usuario.
+Si se le asigna el valor False a la política o no se establece, no se habilitará ningún método de introducción de texto y la política <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> solo configurará los que estén disponibles para el usuario.
+
+Si la política <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> no se define o se le asigna una lista vacía, se ignorará esta política y los usuarios podrán habilitar cualquier método de introducción de texto.</translation>
 <translation id="6264247808139384018">Si se habilita esta política o no se define, se permitirá que los usuarios que usen la autenticación con contraseña bloqueen la pantalla.
 
 Si se inhabilita, los usuarios no podrán bloquear la pantalla. Solo podrán cerrar la sesión de usuario.</translation>
@@ -8948,6 +8954,7 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
 
       Esta política era temporal y se retiró después del lanzamiento de la nueva interfaz del cuadro de descargas.</translation>
 <translation id="7736521021425189418">Terminal (compatible desde la versión 117)</translation>
+<translation id="7736846524371077454">Forzar que se habiliten todos los métodos de introducción de texto permitidos</translation>
 <translation id="7740644123648617252">Habilitar la importación de los datos para autocompletar formularios en la primera ejecución</translation>
 <translation id="7744253761377202223">Porcentaje de brillo de la pantalla cuando el dispositivo esté conectado a la red eléctrica</translation>
 <translation id="7747447585227954402">Permite a los dispositivos usar <ph name="PLUGIN_VM_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9348,7 +9355,6 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="8056800559672904373">Una cuenta gestionada debe ser principal, no puede tener cuentas secundarias y se pueden importar datos de navegación previos al crear el perfil</translation>
 <translation id="8059164285174960932">URL en la que los clientes de acceso remoto deben obtener su token de autenticación</translation>
 <translation id="8059352177830050556">Habilitar los informes sobre la retroiluminación del dispositivo</translation>
-<translation id="8062375903420954294">Esta política permite restringir el uso de direcciones IP e interfaces por parte de WebRTC al intentar buscar la mejor conexión disponible. Consulta RFC 8828 (sección 5.2): https://tools.ietf.org/html/rfc8828.html#section-5.2. Si no se le asigna ningún valor, utilizará de forma predeterminada todas las interfaces disponibles.</translation>
 <translation id="8062485064082966327">Usar un servicio de Google anónimo para proporcionar descripciones automáticas para imágenes que no tengan descripción</translation>
 <translation id="8066428282805800713">Enviar datos adicionales de hardware con ChromeOS Flex</translation>
 <translation id="8066532561081127944">Por motivos de seguridad, para llamar a la API web <ph name="REQUEST_FULLSCREEN_API_NAME" /> se requiere un gesto previo del usuario ("activación temporal"). De lo contrario, se producirá un error. La configuración personal del usuario podría permitir que algunos orígenes llamen a esta API sin un gesto previo del usuario, tal como se describe en <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.

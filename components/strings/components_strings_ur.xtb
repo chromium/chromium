@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="1617276713587758852">کراس اوورز</translation>
 <translation id="1619007254056372606">'آلے پر' سائٹ ڈیٹا کا نظم کریں</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب کو ہٹا دیا</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1622966923835127638">کاروباری فائنانس</translation>
 <translation id="1623104350909869708">اس صفحہ کو اضافی ڈائیلاگز بنانے سے روکیں</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{منتظم کی پالیسی کے تحت اس فائل کا کھولنا مسدود ہے}other{منتظم کی پالیسی کے تحت # فائلز کا کھولنا مسدود ہے}}</translation>
 <translation id="1633941398432788136">ایونٹ کی منصوبہ بندی</translation>
 <translation id="1634828734222219955">کُل</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> گروپ میں شامل ہوا</translation>
 <translation id="163826442096818926">مختصر کریں</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1640180200866533862">صارف کی پالیسیاں</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">‏سیکیورٹی کو یقینی بنانے میں مدد کے لیے، یہ آلہ کا OS، براؤزر ورژن اور کون سا سافٹ ویئر انسٹال ہوا ہے یہ بھی دیکھ سکتا ہے۔</translation>
 <translation id="2573170131138724450">ٹیلی ویژنز</translation>
 <translation id="257674075312929031">گروپ</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب شامل کیا</translation>
 <translation id="2586657967955657006">کلپ بورڈ</translation>
 <translation id="2587841377698384444">‏ڈائرکٹری API ID:</translation>
 <translation id="2594318783181750337">تیز ویب کا منظر:</translation>
@@ -1141,6 +1144,7 @@
 <translation id="306573536155379004">گیم شروع ہو گئی۔</translation>
 <translation id="3067505415088964188">قیمت کم ہے</translation>
 <translation id="3068118691172921711">1 منٹ میں آپ کی فائل <ph name="CLOUD_PROVIDER" /> میں اپ لوڈ ہونا شروع ہو جائے گی</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} آئٹم}other{{ITEMS} آئٹمز}}</translation>
 <translation id="3076865167425975822">آپریٹنگ سسٹمز</translation>
 <translation id="3080254622891793721">گرافک</translation>
 <translation id="3082007635241601060">‏Google کو اجازت دیں کہ وہ آپ کے کارٹس کو استعمال کر کے دستیاب ہونے پر آپ کے لئے ذاتی نوعیت کی رعایتیں تلاش کرے</translation>
@@ -2402,6 +2406,7 @@
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5305716236436927587">تشہیر اور مارکیٹنگ</translation>
 <translation id="5306593769196050043">دونوں شیٹیں</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> نے گروپ کا رنگ تبدیل کر دیا</translation>
 <translation id="5307166000025436103">ٹھیک ہے</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5308689395849655368">کریش رپورٹنگ کو غیر فعال کر دیا گیا ہے۔</translation>
@@ -2433,6 +2438,7 @@
 <translation id="5363309033720083897">آپ کے منتظم کی جانب سے اجازت یافتہ سیریل پورٹ</translation>
 <translation id="5363532265530011914">جرابیں اور ہوزری</translation>
 <translation id="5371425731340848620">کارڈ اپ ڈیٹ کریں</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب کو تبدیل کیا</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">‏"آپ کی گھڑی پیچھے ہے" یا "آپ کی گھڑی آگے ہے" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">اپنے سبھی آلات پر اس پاس ورڈ کو حاصل کرنے کے لیے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
@@ -2447,6 +2453,7 @@
 <translation id="5392506727170022660">میٹل (سیمی گلوس)</translation>
 <translation id="5394069166371280357">‏خاندان پر مرتکز TV شوز</translation>
 <translation id="5396631636586785122">دائیں طرف کنارے کی سلائی</translation>
+<translation id="5397794290049113714">آپ</translation>
 <translation id="5398772614898833570">اشتہارات مسدود ہیں</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5401344472773249513">مشہور شخصیات اور تفریح کی خبریں</translation>
@@ -2832,7 +2839,9 @@
 <translation id="6105460996796456817">سائٹ تخلیق کریں</translation>
 <translation id="6106989379647458772">ممکن ہے <ph name="PAGE" /> پر موجود ویب صفحہ عارضی طور پر ڈاؤن ہو یا ممکن ہے یہ مستقل طور پر ایک نئے ویب پتہ پر منتقل ہوگیا ہو۔</translation>
 <translation id="6107012941649240045">جاری کردہ بنام</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> نے گروپ کا نام تبدیل کر دیا</translation>
 <translation id="6107924765192360631">تحریری تجاویز حاصل کرنے کے لیے صرف چند الفاظ یا پہلے مسودے کے ساتھ شروع کریں۔</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" /> کا موازنہ کریں</translation>
 <translation id="6108580855199168381">سرٹیفیکیٹ کی تفصیلات</translation>
 <translation id="6108702513636120202">‏Chromium میں آپ کا سرچ انجن</translation>
 <translation id="6108849843016142864">خزندے اور جل تھلیے</translation>
@@ -3717,6 +3726,7 @@
 <translation id="7660456820368115565">وسیع پیمانے پر ملٹی پلیئر گیمز</translation>
 <translation id="7661591871037163355">آپ کا موازنہ ٹیبل بھر گیا ہے۔ نئے کالمز شامل کرنے کیلئے کالمز ہٹائیں۔</translation>
 <translation id="7662298039739062396">ترتیب کو ایک ایکسٹینشن سے کنٹرول کیا جاتا ہے</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> نے گروپ چھوڑ دیا</translation>
 <translation id="7663736086183791259">سرٹیفیکیٹ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">پوشیدگی وضع میں اجازت نہیں ہے</translation>
 <translation id="7667346355482952095">واپس کردہ پالیسی ٹوکن خالی ہے یا موجودہ ٹوکن سے مماثل نہیں ہے</translation>

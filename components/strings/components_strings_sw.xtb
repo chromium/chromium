@@ -362,6 +362,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1615402009686901181">Sera ya msimamizi huzuia kupiga picha ya skrini wakati maudhui ya siri yanaonekana</translation>
 <translation id="1617276713587758852">Magari yenye vipuri mchanganyiko (Crossovers)</translation>
 <translation id="1619007254056372606">Dhibiti data ya tovuti kwenye kifaa</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ameondoa kichupo</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Usimamizi wa Kifedha Kwenye Biashara</translation>
 <translation id="1623104350909869708">Zuia ukurasa huu usiunde vidadisi zaidi</translation>
@@ -369,6 +370,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1633137413609266904">{0,plural, =1{Sera ya msimamizi inazuia kufungua faili hii}other{Sera ya msimamizi inazuia kufungua faili #}}</translation>
 <translation id="1633941398432788136">Uandaaji Sherehe</translation>
 <translation id="1634828734222219955">Jumla</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> amejiunga kwenye kikundi</translation>
 <translation id="163826442096818926">Fupisha</translation>
 <translation id="1639239467298939599">Inapakia</translation>
 <translation id="1640180200866533862">Sera za mtumiaji</translation>
@@ -904,6 +906,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2571488850200220306">Ili kusaidia kudumisha usalama, inaweza kuona mfumo wa uendeshaji wa kifaa, toleo la kivinjari na programu zilizowekwa kwenye kifaa</translation>
 <translation id="2573170131138724450">Televisheni</translation>
 <translation id="257674075312929031">Kikundi</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ameweka kichupo</translation>
 <translation id="2586657967955657006">Ubao wa kunakili</translation>
 <translation id="2587841377698384444">Kitambulisho cha API ya Saraka:</translation>
 <translation id="2594318783181750337">Mwonekano wa wavuti wa haraka:</translation>
@@ -2402,6 +2405,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5305716236436927587">Utangazaji na Masoko</translation>
 <translation id="5306593769196050043">Laha zote mbili</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> amebadilisha rangi ya kikundi</translation>
 <translation id="5307166000025436103">Sawa</translation>
 <translation id="5308380583665731573">Unganisha</translation>
 <translation id="5308689395849655368">Kuripoti uharibifu kumelemazwa.</translation>
@@ -2433,6 +2437,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5363309033720083897">Mlango huu wa kuchomeka vifaa unaruhusiwa na msimamizi wako</translation>
 <translation id="5363532265530011914">Soksi na Stokingi</translation>
 <translation id="5371425731340848620">Badilisha maelezo ya kadi</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> amebadilisha kichupo</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Saa yako iko nyuma" au "Saa yako iko mbele" au "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Ili upate nenosiri hili kwenye vifaa vyako vyote, thibitisha kuwa ni wewe</translation>
@@ -2447,6 +2452,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5392506727170022660">Chuma (Mng'ao Nusu)</translation>
 <translation id="5394069166371280357">Vipindi vya Televisheni mahususi kwa Familia</translation>
 <translation id="5396631636586785122">Shona ncha ya kulia</translation>
+<translation id="5397794290049113714">Wewe</translation>
 <translation id="5398772614898833570">Matangazo yamezuiwa</translation>
 <translation id="5400836586163650660">Kijivu</translation>
 <translation id="5401344472773249513">Habari za Watu Mashuhuri na Burudani</translation>
@@ -2832,6 +2838,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6105460996796456817">Unda tovuti</translation>
 <translation id="6106989379647458772">Huenda ukurasa wa wavuti ulio kwenye <ph name="PAGE" /> haupatikani kwa muda au umehamishwa kabisa hadi kwenye anwani mpya ya wavuti.</translation>
 <translation id="6107012941649240045">Kimetolewa Kwa</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> amebadilisha jina la kikundi</translation>
 <translation id="6107924765192360631">Anza tu kwa maneno machache au rasimu ya kwanza ili upate mapendekezo ya uandishi.</translation>
 <translation id="6108508372809181847">Linganisha <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Maelezo ya cheti</translation>
@@ -3716,6 +3723,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7660456820368115565">Michezo ya Wachezaji Wengi Zaidi</translation>
 <translation id="7661591871037163355">Jedwali lako la ulinganishaji limejaa. Ondoa safu wima ili uweke majedwali mapya.</translation>
 <translation id="7662298039739062396">Mipangilio inadhibitiwa na kiendelezi</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ameondoka kwenye kikundi</translation>
 <translation id="7663736086183791259">Cheti <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Hairuhusiwi katika hali fiche</translation>
 <translation id="7667346355482952095">Tokeni ya sera iliyoletwa haina chochote au hailingani na tokeni ya sasa</translation>

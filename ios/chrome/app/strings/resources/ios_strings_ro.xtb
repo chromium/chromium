@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Activezi sincronizarea?</translation>
 <translation id="1253032109800629289">Ascunde opțiunea Primește notificări de urmărire a prețurilor</translation>
 <translation id="1258491128795710625">Noutăți</translation>
+<translation id="1259210743048744967">Datele de navigare existente vor fi disponibile după ce te deconectezi de la <ph name="USER_EMAIL" />. Nu se vor salva în acest cont.</translation>
 <translation id="1262724000444746916">Ascunde Adaugă în Marcaje</translation>
 <translation id="1263231323834454256">Lista de lectură</translation>
 <translation id="1263433075299269530">Ultima filă deschisă</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">Nu există file deschise</translation>
 <translation id="1469381646033328562">Contul tău este gestionat de un părinte.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Modificată</translation>
 <translation id="1480152980057770392">Afișează lista de lecturi</translation>
 <translation id="1484758781961275277">Profită la maximum de browserul pentru computer pe care îl cunoști și îl apreciezi pe iPad.</translation>
 <translation id="1485907716209290998">Urmărirea coletelor</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Elimini fila și ștergi grupul?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selectate</translation>
 <translation id="1709916727352927457">Șterge cheia de acces</translation>
+<translation id="1712341189152602203">Datele de navigare existente vor fi asociate cu <ph name="USER_EMAIL" />. Aceste date pot fi vizibile pentru organizația ta.</translation>
 <translation id="1713777106376424209">Livrat de</translation>
 <translation id="1715515772563243997">Dacă ai încredere în <ph name="SITE" />, poți folosi o parolă salvată pentru a te conecta.</translation>
 <translation id="1728549374069268714">Inserează și accesează</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">Pe un site unde ai salvat o parolă, atinge câmpul pentru parola de conectare.</translation>
 <translation id="1872096359983322073">Lanternă</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Alege ce să faci cu datele de navigare existente de pe acest dispozitiv, cum ar fi parolele, istoricul și altele.</translation>
 <translation id="1881621406744213161">Invită membrii familiei</translation>
 <translation id="188237709236611317">Bara de meniu pentru sortare inteligentă</translation>
 <translation id="1883255238294161206">Restrângeți lista</translation>
@@ -512,6 +516,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3324193307694657476">Adresă 2</translation>
 <translation id="3328801116991980348">Informații despre site</translation>
 <translation id="333229797575847124">Cum să activezi această funcție</translation>
+<translation id="3333566504534692948">Nu, doresc să le mut în spațiul de serviciu</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcaj salvat în {title} în contul tău {email}}few{Marcaje salvate în {title} în contul tău {email}}other{Marcaje salvate în {title} în contul tău {email}}}</translation>
 <translation id="334690320928261823">File recente</translation>
 <translation id="3348387552617855658">Acest card te ajută să urmărești coletele și să primești actualizări importante privind livrările.</translation>
@@ -1207,6 +1212,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6445981559479772097">Mesaj trimis.</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6449554712554071184">Astfel, grupul va fi șters definitiv de pe dispozitiv.</translation>
+<translation id="6452534462676960500">Activitate nouă</translation>
 <translation id="6459307836338400162">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Sincronizarea<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detaliile au fost ascunse</translation>
 <translation id="646394917185284261">Fișiere</translation>
@@ -1615,6 +1621,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8219424187226230983">Vezi versiunea offline într-o filă nouă</translation>
 <translation id="8230355548492839438">Rezultatul anterior</translation>
 <translation id="8232956427053453090">Păstrează datele</translation>
+<translation id="8258999165172757081">Adăugat</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="82619448491672958">Vezi alte file</translation>
 <translation id="8263228331881858381">Cheia de acces a fost salvată</translation>

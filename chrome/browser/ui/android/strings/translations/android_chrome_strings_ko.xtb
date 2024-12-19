@@ -146,10 +146,8 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1594635596540195766">아래 리스트에 추천된 항목이 <ph name="SUGGESTIONS_COUNT" />개 있습니다.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" /> 사용하기</translation>
 <translation id="160275202205869636">이 설정을 사용하도록 설정하면 Google 계정을 통해 데이터를 사용하고 저장할 수 있습니다. 사용 중지하면 데이터가 이 기기에만 저장됩니다.</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />님이 탭을 삭제했습니다.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{북마크 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{북마크 #개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
-<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" />님이 그룹에 참여했습니다.</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
@@ -349,7 +347,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2578337197553672982">어린이를 위한 Google 콘텐츠</translation>
 <translation id="2579297619530305344">모든 기기의 비밀번호가 전체 높이로 열림</translation>
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
-<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />님이 탭을 추가했습니다.</translation>
 <translation id="2587052924345400782">최신 버전 사용 가능</translation>
 <translation id="2593272815202181319">고정 너비</translation>
 <translation id="2603212228005142861">환경설정을 관리하려면 로그인하세요</translation>
@@ -863,7 +860,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4912413785358399818">탭 이동</translation>
 <translation id="4913169188695071480">새로고침 중지</translation>
 <translation id="4918086044614829423">수락</translation>
-<translation id="492284538114688557">가격 인하 항목 발견</translation>
 <translation id="4925120120285606924">스크린샷 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">내보낸 비밀번호는 텍스트 파일로 다운로드됩니다. 비밀번호가 저장된 폴더에 대한 액세스 권한이 있는 모든 사용자와 앱에 표시됩니다.</translation>
 <translation id="4926901776383726965">이미지와 파일을 저장하여 오프라인으로 보거나 다른 앱에서 공유할 수 있습니다.</translation>
@@ -944,7 +940,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5301876394151419436"><ph name="EMAIL" /> 계정으로 로그인했습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="5304593522240415983">필수 입력란입니다.</translation>
 <translation id="5306014156308790439">컬렉션에 추가 사용 중지됨</translation>
-<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />님이 그룹 색상을 변경했습니다.</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5310963254742922113">비밀번호가 사용되었습니다.</translation>
 <translation id="5316947901395241499">관리자가 비밀번호 저장을 사용 중지했습니다</translation>
@@ -956,12 +951,10 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> 동안의 사이트 없음</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="5364112109233799727">의견을 제공하시는 페이지의 URL은 Google에 전송되며 기능 개선을 위해 담당자가 검토할 수 있습니다.</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />님이 탭을 변경했습니다.</translation>
 <translation id="5375374982898812658">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">시크릿 모드 종료</translation>
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
-<translation id="5397794290049113714">나</translation>
 <translation id="539881862970320163">안전한 비밀번호가 제안되었습니다. 키보드가 숨겨졌습니다.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />에 코드(<ph name="ONE_TIME_CODE" />)를 제출하시겠습니까?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" />(<ph name="OWNER_EMAIL" />)님이 내가 탭 그룹에 참여하기를 바랍니다. 링크가 있는 사용자는 모든 탭을 수정할 수 있으므로, 신중하게 참여하세요. 링크는 48시간 후에 만료됩니다.</translation>
@@ -990,7 +983,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5515439363601853141">비밀번호를 보려면 잠금 해제하세요</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
 <translation id="5517326820028369152">최근 활동 하단 시트</translation>
-<translation id="5524843473235508879">리디렉션이 차단되었습니다.</translation>
 <translation id="5526281268548144413">여러 창을 닫을 수 없음</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="5548606607480005320">안전 확인</translation>
@@ -1120,7 +1112,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="60923314841986378"><ph name="HOURS" />시간 남음</translation>
 <translation id="6095578583683628124">Google이 기본 검색엔진이면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>
 <translation id="610630277578876674">메시지에서 링크를 빠르게 여는 등의 기능을 이용하세요</translation>
-<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />님이 그룹 이름을 변경했습니다.</translation>
 <translation id="6108923351542677676">설정 진행 중...</translation>
 <translation id="6112702117600201073">페이지 새로고침</translation>
 <translation id="6122831415929794347">세이프 브라우징을 사용 중지하시겠습니까?</translation>
@@ -1233,7 +1224,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6565959834589222080">가능한 경우 Wi-Fi가 사용됨</translation>
 <translation id="6569373978618239158">이제 새 탭을 열 때 <ph name="SITE_NAME" /> 스토리가 표시됩니다. 내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
 <translation id="6570116402456758630">페이지 요약</translation>
-<translation id="6573096386450695060">항상 허용</translation>
 <translation id="6573431926118603307">다른 기기의 Chrome에서 연 탭이 여기에 표시됩니다.</translation>
 <translation id="6583199322650523874">현재 페이지 북마크</translation>
 <translation id="6588043302623806746">보안 DNS 사용</translation>
@@ -1349,6 +1339,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6971862865055170158">승인 안함</translation>
 <translation id="6978717888677691380">차단한 사이트</translation>
 <translation id="6979737339423435258">전체 기간</translation>
+<translation id="6983306615164277634">주소 표시줄을 길게 터치하여 위치를 변경할 수도 있습니다.</translation>
 <translation id="6987047470128880212">이 기기에서는 시크릿 모드를 사용할 수 없습니다.</translation>
 <translation id="6991701761229081516">비밀번호가 CSV 파일로 다운로드됩니다. 파일에 액세스 가능한 모든 사용자와 앱이 비밀번호를 확인할 수 있습니다. 내보낸 비밀번호는 Chrome에서 삭제됩니다.</translation>
 <translation id="6996145122199359148">이 페이지 다운로드</translation>
@@ -1360,7 +1351,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7035701931849773472">기타 옵션</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7054588988317389591">이미지 설명을 표시하시겠습니까?</translation>
-<translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
 <translation id="7057969023583258980">전체 Chrome 방문 기록 열기</translation>
 <translation id="7063006564040364415">동기화 서버에 연결할 수 없습니다.</translation>
 <translation id="7071521146534760487">계정 관리</translation>
@@ -1505,7 +1495,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7656721520530864426">사이트 없음</translation>
 <translation id="7656862631699126784">시크릿 모드 탭 잠금 사용 설정</translation>
 <translation id="7658239707568436148">취소</translation>
-<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />님이 그룹을 나갔습니다.</translation>
 <translation id="7663320421139257046">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />를 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />을 확인하세요.</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="766587987807204883">기사가 여기 표시되며 오프라인 상태에서도 읽을 수 있습니다.</translation>
@@ -1786,7 +1775,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>
 <translation id="8888527824584402177"><ph name="DAYS_INACTIVE" />일 동안 사용하지 않은 탭은 여기로 이동되며<ph name="AUTODELETE_SECTION" /> 언제든지 <ph name="SETTINGS_TITLE" />에서 변경할 수 있습니다.</translation>
 <translation id="8890668505403261809">시크릿 탭 검색</translation>
-<translation id="8898822736010347272">모든 웹 사용자에게 영향을 주는 새로운 위협을 발견하고 사용자를 보호하는 데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
+<translation id="8898822736010347272">새로운 위협을 발견하고 모든 웹 사용자를 보호하는데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
 <translation id="8909135823018751308">공유…</translation>
 <translation id="8921980840204105660">동기화하여 다른 기기에서 북마크를 가져오세요.</translation>
 <translation id="8922289737868596582">옵션 더보기 버튼을 눌러 페이지를 다운로드하여 오프라인에서 사용하세요.</translation>

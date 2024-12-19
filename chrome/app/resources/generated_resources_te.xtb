@@ -1919,6 +1919,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">కింది కీలకు సపోర్ట్ లేదు: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">మీ మోషన్ లేదా లైట్ సెన్సార్‌లను యాక్సెస్ చేయనీయకుండా ఈ సైట్ బ్లాక్ చేయబడింది.</translation>
+<translation id="2310414604104802967">మీరు సైన్ ఇన్ చేశారో లేదో చెక్ చేస్తోంది...</translation>
 <translation id="2310923358723722542">డిస్‌ప్లే, మ్యాగ్నిఫికేషన్</translation>
 <translation id="2312219318583366810">పేజీ URL</translation>
 <translation id="2314165183524574721">ప్రస్తుత విజిబిలిటీ సెట్టింగ్, 'దాచబడింది'గా సెట్ చేయబడింది</translation>
@@ -11285,6 +11286,7 @@
 <translation id="9007688236643268728">&amp;మళ్లీ సైన్ ఇన్ చేయండి</translation>
 <translation id="9008201768610948239">విస్మరించు</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> వివరాలకు సంబంధించిన పేజీ 'వెనుకకు' బటన్</translation>
+<translation id="9008425116680857079">మీరు సైన్ ఇన్ చేసిన తర్వాత Chrome మీ పాస్‌వర్డ్‌ను మార్చగలదు.</translation>
 <translation id="9008828754342192581"><ph name="ORIGIN" />లో అన్ని ఎక్స్‌టెన్షన్‌లను అనుమతించాలని మీరు మునుపు ఎంచుకున్నారు</translation>
 <translation id="9009369504041480176">అప్‌లోడ్ అవుతోంది (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Windows నుండి దిగుమతి చేయబడింది</translation>

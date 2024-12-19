@@ -1373,7 +1373,6 @@ Observação: esta política não se aplica a URLs de JavaScript in-page com dad
 <translation id="2005506794355327448">Ação a ser tomada quando a tampa for fechada.</translation>
 <translation id="2006530844219044261">Gerenciamento de energia</translation>
 <translation id="2006954055163088863">Considerar o usuário inativo durante a reprodução de vídeos</translation>
-<translation id="2008514891623783266">A política de processamento de IPs do WebRTC</translation>
 <translation id="201153120366509312">Se a política for permitida ou deixada sem definição, a coleta de métricas inseridas no URL será permitida.
 Se permitida e a coleta de métricas inseridas no URL for ativada pelo usuário, a coleta vai enviar ao Google URLs de páginas que o usuário visita para melhorar as pesquisas e a navegação, além das estatísticas de uso por página.
 As métricas inseridas no URL também incluem os identificadores e as estatísticas de uso de outros componentes do navegador que podem modificar ou fornecer conteúdo, como extensões.
@@ -9664,7 +9663,6 @@ também é seguro.</translation>
 <translation id="8056800559672904373">Uma conta gerenciada precisa ser a principal e não pode ter contas secundárias. A importação de dados de navegação existentes é permitida no momento da criação do perfil</translation>
 <translation id="8059164285174960932">URL no qual clientes de acesso remoto devem receber seu token de autenticação</translation>
 <translation id="8059352177830050556">Ativar relatórios de informações da luz de fundo do dispositivo</translation>
-<translation id="8062375903420954294">Esta política permite restringir as interfaces e os endereços IP usados pelo WebRTC ao tentar encontrar a melhor conexão disponível. Consulte a seção 5.2 do RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2, link em inglês). Se a política não for definida, o WebRTC usará todas as interfaces disponíveis como padrão.</translation>
 <translation id="8062485064082966327">Usar um Serviço do Google anônimo para oferecer descrições automáticas para imagens sem um texto alternativo</translation>
 <translation id="8066428282805800713">Enviar mais dados de hardware no ChromeOS Flex</translation>
 <translation id="8066532561081127944">Por motivos de segurança, a

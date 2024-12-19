@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Queres activar a sincronización?</translation>
 <translation id="1253032109800629289">Ocultar Obter notificacións de seguimento de prezos</translation>
 <translation id="1258491128795710625">Novidades</translation>
+<translation id="1259210743048744967">Os datos de navegación actuais estarán dispoñibles despois de pechar sesión en <ph name="USER_EMAIL" />. Non se gardarán nesta conta.</translation>
 <translation id="1262724000444746916">Ocultar Engadir aos marcadores</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263433075299269530">A túa última pestana aberta</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">Non hai ningunha pestana aberta</translation>
 <translation id="1469381646033328562">A túa conta está xestionada polo teu pai ou pola túa nai.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Cambiada</translation>
 <translation id="1480152980057770392">Mostrar Lista de lectura</translation>
 <translation id="1484758781961275277">Tira o máximo proveito no iPad do navegador de ordenador que coñeces e tanto che gusta.</translation>
 <translation id="1485907716209290998">Seguimento de paquetes</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Queres quitar a pestana e eliminar o grupo?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1709916727352927457">Eliminar a clave de acceso</translation>
+<translation id="1712341189152602203">Os datos de navegación actuais vincularanse a <ph name="USER_EMAIL" />. A túa organización poderá velos.</translation>
 <translation id="1713777106376424209">Entregado por</translation>
 <translation id="1715515772563243997">Se confías en <ph name="SITE" />, podes usar un contrasinal gardado para iniciar sesión.</translation>
 <translation id="1728549374069268714">Pegar e acceder</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">Nun sitio no que gardases un contrasinal, toca o campo de contrasinal de inicio de sesión.</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Escolle que queres facer cos datos de navegación deste dispositivo, como os contrasinais ou o historial, entre outras cousas.</translation>
 <translation id="1881621406744213161">Invita membros da familia</translation>
 <translation id="188237709236611317">Barra de menú con orde intelixente</translation>
 <translation id="1883255238294161206">Contraer lista</translation>
@@ -512,6 +516,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="333229797575847124">Como activar esta función</translation>
+<translation id="3333566504534692948">Non, movelos ao perfil de traballo</translation>
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="334690320928261823">Pestanas recentes</translation>
 <translation id="3348387552617855658">Nesta tarxeta podes facer un seguimento dos paquetes e consultar as actualizacións de entrega importantes.</translation>
@@ -1207,6 +1212,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6445981559479772097">Mensaxe enviada.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Eliminarase permanentemente o grupo do teu dispositivo.</translation>
+<translation id="6452534462676960500">Actividade nova</translation>
 <translation id="6459307836338400162">Para ver máis opcións de configuración relacionadas coa privacidade, a seguranza e a recompilación de datos, consulta <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detalles ocultados</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1615,6 +1621,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8219424187226230983">Ver versión sen conexión nunha nova pestana</translation>
 <translation id="8230355548492839438">Buscar anterior</translation>
 <translation id="8232956427053453090">Conservar datos</translation>
+<translation id="8258999165172757081">Engadiuse</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="82619448491672958">Ver outras pestanas</translation>
 <translation id="8263228331881858381">Gardouse a clave de acceso</translation>

@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Купуя нерселер көрүнүп турганда, Администратордун эрежеси боюнча экрандагыны сүрөткө тартып алууга болбойт</translation>
 <translation id="1617276713587758852">Кроссоверлер</translation>
 <translation id="1619007254056372606">Түзмөктөгү сайттын маалыматын башкаруу</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> өтмөктү өчүрдү</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622966923835127638">Бизнести каржылоо</translation>
 <translation id="1623104350909869708">Бул бет кошумча диалогдорду түзбөсүн</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Бул файлды ачуу аракети администраторуңуздун саясаты менен бөгөттөлгөн}other{# файлды ачуу аракети администраторуңуздун саясаты менен бөгөттөлгөн}}</translation>
 <translation id="1633941398432788136">Иш-чараны пландоо</translation>
 <translation id="1634828734222219955">Жалпы</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> топко кошулду</translation>
 <translation id="163826442096818926">Кыскартуу</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
 <translation id="1640180200866533862">Колдонуучунун эрежелери</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">Коопсуздукту камсыздоо үчүн ал түзмөктүн OS, серепчинин версиясын жана кайсы программа орнотулганын да көрө алат</translation>
 <translation id="2573170131138724450">Сыналгылар</translation>
 <translation id="257674075312929031">Топ</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> өтмөк кошту</translation>
 <translation id="2586657967955657006">Алмашуу буфери</translation>
 <translation id="2587841377698384444">Каталогдун API'синин ID:</translation>
 <translation id="2594318783181750337">Ыкчам веб көрүнүшү:</translation>
@@ -1141,6 +1144,7 @@
 <translation id="306573536155379004">Оюн башталды.</translation>
 <translation id="3067505415088964188">Баасы төмөн</translation>
 <translation id="3068118691172921711">Файлыңыз <ph name="CLOUD_PROVIDER" /> камсыздоочусуна 1 мүнөттөн кийин жүктөлүп бериле башталат</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} нерсе}other{{ITEMS} нерсе}}</translation>
 <translation id="3076865167425975822">Операциялык тутумдар</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3082007635241601060">Жекелештирилген арзандатуулар жеткиликтүү болгондо, аларды табуу үчүн Google'га арабаларыңызды колдонууга уруксат бериңиз</translation>
@@ -2400,6 +2404,7 @@
 <translation id="5300589172476337783">Көрсөтүү</translation>
 <translation id="5305716236436927587">Жарнамалоо жана маркетинг</translation>
 <translation id="5306593769196050043">Эки барак тең</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> топтун түсүн өзгөрттү</translation>
 <translation id="5307166000025436103">Макул</translation>
 <translation id="5308380583665731573">Туташуу</translation>
 <translation id="5308689395849655368">Ката жөнүндө кабарлоо мүмкүнчүлүгү өчүрүлдү.</translation>
@@ -2431,6 +2436,7 @@
 <translation id="5363309033720083897">Администраторуңуз уруксат берген сериялык порттор</translation>
 <translation id="5363532265530011914">Байпактар жана колготкилер</translation>
 <translation id="5371425731340848620">Картаны жаңыртуу</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> өтмөктү өзгөрттү</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Саатыңыз артта" же "Саатыңыз алдыда" же "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Бул сырсөздү бардык түзмөктөрүңүздө колдонуу үчүн сиз экениңизди ырастаңыз</translation>
@@ -2445,6 +2451,7 @@
 <translation id="5392506727170022660">Металл (жарым жылтырак)</translation>
 <translation id="5394069166371280357">Үй-бүлөлүк телекөрсөтүүлөр</translation>
 <translation id="5396631636586785122">Оң четин жамоо</translation>
+<translation id="5397794290049113714">Сиз</translation>
 <translation id="5398772614898833570">Жарнамалар бөгөттөлдү</translation>
 <translation id="5400836586163650660">Боз</translation>
 <translation id="5401344472773249513">Атактуулар жана көңүл ачуу жаңылыктары</translation>
@@ -2830,7 +2837,9 @@
 <translation id="6105460996796456817">Сайт түзүү</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> дарегиндеги веб-баракча убактылуу иштебейт же жаңы веб дарекке биротоло көчүрүлгөн окшойт.</translation>
 <translation id="6107012941649240045">Кимге берилген</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> топтун аталышын өзгөрттү</translation>
 <translation id="6107924765192360631">Жазуу сунуштарын алуу үчүн бир нече сөздөн же биринчи жумушчу варианттан баштаңыз.</translation>
+<translation id="6108508372809181847">Салыштыруу: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Тастыктаманын чоо-жайы</translation>
 <translation id="6108702513636120202">Chromium'дагы Издөө куралыңыз</translation>
 <translation id="6108849843016142864">Сойлоочулар жана амфибиялар</translation>
@@ -3714,6 +3723,7 @@
 <translation id="7660456820368115565">Көп оюнчу катышкан оюндар</translation>
 <translation id="7661591871037163355">Салыштыруучу таблица толуп калды. Жаңыларын кошуу үчүн учурдагы тилкелерди өчүрүңүз.</translation>
 <translation id="7662298039739062396">Жөндөө кеңейтүү тарабынан көзөмөлдөнөт</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> топтон чыкты</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> тастыктамасы</translation>
 <translation id="7666397036351755929">Жашыруун режимде тыюу салынат</translation>
 <translation id="7667346355482952095">Кайтарылган саясат энбелгиси бош же учурдагы энбелгиге дал келбейт</translation>

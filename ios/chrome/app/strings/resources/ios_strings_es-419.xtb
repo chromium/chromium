@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">¿Quieres activar la sincronización?</translation>
 <translation id="1253032109800629289">Ocultar "Recibir notificaciones de seguimiento de precios"</translation>
 <translation id="1258491128795710625">Novedades</translation>
+<translation id="1259210743048744967">Tus datos de navegación existentes estarán disponibles cuando salgas de <ph name="USER_EMAIL" />. No se guardarán en esta cuenta.</translation>
 <translation id="1262724000444746916">Ocultar la opción Agregar a Favoritos</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263433075299269530">La última pestaña que abriste</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">No hay pestañas abiertas</translation>
 <translation id="1469381646033328562">Tu madre o padre administra tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Se cambió</translation>
 <translation id="1480152980057770392">Mostrar la lista de lectura</translation>
 <translation id="1484758781961275277">Aprovecha al máximo el navegador para computadoras que conoces y te encanta en tu iPad.</translation>
 <translation id="1485907716209290998">Seguimiento de paquetes</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">¿Quieres quitar la pestaña y borrar el grupo?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1709916727352927457">Borra la llave de acceso</translation>
+<translation id="1712341189152602203">Los datos de navegación existentes se vincularán a <ph name="USER_EMAIL" />. Es posible que tu organización pueda ver estos datos.</translation>
 <translation id="1713777106376424209">Empresa de transporte a cargo de la entrega:</translation>
 <translation id="1715515772563243997">Si confías en <ph name="SITE" />, puedes usar una contraseña guardada para acceder.</translation>
 <translation id="1728549374069268714">Pegar y acceder</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">En un sitio en el que hayas guardado una contraseña, presiona el campo de contraseña de acceso.</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Elige qué hacer con los datos de navegación existentes en este dispositivo, como las contraseñas, el historial y mucho más.</translation>
 <translation id="1881621406744213161">Invita a familiares</translation>
 <translation id="188237709236611317">Barra de menú con orden inteligente</translation>
 <translation id="1883255238294161206">Ocultar lista</translation>
@@ -512,6 +516,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="333229797575847124">Cómo habilitar esta función</translation>
+<translation id="3333566504534692948">No, moverlos al perfil de trabajo</translation>
 <translation id="3344485292736684439">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email}).}other{Los favoritos se guardaron en "{title}" en tu cuenta ({email}).}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>
 <translation id="3348387552617855658">Esta tarjeta te ayuda a realizar un seguimiento de tus paquetes y brindarte actualizaciones importantes sobre las entregas.</translation>
@@ -1207,6 +1212,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6445981559479772097">Mensaje enviado</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Esta acción borrará el grupo de tu dispositivo de forma permanente.</translation>
+<translation id="6452534462676960500">Actividad nueva</translation>
 <translation id="6459307836338400162">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Se ocultaron los detalles</translation>
 <translation id="646394917185284261">Archivos</translation>
@@ -1615,6 +1621,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8219424187226230983">Ver la versión sin conexión en una nueva pestaña</translation>
 <translation id="8230355548492839438">Buscar anterior</translation>
 <translation id="8232956427053453090">Conservar los datos</translation>
+<translation id="8258999165172757081">Agregado</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="82619448491672958">Ver otras pestañas</translation>
 <translation id="8263228331881858381">Se guardó la llave de acceso</translation>

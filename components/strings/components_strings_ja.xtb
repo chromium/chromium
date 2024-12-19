@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
 <translation id="1617276713587758852">クロスオーバー</translation>
 <translation id="1619007254056372606">デバイス上のサイトデータを管理</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> さんがタブを削除しました</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1622966923835127638">アセット ファイナンス</translation>
 <translation id="1623104350909869708">このページで追加のダイアログが作成されないようにする</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{このファイルは管理者が設定したポリシーによって開けないようブロックされています}other{# 個のファイルが、管理者が設定したポリシーによって開けないようブロックされています}}</translation>
 <translation id="1633941398432788136">イベント企画</translation>
 <translation id="1634828734222219955">合計</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> さんがグループに参加しました</translation>
 <translation id="163826442096818926">短縮</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1640180200866533862">ユーザー ポリシー</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">セキュリティ確保の目的で、デバイスの OS、ブラウザのバージョン、インストールされているソフトウェアも確認される可能性があります</translation>
 <translation id="2573170131138724450">テレビ</translation>
 <translation id="257674075312929031">グループ化</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> さんがタブを追加しました</translation>
 <translation id="2586657967955657006">クリップボード</translation>
 <translation id="2587841377698384444">Directory API ID:</translation>
 <translation id="2594318783181750337">高速ウェブビュー:</translation>
@@ -2402,6 +2405,7 @@
 <translation id="5300589172476337783">表示</translation>
 <translation id="5305716236436927587">広告、マーケティング</translation>
 <translation id="5306593769196050043">両方のシート</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> さんがグループの色を変更しました</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5308689395849655368">障害レポートが無効になっています。</translation>
@@ -2433,6 +2437,7 @@
 <translation id="5363309033720083897">管理者が許可したシリアルポート</translation>
 <translation id="5363532265530011914">靴下、タイツ</translation>
 <translation id="5371425731340848620">カードを更新</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> さんがタブを変更しました</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「時計が遅れています」、「時計が進んでいます」、「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
 <translation id="5379618281582508161">このパスワードをすべてのデバイスで使用するには、本人確認を行ってください</translation>
@@ -2447,6 +2452,7 @@
 <translation id="5392506727170022660">金属（半光沢）</translation>
 <translation id="5394069166371280357">ファミリー向け番組</translation>
 <translation id="5396631636586785122">端綴じ（右）</translation>
+<translation id="5397794290049113714">あなた</translation>
 <translation id="5398772614898833570">広告がブロックされました</translation>
 <translation id="5400836586163650660">グレー</translation>
 <translation id="5401344472773249513">芸能、エンターテイメント ニュース</translation>
@@ -2832,6 +2838,7 @@
 <translation id="6105460996796456817">サイトを作成</translation>
 <translation id="6106989379647458772">ウェブページ（<ph name="PAGE" />）は一時的に利用できなくなっているか、新しいウェブアドレスに移動した可能性があります。</translation>
 <translation id="6107012941649240045">発行先</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> さんがグループ名を変更しました</translation>
 <translation id="6107924765192360631">いくつかの単語や最初の下書きを入力するだけで、文章の候補が表示されます。</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> の比較</translation>
 <translation id="6108580855199168381">証明書の詳細</translation>
@@ -3719,6 +3726,7 @@
 <translation id="7660456820368115565">大規模マルチプレーヤー型ゲーム</translation>
 <translation id="7661591871037163355">比較表がいっぱいです。新しい列を追加するには、列を削除してください。</translation>
 <translation id="7662298039739062396">拡張機能によって指定される設定</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> さんがグループから退出しました</translation>
 <translation id="7663736086183791259">証明書 <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">シークレット モードでは許可されていません</translation>
 <translation id="7667346355482952095">返されたポリシーのトークンが空であるか、現在のトークンと一致しません</translation>

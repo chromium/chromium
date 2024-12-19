@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">ადმინისტრატორის წესების მიხედვით, ეკრანის აღბეჭდვა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
 <translation id="1617276713587758852">კროსოვერები</translation>
 <translation id="1619007254056372606">საიტის მოწყობილობაზე არსებული მონაცემების მართვა</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />-მა ამოშალა ეს ჩანართი</translation>
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1622966923835127638">ბიზნესის დაფინანსება</translation>
 <translation id="1623104350909869708">ამ გვერდისთვის დამატებითი დიალოგების შექმნის აკრძალვა</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ამ ფაილის გახსნა დაბლოკილია ადმინისტრატორის წესების მიხედვით}other{# ფაილის გახსნა დაბლოკილია ადმინისტრატორის წესების მიხედვით}}</translation>
 <translation id="1633941398432788136">ღონისძიებების დაგეგმვა</translation>
 <translation id="1634828734222219955">სულ</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> შეუერთდა ჯგუფს</translation>
 <translation id="163826442096818926">შემოკლება</translation>
 <translation id="1639239467298939599">იტვირთება</translation>
 <translation id="1640180200866533862">მომხმარებლის წესები</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">უსაფრთხოების დაცვის მიზნით მან შეიძლება ნახოს მოწყობილობის ოპერაციული სისტემის, ბრაუზერის ვერსიისა და დაყენებული პროგრამული უზრუნველყოფის ინფორმაციაც.</translation>
 <translation id="2573170131138724450">ტელევიზორები</translation>
 <translation id="257674075312929031">ჯგუფი</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />-მა დაამატა ჩანართი</translation>
 <translation id="2586657967955657006">გაცვლის ბუფერი</translation>
 <translation id="2587841377698384444">კატალოგის API-ის ID:</translation>
 <translation id="2594318783181750337">სწრაფი ვებ-ხედი:</translation>
@@ -2402,6 +2405,7 @@
 <translation id="5300589172476337783">ჩვენება</translation>
 <translation id="5305716236436927587">რეკლამა და მარკეტინგი</translation>
 <translation id="5306593769196050043">ორივე ფურცელი</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />-მა შეცვალა ჯგუფის ფერი</translation>
 <translation id="5307166000025436103">კარგი</translation>
 <translation id="5308380583665731573">დაკავშირება</translation>
 <translation id="5308689395849655368">შეცდომების შესახებ მოხსენებების გაგზავნა გამორთულია.</translation>
@@ -2433,6 +2437,7 @@
 <translation id="5363309033720083897">თანმიმდევრული პორტი დაშვებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="5363532265530011914">წინდები და ტრიკოტაჟის ნაწარმი</translation>
 <translation id="5371425731340848620">ბარათის განახლება</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />-მა შეცვალა ჩანართი</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„თქვენი საათი უკანაა“, „თქვენი საათი წინაა“ ან „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">ამ პაროლის თქვენს ყველა მოწყობილობაში მისაღებად საჭიროა ვინაობის დადასტურება</translation>
@@ -2447,6 +2452,7 @@
 <translation id="5392506727170022660">ლითონი (ნახევარპრიალა)</translation>
 <translation id="5394069166371280357">საოჯახო სატელევიზიო შოუები</translation>
 <translation id="5396631636586785122">კიდეების მიკერება მარჯვნივ</translation>
+<translation id="5397794290049113714">თქვენ</translation>
 <translation id="5398772614898833570">რეკლამა დაიბლოკა</translation>
 <translation id="5400836586163650660">ნაცრისფერი</translation>
 <translation id="5401344472773249513">ცნობილი სახეები და შოუბიზნესის სიახლეები</translation>
@@ -2832,6 +2838,7 @@
 <translation id="6105460996796456817">საიტის შექმნა</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />-ზე არსებული ვებგვერდი შეიძლება იყოს დროებით გათიშული ან სამუდამოდ ახალ ვებ მისამართზე გადასული.</translation>
 <translation id="6107012941649240045">გაცემულია</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />-მა შეცვალა ჯგუფის სახელი</translation>
 <translation id="6107924765192360631">წერასთან დაკავშირებით შემოთავაზებები რომ მიიღოთ, დაიწყეთ რამდენიმე სიტყვით ან პირველი მონახაზით.</translation>
 <translation id="6108508372809181847">შეადარეთ <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">სერტიფიკატის დეტალები</translation>
@@ -3717,6 +3724,7 @@
 <translation id="7660456820368115565">მასობრივად მრავალმოთამაშიანი თამაშები</translation>
 <translation id="7661591871037163355">შედარების ცხრილი სავსეა. ახალი სვეტების დასამატებლად წაშალეთ არსებული.</translation>
 <translation id="7662298039739062396">პარამეტრს აკონტროლებს გაფართოება</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> გავიდა ჯგუფიდან</translation>
 <translation id="7663736086183791259">სერტიფიკატი <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">დაუშვებელია ინკოგნიტო რეჟიმში</translation>
 <translation id="7667346355482952095">წესების დაბრუნებული ჟეტონი ცარიელია ან ამჟამინდელ ჟეტონს არ ემთხვევა</translation>

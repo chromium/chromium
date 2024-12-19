@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">آپ کا آخری ٹیب</translation>
 <translation id="5380159289133845234">ڈپلیکیٹ ٹیبز کو آرکائیو کریں</translation>
 <translation id="5400836586163650660">خاکستری</translation>
+<translation id="5446043142172831860">ٹیب کو ہٹائیں اور گروپ سے نکلیں</translation>
 <translation id="5490235265819901748">ٹیب گروپ پھیلا دیا گیا</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو بند کریں}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو بند کریں}}</translation>

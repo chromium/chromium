@@ -1908,6 +1908,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">I seguenti tasti non sono supportati: Tab, Maiusc, Ctrl, Esc, Bloc maiusc, Volume</translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
+<translation id="2310414604104802967">Verifica dell'accesso in corso…</translation>
 <translation id="2310923358723722542">Display e ingrandimento</translation>
 <translation id="2312219318583366810">URL della pagina</translation>
 <translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
@@ -11275,6 +11276,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9007688236643268728">&amp;Accedi di nuovo</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9008201858626224558">Pulsante Indietro pagina dei dettagli <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008425116680857079">Chrome può cambiare la tua password dopo che hai eseguito l'accesso.</translation>
 <translation id="9008828754342192581">In precedenza hai scelto di consentire tutte le estensioni su <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Caricamento in corso (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Importato da Windows</translation>

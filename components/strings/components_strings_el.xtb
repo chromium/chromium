@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Η πολιτική διαχειριστή απενεργοποιεί τη λήψη οθόνης όταν είναι ορατό εμπιστευτικό περιεχόμενο.</translation>
 <translation id="1617276713587758852">Οχήματα τύπου crossover</translation>
 <translation id="1619007254056372606">Διαχείριση δεδομένων ιστοτόπου στη συσκευή</translation>
+<translation id="1619648179761984213">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> κατάργησε μια καρτέλα</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1622966923835127638">Χρηματοοικονομικά επιχειρήσεων</translation>
 <translation id="1623104350909869708">Αποτροπή δημιουργίας πρόσθετων παραθύρων διαλόγου από αυτήν τη σελίδα</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Το άνοιγμα αυτού του αρχείου έχει αποκλειστεί από την πολιτική διαχειριστή}other{Το άνοιγμα # αρχείων έχει αποκλειστεί από την πολιτική διαχειριστή}}</translation>
 <translation id="1633941398432788136">Σχεδιασμός εκδηλώσεων</translation>
 <translation id="1634828734222219955">Σύνολο</translation>
+<translation id="1637407510758033366">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> έγινε μέλος της ομάδας</translation>
 <translation id="163826442096818926">Μικρότερο</translation>
 <translation id="1639239467298939599">Φόρτωση</translation>
 <translation id="1640180200866533862">Πολιτικές χρηστών</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">Για λόγους ασφάλειας, μπορεί επίσης να δει το λειτουργικό σύστημα της συσκευής, την έκδοση του προγράμματος περιήγησης και το λογισμικό που έχει εγκατασταθεί</translation>
 <translation id="2573170131138724450">Τηλεοράσεις</translation>
 <translation id="257674075312929031">Ομάδα</translation>
+<translation id="258135245577667916">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> πρόσθεσε μια καρτέλα</translation>
 <translation id="2586657967955657006">Πρόχειρο</translation>
 <translation id="2587841377698384444">Αναγνωριστικό API καταλόγου:</translation>
 <translation id="2594318783181750337">Γρήγορη προβολή ιστού:</translation>
@@ -2404,6 +2407,7 @@
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5305716236436927587">Διαφήμιση και μάρκετινγκ</translation>
 <translation id="5306593769196050043">Και τα δύο φύλλα</translation>
+<translation id="5307109011461144709">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> άλλαξε το χρώμα της ομάδας</translation>
 <translation id="5307166000025436103">ΟΚ</translation>
 <translation id="5308380583665731573">Σύνδεση</translation>
 <translation id="5308689395849655368">Η αναφορά σφαλμάτων είναι απενεργοποιημένη.</translation>
@@ -2435,6 +2439,7 @@
 <translation id="5363309033720083897">Σειριακή θύρα που επιτρέπεται από τον διαχειριστή σας</translation>
 <translation id="5363532265530011914">Κάλτσες και καλσόν</translation>
 <translation id="5371425731340848620">Ενημέρωση κάρτας</translation>
+<translation id="537425196847960924">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> άλλαξε μια καρτέλα</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Το ρολόι σας πάει πίσω" ή "Το ρολόι σας πάει μπροστά" ή "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Για να λάβετε αυτόν τον κωδικό πρόσβασης σε όλες τις συσκευές σας, επαληθεύστε την ταυτότητά σας</translation>
@@ -2449,6 +2454,7 @@
 <translation id="5392506727170022660">Μέταλλο (Ημι-γυαλιστερό)</translation>
 <translation id="5394069166371280357">Τηλεοπτικές εκπομπές για όλη την οικογένεια</translation>
 <translation id="5396631636586785122">Ραφή στο δεξί άκρο</translation>
+<translation id="5397794290049113714">Εσείς</translation>
 <translation id="5398772614898833570">Αποκλείστηκαν διαφημίσεις</translation>
 <translation id="5400836586163650660">Γκρι</translation>
 <translation id="5401344472773249513">Διασημότητες και νέα από τον χώρο της ψυχαγωγίας</translation>
@@ -2834,6 +2840,7 @@
 <translation id="6105460996796456817">Δημιουργία ιστοτόπου</translation>
 <translation id="6106989379647458772">Η ιστοσελίδα στη διεύθυνση <ph name="PAGE" /> μπορεί να βρίσκεται προσωρινά εκτός λειτουργίας ή ίσως έχει μεταφερθεί μόνιμα σε μια νέα διεύθυνση ιστού.</translation>
 <translation id="6107012941649240045">Εκδόθηκε σε</translation>
+<translation id="6107864469867367783">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> άλλαξε το όνομα της ομάδας</translation>
 <translation id="6107924765192360631">Απλώς ξεκινήστε με μερικές λέξεις ή με ένα πρώτο πρόχειρο, για να λάβετε προτάσεις γραφής.</translation>
 <translation id="6108508372809181847">Σύγκριση <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Λεπτομέρειες πιστοποιητικού</translation>
@@ -3720,6 +3727,7 @@
 <translation id="7660456820368115565">Παιχνίδια για πολλούς παίκτες</translation>
 <translation id="7661591871037163355">Ο πίνακας σύγκρισης είναι πλήρης. Καταργήστε στήλες, για να προσθέσετε νέες.</translation>
 <translation id="7662298039739062396">Η ρύθμιση ελέγχεται από μια επέκταση</translation>
+<translation id="7662911501613893058">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> αποχώρησε από την ομάδα</translation>
 <translation id="7663736086183791259">Πιστοποιητικό <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Δεν επιτρέπεται στην Ανώνυμη περιήγηση</translation>
 <translation id="7667346355482952095">Το εμφανιζόμενο διακριτικό πολιτικής είναι κενό ή δεν αντιστοιχεί στο τρέχον διακριτικό</translation>

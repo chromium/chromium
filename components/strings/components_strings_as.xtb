@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দৃশ্যমান হৈ থাকোঁতে স্ক্ৰীন কেপচাৰ অক্ষম কৰে</translation>
 <translation id="1617276713587758852">ক্ৰছঅ’ভাৰ</translation>
 <translation id="1619007254056372606">ডিভাইচত থকা ছাইটৰ ডেটা পৰিচালনা কৰক</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />এ এটা টেব আঁতৰাইছে</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
 <translation id="1622966923835127638">ব্যৱসায়িক বিত্ত</translation>
 <translation id="1623104350909869708">এই পৃষ্ঠাটোক অতিৰিক্ত ডায়ল’গ সৃষ্টি কৰিব নিদিব</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{এই ফাইলটো খোলাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে}one{# টা ফাইল খোলাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে}other{# টা ফাইল খোলাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে}}</translation>
 <translation id="1633941398432788136">অনুষ্ঠানৰ পৰিকল্পনা</translation>
 <translation id="1634828734222219955">মুঠ</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" />এ গোটটোত যোগদান কৰিছে</translation>
 <translation id="163826442096818926">চুটি কৰক</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
 <translation id="1640180200866533862">ব্যৱহাৰকাৰীৰ নীতি</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">সুৰক্ষা নিশ্চিত কৰাত সহায় হ’বলৈ, ই ডিভাইচৰ OS, ব্ৰাউজাৰৰ সংস্কৰণ আৰু কি ছফ্টৱেৰ ইনষ্টল কৰা আছে সেয়া চাব পাৰে</translation>
 <translation id="2573170131138724450">টেলিভিশ্বন</translation>
 <translation id="257674075312929031">গোট</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />এ এটা টেব যোগ দিছে</translation>
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
 <translation id="2587841377698384444">ডাইৰেক্টৰী এপিআই আইডি:</translation>
 <translation id="2594318783181750337">দ্ৰুত ৱেব ভিউ:</translation>
@@ -2398,6 +2401,7 @@
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5305716236436927587">বিজ্ঞাপন প্ৰচাৰ আৰু বিপণন</translation>
 <translation id="5306593769196050043">উভয় শ্বীট</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />এ গোটৰ ৰঙটো সলনি কৰিছে</translation>
 <translation id="5307166000025436103">ঠিক আছে</translation>
 <translation id="5308380583665731573">সংযোগ কৰক</translation>
 <translation id="5308689395849655368">ক্ৰেশ্ব ৰিপর্ট কৰা সুবিধাটো অক্ষম কৰা হৈছে।</translation>
@@ -2429,6 +2433,7 @@
 <translation id="5363309033720083897">আপোনাৰ প্ৰশাসকে অনুমতি দিয়া ক্ৰমিক পৰ্ট</translation>
 <translation id="5363532265530011914">মোজা আৰু হ’জেৰী</translation>
 <translation id="5371425731340848620">কাৰ্ড আপডে’ট কৰক</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />এ এটা টেব সলনি কৰিছে</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"আপোনাৰ ঘড়ী লেহেমীয়াকৈ চলি আছে" বা "আপোনাৰ ঘড়ী খৰকৈ চলি আছে " বা "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">আপোনাৰ আটাইবোৰ ডিভাইচত এই পাছৱৰ্ডটো লাভ কৰিবলৈ, এইগৰাকী আপুনি বুলি সত্যাপন কৰক</translation>
@@ -2443,6 +2448,7 @@
 <translation id="5392506727170022660">মেটেল (ছেমি-গ্লছ)</translation>
 <translation id="5394069166371280357">পৰিয়ালৰ বাবে নিৰ্মাণ কৰা টিভি শ্ব’</translation>
 <translation id="5396631636586785122">সোঁফালে কাষত চিলাওক</translation>
+<translation id="5397794290049113714">আপুনি</translation>
 <translation id="5398772614898833570">বিজ্ঞাপন অৱৰোধ কৰা হৈছে</translation>
 <translation id="5400836586163650660">ধোঁৱাবৰণীয়া</translation>
 <translation id="5401344472773249513">যশস্বী ব্যক্তি আৰু মনোৰঞ্জন সম্পৰ্কীয় বাতৰি</translation>
@@ -2828,6 +2834,7 @@
 <translation id="6105460996796456817">ছাইট সৃষ্টি কৰক</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />ৰ ৱেবপৃষ্ঠাটো অস্থায়ীভাৱে ব্যৱহাৰযোগ্য হৈ নাথাকিব পাৰে বা ইয়াক কোনো নতুন ৱেব ঠিকনালৈ স্থায়ী ভাৱে নিয়া হ’ব পাৰে।</translation>
 <translation id="6107012941649240045">ইয়াত প্ৰদান কৰা হৈছে</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />এ গোটৰ নামটো সলনি কৰিছে</translation>
 <translation id="6107924765192360631">লিখাৰ পৰামৰ্শ লাভ কৰিবলৈ মাত্ৰ কেইটামান শব্দ অথবা প্ৰথম খচৰাৰে আৰম্ভ কৰক।</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> তুলনা কৰক</translation>
 <translation id="6108580855199168381">প্ৰমাণপত্ৰৰ সবিশেষ</translation>
@@ -3712,6 +3719,7 @@
 <translation id="7660456820368115565">অজস্ৰ খেলুৱৈয়ে একেলগে খেলা মাল্টিপ্লে’য়াৰ গে’ম</translation>
 <translation id="7661591871037163355">আপোনাৰ তুলনাৰ তালিকাখন ভৰি পৰিছে। নতুন যোগ দিবলৈ স্তম্ভসমূহ আঁতৰাওক।</translation>
 <translation id="7662298039739062396">এটা এক্সটেনশ্বনে ছেটিংটো নিয়ন্ত্ৰণ কৰিছে</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />এ গোটটো এৰি গৈছে</translation>
 <translation id="7663736086183791259">প্ৰমাণপত্ৰ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ইনক’গনিট’ত অনুমতি নাই</translation>
 <translation id="7667346355482952095">উভতাই দিয়া নীতিৰ টোকেনটো খালী বা সেইটো বৰ্তমানৰ টোকেনটোৰ সৈতে নিমিলে</translation>

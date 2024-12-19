@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Да се вклучи синхронизација?</translation>
 <translation id="1253032109800629289">Скриј „Добивајте известувања за „Следење цена““</translation>
 <translation id="1258491128795710625">Што има ново</translation>
+<translation id="1259210743048744967">Вашите постојни податоци од прелистување ќе бидат достапни откако ќе се одјавите од <ph name="USER_EMAIL" />. Нема да се зачуваат во сметкава.</translation>
 <translation id="1262724000444746916">Скриј „Додај во обележувачите“</translation>
 <translation id="1263231323834454256">Список за читање</translation>
 <translation id="1263433075299269530">Вашата последно отворена картичка</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">Нема отворени картички</translation>
 <translation id="1469381646033328562">Твојот родител управува со твојата сметка.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Променето</translation>
 <translation id="1480152980057770392">Прикажи го „Списокот за читање“</translation>
 <translation id="1484758781961275277">Извлечете максимум од компјутерскиот прелистувач што го знаете и обожавате на вашиот iPad.</translation>
 <translation id="1485907716209290998">Следење пакети</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Да се отстрани картичката и да се избрише групата?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
 <translation id="1709916727352927457">Избришете го криптографскиот клуч</translation>
+<translation id="1712341189152602203">Постојните податоци од прелистување ќе бидат поврзани со <ph name="USER_EMAIL" />. Податоциве може да бидат видливи за вашата организација.</translation>
 <translation id="1713777106376424209">Испорачувач:</translation>
 <translation id="1715515772563243997">Ако имате доверба во <ph name="SITE" />, може да користите зачувана лозинка за да се најавите.</translation>
 <translation id="1728549374069268714">Залепи и продолжи</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">На сајт каде што сте зачувале лозинка, допрете го полето за лозинка за најавување.</translation>
 <translation id="1872096359983322073">Светилка</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Изберете што да се направи со постојните податоци од прелистување на уредов, како лозинки, историја и друго.</translation>
 <translation id="1881621406744213161">Поканете ги членовите на семејството</translation>
 <translation id="188237709236611317">Паметно подредување на лентата со менија</translation>
 <translation id="1883255238294161206">Собери список</translation>
@@ -512,6 +516,7 @@
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
 <translation id="333229797575847124">Како се овозможува функцијава</translation>
+<translation id="3333566504534692948">Не, премести ги во работниот простор</translation>
 <translation id="3344485292736684439">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка, {email}}one{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}other{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}}</translation>
 <translation id="334690320928261823">Неодамнешни картички</translation>
 <translation id="3348387552617855658">Оваа картичка ви помага да ги следите вашите пакети и ви обезбедува важни известувања за испорака.</translation>
@@ -1207,6 +1212,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6445981559479772097">Пораката е испратена.</translation>
 <translation id="6447842834002726250">Колачиња</translation>
 <translation id="6449554712554071184">Ова трајно ќе ја избрише групата од вашиот уред.</translation>
+<translation id="6452534462676960500">Нова активност</translation>
 <translation id="6459307836338400162">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Синхронизација<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Деталите се скриени</translation>
 <translation id="646394917185284261">Датотеки</translation>
@@ -1615,6 +1621,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8219424187226230983">Прикажи ја офлајн верзијата во нова картичка</translation>
 <translation id="8230355548492839438">Најди го претходното</translation>
 <translation id="8232956427053453090">Задржи ги податоците</translation>
+<translation id="8258999165172757081">Додадено</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="82619448491672958">Видете ги другите картички</translation>
 <translation id="8263228331881858381">Криптографскиот клуч е зачуван</translation>

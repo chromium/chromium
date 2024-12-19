@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Ni odprtih zavihkov</translation>
 <translation id="1469381646033328562">Tvoj račun upravlja starš.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Spremenjeno</translation>
 <translation id="1480152980057770392">Pokaži bralni seznam</translation>
 <translation id="1484758781961275277">V iPadu izkoristite najboljše funkcije namiznega brskalnika, ki ga poznate in vam je všeč.</translation>
 <translation id="1485907716209290998">Sledenje paketu</translation>
@@ -1211,6 +1212,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6445981559479772097">Sporočilo poslano.</translation>
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6449554712554071184">S tem boste skupino trajno izbrisali iz naprave.</translation>
+<translation id="6452534462676960500">Nova dejavnost</translation>
 <translation id="6459307836338400162">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelka <ph name="BEGIN_LINK" />Sinhronizacija<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Podrobnosti so skrite</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1619,6 +1621,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8219424187226230983">Ogled različice brez povezave na novem zavihku</translation>
 <translation id="8230355548492839438">Najdi prejšnje</translation>
 <translation id="8232956427053453090">Ohrani podatke</translation>
+<translation id="8258999165172757081">Dodano</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="82619448491672958">Ogled drugih zavihkov</translation>
 <translation id="8263228331881858381">Ključ za dostop je shranjen</translation>

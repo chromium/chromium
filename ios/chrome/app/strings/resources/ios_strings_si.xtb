@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">සමමුහුව ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="1253032109800629289">"මිල හඹා යාමේ දැනුම්දීම් ලබා ගන්න" සඟවන්න</translation>
 <translation id="1258491128795710625">අලුත් මොනවාද</translation>
+<translation id="1259210743048744967"><ph name="USER_EMAIL" /> වෙතින් ඉවත් වූ පසු ඔබේ පවතින බ්‍රවුස් කිරීමේ දත්ත ලබා ගත හැකි වනු ඇත. එය මෙම ගිණුමේ සුරැකෙන්නේ නැත.</translation>
 <translation id="1262724000444746916">පිටුසන් වෙත එක් කිරීම සඟවන්න</translation>
 <translation id="1263231323834454256">කියවීම් ලැයිස්තුව</translation>
 <translation id="1263433075299269530">ඔබේ අවසානයට විවෘත පටිත්ත</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">විවෘත පටිති නැත</translation>
 <translation id="1469381646033328562">ඔබේ ගිණුම ඔබේ මාපියවරු විසින් කළමනා කරනු ලැබේ.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">වෙනස් කළා</translation>
 <translation id="1480152980057770392">කියවීම් ලැයිස්තුව පෙන්වන්න</translation>
 <translation id="1484758781961275277">ඔබේ iPad මත ඔබ දන්නා සහ කැමති ඩෙස්ක්ටොප් බ්‍රවුසරයෙන් හොඳම දේ ලබා ගන්න.</translation>
 <translation id="1485907716209290998">පැකේජය හඹා යෑම</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">පටිත්ත ඉවත් කර සමූහය මකන්න ද?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ක් තෝරා ගන්නා ලදි</translation>
 <translation id="1709916727352927457">මුරයතුර මකන්න</translation>
+<translation id="1712341189152602203">පවතින බ්‍රවුස් කිරීමේ දත්ත <ph name="USER_EMAIL" /> වෙත සම්බන්ධ කරනු ලැබේ. මෙම දත්ත ඔබේ සංවිධානයට බැලිය හැක.</translation>
 <translation id="1713777106376424209">බෙදා හරිනු ලබන්නේ</translation>
 <translation id="1715515772563243997">ඔබ <ph name="SITE" /> විශ්වාස කරන්නේ නම්, ඔබට පුරනය වීමට සුරකින ලද මුරපදයක් භාවිත කළ හැක.</translation>
 <translation id="1728549374069268714">අලවා යන්න</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">ඔබ මුරපදයක් සුරකින ලද අඩවියක, පුරනය වීමේ මුරපද ක්ෂේත්‍රය තට්ටු කරන්න.</translation>
 <translation id="1872096359983322073">පන්දම</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">මුරපද, ඉතිහාසය සහ තවත් දේ වැනි, මෙම උපාංගයේ පවතින බ්‍රවුස් කිරීමේ දත්ත සමග කළ යුතු දේ තෝරා ගන්න.</translation>
 <translation id="1881621406744213161">පවුලේ සාමාජිකයින්ට ආරාධනා කරන්න</translation>
 <translation id="188237709236611317">ස්මාර්ට් වර්ග කිරීමේ මෙනු තීරුව</translation>
 <translation id="1883255238294161206">ලැයිස්තුව හකුළන්න</translation>
@@ -512,6 +516,7 @@
 <translation id="3324193307694657476">ලිපිනය 2</translation>
 <translation id="3328801116991980348">අඩවි තොරතුරු</translation>
 <translation id="333229797575847124">මෙම විශේෂාංගය සබල කරන ආකාරය</translation>
+<translation id="3333566504534692948">නැත, එය ඔබේ කාර්යාල අවකාශය වෙත ගෙන යන්න</translation>
 <translation id="3344485292736684439">{count,plural, =1{පිටුසන ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}one{පිටුසන් ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}other{පිටුසන් ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}}</translation>
 <translation id="334690320928261823">මෑත පටිති</translation>
 <translation id="3348387552617855658">මෙම කාඩ්පත ඔබට ඔබේ පැකේජ නිරීක්ෂණය කිරීමට සහ ඔබට වැදගත් බෙදා හැරීමේ යාවත්කාලීන ලබා දීමට උදවු කරයි.</translation>
@@ -1207,6 +1212,7 @@
 <translation id="6445981559479772097">පණිවිඩය යැවිණි.</translation>
 <translation id="6447842834002726250">කුකීස්</translation>
 <translation id="6449554712554071184">මෙය සමූහය ඔබේ උපාංගයෙන් ස්ථිරව මකයි.</translation>
+<translation id="6452534462676960500">නව ක්‍රියාකාරකම්</translation>
 <translation id="6459307836338400162">රහස්‍යතාව, ආරක්ෂාව සහ දත්ත රැස් කිරීමට අදාළ තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />සමමුහුර්තකරණය<ph name="END_LINK" /> සහ <ph name="BEGIN_LINK" />Google ‍සේවා<ph name="END_LINK" /> යන දෙකම බලන්න.</translation>
 <translation id="6459411599807878608">විස්තර සඟවා ඇත</translation>
 <translation id="646394917185284261">ගොනු</translation>
@@ -1615,6 +1621,7 @@
 <translation id="8219424187226230983">අලුත් ටැබයේ නොබැඳි අනුවාදය බලන්න</translation>
 <translation id="8230355548492839438">පෙර එක සොයන්න</translation>
 <translation id="8232956427053453090">දත්ත තබා ගන්න</translation>
+<translation id="8258999165172757081">එක් කළේය</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="82619448491672958">අනෙකුත් ටැබ බලන්න</translation>
 <translation id="8263228331881858381">මුරයතුර සුරකින ලදි</translation>

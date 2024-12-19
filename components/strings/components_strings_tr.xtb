@@ -362,6 +362,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1615402009686901181">Yönetici politikası ekranda gizli içerik varken ekran görüntüsü almaya izin vermiyor</translation>
 <translation id="1617276713587758852">Crossover'lar</translation>
 <translation id="1619007254056372606">Cihaz üzerindeki site verilerini yönetin</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> bir sekmeyi kaldırdı</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">İşletme Maliyesi</translation>
 <translation id="1623104350909869708">Bu sayfanın daha fazla iletişim kutusu oluşturmasını önle</translation>
@@ -369,6 +370,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1633137413609266904">{0,plural, =1{Bu dosyanın açılması yönetici politikası tarafından engellendi}other{# dosyanın açılması yönetici politikası tarafından engellendi}}</translation>
 <translation id="1633941398432788136">Etkinlik Planlama</translation>
 <translation id="1634828734222219955">Toplam</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> gruba katıldı</translation>
 <translation id="163826442096818926">Kısalt</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1640180200866533862">Kullanıcı politikaları</translation>
@@ -904,6 +906,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2571488850200220306">Ayrıca, güvenliği sağlamak için cihazın işletim sistemi, tarayıcı sürümü ve yüklü yazılımları da görebilir</translation>
 <translation id="2573170131138724450">Televizyonlar</translation>
 <translation id="257674075312929031">Grup</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> bir sekme ekledi</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2587841377698384444">Dizin API'sı Kimliği:</translation>
 <translation id="2594318783181750337">Hızlı web görüntüleme:</translation>
@@ -1141,6 +1144,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="306573536155379004">Oyun başladı.</translation>
 <translation id="3067505415088964188">Düşük fiyatlı</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> hedefine dosya yükleme işleminiz 1 dakika sonra başlayacak</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} öğe}other{{ITEMS} öğe}}</translation>
 <translation id="3076865167425975822">İşletim Sistemleri</translation>
 <translation id="3080254622891793721">Grafik</translation>
 <translation id="3082007635241601060">Kişiye özel indirimler olduğunda Google'ın bunları bulabilmesi için alışveriş sepetlerinizi kullanmasına izin verin</translation>
@@ -2401,6 +2405,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5305716236436927587">Reklamcılık ve Pazarlama</translation>
 <translation id="5306593769196050043">Her iki sayfa</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />, grup rengini değiştirdi</translation>
 <translation id="5307166000025436103">Tamam</translation>
 <translation id="5308380583665731573">Bağlan</translation>
 <translation id="5308689395849655368">Kilitlenme bildirme devre dışı.</translation>
@@ -2432,6 +2437,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5363309033720083897">Yöneticiniz tarafından izin verilen seri bağlantı noktası</translation>
 <translation id="5363532265530011914">Çoraplar ve Külotlu Çoraplar</translation>
 <translation id="5371425731340848620">Kartı güncelle</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> bir sekmeyi değiştirdi</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Saatiniz geri", "Saatiniz ileri" veya "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Bu şifreyi tüm cihazlarınızda kullanmak için kimliğinizi doğrulayın</translation>
@@ -2446,6 +2452,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5392506727170022660">Metal (Yarı Parlak)</translation>
 <translation id="5394069166371280357">Ailelere Yönelik TV programları</translation>
 <translation id="5396631636586785122">Sağda kenar dikişi</translation>
+<translation id="5397794290049113714">Siz</translation>
 <translation id="5398772614898833570">Reklamlar engellendi</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5401344472773249513">Ünlüler ve Eğlence Haberleri</translation>
@@ -2831,7 +2838,9 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6105460996796456817">Site oluştur</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> adresindeki web sayfası geçici olarak kullanılamıyor veya kalıcı olarak yeni bir web adresine taşınmış olabilir.</translation>
 <translation id="6107012941649240045">Verilen:</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />, grup adını değiştirdi</translation>
 <translation id="6107924765192360631">Yazma önerileri almak için birkaç kelime veya ilk taslağınızı yazmanız yeterlidir.</translation>
+<translation id="6108508372809181847">Karşılaştır: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Sertifika bilgileri</translation>
 <translation id="6108702513636120202">Chromium'daki Arama Motorunuz</translation>
 <translation id="6108849843016142864">Sürüngenler ve Amfibi Hayvanlar</translation>
@@ -3716,6 +3725,7 @@ Ek ayrıntılar:
 <translation id="7660456820368115565">Devasa Çok Oyunculu Oyunlar</translation>
 <translation id="7661591871037163355">Karşılaştırma tablonuz dolu. Yeni sütun eklemek için mevcut sütunları kaldırın.</translation>
 <translation id="7662298039739062396">Ayar bir uzantının kontrolü altında</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> gruptan ayrıldı</translation>
 <translation id="7663736086183791259">Sertifika <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Gizli modda izin verilmiyor</translation>
 <translation id="7667346355482952095">Döndürülen politika jetonu boş veya mevcut jetonla eşleşmiyor</translation>

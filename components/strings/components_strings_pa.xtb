@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">ਗੁਪਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਨੂੰ ਬੰਦ ਕਰ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="1617276713587758852">ਕ੍ਰਾਸਓਵਰ</translation>
 <translation id="1619007254056372606">ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਟ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ਨੇ ਇੱਕ ਟੈਬ ਹਟਾ ਦਿੱਤੀ</translation>
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
 <translation id="1622966923835127638">ਕਾਰੋਬਾਰ ਵਿੱਤ</translation>
 <translation id="1623104350909869708">ਇਸ ਸਫ਼ੇ ਨੂੰ ਵਾਧੂ ਡਾਇਲੌਗ ਬਣਾਉਣ ਤੋਂ ਰੋਕੋ</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ # ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ # ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>
 <translation id="1633941398432788136">ਇਵੈਂਟ ਯੋਜਨਾਬੰਦੀ</translation>
 <translation id="1634828734222219955">ਕੁੱਲ</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਏ</translation>
 <translation id="163826442096818926">ਛੋਟਾ ਕਰੋ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="1640180200866533862">ਵਰਤੋਂਕਾਰ ਨੀਤੀਆਂ</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">ਸੁਰੱਖਿਆ ਨੂੰ ਪੱਕਾ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, ਇਹ ਡੀਵਾਈਸ ਦੇ OS, ਬ੍ਰਾਊਜ਼ਰ ਦੇ ਵਰਜਨ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ ਅਤੇ ਨਾਲ ਹੀ ਇਹ ਵੀ ਦੇਖ ਸਕਦਾ ਹੈ ਕਿ ਕਿਹੜਾ ਸਾਫ਼ਟਵੇਅਰ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2573170131138724450">ਟੈਲੀਵਿਜ਼ਨ</translation>
 <translation id="257674075312929031">ਸਮੂਹ</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ਨੇ ਇੱਕ ਟੈਬ ਸ਼ਾਮਲ ਕੀਤੀ</translation>
 <translation id="2586657967955657006">ਕਲਿੱਪਬੋਰਡ</translation>
 <translation id="2587841377698384444">ਡਾਇਰੈਕਟਰੀ API ਆਈ.ਡੀ.:</translation>
 <translation id="2594318783181750337">ਤੇਜ਼ ਵੈੱਬ ਦ੍ਰਿਸ਼:</translation>
@@ -2399,6 +2402,7 @@
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
 <translation id="5305716236436927587">ਵਿਗਿਆਪਨ ਅਤੇ ਮਾਰਕੀਟਿੰਗ</translation>
 <translation id="5306593769196050043">ਦੋਵੇਂ ਸ਼ੀਟਾਂ</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ਨੇ ਗਰੁੱਪ ਦਾ ਰੰਗ ਬਦਲ ਦਿੱਤਾ</translation>
 <translation id="5307166000025436103">ਠੀਕ ਹੈ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5308689395849655368">ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਿੰਗ ਬੰਦ ਹੈ।</translation>
@@ -2430,6 +2434,7 @@
 <translation id="5363309033720083897">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਇਜਾਜ਼ਤਸ਼ੁਦਾ ਸੀਰੀਅਲ ਪੋਰਟ</translation>
 <translation id="5363532265530011914">ਜੁਰਾਬਾਂ ਅਤੇ ਹੌਜ਼ਰੀ</translation>
 <translation id="5371425731340848620">ਕਾਰਡ ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ਨੇ ਟੈਬ ਨੂੰ ਬਦਲ ਦਿੱਤਾ</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"ਤੁਹਾਡੀ ਘੜੀ ਪਿੱਛੇ ਹੈ" ਜਾਂ "ਤੁਹਾਡੀ ਘੜੀ ਅੱਗੇ ਹੈ" ਜਾਂ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -2444,6 +2449,7 @@
 <translation id="5392506727170022660">ਧਾਤ (ਸੇਮੀ-ਗਲੋਸ)</translation>
 <translation id="5394069166371280357">ਪਰਿਵਾਰਕ ਟੀਵੀ ਸ਼ੋਅ</translation>
 <translation id="5396631636586785122">ਸੱਜੇ ਕਿਨਾਰੇ ਤੋਂ ਸਿਲਾਈ</translation>
+<translation id="5397794290049113714">ਤੁਸੀਂ</translation>
 <translation id="5398772614898833570">ਵਿਗਿਆਪਨ ਬਲੌਕ ਕੀਤੇ ਗਏ</translation>
 <translation id="5400836586163650660">ਸਲੇਟੀ</translation>
 <translation id="5401344472773249513">ਮਸ਼ਹੂਰ-ਹਸਤੀਆਂ ਅਤੇ ਮਨੋਰੰਜਨ ਖਬਰਾਂ</translation>
@@ -2829,6 +2835,7 @@
 <translation id="6105460996796456817">ਸਾਈਟ ਬਣਾਓ</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> ਤੇ ਵੈਬਸਫ਼ਾ ਅਸਥਾਈ ਤੌਰ ਤੇ ਹੇਠਾਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਜਾਂ ਇਸਨੂੰ ਇੱਕ ਨਵੇਂ ਵੈਬ ਪਤੇ ਤੇ ਸਥਾਈ ਤੌਰ ਤੇ ਮੂਵ ਕੀਤਾ ਗਿਆ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="6107012941649240045">ਨੂੰ ਜਾਰੀ ਕੀਤਾ</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ਨੇ ਗਰੁੱਪ ਦਾ ਨਾਮ ਬਦਲ ਦਿੱਤਾ</translation>
 <translation id="6107924765192360631">ਲਿਖਣ ਸੰਬੰਧੀ ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਬਸ ਕੁਝ ਸ਼ਬਦਾਂ ਜਾਂ ਪਹਿਲੇ ਡਰਾਫਟ ਨਾਲ ਸ਼ੁਰੂਆਤ ਕਰੋ।</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> ਦੀ ਤੁਲਨਾ ਕਰੋ</translation>
 <translation id="6108580855199168381">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੇ ਵੇਰਵੇ</translation>
@@ -3713,6 +3720,7 @@
 <translation id="7660456820368115565">ਵਿਸ਼ਾਲ ਬਹੁ-ਖਿਡਾਰੀ ਗੇਮਾਂ</translation>
 <translation id="7661591871037163355">ਤੁਹਾਡੀ ਤੁਲਨਾ ਸਾਰਨੀ ਭਰ ਗਈ ਹੈ। ਨਵੇਂ ਕਾਲਮ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਮੌਜੂਦਾ ਕਾਲਮ ਹਟਾਓ।</translation>
 <translation id="7662298039739062396">ਸੈਟਿੰਗ ਕਿਸੇ ਐਕਸਟੈਂਸ਼ਨ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤੀ ਗਈ</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ਨੇ ਗਰੁੱਪ ਛੱਡ ਦਿੱਤਾ</translation>
 <translation id="7663736086183791259">ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="7667346355482952095">ਵਾਪਸੀ ਸੰਬੰਧੀ ਨੀਤੀ ਟੋਕਨ ਖਾਲੀ ਹੈ ਜਾਂ ਮੌਜੂਦਾ ਟੋਕਨ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ ਹੈ</translation>

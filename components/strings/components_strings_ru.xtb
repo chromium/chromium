@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="1617276713587758852">Кроссоверы</translation>
 <translation id="1619007254056372606">Управлять данными сайтов на устройстве</translation>
+<translation id="1619648179761984213">Пользователь <ph name="USER_DISPLAY_NAME" /> удалил вкладку</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622966923835127638">Корпоративные финансы</translation>
 <translation id="1623104350909869708">Запретить создание дополнительных диалоговых окон на этой странице</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Администратор запретил открывать этот файл.}one{Администратор запретил открывать # файл.}few{Администратор запретил открывать # файла.}many{Администратор запретил открывать # файлов.}other{Администратор запретил открывать # файла.}}</translation>
 <translation id="1633941398432788136">Планирование мероприятий</translation>
 <translation id="1634828734222219955">Всего</translation>
+<translation id="1637407510758033366">Пользователь <ph name="USER_DISPLAY_NAME" /> присоединился к группе</translation>
 <translation id="163826442096818926">Короче</translation>
 <translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1640180200866533862">Пользовательские правила</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">В целях безопасности администратору доступна информация об операционной системе устройства, версии браузера и установленном программном обеспечении.</translation>
 <translation id="2573170131138724450">Телевизоры</translation>
 <translation id="257674075312929031">Группа</translation>
+<translation id="258135245577667916">Пользователь <ph name="USER_DISPLAY_NAME" /> добавил вкладку</translation>
 <translation id="2586657967955657006">Буфер обмена</translation>
 <translation id="2587841377698384444">Идентификатор Directory API:</translation>
 <translation id="2594318783181750337">Быстрый просмотр в Web:</translation>
@@ -2401,6 +2404,7 @@
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5305716236436927587">Реклама и маркетинг</translation>
 <translation id="5306593769196050043">Оба листа</translation>
+<translation id="5307109011461144709">Пользователь <ph name="USER_DISPLAY_NAME" /> изменил цвет группы</translation>
 <translation id="5307166000025436103">ОК</translation>
 <translation id="5308380583665731573">Подключение</translation>
 <translation id="5308689395849655368">Отчеты о сбоях отключены.</translation>
@@ -2432,6 +2436,7 @@
 <translation id="5363309033720083897">Последовательный порт разрешен администратором</translation>
 <translation id="5363532265530011914">Чулочно-носочные изделия</translation>
 <translation id="5371425731340848620">Изменить информацию о карте</translation>
+<translation id="537425196847960924">Пользователь <ph name="USER_DISPLAY_NAME" /> изменил вкладку</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Часы отстают", "Часы спешат" или &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;</translation>
 <translation id="5379618281582508161">Чтобы пароль был доступен на всех ваших устройствах, подтвердите личность.</translation>
@@ -2446,6 +2451,7 @@
 <translation id="5392506727170022660">Металл (полуглянцевый)</translation>
 <translation id="5394069166371280357">Семейные телешоу</translation>
 <translation id="5396631636586785122">Скобы по правому краю</translation>
+<translation id="5397794290049113714">Вы</translation>
 <translation id="5398772614898833570">Реклама заблокирована</translation>
 <translation id="5400836586163650660">Серый</translation>
 <translation id="5401344472773249513">Новости о знаменитостях и развлечениях</translation>
@@ -2831,6 +2837,7 @@
 <translation id="6105460996796456817">Создать сайт</translation>
 <translation id="6106989379647458772">Возможно, веб-страница <ph name="PAGE" /> временно недоступна или находится по новому адресу.</translation>
 <translation id="6107012941649240045">Кому выдан</translation>
+<translation id="6107864469867367783">Пользователь <ph name="USER_DISPLAY_NAME" /> изменил название группы</translation>
 <translation id="6107924765192360631">Просто напишите несколько слов или создайте черновик, чтобы увидеть подсказки генератора текстов.</translation>
 <translation id="6108508372809181847">Сравнение товаров из категории "<ph name="TABLE_NAME" />"</translation>
 <translation id="6108580855199168381">Сведения о сертификате</translation>
@@ -3717,6 +3724,7 @@
 <translation id="7660456820368115565">Массовые многопользовательские игры</translation>
 <translation id="7661591871037163355">В таблице сравнения максимальное количество столбцов. Удалите некоторые из них, чтобы добавить новые.</translation>
 <translation id="7662298039739062396">Эта настройка управляется расширением</translation>
+<translation id="7662911501613893058">Пользователь <ph name="USER_DISPLAY_NAME" /> покинул группу</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Запрещено в режиме инкогнито</translation>
 <translation id="7667346355482952095">Возвращенный токен пуст или не соответствует имеющемуся</translation>

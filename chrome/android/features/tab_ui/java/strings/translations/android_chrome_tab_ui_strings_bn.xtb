@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">আপনার শেষ ট্যাব</translation>
 <translation id="5380159289133845234">ডুপ্লিকেট ট্যাব আর্কাইভ করুন</translation>
 <translation id="5400836586163650660">ধূসর</translation>
+<translation id="5446043142172831860">ট্যাব সরান এবং গ্রুপ থেকে বেরিয়ে আসুন</translation>
 <translation id="5490235265819901748">ট্যাব গ্রুপ বড় করে দেখানো হয়েছে</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}}</translation>

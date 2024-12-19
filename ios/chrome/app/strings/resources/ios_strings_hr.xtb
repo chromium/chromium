@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Nema otvorenih kartica</translation>
 <translation id="1469381646033328562">Tvojim računom upravlja roditelj.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Izmijenjeno</translation>
 <translation id="1480152980057770392">Prikaz popisa za čitanje</translation>
 <translation id="1484758781961275277">Iskoristite sve pogodnosti računalnog preglednika koji znate i volite na svojem iPadu.</translation>
 <translation id="1485907716209290998">Praćenje paketa</translation>
@@ -1211,6 +1212,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6445981559479772097">Poruka je poslana.</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6449554712554071184">Time ćete trajno izbrisati grupu s uređaja.</translation>
+<translation id="6452534462676960500">Nova aktivnost</translation>
 <translation id="6459307836338400162">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljcima <ph name="BEGIN_LINK" />Sinkronizacija<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Pojedinosti su skrivene</translation>
 <translation id="646394917185284261">Datoteke</translation>
@@ -1619,6 +1621,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8219424187226230983">Prikaži offline verziju na novoj kartici</translation>
 <translation id="8230355548492839438">Traženje prethodnog</translation>
 <translation id="8232956427053453090">Zadrži podatke</translation>
+<translation id="8258999165172757081">Dodano</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="82619448491672958">Pogledajte ostale kartice</translation>
 <translation id="8263228331881858381">Pristupni je ključ spremljen</translation>

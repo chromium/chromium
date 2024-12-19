@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
 <translation id="1617276713587758852">רכבי קרוסאובר</translation>
 <translation id="1619007254056372606">ניהול נתונים מאתרים במכשיר</translation>
+<translation id="1619648179761984213">כרטיסייה הוסרה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1622966923835127638">פיננסים עסקיים</translation>
 <translation id="1623104350909869708">אני רוצה למנוע מהדף זה ליצור תיבות דו-שיח נוספות</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{בהתאם למדיניות האדמין, פתיחת הקובץ הזה נחסמה}one{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}two{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}other{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}}</translation>
 <translation id="1633941398432788136">תכנון אירועים</translation>
 <translation id="1634828734222219955">סך הכל</translation>
+<translation id="1637407510758033366">‫<ph name="USER_DISPLAY_NAME" /> הצטרפ/ה לקבוצה</translation>
 <translation id="163826442096818926">קיצור</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1640180200866533862">מדיניות משתמשים</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">כדי לשמור על האבטחה, יש לאדמין אפשרות לראות גם את מערכת ההפעלה של המכשיר, גרסת הדפדפן והתוכנה שמותקנת בו</translation>
 <translation id="2573170131138724450">טלוויזיות</translation>
 <translation id="257674075312929031">קבוצה</translation>
+<translation id="258135245577667916">כרטיסייה נוספה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2587841377698384444">‏מזהה Directory API:</translation>
 <translation id="2594318783181750337">תצוגה מהירה באינטרנט:</translation>
@@ -2406,6 +2409,7 @@ Del</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5305716236436927587">פרסום ושיווק</translation>
 <translation id="5306593769196050043">שני הגיליונות</translation>
+<translation id="5307109011461144709">הצבע של הקבוצה השתנה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="5307166000025436103">תקין</translation>
 <translation id="5308380583665731573">התחברות</translation>
 <translation id="5308689395849655368">דיווח קריסות מושבת.</translation>
@@ -2437,6 +2441,7 @@ Del</translation>
 <translation id="5363309033720083897">יציאה טורית שאושרה על ידי מנהל המערכת</translation>
 <translation id="5363532265530011914">גרביים ולבנים</translation>
 <translation id="5371425731340848620">עדכון כרטיס</translation>
+<translation id="537425196847960924">כרטיסייה שונתה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">‏"השעון מאחר", "השעון מקדים" או "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">כדי לקבל את הסיסמה הזו בכל המכשירים, עליך לאמת את הזהות שלך</translation>
@@ -2451,6 +2456,7 @@ Del</translation>
 <translation id="5392506727170022660">Metal (Semi-Gloss)</translation>
 <translation id="5394069166371280357">תוכניות טלוויזיה לכל המשפחה</translation>
 <translation id="5396631636586785122">הידוק קצוות בצד ימין</translation>
+<translation id="5397794290049113714">את/ה</translation>
 <translation id="5398772614898833570">מודעות חסומות</translation>
 <translation id="5400836586163650660">אפור</translation>
 <translation id="5401344472773249513">חדשות בידור וידוענים</translation>
@@ -2837,6 +2843,7 @@ Del</translation>
 <translation id="6105460996796456817">יצירת אתר</translation>
 <translation id="6106989379647458772">ייתכן שדף האינטרנט בכתובת <ph name="PAGE" /> אינו פעיל זמנית, או שהוא הועבר לכתובת אינטרנט קבועה אחרת.</translation>
 <translation id="6107012941649240045">מונפק ל</translation>
+<translation id="6107864469867367783">שם הקבוצה שונה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="6107924765192360631">כדי לקבל הצעות לכתיבה, פשוט צריך להתחיל עם כמה מילים או טיוטה ראשונית.</translation>
 <translation id="6108508372809181847">השוואה למוצר <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">פרטי אישור</translation>
@@ -3723,6 +3730,7 @@ Del</translation>
 <translation id="7660456820368115565">משחקים רבי-משתתפים</translation>
 <translation id="7661591871037163355">טבלת ההשוואה מלאה. כדי להוסיף עמודות חדשות, צריך להסיר עמודות קיימות.</translation>
 <translation id="7662298039739062396">ההגדרה נשלטת על-ידי תוסף</translation>
+<translation id="7662911501613893058">‫<ph name="USER_DISPLAY_NAME" /> עזב/ה את הקבוצה</translation>
 <translation id="7663736086183791259">אישור <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">אין הרשאה במצב אנונימי</translation>
 <translation id="7667346355482952095">טוקן המדיניות שהוחזר הוא ריק או שאינו תואם לטוקן הנוכחי</translation>

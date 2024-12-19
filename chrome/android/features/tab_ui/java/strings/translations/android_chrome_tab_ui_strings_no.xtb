@@ -100,6 +100,7 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="5339733443032484186">Den siste fanen du brukte</translation>
 <translation id="5380159289133845234">Arkiver duplikatfaner</translation>
 <translation id="5400836586163650660">Grå</translation>
+<translation id="5446043142172831860">Fjern fanen og forlat gruppen</translation>
 <translation id="5490235265819901748">Fanegruppen er utvidet</translation>
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Lukk fanegruppe med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Lukk fanegruppe med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>

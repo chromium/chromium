@@ -362,6 +362,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1615402009686901181">Pravidlo správcu zakazuje snímanie obrazovky, keď je viditeľný dôverný obsah</translation>
 <translation id="1617276713587758852">Autá typu crossover</translation>
 <translation id="1619007254056372606">Spravovať dáta webov v zariadení</translation>
+<translation id="1619648179761984213">Používateľ <ph name="USER_DISPLAY_NAME" /> odstránil kartu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Obchodné financie</translation>
 <translation id="1623104350909869708">Zakázať tejto stránke otvárať ďalšie dialógové okná</translation>
@@ -369,6 +370,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1633137413609266904">{0,plural, =1{Otvorenie tohto súboru je blokované pravidlami správcu}few{Otvorenie # súborov je blokované pravidlami správcu}many{Opening # files is blocked by administrator policy}other{Otvorenie # súborov je blokované pravidlami správcu}}</translation>
 <translation id="1633941398432788136">Plánovanie podujatí</translation>
 <translation id="1634828734222219955">Celkove</translation>
+<translation id="1637407510758033366">Používateľ <ph name="USER_DISPLAY_NAME" /> sa pripojil ku skupine</translation>
 <translation id="163826442096818926">Skrátiť</translation>
 <translation id="1639239467298939599">Načítava sa</translation>
 <translation id="1640180200866533862">Pravidlá pre používateľa</translation>
@@ -904,6 +906,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2571488850200220306">V záujme zaistenia bezpečnosti si môže zobraziť aj operačný systém zariadenia, verziu prehliadača a nainštalovaný softvér</translation>
 <translation id="2573170131138724450">Televízory</translation>
 <translation id="257674075312929031">Skupina</translation>
+<translation id="258135245577667916">Používateľ <ph name="USER_DISPLAY_NAME" /> pridal kartu</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2587841377698384444">Identifikátor priečinka API:</translation>
 <translation id="2594318783181750337">Rýchle webové zobrazenie:</translation>
@@ -1141,6 +1144,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="306573536155379004">Hra bola spustená.</translation>
 <translation id="3067505415088964188">Cena je nízka</translation>
 <translation id="3068118691172921711">Nahrávanie súborov do služby <ph name="CLOUD_PROVIDER" /> sa začne o 1 minútu</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} položka}few{{ITEMS} položky}many{{ITEMS} items}other{{ITEMS} položiek}}</translation>
 <translation id="3076865167425975822">Operačné systémy</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Umožnite Googlu hľadať prispôsobené zľavy pomocou vašich košíkov (keď budú k dispozícii)</translation>
@@ -2397,6 +2401,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5305716236436927587">Reklama a marketing</translation>
 <translation id="5306593769196050043">Oba hárky</translation>
+<translation id="5307109011461144709">Používateľ <ph name="USER_DISPLAY_NAME" /> zmenil farbu skupiny</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Pripojiť</translation>
 <translation id="5308689395849655368">Hlásenie zlyhaní je zakázané.</translation>
@@ -2428,6 +2433,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5363309033720083897">Sériový port povolený vaším správcom</translation>
 <translation id="5363532265530011914">Ponožky a pančuchy</translation>
 <translation id="5371425731340848620">Aktualizujte si kartu</translation>
+<translation id="537425196847960924">Používateľ <ph name="USER_DISPLAY_NAME" /> zmenil kartu</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Vaše hodiny meškajú“, „Vaše hodiny idú dopredu“ alebo „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Ak chcete mať toto heslo k dispozícii vo všetkých zariadeniach, overte svoju totožnosť</translation>
@@ -2442,6 +2448,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5392506727170022660">Kov (pololesklý)</translation>
 <translation id="5394069166371280357">Rodinné televízne relácie</translation>
 <translation id="5396631636586785122">Zošiť hrebeňovou väzbou vpravo</translation>
+<translation id="5397794290049113714">Vy</translation>
 <translation id="5398772614898833570">Reklamy sú blokované</translation>
 <translation id="5400836586163650660">Sivá</translation>
 <translation id="5401344472773249513">Celebrity a správy zo zábavného priemyslu</translation>
@@ -2827,7 +2834,9 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6105460996796456817">Vytvoriť web</translation>
 <translation id="6106989379647458772">Stránka <ph name="PAGE" /> je možno dočasne nedostupná, možno bola natrvalo presunutá na novú webovú adresu.</translation>
 <translation id="6107012941649240045">Vydané pre</translation>
+<translation id="6107864469867367783">Používateľ <ph name="USER_DISPLAY_NAME" /> zmenil názov skupiny</translation>
 <translation id="6107924765192360631">Ak chcete dostávať návrhy pri písaní, napíšte niekoľko slov alebo prvý koncept.</translation>
+<translation id="6108508372809181847">Porovnajte <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Podrobnosti o certifikáte</translation>
 <translation id="6108702513636120202">Váš vyhľadávač v prehliadači Chromium</translation>
 <translation id="6108849843016142864">Plazy a obojživelníky</translation>
@@ -3711,6 +3720,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7660456820368115565">Hry pre veľký počet hráčov</translation>
 <translation id="7661591871037163355">Porovnávacia tabuľka je plná. Ak chcete pridať nové stĺpce, niektoré odstráňte.</translation>
 <translation id="7662298039739062396">Nastavenie ovládané rozšírením</translation>
+<translation id="7662911501613893058">Používateľ <ph name="USER_DISPLAY_NAME" /> opustil skupinu</translation>
 <translation id="7663736086183791259">Certifikát <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nie je povolené v režime inkognito</translation>
 <translation id="7667346355482952095">Vrátený token pravidla je prázdny alebo sa nezhoduje s aktuálnym tokenom</translation>

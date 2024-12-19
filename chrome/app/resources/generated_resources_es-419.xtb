@@ -1903,6 +1903,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">No se admiten las siguientes teclas: Tab, Mayúsculas, Control, Escape, Bloq Mayús, Volumen</translation>
 <translation id="2309620859903500144">Este sitio no tiene permiso para acceder a los sensores de movimiento y luz.</translation>
+<translation id="2310414604104802967">Verificando si accediste a tu cuenta…</translation>
 <translation id="2310923358723722542">Pantalla y ampliación</translation>
 <translation id="2312219318583366810">URL de la página</translation>
 <translation id="2314165183524574721">Se estableció la configuración de visibilidad actual en Oculta</translation>
@@ -2321,6 +2322,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2606568927909309675">Crea subtítulos de forma automática para audio y video en inglés. El audio y los subtítulos permanecen en el dispositivo.</translation>
 <translation id="2606890864830643943">Se están exportando los datos de diagnóstico</translation>
 <translation id="2607101320794533334">Información sobre la clave pública del sujeto</translation>
+<translation id="2608837922830967145">No volver a mostrar este mensaje</translation>
 <translation id="2609896558069604090">Crear accesos directos...</translation>
 <translation id="2609980095400624569">No se pudo establecer la conexión</translation>
 <translation id="2610157865375787051">Suspender</translation>
@@ -11250,6 +11252,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9007688236643268728">&amp;Volver a acceder</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botón Atrás de la página de detalles de <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008425116680857079">Chrome podrá cambiar tu contraseña una vez que accedas.</translation>
 <translation id="9008828754342192581">Anteriormente elegiste permitir todas las extensiones para <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Cargando (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Importados desde Windows</translation>

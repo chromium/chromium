@@ -4434,7 +4434,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4072805772816336153">Pokušajte ponovo kasnije</translation>
 <translation id="4074164314564067597">tipkovnica</translation>
 <translation id="407520071244661467">Skaliranje</translation>
-<translation id="4077623680826964850">Vrijeme čekanja pri pokretanju ili ponovnom povezivanju s VM-om.</translation>
+<translation id="4077623680826964850">Isteklo je vrijeme pri pokretanju ili ponovnom povezivanju s VM-om.</translation>
 <translation id="4077917118009885966">Oglasi su blokirani na ovoj web-lokaciji</translation>
 <translation id="4078738236287221428">Agresivno</translation>
 <translation id="4078903002989614318">Opcije razvrstavanja i popisa</translation>
@@ -5460,7 +5460,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4833683849865011483">Pronađen je jedan pisač s poslužitelja za ispis</translation>
 <translation id="4835598628985424375">Stiskanje usana</translation>
 <translation id="4835677468087803981">Sakrij PIN</translation>
-<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> duplikat/duplikata</translation>
+<translation id="4835743726635354518"><ph name="URL" /> • <ph name="DUPLICATE_COUNT" /> duplikat(a)</translation>
 <translation id="4836504898754963407">Upravljanje otiscima prstiju</translation>
 <translation id="4837128290434901661">Želite li se vratiti na Google pretraživanje?</translation>
 <translation id="4837926214103741331">Niste ovlašteni za upotrebu ovog uređaja. Zamolite vlasnika da vam dopusti prijavu.</translation>
@@ -7042,7 +7042,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5982578203375898585">Prikaži preuzimanja nakon dovršetka</translation>
 <translation id="5983716913605894570">Generiranje...</translation>
 <translation id="5984222099446776634">Nedavno posjećeno</translation>
-<translation id="5984334442529819751">Pogreška pri instaliranju DLC-a (često je potrebno ponovno pokretanje, saznajte više u Postavkama\&gt;\&gt;O Chrome OS-u).</translation>
+<translation id="5984334442529819751">Pogreška pri instaliranju DLC-a (često je potrebno ponovno pokretanje; saznajte više u Postavkama\&gt;\&gt;O ChromeOS-u).</translation>
 <translation id="5985458664595100876">Format URL-a nije važeći. Podržani su formati \\server\share i smb://server/share.</translation>
 <translation id="5985556342298151179">Administrator vašeg uređaja instalirao je aplikaciju Chrome.</translation>
 <translation id="598810097218913399">Ukloni zadatak</translation>
@@ -9836,7 +9836,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7992203134935383159">Sinteza govora</translation>
 <translation id="799570308305997052">Web-prikaz</translation>
 <translation id="7997826902155442747">Prioritet obrade</translation>
-<translation id="7997828719430450286">Uspjeli ste.</translation>
+<translation id="7997828719430450286">Uspješno.</translation>
 <translation id="7998701048266085837">URL-ovi</translation>
 <translation id="7999229196265990314">Stvorene su sljedeće datoteke:
         
@@ -11152,7 +11152,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8918900204934259333">Instaliranje aplikacije...</translation>
 <translation id="891931289445130855">Izbriši podatke i dopuštenja</translation>
 <translation id="8920133120839850939">Odaberite karticu Više pokreta, a zatim uključite prelazak prstom između stranica da biste se kretali unaprijed ili unatrag</translation>
-<translation id="8921369299636221117">Usluga osobnog pomoćnika nije dostupna.</translation>
+<translation id="8921369299636221117">Usluga Concierge nije dostupna.</translation>
 <translation id="8922348435910470639">Kolizija</translation>
 <translation id="8922624386829239660">Pomiči zaslon kad miš dodiruje rubove zaslona</translation>
 <translation id="8923880975836399332">Tamnotirkiznoplava</translation>

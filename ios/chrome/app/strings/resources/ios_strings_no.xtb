@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Vil du slå på synkronisering?</translation>
 <translation id="1253032109800629289">Skjul «Få varsler om prissporing»</translation>
 <translation id="1258491128795710625">Hva er nytt?</translation>
+<translation id="1259210743048744967">De eksisterende nettlesingsdataene dine blir tilgjengelige når du logger av <ph name="USER_EMAIL" />. De blir ikke lagret i denne kontoen.</translation>
 <translation id="1262724000444746916">Skjul Legg til i bokmerker</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1263433075299269530">Den siste åpne fanen din</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">Ingen åpne faner</translation>
 <translation id="1469381646033328562">Kontoen din administreres av forelderen din.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Endret</translation>
 <translation id="1480152980057770392">Vis leselisten</translation>
 <translation id="1484758781961275277">Få det beste fra datamaskinnettleseren du allerede kjenner til, på iPad.</translation>
 <translation id="1485907716209290998">Pakkesporing</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Vil du fjerne fanen og slette gruppen?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> er valgt</translation>
 <translation id="1709916727352927457">Slett sikkerhetsnøkkel</translation>
+<translation id="1712341189152602203">Eksisterende nettlesingsdata blir knyttet til <ph name="USER_EMAIL" />. Disse dataene kan være synlige for organisasjonen din.</translation>
 <translation id="1713777106376424209">Levert av</translation>
 <translation id="1715515772563243997">Hvis du stoler på <ph name="SITE" />, kan du logge på med et lagret passord.</translation>
 <translation id="1728549374069268714">Lim inn og gå til</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">På et nettsted der du har lagret et passord, trykker du på feltet for påloggingspassord.</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Velg hva du vil gjøre med de eksisterende nettlesingsdataene på denne enheten, for eksempel passord og logg.</translation>
 <translation id="1881621406744213161">Inviter familiemedlemmer</translation>
 <translation id="188237709236611317">Menylinje for smart sortering</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
@@ -512,6 +516,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informasjon om nettstedet</translation>
 <translation id="333229797575847124">Slik slår du på denne funksjonen</translation>
+<translation id="3333566504534692948">Nei, flytt dem til jobbområdet mitt</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din, {email}}other{Bokmerkene er lagret i «{title}» i kontoen din, {email}}}</translation>
 <translation id="334690320928261823">Nylige faner</translation>
 <translation id="3348387552617855658">Med dette kortet kan du følge med på pakkene dine og få viktige leveringsoppdateringer.</translation>
@@ -1207,6 +1212,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6445981559479772097">Melding sendt.</translation>
 <translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6449554712554071184">Dette sletter gruppen fra enheten permanent.</translation>
+<translation id="6452534462676960500">Ny aktivitet</translation>
 <translation id="6459307836338400162">For flere innstillinger knyttet til personvern, sikkerhet og datainnsamling, se både <ph name="BEGIN_LINK" />Synkronisering<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /> .</translation>
 <translation id="6459411599807878608">Detaljene er skjult</translation>
 <translation id="646394917185284261">Filer</translation>
@@ -1615,6 +1621,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8219424187226230983">Se versjonen uten nett på en ny fane</translation>
 <translation id="8230355548492839438">Finn forrige</translation>
 <translation id="8232956427053453090">Behold dataene</translation>
+<translation id="8258999165172757081">Lagt til</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="82619448491672958">Se andre faner</translation>
 <translation id="8263228331881858381">Passnøkkelen er lagret</translation>

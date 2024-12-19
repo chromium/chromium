@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Turn on sync?</translation>
 <translation id="1253032109800629289">Hide 'Get price tracking notifications'</translation>
 <translation id="1258491128795710625">What’s new</translation>
+<translation id="1259210743048744967">Your existing browsing data will be available upon signing out of <ph name="USER_EMAIL" />. It won't be saved in this account.</translation>
 <translation id="1262724000444746916">Hide Add to bookmarks</translation>
 <translation id="1263231323834454256">Reading list</translation>
 <translation id="1263433075299269530">Your last open tab</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">No open tabs</translation>
 <translation id="1469381646033328562">Your account is managed by your parent.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Changed</translation>
 <translation id="1480152980057770392">Show reading list</translation>
 <translation id="1484758781961275277">Get the best from the desktop browser that you know and love on your iPad.</translation>
 <translation id="1485907716209290998">Package tracking</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Remove tab and delete group?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
 <translation id="1709916727352927457">Delete passkey</translation>
+<translation id="1712341189152602203">Existing browsing data will be linked to <ph name="USER_EMAIL" />. This data may be viewable by your organisation.</translation>
 <translation id="1713777106376424209">Delivered by</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
 <translation id="1728549374069268714">Paste and go</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">On a site where you've saved a password, tap the sign-in password field.</translation>
 <translation id="1872096359983322073">Torch</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Choose what to do with the existing browsing data on this device, like passwords, history and more.</translation>
 <translation id="1881621406744213161">Invite family members</translation>
 <translation id="188237709236611317">Smart sort menu bar</translation>
 <translation id="1883255238294161206">Collapse list</translation>
@@ -512,6 +516,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="333229797575847124">How to enable this feature</translation>
+<translation id="3333566504534692948">No, move it into your work space</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="334690320928261823">Recent tabs</translation>
 <translation id="3348387552617855658">This card helps you keep track of your packages and gives you important delivery updates.</translation>
@@ -1207,6 +1212,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6445981559479772097">Message sent.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">This will permanently delete the group from your device.</translation>
+<translation id="6452534462676960500">New activity</translation>
 <translation id="6459307836338400162">For more settings that relate to privacy, security and data collection, see both <ph name="BEGIN_LINK" />Sync<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Details hidden</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1615,6 +1621,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8219424187226230983">View offline version in a new tab</translation>
 <translation id="8230355548492839438">Find previous</translation>
 <translation id="8232956427053453090">Keep data</translation>
+<translation id="8258999165172757081">Added</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="82619448491672958">See other tabs</translation>
 <translation id="8263228331881858381">Passkey saved</translation>

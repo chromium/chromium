@@ -362,6 +362,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1615402009686901181">Rendszergazdai házirend tiltja képernyőfelvétel készítését, ha bizalmas tartalom látható a képernyőn.</translation>
 <translation id="1617276713587758852">Crossover autók</translation>
 <translation id="1619007254056372606">Eszközön tárolt webhelyadatok kezelése</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> eltávolított egy lapot</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Üzlet/pénzügy</translation>
 <translation id="1623104350909869708">Akadályozza meg, hogy ez az oldal további párbeszédablakokat hozzon létre.</translation>
@@ -369,6 +370,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1633137413609266904">{0,plural, =1{A fájl megnyitását rendszergazdai házirend tiltja}other{# fájl megnyitását rendszergazdai házirend tiltja}}</translation>
 <translation id="1633941398432788136">Eseménytervezés</translation>
 <translation id="1634828734222219955">Végösszeg</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> csatlakozott a csoporthoz</translation>
 <translation id="163826442096818926">Rövidítés</translation>
 <translation id="1639239467298939599">Betöltés</translation>
 <translation id="1640180200866533862">Felhasználói házirendek</translation>
@@ -904,6 +906,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2571488850200220306">A biztonság érdekében látja azt is, hogy az eszközön milyen operációs rendszer, böngészőverzió és telepített szoftverek találhatók</translation>
 <translation id="2573170131138724450">Televíziók</translation>
 <translation id="257674075312929031">Csoport</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> hozzáadott egy lapot</translation>
 <translation id="2586657967955657006">Vágólap</translation>
 <translation id="2587841377698384444">Könyvtár API-azonosítója:</translation>
 <translation id="2594318783181750337">Gyors webnézet:</translation>
@@ -2399,6 +2402,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5305716236436927587">Hirdetés és marketing</translation>
 <translation id="5306593769196050043">Mindkét munkalap</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> módosította a csoport színét</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
 <translation id="5308689395849655368">A hibabejelentés ki van kapcsolva.</translation>
@@ -2430,6 +2434,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5363309033720083897">Rendszergazda által engedélyezett soros port</translation>
 <translation id="5363532265530011914">Zoknik és harisnyák</translation>
 <translation id="5371425731340848620">Kártya frissítése</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> módosított egy lapot</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Az óra késik”, „Az óra siet” vagy „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Ha az összes eszközén szeretne hozzáférni ehhez a jelszóhoz, igazolja személyazonosságát</translation>
@@ -2444,6 +2449,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5392506727170022660">Fém (félig fényes)</translation>
 <translation id="5394069166371280357">Családi tévéműsorok</translation>
 <translation id="5396631636586785122">Éltűzés a jobb oldalon</translation>
+<translation id="5397794290049113714">Ön</translation>
 <translation id="5398772614898833570">Hirdetések letiltva</translation>
 <translation id="5400836586163650660">Szürke</translation>
 <translation id="5401344472773249513">Hírek celebekről és szórakoztatóiparból</translation>
@@ -2829,6 +2835,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6105460996796456817">Webhely létrehozása</translation>
 <translation id="6106989379647458772">Előfordulhat, hogy a(z) <ph name="PAGE" /> webhelyen található oldal ideiglenesen nem érhető el, vagy véglegesen új címre költözött.</translation>
 <translation id="6107012941649240045">Tulajdonos</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> módosította a csoport nevét</translation>
 <translation id="6107924765192360631">Kezdje el néhány szóval vagy az első piszkozattal, hogy írási javaslatokat kaphasson.</translation>
 <translation id="6108508372809181847">A következő összehasonlítása: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Tanúsítványadatok</translation>
@@ -3715,6 +3722,7 @@ További részletek:
 <translation id="7660456820368115565">Multiplayer játékok</translation>
 <translation id="7661591871037163355">Az összehasonlító táblázat megtelt. Újabb oszlopok hozzáadásához távolítson el meglévőket.</translation>
 <translation id="7662298039739062396">A beállítást bővítmény vezérli</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> kilépett a csoportból</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> tanúsítvány</translation>
 <translation id="7666397036351755929">Nem engedélyezett inkognitó módban</translation>
 <translation id="7667346355482952095">A visszaadott irányelvtoken üres vagy nem egyezik az aktuális tokennel</translation>

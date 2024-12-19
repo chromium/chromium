@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
 <translation id="1617276713587758852">Кросовери</translation>
 <translation id="1619007254056372606">Управувајте со податоци од сајт на уредот</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> отстрани картичка</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622966923835127638">Бизнис финансии</translation>
 <translation id="1623104350909869708">Спречете ја страницата да направи дополнителни дијалози</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Отворањето на датотекава е блокирано со правило на администраторот}one{Отворањето на # датотека е блокирано со правило на администраторот}other{Отворањето на # датотеки е блокирано со правило на администраторот}}</translation>
 <translation id="1633941398432788136">Планирање настани</translation>
 <translation id="1634828734222219955">Вкупно</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> се придружи во групата</translation>
 <translation id="163826442096818926">Пократко</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
 <translation id="1640180200866533862">Правила за корисникот</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">За да помогне да се гарантира безбедност, може да ги види OS, верзијата на прелистувачот и софтверот што е инсталиран на уредот</translation>
 <translation id="2573170131138724450">Телевизори</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> додаде картичка</translation>
 <translation id="2586657967955657006">Табла со исечоци</translation>
 <translation id="2587841377698384444">ИД на директориумот API:</translation>
 <translation id="2594318783181750337">Брз преглед на интернет:</translation>
@@ -1141,6 +1144,7 @@
 <translation id="306573536155379004">Играта започна.</translation>
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3068118691172921711">Прикачувањето на вашата датотека во <ph name="CLOUD_PROVIDER" /> ќе започне по 1 минута</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ставка}one{{ITEMS} ставка}other{{ITEMS} ставки}}</translation>
 <translation id="3076865167425975822">Оперативни системи</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3082007635241601060">Дозволете Google да ги користи вашите кошнички за да најде персонализирани попусти кога има</translation>
@@ -2401,6 +2405,7 @@
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5305716236436927587">Рекламирање и маркетинг</translation>
 <translation id="5306593769196050043">Двата листа</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ја промени бојата на групата</translation>
 <translation id="5307166000025436103">Во ред</translation>
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5308689395849655368">Пријавување пад е оневозможено.</translation>
@@ -2432,6 +2437,7 @@
 <translation id="5363309033720083897">Сериска порта што ја дозволил вашиот администратор</translation>
 <translation id="5363532265530011914">Чорапи и хулахопки</translation>
 <translation id="5371425731340848620">Ажурирајте ја картичката</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> промени картичка</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Вашиот часовник е поназад“ или „Вашиот часовник е понапред“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">За да ја добиете лозинкава на сите ваши уреди, потврдете го вашиот идентитет</translation>
@@ -2446,6 +2452,7 @@
 <translation id="5392506727170022660">Метал (полусјајен)</translation>
 <translation id="5394069166371280357">ТВ-серии за семејства</translation>
 <translation id="5396631636586785122">Шиење на работ десно</translation>
+<translation id="5397794290049113714">Вие</translation>
 <translation id="5398772614898833570">Рекламите се блокирани</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5401344472773249513">Вести за познати личности и забава</translation>
@@ -2831,7 +2838,9 @@
 <translation id="6105460996796456817">Создајте сајт</translation>
 <translation id="6106989379647458772">Веб-страницата на <ph name="PAGE" /> можеби привремено не работи или можеби трајно е преместена на нова веб-адреса.</translation>
 <translation id="6107012941649240045">Издадено на</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> го промени името на групата</translation>
 <translation id="6107924765192360631">За да добивате предлози за пишување, само започнете со неколку збора или првичен нацрт.</translation>
+<translation id="6108508372809181847">Споредете <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Детали за сертификатот</translation>
 <translation id="6108702513636120202">Вашиот пребарувач во Chromium</translation>
 <translation id="6108849843016142864">Влечуги и водоземци</translation>
@@ -3715,6 +3724,7 @@
 <translation id="7660456820368115565">Масивни мултиплеер игри</translation>
 <translation id="7661591871037163355">Табелата за споредба е полна. Отстранете колони за да додадете нови.</translation>
 <translation id="7662298039739062396">Поставка контролирана од екстензија</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ја напушти групата</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Не е дозволено во „Инкогнито“</translation>
 <translation id="7667346355482952095">Вратениот токен на правилово е празен или не соодветствува со тековниот токен</translation>

@@ -1899,6 +1899,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">不支持以下按键：Tab、Shift、Ctrl、Esc、Caps Lock、音量按键</translation>
 <translation id="2309620859903500144">此网站已被禁止使用您的动态传感器或光传感器。</translation>
+<translation id="2310414604104802967">正在检查您是否已登录…</translation>
 <translation id="2310923358723722542">显示和放大</translation>
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
@@ -11238,6 +11239,7 @@
 <translation id="9007688236643268728">重新登录(&amp;S)</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9008201858626224558">“<ph name="SUBPAGE_TITLE" />”详情页面上的返回按钮</translation>
+<translation id="9008425116680857079">登录后，Chrome 就能更改您的密码。</translation>
 <translation id="9008828754342192581">您先前已选择允许 <ph name="ORIGIN" /> 上的所有扩展程序</translation>
 <translation id="9009369504041480176">正在上传 (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">从 Windows 导入</translation>

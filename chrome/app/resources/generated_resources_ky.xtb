@@ -1919,6 +1919,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Төмөнкү баскычтарды колдонууга болбойт: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">Бул сайттын кыймыл же жарык сенсорлорун колдонуу мүмкүнчүлүгү бөгөттөлгөн.</translation>
+<translation id="2310414604104802967">Аккаунтка кирип турганыңыз текшерилүүдө...</translation>
 <translation id="2310923358723722542">Дисплей жана чоңойтуу</translation>
 <translation id="2312219318583366810">Барактын URL'и</translation>
 <translation id="2314165183524574721">Учурдагы көрүнүү параметрлери жашырылган</translation>
@@ -2337,6 +2338,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2606568927909309675">Англис тилиндеги аудио жана видеолор үчүн коштомо жазууларды автоматтык түрдө түзөт. Аудио менен коштомо жазуулар түзмөгүңүздө гана сакталат.</translation>
 <translation id="2606890864830643943">Мүчүлүштүктөрдү аныктоо маалыматы экспорттолууда</translation>
 <translation id="2607101320794533334">Субъекттин Коомдук ачкыч маалыматы</translation>
+<translation id="2608837922830967145">Бул билдирүү экинчи көрсөтүлбөсүн</translation>
 <translation id="2609896558069604090">Кыска жолдорду түзүү…</translation>
 <translation id="2609980095400624569">Туташпай койду</translation>
 <translation id="2610157865375787051">Уйку режими</translation>
@@ -11264,6 +11266,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9007688236643268728">Кайрадан &amp;кирүү</translation>
 <translation id="9008201768610948239">Этибарга албоо</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> жөнүндө маалымат барагына кайтуу баскычы</translation>
+<translation id="9008425116680857079">Chrome сырсөзүңүздү аккаунтка киргениңизден кийин өзгөртө алат.</translation>
 <translation id="9008828754342192581">Буга чейин <ph name="ORIGIN" /> сайтында бардык кеңейтүүлөргө уруксат берүүнү тандагансыз</translation>
 <translation id="9009369504041480176">Жүктөлүп берилүүдө (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009707268312089299">Windows'тон импорттолгондор</translation>

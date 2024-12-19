@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Заснемането на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
 <translation id="1617276713587758852">Кросоувъри</translation>
 <translation id="1619007254056372606">Управление на локалните данни за сайтовете</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> премахна раздел</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622966923835127638">Бизнес и финанси</translation>
 <translation id="1623104350909869708">Да не се създават допълнителни диалогови прозорци от тази страница</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Отварянето на този файл е блокирано чрез администраторско правило}other{Отварянето на # файла е блокирано чрез администраторско правило}}</translation>
 <translation id="1633941398432788136">Планиране на събития</translation>
 <translation id="1634828734222219955">Общо</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> се присъедини към групата</translation>
 <translation id="163826442096818926">Съкратен</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1640180200866533862">Правила за потребителите</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">С цел по-голяма сигурност администраторът може да вижда и операционната система на устройството, версията на браузъра и какъв софтуер е инсталиран</translation>
 <translation id="2573170131138724450">Телевизори</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> добави раздел</translation>
 <translation id="2586657967955657006">Буферна памет</translation>
 <translation id="2587841377698384444">ID на API за директории:</translation>
 <translation id="2594318783181750337">Бърз изглед в мрежата:</translation>
@@ -2402,6 +2405,7 @@
 <translation id="5300589172476337783">Показване</translation>
 <translation id="5305716236436927587">Реклама и маркетинг</translation>
 <translation id="5306593769196050043">И двата листа</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> промени цвета на групата</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Свързване</translation>
 <translation id="5308689395849655368">Изпращането на сигнали за сривове е деактивирано.</translation>
@@ -2433,6 +2437,7 @@
 <translation id="5363309033720083897">Сериен порт, разрешен от администратора ви</translation>
 <translation id="5363532265530011914">Чорапи и трикотаж</translation>
 <translation id="5371425731340848620">Актуализиране на картата</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> промени раздел</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Часовникът ви е назад“, „Часовникът ви е напред“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Потвърдете самоличността си, за да получите тази парола на всичките си устройства</translation>
@@ -2447,6 +2452,7 @@
 <translation id="5392506727170022660">Метал (полугланциран)</translation>
 <translation id="5394069166371280357">Семейни телевизионни предавания</translation>
 <translation id="5396631636586785122">Зашиване на десния ръб</translation>
+<translation id="5397794290049113714">Вие</translation>
 <translation id="5398772614898833570">Рекламите са блокирани</translation>
 <translation id="5400836586163650660">сиво</translation>
 <translation id="5401344472773249513">Новини за знаменитости и шоубизнеса</translation>
@@ -2832,6 +2838,7 @@
 <translation id="6105460996796456817">Създаване на сайт</translation>
 <translation id="6106989379647458772">Уеб страницата на адрес <ph name="PAGE" /> може временно да не е налице или да е била преместена на нов уеб адрес.</translation>
 <translation id="6107012941649240045">Издаден на</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> промени името на групата</translation>
 <translation id="6107924765192360631">За да получите предложения за писане, трябва само да започнете с няколко думи или първоначална чернова.</translation>
 <translation id="6108508372809181847">Сравняване на <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Подробности за сертификата</translation>
@@ -3718,6 +3725,7 @@
 <translation id="7660456820368115565">Масови мултиплейър игри</translation>
 <translation id="7661591871037163355">Таблицата ви за сравнение е пълна. Премахнете някои колони, за да добавите нови.</translation>
 <translation id="7662298039739062396">Настройката се контролира от разширение</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> напусна групата</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Не е разрешено в режим „инкогнито“</translation>
 <translation id="7667346355482952095">Върнатото означение за правилата е празно или не съответства на текущото</translation>

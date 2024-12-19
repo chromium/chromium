@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Skakel sinkronisering aan?</translation>
 <translation id="1253032109800629289">Steek “Kry prysnasporingkennisgewings” weg</translation>
 <translation id="1258491128795710625">Wat's nuut</translation>
+<translation id="1259210743048744967">Jou bestaande blaaierdata sal beskikbaar wees wanneer jy by <ph name="USER_EMAIL" /> afmeld. Dit sal nie in hierdie rekening gestoor word nie.</translation>
 <translation id="1262724000444746916">Versteek Voeg by boekmerke</translation>
 <translation id="1263231323834454256">Leeslys</translation>
 <translation id="1263433075299269530">Jou laaste oop oortjie</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">Geen oop oortjies nie</translation>
 <translation id="1469381646033328562">Jou rekening word deur jou ouer bestuur.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Het verander</translation>
 <translation id="1480152980057770392">Wys leeslys</translation>
 <translation id="1484758781961275277">Kry die beste uit die rekenaarblaaier wat jy ken en geniet op jou iPad.</translation>
 <translation id="1485907716209290998">Pakkienasporing</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Verwyder oortjie en vee groep uit?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> gekies</translation>
 <translation id="1709916727352927457">Vee toegangsleutel uit</translation>
+<translation id="1712341189152602203">Bestaande blaaierdata sal aan <ph name="USER_EMAIL" /> gekoppel word. Hierdie data kan vir jou organisasie sigbaar wees.</translation>
 <translation id="1713777106376424209">Afgelewer deur</translation>
 <translation id="1715515772563243997">As jy <ph name="SITE" /> vertrou, kan jy ’n gestoorde wagwoord gebruik om aan te meld.</translation>
 <translation id="1728549374069268714">Plak en gaan</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">Tik op die aanmeldwagwoordveld op ’n werf waar jy ’n wagwoord gestoor het.</translation>
 <translation id="1872096359983322073">Flits</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Kies wat om met die bestaande blaaierdata op hierdie toestel te doen, soos wagwoorde, geskiedenis en meer.</translation>
 <translation id="1881621406744213161">Nooi gesinslede</translation>
 <translation id="188237709236611317">Kieslysbalk vir slimrangskik</translation>
 <translation id="1883255238294161206">Vou lys in</translation>
@@ -512,6 +516,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Werfinligting</translation>
 <translation id="333229797575847124">Hoe om hierdie kenmerk te aktiveer</translation>
+<translation id="3333566504534692948">Nee, skuif dit na jou werkspasie</translation>
 <translation id="3344485292736684439">{count,plural, =1{Boekmerk is gestoor in “{title}” in jou rekening, {email}}other{Boekmerke is gestoor in “{title}” in jou rekening, {email}}}</translation>
 <translation id="334690320928261823">Onlangse oortjies</translation>
 <translation id="3348387552617855658">Hierdie kaart help jou om jou pakkette na te spoor en gee jou belangrike afleweringopdaterings.</translation>
@@ -1207,6 +1212,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6445981559479772097">Boodskap is gestuur.</translation>
 <translation id="6447842834002726250">Webkoekies</translation>
 <translation id="6449554712554071184">Dit sal die groep permanent van jou toestel af uitvee</translation>
+<translation id="6452534462676960500">Nuwe aktiwiteit</translation>
 <translation id="6459307836338400162">Raadpleeg <ph name="BEGIN_LINK" />Sinkronisering<ph name="END_LINK" /> én <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat met privaatheid, sekuriteit en data-insameling verband hou.</translation>
 <translation id="6459411599807878608">Besonderhede is versteek</translation>
 <translation id="646394917185284261">Lêers</translation>
@@ -1615,6 +1621,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8219424187226230983">Bekyk vanlyn weergawe in nuwe oortjie</translation>
 <translation id="8230355548492839438">Vind vorige</translation>
 <translation id="8232956427053453090">Hou data</translation>
+<translation id="8258999165172757081">Bygevoeg</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="82619448491672958">Sien ander oortjies</translation>
 <translation id="8263228331881858381">Toegangsleutel is gestoor</translation>

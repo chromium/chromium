@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">ଯେତେବେଳେ ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହୁଏ, ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ସ୍କ୍ରିନ୍ କ୍ୟାପଚରକୁ ଅକ୍ଷମ କରିଦିଏ</translation>
 <translation id="1617276713587758852">କ୍ରସଓଭରଗୁଡ଼ିକ</translation>
 <translation id="1619007254056372606">ଡିଭାଇସରେ ସାଇଟ ଡାଟାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ଏକ ଟାବକୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1622966923835127638">ବିଜିନେସ ଫାଇନାନ୍ସ</translation>
 <translation id="1623104350909869708">ଅତିରିକ୍ତ ସଂଳାପଗୁଡିକ ସୃଷ୍ଟି କରିବା କାର୍ଯ୍ୟରୁ ଏହି ପୃଷ୍ଠାକୁ ପ୍ରତିରୋଧ କରନ୍ତୁ</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲକୁ ଖୋଲିବା ବ୍ଲକ କରାଯାଇଛି}other{ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ #ଟି ଫାଇଲକୁ ଖୋଲିବା ବ୍ଲକ କରାଯାଇଛି}}</translation>
 <translation id="1633941398432788136">ଇଭେଣ୍ଟ ପ୍ଲାନିଂ</translation>
 <translation id="1634828734222219955">ମୋଟ</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ଗୋଷ୍ଠୀରେ ଯୋଗ ଦେଇଛନ୍ତି</translation>
 <translation id="163826442096818926">ଛୋଟ କରନ୍ତୁ</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1640180200866533862">ୟୁଜର ନୀତିଗୁଡ଼ିକ</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">ସୁରକ୍ଷାକୁ ସକ୍ଷମ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଏହା ଡିଭାଇସର OS, ବ୍ରାଉଜର ଭର୍ସନ ଏବଂ କେଉଁ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ କରାଯାଇଛି ତାହା ମଧ୍ୟ ଦେଖିପାରିବ</translation>
 <translation id="2573170131138724450">ଟେଲିଭିଜନ</translation>
 <translation id="257674075312929031">ଗୋଷ୍ଠୀ</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ଏକ ଟାବ ଯୋଗ କରିଛନ୍ତି</translation>
 <translation id="2586657967955657006">କ୍ଲିପ୍‌ବୋର୍ଡ</translation>
 <translation id="2587841377698384444">ଡିରେକ୍ଟୋରୀ API ID:</translation>
 <translation id="2594318783181750337">ଦ୍ରୁତ ୱେବ୍ ଭ୍ୟୁ:</translation>
@@ -1141,6 +1144,7 @@
 <translation id="306573536155379004">ଗେମ୍ ଆରମ୍ଭ ହୋଇଛି।</translation>
 <translation id="3067505415088964188">ମୂଲ୍ୟ କମ ଅଟେ</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ 1 ମିନିଟରେ ଆରମ୍ଭ ହେବ</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ଆଇଟମ}other{{ITEMS} ଆଇଟମ}}</translation>
 <translation id="3076865167425975822">ଅପରେଟିଂ ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
 <translation id="3080254622891793721">ଗ୍ରାଫିକ୍</translation>
 <translation id="3082007635241601060">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ରିହାତିଗୁଡ଼ିକ ଉପଲବ୍ଧ ହେଲେ ତାହା ଖୋଜିବା ପାଇଁ Googleକୁ ଆପଣଙ୍କ କାର୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଦିଅନ୍ତୁ</translation>
@@ -2398,6 +2402,7 @@
 <translation id="5300589172476337783">ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="5305716236436927587">ବିଜ୍ଞାପନ ଏବଂ ମାର୍କେଟିଂ</translation>
 <translation id="5306593769196050043">ଉଭୟ ସିଟ୍ସ</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ଗୋଷ୍ଠୀର ରଙ୍ଗକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="5307166000025436103">ଠିକ୍ ଅଛି</translation>
 <translation id="5308380583665731573">ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5308689395849655368">କ୍ରାସ୍ ରିପୋର୍ଟିଂ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
@@ -2429,6 +2434,7 @@
 <translation id="5363309033720083897">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ସିରିଅଲ୍ ପୋର୍ଟକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5363532265530011914">ସକ୍ସ ଏବଂ ହଜେରୀ</translation>
 <translation id="5371425731340848620">କାର୍ଡ ଅପ୍‍‍ଡେଟ୍ କରନ୍ତୁ</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ଏକ ଟାବକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"ଆପଣଙ୍କର ଘଣ୍ଟା ପଛୁଆ ଅଛି" କିମ୍ବା "ଆପଣଙ୍କର ଘଣ୍ଟା ଆଗୁଆ ଅଛି " କିମ୍ବା "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଏହି ପାସୱାର୍ଡ ପାଇବା ପାଇଁ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -2443,6 +2449,7 @@
 <translation id="5392506727170022660">ମେଟାଲ (ସେମି-ଗ୍ଲସ)</translation>
 <translation id="5394069166371280357">ଟିଭି ପରିବାର-ଅନୁକୂଳ ଶୋ'ଗୁଡ଼ିକ</translation>
 <translation id="5396631636586785122">ଡାହାଣ ପଟରେ ଏଜ୍ ଷ୍ଟିଚ୍</translation>
+<translation id="5397794290049113714">ଆପଣ</translation>
 <translation id="5398772614898833570">ବିଜ୍ଞାପନଗୁଡ଼ିକ ଅବରୋଧ ହୋ‍ଇଛି</translation>
 <translation id="5400836586163650660">ଧୂସର</translation>
 <translation id="5401344472773249513">ସେଲିବ୍ରିଟି ଓ ମନୋରଞ୍ଜନ ନ୍ୟୁଜ</translation>
@@ -2828,7 +2835,9 @@
 <translation id="6105460996796456817">ସାଇଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />ରେ ଥିବା ୱେବ୍‌ପୃଷ୍ଠାଟି ଅସ୍ଥାୟୀ ରୂପେ ଡାଉନ୍‌ ଥାଇପାରେ କିମ୍ବା ସ୍ଥାୟୀଭାବେ ଏକ ନୂତନ ୱେବ୍ ଠିକଣାକୁ ସ୍ଥାନାନ୍ତର ହୋଇପାରେ।</translation>
 <translation id="6107012941649240045">ଏହାଙ୍କୁ ଜାରି କରାଯାଇଛି</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ଗୋଷ୍ଠୀର ନାମକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="6107924765192360631">ଲିଖନ ପରାମର୍ଶ ପାଇବାକୁ କେବଳ କିଛି ଶବ୍ଦ କିମ୍ବା ଏକ ପ୍ରଥମ ଡ୍ରାଫ୍ଟ ସହିତ ଆରମ୍ଭ କରନ୍ତୁ।</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" />କୁ ତୁଳନା କରନ୍ତୁ</translation>
 <translation id="6108580855199168381">ସାର୍ଟିଫିକେଟ ବିବରଣୀ</translation>
 <translation id="6108702513636120202">Chromiumରେ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="6108849843016142864">ସରୀସୃପ ଏବଂ ଉଭୟଚରଗୁଡ଼ିକ</translation>
@@ -3711,6 +3720,7 @@
 <translation id="7660456820368115565">ବୃହଦାକାର ମଲ୍ଟିପ୍ଲେୟାର ଗେମଗୁଡ଼ିକ</translation>
 <translation id="7661591871037163355">ଆପଣଙ୍କ କମ୍ପାରିଜନ ଟେବୁଲ ପୂର୍ଣ୍ଣ ଅଛି। ନୂଆ ସ୍ତମ୍ଭଗୁଡ଼ିକ ଯୋଗ କରିବା ପାଇଁ ସ୍ତମ୍ଭଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
 <translation id="7662298039739062396">ଗୋଟିଏ ଏକ୍ସଟେନ୍‍ସନ୍ ଦ୍ଵାରା ସେଟିଂକୁ ନିୟନ୍ତ୍ରଣ କରାଯାଉଛି</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ଗୋଷ୍ଠୀରୁ ବାହାରି ଯାଇଛନ୍ତି</translation>
 <translation id="7663736086183791259">ସାର୍ଟିଫିକେଟ୍ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ଇନକଗ୍ନିଟୋ ମୋଡରେ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="7667346355482952095">ଫେରସ୍ତ ପଲିସି ଟୋକନ୍ ଖାଲି ଅଛି ବା ସାମ୍ପ୍ରତିକ ଟୋକନ୍ ସହ ମେଳ ଖାଉନି।</translation>

@@ -146,10 +146,8 @@
 <translation id="1594635596540195766">มี <ph name="SUGGESTIONS_COUNT" /> รายการที่แนะนำในลิสต์ด้านล่าง</translation>
 <translation id="1598163867407640634">ใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">เมื่อเปิดไว้ ระบบจะใช้และบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้น</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> นำแท็บออกแล้ว</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{นำ 1 รายการที่เลือกออก}other{นำ # รายการที่เลือกออก}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{ระบบบันทึกบุ๊กมาร์ก 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="ACCOUNT_EMAIL" />}other{ระบบบันทึกบุ๊กมาร์ก # รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="ACCOUNT_EMAIL" />}}</translation>
-<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> เข้าร่วมกลุ่มแล้ว</translation>
 <translation id="1641113438599504367">Google Safe Browsing</translation>
 <translation id="164269334534774161">คุณกำลังดูสำเนาออฟไลน์ของหน้านี้จากวันที่ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
@@ -349,7 +347,6 @@
 <translation id="2578337197553672982">เนื้อหาโดย Google สำหรับเด็ก</translation>
 <translation id="2579297619530305344">รหัสผ่านในอุปกรณ์ทุกเครื่องเปิดแบบเต็มหน้า</translation>
 <translation id="2581165646603367611">การดำเนินการนี้จะล้างคุกกี้ แคช และข้อมูลอื่นๆ ของเว็บไซต์ที่ Chrome คิดว่าไม่สำคัญ</translation>
-<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> เพิ่มแท็บแล้ว</translation>
 <translation id="2587052924345400782">มีเวอร์ชันใหม่กว่าให้ใช้งาน</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">ลงชื่อเข้าใช้เพื่อจัดการค่ากำหนด</translation>
@@ -863,7 +860,6 @@
 <translation id="4912413785358399818">ย้ายแท็บ</translation>
 <translation id="4913169188695071480">หยุดรีเฟรช</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
-<translation id="492284538114688557">พบการลดราคา</translation>
 <translation id="4925120120285606924">ภาพหน้าจอ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">ระบบจะส่งออกรหัสผ่านให้ดาวน์โหลดเป็นไฟล์ข้อความ ซึ่งใครหรือแอปใดก็ตามที่มีสิทธิ์เข้าถึงโฟลเดอร์ที่บันทึกไฟล์ไว้จะเห็นรหัสผ่านเหล่านี้ได้</translation>
 <translation id="4926901776383726965">คุณบันทึกรูปภาพและไฟล์เพื่อดูแบบออฟไลน์หรือแชร์ในแอปอื่นๆ ได้</translation>
@@ -944,7 +940,6 @@
 <translation id="5301876394151419436">คุณลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="5304593522240415983">ต้องกรอกข้อมูลในช่องนี้</translation>
 <translation id="5306014156308790439">"เพิ่มไปยังคอลเลกชัน" ปิดใช้อยู่</translation>
-<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> เปลี่ยนสีกลุ่มแล้ว</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5310963254742922113">ใช้รหัสผ่านแล้ว</translation>
 <translation id="5316947901395241499">ผู้ดูแลระบบของคุณปิดการบันทึกรหัสผ่าน</translation>
@@ -956,12 +951,10 @@
 <translation id="534580735623577507">ไม่มีเว็บไซต์จาก <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
 <translation id="5364112109233799727">ระบบจะส่ง URL ของหน้าที่คุณแสดงความคิดเห็นไปยัง Google และเจ้าหน้าที่อาจตรวจสอบ URL ดังกล่าวเพื่อปรับปรุงฟีเจอร์นี้</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> เปลี่ยนแท็บแล้ว</translation>
 <translation id="5375374982898812658">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ของคุณทุกเครื่อง</translation>
 <translation id="5375577065097716013">ค้นหาภาพด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">ออกจากโหมดไม่ระบุตัวตน</translation>
 <translation id="5395376160638294582">ตรวจสอบว่าคุณใช้ข้อมูล Chrome ในบัญชี Google ได้เสมอ</translation>
-<translation id="5397794290049113714">คุณ</translation>
 <translation id="539881862970320163">แนะนำรหัสผ่านที่รัดกุมแล้ว แป้นพิมพ์ซ่อนอยู่</translation>
 <translation id="5409881200985013443">ส่ง <ph name="ONE_TIME_CODE" /> ใน <ph name="CLIENT_NAME" /> ไหม</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) ต้องการให้คุณเข้าร่วมกลุ่มแท็บ ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้ ดังนั้นโปรดเข้าร่วมอย่างระมัดระวัง ลิงก์จะหมดอายุใน 48 ชม.</translation>
@@ -990,7 +983,6 @@
 <translation id="5515439363601853141">ปลดล็อกเพื่อดูรหัสผ่าน</translation>
 <translation id="5517095782334947753">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>
 <translation id="5517326820028369152">Bottom Sheet กิจกรรมล่าสุด</translation>
-<translation id="5524843473235508879">การเปลี่ยนเส้นทางถูกบล็อก</translation>
 <translation id="5526281268548144413">ปิดในหลายหน้าต่างไม่ได้</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="5548606607480005320">การตรวจสอบความปลอดภัย</translation>
@@ -1120,7 +1112,6 @@
 <translation id="60923314841986378">เหลือ <ph name="HOURS" /> ชั่วโมง</translation>
 <translation id="6095578583683628124">หาก Google เป็นเครื่องมือค้นหาเริ่มต้นของคุณด้วย คุณจะเห็นคำแนะนำที่มีประสิทธิภาพและเกี่ยวข้องกับบริบทมากยิ่งขึ้น</translation>
 <translation id="610630277578876674">เปิดลิงก์ในข้อความและอื่นๆ อย่างรวดเร็ว</translation>
-<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> เปลี่ยนชื่อกลุ่มแล้ว</translation>
 <translation id="6108923351542677676">กำลังดำเนินการตั้งค่า…</translation>
 <translation id="6112702117600201073">กำลังรีเฟรชหน้า</translation>
 <translation id="6122831415929794347">ปิด Google Safe Browsing ใช่ไหม</translation>
@@ -1233,7 +1224,6 @@
 <translation id="6565959834589222080">ระบบจะใช้ Wi-Fi เมื่อพร้อมใช้งาน</translation>
 <translation id="6569373978618239158">ตอนนี้คุณจะเห็นเรื่องราวจาก <ph name="SITE_NAME" /> เมื่อเปิดแท็บใหม่ ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่าของฟีเจอร์สำรวจ</translation>
 <translation id="6570116402456758630">สรุปหน้าเว็บ</translation>
-<translation id="6573096386450695060">อนุญาตเสมอ</translation>
 <translation id="6573431926118603307">แท็บที่คุณเปิดไว้ใน Chrome ในอุปกรณ์เครื่องอื่นๆ จะปรากฏที่นี่</translation>
 <translation id="6583199322650523874">บุ๊กมาร์กหน้าปัจจุบัน</translation>
 <translation id="6588043302623806746">ใช้ DNS ที่ปลอดภัย</translation>
@@ -1349,6 +1339,7 @@
 <translation id="6971862865055170158">ไม่อนุมัติ</translation>
 <translation id="6978717888677691380">เว็บไซต์ที่คุณบล็อก</translation>
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
+<translation id="6983306615164277634">คุณยังสามารถแตะแถบที่อยู่ค้างไว้เพื่อเปลี่ยนตำแหน่งได้อีกด้วย</translation>
 <translation id="6987047470128880212">แท็บที่ไม่ระบุตัวตนไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
 <translation id="6991701761229081516">ระบบจะดาวน์โหลดรหัสผ่านของคุณเป็นไฟล์ CSV โดยรหัสผ่านจะแสดงแก่ทุกคนที่เข้าถึงไฟล์นี้ได้ ซึ่งรวมถึงแอปต่างๆ ด้วย และระบบจะลบรหัสผ่านที่ส่งออกแล้วออกจาก Chrome</translation>
 <translation id="6996145122199359148">ดาวน์โหลดหน้านี้</translation>
@@ -1360,7 +1351,6 @@
 <translation id="7035701931849773472">ตัวเลือกอื่นๆ</translation>
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7054588988317389591">รับคำอธิบายรูปภาพใช่ไหม</translation>
-<translation id="7055152154916055070">การเปลี่ยนเส้นทางถูกบล็อก</translation>
 <translation id="7057969023583258980">เปิดประวัติการเข้าชมใน Chrome ทั้งหมด</translation>
 <translation id="7063006564040364415">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์การซิงค์</translation>
 <translation id="7071521146534760487">จัดการบัญชี</translation>
@@ -1505,7 +1495,6 @@
 <translation id="7656721520530864426">ไม่มีเว็บไซต์</translation>
 <translation id="7656862631699126784">เปิดการล็อกโหมดไม่ระบุตัวตน</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
-<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ออกจากกลุ่มแล้ว</translation>
 <translation id="7663320421139257046">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์<ph name="FIELDS_STRING" />ของคุณกับเว็บไซต์นี้ ดู<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="END_LINK1" />ของเว็บไซต์นี้</translation>
 <translation id="7665369617277396874">เพิ่มบัญชี</translation>
 <translation id="766587987807204883">บทความจะแสดงที่นี่ ซึ่งคุณจะอ่านได้แม้ในขณะออฟไลน์</translation>

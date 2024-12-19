@@ -1918,6 +1918,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">این کلیدها پشتیبانی نمی‌شوند: جهش، تبدیل، کنترل، گریز، کلید قفل تبدیل، میزان صدا</translation>
 <translation id="2309620859903500144">دسترسی این سایت به حسگرهای نور یا حرکت مسدود شده است.</translation>
+<translation id="2310414604104802967">درحال بررسی اینکه به سیستم وارد شده‌اید یا نه…</translation>
 <translation id="2310923358723722542">نمایشگر و درشت‌نمایی</translation>
 <translation id="2312219318583366810">نشانی وب صفحه</translation>
 <translation id="2314165183524574721">تنظیم رؤیت‌پذیری کنونی «پنهان» است</translation>
@@ -11291,6 +11292,7 @@
 <translation id="9007688236643268728">ورود مجدد به سیستم</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9008201858626224558">دکمه برگشت صفحه جزئیات <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008425116680857079">‏وقتی به سیستم وارد شدید، Chrome می‌تواند گذروازه‌تان را تغییر دهد.</translation>
 <translation id="9008828754342192581">قبلاً انتخاب کرده‌اید همه افزونه‌ها در <ph name="ORIGIN" /> مجاز باشند</translation>
 <translation id="9009369504041480176">در حال بارگذاری کردن (%<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="9009707268312089299">‏واردشده از Windows</translation>

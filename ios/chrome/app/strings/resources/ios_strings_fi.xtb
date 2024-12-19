@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Ei avoimia välilehtiä</translation>
 <translation id="1469381646033328562">Vanhempi ylläpitää tiliäsi.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Muutettu</translation>
 <translation id="1480152980057770392">Näytä lukulista</translation>
 <translation id="1484758781961275277">Hyödynnä iPadilla tuttuja pöytäkoneselaimen parhaita ominaisuuksia.</translation>
 <translation id="1485907716209290998">Lähetyksen seuranta</translation>
@@ -1211,6 +1212,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6445981559479772097">Viesti lähetetty.</translation>
 <translation id="6447842834002726250">Evästeet</translation>
 <translation id="6449554712554071184">Ryhmä poistetaan laitteelta pysyvästi.</translation>
+<translation id="6452534462676960500">Uusi toiminta</translation>
 <translation id="6459307836338400162">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia kohdista <ph name="BEGIN_LINK" />Synkronointi<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Tiedot piilotettu</translation>
 <translation id="646394917185284261">Tiedostot</translation>
@@ -1619,6 +1621,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8219424187226230983">Näytä offline-versio uudella välilehdellä</translation>
 <translation id="8230355548492839438">Hae edellinen</translation>
 <translation id="8232956427053453090">Säilytä data</translation>
+<translation id="8258999165172757081">Lisätty</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="82619448491672958">Katso muut välilehdet</translation>
 <translation id="8263228331881858381">Avainkoodi tallennettu</translation>

@@ -1419,7 +1419,6 @@ Nota: questo criterio non si applica agli URL JavaScript in-page con caricamento
 <translation id="2005506794355327448">L'azione da compiere quando lo schermo è abbassato.</translation>
 <translation id="2006530844219044261">Gestione dell'alimentazione</translation>
 <translation id="2006954055163088863">Considera l'utente inattivo quando viene riprodotto il video</translation>
-<translation id="2008514891623783266">Criteri di gestione dell'IP di WebRTC</translation>
 <translation id="201153120366509312">Se questo criterio viene consentito o se non viene configurato, la raccolta di metriche con chiave URL è consentita.
 Se il criterio viene consentito e la raccolta di metriche con chiave URL viene attivata dall'utente, la raccolta di metriche con chiave URL invia a Google gli URL delle pagine visitate dagli utenti per migliorare le ricerche e la navigazione, nonché le statistiche sull'utilizzo di ogni singola pagina.
 Le metriche con chiave URL includono anche gli identificatori e le statistiche sull'utilizzo di altri componenti del browser che possono modificare o fornire contenuti, come le estensioni.
@@ -3427,6 +3426,7 @@ Se questo criterio viene configurato, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POL
       contattare Quirks Server per scaricare i file di configurazione.
 
       Se questa norma è impostata su true o non è configurata, allora <ph name="PRODUCT_OS_NAME" /> contatterà automaticamente Quirks Server e scaricherà i file di configurazione, se disponibili, e li archivierà sul dispositivo.  Questi file potrebbero essere usati, ad esempio, per migliorare la qualità del display dei monitor collegati.</translation>
+<translation id="3513864752694608929">Non imporre i metodi di immissione abilitati</translation>
 <translation id="3515196503924273265">Consente di attivare la funzionalità NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Dopo la disattivazione di <ph name="LACROS_NAME" />, la migrazione dei dati non viene eseguita. La cartella <ph name="LACROS_NAME" /> viene rimossa e gli utenti continuano a utilizzare i dati rimanenti.</translation>
 <translation id="3518293344797498431">Carica la batteria fino a circa l'80% per massimizzarne l'autonomia.</translation>
@@ -6926,6 +6926,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6092073071805297119">Consenti l'uso del filtro delle prestazioni di accessibilità.</translation>
 <translation id="60925735895026302">Non consentire a nessun sito di richiedere l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting</translation>
 <translation id="6093156968240188330">Consente agli utenti remoti di interagire con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
+<translation id="6093551397728373988">Imponi l'abilitazione di tutti i metodi di immissione consentiti in una sessione utente</translation>
 <translation id="6094314311474620462">Viene disattivata la stampa</translation>
 <translation id="6097601282776163274">Attiva la raccolta di dati anonimizzati con chiave URL</translation>
 <translation id="6099853574908182288">Modalità di stampa a colori predefinita</translation>
@@ -7137,6 +7138,11 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
       Se viene disattivato, gli utenti non possono eseguire Chrome for Testing. Gli utenti potranno comunque installare Chrome for Testing, ma non verrà eseguito con i profili per cui questo criterio è disattivato.</translation>
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
+<translation id="6262668203803408414">Se la policy viene impostata su true, tutti i metodi di immissione della policy <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> vengono abilitati nelle sessioni <ph name="PRODUCT_OS_NAME" />.
+Non è possibile abilitare altri metodi di immissione nelle sessioni utente.
+Se la policy viene impostata su false o se non viene configurata, non vengono imposti i metodi di immissione abilitati e la policy <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> configura solo i metodi di immissione disponibili per l'utente.
+
+Se la policy <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> non viene configurata o se viene impostata su un elenco vuoto, questa policy viene ignorata e gli utenti possono abilitare qualsiasi metodo di immissione.</translation>
 <translation id="6264247808139384018">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti che hanno effettuato l'autenticazione con una password possono bloccare lo schermo.
 
 Se viene impostato su Disattivato, gli utenti non possono bloccare lo schermo e possono soltanto uscire dalla sessione utente.</translation>
@@ -9223,6 +9229,7 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
 
       Questo criterio era stato pensato per essere temporaneo ed è stato rimosso dopo l'avvio completo della nuova interfaccia utente del fumetto dei download.</translation>
 <translation id="7736521021425189418">Terminale (supportata dalla versione 117)</translation>
+<translation id="7736846524371077454">Imponi l'abilitazione di tutti i metodi di immissione consentiti</translation>
 <translation id="7740644123648617252">Abilita l'importazione dei dati di compilazione automatica dei moduli alla prima esecuzione</translation>
 <translation id="7744253761377202223">La percentuale di luminosità dello schermo quando viene usata l'alimentazione CA.</translation>
 <translation id="7747447585227954402">Consenti ai dispositivi di usare <ph name="PLUGIN_VM_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9620,7 +9627,6 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="8056800559672904373">Un account gestito deve essere un account principale e non deve avere account secondari. L'importazione dei dati di navigazione esistenti è consentita al momento della creazione del profilo</translation>
 <translation id="8059164285174960932">URL su cui i client di accesso remoto dovrebbero ottenere il token di autenticazione</translation>
 <translation id="8059352177830050556">Attiva i report sulle informazioni relative alla retroilluminazione del dispositivo</translation>
-<translation id="8062375903420954294">Questo criterio permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile. Consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Se il criterio non viene configurato, per impostazione predefinita vengono usate tutte le interfacce disponibili.</translation>
 <translation id="8062485064082966327">Usa un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="8066428282805800713">Invia dati hardware aggiuntivi su ChromeOS Flex</translation>
 <translation id="8066532561081127944">Per motivi di sicurezza,

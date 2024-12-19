@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Құпия контент көрініп тұрғанда, әкімші саясаты экранды түсіру функциясын өшіреді.</translation>
 <translation id="1617276713587758852">Кроссоверлер</translation>
 <translation id="1619007254056372606">Құрылғыдағы сайт деректерін реттеу</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> қойындыны өшірді.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622966923835127638">Бизнесті қаржыландыру</translation>
 <translation id="1623104350909869708">Бұл беттің қосымша диалогтік терезелерді жасауына жол бермеу</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Әкімші саясатында бұл файлды ашуға тыйым салынған}other{Әкімші саясатында # файлды ашуға тыйым салынған}}</translation>
 <translation id="1633941398432788136">Іс-шараларды жоспарлау</translation>
 <translation id="1634828734222219955">Барлығы</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> топқа қосылды.</translation>
 <translation id="163826442096818926">Қысқарту</translation>
 <translation id="1639239467298939599">Жүктелуде</translation>
 <translation id="1640180200866533862">Пайдаланушы саясаттары</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">Қауіпсіздікті қамтамасыз ету үшін ол құрылғының операциялық жүйесін, браузер нұсқасы мен қандай бағдарламалық құрал орнатылғанын да көреді.</translation>
 <translation id="2573170131138724450">Телевизия</translation>
 <translation id="257674075312929031">Топ</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> қойынды қосты.</translation>
 <translation id="2586657967955657006">Буфер</translation>
 <translation id="2587841377698384444">Каталогтің API идентификаторы:</translation>
 <translation id="2594318783181750337">Жылдам веб-көрініс:</translation>
@@ -2401,6 +2404,7 @@
 <translation id="5300589172476337783">Көрсету</translation>
 <translation id="5305716236436927587">Жарнама және маркетинг</translation>
 <translation id="5306593769196050043">Екі парақ та</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> топ түсін өзгертті.</translation>
 <translation id="5307166000025436103">Жарайды</translation>
 <translation id="5308380583665731573">Қосылу</translation>
 <translation id="5308689395849655368">Бұзылу туралы хабарлау өшірілген.</translation>
@@ -2432,6 +2436,7 @@
 <translation id="5363309033720083897">Әкімші рұқсат еткен тізбекті порт</translation>
 <translation id="5363532265530011914">Шұлық және шұлық бұйымы</translation>
 <translation id="5371425731340848620">Картаны жаңарту</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> қойындыны өзгертті.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Сағатыңыз артта", "Сағатыңыз алда" немесе "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Бұл құпия сөз барлық құрылғыңызда болуы үшін жеке басыңызды растаңыз.</translation>
@@ -2446,6 +2451,7 @@
 <translation id="5392506727170022660">Металл (жартылай жылтыр)</translation>
 <translation id="5394069166371280357">Отбасылық телешоулар</translation>
 <translation id="5396631636586785122">Оң жақ жиегін тігу</translation>
+<translation id="5397794290049113714">Сіз</translation>
 <translation id="5398772614898833570">Жарнамалар бөгелді</translation>
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="5401344472773249513">Танымал тұлғалар мен ойын-сауық туралы жаңалықтар</translation>
@@ -2831,6 +2837,7 @@
 <translation id="6105460996796456817">Сайт жасау</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> мекенжайындағы веб-бет уақытша өшірілген немесе біржола жаңа мекенжайға көшірілген болуы мүмкін.</translation>
 <translation id="6107012941649240045">Кімге берілді</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> топ атауын өзгертті.</translation>
 <translation id="6107924765192360631">Жазуға қатысты ұсыныстар алу үшін бірнеше сөзден немесе бірінші нобайдан бастаңыз.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> тауарларын салыстыру</translation>
 <translation id="6108580855199168381">Сертификат мәліметтері</translation>
@@ -3716,6 +3723,7 @@
 <translation id="7660456820368115565">Көп ойыншыға арналған ойындар</translation>
 <translation id="7661591871037163355">Салыстыру кестесі толды. Жаңа бағандар қосу үшін бар бағандарды өшіріңіз.</translation>
 <translation id="7662298039739062396">Кеңейтім арқылы реттелетін параметр</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> топтан шықты.</translation>
 <translation id="7663736086183791259">Сертификат: <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Incognito режимінде рұқсат етілмеген.</translation>
 <translation id="7667346355482952095">Қайтарылған саясат таңбалауышы бос немесе ағымдағы таңбалауышқа сәйкес келмейді</translation>

@@ -357,6 +357,7 @@
 <translation id="1615402009686901181">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తుంది</translation>
 <translation id="1617276713587758852">క్రాస్ఓవర్‌లు</translation>
 <translation id="1619007254056372606">పరికరంలో సైట్ డేటాను మేనేజ్ చేయండి</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ఈ ట్యాబ్‌ను తీసివేశారు</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1622966923835127638">బిజినెస్ ఫైనాన్స్</translation>
 <translation id="1623104350909869708">ఈ పేజీని అదనపు డైలాగ్‌లు సృష్టించనీయకుండా నిరోధించు</translation>
@@ -364,6 +365,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ఈ ఫైల్‌ను తెరవకుండా అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది}other{# ఫైల్స్‌ను తెరవకుండా అడ్మినిస్ట్రేటర్ పాలసీ బ్లాక్ చేసింది}}</translation>
 <translation id="1633941398432788136">ఈవెంట్ ప్లానింగ్</translation>
 <translation id="1634828734222219955">మొత్తం</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> గ్రూప్‌లో చేరారు</translation>
 <translation id="163826442096818926">షార్ట్‌గా చేయండి</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
 <translation id="1640180200866533862">వినియోగదారు విధానాలు</translation>
@@ -899,6 +901,7 @@
 <translation id="2571488850200220306">సెక్యూరిటీని నిర్ధారించడంలో సహాయపడటానికి, ఇది పరికరం OS, బ్రౌజర్ వెర్షన్‌ను, ఏ సాఫ్ట్‌వేర్ ఇన్‌స్టాల్ చేయబడిందో కూడా చూడగలదు</translation>
 <translation id="2573170131138724450">టెలివిజన్‌లు</translation>
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ట్యాబ్‌ను జోడించారు</translation>
 <translation id="2586657967955657006">క్లిప్‌బోర్డ్</translation>
 <translation id="2587841377698384444">డైరెక్టరీ API ID:</translation>
 <translation id="2594318783181750337">వేగవంతమైన వెబ్ వీక్షణ:</translation>
@@ -2397,6 +2400,7 @@
 <translation id="5300589172476337783">చూపించు</translation>
 <translation id="5305716236436927587">అడ్వర్టయిజింగ్ &amp; మార్కెటింగ్</translation>
 <translation id="5306593769196050043">రెండు షీట్‌లూ</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> గ్రూప్ రంగును మార్చారు</translation>
 <translation id="5307166000025436103">సరే</translation>
 <translation id="5308380583665731573">కనెక్ట్ చేయండి</translation>
 <translation id="5308689395849655368">క్రాష్ రిపోర్ట్‌ నిలిపివేయ‌బడింది.</translation>
@@ -2428,6 +2432,7 @@
 <translation id="5363309033720083897">మీ అడ్మినిస్ట్రేటర్ అనుమతించిన సీరియల్ పోర్ట్</translation>
 <translation id="5363532265530011914">సాక్స్ &amp; అల్లిన దుస్తులు</translation>
 <translation id="5371425731340848620">కార్డ్‌ని అప్‌డేట్ చేయండి</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ట్యాబ్‌ను మార్చారు</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"మీ గడియారం ఆలస్యంగా నడుస్తోంది" లేదా "మీ గడియారం ముందుగా ఉంది" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">మీ పరికరాలన్నింటిలో ఈ పాస్‌వర్డ్‌ను పొందడానికి, మీ గుర్తింపును వెరిఫై చేయండి</translation>
@@ -2442,6 +2447,7 @@
 <translation id="5392506727170022660">మెటల్ (సెమీ-గ్లాస్)</translation>
 <translation id="5394069166371280357">కుటుంబ-తరహా టీవీ షోలు</translation>
 <translation id="5396631636586785122">కుడివైపు కుట్టిన అంచు</translation>
+<translation id="5397794290049113714">మీరు</translation>
 <translation id="5398772614898833570">ప్రకటనలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="5400836586163650660">బూడిద రంగు</translation>
 <translation id="5401344472773249513">సెలబ్రిటీలు &amp; వినోద వార్తలు</translation>
@@ -2827,6 +2833,7 @@
 <translation id="6105460996796456817">సైట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />లోని వెబ్‌పేజీ తాత్కాలికంగా నిలిపివేయబడి ఉండవచ్చు లేదా ఇది శాశ్వతంగా కొత్త వెబ్ అడ్రస్‌కు తరలించబడి ఉండవచ్చు.</translation>
 <translation id="6107012941649240045">వీరికి జారీ చేయబడింది</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> గ్రూప్ పేరు మార్చారు</translation>
 <translation id="6107924765192360631">రచనకు సంబంధించిన సూచనలను పొందడానికి కొన్ని పదాలను లేదా మొదటి డ్రాఫ్ట్‌తో ప్రారంభించండి.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" />‌ను కంపార్ చేయండి</translation>
 <translation id="6108580855199168381">సర్టిఫికెట్ వివరాలు</translation>
@@ -3713,6 +3720,7 @@
 <translation id="7660456820368115565">ఎక్కువ మంది కలిసి ఆడ గల మల్టీ-ప్లేయర్ గేమ్‌లు</translation>
 <translation id="7661591871037163355">మీ కంపారిజన్ టేబుల్ నిండింది. కొత్త వాటిని జోడించడానికి నిలువు వరుసలను తీసివేయండి.</translation>
 <translation id="7662298039739062396">ఎక్స్‌టెన్షన్‌ ద్వారా సెట్టింగ్ నియంత్రించబడుతోంది</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> గ్రూప్ నుండి నిష్క్రమించారు</translation>
 <translation id="7663736086183791259">సర్టిఫికెట్ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">అజ్ఞాత మోడ్‌లో అనుమతించబడదు</translation>
 <translation id="7667346355482952095">అందించిన విధాన టోకెన్ ఖాళీగా ఉంది లేదా ప్రస్తుత టోకెన్‌తో సరిపోలలేదు</translation>

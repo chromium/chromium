@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">कुनै पनि खुला ट्याब छैन</translation>
 <translation id="1469381646033328562">तपाईंका अभिभावक तपाईंको खाता व्यवस्थापन गर्नुहुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">परिवर्तन गरिएको</translation>
 <translation id="1480152980057770392">रिडिङ लिस्ट देखाउनुहोस्</translation>
 <translation id="1484758781961275277">iPad मा उपलब्ध आफूलाई थाहा भएको र मन पर्ने डेस्कटप ब्राउजरबाट उत्कृष्ट लाभ प्राप्त गर्नुहोस्।</translation>
 <translation id="1485907716209290998">प्याकेज ट्रयाकिङ</translation>
@@ -412,7 +413,7 @@
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2772667768515195373">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="USER_EMAIL" />) मा सेभ गरिन्छ।</translation>
 <translation id="2773344962924806829">इमेल नोटिफिकेसनहरू</translation>
-<translation id="2781331604911854368">सक्रिय छ</translation>
+<translation id="2781331604911854368">अन छ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">डेस्कटप साइट देखाउन अनुरोध गर्नुहोस्</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{यो पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएको छ}other{यी पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएका छन्}}</translation>
@@ -1211,6 +1212,7 @@
 <translation id="6445981559479772097">सन्देश पठाइयो।</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
 <translation id="6449554712554071184">तपाईंले यसो गर्नुभयो भने तपाईंको डिभाइसबाट यो समूह सदाका लागि मेटाइने छ।</translation>
+<translation id="6452534462676960500">नयाँ गतिविधि</translation>
 <translation id="6459307836338400162">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />सिंक<ph name="END_LINK" /> तथा <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक दुवै खण्ड हेर्नुहोस्।</translation>
 <translation id="6459411599807878608">विवरणहरू लुकाइएका छन्</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1619,6 +1621,7 @@
 <translation id="8219424187226230983">नयाँ ट्याबमा अफलाइन संस्करण हेर्नुहोस्</translation>
 <translation id="8230355548492839438">अघिल्लो स्ट्रिङ भेट्टाउनुहोस्</translation>
 <translation id="8232956427053453090">डेटा राख्नुहोस्</translation>
+<translation id="8258999165172757081">थपियो</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="82619448491672958">अन्य ट्याबहरू हेर्नुहोस्</translation>
 <translation id="8263228331881858381">पासकी सेभ गरिएको छ</translation>

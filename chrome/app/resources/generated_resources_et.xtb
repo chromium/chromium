@@ -414,6 +414,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1274997165432133392">Küpsised ja muud saidi andmed</translation>
 <translation id="1275718070701477396">Valitud</translation>
 <translation id="1275936815032730048">käivitaja + paremnool</translation>
+<translation id="1275963833368139883">Sirvimisajalugu otsides põhinevad vastused ja otsingutulemused lehe sisul. See tagab paremad tulemused</translation>
 <translation id="1276994519141842946">Rakendust <ph name="APP_NAME" /> ei saanud installida</translation>
 <translation id="1277020343994096713">Looge uus PIN-kood, mis erineb teie praegusest PIN-koodist</translation>
 <translation id="1277597051786235230">Teenusest <ph name="SEARCH_ENGINE" /> uuel vahelehel sõna „<ph name="SEARCH_TERMS" />” otsimine</translation>
@@ -1333,6 +1334,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1920390473494685033">Kontaktid</translation>
 <translation id="1921544956190977703">Teil on Chrome'i tugevaim kaitse ohtlike veebisaitide, allalaadimiste ja laienduste vastu</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> punkti tolli kohta</translation>
+<translation id="1921600948984918136">„<ph name="NAME" />“ salvestatakse ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage see oma kontole.</translation>
 <translation id="1922496389170590548">Lapse koolikonto</translation>
 <translation id="1923468477587371721">Google'i saidid, nagu Gmail, Drive ja YouTube, kasutavad teie Google'i konto keelt, kui te pole konkreetse teenuse keelt muutnud</translation>
 <translation id="1923539912171292317">Automaatsed klikid</translation>
@@ -2251,6 +2253,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2540651571961486573">Midagi läks valesti. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Kas optimeerida täisekraanil ülekandmiseks?</translation>
 <translation id="2541343621592284735">Kaamera ja mikrofoni kasutamine pole lubatud</translation>
+<translation id="2541400104619216245">Soovitab toodete vahel valimise korral üksikasju, mida võrrelda</translation>
 <translation id="2541706104884128042">Määrati uus uneaeg</translation>
 <translation id="2542050502251273923">Määrab võrguühenduse halduri ja muude üksust ff_debug kasutavate teenuste silumise taseme.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Õigused, mille lubate rakenduse „<ph name="APP_NAME" />“ jaoks, lubatakse ka selle rakenduse jaoks. <ph name="MANAGE_LINK" />}other{Õigused, mille lubate rakenduse „<ph name="APP_NAME" />“ jaoks, lubatakse ka nende rakenduste jaoks. <ph name="MANAGE_LINK" />}}</translation>
@@ -2283,6 +2286,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2568774940984945469">Teaberiba ümbris</translation>
 <translation id="2569972178052279830">Jaemüüja nimi</translation>
 <translation id="257088987046510401">Teemad</translation>
+<translation id="2571638829488071045">Kas salvestada see laiendus teie Google'i kontole?</translation>
 <translation id="2571655996835834626">Muutke seadeid, mis juhivad veebisaitide juurdepääsu funktsioonidele, näiteks küpsistele, JavaScriptile, pistikprogrammidele, asukoha määramise teenusele, mikrofonile, kaamerale jms.</translation>
 <translation id="257175846174451436">Soovitatud vahelehegrupp</translation>
 <translation id="2572032849266859634">On antud kirjutuskaitstud juurdepääs seadmele <ph name="VOLUME_NAME" />.</translation>
@@ -2328,6 +2332,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2606568927909309675">Ingliskeelse heli ja video puhul luuakse automaatselt subtiitrid. Heli ja subtiitreid ei saadeta kunagi seadmest väljapoole.</translation>
 <translation id="2606890864830643943">Diagnostikaandmete importimine</translation>
 <translation id="2607101320794533334">Subjekti avaliku võtme teave</translation>
+<translation id="2608837922830967145">Ära seda sõnumit enam kuva</translation>
 <translation id="2609896558069604090">Loo otseteid ...</translation>
 <translation id="2609980095400624569">Ühendust ei õnnestunud luua</translation>
 <translation id="2610157865375787051">Unerežiim</translation>
@@ -2387,6 +2392,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2646132387794831258">Kas salvestada teie Google'i konto kausta?</translation>
 <translation id="264897126871533291">Protanomaalia</translation>
 <translation id="2649045351178520408">Base64 kodeeritud ASCII, sertifikaadiahel</translation>
+<translation id="2650114513545328141">Sees • Kasutage sirvimisajaloo otsimiseks ja külastatud saitide leidmiseks igapäevakeelt. Teil on võimalik ka küsimusi esitada ja oma sirvimisajaloo põhjal vastuseid saada</translation>
 <translation id="265156376773362237">Standardne eellaadimine</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} parool on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes <ph name="BEGIN_LINK" />salvestage see oma Google’i kontole<ph name="END_LINK" />.}other{{COUNT} parooli on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes <ph name="BEGIN_LINK" />salvestage need oma Google’i kontole<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Parooli valimine</translation>
@@ -3234,6 +3240,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3262261769033093854">Ära luba saitidel hiiresisendit jäädvustada ega kasutada</translation>
 <translation id="3262336253311870293">Kuna seda kontot haldab domeen <ph name="DOMAIN" />, ei logita teid Google'i kontolt välja. Teie järjehoidjaid, ajalugu, paroole ega muid seadeid ei sünkroonita enam. Sellegipoolest jäävad teie varem sünkroonitud andmed teie Google'i kontole alles ja saate neid hallata <ph name="BEGIN_LINK" />Google Dashboardi kaudu<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Liiga suur</translation>
+<translation id="3263103592011092762">Saitide sirvimisel krüpteeritakse nende lehtede sisu ja salvestatakse teie seadmesse.  AI-põhised ajaloo otsingutulemused ja vastused võivad aeguda, kui saidi sisu on pärast teie viimast külastust muutunud.  See funktsioon võib mõjutada ka Chrome'i toimivust.</translation>
 <translation id="3264544094376351444">Seriifideta font</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Sulge aken</translation>
@@ -3800,6 +3807,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3670113805793654926">Seadmed mis tahes teenusepakkujalt</translation>
 <translation id="3670229581627177274">Lülita Bluetooth sisse</translation>
 <translation id="3670480940339182416">Saidid võivad kasutada V8 optimeerijat</translation>
+<translation id="3671764914317109892">Kasutage sirvimisajaloo otsimiseks igapäevakeelt. Teil on võimalik ka küsimusi esitada ja oma sirvimisajaloo põhjal vastuseid saada.</translation>
 <translation id="3672681487849735243">Tuvastati tehaseviga</translation>
 <translation id="3673097791729989571">Sisselogimist hostib <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673287357837016374">Teie PIN-kood on värskendatud</translation>
@@ -4110,6 +4118,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="3857807444929313943">Tõstke sõrm andurilt ja seejärel puudutage uuesti</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="385939467708172187">Kasutage tugevat parooli</translation>
+<translation id="3859987779882450877">Soovitab teie avatud vahelehtede põhjal automaatselt gruppe ja loob need</translation>
 <translation id="386009056910366930">Vahelehegrupi „<ph name="GROUP_NAME" />“ haldamine</translation>
 <translation id="3861638017150647085">Kasutajanime „<ph name="USERNAME" />” pole saadaval</translation>
 <translation id="3861852898230054539">Praegu kasutate Google'i konto parooli. Sisselogimise hõlbustamiseks saate seadistada seadme <ph name="DEVICE_TYPE" /> parooli.</translation>
@@ -4227,6 +4236,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="3937640725563832867">Sertifikaadi väljastaja alternatiivne nimi</translation>
 <translation id="3937734102568271121">Tõlgi alati: <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Seadmed teenusepakkujalt <ph name="VENDOR_ID" /></translation>
+<translation id="3938708596383910944">AI-põhistes otsingutulemustes kuvatakse ainult pärast selle funktsiooni sisselülitamist külastatud saidid</translation>
 <translation id="3941565636838060942">Programmile juurdepääsu peitmiseks tuleb teil programm desinstallida,
 kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 
@@ -4886,6 +4896,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4415748029120993980">SECG elliptilise kõveraga secp384r1 (ehk NIST P-384)</translation>
 <translation id="4415815425191869676">Järgmised saidid hoitakse alati aktiivsena</translation>
 <translation id="4416582610654027550">Sisestage kehtiv URL</translation>
+<translation id="4421932172707401417">Kirjutussoovitused põhinevad teie päringutel ja veebilehe sisul</translation>
 <translation id="4421932782753506458">Miisu</translation>
 <translation id="4423376891418188461">Taasta seaded</translation>
 <translation id="4423525817792153232">Näidake kõiki oma hambaid</translation>
@@ -5351,6 +5362,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4766598565665644999">Kõik laiendused saavad saiti <ph name="HOST" /> lugeda ja muuta</translation>
 <translation id="4767427586072640478">Vaadake lisateavet keelatud laienduste kohta.</translation>
 <translation id="4768332406694066911">Teil on nende organisatsioonide sertifikaadid, mis teid tuvastavad</translation>
+<translation id="4768945955870840220">Mõne toote puhul saab Chrome koguda arvustusi kogu veebist</translation>
 <translation id="4769632191812288342">Teil on standardtasemel kaitse</translation>
 <translation id="4770119228883592393">Taotleti luba, vastamiseks vajutage klahvikombinatsiooni ⌘ + Option + allanool</translation>
 <translation id="4770755495532014179">Parooli kasutamine iPhone'is</translation>
@@ -6274,6 +6286,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="542750953150239272">Jätkamisel nõustute, et seade võib Google'i, teie operaatori ja seadme tootja värskendusi ning rakendusi ka automaatselt alla laadida ja installida, kasutades selleks võib-olla mobiilset andmesidet. Mõned neist rakendustest võivad pakkuda rakendusesiseseid oste.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (värskendus on saadaval)</translation>
 <translation id="542948651837270806">Installida tuleb usaldusväärse platvormi mooduli püsivara. Kuva <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="5429549332422308385">AI-põhistes ajaloo otsingutulemustes kuvatakse ainult pärast selle funktsiooni sisselülitamist külastatud saidid.</translation>
 <translation id="5429818411180678468">Täislaius</translation>
 <translation id="5430931332414098647">Automaatne jagamine</translation>
 <translation id="5431318178759467895">Värv</translation>
@@ -6431,6 +6444,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5542750926112347543">Domeeni <ph name="DOMAIN" /> küpsisefailid on blokeeritud.</translation>
 <translation id="5542949973455282971">Luuakse ühendus operaatoriga <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Oleku kontrollimine ...</translation>
+<translation id="5544193518673765595">Vastused ja otsingutulemused põhinevad lehe sisul.  See annab teile paremaid tulemusi olenemata sellest, kas otsite sirvimisajalugu aadressiribal otsetee @ajalugu abil või lehelt Ajalugu.</translation>
 <translation id="5544482392629385159">Seade <ph name="DEVICE_INDEX" />/<ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Renderdaja</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Vahelehe lisamine gruppi}other{Vahelehtede lisamine gruppi}}</translation>
@@ -6908,6 +6922,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5895335062901455404">Kui logite sisse oma Google'i kontoga, on teie salvestatud eelistused ja tegevused igas Chrome OS Flexi seadmes valmis. Jaotises Seaded saate valida, mida sünkroonida.</translation>
 <translation id="5895338131909306775">Keemia labor</translation>
 <translation id="589541317545606110">Otsige lehelt rakendusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="5895549920267917925">Aitab teil keskenduda vajalikule tegevusele</translation>
 <translation id="5895758411979561724"><ph name="APP_ORIGIN" /> salvestab teie ekraanikuva</translation>
 <translation id="5896436821193322561">Ära luba</translation>
 <translation id="5899860758576822363">Esita väiksema helitugevusega, kui ChromeVox räägib</translation>
@@ -7038,6 +7053,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5985556342298151179">Chrome'i rakenduse installis teie seadme administraator.</translation>
 <translation id="598810097218913399">Tühista määrang</translation>
 <translation id="5988563937187882754">Paremale vaatamine</translation>
+<translation id="5989497858237037960">Saitide sirvimisel krüpteeritakse nende lehtede sisu ja salvestatakse teie seadmesse. See võib mõjutada Chrome'i toimivust</translation>
 <translation id="5990266201903445068">Ainult WiFi</translation>
 <translation id="5990386583461751448">Tõlgitud</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Kui soovite jätkuvalt veebi sirvida, paluge administraatoril see rakendus eemaldada.}other{Kui soovite jätkuvalt veebi sirvida, paluge administraatoril need rakendused eemaldada.}}</translation>
@@ -7087,6 +7103,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6024317249717725918">&amp;Otsi videokaadrit teenusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Virna jälg</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-seade on ühendatud</translation>
+<translation id="6027143200498653403">Kui esitate oma ajaloo kohta küsimusi, saate hankida vastuseid konkreetse teabe kohta mõnel külastatud lehel</translation>
 <translation id="6027945736510816438">Kas mõtlesite saiti <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Lisa sõrmejälg</translation>
 <translation id="6030719887161080597">Saate hallata teavet, mida saidid kasutavad reklaami toimivuse mõõtmiseks</translation>
@@ -7808,6 +7825,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="656293578423618167">Faili tee või nimi on liiga pikk. Salvestage lühema nimega või muusse asukohta.</translation>
 <translation id="6563002009564846727">Windowsist imporditud sertifikaatide vaatamine</translation>
 <translation id="6563055593659435495">Teie telefoniga ei saa ühendust säilitada. Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
+<translation id="6564860838537532172">Sirvimisajalugu otsides saadetakse teie ajaloo-otsingud, parimate vastete lehesisu ja genereeritud mudeliväljundid Google'ile ning ülevaatajad võivad neid näha, et seda funktsiooni täiustada.</translation>
 <translation id="6569931898053264308">Keskmine sääst</translation>
 <translation id="6570622975915850879">Kasuta teist seadet</translation>
 <translation id="65711204837946324">Allalaadimiseks on vaja luba</translation>
@@ -8292,6 +8310,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6900651018461749106">E-posti aadressi <ph name="USER_EMAIL" /> värskendamiseks logige uuesti sisse</translation>
 <translation id="6900654715912436255">Kas soovite selle otsingumootori kindlasti kustutada?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
+<translation id="6901130673208235020">Sirvimisajalugu otsides saadetakse teie ajaloo-otsingud, parimate vastete lehesisu ja genereeritud mudeliväljundid Google'ile</translation>
 <translation id="6902066522699286937">Eelvaate hääl</translation>
 <translation id="6902336033320348843">Jaotist ei toetata: <ph name="ERROR_LINE" /></translation>
 <translation id="6903022061658753260">Teie andmed sünkroonitakse kõigis Chrome'i brauserites, kus olete sünkroonimise selle konto jaoks sisse lülitanud. Chrome OS-i sünkroonimisvalikute nägemiseks avage <ph name="LINK_BEGIN" />Chrome OS-i seaded<ph name="LINK_END" />.</translation>
@@ -8335,6 +8354,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6933321725007230600">Lülitage &amp;sünkroonimine sisse ...</translation>
 <translation id="693459579445775904">Häälefaile jagatakse kasutajate vahel, et kettaruumi säästa</translation>
 <translation id="6935031746833428401">Lisateave seadmehalduse kohta</translation>
+<translation id="6935125916377656496">Väljas • Kasutage sirvimisajaloo otsimiseks ja külastatud saitide leidmiseks igapäevakeelt. Teil on võimalik ka küsimusi esitada ja oma sirvimisajaloo põhjal vastuseid saada</translation>
 <translation id="6935286146439255109">Paberisalv puudub</translation>
 <translation id="6938386202199793006">Teil on 1 salvestatud printer.</translation>
 <translation id="6938606182859551396">Selleks et seadmes <ph name="DEVICE_TYPE" /> oma telefoni märguandeid saada, järgige telefonis esitatud juhiseid, et anda Google Play teenustele juurdepääs märguannetele.</translation>
@@ -8741,6 +8761,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7237820815228048635">Saitide <ph name="EXAMPLE_DOMAIN_1" /> ja <ph name="EXAMPLE_DOMAIN_2" /> jaoks</translation>
 <translation id="7238609589076576185">Sisestati rõhumärk.</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> tühistas ülekande</translation>
+<translation id="7239401402533584029">Aitab teil kirjutada veebis kõike, lisades veidi viimistlust või andes loomingulist inspiratsiooni</translation>
 <translation id="7240339475467890413">Kas luua ühendus uue levialaga?</translation>
 <translation id="7241389281993241388">Logige sisse rakendusse <ph name="TOKEN_NAME" /> kliendi sertifikaadi importimiseks.</translation>
 <translation id="7241763419756062043">Valige oma otsingu ja sirvimise kvaliteet</translation>
@@ -8969,6 +8990,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="740333000181878130">Seadme käivitamise heli</translation>
 <translation id="7403642243184989645">Ressursside allalaadimine</translation>
 <translation id="7406113532070524618">See seade toimib ilma teid tuvastamata ega luba saitidel vaadata teie sirvimisajalugu, kuid saidid võivad kontrollimistoimingu käigus jagada väikest hulka teavet</translation>
+<translation id="7406170619228425009">AI-põhised ajaloo otsingutulemused ja vastused võivad aeguda, kui saidi sisu on pärast teie viimast külastust muutunud</translation>
 <translation id="740624631517654988">Hüpik blokeeritud</translation>
 <translation id="7406912950279255498">Värvide ümberpööramise režiim</translation>
 <translation id="7407430846095439694">Impordi ja seo</translation>
@@ -9379,6 +9401,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7691077781194517083">Seda turvavõtit ei saa lähtestada. Viga <ph name="ERROR_CODE" />.</translation>
 <translation id="7691163173018300413">„Ok Google”</translation>
 <translation id="7691698019618282776">Crostini versiooniuuendus</translation>
+<translation id="7693792553740402887">Kasutage sirvimisajaloo otsimiseks ja külastatud saitide leidmiseks igapäevakeelt. Teil on võimalik ka küsimusi esitada ja oma sirvimisajaloo põhjal vastuseid saada</translation>
 <translation id="7694246789328885917">Esiletõstutööriist</translation>
 <translation id="7694895628076803349">Ära näita Drive'i</translation>
 <translation id="7696063401938172191">Teie seadmes <ph name="PHONE_NAME" />:</translation>
@@ -10404,6 +10427,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8407199357649073301">Logimistase:</translation>
 <translation id="8408270600235826886">Saate juhtida, millist teavet Google'iga jagatakse. Saate seda menüüs Seaded alati muuta. Andmeid kasutatakse Google’i <ph name="BEGIN_LINK" />privaatsuseeskirjade<ph name="END_LINK" /> alusel.</translation>
 <translation id="84098433273647700">Teie praegu installitud teema.</translation>
+<translation id="8410133743809404768">Saate otsida aadressiribalt, kasutades otseteed @ajalugu, ja samuti lehelt Ajalugu</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">täisekraan</translation>
 <translation id="8412136526970428322">Lubatud on <ph name="PERMISSION" /> ja veel <ph name="COUNT" /></translation>
@@ -10833,6 +10857,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8713110120305151436">Menüüs Kiirseaded juurdepääsetavuse valikute kuvamine</translation>
 <translation id="8713570323158206935">Saada <ph name="BEGIN_LINK1" />süsteemiteave<ph name="END_LINK1" /></translation>
+<translation id="8713761545374852805">Saate hankida abi arvustuste, meilide, sotsiaalmeediapostituste, esseede ja palju muuga</translation>
 <translation id="871445143952086903">Kui võrdlete tooteid, saadetakse vahelehtede pealkirjad ja toodete URL-id Google'ile</translation>
 <translation id="8714731224866194981">Vaadake oma telefonis olevaid fotosid ja rakendusi. Vastake kiiresti sõnumside märguannetele.</translation>
 <translation id="8714838604780058252">Taustagraafika</translation>
@@ -10891,6 +10916,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8749863574775030885">Juurdepääs tundmatu müüja USB-seadmetele</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> soovib järjestikpordiga ühendust luua</translation>
 <translation id="8750346984209549530">Mobiilivõrgu APN</translation>
+<translation id="8750521821491993283">Kasutage sirvimisajaloo otsimiseks ja külastatud saitide leidmiseks igapäevakeelt. AI-põhistes ajaloo otsingutulemustes kuvatakse ainult pärast selle funktsiooni sisselülitamist külastatud saidid.</translation>
 <translation id="8750786237117206586">ChromeOS Flexi heliseadete haldamine</translation>
 <translation id="8751034568832412184">Kool</translation>
 <translation id="8751329102746373229">Teie administraatorilt</translation>
@@ -11290,6 +11316,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9024127637873500333">&amp;Ava uuel vahelehel</translation>
 <translation id="9024158959543687197">Viga jagatava üksuse ühendamisel. Kontrollige failide jagamise URL-i ja proovige uuesti.</translation>
 <translation id="9024692527554990034">Võite kasutada aadressiriba otseteid, et konkreetsel saidil kiiresti otsida või muud otsingumootorit kasutada</translation>
+<translation id="9025222334598338152">Valikute täpsustamisel saate kasutada jälgimiseks oma võrdlustabeleid</translation>
 <translation id="902638246363752736">Klaviatuuri seaded</translation>
 <translation id="9026393603776578602">dikteerimine</translation>
 <translation id="9026731007018893674">Allalaaditud fail</translation>
@@ -11575,6 +11602,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="93393615658292258">Ainult parool</translation>
 <translation id="934244546219308557">Määrake sellele grupile nimi</translation>
 <translation id="93480724622239549">Tõrge või viga</translation>
+<translation id="93522993865592410">Saitide sirvimisel salvestatakse nende lehtede sisu teie seadmesse krüpteeritud kujul. See võib mõjutada Chrome'i toimivust.</translation>
 <translation id="9354763467503131">Veebirakenduste teie seadmesse installimise küsimine on lubatud</translation>
 <translation id="936646668635477464">Kaamera ja mikrofon</translation>
 <translation id="936801553271523408">Süsteemidiagnostika andmed</translation>

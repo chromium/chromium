@@ -1328,7 +1328,6 @@ accounts.google.com과 같은 특정 URL이 인증 시 필요하므로 온라인
 <translation id="2005506794355327448">덮개를 닫을 경우 취할 작업입니다.</translation>
 <translation id="2006530844219044261">전력 관리</translation>
 <translation id="2006954055163088863">동영상이 재생되는 동안 사용자를 유휴 상태로 간주</translation>
-<translation id="2008514891623783266">WebRTC의 IP 처리 정책</translation>
 <translation id="201153120366509312">정책을 허용됨으로 설정하거나 설정하지 않으면 URL로 입력된 측정항목 수집이 허용됩니다.
 URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사용 설정한 경우 URL로 입력된 측정항목 수집을 통해 사용자가 방문하는 페이지의 URL이 Google로 전송되고 페이지별 사용 통계와 함께 검색 및 탐색 성능이 개선됩니다.
 또한 URL로 입력된 측정항목에는 확장 프로그램과 같이 콘텐츠를 수정하거나 제공할 수 있는 다른 브라우저 구성요소의 식별자 및 사용 통계도 포함됩니다.
@@ -9412,7 +9411,6 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
 <translation id="8056800559672904373">관리 계정은 기본 계정이어야 하고 보조 계정이 없어야 하며 프로필 생성 시 기존 인터넷 사용 기록을 가져오도록 허용됨</translation>
 <translation id="8059164285174960932">원격 액세스 클라이언트가 인증 토큰을 확보해야 하는 URL</translation>
 <translation id="8059352177830050556">기기 백라이트 정보 보고 사용 설정</translation>
-<translation id="8062375903420954294">이 정책은 사용 가능한 최상의 연결을 찾으려고 할 때 WebRTC가 사용하는 IP 주소 및 인터페이스를 제한할 수 있습니다. RFC 8828 섹션 5.2(https://tools.ietf.org/html/rfc8828.html#section-5.2)를 참고하세요. 설정하지 않으면 기본적으로 가능한 모든 인터페이스를 사용합니다.</translation>
 <translation id="8062485064082966327">익명의 Google 서비스를 통해 라벨이 지정되지 않은 이미지에 자동 생성된 설명 제공</translation>
 <translation id="8066428282805800713">ChromeOS Flex에서 추가 하드웨어 데이터 전송</translation>
 <translation id="8066532561081127944">보안상의 이유로 <ph name="REQUEST_FULLSCREEN_API_NAME" /> 웹 API에서는 이전 사용자 동작('일시적 활성화')을 호출해야 하며, 그러지 않으면 실패합니다. 사용자의 개인 설정을 사용하면 <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />에 설명된 대로 특정 출처에서 이전 사용자 동작 없이 이 API를 호출할 수 있습니다.

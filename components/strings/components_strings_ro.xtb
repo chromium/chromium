@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Politica implementată de administrator dezactivează capturarea ecranului atunci când se afișează conținut confidențial</translation>
 <translation id="1617276713587758852">Crossovere</translation>
 <translation id="1619007254056372606">Gestionează datele privind site-urile pe dispozitiv</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> a eliminat o filă</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1622966923835127638">Finanțe comerciale</translation>
 <translation id="1623104350909869708">Restricționați capacitatea acestei pagini de a crea casete de dialog suplimentare</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Deschiderea acestui fișier este blocată de politica implementată de administrator}few{Deschiderea a # fișiere este blocată de politica implementată de administrator}other{Deschiderea a # de fișiere este blocată de politica implementată de administrator}}</translation>
 <translation id="1633941398432788136">Planificarea evenimentelor</translation>
 <translation id="1634828734222219955">Total</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> s-a alăturat grupului</translation>
 <translation id="163826442096818926">Scurtează</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1640180200866533862">Politici privind utilizatorii</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">Pentru a asigura securitatea, poate vedea și sistemul de operare al dispozitivului, versiunea browserului și software-ul instalat.</translation>
 <translation id="2573170131138724450">Televizoare</translation>
 <translation id="257674075312929031">Grupează</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> a adăugat o filă</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2587841377698384444">ID-ul API-ului Directory:</translation>
 <translation id="2594318783181750337">Vizualizare pe web rapidă:</translation>
@@ -1141,6 +1144,7 @@
 <translation id="306573536155379004">Jocul a început.</translation>
 <translation id="3067505415088964188">Prețul este mic</translation>
 <translation id="3068118691172921711">Încărcarea fișierelor în <ph name="CLOUD_PROVIDER" /> va începe într-un minut</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}few{{ITEMS} elemente}other{{ITEMS} de elemente}}</translation>
 <translation id="3076865167425975822">Sisteme de operare</translation>
 <translation id="3080254622891793721">Grafică</translation>
 <translation id="3082007635241601060">Permite ca Google să utilizeze coșurile tale de cumpărături pentru a găsi reduceri personalizate dacă sunt disponibile</translation>
@@ -2401,6 +2405,7 @@
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5305716236436927587">Publicitate și marketing</translation>
 <translation id="5306593769196050043">Ambele foi</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> a schimbat culoarea grupului</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Conectează-te</translation>
 <translation id="5308689395849655368">Raportarea blocărilor este dezactivată.</translation>
@@ -2432,6 +2437,7 @@
 <translation id="5363309033720083897">Port serial permis de administrator</translation>
 <translation id="5363532265530011914">Șosete și ciorapi</translation>
 <translation id="5371425731340848620">Actualizează cardul</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> a modificat o filă</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Ora este setată în trecut”, „Ora este setată în viitor” sau „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Confirmă-ți identitatea ca să folosești această parolă pe toate dispozitivele</translation>
@@ -2446,6 +2452,7 @@
 <translation id="5392506727170022660">Metal (semilucios)</translation>
 <translation id="5394069166371280357">Seriale pentru familie</translation>
 <translation id="5396631636586785122">Broșare pe marginea din dreapta</translation>
+<translation id="5397794290049113714">Dvs.</translation>
 <translation id="5398772614898833570">Anunțurile au fost blocate</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5401344472773249513">Știri din divertisment și despre celebrități</translation>
@@ -2831,7 +2838,9 @@
 <translation id="6105460996796456817">Creează un site</translation>
 <translation id="6106989379647458772">Este posibil ca pagina web de la <ph name="PAGE" /> să fie blocată temporar sau să fi fost mutată definitiv la o nouă adresă web.</translation>
 <translation id="6107012941649240045">Emis către</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> a schimbat numele grupului</translation>
 <translation id="6107924765192360631">Începe cu câteva cuvinte sau cu o primă schiță pentru a primi sugestii de scriere.</translation>
+<translation id="6108508372809181847">Compară <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Detaliile certificatului</translation>
 <translation id="6108702513636120202">Motorul tău de căutare în Chromium</translation>
 <translation id="6108849843016142864">Reptile și amfibieni</translation>
@@ -3716,6 +3725,7 @@ Detalii suplimentare:
 <translation id="7660456820368115565">Jocuri cu foarte mulți jucători</translation>
 <translation id="7661591871037163355">Tabelul de comparație este plin. Elimină coloane pentru a adăuga altele noi.</translation>
 <translation id="7662298039739062396">Setare controlată de o extensie</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> a părăsit grupul</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nu sunt permise în modul Incognito</translation>
 <translation id="7667346355482952095">Indicativul returnat pentru politică este gol sau nu corespunde cu indicativul actual</translation>

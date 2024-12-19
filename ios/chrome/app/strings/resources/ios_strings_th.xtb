@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">ไม่มีแท็บที่เปิดไว้</translation>
 <translation id="1469381646033328562">บัญชีของคุณได้รับการจัดการโดยผู้ปกครอง
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">เปลี่ยนแปลงแล้ว</translation>
 <translation id="1480152980057770392">แสดงเรื่องรออ่าน</translation>
 <translation id="1484758781961275277">รับสิ่งที่ดีที่สุดจากเบราว์เซอร์ในเดสก์ท็อปที่คุณรู้จักและชื่นชอบใน iPad</translation>
 <translation id="1485907716209290998">การติดตามพัสดุภัณฑ์</translation>
@@ -1211,6 +1212,7 @@
 <translation id="6445981559479772097">ส่งข้อความแล้ว</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6449554712554071184">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร</translation>
+<translation id="6452534462676960500">กิจกรรมใหม่</translation>
 <translation id="6459307836338400162">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ทั้งที่<ph name="BEGIN_LINK" />การซิงค์<ph name="END_LINK" />และ<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="6459411599807878608">ซ่อนรายละเอียดแล้ว</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1619,6 +1621,7 @@
 <translation id="8219424187226230983">ดูเวอร์ชันออฟไลน์ในแท็บใหม่</translation>
 <translation id="8230355548492839438">ค้นหาก่อนหน้า</translation>
 <translation id="8232956427053453090">เก็บข้อมูลไว้</translation>
+<translation id="8258999165172757081">มีแล้ว</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="82619448491672958">ดูแท็บอื่นๆ</translation>
 <translation id="8263228331881858381">บันทึกพาสคีย์แล้ว</translation>

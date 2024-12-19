@@ -366,6 +366,7 @@
 <translation id="1615402009686901181">Ըստ ադմինիստրատորի սահմանած կանոնի՝ էկրանի տեսագրման հնարավորությունն անջատվում է, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="1617276713587758852">Քրոսովերներ</translation>
 <translation id="1619007254056372606">Կառավարել սարքում կայքերի տվյալները</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> օգտատերը ներդիր է հեռացրել</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1622966923835127638">Բիզնես ֆինանսներ</translation>
 <translation id="1623104350909869708">Թույլ չտալ այս էջին ստեղծել լրացուցիչ երկխոսություններ</translation>
@@ -373,6 +374,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Ադմինիստրատորն արգելել է բացել այս ֆայլը}one{Ադմինիստրատորն արգելել է բացել # ֆայլ}other{Ադմինիստրատորն արգելել է բացել # ֆայլ}}</translation>
 <translation id="1633941398432788136">Միջոցառումների պլանավորում</translation>
 <translation id="1634828734222219955">Ընդհանուր</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> օգտատերը միացել է խմբին</translation>
 <translation id="163826442096818926">Կրճատել</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
 <translation id="1640180200866533862">Օգտագործման կանոններ</translation>
@@ -908,6 +910,7 @@
 <translation id="2571488850200220306">Անվտանգության նկատառումներից ելնելով՝ այն կարող է նաև տեսնել տեղեկություններ սարքի օպերացիոն համակարգի, դիտարկիչի տարբերակի և սարքում տեղադրված ծրագրերի մասին</translation>
 <translation id="2573170131138724450">Հեռուստացույցներ</translation>
 <translation id="257674075312929031">Խումբ</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> օգտատերը ներդիր է ավելացրել</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2587841377698384444">Գրացուցակի API ID՝</translation>
 <translation id="2594318783181750337">Արագ վեբ տարբերակ՝</translation>
@@ -1147,6 +1150,7 @@
 <translation id="306573536155379004">Խաղը սկսված է։</translation>
 <translation id="3067505415088964188">Գինը ցածր է</translation>
 <translation id="3068118691172921711">Ֆայլի վերբեռնումը <ph name="CLOUD_PROVIDER" /> կսկսվի 1 րոպեից</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} տարր}one{{ITEMS} տարր}other{{ITEMS} տարր}}</translation>
 <translation id="3076865167425975822">Օպերացիոն համակարգեր</translation>
 <translation id="3080254622891793721">Գրաֆիկա</translation>
 <translation id="3082007635241601060">Հասանելի դարձրեք Google-ին ձեր զամբյուղները, որպեսզի մեր համակարգերը կարողանան անհատականացված զեղչեր գտնել ձեզ համար</translation>
@@ -2408,6 +2412,7 @@
 <translation id="5300589172476337783">Ցույց տալ</translation>
 <translation id="5305716236436927587">Գովազդ և մարքեթինգ</translation>
 <translation id="5306593769196050043">Երկու թերթերը</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոխել է խմբի գույնը</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
 <translation id="5308689395849655368">Խափանումների մասին հաշվետվությունների ուղարկումն անջատված է:</translation>
@@ -2441,6 +2446,7 @@
 <translation id="5363309033720083897">Ադմինիստրատորը թույլատրել է հերթական միացքը</translation>
 <translation id="5363532265530011914">Գուլպաներ և զուգագուլպաներ</translation>
 <translation id="5371425731340848620">Փոփոխել քարտի տվյալները</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոփոխել է ներդիր</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">«Ձեր ժամացույցը հետ է ընկել», «Ձեր ժամացույցն առաջ է ընկել» կամ «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
 <translation id="5379618281582508161">Ձեր բոլոր սարքերում այս գաղտնաբառն օգտագործելու համար հաստատեք ձեր ինքնությունը</translation>
@@ -2455,6 +2461,7 @@
 <translation id="5392506727170022660">Մետաղ (կիսափայլուն)</translation>
 <translation id="5394069166371280357">Ընտանեկան հեռուստաշոուներ</translation>
 <translation id="5396631636586785122">Աջ եզրակար</translation>
+<translation id="5397794290049113714">Դուք</translation>
 <translation id="5398772614898833570">Գովազդն արգելափակված է</translation>
 <translation id="5400836586163650660">Մոխրագույն</translation>
 <translation id="5401344472773249513">Աստղերի և ժամանցի վերաբերյալ նորություններ</translation>
@@ -2840,7 +2847,9 @@
 <translation id="6105460996796456817">Ստեղծել կայք</translation>
 <translation id="6106989379647458772">Հնարավոր է, որ <ph name="PAGE" /> կայքէջը ժամանակավորապես անհասանելի է կամ մշտապես տեղափոխվել է նոր հասցե:</translation>
 <translation id="6107012941649240045">Տրված`</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոխել է խմբի անվանումը</translation>
 <translation id="6107924765192360631">Պարզապես գրեք մի քանի բառ կամ ստեղծեք սևագիր, որպեսզի ստանաք գրելու առաջարկներ։</translation>
+<translation id="6108508372809181847">Համեմատել <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Վկայականի մանրամասները</translation>
 <translation id="6108702513636120202">Ձեր որոնողական համակարգը Chromium-ում</translation>
 <translation id="6108849843016142864">Սողուններ և երկկենցաղներ</translation>
@@ -3724,6 +3733,7 @@
 <translation id="7660456820368115565">Զանգվածային բազմախաղորդ խաղեր</translation>
 <translation id="7661591871037163355">Ձեր համեմատման աղյուսակը լցված է։ Նոր սյունակներ ավելացնելու համար հեռացրեք եղածները։</translation>
 <translation id="7662298039739062396">Կարգավորումը կառավարվում է ընդլայնման կողմից</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> օգտատերը հեռացել է խմբից</translation>
 <translation id="7663736086183791259">Հավաստագիր <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Արգելված է ինկոգնիտո ռեժիմում</translation>
 <translation id="7667346355482952095">Վերադարձված թոքենը դատարկ է կամ չի համապատասխանում եղածին</translation>

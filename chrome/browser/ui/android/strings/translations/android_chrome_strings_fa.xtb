@@ -146,10 +146,8 @@
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> مورد پیشنهادی در فهرست زیر.</translation>
 <translation id="1598163867407640634">استفاده از <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">‏وقتی روشن باشد، از داده‌های «حساب Google» شما استفاده می‌شود و داده‌ها در آن ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
-<translation id="1619648179761984213">‫<ph name="USER_DISPLAY_NAME" /> برگه‌ای را برداشت</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{حذف ۱ مورد انتخاب‌شده}one{حذف # مورد انتخاب‌شده}other{حذف # مورد انتخاب‌شده}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{‏‫۱ نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}one{‏‫# نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}other{‏‫# نشانک و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />) ذخیره کنید.}}</translation>
-<translation id="1637407510758033366">‫<ph name="USER_DISPLAY_NAME" /> به گروه پیوست</translation>
 <translation id="1641113438599504367">مرور ایمن</translation>
 <translation id="164269334534774161">شما در حال تماشای کپی آفلاین این صفحه از <ph name="CREATION_TIME" /> هستید</translation>
 <translation id="1644574205037202324">سابقه</translation>
@@ -349,7 +347,6 @@
 <translation id="2578337197553672982">‏محتوای Google برای ذهن‌های جوان</translation>
 <translation id="2579297619530305344">برگه «گذرواژه‌ها در همه دستگاه‌ها دردسترس است» به‌صورت کامل باز شد</translation>
 <translation id="2581165646603367611">‏این کار کوکی‌ها، حافظه پنهان و داده‌های دیگر سایت‌ها را که از نظر Chrome مهم نیست پاک می‌کند.</translation>
-<translation id="258135245577667916">‫<ph name="USER_DISPLAY_NAME" /> برگه‌ای اضافه کرد</translation>
 <translation id="2587052924345400782">نسخه جدیدتری در دسترس است</translation>
 <translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
 <translation id="2603212228005142861">برای مدیریت اولویت‌هایتان، به سیستم وارد شوید</translation>
@@ -863,7 +860,6 @@
 <translation id="4912413785358399818">انتقال برگه</translation>
 <translation id="4913169188695071480">توقف تازه‌سازی</translation>
 <translation id="4918086044614829423">می‌پذیرم</translation>
-<translation id="492284538114688557">کاهش قیمت شناسایی شد</translation>
 <translation id="4925120120285606924">نماگرفت <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">گذرواژه‌هایتان به‌صورت فایل نوشتاری صادر و بارگیری خواهد شد. گذرواژه‌هایتان برای همه افراد و برنامه‌هایی که به پوشه مقصد دسترسی دارند نمایان خواهد بود.</translation>
 <translation id="4926901776383726965">می‌توانید تصاویر و فایل‌ها را برای مشاهده آفلاین یا هم‌رسانی در برنامه‌های دیگر ذخیره کنید</translation>
@@ -944,7 +940,6 @@
 <translation id="5301876394151419436">‏با <ph name="EMAIL" /> به سیستم وارد شده‌اید. هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. ‫Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="5304593522240415983">این قسمت باید پر شود</translation>
 <translation id="5306014156308790439">«افزودن به مجموعه» غیرفعال شده است</translation>
-<translation id="5307109011461144709">‫<ph name="USER_DISPLAY_NAME" /> رنگ گروه را تغییر داد</translation>
 <translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5310963254742922113">از گذرواژه استفاده شد.</translation>
 <translation id="5316947901395241499">سرپرستتان ذخیره گذرواژه را خاموش کرده است</translation>
@@ -956,12 +951,10 @@
 <translation id="534580735623577507">سایتی از <ph name="TIME_PERIOD" /> وجود ندارد</translation>
 <translation id="5355191726083956201">«محافظت بهبودیافته» روشن است</translation>
 <translation id="5364112109233799727">‏نشانی وب صفحه‌ای که درباره آن بازخورد ارائه می‌کنید به Google ارسال خواهد شد و ممکن است افرادی برای بهبود این ویژگی آن را بازبینی کنند</translation>
-<translation id="537425196847960924">‫<ph name="USER_DISPLAY_NAME" /> برگه‌ای را تغییر داد</translation>
 <translation id="5375374982898812658">دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
 <translation id="5375577065097716013">‏جستجوی تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">خروج از حالت «ناشناس»</translation>
 <translation id="5395376160638294582">‏مطمئن شوید همیشه می‌توانید از داده‌های Chrome ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
-<translation id="5397794290049113714">شما</translation>
 <translation id="539881862970320163">گذرواژه قوی‌ای پیشنهاد شد. صفحه‌کلید پنهان است.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> در <ph name="CLIENT_NAME" /> ارسال شود؟</translation>
 <translation id="5410300144953132176">‫<ph name="OWNER_FULL_NAME" />‏ (<ph name="OWNER_EMAIL" />) از شما می‌خواهد به یک گروه برگه بپیوندید. هر کسی پیوند را داشته باشد می‌تواند همه برگه‌ها را ویرایش کند، پس بااحتیاط بپیوندید. پیوند ظرف ۴۸ ساعت منقضی می‌شود.</translation>
@@ -990,7 +983,6 @@
 <translation id="5515439363601853141">برای مشاهده گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="5517095782334947753">نشانک، سابقه، گذرواژه و تنظیمات دیگری از <ph name="FROM_ACCOUNT" /> دارید.</translation>
 <translation id="5517326820028369152">برگ زیرین فعالیت اخیر</translation>
-<translation id="5524843473235508879">هدایت کردن مسدود شد.</translation>
 <translation id="5526281268548144413">بستن در چند پنجره امکان‌پذیر نیست</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{‫# دقیقه پیش}one{‫# دقیقه پیش}other{‫# دقیقه پیش}}</translation>
 <translation id="5548606607480005320">بررسی ایمنی</translation>
@@ -1120,7 +1112,6 @@
 <translation id="60923314841986378"><ph name="HOURS" /> ساعت باقی‌مانده است</translation>
 <translation id="6095578583683628124">‏اگر موتور جستجوی پیش‌فرضتان هم Google باشد، پیشنهادهای بهتر و مرتبط‌تری درباره موضوع خواهید دید</translation>
 <translation id="610630277578876674">پیوندهای موجود در پیام‌ها را به‌سرعت باز کنید و از مزایای دیگری بهره‌مند شوید</translation>
-<translation id="6107864469867367783">‫<ph name="USER_DISPLAY_NAME" /> نام گروه را تغییر داد</translation>
 <translation id="6108923351542677676">تنظیم در حال انجام است...</translation>
 <translation id="6112702117600201073">درحال بازآوری صفحه</translation>
 <translation id="6122831415929794347">«مرور ایمن» خاموش شود؟</translation>
@@ -1233,7 +1224,6 @@
 <translation id="6565959834589222080">‏استفاده از Wi-Fi هنگام دردسترس بودن</translation>
 <translation id="6569373978618239158">‏اکنون وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="SITE_NAME" /> خواهید دید. سایت‌هایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شوند. می‌توانید در تنظیمات «یافته‌ها»، آن‌ها را مدیریت کنید.</translation>
 <translation id="6570116402456758630">خلاصه صفحه</translation>
-<translation id="6573096386450695060">همیشه مجاز</translation>
 <translation id="6573431926118603307">‏برگه‌هایی که در دستگاه‌های دیگر در Chrome باز کرده‌اید، در اینجا نمایان می‌شوند.</translation>
 <translation id="6583199322650523874">نشانک‌گذاری صفحه کنونی</translation>
 <translation id="6588043302623806746">استفاده از ساناد امن</translation>
@@ -1349,6 +1339,7 @@
 <translation id="6971862865055170158">تأیید نکردن</translation>
 <translation id="6978717888677691380">سایت‌هایی که مسدود کرده‌اید</translation>
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
+<translation id="6983306615164277634">برای تغییر موقعیت نوار نشانی، همچنین می‌توانید آن را لمس کنید و نگه دارید.</translation>
 <translation id="6987047470128880212">«حالت ناشناس» در این دستگاه دردسترس نیست</translation>
 <translation id="6991701761229081516">‏گذرواژه‌هایتان در قالب فایل CSV بارگیری خواهد شد. گذرواژه‌هایتان برای همه افرادی که می‌توانند به این فایل دسترسی داشته باشند، ازجمله برنامه‌ها، نمایان خواهد بود. گذرواژه‌های صادرشده از Chrome حذف خواهد شد.</translation>
 <translation id="6996145122199359148">بارگیری این صفحه</translation>
@@ -1360,7 +1351,6 @@
 <translation id="7035701931849773472">گزینه‌های دیگر</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7054588988317389591">توضیحات تصویر دریافت شود؟</translation>
-<translation id="7055152154916055070">هدایت کردن مسدود شده است:</translation>
 <translation id="7057969023583258980">‏باز کردن سابقه کامل Chrome</translation>
 <translation id="7063006564040364415">اتصال به سرور همگام‌سازی ممکن نیست.</translation>
 <translation id="7071521146534760487">مدیریت حساب</translation>
@@ -1505,7 +1495,6 @@
 <translation id="7656721520530864426">سایتی وجود ندارد</translation>
 <translation id="7656862631699126784">روشن کردن قفل ناشناس</translation>
 <translation id="7658239707568436148">لغو</translation>
-<translation id="7662911501613893058">‫<ph name="USER_DISPLAY_NAME" /> گروه را ترک کرد</translation>
 <translation id="7663320421139257046">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> شما را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK1" />خط‌مشی رازداری<ph name="END_LINK1" /> این سایت را بررسی کنید.</translation>
 <translation id="7665369617277396874">افزودن حساب</translation>
 <translation id="766587987807204883">مقاله‌ها اینجا نشان داده می‌شوند و حتی درحالت آفلاین هم می‌توانید آن‌ها را بخوانید.</translation>

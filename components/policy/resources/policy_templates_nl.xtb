@@ -1314,7 +1314,6 @@ Opmerking: Dit beleid is niet van toepassing op in-page JavaScript-URL's met dyn
 <translation id="2005506794355327448">Actie die moet worden ondernomen als de klep wordt gesloten</translation>
 <translation id="2006530844219044261">Energiebeheer</translation>
 <translation id="2006954055163088863">Gebruiker als inactief beschouwen tijdens afspelen van video's</translation>
-<translation id="2008514891623783266">Het IP-gebruiksbeleid van WebRTC</translation>
 <translation id="201153120366509312">Als je dit beleid instelt op toegestaan of niet instelt, is de verzameling van URL-sleutelstatistieken toegestaan.
 Als dit is toegestaan en de verzameling van URL-sleutelstatistieken is aangezet door de gebruiker, worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsefunctionaliteit te verbeteren, samen met gebruiksstatistieken per pagina.
 URL-sleutelstatistieken omvatten ook de ID's en gebruiksstatistieken van andere browsercomponenten die content kunnen aanpassen of leveren, zoals extensies.
@@ -9245,7 +9244,6 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 <translation id="8056800559672904373">Een beheerd account moet een primair account zijn, mag geen secundaire accounts hebben en bestaande browsegegevens mogen worden geïmporteerd bij het maken van een profiel</translation>
 <translation id="8059164285174960932">URL waarbij clients met externe toegang hun verificatietoken moeten ophalen</translation>
 <translation id="8059352177830050556">Rapportage van achtergrondverlichtingsinformatie van apparaat aanzetten</translation>
-<translation id="8062375903420954294">Dit beleid maakt het mogelijk om te beperken welke IP-adressen en interfaces worden gebruikt door WebRTC als naar de beste beschikbare verbinding wordt gezocht. Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Als dit niet is ingesteld, worden standaard alle beschikbare interfaces gebruikt.</translation>
 <translation id="8062485064082966327">Een anonieme Google-service gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="8066428282805800713">Extra hardwaregegevens sturen op ChromeOS Flex</translation>
 <translation id="8066532561081127944">Om veiligheidsredenen moet voor de web-API <ph name="REQUEST_FULLSCREEN_API_NAME" /> een eerder gebruikersgebaar ('tijdelijke activering') worden aangeroepen, anders mislukt deze. De persoonlijke instellingen van gebruikers kunnen toestaan dat bepaalde oorsprongen deze API aanroepen zonder eerder gebruikersgebaar, zoals beschreven in <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.

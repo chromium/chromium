@@ -362,6 +362,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1615402009686901181">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="1617276713587758852">Automjete Crossover</translation>
 <translation id="1619007254056372606">Menaxho të dhënat e sajtit në pajisje</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> hoqi një skedë</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Financë biznesi</translation>
 <translation id="1623104350909869708">Parandalo krijimin e dialogëve shtesë nga kjo faqe</translation>
@@ -369,6 +370,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1633137413609266904">{0,plural, =1{Hapja e këtij skedari është bllokuar nga politika e administratorit}other{Hapja e # skedarëve është bllokuar nga politika e administratorit}}</translation>
 <translation id="1633941398432788136">Planifikim ngjarjesh</translation>
 <translation id="1634828734222219955">Totali</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> u bashkua në grup</translation>
 <translation id="163826442096818926">Shkurto</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1640180200866533862">Politikat e përdoruesit</translation>
@@ -904,6 +906,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2571488850200220306">Për të garantuar sigurinë, ai mund të shohë gjithashtu sistemin operativ të pajisjes, versionin e shfletuesit dhe se çfarë softueri është instaluar</translation>
 <translation id="2573170131138724450">Televizorë</translation>
 <translation id="257674075312929031">Grup</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> shtoi një skedë</translation>
 <translation id="2586657967955657006">Kujtesa e fragmenteve</translation>
 <translation id="2587841377698384444">ID-ja e ndërfaqes API të direktorisë:</translation>
 <translation id="2594318783181750337">Pamja e shpejtë e uebit:</translation>
@@ -1141,6 +1144,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="306573536155379004">Loja filloi.</translation>
 <translation id="3067505415088964188">Çmimi është i ulët</translation>
 <translation id="3068118691172921711">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas 1 minute</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} artikull}other{{ITEMS} artikuj}}</translation>
 <translation id="3076865167425975822">Sistemet operative</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Lejo që Google të përdorë grumbujt e tu të artikujve për të gjetur zbritje të personalizuara kur ato ofrohen</translation>
@@ -2401,6 +2405,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5305716236436927587">Reklamim dhe marketing</translation>
 <translation id="5306593769196050043">Të dyja fletët</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> e ndryshoi ngjyrën e grupit</translation>
 <translation id="5307166000025436103">Në rregull</translation>
 <translation id="5308380583665731573">Lidh</translation>
 <translation id="5308689395849655368">Raportimi i ndërprerjes aksidentale është çaktivizuar.</translation>
@@ -2432,6 +2437,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5363309033720083897">Porta seriale e lejuar nga administratori yt</translation>
 <translation id="5363532265530011914">Çorapë dhe geta</translation>
 <translation id="5371425731340848620">Përditëso kartën</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ndryshoi një skedë</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ora jote është prapa" ose "Ora jote është përpara" ose "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Verifiko që je ti për ta marrë këtë fjalëkalim në të gjitha pajisjet e tua</translation>
@@ -2446,6 +2452,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5392506727170022660">Metal (me gjysmë shkëlqim)</translation>
 <translation id="5394069166371280357">Shfaqje televizive për familje</translation>
 <translation id="5396631636586785122">Qepje anësore djathtas</translation>
+<translation id="5397794290049113714">Ti</translation>
 <translation id="5398772614898833570">Reklamat janë të bllokuara</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5401344472773249513">Lajme nga persona të famshëm dhe argëtimi</translation>
@@ -2831,7 +2838,9 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6105460996796456817">Krijo sajt</translation>
 <translation id="6106989379647458772">Faqja e uebit në <ph name="PAGE" /> mund të mos jetë përkohësisht në punë ose mund të jetë zhvendosur përgjithmonë në një adresë uebi të re.</translation>
 <translation id="6107012941649240045">Lëshuar për</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> e ndryshoi emrin e grupit</translation>
 <translation id="6107924765192360631">Thjesht fillo me disa fjalë ose një draft të parë për të marrë sugjerime për të shkruarit.</translation>
+<translation id="6108508372809181847">Krahaso "<ph name="TABLE_NAME" />"</translation>
 <translation id="6108580855199168381">Detajet e certifikatës</translation>
 <translation id="6108702513636120202">Motori yt i kërkimit në Chromium</translation>
 <translation id="6108849843016142864">Zvarranikë dhe amfibë</translation>
@@ -3714,6 +3723,7 @@ Detaje shtesë:
 <translation id="7660456820368115565">Lojëra masive me shumë lojtarë</translation>
 <translation id="7661591871037163355">Tabela e krahasimit është plot. Hiq kolona për të shtuar të reja.</translation>
 <translation id="7662298039739062396">Cilësim i kontrolluar nga një shtesë</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> u largua nga grupi</translation>
 <translation id="7663736086183791259">Certifikata <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nuk lejohet në "I fshehtë"</translation>
 <translation id="7667346355482952095">Shenja e kthyer e politikës është bosh ose nuk përputhet me shenjën aktuale</translation>

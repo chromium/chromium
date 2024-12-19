@@ -146,10 +146,8 @@
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> առաջարկվող տարր ներքևի ցուցակում։</translation>
 <translation id="1598163867407640634">Օգտագործեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքը <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="160275202205869636">Երբ պարամետրը միացված է, կարող եք օգտագործել և պահել տվյալները ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում։</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> օգտատերը ներդիր է հեռացրել</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Հեռացնել ընտրված 1 տարրը}one{Հեռացնել ընտրված # տարրը}other{Հեռացնել ընտրված # տարրերը}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Էջանիշը և տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}one{# էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Էջանիշը և տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}other{# էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Էջանինշները և տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}}</translation>
-<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> օգտատերը միացել է խմբին</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="164269334534774161">Դուք դիտում եք տվյալ էջի <ph name="CREATION_TIME" />-ի անցանց պատճենը</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
@@ -349,7 +347,6 @@
 <translation id="2578337197553672982">Բովանդակություն Google-ի կողմից երեխաների համար</translation>
 <translation id="2579297619530305344">«Գաղտնաբառերը ձեր բոլոր սարքերում» պատուհանը բացված է ամբողջությամբ</translation>
 <translation id="2581165646603367611">Բոլոր քուքիները, քեշը և այլ տվյալները, որոնք Chrome-ին անհրաժեշտ չեն, կջնջվեն:</translation>
-<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> օգտատերը ներդիր է ավելացրել</translation>
 <translation id="2587052924345400782">Հասանելի է նոր տարբերակ</translation>
 <translation id="2593272815202181319">Միալայն</translation>
 <translation id="2603212228005142861">Մտեք հաշիվ՝ ձեր կարգավորումները կառավարելու համար</translation>
@@ -863,7 +860,6 @@
 <translation id="4912413785358399818">Տեղափոխել ներդիրը</translation>
 <translation id="4913169188695071480">Դադարեցնել թարմացումը</translation>
 <translation id="4918086044614829423">Ընդունել</translation>
-<translation id="492284538114688557">Հայտնաբերվել է գնի իջեցում</translation>
 <translation id="4925120120285606924">Սքրինշոթ՝ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ձեր գաղտնաբառերը կարտահանվեն և կներբեռնվեն տեքստային ֆայլի տեսքով։ Դրանք տեսանելի կլինեն բոլոր օգտատերերին և հավելվածներին, որոնց հասանելի է նպատակային պանակը։</translation>
 <translation id="4926901776383726965">Դուք կարող եք պահել պատկերներն ու ֆայլերը՝ անցանց դիտելու կամ այլ հավելվածներում բացելու համար</translation>
@@ -944,7 +940,6 @@
 <translation id="5301876394151419436">Դուք մուտք եք գործել որպես <ph name="EMAIL" />։ Ցանկացած ժամանակ կարգավորումներում կարող եք կանգնեցնել համաժամացումը։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
 <translation id="5304593522240415983">Այս դաշտը չի կարող դատարկ լինել</translation>
 <translation id="5306014156308790439">Հավաքածուին ավելացնելու գործառույթն անջատված է</translation>
-<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոխել է խմբի գույնը</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
 <translation id="5310963254742922113">Գաղտնաբառն օգտագործվել է։</translation>
 <translation id="5316947901395241499">Ձեր ադմինիստրատորն անջատել է գաղտնաբառերի պահումը</translation>
@@ -956,12 +951,10 @@
 <translation id="534580735623577507">Կայքեր չկան նշված ժամանակահատվածից (<ph name="TIME_PERIOD" />)</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5364112109233799727">Էջի URL-ը, որի մասին կարծիք եք հայտնում, կուղարկվի Google-ին և կարող է ստուգվել մասնագետների կողմից՝ այս գործառույթը բարելավելու համար</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոփոխել է ներդիր</translation>
 <translation id="5375374982898812658">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="5395376160638294582">Համոզվեք, որ միշտ կարող եք օգտվել Chrome-ի տվյալներից ձեր Google հաշվում</translation>
-<translation id="5397794290049113714">Դուք</translation>
 <translation id="539881862970320163">Հուսալի գաղտնաբառ է առաջարկվում։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) օգտատերն ուզում է ներդիրների խմբի միանալ։ Ցանկացած մեկը, ով ունի այս հղումը, կարող է փոփոխել բոլոր ներդիրները, այնպես որ ուշադիր եղեք։ Հղումը կգործի 48 ժամ։</translation>
@@ -990,7 +983,6 @@
 <translation id="5515439363601853141">Գաղտնաբառը տեսնելու համար ապակողպեք էկրանը</translation>
 <translation id="5517095782334947753">Դուք էջանիշներ, պատմություն, գաղտնաբառեր և այլ կարգավորումներ ունեք <ph name="FROM_ACCOUNT" /> հաշվից:</translation>
 <translation id="5517326820028369152">Վերջին գործողությունների ներքևի էկրան</translation>
-<translation id="5524843473235508879">Վերահասցեավորումն արգելափակված է:</translation>
 <translation id="5526281268548144413">Հնարավոր չէ փակել ներդիրները, որոնք բացված են մեկից ավելի պատուհանում</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# ր առաջ}one{# ր առաջ}other{# ր առաջ}}</translation>
 <translation id="5548606607480005320">Անվտանգության ստուգում</translation>
@@ -1120,7 +1112,6 @@
 <translation id="60923314841986378">Մնացել է <ph name="HOURS" /> ժամ</translation>
 <translation id="6095578583683628124">Եթե Google-ը նաև ձեր կանխադրված որոնողական համակարգն է, դուք կտեսնեք ավելի լավ և համապատասխան առաջարկներ</translation>
 <translation id="610630277578876674">Արագ բացեք հղումները հաղորդագրություններում և ավելին</translation>
-<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոխել է խմբի անվանումը</translation>
 <translation id="6108923351542677676">Կարգավորումն ընթացքի մեջ է…</translation>
 <translation id="6112702117600201073">Էջի թարմացում</translation>
 <translation id="6122831415929794347">Անջատե՞լ ապահով դիտարկումը</translation>
@@ -1233,7 +1224,6 @@
 <translation id="6565959834589222080">Wi-Fi ցանցը օգտագործվում է հասանելի լինելու դեպքում</translation>
 <translation id="6569373978618239158">Այժմ, երբ նոր ներդիր բացեք, կտեսնեք նորություններ <ph name="SITE_NAME" /> կայքից։ Կայքերը, որոնց բաժանորդագրվում եք, պահվում են ձեր Google հաշվում։ Դրանք կարող եք կառավարել «Բացահայտեք» ներդիրի կարգավորումներում:</translation>
 <translation id="6570116402456758630">Էջի ամփոփագիր</translation>
-<translation id="6573096386450695060">Միշտ թույլատրել</translation>
 <translation id="6573431926118603307">Ձեր մյուս սարքերում Chrome-ով բացված ներդիրները կտեսնեք այստեղ:</translation>
 <translation id="6583199322650523874">Էջանշել ընթացիկ էջը</translation>
 <translation id="6588043302623806746">Օգտագործել ապահով DNS</translation>
@@ -1349,6 +1339,7 @@
 <translation id="6971862865055170158">Չհաստատել</translation>
 <translation id="6978717888677691380">Ձեր արգելափակած կայքերը</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
+<translation id="6983306615164277634">Կարող եք նաև հպել հասցեագոտուն և պահել՝ դիրքը փոխելու համար։</translation>
 <translation id="6987047470128880212">Ինկոգնիտո ռեժիմը հասանելի չէ այս սարքում</translation>
 <translation id="6991701761229081516">Ձեր գաղտնաբառերով ֆայլը կներբեռնվի CSV ձևաչափով։ Դրանք տեսանելի կլինեն բոլոր նրանց, ովքեր կարող են բացել ֆայլը և հավելվածները։ Արտահանված գաղտնաբառերը կջնջվեն Chrome-ից։</translation>
 <translation id="6996145122199359148">Ներբեռնել այս էջը</translation>
@@ -1360,7 +1351,6 @@
 <translation id="7035701931849773472">Այլ տարբերակներ</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
-<translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
 <translation id="7057969023583258980">Բացել Chrome-ի ամբողջ պատմությունը</translation>
 <translation id="7063006564040364415">Չհաջողվեց կապակցվել համաժամացման սերվերին:</translation>
 <translation id="7071521146534760487">Կառավարել հաշիվը</translation>
@@ -1505,7 +1495,6 @@
 <translation id="7656721520530864426">Կայքեր չկան</translation>
 <translation id="7656862631699126784">Միացնել ինկոգնիտո ներդիրների կողպումը</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
-<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> օգտատերը հեռացել է խմբից</translation>
 <translation id="7663320421139257046">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" />։</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="766587987807204883">Հոդվածները ցուցադրվում են այստեղ։ Դրանք կարող եք կարդալ նույնիսկ անցանց ռեժիմում։</translation>

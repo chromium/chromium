@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="1617276713587758852">Кросовери</translation>
 <translation id="1619007254056372606">Керувати даними сайтів на пристрої</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> вилучає вкладку</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622966923835127638">Фінансова діяльність компанії</translation>
 <translation id="1623104350909869708">Заборонити цій сторінці створювати додаткові діалогові вікна</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Адміністратор заборонив відкривати цей файл}one{Адміністратор заборонив відкривати # файл}few{Адміністратор заборонив відкривати # файли}many{Адміністратор заборонив відкривати # файлів}other{Адміністратор заборонив відкривати # файлу}}</translation>
 <translation id="1633941398432788136">Планування подій</translation>
 <translation id="1634828734222219955">Усього</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> приєднується до групи</translation>
 <translation id="163826442096818926">Лаконічний</translation>
 <translation id="1639239467298939599">Завантаження</translation>
 <translation id="1640180200866533862">Правила користувача</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">З міркувань безпеки він також може перевіряти ОС пристрою, версію вебпереглядача й установлене програмне забезпечення.</translation>
 <translation id="2573170131138724450">Телевізори</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> додає вкладку</translation>
 <translation id="2586657967955657006">Буфер обміну</translation>
 <translation id="2587841377698384444">Ідентифікатор API каталогу:</translation>
 <translation id="2594318783181750337">Швидкий веб-перегляд:</translation>
@@ -1141,6 +1144,7 @@
 <translation id="306573536155379004">Гра почалася.</translation>
 <translation id="3067505415088964188">Низька ціна</translation>
 <translation id="3068118691172921711">Завантаження файлів у сервіс <ph name="CLOUD_PROVIDER" /> почнеться через 1 хвилину</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} товар}one{{ITEMS} товар}few{{ITEMS} товари}many{{ITEMS} товарів}other{{ITEMS} товару}}</translation>
 <translation id="3076865167425975822">Операційні системи</translation>
 <translation id="3080254622891793721">Зображення</translation>
 <translation id="3082007635241601060">Надайте Google доступ до своїх кошиків, щоб наші системи могли знаходити для вас персоналізовані знижки</translation>
@@ -2401,6 +2405,7 @@
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5305716236436927587">Реклама й маркетинг</translation>
 <translation id="5306593769196050043">Обидва аркуші</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> змінює колір групи</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Під’єднатися</translation>
 <translation id="5308689395849655368">Повідомлення про аварійне завершення роботи вимкнено.</translation>
@@ -2432,6 +2437,7 @@
 <translation id="5363309033720083897">Адміністратор дозволив цей послідовний порт</translation>
 <translation id="5363532265530011914">Шкарпетки й панчохи</translation>
 <translation id="5371425731340848620">Оновити картку</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> змінює вкладку</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш годинник відстає", "Ваш годинник спішить" або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Щоб використовувати цей пароль на всіх пристроях, підтвердьте свою особу</translation>
@@ -2446,6 +2452,7 @@
 <translation id="5392506727170022660">Метал (напівглянцевий)</translation>
 <translation id="5394069166371280357">Сімейні телевізійні шоу</translation>
 <translation id="5396631636586785122">Зшити вздовж правого краю</translation>
+<translation id="5397794290049113714">Ви</translation>
 <translation id="5398772614898833570">Оголошення заблоковано</translation>
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="5401344472773249513">Новини про знаменитостей і розваги</translation>
@@ -2831,7 +2838,9 @@
 <translation id="6105460996796456817">Створити сайт</translation>
 <translation id="6106989379647458772">Можливо, веб-сторінка <ph name="PAGE" /> тимчасово недоступна або її назавжди переміщено на нову веб-адресу.</translation>
 <translation id="6107012941649240045">Кому видано</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> змінює назву групи</translation>
 <translation id="6107924765192360631">Просто почніть із кількох слів або створіть першу чернетку, щоб отримувати пропозиції щодо виправлення орфографічних помилок.</translation>
+<translation id="6108508372809181847">Порівняння товарів у категорії "<ph name="TABLE_NAME" />"</translation>
 <translation id="6108580855199168381">Дані сертифіката</translation>
 <translation id="6108702513636120202">Ваша пошукова система в Chromium</translation>
 <translation id="6108849843016142864">Плазуни й земноводні</translation>
@@ -3716,6 +3725,7 @@
 <translation id="7660456820368115565">Масові багатокористувацькі ігри</translation>
 <translation id="7661591871037163355">Таблиця порівняння заповнена. Вилучіть наявні стовпці, щоб додати нові.</translation>
 <translation id="7662298039739062396">Налаштуванням керує розширення</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> залишає групу</translation>
 <translation id="7663736086183791259">Сертифікат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Заборонено в анонімному режимі</translation>
 <translation id="7667346355482952095">Отриманий маркер правила порожній або не збігається з поточним маркером</translation>
@@ -4406,7 +4416,7 @@
 <translation id="8924109546403192898">Коли Chrome повідомляє про події системи безпеки, ваш адміністратор отримує відповідні дані про них, зокрема URL-адреси відвіданих у Chrome сторінок, URL-адреси сторінок, з яких ви скопіювали дані, назви або метадані файлів, інформацію про збої в роботі вебпереглядача чи вкладок, а також ім’я користувача, під яким ви входите у вебдодатки, систему пристрою або обліковий запис у Chrome.</translation>
 <translation id="892588693504540538">Пробити отвір угорі праворуч</translation>
 <translation id="8926389886865778422">Не запитувати знову</translation>
-<translation id="8932102934695377596">Ваш годинник запізнюється</translation>
+<translation id="8932102934695377596">Ваш годинник відстає</translation>
 <translation id="893332455753468063">Додайте ім’я</translation>
 <translation id="8942355029279167844">Адміністратор надав додатку <ph name="APP_NAME" /> дозвіл збирати дані діагностики, щоб покращувати роботу продукту. Докладніше читайте на сторінці <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лаймовий</translation>

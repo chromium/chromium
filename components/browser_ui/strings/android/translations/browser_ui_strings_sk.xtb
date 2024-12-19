@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Pripojené k zariadeniu USB</translation>
 <translation id="4194328954146351878">Pýtať sa, či chcete povoliť webom zobrazovať a meniť informácie v zariadeniach s rozhraním NFC (odprúčané)</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
+<translation id="4213239715282467974">Chrome teraz zdieľa vaše nedávne karty s vaším zariadením. V zariadení k nim môžete rýchlo získať prístup v zozname aplikácií a výsledkoch vyhľadávania. Túto možnosť môžete kedykoľvek vypnúť v nastaveniach Chromu.</translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povolené</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Weby majú zablokované žiadať vás o používanie informácií, ktoré o vás uložili</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ďalšie)}few{(+ # ďalšie)}many{(+ # more)}other{(+ # ďalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
+<translation id="5408906274948600065">Povoľte Chromu zdieľať vaše nedávne karty so zariadením, aby sa v ňom mohli zobrazovať v zozname aplikácií a výsledkoch vyhľadávania. Túto možnosť môžete kedykoľvek zapnúť alebo vypnúť v nastaveniach Chromu.</translation>
 <translation id="5438097262470833822">Týmto výberom resetujete povolenia pre web <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Keď je táto možnosť zapnutá, weby môžu žiadať o vašu polohu. Keď je táto funkcia vypnutá, weby nevidia vašu polohu.</translation>
 <translation id="5489227211564503167">Uplynutý čas: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>

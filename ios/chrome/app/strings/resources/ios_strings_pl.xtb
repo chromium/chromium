@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Brak otwartych kart</translation>
 <translation id="1469381646033328562">Twoim kontem zarządza rodzic.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Zmieniono</translation>
 <translation id="1480152980057770392">Pokaż listę Do przeczytania</translation>
 <translation id="1484758781961275277">Korzystaj na iPadzie z najlepszych funkcji przeglądarki na komputery, którą znasz i lubisz.</translation>
 <translation id="1485907716209290998">Śledzenie przesyłki</translation>
@@ -1211,6 +1212,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6445981559479772097">Wiadomość została wysłana.</translation>
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6449554712554071184">Spowoduje to trwałe usunięcie grupy z urządzenia.</translation>
+<translation id="6452534462676960500">Nowa aktywność</translation>
 <translation id="6459307836338400162">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK" />Synchronizacja<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Szczegóły zostały ukryte</translation>
 <translation id="646394917185284261">Pliki</translation>
@@ -1619,6 +1621,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8219424187226230983">Wyświetl wersję offline w nowej karcie</translation>
 <translation id="8230355548492839438">Znajdź poprzedni</translation>
 <translation id="8232956427053453090">Zachowaj dane</translation>
+<translation id="8258999165172757081">Dodano</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="82619448491672958">Zobacz inne karty</translation>
 <translation id="8263228331881858381">Klucz dostępu został zapisany</translation>

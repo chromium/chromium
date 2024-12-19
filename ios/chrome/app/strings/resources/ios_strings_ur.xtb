@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">مطابقت پذیری آن کریں؟</translation>
 <translation id="1253032109800629289">"قیمت کی ٹریکنگ کی اطلاعات حاصل کریں" کو چھپائیں</translation>
 <translation id="1258491128795710625">نیا کیا ہے</translation>
+<translation id="1259210743048744967">آپ کا موجودہ براؤزنگ ڈیٹا <ph name="USER_EMAIL" /> کے سائن آؤٹ کرنے پر دستیاب ہوگا۔ یہ اس اکاؤنٹ میں محفوظ نہیں ہوگا۔</translation>
 <translation id="1262724000444746916">‏‫'Bookmarks میں شامل کریں' کو چھپائیں</translation>
 <translation id="1263231323834454256">پڑھنے کی فہرست</translation>
 <translation id="1263433075299269530">آپ کا آخری کھلا ہوا ٹیب</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">کوئی کھلے ٹیبز نہیں ہیں</translation>
 <translation id="1469381646033328562">آپ کا اکاؤنٹ آپ کے والد/والدہ کے زیر انتظام ہے۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">تبدیل کر دیا گیا</translation>
 <translation id="1480152980057770392">پڑھنے کی فہرست دکھائیں</translation>
 <translation id="1484758781961275277">‏اپنے iPad فون پر، اپنے پسندیدہ ڈیسک ٹاپ براؤزر کا بھرپور فائدہ اٹھائیں۔</translation>
 <translation id="1485907716209290998">پیکیج ٹریکنگ</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">ٹیب کو ہٹائیں اور گروپ کو حذف کریں؟</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> کو منتخب کیا گیا</translation>
 <translation id="1709916727352927457">پاس کی حذف کریں</translation>
+<translation id="1712341189152602203">موجودہ براؤزنگ ڈیٹا <ph name="USER_EMAIL" /> سے لنک کیا جائے گا۔ اس ڈیٹا کو ہو سکتا ہے آپ کی تنظیم دیکھ سکے۔</translation>
 <translation id="1713777106376424209">ڈیلیور کردہ منجانب</translation>
 <translation id="1715515772563243997">اگر آپ کو <ph name="SITE" /> پر اعتماد ہے تو آپ سائن ان کرنے کے لیے محفوظ کردہ پاس ورڈ استعمال کر سکتے ہیں۔</translation>
 <translation id="1728549374069268714">پیسٹ کریں اور جائیں</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">اس سائٹ پر جہاں آپ نے پاس ورڈ محفوظ کر رکھا ہے، سائن ان پاس ورڈ فیلڈ پر تھپتھپائیں۔</translation>
 <translation id="1872096359983322073">ٹارچ</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />۔</translation>
+<translation id="1879793121657209834">منتخب کریں کہ اس آلے پر موجودہ براؤزنگ ڈیٹا جیسے پاس ورڈز، سرگزشت وغیرہ کا کیا کرنا ہے۔</translation>
 <translation id="1881621406744213161">فیملی ممبرز کو دعوت دیں</translation>
 <translation id="188237709236611317">اسمارٹ ترتیب کا مینیو بار</translation>
 <translation id="1883255238294161206">فہرست سکیڑیں</translation>
@@ -512,6 +516,7 @@
 <translation id="3324193307694657476">پتہ 2</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
 <translation id="333229797575847124">اس خصوصیت کو فعال کرنے کا طریقہ</translation>
+<translation id="3333566504534692948">نہیں، اسے اپنے دفتری اسپیس میں منتقل کریں</translation>
 <translation id="3344485292736684439">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="334690320928261823">حالیہ ٹیبز</translation>
 <translation id="3348387552617855658">یہ کارڈ آپ کو اپنے پیکیجز پر نظر رکھنے، ساتھ ہی آپ کو اہم ڈیلیوری سے متعلق اپ ڈیٹس فراہم کرنے میں مدد کرتا ہے۔</translation>
@@ -1207,6 +1212,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6445981559479772097">پیغام بھیج دیا گیا۔</translation>
 <translation id="6447842834002726250">کوکیز</translation>
 <translation id="6449554712554071184">ایسا کرنے سے آپ کے آلے سے گروپ مستقل طور پر حذف ہو جائے گا۔</translation>
+<translation id="6452534462676960500">نئی سرگرمی</translation>
 <translation id="6459307836338400162">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کے لیے، <ph name="BEGIN_LINK" />مطابقت پذیری<ph name="END_LINK" /> اور <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دونوں دیکھیں۔</translation>
 <translation id="6459411599807878608">تفصیلات پوشیدہ ہیں</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1615,6 +1621,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8219424187226230983">نئے ٹیب میں آف لائن ورژن دیکھیں</translation>
 <translation id="8230355548492839438">پچھلا تلاش کریں</translation>
 <translation id="8232956427053453090">ڈیٹا برقرار رکھیں</translation>
+<translation id="8258999165172757081">شامل کر دیا گیا</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="82619448491672958">دیگر ٹیبز دیکھیں</translation>
 <translation id="8263228331881858381">پاس کی کو محفوظ کر دیا گیا</translation>

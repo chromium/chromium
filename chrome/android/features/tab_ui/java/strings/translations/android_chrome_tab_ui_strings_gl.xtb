@@ -100,6 +100,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="5339733443032484186">A túa última pestana</translation>
 <translation id="5380159289133845234">Arquivar pestanas duplicadas</translation>
 <translation id="5400836586163650660">Gris</translation>
+<translation id="5446043142172831860">Quitar pestana e saír do grupo</translation>
 <translation id="5490235265819901748">Grupo de pestanas despregado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Pecha o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Pecha o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>

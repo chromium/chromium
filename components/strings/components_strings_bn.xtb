@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1617276713587758852">ক্রসওভার</translation>
 <translation id="1619007254056372606">অন-ডিভাইস সাইট ডেটা ম্যানেজ করুন</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> একটি ট্যাব সরিয়ে দিয়েছেন</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1622966923835127638">ব্যবসায় ফাইন্যান্স</translation>
 <translation id="1623104350909869708">এই পৃষ্ঠাটিকে অতিরিক্ত কথোপকথন তৈরি করা থেকে বাধা দিন</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল খোলার সুবিধা ব্লক করা হয়েছে}one{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই #টি ফাইল খোলার সুবিধা ব্লক করা হয়েছে}other{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই #টি ফাইল খোলার সুবিধা ব্লক করা হয়েছে}}</translation>
 <translation id="1633941398432788136">ইভেন্ট প্ল্যানিং</translation>
 <translation id="1634828734222219955">মোট</translation>
+<translation id="1637407510758033366">গ্রুপে <ph name="USER_DISPLAY_NAME" /> যোগ দিয়েছেন</translation>
 <translation id="163826442096818926">ছোট করুন</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1640180200866533862">ব্যবহারকারীর নীতিসমূহ</translation>
@@ -905,6 +907,7 @@
 <translation id="2571488850200220306">এছাড়াও, নিরাপত্তা নিশ্চিত করার ব্যাপারে সহায়তা করতে, এটি ডিভাইসের OS, ব্রাউজার ভার্সন এবং কী সফ্টওয়্যার ইনস্টল করা রয়েছে তা দেখতে পারবে</translation>
 <translation id="2573170131138724450">টেলিভিশন</translation>
 <translation id="257674075312929031">গ্রুপ</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> একটি ট্যাব যোগ করেছেন</translation>
 <translation id="2586657967955657006">ক্লিপবোর্ড</translation>
 <translation id="2587841377698384444">ডিরেক্টরি API আইডি:</translation>
 <translation id="2594318783181750337">চটপট ওয়েব ভিউ:</translation>
@@ -1142,6 +1145,7 @@
 <translation id="306573536155379004">গেম শুরু হয়েছে।</translation>
 <translation id="3067505415088964188">দাম কম</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড ১ মিনিটে শুরু হবে</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS}টি আইটেম}one{{ITEMS}টি আইটেম}other{{ITEMS}টি আইটেম}}</translation>
 <translation id="3076865167425975822">অপারেটিং সিস্টেম</translation>
 <translation id="3080254622891793721">গ্রাফিক</translation>
 <translation id="3082007635241601060">উপলভ্য হলে পছন্দমতো ডিসকাউন্ট খুঁজে পেতে Google-কে আপনার কার্ট ব্যবহার করতে দিন</translation>
@@ -2402,6 +2406,7 @@
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5305716236436927587">বিজ্ঞাপন এবং মার্কেটিং</translation>
 <translation id="5306593769196050043">উভয় শিট</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> গ্রুপের রঙ পরিবর্তন করেছেন</translation>
 <translation id="5307166000025436103">ওকে</translation>
 <translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5308689395849655368">ক্র্যাশ প্রতিবেদন অক্ষম আছে৷</translation>
@@ -2433,6 +2438,7 @@
 <translation id="5363309033720083897">আপনার অ্যাডমিনিস্ট্রেটরের তরফ থেকে অনুমোদিত সিরিয়াল পোর্ট</translation>
 <translation id="5363532265530011914">সকস ও হোসিয়ারি</translation>
 <translation id="5371425731340848620">কার্ড আপডেট করুন</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> একটি ট্যাব পরিবর্তন করেছেন</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"আপনার ঘড়ি লেটে চলছে" অথবা "আপনার ঘড়ি ফাস্ট আছে" অথবা "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">আপনার সব ডিভাইসে এই পাসওয়ার্ড পেতে, নিজের পরিচয় যাচাই করুন</translation>
@@ -2447,6 +2453,7 @@
 <translation id="5392506727170022660">মেটাল (সেমি-গ্লস)</translation>
 <translation id="5394069166371280357">টিভিতে পারিবারিক অনুষ্ঠান</translation>
 <translation id="5396631636586785122">ডানদিকে ধারের দিকে সেলাই</translation>
+<translation id="5397794290049113714">আপনি</translation>
 <translation id="5398772614898833570">বিজ্ঞাপন ব্লক করা হয়েছে</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="5401344472773249513">সেলিব্রেটিদের ও বিনোদন সংবাদ</translation>
@@ -2832,7 +2839,9 @@
 <translation id="6105460996796456817">সাইট তৈরি করুন</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি অস্থায়ীভাবে ডাউন হয়ে থাকতে পারে অথবা এটি হয়ত একটি নতুন ওয়েব ঠিকানায় স্থায়ীভাবে সরানো হয়েছে।</translation>
 <translation id="6107012941649240045">একে ইস্যু করা হয়েছিল</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> গ্রুপের নাম পরিবর্তন করেছেন</translation>
 <translation id="6107924765192360631">লেখার সাজেশন পেতে কয়েকটি শব্দ অথবা প্রথম ড্রাফ্ট দিয়ে শুরু করুন।</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" />-এর তুলনা করুন</translation>
 <translation id="6108580855199168381">সার্টিফিকেটের বিবরণ</translation>
 <translation id="6108702513636120202">Chromium-এ আপনার সার্চ ইঞ্জিন</translation>
 <translation id="6108849843016142864">সরীসৃপ ও উভচর</translation>
@@ -3716,6 +3725,7 @@
 <translation id="7660456820368115565">ব্যাপকভাবে মাল্টিপ্লেয়ার গেম</translation>
 <translation id="7661591871037163355">আপনার তুলনা টেবিল সম্পূর্ণ। নতুন একটি যোগ করতে কলাম সরান।</translation>
 <translation id="7662298039739062396">সেটিংস একটি এক্সটেনশন দ্বারা নিয়ন্ত্রিত</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> গ্রুপটি ছেড়ে গেছেন</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> সার্টিফিকেট</translation>
 <translation id="7666397036351755929">'ছদ্মবেশী মোড'-এ অনুমতি দেওয়া নেই</translation>
 <translation id="7667346355482952095">ফিরে পাওয়া নীতির টোকেন খালি অথবা বর্তমান টোকেনের সঙ্গে মেলে না</translation>

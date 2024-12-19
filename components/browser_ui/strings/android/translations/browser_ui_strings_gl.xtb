@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Conectouse un dispositivo USB</translation>
 <translation id="4194328954146351878">Pregunta antes de permitir que os sitios consulten e cambien información en dispositivos con NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir Configuración de localización</translation>
+<translation id="4213239715282467974">Agora Chrome comparte as pestanas recentes co teu dispositivo. Podes acceder a elas facilmente na lista de aplicacións e nos resultados de busca do aparello. Desactiva esta opción cando queiras na configuración de Chrome.</translation>
 <translation id="4226663524361240545">O dispositivo pode vibrar ao recibir notificacións</translation>
 <translation id="4259722352634471385">A navegación está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitida</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Os sitios non poderán pedirche usar a información que garden sobre ti</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
+<translation id="5408906274948600065">Permite que Chrome comparta as pestanas recentes co teu dispositivo para que se mostren na lista de aplicacións e nos resultados de busca do aparello. Activa ou desactiva esta opción cando queiras na configuración de Chrome.</translation>
 <translation id="5438097262470833822">Con esta opción restableceranse os permisos de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Cando esta opción está activada, os sitios poden pedirche permiso para acceder á túa localización. Cando esta opción está desactivada, os sitios non poden acceder á túa localización.</translation>
 <translation id="5489227211564503167">Tempo transcorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

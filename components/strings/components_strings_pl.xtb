@@ -362,6 +362,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1615402009686901181">Zasada administratora wyłącza zrzut ekranu, gdy widoczne są treści poufne</translation>
 <translation id="1617276713587758852">Crossovery</translation>
 <translation id="1619007254056372606">Zarządzaj danymi witryn na urządzeniu</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> usunął(-ęła) kartę</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Biznes/Finanse</translation>
 <translation id="1623104350909869708">Zapobiegaj wyświetlaniu dodatkowych okien dialogowych na tej stronie</translation>
@@ -369,6 +370,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1633137413609266904">{0,plural, =1{Otwieranie tego pliku jest zablokowane przez zasady administratora}few{Otwieranie # plików jest zablokowane przez zasady administratora}many{Otwieranie # plików jest zablokowane przez zasady administratora}other{Otwieranie # pliku jest zablokowane przez zasady administratora}}</translation>
 <translation id="1633941398432788136">Planowanie imprez</translation>
 <translation id="1634828734222219955">Suma</translation>
+<translation id="1637407510758033366">Do grupy dołączył(a) <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="163826442096818926">Skróć</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1640180200866533862">Zasady dotyczące użytkowników</translation>
@@ -904,6 +906,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2571488850200220306">Aby zapewnić bezpieczeństwo, administrator może też wyświetlać informacje o systemie operacyjnym urządzenia, wersji przeglądarki i zainstalowanym oprogramowaniu</translation>
 <translation id="2573170131138724450">Telewizory</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> dodał(a) kartę</translation>
 <translation id="2586657967955657006">Schowek</translation>
 <translation id="2587841377698384444">Identyfikator interfejsu API katalogu:</translation>
 <translation id="2594318783181750337">Szybkie wyświetlanie w sieci:</translation>
@@ -2402,6 +2405,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5305716236436927587">Reklama i marketing</translation>
 <translation id="5306593769196050043">Oba arkusze</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> zmienił(a) kolor grupy</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Połącz</translation>
 <translation id="5308689395849655368">Funkcja zgłaszania awarii jest wyłączona.</translation>
@@ -2433,6 +2437,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5363309033720083897">Port szeregowy, na który zezwala administrator</translation>
 <translation id="5363532265530011914">Skarpety i wyroby pończosznicze</translation>
 <translation id="5371425731340848620">Zaktualizuj dane karty</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> zmienił(a) kartę</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Twój zegar się spóźnia” lub „Twój zegar się śpieszy” lub „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Aby uzyskać dostęp do tego hasła na wszystkich swoich urządzeniach, potwierdź swoją tożsamość</translation>
@@ -2447,6 +2452,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5392506727170022660">Metal (półpołysk)</translation>
 <translation id="5394069166371280357">Telewizyjne programy rodzinne</translation>
 <translation id="5396631636586785122">Zszywanie przy prawej krawędzi</translation>
+<translation id="5397794290049113714">Ty</translation>
 <translation id="5398772614898833570">Reklamy zostały zablokowane</translation>
 <translation id="5400836586163650660">Szary</translation>
 <translation id="5401344472773249513">Wiadomości o celebrytach i branży rozrywkowej</translation>
@@ -2832,6 +2838,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6105460996796456817">Utwórz witrynę</translation>
 <translation id="6106989379647458772">Strona <ph name="PAGE" /> może być chwilowo niedostępna lub została przeniesiona pod nowy adres.</translation>
 <translation id="6107012941649240045">Wystawiony dla</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> zmienił(a) nazwę grupy</translation>
 <translation id="6107924765192360631">Aby otrzymać sugestie dotyczące pisania, zacznij od kilku słów lub pierwszej wersji roboczej.</translation>
 <translation id="6108508372809181847">Porównaj: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Szczegóły certyfikatu</translation>
@@ -3718,6 +3725,7 @@ Dodatkowe informacje:
 <translation id="7660456820368115565">Gry typu Massively Multiplayer</translation>
 <translation id="7661591871037163355">Tabela porównawcza jest pełna. Usuń kolumny, aby dodać nowe.</translation>
 <translation id="7662298039739062396">Ustawienie kontrolowane przez rozszerzenie</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> opuścił(a) grupę</translation>
 <translation id="7663736086183791259">Certyfikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Niedozwolone w trybie incognito</translation>
 <translation id="7667346355482952095">Zwrócony token zasad jest pusty lub nie pasuje do bieżącego tokena</translation>

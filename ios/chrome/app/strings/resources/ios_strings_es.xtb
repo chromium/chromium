@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">No hay pestañas abiertas</translation>
 <translation id="1469381646033328562">Tu padre o madre gestiona tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Modificada</translation>
 <translation id="1480152980057770392">Mostrar lista de lectura</translation>
 <translation id="1484758781961275277">Disfruta de lo mejor del navegador para ordenadores que ya conoces y tanto te gusta en tu iPad.</translation>
 <translation id="1485907716209290998">Seguir envío</translation>
@@ -1211,6 +1212,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6445981559479772097">Mensaje enviado</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Se eliminará permanentemente el grupo de tu dispositivo.</translation>
+<translation id="6452534462676960500">Actividad nueva</translation>
 <translation id="6459307836338400162">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Se han ocultado los detalles</translation>
 <translation id="646394917185284261">Archivos</translation>
@@ -1619,6 +1621,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8219424187226230983">Ver versión sin conexión en una nueva pestaña</translation>
 <translation id="8230355548492839438">Buscar anterior</translation>
 <translation id="8232956427053453090">Conservar datos</translation>
+<translation id="8258999165172757081">Añadido</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="82619448491672958">Ver otras pestañas</translation>
 <translation id="8263228331881858381">Llave de acceso guardada</translation>

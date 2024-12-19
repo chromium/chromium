@@ -362,6 +362,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1615402009686901181">Administratzailearen gidalerroek pantaila-kapturak ateratzea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="1617276713587758852">Crossover ibilgailuak</translation>
 <translation id="1619007254056372606">Kudeatu gailuan gordetako webguneetako datuak</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak fitxa bat kendu du</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Enpresa-finantzak</translation>
 <translation id="1623104350909869708">Ez utzi orri honi elkarrizketa-koadroa gehigarriak sortzea</translation>
@@ -369,6 +370,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1633137413609266904">{0,plural, =1{Administratzailearen gidalerroek ez dute uzten fitxategia irekitzen}other{Administratzailearen gidalerroek ez dute uzten # fitxategi irekitzen}}</translation>
 <translation id="1633941398432788136">Gertaera-plangintza</translation>
 <translation id="1634828734222219955">Guztira</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> taldean sartu da</translation>
 <translation id="163826442096818926">Laburtu</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1640180200866533862">Erabiltzaile-gidalerroak</translation>
@@ -904,6 +906,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2571488850200220306">Segurtasuna bermatzeko, gailuaren sistema eragilea, arakatzailearen bertsioa eta instalatutako softwarea ikus ditzake</translation>
 <translation id="2573170131138724450">Telebistak</translation>
 <translation id="257674075312929031">Taldekatu</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak fitxa bat gehitu du</translation>
 <translation id="2586657967955657006">Arbela</translation>
 <translation id="2587841377698384444">Direktorioko APIarenidentifikatzailea:</translation>
 <translation id="2594318783181750337">Web-ikuspegi bizkorra:</translation>
@@ -1141,6 +1144,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="306573536155379004">Hasi da jokoa.</translation>
 <translation id="3067505415088964188">Prezioa baxua da</translation>
 <translation id="3068118691172921711">Fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzura kargatzeko prozesua minutu bat barru hasiko da</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elementu}other{{ITEMS} elementu}}</translation>
 <translation id="3076865167425975822">Sistema eragileak</translation>
 <translation id="3080254622891793721">Grafikoa</translation>
 <translation id="3082007635241601060">Utzi Google-ri saskiak erabiltzen bertako produktuen deskontu pertsonalizatuak bilatzeko</translation>
@@ -2397,6 +2401,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5300589172476337783">Erakutsi</translation>
 <translation id="5305716236436927587">Publizitatea eta marketina</translation>
 <translation id="5306593769196050043">Bi orriak</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak taldearen kolorea aldatu du</translation>
 <translation id="5307166000025436103">Ados</translation>
 <translation id="5308380583665731573">Konektatu</translation>
 <translation id="5308689395849655368">Hutsegite-txostenak bidaltzeko aukera desgaituta dago.</translation>
@@ -2428,6 +2433,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5363309033720083897">Administratzaileak onartu duen serieko ataka</translation>
 <translation id="5363532265530011914">Galtzerdiak eta galtzeteria</translation>
 <translation id="5371425731340848620">Eguneratu txartela</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak fitxa bat aldatu du</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Erlojua atzeratuta duzu", "Erlojua aurreratuta duzu" edo "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Pasahitza zure gailu guztietan lortzeko, egiaztatu zeu zarela</translation>
@@ -2442,6 +2448,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5392506727170022660">Metala (erdidistiratsua)</translation>
 <translation id="5394069166371280357">Familientzako saioak</translation>
 <translation id="5396631636586785122">Eskuineko ertza josita</translation>
+<translation id="5397794290049113714">Zu</translation>
 <translation id="5398772614898833570">Blokeatu egin dira iragarkiak</translation>
 <translation id="5400836586163650660">Grisa</translation>
 <translation id="5401344472773249513">Pertsona famatuei eta aisiari buruzko albisteak</translation>
@@ -2827,7 +2834,9 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6105460996796456817">Sortu webgune bat</translation>
 <translation id="6106989379647458772">Baliteke <ph name="PAGE" /> helbideko web-orria ez funtzionatzea edo beste web-helbide batera betiko aldatu izatea.</translation>
 <translation id="6107012941649240045">Nori jaulkia:</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak taldearen izena aldatu du</translation>
 <translation id="6107924765192360631">Idazteko iradokizunak jasotzeko, hasi hitz batzuk edo lehenengo zirriborroa idazten.</translation>
+<translation id="6108508372809181847">Konparatu <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Ziurtagiriaren xehetasunak</translation>
 <translation id="6108702513636120202">Chromium-eko bilatzailea</translation>
 <translation id="6108849843016142864">Narrastiak eta anfibioak</translation>
@@ -3710,6 +3719,7 @@ Xehetasun gehiago:
 <translation id="7660456820368115565">Jokalari bat baino gehiagoko joko masiboak</translation>
 <translation id="7661591871037163355">Konparazio-taula beteta dago. Zutabeak gehitzeko, kendu lehendik dauden batzuk.</translation>
 <translation id="7662298039739062396">Luzapen batek kontrolatzen du ezarpena</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> taldetik irten da</translation>
 <translation id="7663736086183791259">Ziurtagiria <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Baimenik gabe ezkutuko moduan</translation>
 <translation id="7667346355482952095">Itzuli den gidalerro-tokena hutsik dago edo ez dator bat oraingo tokenarekin</translation>

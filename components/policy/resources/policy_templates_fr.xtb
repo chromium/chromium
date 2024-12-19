@@ -1314,7 +1314,6 @@ Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans l
 <translation id="2005506794355327448">Action à effectuer quand l'écran est rabattu.</translation>
 <translation id="2006530844219044261">Gestion de l'alimentation</translation>
 <translation id="2006954055163088863">Considérer l'utilisateur comme inactif pendant la lecture de la vidéo</translation>
-<translation id="2008514891623783266">La règle de gestion des adresses IP de WebRTC</translation>
 <translation id="201153120366509312">Si cette règle est définie sur "Autorisée" ou n'est pas configurée, la collecte de métriques avec clé d'URL est autorisée.
 Si la collecte de métriques avec clé d'URL est autorisée et activée par l'utilisateur, elle envoie à Google les URL des pages consultées par l'utilisateur afin d'améliorer la recherche et la navigation, ainsi que les statistiques d'utilisation par page.
 Les métriques avec clé d'URL comprennent également les identifiants et les statistiques d'utilisation d'autres composants du navigateur pouvant modifier ou fournir du contenu, comme les extensions.
@@ -4257,6 +4256,11 @@ Cette règle a été utilisée pour désactiver la mise à niveau automatique du
 
       Cette fonctionnalité n'est prise en charge que dans l'environnement réseau interne de Google.</translation>
 <translation id="4269859918103560644">Laisser l'utilisateur décider</translation>
+<translation id="4271245613154024710">Cette règle permet de spécifier quelles applications Web isolées (AWI) peuvent se connecter à des cartes à puce à l'aide de l'API Web Smart Card sans demander l'autorisation de l'utilisateur. Cette règle n'accepte pas les caractères génériques.
+
+Cette règle remplace <ph name="POLICY_NAME" />. En particulier, si la valeur de la liste de blocage de est <ph name="ALL_ISOLATED_WEB_APPS" />, aucune AWI ne pourra se connecter aux lecteurs de cartes à puce (les utilisateurs ne seront même pas invités à donner leur autorisation), à l'exception de celles listées dans cette règle.
+
+Par défaut, les AWI qui spécifient des autorisations de carte à puce dans leur fichier manifeste peuvent se connecter à des cartes à puce à condition que l'utilisateur accorde l'autorisation de manière interactive par lecteur.</translation>
 <translation id="4274691295133617461">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès en lecture aux fichiers et répertoires qui figurent dans le système de fichiers du système d'exploitation hôte via l'API File System. Si cette règle est définie sur "2", l'accès est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -5831,6 +5835,11 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
       </translation>
 <translation id="5448022937220253000">Choisissez ce qu'il advient des données utilisateur une fois <ph name="LACROS_NAME" /> désactivé</translation>
 <translation id="5449690328792750354">L'API Event.path sera disponible.</translation>
+<translation id="5450507908812118425">Cette règle permet de spécifier quelles applications Web isolées (AWI) ne pourront pas se connecter aux lecteurs de cartes à puce (les utilisateurs ne seront même pas invités à donner leur autorisation). Cette règle accepte les caractères génériques. Par exemple, <ph name="ALL_ISOLATED_WEB_APPS" /> bloquera l'accès à toutes les AWI.
+
+Cette règle est remplacée par <ph name="POLICY_NAME" />. En particulier, si la valeur de la liste de blocage est <ph name="ALL_ISOLATED_WEB_APPS" />, les AWI ne pourront pas se connecter aux lecteurs de carte à puce (les utilisateurs ne seront même pas invités à donner leur autorisation), à l'exception de celles listées dans <ph name="POLICY_NAME" />.
+
+Par défaut, les AWI qui spécifient des autorisations de carte à puce dans leur fichier manifeste peuvent se connecter à des cartes à puce à condition que l'utilisateur accorde l'autorisation de manière interactive par lecteur.</translation>
 <translation id="5452024130413254050">Détermine si les VM utilisant cette configuration ont accès à un module vTPM (la valeur par défaut est "false", et <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> si la règle n'est pas configurée).</translation>
 <translation id="5454128917282602937">Lorsqu'un utilisateur passe d'un appareil <ph name="PRODUCT_OS_NAME" /> à un autre, le service <ph name="PRODUCT_NAME" /> V2 rétablit sur le nouvel appareil les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil précédent.
 Si vous activez cette règle, les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil <ph name="PRODUCT_OS_NAME" /> auquel l'utilisateur était connecté en dernier sont automatiquement rétablies lorsqu'il se connecte.
@@ -9288,7 +9297,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="8056800559672904373">Un compte géré doit être un compte principal sans comptes secondaires. L'importation de données de navigation existantes est autorisée au moment de la création du profil</translation>
 <translation id="8059164285174960932">URL où les clients d'accès à distance doivent obtenir leur jeton d'authentification</translation>
 <translation id="8059352177830050556">Activer les rapports sur le rétroéclairage de l'appareil</translation>
-<translation id="8062375903420954294">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour tenter d'identifier la meilleure connexion disponible. Consultez le document RFC 8828, section 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Lorsqu'elle n'est pas définie, toutes les interfaces disponibles sont utilisées par défaut.</translation>
 <translation id="8062485064082966327">Utiliser un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
 <translation id="8066428282805800713">Envoyer des données matérielles supplémentaires sur ChromeOS Flex</translation>
 <translation id="8066532561081127944">Pour des raisons de sécurité, l'API Web <ph name="REQUEST_FULLSCREEN_API_NAME" /> nécessite un geste préalable de l'utilisateur ("activation temporaire"). Sinon, une erreur se produit. Les paramètres personnels des utilisateurs peuvent autoriser certaines origines à appeler cette API sans geste préalable de l'utilisateur, comme décrit sur <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.

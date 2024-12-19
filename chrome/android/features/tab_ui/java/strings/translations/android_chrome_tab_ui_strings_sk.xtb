@@ -100,6 +100,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="5339733443032484186">Vaša posledná karta</translation>
 <translation id="5380159289133845234">Archivovať duplicitné karty</translation>
 <translation id="5400836586163650660">Sivá</translation>
+<translation id="5446043142172831860">Odstrániť kartu a opustiť skupinu</translation>
 <translation id="5490235265819901748">Skupina kariet bola rozbalená</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_ONE" /> kartou.}few{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}many{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs, color <ph name="COLOR_NAME" />.}other{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>

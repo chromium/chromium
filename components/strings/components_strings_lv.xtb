@@ -362,6 +362,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1615402009686901181">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna uzņemšanu</translation>
 <translation id="1617276713587758852">Krosoveri</translation>
 <translation id="1619007254056372606">Pārvaldīt vietņu datus ierīcē</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> noņēma cilni</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Uzņēmējdarbības finanses</translation>
 <translation id="1623104350909869708">Neļaut šai lapai veidot papildu dialoglodziņus</translation>
@@ -369,6 +370,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1633137413609266904">{0,plural, =1{Administratora politika bloķē šī faila atvēršanu}zero{Administratora politika bloķē # failu atvēršanu}one{Administratora politika bloķē # faila atvēršanu}other{Administratora politika bloķē # failu atvēršanu}}</translation>
 <translation id="1633941398432788136">Pasākumu plānošana</translation>
 <translation id="1634828734222219955">Kopā</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> pievienojās grupai</translation>
 <translation id="163826442096818926">Saīsināts</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1640180200866533862">Lietotāja politikas</translation>
@@ -904,6 +906,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2571488850200220306">Lai palīdzētu gādāt par drošību, administrators var arī skatīt ierīces operētājsistēmu, pārlūkprogrammas versiju un instalēto programmatūru.</translation>
 <translation id="2573170131138724450">Televizori</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> pievienoja cilni</translation>
 <translation id="2586657967955657006">Starpliktuve</translation>
 <translation id="2587841377698384444">Direktorija API ID:</translation>
 <translation id="2594318783181750337">Ātrais tīmekļa skats:</translation>
@@ -2400,6 +2403,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5305716236436927587">Reklamēšana un mārketings</translation>
 <translation id="5306593769196050043">Abas lapas</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> mainīja grupas krāsu</translation>
 <translation id="5307166000025436103">Derīga</translation>
 <translation id="5308380583665731573">Pievienot</translation>
 <translation id="5308689395849655368">Avāriju pārskatu izveide ir atspējota.</translation>
@@ -2431,6 +2435,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5363309033720083897">Seriālais ports, ko atļāva jūsu administrators.</translation>
 <translation id="5363532265530011914">Zeķes un zeķbikses</translation>
 <translation id="5371425731340848620">Kartes atjaunināšana</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> mainīja cilni</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">“Pulkstenis atpaliek”, “Pulkstenis steidzas” vai “&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Lai varētu izmantot šo paroli visās savās ierīcēs, apstipriniet savu identitāti.</translation>
@@ -2445,6 +2450,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5392506727170022660">Metāls (pusglancēts)</translation>
 <translation id="5394069166371280357">Televīzijas pārraides visai ģimenei</translation>
 <translation id="5396631636586785122">Malu sašuvums labajā pusē</translation>
+<translation id="5397794290049113714">Jūs</translation>
 <translation id="5398772614898833570">Reklāmu rādīšana bloķēta</translation>
 <translation id="5400836586163650660">Pelēka</translation>
 <translation id="5401344472773249513">Slavenību un izklaides ziņas</translation>
@@ -2830,6 +2836,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6105460996796456817">Izveidot vietni</translation>
 <translation id="6106989379647458772">Tīmekļa lapa <ph name="PAGE" /> var būt īslaicīgi nepieejama, vai tā var būt pārvietota uz jaunu tīmekļa adresi.</translation>
 <translation id="6107012941649240045">Izsniegts</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> mainīja grupas nosaukumu</translation>
 <translation id="6107924765192360631">Sāciet ar dažiem vārdiem vai melnraksta pirmo versiju, lai saņemtu rakstīšanas ieteikumus.</translation>
 <translation id="6108508372809181847">Salīdzināt: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Sertifikāta informācija</translation>
@@ -3716,6 +3723,7 @@ Papildu informācija:
 <translation id="7660456820368115565">Lielas vairāku spēlētāju spēles</translation>
 <translation id="7661591871037163355">Salīdzinājuma tabula ir pilna. Lai pievienotu jaunas slejas, noņemiet kādu no esošajām.</translation>
 <translation id="7662298039739062396">Iestatījumu kontrolē paplašinājums</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> pameta grupu</translation>
 <translation id="7663736086183791259">Sertifikāts <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nav atļauts inkognito režīmā</translation>
 <translation id="7667346355482952095">Atgrieztais politikas marķieris ir tukšs vai neatbilst pašreizējam marķierim</translation>

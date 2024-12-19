@@ -362,6 +362,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1615402009686901181">Pravilnik skrbnika onemogoča zajem zaslona, če je vidna zaupna vsebina.</translation>
 <translation id="1617276713587758852">Križanci (CUV)</translation>
 <translation id="1619007254056372606">Upravljanje podatkov spletnih mest v napravi</translation>
+<translation id="1619648179761984213">Oseba <ph name="USER_DISPLAY_NAME" /> je odstranila zavihek</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Poslovne finance</translation>
 <translation id="1623104350909869708">Tej strani prepreči, da bi ustvarila dodatna pogovorna okna</translation>
@@ -369,6 +370,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1633137413609266904">{0,plural, =1{Odpiranje te datoteke blokira skrbniški pravilnik.}one{Odpiranje # datoteke blokira skrbniški pravilnik.}two{Odpiranje # datotek blokira skrbniški pravilnik.}few{Odpiranje # datotek blokira skrbniški pravilnik.}other{Odpiranje # datotek blokira skrbniški pravilnik.}}</translation>
 <translation id="1633941398432788136">Načrtovanje dogodka</translation>
 <translation id="1634828734222219955">Total</translation>
+<translation id="1637407510758033366">Oseba <ph name="USER_DISPLAY_NAME" /> se je pridružila skupini</translation>
 <translation id="163826442096818926">Skrajšaj</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1640180200866533862">Uporabniški pravilniki</translation>
@@ -904,6 +906,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2571488850200220306">Zaradi zagotavljanja varnosti so morda vidni tudi operacijski sistem naprave, različica brskalnika in nameščena programska oprema</translation>
 <translation id="2573170131138724450">Televizorji</translation>
 <translation id="257674075312929031">Združi</translation>
+<translation id="258135245577667916">Oseba <ph name="USER_DISPLAY_NAME" /> je dodala zavihek</translation>
 <translation id="2586657967955657006">Odložišče</translation>
 <translation id="2587841377698384444">ID API-ja imenika:</translation>
 <translation id="2594318783181750337">Hiter spletni ogled:</translation>
@@ -2402,6 +2405,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5305716236436927587">Oglaševanje in marketing</translation>
 <translation id="5306593769196050043">Oba lista</translation>
+<translation id="5307109011461144709">Oseba <ph name="USER_DISPLAY_NAME" /> je spremenila barvo skupine</translation>
 <translation id="5307166000025436103">V redu</translation>
 <translation id="5308380583665731573">Povezovanje</translation>
 <translation id="5308689395849655368">Poročanje o zrušitvah je onemogočeno.</translation>
@@ -2433,6 +2437,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5363309033720083897">Serijska vrata, ki jih dovoli skrbnik</translation>
 <translation id="5363532265530011914">Nogavice in pletenine</translation>
 <translation id="5371425731340848620">Posodobite kartico</translation>
+<translation id="537425196847960924">Oseba <ph name="USER_DISPLAY_NAME" /> je spremenila zavihek</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">Ura zaostaja« ali »Ura prehiteva« ali »&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;«</translation>
 <translation id="5379618281582508161">Če želite imeti to geslo v vseh napravah, potrdite, da ste to vi</translation>
@@ -2447,6 +2452,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5392506727170022660">Metal (Semi-Gloss)</translation>
 <translation id="5394069166371280357">Družinske televizijske serije</translation>
 <translation id="5396631636586785122">Robni šiv na desni</translation>
+<translation id="5397794290049113714">Vi</translation>
 <translation id="5398772614898833570">Oglasi blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5401344472773249513">Slavne osebe in novice iz sveta zabave</translation>
@@ -2832,6 +2838,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6105460996796456817">Ustvari spletno mesto</translation>
 <translation id="6106989379647458772">Spletna stran na naslovu <ph name="PAGE" /> morda začasno ni na voljo ali pa je trajno preseljena na drug spletni naslov.</translation>
 <translation id="6107012941649240045">Izdano za</translation>
+<translation id="6107864469867367783">Oseba <ph name="USER_DISPLAY_NAME" /> je spremenila ime skupine</translation>
 <translation id="6107924765192360631">Začnite z nekaj besedami ali prvim osnutkom, če želite dobiti predloge za pisanje.</translation>
 <translation id="6108508372809181847">Primerjava: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Podrobnosti potrdila</translation>
@@ -3718,6 +3725,7 @@ Dodatne podrobnosti:
 <translation id="7660456820368115565">Spletne igre za veliko število igralcev</translation>
 <translation id="7661591871037163355">Vaša primerjalna tabela je polna. Odstranite obstoječe stolpce, če želite dodati nove.</translation>
 <translation id="7662298039739062396">Nastavitev nadzira razširitev</translation>
+<translation id="7662911501613893058">Oseba <ph name="USER_DISPLAY_NAME" /> je zapustila skupino</translation>
 <translation id="7663736086183791259">Potrdilo <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">V anonimnem načinu ni dovoljeno</translation>
 <translation id="7667346355482952095">Vrnjen žeton pravilnika je prazen ali se ne ujema s trenutnim žetonom</translation>

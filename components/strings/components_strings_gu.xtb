@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">ગોપનીય કન્ટેન્ટ દેખાય ત્યારે વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવે છે</translation>
 <translation id="1617276713587758852">ક્રૉસઓવર</translation>
 <translation id="1619007254056372606">ડિવાઇસ પર સાઇટનો ડેટા મેનેજ કરો</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબ કાઢી નાખ્યું</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1622966923835127638">વ્યવસાય સંબંધિત ફાઇનાન્સ</translation>
 <translation id="1623104350909869708">આ પેજને વધારાના સંવાદો બનાવતા અટકાવો</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર આ ફાઇલ ખોલવાનું બ્લૉક કરેલું છે}one{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર # ફાઇલ ખોલવાનું બ્લૉક કરેલું છે}other{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર # ફાઇલ ખોલવાનું બ્લૉક કરેલું છે}}</translation>
 <translation id="1633941398432788136">ઇવેન્ટનું આયોજન</translation>
 <translation id="1634828734222219955">કુલ</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ગ્રૂપમાં જોડાયા</translation>
 <translation id="163826442096818926">ટૂંકું</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1640180200866533862">વપરાશકર્તા પૉલિસીઓ</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">સુરક્ષાની ખાતરી કરવામાં સહાય મળે તે માટે, ડિવાઇસનું OS, બ્રાઉઝરનું વર્ઝન અને કયું સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે એ પણ તે જોઈ શકે છે</translation>
 <translation id="2573170131138724450">ટેલિવિઝન</translation>
 <translation id="257674075312929031">જૂથ</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબ ઉમેર્યું</translation>
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
 <translation id="2587841377698384444">ડિરેક્ટરી API ID:</translation>
 <translation id="2594318783181750337">ઝડપી વેબ વ્યૂ:</translation>
@@ -2402,6 +2405,7 @@
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5305716236436927587">જાહેરાત અને માર્કેટિંગ</translation>
 <translation id="5306593769196050043">બન્ને શીટ</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપના રંગમાં ફેરફાર કર્યો</translation>
 <translation id="5307166000025436103">ઓકે</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
 <translation id="5308689395849655368">ક્રૅશની જાણ કરવાનું બંધ કર્યું છે.</translation>
@@ -2433,6 +2437,7 @@
 <translation id="5363309033720083897">તમારા વ્યવસ્થાપક દ્વારા મંજૂરી આપવામાં આવેલો સીરિયલ પોર્ટ</translation>
 <translation id="5363532265530011914">મોજાં અને ગૂંથેલા કપડા</translation>
 <translation id="5371425731340848620">કાર્ડને અપડેટ કરો</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબમાં ફેરફાર કર્યો</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"તમારી ઘડિયાળ પાછળ છે" અથવા "તમારી ઘડિયાળ આગળ છે" અથવા "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">તમારા બધા ડિવાઇસ પર આ પાસવર્ડ મેળવવા માટે, આ તમે જ હોવાની ચકાસણી કરો</translation>
@@ -2447,6 +2452,7 @@
 <translation id="5392506727170022660">ધાતુ (સેમી-ગ્લોસ)</translation>
 <translation id="5394069166371280357">કૌટુંબિક ટીવી શો</translation>
 <translation id="5396631636586785122">જમણી બાજુએ કિનારી જોડો</translation>
+<translation id="5397794290049113714">તમે</translation>
 <translation id="5398772614898833570">જાહેરાતો અવરોધિત કરી</translation>
 <translation id="5400836586163650660">ગ્રે</translation>
 <translation id="5401344472773249513">સેલિબ્રિટી અને મનોરંજન ન્યૂઝ</translation>
@@ -2832,6 +2838,7 @@
 <translation id="6105460996796456817">સાઇટ બનાવો</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> પરનું વેબપેજ થોડી વાર માટે બંધ હોઈ શકે છે અથવા તે કાયમ માટે નવા વેબ ઍડ્રેસ પર ખસેડવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="6107012941649240045">આને રજૂ કરેલું</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપના નામમાં ફેરફાર કર્યો</translation>
 <translation id="6107924765192360631">લેખનના સૂચનો મેળવવા માટે ફક્ત થોડા શબ્દો અથવા પ્રથમ ડ્રાફ્ટથી શરૂ કરો.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" />ની તુલના કરો</translation>
 <translation id="6108580855199168381">સર્ટિફિકેટની વિગતો</translation>
@@ -3718,6 +3725,7 @@
 <translation id="7660456820368115565">એક સાથે હજારો ખેલાડીઓ દ્વારા રમાતી મલ્ટિપ્લેયર ગેમ</translation>
 <translation id="7661591871037163355">તમારું સરખામણી ટેબલ ભરાઈ ગયું છે. નવી કૉલમ ઉમેરવા માટે, કોઈ કૉલમ કાઢી નાખો.</translation>
 <translation id="7662298039739062396">એક્સટેન્શન દ્વારા સેટિંગ નિયંત્રિત કરેલ છે</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપ છોડી દીધું</translation>
 <translation id="7663736086183791259">પ્રમાણપત્ર <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">છુપા મોડમાં મંજૂરી નથી</translation>
 <translation id="7667346355482952095">પરત કરવાની નીતિનું ટોકન ખાલી છે અથવા વર્તમાન ટોકન સાથે મેળ ખાતું નથી</translation>

@@ -362,6 +362,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1615402009686901181">Administrator policy disables screen capture when confidential content is visible</translation>
 <translation id="1617276713587758852">Crossovers</translation>
 <translation id="1619007254056372606">Manage on-device site data</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> removed a tab</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622966923835127638">Business Finance</translation>
 <translation id="1623104350909869708">Prevent this page from creating additional dialogues</translation>
@@ -369,6 +370,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1633137413609266904">{0,plural, =1{Opening this file is blocked by administrator policy}other{Opening # files is blocked by administrator policy}}</translation>
 <translation id="1633941398432788136">Event Planning</translation>
 <translation id="1634828734222219955">Total</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> joined the group</translation>
 <translation id="163826442096818926">Shorten</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1640180200866533862">User policies</translation>
@@ -904,6 +906,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2571488850200220306">To help ensure security, it can also see the device's OS, browser version and what software is installed</translation>
 <translation id="2573170131138724450">Televisions</translation>
 <translation id="257674075312929031">Group</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> added a tab</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2587841377698384444">Directory API ID:</translation>
 <translation id="2594318783181750337">Fast web view:</translation>
@@ -1141,6 +1144,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3068118691172921711">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in one minute</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} item}other{{ITEMS} items}}</translation>
 <translation id="3076865167425975822">Operating systems</translation>
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3082007635241601060">Let Google use your baskets to find personalised discounts when available</translation>
@@ -2401,6 +2405,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5300589172476337783">Show</translation>
 <translation id="5305716236436927587">Advertising and marketing</translation>
 <translation id="5306593769196050043">Both sheets</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> changed the group colour</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5308689395849655368">Crash reporting is disabled.</translation>
@@ -2432,6 +2437,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5363309033720083897">Serial port allowed by your administrator</translation>
 <translation id="5363532265530011914">Socks and Hosiery</translation>
 <translation id="5371425731340848620">Update card</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> changed a tab</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'Your clock is behind' or 'Your clock is ahead' or "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">To get this password on all your devices, verify that it's you</translation>
@@ -2446,6 +2452,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5392506727170022660">Metal (semi-gloss)</translation>
 <translation id="5394069166371280357">TV family-oriented shows</translation>
 <translation id="5396631636586785122">Edge stitch right</translation>
+<translation id="5397794290049113714">You</translation>
 <translation id="5398772614898833570">Ads blocked</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5401344472773249513">Celebrities and Entertainment News</translation>
@@ -2831,7 +2838,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6105460996796456817">Create site</translation>
 <translation id="6106989379647458772">The web page at <ph name="PAGE" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="6107012941649240045">Issued To</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> changed the group name</translation>
 <translation id="6107924765192360631">Just start with a few words or a first draft to get writing suggestions.</translation>
+<translation id="6108508372809181847">Compare <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Certificate details</translation>
 <translation id="6108702513636120202">Your search engine in Chromium</translation>
 <translation id="6108849843016142864">Reptiles and amphibians</translation>
@@ -3716,6 +3725,7 @@ Additional details:
 <translation id="7660456820368115565">Massively multiplayer games</translation>
 <translation id="7661591871037163355">Your comparison table is full. Remove columns to add new ones.</translation>
 <translation id="7662298039739062396">Setting controlled by an extension</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> left the group</translation>
 <translation id="7663736086183791259">Certificate <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Not allowed in Incognito</translation>
 <translation id="7667346355482952095">Returned policy token is empty or doesn't match current token</translation>

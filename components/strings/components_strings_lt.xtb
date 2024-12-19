@@ -362,6 +362,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1615402009686901181">Remiantis administratoriaus politika, negalima užfiksuoti ekrano, jei matomas konfidencialus turinys</translation>
 <translation id="1617276713587758852">Krosoveriai</translation>
 <translation id="1619007254056372606">Įrenginyje esančių svetainių duomenų tvarkymas</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> pašalino skirtuką</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Verslas / finansai</translation>
 <translation id="1623104350909869708">Neleisti šiam puslapiui kurti papildomų dialogo langų</translation>
@@ -369,6 +370,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1633137413609266904">{0,plural, =1{Pagal administratoriaus politiką neleidžiama atidaryti šio failo}one{Pagal administratoriaus politiką neleidžiama atidaryti # failo}few{Pagal administratoriaus politiką neleidžiama atidaryti # failų}many{Pagal administratoriaus politiką neleidžiama atidaryti # failo}other{Pagal administratoriaus politiką neleidžiama atidaryti # failų}}</translation>
 <translation id="1633941398432788136">Renginių planavimas</translation>
 <translation id="1634828734222219955">Iš viso</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> prisijungė prie grupės</translation>
 <translation id="163826442096818926">Sutrumpinti</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1640180200866533862">Naudotojo politika</translation>
@@ -904,6 +906,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2571488850200220306">Siekiant užtikrinti saugą, taip pat gali būti rodoma įrenginio OS, naršyklės versija ir įdiegta programinė įranga.</translation>
 <translation id="2573170131138724450">Televizoriai</translation>
 <translation id="257674075312929031">Grupė</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> pridėjo skirtuką</translation>
 <translation id="2586657967955657006">Iškarpinė</translation>
 <translation id="2587841377698384444">Katalogo API ID:</translation>
 <translation id="2594318783181750337">Spartusis žiniatinklio rodinys:</translation>
@@ -2403,6 +2406,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5305716236436927587">Reklamavimas ir rinkodara</translation>
 <translation id="5306593769196050043">Abu lapai</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> pakeitė grupės spalvą</translation>
 <translation id="5307166000025436103">Gerai</translation>
 <translation id="5308380583665731573">Prisijungti</translation>
 <translation id="5308689395849655368">Strigčių ataskaitų teikimas neleidžiamas.</translation>
@@ -2434,6 +2438,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5363309033720083897">Administratorius leidžia naudoti nuoseklųjį prievadą</translation>
 <translation id="5363532265530011914">Kojinės ir trikotažas</translation>
 <translation id="5371425731340848620">Atnaujinkite kortelę</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> pakeitė skirtuką</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Laikrodis atsilieka“, „Laikrodis skuba“ arba „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Jei norite gauti šį slaptažodį visuose įrenginiuose, patvirtinkite savo tapatybę</translation>
@@ -2448,6 +2453,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5392506727170022660">Metalas (pusiau blizgus)</translation>
 <translation id="5394069166371280357">Šeimai skirtos TV laidos</translation>
 <translation id="5396631636586785122">Kraštų sukabinimas dešinėje</translation>
+<translation id="5397794290049113714">Jūs</translation>
 <translation id="5398772614898833570">Skelbimai užblokuoti</translation>
 <translation id="5400836586163650660">Pilka spalva</translation>
 <translation id="5401344472773249513">Garsenybės ir pramogų naujienos</translation>
@@ -2833,6 +2839,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6105460996796456817">Sukurti svetainę</translation>
 <translation id="6106989379647458772">Gali būti, kad tinklalapis adresu <ph name="PAGE" /> laikinai neveikia arba yra visam laikui perkeltas nauju žiniatinklio adresu.</translation>
 <translation id="6107012941649240045">Išduotas</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> pakeitė grupės pavadinimą</translation>
 <translation id="6107924765192360631">Tiesiog pradėkite nuo kelių žodžių ar pirmojo juodraščio, kad gautumėte rašymo pasiūlymų.</translation>
 <translation id="6108508372809181847">Palyginti <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Išsami sertifikato informacija</translation>
@@ -3719,6 +3726,7 @@ Papildoma išsami informacija:
 <translation id="7660456820368115565">Kelių žaidėjų režimo žaidimai</translation>
 <translation id="7661591871037163355">Palyginimo lentelė pilna. Pašalinkite stulpelius, kad galėtumėte pridėti naujų.</translation>
 <translation id="7662298039739062396">Nustatymas valdomas pagal plėtinį</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> išėjo iš grupės</translation>
 <translation id="7663736086183791259">Sertifikatas <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Neleidžiama inkognito režimu</translation>
 <translation id="7667346355482952095">Sugrąžintas politikos prieigos raktas yra tuščias arba neatitinka dabartinio prieigos rakto</translation>

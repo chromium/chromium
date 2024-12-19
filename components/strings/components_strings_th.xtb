@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="1617276713587758852">ครอสโอเวอร์</translation>
 <translation id="1619007254056372606">จัดการข้อมูลเว็บไซต์ในอุปกรณ์</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> นำแท็บออกแล้ว</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1622966923835127638">การเงินธุรกิจ</translation>
 <translation id="1623104350909869708">ป้องกันหน้าเว็บนี้จากการสร้างการโต้ตอบเพิ่มเติม</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{นโยบายของผู้ดูแลระบบบล็อกการเปิดไฟล์นี้}other{นโยบายของผู้ดูแลระบบบล็อกการเปิดไฟล์ # รายการ}}</translation>
 <translation id="1633941398432788136">การวางแผนงานอีเวนต์</translation>
 <translation id="1634828734222219955">รวม</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> เข้าร่วมกลุ่มแล้ว</translation>
 <translation id="163826442096818926">ย่อ</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1640180200866533862">นโยบายผู้ใช้</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">เพื่อช่วยตรวจสอบการรักษาความปลอดภัย ยังสามารถดูระบบปฏิบัติการ เวอร์ชันเบราว์เซอร์ และซอฟต์แวร์ที่ติดตั้งของอุปกรณ์ได้อีกด้วย</translation>
 <translation id="2573170131138724450">โทรทัศน์</translation>
 <translation id="257674075312929031">จัดกลุ่ม</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> เพิ่มแท็บแล้ว</translation>
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
 <translation id="2587841377698384444">รหัส API ไดเรกทอรี:</translation>
 <translation id="2594318783181750337">มุมมองเว็บแบบรวดเร็ว:</translation>
@@ -2401,6 +2404,7 @@
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5305716236436927587">การโฆษณาและการตลาด</translation>
 <translation id="5306593769196050043">ทั้ง 2 แผ่นงาน</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> เปลี่ยนสีกลุ่มแล้ว</translation>
 <translation id="5307166000025436103">ปกติ</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5308689395849655368">การรายงานข้อขัดข้องถูกปิดใช้งาน</translation>
@@ -2432,6 +2436,7 @@
 <translation id="5363309033720083897">พอร์ตอนุกรมนี้ได้รับอนุญาตจากผู้ดูแลระบบ</translation>
 <translation id="5363532265530011914">ถุงเท้าและถุงน่อง</translation>
 <translation id="5371425731340848620">อัปเดตบัตร</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> เปลี่ยนแท็บแล้ว</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"นาฬิกาของคุณช้ากว่าปัจจุบัน" หรือ "นาฬิกาของคุณเร็วกว่าปัจจุบัน" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">หากต้องการรับรหัสผ่านนี้ในอุปกรณ์ทุกเครื่อง โปรดยืนยันว่าเป็นคุณ</translation>
@@ -2446,6 +2451,7 @@
 <translation id="5392506727170022660">โลหะ (กึ่งเงา)</translation>
 <translation id="5394069166371280357">รายการทีวีสำหรับครอบครัว</translation>
 <translation id="5396631636586785122">เย็บขอบด้านขวา</translation>
+<translation id="5397794290049113714">คุณ</translation>
 <translation id="5398772614898833570">บล็อกโฆษณา</translation>
 <translation id="5400836586163650660">สีเทา</translation>
 <translation id="5401344472773249513">ข่าวสารคนดังและวงการบันเทิง</translation>
@@ -2831,6 +2837,7 @@
 <translation id="6105460996796456817">สร้างเว็บไซต์</translation>
 <translation id="6106989379647458772">หน้าเว็บที่ <ph name="PAGE" /> อาจใช้งานไม่ได้ชั่วคราวหรืออาจมีการย้ายไปยังที่อยู่เว็บใหม่อย่างถาวรแล้ว</translation>
 <translation id="6107012941649240045">ออกให้แก่</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> เปลี่ยนชื่อกลุ่มแล้ว</translation>
 <translation id="6107924765192360631">เพียงเริ่มด้วยคำไม่กี่คำหรือฉบับร่างแรกเพื่อให้รับคำแนะนำในการเขียน</translation>
 <translation id="6108508372809181847">เปรียบเทียบ <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">รายละเอียดใบรับรอง</translation>
@@ -3717,6 +3724,7 @@
 <translation id="7660456820368115565">เกมแบบผู้เล่นหลายคน</translation>
 <translation id="7661591871037163355">ตารางเปรียบเทียบเต็มแล้ว นำคอลัมน์ออกเพื่อเพิ่มคอลัมน์ใหม่</translation>
 <translation id="7662298039739062396">การตั้งค่าควบคุมโดยส่วนขยาย</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ออกจากกลุ่มแล้ว</translation>
 <translation id="7663736086183791259">ใบรับรอง <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ไม่อนุญาตในโหมดไม่ระบุตัวตน</translation>
 <translation id="7667346355482952095">โทเค็นนโยบายที่ส่งกลับว่างเปล่าหรือไม่ตรงกับโทเค็นปัจจุบัน</translation>

@@ -1901,6 +1901,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Tab キー、Shift キー、Ctrl キー、Esc キー、CapsLock キー、音量キーは使用できません</translation>
 <translation id="2309620859903500144">このサイトではモーション センサーまたは光センサーへのアクセスがブロックされています。</translation>
+<translation id="2310414604104802967">ログイン状態を確認しています...</translation>
 <translation id="2310923358723722542">表示と拡大</translation>
 <translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
@@ -11235,6 +11236,7 @@
 <translation id="9007688236643268728">もう一度ログイン(&amp;S)</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> の詳細ページの戻るボタン</translation>
+<translation id="9008425116680857079">ログインすると、Chrome でパスワードを変更できます。</translation>
 <translation id="9008828754342192581"><ph name="ORIGIN" /> の拡張機能をすべて許可するよう選択しています</translation>
 <translation id="9009369504041480176">アップロード中（<ph name="PROGRESS_PERCENT" /> %）...</translation>
 <translation id="9009707268312089299">Windows からインポート</translation>

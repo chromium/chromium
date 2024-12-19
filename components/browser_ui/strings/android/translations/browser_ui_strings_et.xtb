@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Ühendatud USB-seadmega</translation>
 <translation id="4194328954146351878">Teilt küsitakse luba, kui saidid üritavad NFC-seadmetes teavet vaadata ja muuta (soovitatav)</translation>
 <translation id="4200726100658658164">Ava asukohaseaded</translation>
+<translation id="4213239715282467974">Chrome jagab nüüd teie hiljutisi vahelehti teie seadmega. Saate neile oma seadme rakenduste loendis ja otsingutulemustes kiiresti juurde pääseda. Võite selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="4226663524361240545">Seade võib märguannete korral vibreerida</translation>
 <translation id="4259722352634471385">Navigeerimine on blokeeritud: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Lubatud</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Saidid on blokeeritud küsimast luba kasutada teie kohta salvestatud teavet</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ja veel 1)}other{(ja veel #)}}</translation>
 <translation id="5403592356182871684">Nimed</translation>
+<translation id="5408906274948600065">Lubage Chrome’il jagada teie hiljutisi vahelehti teie seadmega, et näha neid seadme rakenduste loendis ja otsingutulemustes. Võite selle Chrome’i seadetes igal ajal sisse või välja lülitada.</translation>
 <translation id="5438097262470833822">Jätkates lähtestatakse veebisaidi <ph name="WEBSITE" /> load</translation>
 <translation id="5459413148890178711">Kui see on sisse lülitatud, võivad saidid teie asukohateavet küsida. Kui see on välja lülitatud, ei näe saidid teie asukohta.</translation>
 <translation id="5489227211564503167">Kulunud aeg: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

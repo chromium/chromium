@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
 <translation id="1617276713587758852">Кросовер возила</translation>
 <translation id="1619007254056372606">Управљај подацима о сајтовима на уређају</translation>
+<translation id="1619648179761984213">Корисник <ph name="USER_DISPLAY_NAME" /> је уклонио картицу</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622966923835127638">Пословне финансије</translation>
 <translation id="1623104350909869708">Спречи ову страницу да прави додатне дијалоге</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Смернице администратора блокирају отварање овог фајла}one{Смернице администратора блокирају отварање # фајла}few{Смернице администратора блокирају отварање # фајла}other{Смернице администратора блокирају отварање # фајлова}}</translation>
 <translation id="1633941398432788136">Планирање догађаја</translation>
 <translation id="1634828734222219955">Укупно</translation>
+<translation id="1637407510758033366">Корисник <ph name="USER_DISPLAY_NAME" /> се придружио групи</translation>
 <translation id="163826442096818926">Скрати</translation>
 <translation id="1639239467298939599">Учитава се</translation>
 <translation id="1640180200866533862">Смернице за кориснике</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">Из безбедносних разлога уређај може да види и ОС уређаја, верзију прегледача и који софтвер је инсталиран</translation>
 <translation id="2573170131138724450">Телевизори</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="258135245577667916">Корисник <ph name="USER_DISPLAY_NAME" /> је додао картицу</translation>
 <translation id="2586657967955657006">Меморија</translation>
 <translation id="2587841377698384444">ИД API-ја за директоријуме:</translation>
 <translation id="2594318783181750337">Брзи веб-приказ:</translation>
@@ -2402,6 +2405,7 @@
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5305716236436927587">Оглашавање и маркетинг</translation>
 <translation id="5306593769196050043">Обе табеле</translation>
+<translation id="5307109011461144709">Корисник <ph name="USER_DISPLAY_NAME" /> је променио боју групе</translation>
 <translation id="5307166000025436103">У реду</translation>
 <translation id="5308380583665731573">Повежи</translation>
 <translation id="5308689395849655368">Извештавање о отказивању је онемогућено.</translation>
@@ -2433,6 +2437,7 @@
 <translation id="5363309033720083897">Администратор је дозволио серијски порт</translation>
 <translation id="5363532265530011914">Чарапе</translation>
 <translation id="5371425731340848620">Ажурирајте картицу</translation>
+<translation id="537425196847960924">Корисник <ph name="USER_DISPLAY_NAME" /> је променио картицу</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Сат касни“ или „Сат жури“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Да бисте добили ову лозинку на свим уређајима, потврдите свој идентитет</translation>
@@ -2447,6 +2452,7 @@
 <translation id="5392506727170022660">Метал (полусјајни)</translation>
 <translation id="5394069166371280357">Породичне ТВ емисије</translation>
 <translation id="5396631636586785122">Спајање ивица шавом на десној страни</translation>
+<translation id="5397794290049113714">Ви</translation>
 <translation id="5398772614898833570">Огласи су блокирани</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5401344472773249513">Познате личности и вести из света забаве</translation>
@@ -2832,6 +2838,7 @@
 <translation id="6105460996796456817">Направите сајт</translation>
 <translation id="6106989379647458772">Веб-страница на адреси <ph name="PAGE" /> можда привремено не функционише или је трајно премештена на нову веб-адресу.</translation>
 <translation id="6107012941649240045">Издато за</translation>
+<translation id="6107864469867367783">Корисник <ph name="USER_DISPLAY_NAME" /> је променио назив групе</translation>
 <translation id="6107924765192360631">Почните са неколико речи или првом радном верзијом да бисте добили предлоге за писање.</translation>
 <translation id="6108508372809181847">Упоредите ставке <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Детаљи сертификата</translation>
@@ -3717,6 +3724,7 @@
 <translation id="7660456820368115565">Масовне игре за више играча</translation>
 <translation id="7661591871037163355">Табела за поређење је пуна. Уклоните колоне да бисте додали нове.</translation>
 <translation id="7662298039739062396">Подешавање контролише додатак</translation>
+<translation id="7662911501613893058">Корисник <ph name="USER_DISPLAY_NAME" /> је напустио групу</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Није дозвољено у режиму без архивирања</translation>
 <translation id="7667346355482952095">Враћени токен смерница је празан или се не подудара са актуелним токеном</translation>

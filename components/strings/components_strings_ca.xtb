@@ -362,6 +362,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1615402009686901181">La política de l'administrador desactiva la captura de pantalla quan es mostra contingut confidencial</translation>
 <translation id="1617276713587758852">Vehicles multisegment</translation>
 <translation id="1619007254056372606">Gestiona les dades dels llocs web al dispositiu</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ha suprimit una pestanya</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1622966923835127638">Finances empresarials</translation>
 <translation id="1623104350909869708">Impedeix que aquesta pàgina creï quadres de diàleg addicionals</translation>
@@ -369,6 +370,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1633137413609266904">{0,plural, =1{La política de l'administrador ha bloquejat l'opció d'obrir aquest fitxer}other{La política de l'administrador ha bloquejat l'opció d'obrir # fitxers}}</translation>
 <translation id="1633941398432788136">Planificació d'esdeveniments</translation>
 <translation id="1634828734222219955">Total</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> s'ha unit al grup</translation>
 <translation id="163826442096818926">Escurça</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1640180200866533862">Polítiques d'usuari</translation>
@@ -904,6 +906,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2571488850200220306">Per garantir-ne la seguretat, també pot veure el SO del dispositiu, la versió del navegador i quin programari hi ha instal·lat</translation>
 <translation id="2573170131138724450">Televisors</translation>
 <translation id="257674075312929031">Grup</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ha afegit una pestanya</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
 <translation id="2587841377698384444">Identificador de l'API de directoris:</translation>
 <translation id="2594318783181750337">Visualització web ràpida:</translation>
@@ -1141,6 +1144,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="306573536155379004">S'ha iniciat el joc.</translation>
 <translation id="3067505415088964188">El preu és baix</translation>
 <translation id="3068118691172921711">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a 1 minut</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}other{{ITEMS} elements}}</translation>
 <translation id="3076865167425975822">Sistemes operatius</translation>
 <translation id="3080254622891793721">Gràfic</translation>
 <translation id="3082007635241601060">Deixa que Google utilitzi els teus carretons per trobar descomptes personalitzats quan n'hi hagi de disponibles</translation>
@@ -2401,6 +2405,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5305716236436927587">Publicitat i màrqueting</translation>
 <translation id="5306593769196050043">Tots dos fulls</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ha canviat el color del grup</translation>
 <translation id="5307166000025436103">Vàlid</translation>
 <translation id="5308380583665731573">Connecta</translation>
 <translation id="5308689395849655368">La creació d'informes de bloqueig està desactivada.</translation>
@@ -2432,6 +2437,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5363309033720083897">Port en sèrie admès pel teu administrador</translation>
 <translation id="5363532265530011914">Mitges i mitjons</translation>
 <translation id="5371425731340848620">Actualitza la targeta</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ha canviat una pestanya</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"El rellotge està endarrerit", "El rellotge està avançat" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Per obtenir aquesta contrasenya en tots els teus dispositius, verifica la teva identitat</translation>
@@ -2446,6 +2452,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5392506727170022660">Metall (semibrillant)</translation>
 <translation id="5394069166371280357">Programes de televisió orientats a les famílies</translation>
 <translation id="5396631636586785122">Cosit de la vora a la dreta</translation>
+<translation id="5397794290049113714">Usuari</translation>
 <translation id="5398772614898833570">Anuncis bloquejats</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5401344472773249513">Notícies sobre famosos i entreteniment</translation>
@@ -2831,7 +2838,9 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6105460996796456817">Crea un lloc web</translation>
 <translation id="6106989379647458772">És possible que la pàgina web <ph name="PAGE" /> estigui temporalment fora de servei o s'hagi traslladat permanentment a una adreça web nova.</translation>
 <translation id="6107012941649240045">Emès per a</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ha canviat el nom del grup</translation>
 <translation id="6107924765192360631">Comença amb unes quantes paraules o amb un primer esborrany per obtenir suggeriments d'escriptura.</translation>
+<translation id="6108508372809181847">Compara <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Detalls del certificat</translation>
 <translation id="6108702513636120202">El teu motor de cerca a Chromium</translation>
 <translation id="6108849843016142864">Rèptils i amfibis</translation>
@@ -3716,6 +3725,7 @@ Detalls addicionals:
 <translation id="7660456820368115565">Jocs multijugador massius</translation>
 <translation id="7661591871037163355">La taula de comparació està plena. Suprimeix columnes per afegir-ne de noves.</translation>
 <translation id="7662298039739062396">Configuració controlada per una extensió</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ha marxat del grup</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">No es permet en mode d'incògnit</translation>
 <translation id="7667346355482952095">El testimoni de la política que s'ha retornat és buit o no coincideix amb el testimoni actual</translation>

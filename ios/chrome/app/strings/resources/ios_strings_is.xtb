@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Engir opnir flipar</translation>
 <translation id="1469381646033328562">Foreldri þitt stjórnar reikningnum þínum.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Breytt</translation>
 <translation id="1480152980057770392">Sýna leslista</translation>
 <translation id="1484758781961275277">Fáðu sem mest út úr vafranum sem þú notar helst fyrir tölvu í iPad.</translation>
 <translation id="1485907716209290998">Pakkarakning</translation>
@@ -1211,6 +1212,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6445981559479772097">Skilaboð send.</translation>
 <translation id="6447842834002726250">Fótspor</translation>
 <translation id="6449554712554071184">Hópnum verður eytt varanlega úr tækinu.</translation>
+<translation id="6452534462676960500">Ný virkni</translation>
 <translation id="6459307836338400162">Fleiri stillingar sem tengjast persónuvernd, öryggi og gagnasöfnun má bæði finna í <ph name="BEGIN_LINK" />samstillingu<ph name="END_LINK" /> og í <ph name="BEGIN_LINK" />Google þjónustum<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Upplýsingar faldar</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1619,6 +1621,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8219424187226230983">Skoða útgáfu án nettengingar í nýjum flipa</translation>
 <translation id="8230355548492839438">Finna fyrri</translation>
 <translation id="8232956427053453090">Halda gögnum</translation>
+<translation id="8258999165172757081">Bætt við</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="82619448491672958">Sjá aðra flipa</translation>
 <translation id="8263228331881858381">Aðgangslykill vistaður</translation>

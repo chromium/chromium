@@ -362,6 +362,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1615402009686901181">Slökkt er á skjáupptöku þegar trúnaðarefni er sýnilegt vegna reglu kerfisstjóra</translation>
 <translation id="1617276713587758852">Crossover-bílar</translation>
 <translation id="1619007254056372606">Stjórna vefsvæðagögnum í tæki</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> fjarlægði flipa</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1622966923835127638">Viðskiptafjármál</translation>
 <translation id="1623104350909869708">Koma í veg fyrir að þessi síða búi til fleiri glugga.</translation>
@@ -369,6 +370,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1633137413609266904">{0,plural, =1{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna þessa skrá}one{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna # skrá}other{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna # skrár}}</translation>
 <translation id="1633941398432788136">Viðburðastjórnun</translation>
 <translation id="1634828734222219955">Samtals</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> tengdist hópnum</translation>
 <translation id="163826442096818926">Stytta</translation>
 <translation id="1639239467298939599">Hleður</translation>
 <translation id="1640180200866533862">Notendareglur</translation>
@@ -904,6 +906,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2571488850200220306">Í öryggisskyni getur viðkomandi einnig séð upplýsingar um stýrikerfi tækisins, vafraútgáfu og uppsettan hugbúnað</translation>
 <translation id="2573170131138724450">Sjónvörp</translation>
 <translation id="257674075312929031">Hópur</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> bætti flipa við</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
 <translation id="2587841377698384444">Auðkenni forritaskila möppu:</translation>
 <translation id="2594318783181750337">Skyndivefyfirlit:</translation>
@@ -2402,6 +2405,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5300589172476337783">Sýna</translation>
 <translation id="5305716236436927587">Auglýsingar og markaðssetning</translation>
 <translation id="5306593769196050043">Bæði blöðin</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> breytti lit hópsins</translation>
 <translation id="5307166000025436103">Í lagi</translation>
 <translation id="5308380583665731573">Tengjast</translation>
 <translation id="5308689395849655368">Slökkt er á tilkynningum um hrun.</translation>
@@ -2433,6 +2437,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5363309033720083897">Raðtengi heimilað af stjórnanda</translation>
 <translation id="5363532265530011914">Sokkar og sokkavörur</translation>
 <translation id="5371425731340848620">Uppfæra kort</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> breytti flipa</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Klukkan er á eftir“, „Klukkan þín er á undan“ eða „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Staðfestu að þetta sért þú til að nota þetta aðgangsorð í öllum tækjunum þínum</translation>
@@ -2447,6 +2452,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5392506727170022660">Málmur (hálfglans)</translation>
 <translation id="5394069166371280357">Sjónvarpsþættir fyrir fjölskyldur</translation>
 <translation id="5396631636586785122">Saumur hægra megin</translation>
+<translation id="5397794290049113714">Þú</translation>
 <translation id="5398772614898833570">Lokað á auglýsingar</translation>
 <translation id="5400836586163650660">Grár</translation>
 <translation id="5401344472773249513">Fréttir af fræga fólkinu og skemmtanaiðnaðinum</translation>
@@ -2832,6 +2838,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6105460996796456817">Búa til Site</translation>
 <translation id="6106989379647458772">Vefsíðan á <ph name="PAGE" /> gæti legið niðri tímabundið eða hafa verið færð á nýtt veffang fyrir fullt og allt.</translation>
 <translation id="6107012941649240045">Úthlutað til</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> breytti heiti hópsins</translation>
 <translation id="6107924765192360631">Byrjaðu einfaldlega á því að skrifa nokkur orð eða fyrstu drög til að fá skriftillögur.</translation>
 <translation id="6108508372809181847">Bera saman <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Upplýsingar um vottorð</translation>
@@ -3717,6 +3724,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7660456820368115565">Stórir fjölspilunarleikir</translation>
 <translation id="7661591871037163355">Samanburðartaflan þín er full. Fjarlægðu dálka til að bæta við nýjum.</translation>
 <translation id="7662298039739062396">Stillingu stýrt af viðbót</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> yfirgaf hópinn</translation>
 <translation id="7663736086183791259">Vottorð <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Ekki heimilað í huliðsstillingu</translation>
 <translation id="7667346355482952095">Stefnukóðinn sem skilað var er auður eða stemmir ekki við núverandi kóða</translation>

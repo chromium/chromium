@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Vil du aktivere synkronisering?</translation>
 <translation id="1253032109800629289">Skjul "Få notifikationer om prissporing"</translation>
 <translation id="1258491128795710625">Nyheder</translation>
+<translation id="1259210743048744967">Dine eksisterende browserdata er tilgængelige, når du logger ud af <ph name="USER_EMAIL" />. De gemmes ikke på denne konto.</translation>
 <translation id="1262724000444746916">Skjul Føj til Bogmærker</translation>
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1263433075299269530">Din seneste åbne fane</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">Ingen åbne faner</translation>
 <translation id="1469381646033328562">Din konto administreres af din forælder.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Ændret</translation>
 <translation id="1480152980057770392">Vis læselisten</translation>
 <translation id="1484758781961275277">Få mest muligt ud af din foretrukne computerbrowser på din iPad.</translation>
 <translation id="1485907716209290998">Pakkesporing</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Vil du fjerne fanen og slette gruppen?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valgt</translation>
 <translation id="1709916727352927457">Slet adgangsnøgle</translation>
+<translation id="1712341189152602203">Eksisterende browserdata knyttes til <ph name="USER_EMAIL" />. Disse data kan muligvis ses af din organisation.</translation>
 <translation id="1713777106376424209">Leveret af</translation>
 <translation id="1715515772563243997">Hvis du har tillid til <ph name="SITE" />, kan du bruge en gemt adgangskode til at logge ind.</translation>
 <translation id="1728549374069268714">Indsæt og fortsæt</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">På et website, hvor du har gemt en adgangskode, skal du trykke på feltet til login med adgangskode.</translation>
 <translation id="1872096359983322073">Lommelygte</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
+<translation id="1879793121657209834">Vælg, hvad der skal ske med de eksisterende browserdata på denne enhed, f.eks. adgangskoder, historik m.m.</translation>
 <translation id="1881621406744213161">Inviter familiemedlemmer</translation>
 <translation id="188237709236611317">Menulinje for smartsortering</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
@@ -512,6 +516,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
 <translation id="333229797575847124">Sådan aktiverer du denne funktion</translation>
+<translation id="3333566504534692948">Nej, flyt dem til arbejdsområdet</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bogmærket er gemt i "{title}" på din konto, {email}}one{Bogmærket er gemt i "{title}" på din konto, {email}}other{Bogmærkerne er gemt i "{title}" på din konto, {email}}}</translation>
 <translation id="334690320928261823">Seneste faner</translation>
 <translation id="3348387552617855658">Dette kort hjælper dig med at holde styr på dine pakker og give dig vigtige leveringsopdateringer.</translation>
@@ -1207,6 +1212,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6445981559479772097">Beskeden er sendt.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Denne handling sletter gruppen permanent fra din enhed.</translation>
+<translation id="6452534462676960500">Ny aktivitet</translation>
 <translation id="6459307836338400162">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under hhv. <ph name="BEGIN_LINK" />Synkronisering<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Oplysningerne er skjult</translation>
 <translation id="646394917185284261">Filer</translation>
@@ -1615,6 +1621,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8219424187226230983">Se offlineversion på en ny fane</translation>
 <translation id="8230355548492839438">Find forrige</translation>
 <translation id="8232956427053453090">Behold data</translation>
+<translation id="8258999165172757081">Tilføjet</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="82619448491672958">Se andre faner</translation>
 <translation id="8263228331881858381">Adgangsnøglen er gemt</translation>

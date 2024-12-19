@@ -55,6 +55,7 @@
 <translation id="1231733316453485619">Միացնե՞լ համաժամացումը</translation>
 <translation id="1253032109800629289">Թաքցնել «Ստանալ ծանուցումներ գների հետագծման մասին» քարտը</translation>
 <translation id="1258491128795710625">Նորություններ</translation>
+<translation id="1259210743048744967">Այցելությունների գոյություն ունեցող պատմությունը հասանելի կլինի <ph name="USER_EMAIL" /> հաշվից դուրս գալուց հետո։ Այն չի պահվի այս հաշվում։</translation>
 <translation id="1262724000444746916">Թաքցնել «Ավելացնել էջանիշներում» գործողությունը</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1263433075299269530">Ձեր վերջին բաց ներդիրը</translation>
@@ -112,6 +113,7 @@
 <translation id="1466035273550360103">Բաց ներդիրներ չկան</translation>
 <translation id="1469381646033328562">Ձեր հաշիվը կառավարում է ձեր ծնողը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Փոխվել է</translation>
 <translation id="1480152980057770392">Ցույց տալ ընթերցանության ցանկը</translation>
 <translation id="1484758781961275277">Առավելագույնս օգտվեք ձեր սիրելի և լավ ծանոթ համակարգչային դիտարկիչի հնարավորություններից iPad-ում։</translation>
 <translation id="1485907716209290998">Հետևեք ձեր առաքանուն</translation>
@@ -168,6 +170,7 @@
 <translation id="169048873465870056">Հեռացնե՞լ ներդիրը և ջնջել խումբը</translation>
 <translation id="1700629756560807968">Ընտրվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> էջանիշ</translation>
 <translation id="1709916727352927457">Մուտքի բանալու ջնջում</translation>
+<translation id="1712341189152602203">Այցելությունների գոյություն ունեցող պատմության տվյալները կկապվեն <ph name="USER_EMAIL" /> հաշվի հետ։ Այս տվյալները հնարավոր է, որ տեսանելի լինեն ձեր կազմակերպությանը։</translation>
 <translation id="1713777106376424209">Առաքման ծառայությունը՝</translation>
 <translation id="1715515772563243997">Եթե վստահում եք <ph name="SITE" /> կայքին, մուտք գործելու համար կարող եք օգտագործել պահված գաղտնաբառ։</translation>
 <translation id="1728549374069268714">Տեղադրել և անցնել</translation>
@@ -203,6 +206,7 @@
 <translation id="1864266050569350424">Կայքում, որտեղ դուք գաղտնաբառ եք պահել, մուտքի պատուհանում հպեք գաղտնաբառի դաշտին։</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />։</translation>
+<translation id="1879793121657209834">Ընտրեք, թե ինչ անել այս սարքի այցելությունների գոյություն ունեցող պատմության հետ, որը ներառում է այնպիսի տվյալներ, ինչպիսիք են գաղտնաբառերը, գործողությունները և այլն։</translation>
 <translation id="1881621406744213161">Հրավիրեք ընտանիքի անդամների</translation>
 <translation id="188237709236611317">Խելացի դասավորման ընտրացանկի գոտի</translation>
 <translation id="1883255238294161206">Ծալել ցանկը</translation>
@@ -512,6 +516,7 @@
 <translation id="3324193307694657476">Հասցե 2</translation>
 <translation id="3328801116991980348">Տեղեկություններ կայքի մասին</translation>
 <translation id="333229797575847124">Ինչպես միացնել այս գործառույթը</translation>
+<translation id="3333566504534692948">Ոչ, այն տեղափոխել ձեր աշխատանքային տարածք</translation>
 <translation id="3344485292736684439">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}other{Էջանիշները պահվեցին {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="334690320928261823">Վերջին ներդիրները</translation>
 <translation id="3348387552617855658">Այս քարտն օգնում է հետևել փաթեթներին և տրամադրում է առաքման հետ կապված կարևոր տեղեկություններ։</translation>
@@ -1207,6 +1212,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6445981559479772097">Հաղորդագրությունն ուղարկվեց:</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6449554712554071184">Խումբն ընդմիշտ կջնջվի ձեր սարքից։</translation>
+<translation id="6452534462676960500">Նոր գործողություն</translation>
 <translation id="6459307836338400162">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK" />Համաժամացում<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" /> բաժիններում։</translation>
 <translation id="6459411599807878608">Մանրամասները թաքցվեցին</translation>
 <translation id="646394917185284261">Ֆայլեր</translation>
@@ -1615,6 +1621,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8219424187226230983">Դիտել անցանց տարբերակը նոր ներդիրում</translation>
 <translation id="8230355548492839438">Գտնել նախորդը</translation>
 <translation id="8232956427053453090">Պահպանել տվյալները</translation>
+<translation id="8258999165172757081">Ավելացվեց</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="82619448491672958">Տեսնել մյուս ներդիրները</translation>
 <translation id="8263228331881858381">Մուտքի բանալին պահված է</translation>

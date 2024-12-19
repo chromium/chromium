@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="1617276713587758852">크로스오버</translation>
 <translation id="1619007254056372606">기기 내 사이트 데이터 관리</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />님이 탭을 삭제했습니다.</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1622966923835127638">경영/금융</translation>
 <translation id="1623104350909869708">이 페이지가 추가적인 대화를 생성하지 않도록 차단</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{관리자 정책에 의해 이 파일의 열기가 차단되었습니다.}other{관리자 정책에 의해 파일 #개의 열기가 차단되었습니다.}}</translation>
 <translation id="1633941398432788136">이벤트 계획</translation>
 <translation id="1634828734222219955">합계</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" />님이 그룹에 참여했습니다.</translation>
 <translation id="163826442096818926">간결하게 작성</translation>
 <translation id="1639239467298939599">로드 중</translation>
 <translation id="1640180200866533862">사용자 정책</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">보안을 위해 기기의 OS, 브라우저 버전, 설치된 소프트웨어도 확인할 수 있습니다.</translation>
 <translation id="2573170131138724450">TV</translation>
 <translation id="257674075312929031">그룹화</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />님이 탭을 추가했습니다.</translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2587841377698384444">Directory API ID:</translation>
 <translation id="2594318783181750337">빠른 웹 보기:</translation>
@@ -2402,6 +2405,7 @@
 <translation id="5300589172476337783">표시</translation>
 <translation id="5305716236436927587">광고 및 마케팅</translation>
 <translation id="5306593769196050043">모든 시트</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />님이 그룹 색상을 변경했습니다.</translation>
 <translation id="5307166000025436103">확인</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5308689395849655368">비정상 종료 보고가 사용 중지되었습니다.</translation>
@@ -2433,6 +2437,7 @@
 <translation id="5363309033720083897">관리자가 허용한 직렬 포트</translation>
 <translation id="5363532265530011914">양말</translation>
 <translation id="5371425731340848620">카드 업데이트</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />님이 탭을 변경했습니다.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'시간이 너무 먼 과거로 설정되어 있습니다.', '시간이 너무 먼 미래로 설정되어 있습니다.', 또는  '&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;'</translation>
 <translation id="5379618281582508161">모든 기기에서 이 비밀번호를 가져오려면 본인 인증을 진행하세요</translation>
@@ -2447,6 +2452,7 @@
 <translation id="5392506727170022660">금속(반광택)</translation>
 <translation id="5394069166371280357">가족용 TV 프로그램</translation>
 <translation id="5396631636586785122">오른쪽 에지 스티치</translation>
+<translation id="5397794290049113714">나</translation>
 <translation id="5398772614898833570">광고 차단됨</translation>
 <translation id="5400836586163650660">그레이</translation>
 <translation id="5401344472773249513">유명인 및 연예 소식</translation>
@@ -2832,6 +2838,7 @@
 <translation id="6105460996796456817">사이트 만들기</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />의 웹페이지가 일시적으로 다운되었거나 새 웹 주소로 완전히 이동했을 수 있습니다.</translation>
 <translation id="6107012941649240045">발급 대상</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />님이 그룹 이름을 변경했습니다.</translation>
 <translation id="6107924765192360631">몇 단어 또는 첫 번째 초안으로 시작하면 추천 단어를 받을 수 있습니다.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> 비교</translation>
 <translation id="6108580855199168381">인증서 세부정보</translation>
@@ -3717,6 +3724,7 @@
 <translation id="7660456820368115565">대규모 멀티플레이어 게임</translation>
 <translation id="7661591871037163355">비교 표가 가득 찼습니다. 새 열을 추가하려면 기존 열을 삭제하세요.</translation>
 <translation id="7662298039739062396">확장 프로그램에서 관리되는 설정</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />님이 그룹을 나갔습니다.</translation>
 <translation id="7663736086183791259">인증서: <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">시크릿 모드에서 허용되지 않음</translation>
 <translation id="7667346355482952095">반환된 정책 토큰이 비었거나 현재 토큰과 일치하지 않음</translation>

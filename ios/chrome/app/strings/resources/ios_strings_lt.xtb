@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Nėra atidarytų skirtukų</translation>
 <translation id="1469381646033328562">Jūsų paskyrą tvarko vienas iš tėvų.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Pakeista</translation>
 <translation id="1480152980057770392">Rodyti skaitymo sąrašą</translation>
 <translation id="1484758781961275277">Išnaudokite visas žinomos ir mėgstamos stalinio kompiuterio naršyklės galimybes „iPad“ įrenginyje.</translation>
 <translation id="1485907716209290998">Siuntinio stebėjimas</translation>
@@ -1211,6 +1212,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6445981559479772097">Pran. išsiųstas.</translation>
 <translation id="6447842834002726250">Slapukai</translation>
 <translation id="6449554712554071184">Atlikus šį veiksmą grupė bus visam laikui ištrinta iš įrenginio.</translation>
+<translation id="6452534462676960500">Nauja veikla</translation>
 <translation id="6459307836338400162">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyse <ph name="BEGIN_LINK" />„Sinchronizavimas“<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Išsami informacija paslėpta</translation>
 <translation id="646394917185284261">Failai</translation>
@@ -1619,6 +1621,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8219424187226230983">Žiūrėti neprisij. naudoj. versiją naujame skirtuke</translation>
 <translation id="8230355548492839438">Rasti ankstesnį</translation>
 <translation id="8232956427053453090">Palikti duomenis</translation>
+<translation id="8258999165172757081">Pridėta</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="82619448491672958">Žr. kitus skirtukus</translation>
 <translation id="8263228331881858381">Prieigos raktas išsaugotas</translation>

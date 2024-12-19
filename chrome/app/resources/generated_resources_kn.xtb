@@ -1914,6 +1914,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">ಕೆಳಗಿನ ಕೀಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">ನಿಮ್ಮ ಚಲನೆಯ ಅಥವಾ ಲೈಟ್‌ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸದಂತೆ ಈ ಸೈಟ್‌ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
+<translation id="2310414604104802967">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಾ ಎಂದು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2310923358723722542">ಡಿಸ್‌ಪ್ಲೇ ಮತ್ತು ಹಿಗ್ಗಿಸುವಿಕೆ</translation>
 <translation id="2312219318583366810">ಪುಟದ URL</translation>
 <translation id="2314165183524574721">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
@@ -5438,7 +5439,7 @@
 <translation id="4819323978093861656">{0,plural, =0{ಈಗ ಮುಚ್ಚಲಾಗುತ್ತಿದೆ.}=1{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: 1 ಸೆಕೆಂಡಿನಲ್ಲಿ}one{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: # ಸೆಕೆಂಡುಗಳಲ್ಲಿ}other{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: # ಸೆಕೆಂಡುಗಳಲ್ಲಿ}}</translation>
 <translation id="4819607494758673676">Google Assistant ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="4819818293886748542">ಬೆಂಬಲ ಟೂಲ್ ಲಿಂಕ್ ಪಡೆಯಿರಿ</translation>
-<translation id="4820236583224459650">ಸಕ್ರಿಯ ಟಿಕೆಟ್ ಎಂದು ಹೊಂದಿಸಿ</translation>
+<translation id="4820236583224459650">ಸಕ್ರಿಯ ಟಿಕೆಟ್ ಎಂದು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="4820795723433418303">ಫಂಕ್ಷನ್ ಕೀಗಳನ್ನು ಮೇಲಿನ ಸಾಲಿನ ಕೀಗಳಾಗಿ ಬಳಸಿರಿ</translation>
 <translation id="4821935166599369261">&amp;ಪ್ರೊಫೈಲಿಂಗ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ
 </translation>
@@ -11283,6 +11284,7 @@
 <translation id="9007688236643268728">ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="9008201768610948239">ನಿರ್ಲಕ್ಷಿಸಿ</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> ವಿವರಗಳ ಪುಟಕ್ಕೆ ಹಿಂದಿರುಗುವ ಬಟನ್</translation>
+<translation id="9008425116680857079">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ನಂತರ Chrome ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="9008828754342192581"><ph name="ORIGIN" /> ನಲ್ಲಿ ಎಲ್ಲಾ ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲು ನೀವು ಈ ಹಿಂದೆ ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="9009369504041480176">ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Windows ನಿಂದ ಆಮದು ಮಾಡಿಕೊಳ್ಳಿ</translation>

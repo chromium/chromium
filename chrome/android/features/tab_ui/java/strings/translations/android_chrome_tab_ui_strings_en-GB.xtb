@@ -100,6 +100,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="5339733443032484186">Your last tab</translation>
 <translation id="5380159289133845234">Archive duplicate tabs</translation>
 <translation id="5400836586163650660">Grey</translation>
+<translation id="5446043142172831860">Remove tab and leave group</translation>
 <translation id="5490235265819901748">Tab group expanded</translation>
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Close tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>

@@ -362,6 +362,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1615402009686901181">Administratorska pravila onemogućavaju snimanje ekrana kada je prisutan povjerljivi sadržaj</translation>
 <translation id="1617276713587758852">Crossover vozila</translation>
 <translation id="1619007254056372606">Upravljajte podacima web lokacije na uređaju</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> je uklonio/la karticu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Poslovne finansije</translation>
 <translation id="1623104350909869708">Spriječi da ova stranica kreira dodatne dijaloške okvire</translation>
@@ -369,6 +370,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1633137413609266904">{0,plural, =1{Administratorska pravila blokiraju otvaranje ovog fajla}one{Administratorska pravila blokiraju otvaranje # fajla}few{Administratorska pravila blokiraju otvaranje # fajlova}other{Administratorska pravila blokiraju otvaranje # fajlova}}</translation>
 <translation id="1633941398432788136">Planiranje događaja</translation>
 <translation id="1634828734222219955">Ukupno</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> se pridružio/la grupi</translation>
 <translation id="163826442096818926">Skrati</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1640180200866533862">Korisnička pravila</translation>
@@ -904,6 +906,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2571488850200220306">Da se osigura zaštita, može vidjeti i OS uređaja, verziju preglednika i koji je softver instaliran</translation>
 <translation id="2573170131138724450">Televizori</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> je dodao/la karticu</translation>
 <translation id="2586657967955657006">Međumemorija</translation>
 <translation id="2587841377698384444">ID API-ja direktorija:</translation>
 <translation id="2594318783181750337">Brzi web prikaz:</translation>
@@ -1141,7 +1144,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="306573536155379004">Igra je počela.</translation>
 <translation id="3067505415088964188">Cijena je niska</translation>
 <translation id="3068118691172921711">Otpremanje fajlova na uslugu <ph name="CLOUD_PROVIDER" /> će započeti za 1 minutu</translation>
-<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} stavka}one{{ITEMS} stavka}few{{ITEMS} stavke}other{{ITEMS} stavki}}</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} artikal}one{{ITEMS} artikal}few{{ITEMS} artikla}other{{ITEMS} artikala}}</translation>
 <translation id="3076865167425975822">Operativni sistemi</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Dozvolite Googleu da koristi vaša kolica i pronađe personalizirane popuste kada su dostupni</translation>
@@ -2402,6 +2405,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5305716236436927587">Oglašavanje i marketing</translation>
 <translation id="5306593769196050043">Obje tabele</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> je promijenio/la boju grupe</translation>
 <translation id="5307166000025436103">UREDU</translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5308689395849655368">Izvještaj o padovima aplikacije je onemogućen.</translation>
@@ -2433,6 +2437,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5363309033720083897">Serijski priključak koji je dozvolio vaš administrator</translation>
 <translation id="5363532265530011914">Čarape i štrample</translation>
 <translation id="5371425731340848620">Ažuriraj karticu</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> je promijenio/la karticu</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Sat kasni" ili "Sat brza" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Potvrdite identitet da dobijete ovu lozinku na svim uređajima</translation>
@@ -2447,6 +2452,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5392506727170022660">Metal (polusjajni)</translation>
 <translation id="5394069166371280357">Porodične TV serije</translation>
 <translation id="5396631636586785122">Uvez desnog ruba</translation>
+<translation id="5397794290049113714">Vi</translation>
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5401344472773249513">Vijesti o poznatim osobama i zabavi</translation>
@@ -2832,8 +2838,9 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6105460996796456817">Kreiraj web lokaciju</translation>
 <translation id="6106989379647458772">Web stranica na <ph name="PAGE" /> je možda privremeno ugašena ili je trajno prebačena na novu web adresu.</translation>
 <translation id="6107012941649240045">Izdato za</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> je promijenio/la naziv grupe</translation>
 <translation id="6107924765192360631">Samo započnite s nekoliko riječi ili prvom nedovršenom verzijom da dobijete prijedloge za pisanje.</translation>
-<translation id="6108508372809181847">Usporedba: <ph name="TABLE_NAME" /></translation>
+<translation id="6108508372809181847">Poređenje proizvoda "<ph name="TABLE_NAME" />"</translation>
 <translation id="6108580855199168381">Detalji certifikata</translation>
 <translation id="6108702513636120202">Vaš pretraživač u Chromiumu</translation>
 <translation id="6108849843016142864">Gmizavci i vodozemci</translation>
@@ -3718,6 +3725,7 @@ Dodatni detalji:
 <translation id="7660456820368115565">Masovne igre za više igrača</translation>
 <translation id="7661591871037163355">Tabela poređenja je puna. Uklonite kolone da dodate nove.</translation>
 <translation id="7662298039739062396">Postavku kontrolira ekstenzija</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> je napustio/la grupu</translation>
 <translation id="7663736086183791259">Potvrda <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nije dozvoljeno u anonimnom načinu rada</translation>
 <translation id="7667346355482952095">Vraćeni token pravila je prazan ili se ne podudara s važećim tokenom</translation>

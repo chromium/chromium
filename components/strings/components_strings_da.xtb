@@ -362,6 +362,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1615402009686901181">Administratorpolitikken deaktiverer screenshots, når fortroligt indhold er synligt</translation>
 <translation id="1617276713587758852">Crossover-biler</translation>
 <translation id="1619007254056372606">Administrer websitedata på enheden</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> har fjernet en fane</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Handel/finans</translation>
 <translation id="1623104350909869708">Undgå, at denne side opretter yderligere dialogbokse</translation>
@@ -369,6 +370,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1633137413609266904">{0,plural, =1{Administratorpolitikken tillader ikke, at du åbner denne fil}one{Administratorpolitikken tillader ikke, at du åbner # fil}other{Administratorpolitikken tillader ikke, at du åbner # filer}}</translation>
 <translation id="1633941398432788136">Eventplanlægning</translation>
 <translation id="1634828734222219955">Total</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> deltager nu i gruppen</translation>
 <translation id="163826442096818926">Forkort</translation>
 <translation id="1639239467298939599">Indlæser</translation>
 <translation id="1640180200866533862">Brugerpolitikker</translation>
@@ -904,6 +906,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2571488850200220306">Af hensyn til sikkerheden kan administratoren også se enhedens OS, browserversion, og hvilken software der er installeret</translation>
 <translation id="2573170131138724450">Fjernsyn</translation>
 <translation id="257674075312929031">Gruppe</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> har tilføjet en fane</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
 <translation id="2587841377698384444">Id for Directory API:</translation>
 <translation id="2594318783181750337">Hurtig webvisning:</translation>
@@ -1141,6 +1144,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3068118691172921711">Din filupload til <ph name="CLOUD_PROVIDER" /> starter om 1 minut</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}one{{ITEMS} element}other{{ITEMS} elementer}}</translation>
 <translation id="3076865167425975822">Operativsystemer</translation>
 <translation id="3080254622891793721">Grafik</translation>
 <translation id="3082007635241601060">Lad Google bruge dine kurve til at finde tilpassede rabatter, når sådanne er tilgængelige</translation>
@@ -2401,6 +2405,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5305716236436927587">Annoncering og marketing</translation>
 <translation id="5306593769196050043">Begge ark</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> har ændret gruppefarven</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="5308689395849655368">Rapportering af nedbrud er deaktiveret.</translation>
@@ -2432,6 +2437,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5363309033720083897">Din administrator har tilladt denne serieport</translation>
 <translation id="5363532265530011914">Strømper og strømpevarer</translation>
 <translation id="5371425731340848620">Opdater kortet</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> har ændret en fane</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Dit ur er bagud" eller "Dit ur er forud" eller "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Verificer din identitet for at gøre denne adgangskode tilgængelig på alle dine enheder</translation>
@@ -2446,6 +2452,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5392506727170022660">Metal (halvblankt)</translation>
 <translation id="5394069166371280357">Familieorienterede tv-programmer</translation>
 <translation id="5396631636586785122">Kanthæftning i højre side</translation>
+<translation id="5397794290049113714">Dig</translation>
 <translation id="5398772614898833570">Annoncer er blokeret</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5401344472773249513">Nyheder om kendte og underholdning</translation>
@@ -2831,7 +2838,9 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6105460996796456817">Opret website</translation>
 <translation id="6106989379647458772">Websiden på <ph name="PAGE" /> kan være midlertidigt nede, eller også er den permanent flyttet til en ny webadresse.</translation>
 <translation id="6107012941649240045">Udstedt til</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> har ændret gruppenavnet</translation>
 <translation id="6107924765192360631">Du skal bare starte med et par ord eller et udkast for at få skriveforslag.</translation>
+<translation id="6108508372809181847">Sammenlign <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Certifikatoplysninger</translation>
 <translation id="6108702513636120202">Din søgemaskine i Chromium</translation>
 <translation id="6108849843016142864">Krybdyr og padder</translation>
@@ -3716,6 +3725,7 @@ Yderligere oplysninger:
 <translation id="7660456820368115565">Multiplayerspil</translation>
 <translation id="7661591871037163355">Der er ikke mere plads i din sammenligningstabel. Fjern kolonner for at tilføje nye.</translation>
 <translation id="7662298039739062396">Indstillingen styres af en udvidelse</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> har forladt gruppen</translation>
 <translation id="7663736086183791259">Certifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Ikke tilladt i inkognito</translation>
 <translation id="7667346355482952095">Det returnerede token for politikken er tomt eller stemmer ikke overens med det nuværende token</translation>

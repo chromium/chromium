@@ -1371,7 +1371,6 @@ Nota: Esta política no se aplica a las URLs de JavaScript en la página con dat
 <translation id="2005506794355327448">La acción que se debe tomar cuando la tapa esté cerrada.</translation>
 <translation id="2006530844219044261">Administración de energía</translation>
 <translation id="2006954055163088863">Considerar al usuario como inactivo mientras se reproduce un video</translation>
-<translation id="2008514891623783266">La política que controla la IP de WebRTC</translation>
 <translation id="201153120366509312">Si habilitas esta política o no la estableces, se permitirá la recopilación de métricas con URL.
 Si el usuario habilita la política y la recopilación de métricas con URL, esta recopilación envía a Google las URLs de las páginas que visita el usuario para mejorar las búsquedas y la navegación junto con las estadísticas de uso por página.
 Las métricas con URL también incluyen los identificadores y las estadísticas de uso de otros componentes del navegador que pueden modificar o proporcionar contenido, como extensiones.
@@ -4436,6 +4435,11 @@ Esta política se usó para inhabilitar la actualización automática de conteni
 
       Ten en cuenta que esta función solo se admite dentro del entorno de red interna de Google.</translation>
 <translation id="4269859918103560644">Permitir que el usuario decida</translation>
+<translation id="4271245613154024710">Si estableces la política, se especificarán las apps web aisladas (IWA) que podrán conectarse a tarjetas inteligentes a través de la API de Web Smart Card sin que se solicite permiso al usuario. Esta política no acepta comodines.
+
+Esta política anula <ph name="POLICY_NAME" />; en particular, un valor de la lista de entidades bloqueadas de <ph name="ALL_ISOLATED_WEB_APPS" /> significa que ninguna IWA podrá conectarse a lectores de tarjetas inteligentes (ni siquiera se les solicitará permiso a los usuarios), excepto las que se indiquen en esta política.
+
+De forma predeterminada, las IWA que especifican permisos de tarjeta inteligente en su manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario otorgue el permiso de forma interactiva por lector.</translation>
 <translation id="4274691295133617461">Si estableces la política en 3, los sitios web podrán solicitar acceso de lectura a archivos y directorios en el sistema de archivos del sistema operativo del host a través de la API de File System. Si la estableces en 2, se rechazará el acceso.
 
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios también podrán cambiar esta configuración.</translation>
@@ -6060,6 +6064,11 @@ los accesos directos basados en la búsqueda funcionarán de forma predeterminad
       </translation>
 <translation id="5448022937220253000">Elegir qué sucede con los datos del usuario después de inhabilitar <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API de Event.path estará disponible.</translation>
+<translation id="5450507908812118425">Si estableces la política, se especificarán las apps web aisladas (IWA) que no podrán conectarse a lectores de tarjetas inteligentes (ni siquiera se solicitará permiso a los usuarios). Esta política acepta comodines. Por ejemplo, <ph name="ALL_ISOLATED_WEB_APPS" /> bloqueará el acceso para todas las IWA.
+
+La política se anula con <ph name="POLICY_NAME" />; en particular, un valor de la lista de entidades bloqueadas de <ph name="ALL_ISOLATED_WEB_APPS" /> significa que ninguna IWA podrá conectarse a lectores de tarjetas inteligentes (ni siquiera se les solicitará permiso a los usuarios), excepto las que se indiquen en <ph name="POLICY_NAME" />.
+
+De forma predeterminada, las IWA que especifican permisos de tarjeta inteligente en su manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario otorgue el permiso de forma interactiva por lector.</translation>
 <translation id="5452024130413254050">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es falso y <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> si no se establece.</translation>
 <translation id="5454128917282602937">Cuando un usuario alterna entre dispositivos con <ph name="PRODUCT_OS_NAME" />, el servicio de <ph name="PRODUCT_NAME" /> V2 abrirá las ventanas del navegador y de las apps del dispositivo anterior en el nuevo dispositivo.
 Si habilitas la política, se abrirán automáticamente las ventanas del navegador y de las apps del último dispositivo con <ph name="PRODUCT_OS_NAME" /> que utilizó el usuario actual al acceder.
@@ -9667,7 +9676,6 @@ también es seguro.</translation>
 <translation id="8056800559672904373">Una cuenta administrada debe ser una cuenta principal sin cuentas secundarias asociadas y se pueden importar datos de navegación cuando crees el perfil</translation>
 <translation id="8059164285174960932">URL donde los clientes de acceso remoto deben obtener el token de autenticación</translation>
 <translation id="8059352177830050556">Habilitar los informes de la retroiluminación del dispositivo</translation>
-<translation id="8062375903420954294">Esta política permite restringir las direcciones IP y las interfaces que utiliza WebRTC al momento de intentar encontrar la mejor conexión disponible. Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Si no estableces la política, de forma predeterminada se utilizarán todas las interfaces disponibles.</translation>
 <translation id="8062485064082966327">Usa un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
 <translation id="8066428282805800713">Enviar datos de hardware adicionales en ChromeOS Flex</translation>
 <translation id="8066532561081127944">Por motivos de seguridad, la

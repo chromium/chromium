@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">उघडलेले कोणतेही टॅब नाहीत</translation>
 <translation id="1469381646033328562">तुमचे खाते तुमच्या पालकांद्वारे व्यवस्थापित केले जाते.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">बदलला आहे</translation>
 <translation id="1480152980057770392">वाचन सूची दाखवा</translation>
 <translation id="1484758781961275277">तुम्हाला माहीत असलेल्या डेस्कटॉप ब्राउझरवरून सर्वोत्तम गोष्टी मिळवा आणि तुमच्या iPad वर त्यांना लाइक करा.</translation>
 <translation id="1485907716209290998">पॅकेज ट्रॅकिंग</translation>
@@ -1212,6 +1213,7 @@
 <translation id="6445981559479772097">संदेश पाठविला.</translation>
 <translation id="6447842834002726250">कुकीज</translation>
 <translation id="6449554712554071184">यामुळे तुमच्या डिव्हाइसमधून गट कायमचा हटवला जाईल.</translation>
+<translation id="6452534462676960500">नवीन अ‍ॅक्टिव्हिटी</translation>
 <translation id="6459307836338400162">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक<ph name="END_LINK" /> व <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> हे दोन्ही पहा.</translation>
 <translation id="6459411599807878608">तपशील लपवले</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1620,6 +1622,7 @@
 <translation id="8219424187226230983">नवीन टॅबमध्ये ऑफलाइन आवृत्ती पहा</translation>
 <translation id="8230355548492839438">मागील शोधा</translation>
 <translation id="8232956427053453090">स्टोअर करायचा असलेला डेटा</translation>
+<translation id="8258999165172757081">जोडले</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="82619448491672958">इतर टॅब पहा</translation>
 <translation id="8263228331881858381">पासकी सेव्ह केली आहे</translation>

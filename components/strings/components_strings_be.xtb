@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Палітыка, зададзеная адміністратарам, адключае здыманне экрана, калі на ім паказваецца прыватнае змесціва</translation>
 <translation id="1617276713587758852">Красоверы</translation>
 <translation id="1619007254056372606">Кіраваць данымі сайтаў на прыладзе</translation>
+<translation id="1619648179761984213">Карыстальнік <ph name="USER_DISPLAY_NAME" /> выдаліў укладку</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622966923835127638">Бізнес і фінансы</translation>
 <translation id="1623104350909869708">Не дазваляць гэтай старонцы ствараць дадатковыя дыялогавыя вокны</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Зададзеная адміністратарам палітыка блакіруе магчымасць адкрываць гэты файл}one{Зададзеная адміністратарам палітыка блакіруе магчымасць адкрываць # файл}few{Зададзеная адміністратарам палітыка блакіруе магчымасць адкрываць # файлы}many{Зададзеная адміністратарам палітыка блакіруе магчымасць адкрываць # файлаў}other{Зададзеная адміністратарам палітыка блакіруе магчымасць адкрываць # файла}}</translation>
 <translation id="1633941398432788136">Арганізацыя мерапрыемстваў</translation>
 <translation id="1634828734222219955">Усяго</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> цяпер у групе</translation>
 <translation id="163826442096818926">Скараціць</translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
 <translation id="1640180200866533862">Палітыкі карыстальніка</translation>
@@ -905,6 +907,7 @@
 <translation id="2571488850200220306">Каб гарантаваць бяспеку, яна таксама можа бачыць інфармацыю пра аперацыйную сістэму прылады, версію браўзера і ўсталяванае праграмнае забеспячэнне</translation>
 <translation id="2573170131138724450">Тэлевізары</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="258135245577667916">Карыстальнік <ph name="USER_DISPLAY_NAME" /> дадаў укладку</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
 <translation id="2587841377698384444">Ідэнтыфікатар API каталога:</translation>
 <translation id="2594318783181750337">Хуткі прагляд у інтэрнэце:</translation>
@@ -2401,6 +2404,7 @@
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5305716236436927587">Рэклама і маркетынг</translation>
 <translation id="5306593769196050043">Абодва аркушы</translation>
+<translation id="5307109011461144709">Карыстальнік <ph name="USER_DISPLAY_NAME" /> змяніў колер групы</translation>
 <translation id="5307166000025436103">ОК</translation>
 <translation id="5308380583665731573">Падключыцца</translation>
 <translation id="5308689395849655368">Справаздачы аб збоях выключаны.</translation>
@@ -2432,6 +2436,7 @@
 <translation id="5363309033720083897">Адміністратар дазволіў гэты паслядоўны порт</translation>
 <translation id="5363532265530011914">Шкарпэткі і панчохі</translation>
 <translation id="5371425731340848620">Абнавіць картку</translation>
+<translation id="537425196847960924">Карыстальнік <ph name="USER_DISPLAY_NAME" /> змяніў укладку</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш гадзіннік спазняецца", або "Ваш гадзіннік спяшаецца", або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Каб атрымаць гэты пароль на ўсіх прыладах, пацвердзіце сваю асобу</translation>
@@ -2446,6 +2451,7 @@
 <translation id="5392506727170022660">Паўглянцавы метал</translation>
 <translation id="5394069166371280357">Сямейныя тэлеперадачы</translation>
 <translation id="5396631636586785122">Сшыванне па краі справа</translation>
+<translation id="5397794290049113714">Вы</translation>
 <translation id="5398772614898833570">Рэклама заблакіравана</translation>
 <translation id="5400836586163650660">Шэры</translation>
 <translation id="5401344472773249513">Навіны жыцця зорак і індустрыі забаў</translation>
@@ -2831,6 +2837,7 @@
 <translation id="6105460996796456817">Стварыць сайт</translation>
 <translation id="6106989379647458772">Магчыма, вэб-старонка па адрасе <ph name="PAGE" /> часова недаступная або была перамешчана на новы вэб-адрас.</translation>
 <translation id="6107012941649240045">Каму выдадзена</translation>
+<translation id="6107864469867367783">Карыстальнік <ph name="USER_DISPLAY_NAME" /> змяніў назву групы</translation>
 <translation id="6107924765192360631">Каб пабачыць прапановы напісання, увядзіце некалькі слоў або стварыце першую версію чарнавіка.</translation>
 <translation id="6108508372809181847">Параўнаць: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Падрабязныя звесткі пра сертыфікат</translation>
@@ -3717,6 +3724,7 @@
 <translation id="7660456820368115565">Масавыя шматкарыстальніцкія гульні</translation>
 <translation id="7661591871037163355">Табліца параўнання запоўнена. Выдаліце слупкі, каб дадаць новыя.</translation>
 <translation id="7662298039739062396">Налада кантралюецца пашырэннем</translation>
+<translation id="7662911501613893058">Карыстальнік <ph name="USER_DISPLAY_NAME" /> пакінуў групу</translation>
 <translation id="7663736086183791259">Сертыфікат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Забаронена ў рэжыме інкогніта</translation>
 <translation id="7667346355482952095">Атрыманы маркер палітыкі пусты або не супадае з бягучым маркерам</translation>

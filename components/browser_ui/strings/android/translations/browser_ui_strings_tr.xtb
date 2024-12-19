@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">USB cihaza bağlandı</translation>
 <translation id="4194328954146351878">NFC cihazlarda sitelere bilgileri görme ve değiştirme izni vermeden önce sor (önerilir)</translation>
 <translation id="4200726100658658164">Konum Ayarlarını açın</translation>
+<translation id="4213239715282467974">Chrome artık son sekmelerinizi cihazınızla paylaşıyor. Bu sekmelere cihazınızın uygulama listesinden ve arama sonuçlarından hızlı şekilde erişebilirsiniz. Bu özelliği Chrome ayarlarından istediğiniz zaman kapatabilirsiniz.</translation>
 <translation id="4226663524361240545">Bildirimler cihazı titretebilir</translation>
 <translation id="4259722352634471385">Gezinme engellendi: <ph name="URL" /></translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Sitelerin, hakkınızda kaydettikleri bilgileri kullanmak için izin istemesi engellenir</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tane daha)}other{(+ # tane daha)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
+<translation id="5408906274948600065">Chrome'un son sekmelerinizi cihazınızla paylaşmasına izin verdiğinizde bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından istediğiniz zaman etkinleştirebilir veya devre dışı bırakabilirsiniz.</translation>
 <translation id="5438097262470833822">Bu tercih, <ph name="WEBSITE" /> izinlerini sıfırlar</translation>
 <translation id="5459413148890178711">Bu düğme açıkken siteler konumunuzu görmek isteyebilir. Düğme kapalıyken siteler konumunuzu göremez.</translation>
 <translation id="5489227211564503167">Geçen süre: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" /></translation>

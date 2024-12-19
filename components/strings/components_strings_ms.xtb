@@ -362,6 +362,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1615402009686901181">Dasar pentadbir melumpuhkan tangkapan skrin apabila kandungan sulit kelihatan</translation>
 <translation id="1617276713587758852">Kenderaan crossover</translation>
 <translation id="1619007254056372606">Urus data laman pada peranti</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> mengalih keluar tab</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Perniagaan Kewangan</translation>
 <translation id="1623104350909869708">Halang halaman ini daripada mencipta dialog tambahan</translation>
@@ -369,6 +370,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1633137413609266904">{0,plural, =1{Pembukaan fail ini disekat oleh dasar pentadbir}other{Pembukaan # fail disekat oleh dasar pentadbir}}</translation>
 <translation id="1633941398432788136">Perancangan Acara</translation>
 <translation id="1634828734222219955">Jumlah</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> menyertai kumpulan</translation>
 <translation id="163826442096818926">Pendekkan</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1640180200866533862">Dasar pengguna</translation>
@@ -904,6 +906,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2571488850200220306">Untuk memastikan keselamatan, pentadbir juga boleh melihat OS dan versi penyemak imbas peranti serta perisian yang dipasang pada peranti</translation>
 <translation id="2573170131138724450">Televisyen</translation>
 <translation id="257674075312929031">Kumpulan</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> menambahkan tab</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
 <translation id="2587841377698384444">ID API Direktori:</translation>
 <translation id="2594318783181750337">Paparan web pantas:</translation>
@@ -2403,6 +2406,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5305716236436927587">Pengiklanan &amp; Pemasaran</translation>
 <translation id="5306593769196050043">Kedua-dua helaian</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> menukar warna kumpulan</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Sambung</translation>
 <translation id="5308689395849655368">Pelaporan nahas dilumpuhkan.</translation>
@@ -2434,6 +2438,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5363309033720083897">Port bersiri yang dibenarkan oleh pentadbir anda</translation>
 <translation id="5363532265530011914">Sarung Kaki &amp; Hosieri</translation>
 <translation id="5371425731340848620">Kemas kini kad</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> menukar tab</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Jam anda lambat" atau "Jam anda cepat" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Untuk mendapatkan kata laluan ini pada semua peranti anda, sahkan identiti anda</translation>
@@ -2448,6 +2453,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5392506727170022660">Logam (Separa Kilat)</translation>
 <translation id="5394069166371280357">Rancangan TV berorientasikan Keluarga</translation>
 <translation id="5396631636586785122">Jahitan tepi kanan</translation>
+<translation id="5397794290049113714">Anda</translation>
 <translation id="5398772614898833570">Iklan disekat</translation>
 <translation id="5400836586163650660">Kelabu</translation>
 <translation id="5401344472773249513">Berita Selebriti &amp; Hiburan</translation>
@@ -2833,6 +2839,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6105460996796456817">Buat laman</translation>
 <translation id="6106989379647458772">Halaman web di <ph name="PAGE" /> mungkin tergendala sebentar atau mungkin telah dipindahkan secara kekal ke alamat web baharu.</translation>
 <translation id="6107012941649240045">Dikeluarkan Kepada</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> menukar nama kumpulan</translation>
 <translation id="6107924765192360631">Mulakan dengan beberapa perkataan atau draf pertama untuk mendapatkan cadangan penulisan.</translation>
 <translation id="6108508372809181847">Bandingkan <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Butiran sijil</translation>
@@ -3719,6 +3726,7 @@ Butiran tambahan:
 <translation id="7660456820368115565">Permainan Berbilang Pemain Besar-besaran</translation>
 <translation id="7661591871037163355">Jadual perbandingan anda penuh. Alih keluar lajur untuk menambahkan lajur baharu.</translation>
 <translation id="7662298039739062396">Tetapan dikawal oleh sambungan</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> meninggalkan kumpulan</translation>
 <translation id="7663736086183791259">Sijil <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Tidak dibenarkan dalam Inkognito</translation>
 <translation id="7667346355482952095">Token dasar yang dikembalikan kosong atau tidak sepadan dengan token semasa</translation>

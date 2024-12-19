@@ -361,6 +361,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1615402009686901181">Maxfiy axborotlar koʻrinib turganda administrator ekranni tasvirga olishni taqiqlagan</translation>
 <translation id="1617276713587758852">Krossoverlar</translation>
 <translation id="1619007254056372606">Qurilmadagi sayt maʼlumotlarini boshqarish</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> varaqni olib tashladi</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Biznes moliyasi</translation>
 <translation id="1623104350909869708">Bu sahifada qo‘shimcha muloqot oynalari yaratishni taqiqlash</translation>
@@ -368,6 +369,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1633137413609266904">{0,plural, =1{Bu fayllarni ochishni administrator taqiqlagan}other{# ta faylni ochishni administrator taqiqlagan}}</translation>
 <translation id="1633941398432788136">Tadbirlarni rejalashtirish</translation>
 <translation id="1634828734222219955">Jami</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> guruhga qoʻshildi</translation>
 <translation id="163826442096818926">Qisqartirish</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1640180200866533862">Foydalanuvchi qoidalari</translation>
@@ -903,6 +905,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2571488850200220306">Xavfsizlikni taʼminlash maqsadida administrator qurilmadagi OT, brauzer versiyasi va oʻrnatilgan dasturlarni ham koʻrishi mumkin.</translation>
 <translation id="2573170131138724450">Televizorlar</translation>
 <translation id="257674075312929031">Guruh</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> varaq kiritdi</translation>
 <translation id="2586657967955657006">Klipbord</translation>
 <translation id="2587841377698384444">Katalog API ID:</translation>
 <translation id="2594318783181750337">Tezkor veb shakli:</translation>
@@ -2397,6 +2400,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5305716236436927587">Reklama va marketing</translation>
 <translation id="5306593769196050043">Har ikki varaq</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> guruh rangini oʻzgartirdi</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Ulanish</translation>
 <translation id="5308689395849655368">Xatoliklar haqidagi hisobotlar o‘chiq.</translation>
@@ -2428,6 +2432,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5363309033720083897">Seriyali port administrator tomonidan ruxsat etilgan</translation>
 <translation id="5363532265530011914">Paypoq va oyoq kiyimlari</translation>
 <translation id="5371425731340848620">Kartani yangilash</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> varaqni oʻzgartirdi</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">“Soatingiz orqada” yoki “Soatingiz oldinda” yoki “&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Bu paroldan barcha qurilmalarda foydalanish uchun shaxsingizni tasdiqlang</translation>
@@ -2442,6 +2447,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5392506727170022660">Metall (yarim yaltiroq)</translation>
 <translation id="5394069166371280357">Oilaviy TV seriallar</translation>
 <translation id="5396631636586785122">Oʻng chekkasini tikish</translation>
+<translation id="5397794290049113714">Siz</translation>
 <translation id="5398772614898833570">Reklamalar bloklandi</translation>
 <translation id="5400836586163650660">Kulrang</translation>
 <translation id="5401344472773249513">Mashhurlar va koʻngilochar yangiliklar</translation>
@@ -2827,6 +2833,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6105460996796456817">Sayt yaratish</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> veb-sahifasi vaqtincha ishlamayotgan yoki yangi veb-manzilga o‘tkazilgan bo‘lishi mumkin.</translation>
 <translation id="6107012941649240045">Berilgan:</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> guruh nomini oʻzgartirdi</translation>
 <translation id="6107924765192360631">Yozma tavsiyalar olish uchun bir necha soʻz yozing yoki qoralama yarating.</translation>
 <translation id="6108508372809181847">Taqqoslash: <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Sertifikat tafsilotlari</translation>
@@ -3711,6 +3718,7 @@ Batafsil axborot:
 <translation id="7660456820368115565">Yirik multipleyer oʻyinlar</translation>
 <translation id="7661591871037163355">Taqqoslash jadvalida ustunlar qolmadi. Ayrimlarini oʻchirib, yangilarini kiriting.</translation>
 <translation id="7662298039739062396">Sozlama kengaytma tomonidan boshqariladi</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> guruhni tark etdi</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> sertifikati</translation>
 <translation id="7666397036351755929">Inkognito rejimida ruxsat berilmagan</translation>
 <translation id="7667346355482952095">Qaytarilgan siyosat tokeni bo‘sh yoki joriy tokenga mos kelmaydi</translation>

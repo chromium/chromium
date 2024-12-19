@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Ixhumeke kudivayisi ye-USB</translation>
 <translation id="4194328954146351878">Buza ngaphambi kokuvumela amasayithi ukuthi abone futhi aguqule ulwazi kumadivayisi e-NFC (kuyanconywa)</translation>
 <translation id="4200726100658658164">Vula Izilungiselelo zendawo</translation>
+<translation id="4213239715282467974">Manje iChrome isiyakwazi ukwabelana nedivayisi yakho ngamathebhu amuva. Ungafinyelela kuwo ngokushesha ohlwini lwama-app akudivayisi yakho nasemiphumeleni yosesho. Lokhu ungakuvala noma nini kumasethingi eChrome.</translation>
 <translation id="4226663524361240545">Izaziso zingadlidliza idivayisi</translation>
 <translation id="4259722352634471385">Ukuzulazula kuvinjiwe: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Kuvunyelwe</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Amasayithi avinjelwe ekukuceleni ukuba asebenzise imininingwane ayilondolozile ngawe</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 okuningi)}one{(+ # okuningi)}other{(+ # okuningi)}}</translation>
 <translation id="5403592356182871684">Amagama</translation>
+<translation id="5408906274948600065">Vumela iChrome yabelane nedivayisi yakho ngamathebhu amuva ukuze uwabone ohlwini lwama-app akudivayisi yakho nasemiphumeleni yosesho. Ungakuvula noma ukuvale noma nini lokhu kumasethingi eChrome.</translation>
 <translation id="5438097262470833822">Le nketho izosetha kabusha izimvume ze-<ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Lapho ivuliwe, amasayithi angacela indawo yakho. Lapho ivaliwe, amasayithi awakwazi ukubona indawo yakho.</translation>
 <translation id="5489227211564503167">Isikhathi esidlulile singu-<ph name="ELAPSED_TIME" /> kwesingu-<ph name="TOTAL_TIME" />.</translation>

@@ -100,6 +100,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="5339733443032484186">Viimane vaheleht</translation>
 <translation id="5380159289133845234">Vahelehtede duplikaatide arhiivimine</translation>
 <translation id="5400836586163650660">Hall</translation>
+<translation id="5446043142172831860">Eemaldage vahekaart ja lahkuge grupist</translation>
 <translation id="5490235265819901748">Vahelehegruppi laiendati</translation>
 <translation id="5494920125229734069">Valige kõik</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp, värv on <ph name="COLOR_NAME" />.}other{Sule <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp, värv on <ph name="COLOR_NAME" />.}}</translation>

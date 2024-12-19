@@ -146,10 +146,8 @@
 <translation id="1594635596540195766">નીચે આપેલી સૂચિમાં સૂચવેલી <ph name="SUGGESTIONS_COUNT" /> આઇટમ છે.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> સાથે <ph name="SITE_ETLD_PLUS_ONE" />નો ઉપયોગ કરો</translation>
 <translation id="160275202205869636">ચાલુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં ડેટાનો ઉપયોગ કરે છે અને તેને સાચવે છે. બંધ હોય ત્યારે, ડેટા ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબ કાઢી નાખ્યું</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{પસંદ કરેલ 1 આઇટમ દૂર કરો}one{પસંદ કરેલ # આઇટમ દૂર કરો}other{પસંદ કરેલ # આઇટમ દૂર કરો}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}one{# બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}other{# બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}}</translation>
-<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ગ્રૂપમાં જોડાયા</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
 <translation id="164269334534774161">તમે <ph name="CREATION_TIME" />માંથી આ પેજની ઑફલાઇન કૉપિ જોઈ રહ્યા છો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
@@ -349,7 +347,6 @@
 <translation id="2578337197553672982">બાળકો માટે Googleનું કન્ટેન્ટ</translation>
 <translation id="2579297619530305344">'તમારા બધા ડિવાઇસ પર પાસવર્ડ' શીટ પૂરી ઊંચાઈ સુધી ખોલી</translation>
 <translation id="2581165646603367611">આ કુકી, કૅશ અને Chromeને લાગતું હોય કે આ મહત્વનું નથી એવા સાઇટના બીજા ડેટાને સાફ કરશે.</translation>
-<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબ ઉમેર્યું</translation>
 <translation id="2587052924345400782">નવું વર્ઝન ઉપલબ્ધ છે</translation>
 <translation id="2593272815202181319">મોનોસ્પેસ</translation>
 <translation id="2603212228005142861">તમારી પસંદગીઓ મેનેજ કરવા માટે, સાઇન ઇન કરો</translation>
@@ -863,7 +860,6 @@
 <translation id="4912413785358399818">ટૅબ ખસેડો</translation>
 <translation id="4913169188695071480">તાજું કરવાનું રોકો</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
-<translation id="492284538114688557">કિંમતમાં ઘટાડાની જાણ થઈ</translation>
 <translation id="4925120120285606924">સ્ક્રીનશૉટ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">તમારા પાસવર્ડની નિકાસ કરવામાં આવશે અને તેને ટેક્સ્ટ ફાઇલ તરીકે સાચવવામાં આવશે. નિર્ધારિત ફોલ્ડરનો ઍક્સેસ ધરાવતી કોઈપણ વ્યક્તિ અને ઍપ તમારા પાસવર્ડ જોઈ શકશે.</translation>
 <translation id="4926901776383726965">તમે ઑફલાઇન જોવા અથવા અન્ય ઍપમાં શેર કરવા માટે છબીઓ અને ફાઇલોને સાચવી શકો છો</translation>
@@ -944,7 +940,6 @@
 <translation id="5301876394151419436">તમે <ph name="EMAIL" /> તરીકે સાઇન ઇન કર્યું છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="5304593522240415983">આ ફીલ્ડ ખાલી હોઈ શકતું નથી</translation>
 <translation id="5306014156308790439">'સંગ્રહમાં ઉમેરો' બટન બંધ કર્યું છે</translation>
-<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપના રંગમાં ફેરફાર કર્યો</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
 <translation id="5310963254742922113">પાસવર્ડનો ઉપયોગ કરવામાં આવ્યો.</translation>
 <translation id="5316947901395241499">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ સાચવવાની સુવિધા બંધ કરવામાં આવી છે</translation>
@@ -956,12 +951,10 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />માં કોઈપણ સાઇટની મુલાકાત લેવામાં આવી નથી</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="5364112109233799727">તમે જે પેજ માટે પ્રતિસાદ આપી રહ્યાં છો તેનું URL Googleને મોકલવામાં આવશે અને આ સુવિધાને બહેતર બનાવવા માટે માનવો દ્વારા તેનો રિવ્યૂ કરવામાં આવી શકે છે</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબમાં ફેરફાર કર્યો</translation>
 <translation id="5375374982898812658">તમે તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને તમારા બધા ડિવાઇસમાંથી તે ડિલીટ કરવામાં આવશે</translation>
 <translation id="5375577065097716013">Google Lens વડે છબી શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">છૂપા મોડમાંથી સ્વિચ આઉટ કરો</translation>
 <translation id="5395376160638294582">ખાતરી કરો કે તમે હંમેશાં તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરી શકો</translation>
-<translation id="5397794290049113714">તમે</translation>
 <translation id="539881862970320163">સશક્ત પાસવર્ડ સૂચવવામાં આવ્યો છે. કીબોર્ડ છુપાવેલું છે.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> પર <ph name="ONE_TIME_CODE" /> સબમિટ કરીએ?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) ઇચ્છે છે કે તમે ટૅબના ગ્રૂપમાં જોડાઓ. લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફાર કરી શકે છે, તેથી સચેત રહીને જોડાઓ. લિંકની સમયસીમા 48 કલાકમાં સમાપ્ત થાય છે.</translation>
@@ -990,7 +983,6 @@
 <translation id="5515439363601853141">તમારો પાસવર્ડ જોવા માટે અનલૉક કરો</translation>
 <translation id="5517095782334947753">તમારી પાસે <ph name="FROM_ACCOUNT" />ના બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ છે.</translation>
 <translation id="5517326820028369152">તાજેતરની ઍક્ટિવિટી બોટમ શીટ</translation>
-<translation id="5524843473235508879">રીડાયરેક્ટ કરવાનું અવરોધિત.</translation>
 <translation id="5526281268548144413">એકથી વધુ વિન્ડો પર બંધ ન હોઈ શકે</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
 <translation id="5548606607480005320">સલામતી માટે તપાસ</translation>
@@ -1120,7 +1112,6 @@
 <translation id="60923314841986378"><ph name="HOURS" /> કલાક બાકી</translation>
 <translation id="6095578583683628124">જો Google તમારું ડિફૉલ્ટ શોધ એન્જિન પણ હોય, તો તમને બહેતર અને સંદર્ભ સાથે સંબંધિત સૂચનો જોવા મળશે</translation>
 <translation id="610630277578876674">મેસેજમાં ઝડપથી લિંક ખોલો અને અન્ય ઘણી સુવિધાઓ મેળવો</translation>
-<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપના નામમાં ફેરફાર કર્યો</translation>
 <translation id="6108923351542677676">સેટઅપની પ્રક્રિયા ચાલુ છે...</translation>
 <translation id="6112702117600201073">પેજ રિફ્રેશ કરી રહ્યાં છીએ</translation>
 <translation id="6122831415929794347">Safe Browsing બંધ કરીએ?</translation>
@@ -1233,7 +1224,6 @@
 <translation id="6565959834589222080">ઉપલબ્ધ હોય ત્યારે વાઇ-ફાઇનો ઉપયોગ કરવામાં આવે છે</translation>
 <translation id="6569373978618239158">હવે જ્યારે તમે નવી ટૅબ ખોલશો ત્યારે તમને <ph name="SITE_NAME" /> પરથી સ્ટોરી દેખાશે. તમે જે સાઇટ ફૉલો કરો છો તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. તમે તેમને Discoverના સેટિંગમાં મેનેજ કરી શકો છો.</translation>
 <translation id="6570116402456758630">પેજનો સારાંશ</translation>
-<translation id="6573096386450695060">હંમેશાં મંજૂરી આપો</translation>
 <translation id="6573431926118603307">તમારા અન્ય ઉપકરણો પર તમે Chrome માં ખોલેલા ટૅબ્સ અહીં દેખાશે.</translation>
 <translation id="6583199322650523874">વર્તમાન પેજને બુકમાર્ક કરો</translation>
 <translation id="6588043302623806746">સુરક્ષિત DNSનો ઉપયોગ કરો</translation>
@@ -1349,6 +1339,7 @@
 <translation id="6971862865055170158">મંજૂરી આપશો નહીં</translation>
 <translation id="6978717888677691380">તમે બ્લૉક કરેલી સાઇટ</translation>
 <translation id="6979737339423435258">હંમેશાં</translation>
+<translation id="6983306615164277634">તમે આ સ્થિતિને બદલવા માટે ઍડ્રેસ બારને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો.</translation>
 <translation id="6987047470128880212">છૂપી ટૅબ આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="6991701761229081516">તમારા પાસવર્ડ CSV ફાઇલ તરીકે ડાઉનલોડ કરવામાં આવશે. ઍપ સહિત ફાઇલને ઍક્સેસ કરી શકતી કોઈપણ વ્યક્તિ તેમને જોઈ શકશે. નિકાસ કરેલા પાસવર્ડ Chromeમાંથી ડિલીટ કરવામાં આવશે.</translation>
 <translation id="6996145122199359148">આ પેજ ડાઉનલોડ કરો</translation>
@@ -1360,7 +1351,6 @@
 <translation id="7035701931849773472">અન્ય વિકલ્પો</translation>
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
 <translation id="7054588988317389591">છબીના વર્ણનો મેળવીએ?</translation>
-<translation id="7055152154916055070">રીડાયરેક્ટ કરવાનું બ્લૉક કરવામાં આવ્યું છે:</translation>
 <translation id="7057969023583258980">સંપૂર્ણ Chrome ઇતિહાસ ખોલો</translation>
 <translation id="7063006564040364415">સમન્વયન સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>
 <translation id="7071521146534760487">એકાઉન્ટને મેનેજ કરો</translation>
@@ -1505,7 +1495,6 @@
 <translation id="7656721520530864426">કોઈ સાઇટ નથી</translation>
 <translation id="7656862631699126784">છૂપી ટૅબને લૉક કરવાનો મોડ ચાલુ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
-<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપ છોડી દીધું</translation>
 <translation id="7663320421139257046">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું <ph name="FIELDS_STRING" /> આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> જુઓ.</translation>
 <translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
 <translation id="766587987807204883">લેખો અહીં દેખાય છે, જે તમે ઑફલાઇન હો ત્યારે પણ વાંચી શકો છો</translation>

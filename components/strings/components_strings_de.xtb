@@ -362,6 +362,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1615402009686901181">Die Administratorrichtlinie blockiert die Bildschirmaufnahme, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="1617276713587758852">Crossover-Fahrzeuge</translation>
 <translation id="1619007254056372606">Websitedaten auf dem Gerät verwalten</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> hat einen Tab entfernt</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Unternehmensfinanzierung</translation>
 <translation id="1623104350909869708">Keine weiteren Dialogfelder auf dieser Seite zulassen</translation>
@@ -369,6 +370,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1633137413609266904">{0,plural, =1{Die Administratorrichtlinie blockiert das Öffnen dieser Datei}other{Die Administratorrichtlinie blockiert das Öffnen von # Dateien}}</translation>
 <translation id="1633941398432788136">Veranstaltungsplanung</translation>
 <translation id="1634828734222219955">Gesamt</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ist der Gruppe beigetreten</translation>
 <translation id="163826442096818926">Kürzen</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1640180200866533862">Nutzerrichtlinien</translation>
@@ -904,6 +906,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2571488850200220306">Für mehr Sicherheit kann ein Admin auch das Betriebssystem, die Browserversion und die installierte Software des Geräts sehen</translation>
 <translation id="2573170131138724450">Fernseher</translation>
 <translation id="257674075312929031">Gruppe</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> hat einen Tab hinzugefügt</translation>
 <translation id="2586657967955657006">Zwischenablage</translation>
 <translation id="2587841377698384444">Directory API-ID: </translation>
 <translation id="2594318783181750337">Schnelle Webanzeige:</translation>
@@ -2400,6 +2403,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5305716236436927587">Werbung und Marketing</translation>
 <translation id="5306593769196050043">Beide Auftragsblätter</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> hat die Gruppenfarbe geändert</translation>
 <translation id="5307166000025436103">Gültig</translation>
 <translation id="5308380583665731573">Verbinden</translation>
 <translation id="5308689395849655368">Die Absturzberichtsfunktion ist deaktiviert.</translation>
@@ -2431,6 +2435,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5363309033720083897">Serielle Ports sind von deinem Administrator zugelassen</translation>
 <translation id="5363532265530011914">Strumpfwaren</translation>
 <translation id="5371425731340848620">Karte aktualisieren</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> hat einen Tab geändert</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Deine Uhr geht nach", "Deine Uhr geht vor" oder "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Wenn du dieses Passwort auf allen deinen Geräten verwenden möchtest, bestätige deine Identität</translation>
@@ -2445,6 +2450,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5392506727170022660">Metall (halbglanz)</translation>
 <translation id="5394069166371280357">Familiengerechte TV-Sendungen</translation>
 <translation id="5396631636586785122">Mehrere Heftklammern rechts</translation>
+<translation id="5397794290049113714">Ich</translation>
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5401344472773249513">Prominenten- und Unterhaltungsnachrichten</translation>
@@ -2830,6 +2836,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6105460996796456817">Website erstellen</translation>
 <translation id="6106989379647458772">Die Webseite unter <ph name="PAGE" /> ist möglicherweise vorübergehend nicht verfügbar oder ist jetzt unter einer neuen Webadresse aufrufbar.</translation>
 <translation id="6107012941649240045">Ausgestellt für</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> hat den Gruppennamen geändert</translation>
 <translation id="6107924765192360631">Beginne einfach mit ein paar Wörtern oder einem ersten Entwurf, um Textvorschläge zu erhalten.</translation>
 <translation id="6108508372809181847">„<ph name="TABLE_NAME" />“ vergleichen</translation>
 <translation id="6108580855199168381">Zertifikatdetails</translation>
@@ -3716,6 +3723,7 @@ Weitere Details:
 <translation id="7660456820368115565">Massen-Mehrspieler-Games</translation>
 <translation id="7661591871037163355">Die Vergleichstabelle ist voll. Du musst erst Spalten entfernen, bevor neue hinzugefügt werden können.</translation>
 <translation id="7662298039739062396">Einstellung wird von einer Erweiterung gesteuert</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> hat die Gruppe verlassen</translation>
 <translation id="7663736086183791259">Zertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nicht zulässig im Inkognitomodus</translation>
 <translation id="7667346355482952095">Zurückgegebenes Token der Richtlinie ist leer oder entspricht nicht dem aktuellen Token</translation>

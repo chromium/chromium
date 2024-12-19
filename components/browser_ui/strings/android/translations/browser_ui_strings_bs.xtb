@@ -211,7 +211,7 @@
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
 <translation id="4194328954146351878">Web lokacije moraju tražiti odobrenje za pregled i izmjenu informacija na NFC uređajima (preporučeno)</translation>
 <translation id="4200726100658658164">Otvaranje postavki lokacije</translation>
-<translation id="4213239715282467974">Chrome sada nedavne kartice dijeli s vašim uređajem. Možete im brzo pristupiti na popisu aplikacija na uređaju i u rezultatima pretraživanja. To uvijek možete isključiti u postavkama Chromea.</translation>
+<translation id="4213239715282467974">Chrome sada dijeli nedavne kartice s uređajem. Možete im brzo pristupiti na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete isključiti ovo bilo kada u postavkama Chromea.</translation>
 <translation id="4226663524361240545">Obavještenja mogu aktivirati vibraciju uređaja</translation>
 <translation id="4259722352634471385">Navigacija je blokirana: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
@@ -293,7 +293,7 @@
 <translation id="5389626883706033615">Web lokacije su blokirane tako da vas ne pitaju za korištenje sačuvanih informacija o vama</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i još 1)}one{(i još #)}few{(i još #)}other{(i još #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
-<translation id="5408906274948600065">Dopustite Chromeu da dijeli vaše nedavne kartice s uređajem kako biste ih vidjeli na popisu aplikacija i u rezultatima pretraživanja na uređaju. Tu značajku uvijek možete uključiti ili isključiti u postavkama Chromea.</translation>
+<translation id="5408906274948600065">Omogućite Chromeu da dijeli nedavne kartice s uređajem da ih vidite na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete uključiti ili isključiti ovo bilo kada u postavkama Chromea.</translation>
 <translation id="5438097262470833822">Ovim odabirom će se poništiti odobrenja za web lokaciju <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kada je postavka uključena, web lokacije mogu zatražiti vašu lokaciju. Kada je postavka isključena, web lokacije ne mogu vidjeti vašu lokaciju.</translation>
 <translation id="5489227211564503167">Proteklo vrijeme <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>

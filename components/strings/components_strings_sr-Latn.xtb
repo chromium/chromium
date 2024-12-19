@@ -362,6 +362,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1615402009686901181">Smernice administratora onemogućavaju snimanje ekrana kada je vidljiv poverljiv sadržaj</translation>
 <translation id="1617276713587758852">Krosover vozila</translation>
 <translation id="1619007254056372606">Upravljaj podacima o sajtovima na uređaju</translation>
+<translation id="1619648179761984213">Korisnik <ph name="USER_DISPLAY_NAME" /> je uklonio karticu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Poslovne finansije</translation>
 <translation id="1623104350909869708">Spreči ovu stranicu da pravi dodatne dijaloge</translation>
@@ -369,6 +370,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1633137413609266904">{0,plural, =1{Smernice administratora blokiraju otvaranje ovog fajla}one{Smernice administratora blokiraju otvaranje # fajla}few{Smernice administratora blokiraju otvaranje # fajla}other{Smernice administratora blokiraju otvaranje # fajlova}}</translation>
 <translation id="1633941398432788136">Planiranje događaja</translation>
 <translation id="1634828734222219955">Ukupno</translation>
+<translation id="1637407510758033366">Korisnik <ph name="USER_DISPLAY_NAME" /> se pridružio grupi</translation>
 <translation id="163826442096818926">Skrati</translation>
 <translation id="1639239467298939599">Učitava se</translation>
 <translation id="1640180200866533862">Smernice za korisnike</translation>
@@ -904,6 +906,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2571488850200220306">Iz bezbednosnih razloga uređaj može da vidi i OS uređaja, verziju pregledača i koji softver je instaliran</translation>
 <translation id="2573170131138724450">Televizori</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="258135245577667916">Korisnik <ph name="USER_DISPLAY_NAME" /> je dodao karticu</translation>
 <translation id="2586657967955657006">Memorija</translation>
 <translation id="2587841377698384444">ID API-ja za direktorijume:</translation>
 <translation id="2594318783181750337">Brzi veb-prikaz:</translation>
@@ -2402,6 +2405,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5305716236436927587">Oglašavanje i marketing</translation>
 <translation id="5306593769196050043">Obe tabele</translation>
+<translation id="5307109011461144709">Korisnik <ph name="USER_DISPLAY_NAME" /> je promenio boju grupe</translation>
 <translation id="5307166000025436103">U redu</translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5308689395849655368">Izveštavanje o otkazivanju je onemogućeno.</translation>
@@ -2433,6 +2437,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5363309033720083897">Administrator je dozvolio serijski port</translation>
 <translation id="5363532265530011914">Čarape</translation>
 <translation id="5371425731340848620">Ažurirajte karticu</translation>
+<translation id="537425196847960924">Korisnik <ph name="USER_DISPLAY_NAME" /> je promenio karticu</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Sat kasni“ ili „Sat žuri“ ili „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Da biste dobili ovu lozinku na svim uređajima, potvrdite svoj identitet</translation>
@@ -2447,6 +2452,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5392506727170022660">Metal (polusjajni)</translation>
 <translation id="5394069166371280357">Porodične TV emisije</translation>
 <translation id="5396631636586785122">Spajanje ivica šavom na desnoj strani</translation>
+<translation id="5397794290049113714">Vi</translation>
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5401344472773249513">Poznate ličnosti i vesti iz sveta zabave</translation>
@@ -2832,6 +2838,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6105460996796456817">Napravite sajt</translation>
 <translation id="6106989379647458772">Veb-stranica na adresi <ph name="PAGE" /> možda privremeno ne funkcioniše ili je trajno premeštena na novu veb-adresu.</translation>
 <translation id="6107012941649240045">Izdato za</translation>
+<translation id="6107864469867367783">Korisnik <ph name="USER_DISPLAY_NAME" /> je promenio naziv grupe</translation>
 <translation id="6107924765192360631">Počnite sa nekoliko reči ili prvom radnom verzijom da biste dobili predloge za pisanje.</translation>
 <translation id="6108508372809181847">Uporedite stavke <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Detalji sertifikata</translation>
@@ -3717,6 +3724,7 @@ Dodatni detalji:
 <translation id="7660456820368115565">Masovne igre za više igrača</translation>
 <translation id="7661591871037163355">Tabela za poređenje je puna. Uklonite kolone da biste dodali nove.</translation>
 <translation id="7662298039739062396">Podešavanje kontroliše dodatak</translation>
+<translation id="7662911501613893058">Korisnik <ph name="USER_DISPLAY_NAME" /> je napustio grupu</translation>
 <translation id="7663736086183791259">Sertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nije dozvoljeno u režimu bez arhiviranja</translation>
 <translation id="7667346355482952095">Vraćeni token smernica je prazan ili se ne podudara sa aktuelnim tokenom</translation>

@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Forbundet til en USB-enhed</translation>
 <translation id="4194328954146351878">Spørg, om websites må få adgang til og ændre oplysninger på NFC-enheder (anbefales)</translation>
 <translation id="4200726100658658164">Åbn lokationsindstillinger</translation>
+<translation id="4213239715282467974">Chrome deler nu dine seneste faner med din enhed. Du kan hurtigt få adgang til dem på din enheds appliste og i søgeresultater. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="4226663524361240545">Notifikationer kan få enheden til at vibrere</translation>
 <translation id="4259722352634471385">Navigationen er blokeret: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tilladt</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Websites kan ikke bede dig om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
 <translation id="5403592356182871684">Navne</translation>
+<translation id="5408906274948600065">Få Chrome til dele dine seneste faner med din enhed for at se dem på din enheds appliste og i søgeresultater. Du kan til enhver tid slå dette til eller fra i Chrome-indstillingerne.</translation>
 <translation id="5438097262470833822">Denne handling nulstiller tilladelserne for <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Når dette er slået til, kan websites anmode om din lokation. Når dette er slået fra, kan websites ikke se din lokation.</translation>
 <translation id="5489227211564503167">Forløbet tid: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>

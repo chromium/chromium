@@ -362,6 +362,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1615402009686901181">Kebijakan administrator akan menonaktifkan tangkapan layar saat konten rahasia terlihat</translation>
 <translation id="1617276713587758852">Mobil crossover</translation>
 <translation id="1619007254056372606">Kelola data situs di perangkat</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> menghapus tab</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Keuangan Bisnis</translation>
 <translation id="1623104350909869708">Cegah dialog lain dari halaman ini.</translation>
@@ -369,6 +370,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1633137413609266904">{0,plural, =1{Pembukaan file ini diblokir oleh kebijakan administrator}other{Pembukaan # file diblokir oleh kebijakan administrator}}</translation>
 <translation id="1633941398432788136">Perencanaan Acara</translation>
 <translation id="1634828734222219955">Total</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> bergabung ke grup</translation>
 <translation id="163826442096818926">Persingkat</translation>
 <translation id="1639239467298939599">Memuat</translation>
 <translation id="1640180200866533862">Kebijakan pengguna</translation>
@@ -905,6 +907,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2571488850200220306">Untuk membantu memastikan keamanan, admin juga dapat melihat OS, versi browser, dan software yang diinstal di perangkat</translation>
 <translation id="2573170131138724450">Televisi</translation>
 <translation id="257674075312929031">Grup</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> menambahkan tab</translation>
 <translation id="2586657967955657006">Papan klip</translation>
 <translation id="2587841377698384444">ID API Direktori:</translation>
 <translation id="2594318783181750337">Tampilan web cepat:</translation>
@@ -2402,6 +2405,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5305716236436927587">Iklan &amp; Pemasaran</translation>
 <translation id="5306593769196050043">Kedua lembar</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> mengubah warna grup</translation>
 <translation id="5307166000025436103">Oke</translation>
 <translation id="5308380583665731573">Hubungkan</translation>
 <translation id="5308689395849655368">Pelaporan kondisi ngadat dinonaktifkan.</translation>
@@ -2433,6 +2437,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5363309033720083897">Port serial yang diizinkan oleh administrator Anda</translation>
 <translation id="5363532265530011914">Kaus Kaki &amp; Pelindung Kaki</translation>
 <translation id="5371425731340848620">Perbarui kartu</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> mengubah tab</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Jam Anda terlalu lambat" atau "Jam Anda terlalu cepat" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Untuk mendapatkan sandi ini di semua perangkat Anda, verifikasi diri Anda</translation>
@@ -2447,6 +2452,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5392506727170022660">Logam (Semi-Kilap)</translation>
 <translation id="5394069166371280357">Acara TV Berorientasi Keluarga</translation>
 <translation id="5396631636586785122">Jahitan tepi di kanan</translation>
+<translation id="5397794290049113714">Anda</translation>
 <translation id="5398772614898833570">Iklan diblokir</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5401344472773249513">Berita Selebritas &amp; Hiburan</translation>
@@ -2832,6 +2838,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6105460996796456817">Buat situs</translation>
 <translation id="6106989379647458772">Halaman web di <ph name="PAGE" /> mungkin tidak aktif untuk sementara atau dipindahkan secara permanen ke alamat web baru.</translation>
 <translation id="6107012941649240045">Diterbitkan Untuk</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> mengubah nama grup</translation>
 <translation id="6107924765192360631">Cukup mulai dengan beberapa kata atau draf pertama untuk mendapatkan saran penulisan.</translation>
 <translation id="6108508372809181847">Bandingkan <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Detail sertifikat</translation>
@@ -3716,6 +3723,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7660456820368115565">Game MMO</translation>
 <translation id="7661591871037163355">Tabel perbandingan Anda penuh. Hapus kolom untuk menambahkan yang baru.</translation>
 <translation id="7662298039739062396">Setelan yang dikontrol oleh ekstensi</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> keluar dari grup</translation>
 <translation id="7663736086183791259">Sertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Tidak diizinkan di Samaran</translation>
 <translation id="7667346355482952095">Token kebijakan yang dikembalikan kosong atau tidak cocok dengan token saat ini</translation>

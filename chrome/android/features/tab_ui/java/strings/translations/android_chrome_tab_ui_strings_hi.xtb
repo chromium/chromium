@@ -100,6 +100,7 @@
 <translation id="5339733443032484186">आपका आखिरी टैब</translation>
 <translation id="5380159289133845234">डुप्लीकेट टैब संग्रहित करें</translation>
 <translation id="5400836586163650660">स्लेटी</translation>
+<translation id="5446043142172831860">टैब हटाएं और ग्रुप छोड़ें</translation>
 <translation id="5490235265819901748">टैब ग्रुप बड़ा किया गया</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बंद करें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}}</translation>

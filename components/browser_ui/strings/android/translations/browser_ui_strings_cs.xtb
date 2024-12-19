@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Připojeno k zařízení USB</translation>
 <translation id="4194328954146351878">Pokud web bude chtít číst a měnit informace na zařízeních NFC, zobrazit dotaz (doporučeno)</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
+<translation id="4213239715282467974">Chrome teď vaše nedávné karty sdílí se zařízením. Můžete je rychle otevřít ze seznamu aplikací na zařízení a z výsledků vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="4226663524361240545">Oznámení mohou aktivovat vibraci</translation>
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Povoleno</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Weby nemohou žádat o použití informací, které o vás uložily</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 další)}few{(+ # další)}many{(+ # další)}other{(+ # dalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
+<translation id="5408906274948600065">Umožněte Chromu sdílet vaše nedávné karty se zařízením, abyste je na něm viděli v seznamu aplikací a ve výsledcích vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli zapnout nebo vypnout.</translation>
 <translation id="5438097262470833822">Výběrem této možnosti resetujete oprávnění webu <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Když je tato možnost zapnutá, weby mohou žádat o přístup k vaší poloze. Když je vypnutá, weby vaši polohu nevidí.</translation>
 <translation id="5489227211564503167">Uplynulá doba: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>

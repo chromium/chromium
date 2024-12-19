@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन कैप्चर की सुविधा बंद कर दी जाती है</translation>
 <translation id="1617276713587758852">क्रॉसओवर</translation>
 <translation id="1619007254056372606">उपयोगकर्ता के डिवाइस पर साइट डेटा को मैनेज करें</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ने एक टैब हटा दिया है</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1622966923835127638">कारोबारी फ़ाइनेंस</translation>
 <translation id="1623104350909869708">इस पेज को अतिरिक्त डॉयलॉग बनाने से रोकें</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{एडमिन नीति के तहत, इस फ़ाइल को खोलने की अनुमति नहीं है}one{एडमिन नीति के तहत, # फ़ाइल को खोलने की अनुमति नहीं है}other{एडमिन नीति के तहत, # फ़ाइलों को खोलने की अनुमति नहीं है}}</translation>
 <translation id="1633941398432788136">इवेंट प्लानिंग</translation>
 <translation id="1634828734222219955">कुल</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" />, अब ग्रुप का हिस्सा हैं</translation>
 <translation id="163826442096818926">छोटा</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
 <translation id="1640180200866533862">उपयोगकर्ता नीतियां</translation>
@@ -905,6 +907,7 @@
 <translation id="2571488850200220306">डिवाइस की सुरक्षा के लिए एडमिन, डिवाइस का ओएस, ब्राउज़र वर्शन, और इंस्टॉल किया गया सॉफ़्टवेयर भी देख सकता है</translation>
 <translation id="2573170131138724450">टेलीविज़न</translation>
 <translation id="257674075312929031">ग्रुप</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ने एक टैब जोड़ा</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2587841377698384444">डायरेक्ट्री एपीआई आईडी:</translation>
 <translation id="2594318783181750337">फ़ास्ट वेब व्यू:</translation>
@@ -1142,6 +1145,7 @@
 <translation id="306573536155379004">गेम शुरू हो गया.</translation>
 <translation id="3067505415088964188">कीमत कम है</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> पर फ़ाइल अपलोड करने की प्रोसेस एक मिनट में शुरू होगी</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} आइटम}one{{ITEMS} आइटम}other{{ITEMS} आइटम}}</translation>
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टम</translation>
 <translation id="3080254622891793721">ग्राफ़िक</translation>
 <translation id="3082007635241601060">Google को अपने कार्ट का ऐक्सेस दें, ताकि वह आपके हिसाब से उपलब्ध छूट का पता लगा सके</translation>
@@ -2401,6 +2405,7 @@
 <translation id="5300589172476337783">दिखाएं</translation>
 <translation id="5305716236436927587">विज्ञापन और मार्केटिंग</translation>
 <translation id="5306593769196050043">दोनों शीट</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ने ग्रुप का रंग बदला</translation>
 <translation id="5307166000025436103">ठीक है</translation>
 <translation id="5308380583665731573">कनेक्ट करें</translation>
 <translation id="5308689395849655368">खराबी रिपोर्ट बंद कर दिया गया है.</translation>
@@ -2432,6 +2437,7 @@
 <translation id="5363309033720083897">ऐसा सीरियल पोर्ट जिसकी अनुमति आपके एडमिन ने दी है</translation>
 <translation id="5363532265530011914">मोज़े और होज़री</translation>
 <translation id="5371425731340848620">कार्ड अपडेट करें</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ने एक टैब बदला है</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"आपकी घड़ी पीछे चल रही है" या "आपकी घड़ी आगे चल रही है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">इस पासवर्ड को अपने सभी डिवाइसों पर सेव करने के लिए, अपनी पहचान की पुष्टि करें</translation>
@@ -2446,6 +2452,7 @@
 <translation id="5392506727170022660">मेटल (सेमी-ग्लॉस)</translation>
 <translation id="5394069166371280357">पारिवारिक टीवी शो</translation>
 <translation id="5396631636586785122">दाईं ओर एज़ स्टिच</translation>
+<translation id="5397794290049113714">आप</translation>
 <translation id="5398772614898833570">विज्ञापन ब्लॉक हैं</translation>
 <translation id="5400836586163650660">स्लेटी</translation>
 <translation id="5401344472773249513">मशहूर हस्तियों और मनोरंजन से जुड़ी खबरें</translation>
@@ -2831,7 +2838,9 @@
 <translation id="6105460996796456817">साइट बनाएं</translation>
 <translation id="6106989379647458772">हो सकता है कि <ph name="PAGE" /> पर मौजूद वेबपेज अस्थायी रूप से काम नहीं कर रहा हो या उसे स्थायी रूप से किसी नए वेब पते पर ले जाया गया हो.</translation>
 <translation id="6107012941649240045">इसको जारी</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ने ग्रुप का नाम बदल दिया</translation>
 <translation id="6107924765192360631">लिखने के सुझाव पाने के लिए, कुछ शब्दों से या पहले ड्राफ़्ट के साथ शुरुआत करें.</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" /> की तुलना करें</translation>
 <translation id="6108580855199168381">सर्टिफ़िकेट की जानकारी</translation>
 <translation id="6108702513636120202">Chromium में आपका सर्च इंजन</translation>
 <translation id="6108849843016142864">रेपटाइल और एम्फ़ीबियंस</translation>
@@ -3716,6 +3725,7 @@
 <translation id="7660456820368115565">मल्टीप्लेयर गेम जिसे एक साथ हज़ारों लोग खेल सकते हैं</translation>
 <translation id="7661591871037163355">तुलना करने वाली टेबल भर गई है. नए कॉलम जोड़ने के लिए, मौजूदा कॉलम हटाएं.</translation>
 <translation id="7662298039739062396">सेटिंग किसी एक्सटेंशन से नियंत्रित है</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ने ग्रुप छोड़ दिया</translation>
 <translation id="7663736086183791259">प्रमाणपत्र <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">गुप्त मोड में अनुमति नहीं है</translation>
 <translation id="7667346355482952095">वापस लौटा हुआ नीति टोकन खाली है या उसका मिलान वर्तमान टोकन से नहीं होता</translation>

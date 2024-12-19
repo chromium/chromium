@@ -113,6 +113,7 @@
 <translation id="1466035273550360103">Ямар ч нээлттэй таб байхгүй</translation>
 <translation id="1469381646033328562">Таны бүртгэлийг танай эцэг эх удирддаг.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Өөрчилсөн</translation>
 <translation id="1480152980057770392">Унших жагсаалтыг харуулах</translation>
 <translation id="1484758781961275277">iPad дээрээ өөрийн мэддэг, дуртай десктоп хөтчийн шилдэг хэрэглээг аваарай.</translation>
 <translation id="1485907716209290998">Илгээмж хянах</translation>
@@ -1211,6 +1212,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6445981559479772097">Мессеж илгээгдсэн.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Энэ нь бүлгийг таны төхөөрөмжөөс бүрмөсөн устгана.</translation>
+<translation id="6452534462676960500">Шинэ үйл ажиллагаа</translation>
 <translation id="6459307836338400162">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргооны хувьд <ph name="BEGIN_LINK" />Синк хийх<ph name="END_LINK" /> ба <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" />-ийн аль алиныг харна уу.</translation>
 <translation id="6459411599807878608">Дэлгэрэнгүй мэдээллийг нуусан</translation>
 <translation id="646394917185284261">Файлс</translation>
@@ -1619,6 +1621,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8219424187226230983">Офлайн хувилбарыг шинэ табд харах</translation>
 <translation id="8230355548492839438">Өмнөхийг олох</translation>
 <translation id="8232956427053453090">Өгөгдөл хадгалах</translation>
+<translation id="8258999165172757081">Нэмсэн</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="82619448491672958">Бусад табыг харах</translation>
 <translation id="8263228331881858381">Нэвтрэх түлхүүрийг хадгалсан</translation>

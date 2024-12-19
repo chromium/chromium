@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
 <translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
+<translation id="4213239715282467974">Chrome 現已與裝置分享最近開啟的分頁。透過裝置的應用程式清單和搜尋結果，可以快速存取這些分頁。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4278390842282768270">允許</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資訊</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
+<translation id="5408906274948600065">允許 Chrome 與裝置分享最近開啟的分頁，裝置的應用程式清單和搜尋結果即可顯示這些分頁。你隨時可以前往 Chrome 設定頁面開啟或關閉這項功能。</translation>
 <translation id="5438097262470833822">這會重設 <ph name="WEBSITE" /> 的權限</translation>
 <translation id="5459413148890178711">如果啟用，網站就可以要求取得你的位置資訊。如果停用，網站將無法查看你的位置資訊。</translation>
 <translation id="5489227211564503167">經過時間：<ph name="ELAPSED_TIME" />，影片總長：<ph name="TOTAL_TIME" />。</translation>

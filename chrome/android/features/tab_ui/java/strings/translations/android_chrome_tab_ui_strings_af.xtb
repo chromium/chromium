@@ -100,6 +100,7 @@ As jy dit uitvee sal almal onmiddellik toegang tot die “<ph name="TITLE_OF_GRO
 <translation id="5339733443032484186">Jou jongste oortjie</translation>
 <translation id="5380159289133845234">Argiveer duplikaatoortjies</translation>
 <translation id="5400836586163650660">Grys</translation>
+<translation id="5446043142172831860">Verwyder oortjie en verlaat groep</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Maak oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" /> toe.}other{Maak oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" /> toe.}}</translation>

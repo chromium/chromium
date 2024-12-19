@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ပုံဖမ်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="1617276713587758852">ပုံပြောင်းကားများ</translation>
 <translation id="1619007254056372606">စက်ပစ္စည်းပေါ်ရှိ ဝဘ်ဆိုက် ဒေတာကို စီမံရန်</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> က တဘ်ကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1622966923835127638">လုပ်ငန်းငွေကြေးဆိုင်ရာ ဝန်ဆောင်မှု</translation>
 <translation id="1623104350909869708">ဤစာမျက်နှာကို နောက်ထပ် စကားကွက်များထပ်မံ ဖန်တီးခြင်းမှ ကာကွယ်မည်။</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{စီမံခန့်ခွဲသူမူဝါဒက ဤဖိုင်ဖွင့်ခွင့် ပိတ်ထားသည်}other{စီမံခန့်ခွဲသူမူဝါဒက ဖိုင် # ဖိုင်ဖွင့်ခွင့် ပိတ်ထားသည်}}</translation>
 <translation id="1633941398432788136">ပွဲစီစဉ်ခြင်း</translation>
 <translation id="1634828734222219955">စုစုပေါင်း</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> က အဖွဲ့တွင် ပါဝင်လိုက်သည်</translation>
 <translation id="163826442096818926">အတို</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
 <translation id="1640180200866533862">အသုံးပြုသူ မူဝါဒများ</translation>
@@ -905,6 +907,7 @@
 <translation id="2571488850200220306">လုံခြုံမှုရှိကြောင်း သေချာစေရန်အတွက် ၎င်းသည် ဤစက်၏ OS၊ ဘရောင်ဇာဗားရှင်းနှင့် ထည့်သွင်းထားသောဆော့ဖ်ဝဲတို့ကိုလည်း မြင်နိုင်ပါသည်</translation>
 <translation id="2573170131138724450">ရုပ်မြင်သံကြားစက်</translation>
 <translation id="257674075312929031">အုပ်စု</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> က တဘ်ထည့်လိုက်သည်</translation>
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
 <translation id="2587841377698384444">လမ်းညွှန် API ID-</translation>
 <translation id="2594318783181750337">အမြန် ဝဘ်မြင်ကွင်း-</translation>
@@ -1146,6 +1149,7 @@
 <translation id="306573536155379004">ဂိမ်းစတင်ပါပြီ။</translation>
 <translation id="3067505415088964188">ဈေးနှုန်း နိမ့်သည်</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> သို့ သင့်ဖိုင်အပ်လုဒ်လုပ်ခြင်းသည် ၁ မိနစ်အတွင်း စတင်ပါမည်</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{ပစ္စည်း {ITEMS} ခု}other{ပစ္စည်း {ITEMS} ခု}}</translation>
 <translation id="3076865167425975822">လည်ပတ်သည့်စနစ်</translation>
 <translation id="3080254622891793721">ဂရပ်ဖစ်</translation>
 <translation id="3082007635241601060">ရနိုင်သည့်အခါ ပုဂ္ဂိုလ်ရေးသီးသန့် လျှော့ဈေးများရှာရန် Google ကို သင်၏ဈေးခြင်းတောင်းများ သုံးခွင့်ပြုနိုင်သည်</translation>
@@ -2402,6 +2406,7 @@
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5305716236436927587">ကြော်ငြာခြင်း၊ ဈေးကွက်ရှာဖွေခြင်း</translation>
 <translation id="5306593769196050043">နှစ်မျက်နှာလုံး</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> က အုပ်စုအရောင်ကို ပြောင်းထားသည်</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">ချိတ်ဆက်ရန်</translation>
 <translation id="5308689395849655368">ပျက်စီးမှု အစီရင်ခံခြင်းကို ပိတ်ထားသည်။</translation>
@@ -2433,6 +2438,7 @@
 <translation id="5363309033720083897">သင့်စီမံခန့်ခွဲသူက ခွင့်ပြုသော အစဉ်လိုက်ပို့တ်</translation>
 <translation id="5363532265530011914">ခြေအိတ်နှင့် အသားကပ်ခြေအိတ်</translation>
 <translation id="5371425731340848620">ကတ်ကို အပ်ဒိတ်လုပ်ပါ</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> က တဘ်ကို ပြောင်းလိုက်သည်</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"သင့်နာရီ နောက်ကျနေသည်" သို့မဟုတ် "သင့်နာရီ စောနေသည်" သို့မဟုတ် "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">သင့်စက်အားလုံးတွင် ဤစကားဝှက် ရယူနိုင်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
@@ -2447,6 +2453,7 @@
 <translation id="5392506727170022660">သတ္တု (အနည်းငယ် တောက်ပြောင်)</translation>
 <translation id="5394069166371280357">မိသားစု TV ရှိုး</translation>
 <translation id="5396631636586785122">ညာဘက်အစွန်းတွင် အပ်ချည်ဖြင့်ချုပ်ရန်</translation>
+<translation id="5397794290049113714">သင်</translation>
 <translation id="5398772614898833570">ကြော်ငြာများကို ပိတ်လိုက်ပါပြီ</translation>
 <translation id="5400836586163650660">မီးခိုး</translation>
 <translation id="5401344472773249513">ကျော်ကြားသူနှင့် ဖျော်ဖြေရေးသတင်း</translation>
@@ -2832,7 +2839,9 @@
 <translation id="6105460996796456817">ဝဘ်ဆိုက် ပြုလုပ်ရန်</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> ပေါ်က ဝဘ်စာမျက်နှာမှာ ယာယီ ဒေါင်းနေတာ ဖြစ်နိုင်သည် သို့မဟုတ် ၎င်းသည် ဝဘ် လိပ်စာ သစ်ဆီသို့ ထာဝရ ရွှေ့ပြောင်းသွားတာ ဖြစ်နိုင်သည်။</translation>
 <translation id="6107012941649240045">...အား ထုတ်ပေးခဲ့သည်</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> က အုပ်စုအမည်ကို ပြောင်းလိုက်သည်</translation>
 <translation id="6107924765192360631">ရေးသားမှုအကြံပြုချက်များ ရယူရန် စာလုံးအနည်းငယ် (သို့) ပထမဆုံးမူကြမ်းဖြင့်သာ စတင်ပါ။</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" /> ကို နှိုင်းယှဉ်ခြင်း</translation>
 <translation id="6108580855199168381">အသိအမှတ်ပြုလက်မှတ် အသေးစိတ်</translation>
 <translation id="6108702513636120202">Chromium ရှိ သင်၏ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="6108849843016142864">တွားသွားသတ္တဝါ၊ ကုန်းနေရေနေသတ္တဝါ</translation>
@@ -3716,6 +3725,7 @@
 <translation id="7660456820368115565">လူအုပ် အဖွဲ့လိုက်ကစားရသောဂိမ်း</translation>
 <translation id="7661591871037163355">နှိုင်းယှဉ်ပြဇယား ပြည့်နေသည်။ ကော်လံအသစ်ထည့်ရန် အဟောင်းများကို ဖယ်ရှားပါ။</translation>
 <translation id="7662298039739062396">နောက်ဆက်တွဲတစ်ခုက ထိန်းချုပ်ထားသည့် ဆက်တင်</translation>
+<translation id="7662911501613893058">အဖွဲ့မှ <ph name="USER_DISPLAY_NAME" /> ထွက်သွားသည်</translation>
 <translation id="7663736086183791259">အသိအမှတ်ပြုလက်မှတ် <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ရုပ်ဖျက်မုဒ်တွင် ခွင့်မပြုပါ</translation>
 <translation id="7667346355482952095">ပစ္စည်းပြန်ပို့နိုင်သည့် မူဝါဒတိုကင်သည် ဗလာဖြစ်နေပါသည် သို့မဟုတ် လက်ရှိတိုကင်နှင့် ကိုက်ညီမှု မရှိပါ</translation>

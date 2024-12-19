@@ -362,6 +362,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1615402009686901181">A captura da tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
 <translation id="1617276713587758852">Crossovers</translation>
 <translation id="1619007254056372606">Gerenciar dados de sites no dispositivo</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> removeu uma guia</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1622966923835127638">Finanças comerciais</translation>
 <translation id="1623104350909869708">Impedir que esta página crie caixas de diálogo adicionais</translation>
@@ -369,6 +370,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1633137413609266904">{0,plural, =1{A abertura desse arquivo está bloqueada pela política do administrador}one{A abertura de # arquivo está bloqueada pela política do administrador}other{A abertura de # arquivos está bloqueada pela política do administrador}}</translation>
 <translation id="1633941398432788136">Planejamento de eventos</translation>
 <translation id="1634828734222219955">Total</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> entrou no grupo</translation>
 <translation id="163826442096818926">Encurtar</translation>
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1640180200866533862">Políticas de usuário</translation>
@@ -904,6 +906,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2571488850200220306">Para garantir a segurança, o administrador também pode ver o SO do dispositivo, a versão do navegador e os softwares instalados</translation>
 <translation id="2573170131138724450">Televisões</translation>
 <translation id="257674075312929031">Grupo</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> adicionou uma guia</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2587841377698384444">Código da API do diretório:</translation>
 <translation id="2594318783181750337">Exibição rápida da Web:</translation>
@@ -2402,6 +2405,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5305716236436927587">Publicidade e marketing</translation>
 <translation id="5306593769196050043">As duas páginas</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> mudou a cor do grupo</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5308689395849655368">O relatório de erros está desativado.</translation>
@@ -2433,6 +2437,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5363309033720083897">Porta serial permitida pelo administrador</translation>
 <translation id="5363532265530011914">Meias e meias-calças</translation>
 <translation id="5371425731340848620">Atualizar cartão</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> mudou uma guia</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Seu relógio está atrasado", "Seu relógio está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para acessar essa senha em todos os seus dispositivos, confirme sua identidade</translation>
@@ -2447,6 +2452,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5392506727170022660">Metal (semibrilho)</translation>
 <translation id="5394069166371280357">Programas de TV voltados para a família</translation>
 <translation id="5396631636586785122">Costura no lado direito</translation>
+<translation id="5397794290049113714">Você</translation>
 <translation id="5398772614898833570">Anúncios bloqueados</translation>
 <translation id="5400836586163650660">Cinza</translation>
 <translation id="5401344472773249513">Notícias de entretenimento e celebridades</translation>
@@ -2832,6 +2838,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6105460996796456817">Criar site</translation>
 <translation id="6106989379647458772">A página da Web no endereço <ph name="PAGE" /> pode estar temporariamente inativa ou pode ter sido transferida para um novo endereço.</translation>
 <translation id="6107012941649240045">Emitido para</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> mudou o nome do grupo</translation>
 <translation id="6107924765192360631">Comece com algumas palavras ou um primeiro rascunho para receber sugestões de escrita.</translation>
 <translation id="6108508372809181847">Comparar <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Detalhes do certificado</translation>
@@ -3718,6 +3725,7 @@ Mais detalhes:
 <translation id="7660456820368115565">Jogos multiplayer massivos</translation>
 <translation id="7661591871037163355">Sua tabela de comparação está cheia. Remova colunas para adicionar outras.</translation>
 <translation id="7662298039739062396">Configuração controlada por uma extensão</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> saiu do grupo</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Sem permissão na navegação anônima</translation>
 <translation id="7667346355482952095">O token da política retornado está vazio ou não corresponde ao token atual</translation>

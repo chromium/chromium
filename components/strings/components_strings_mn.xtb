@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
 <translation id="1617276713587758852">Кроссовер</translation>
 <translation id="1619007254056372606">Төхөөрөмж дээрх сайтын өгөгдлийг удирдах</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> таб хассан</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1622966923835127638">Бизнесийн санхүү</translation>
 <translation id="1623104350909869708">Энэ хуудсыг нэмэлт хэлэлцүүлэг үүсгэхээс нь урьдчилан сэргийлэх</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{Энэ файлыг нээхийг администраторын бодлогоор блоклосон}other{# файлыг нээхийг администраторын бодлогоор блоклосон}}</translation>
 <translation id="1633941398432788136">Арга хэмжээ төлөвлөх</translation>
 <translation id="1634828734222219955">Нийт</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> бүлэгт нэгдсэн</translation>
 <translation id="163826442096818926">Богиносгох</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1640180200866533862">Хэрэглэгчийн журам</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">Аюулгүй байдлыг баталгаажуулахад туслахын тулд энэ нь мөн төхөөрөмжийн OS, хөтчийн хувилбар, ямар программ хангамж суулгасан болохыг харах боломжтой</translation>
 <translation id="2573170131138724450">Телевизүүд</translation>
 <translation id="257674075312929031">Бүлэг</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> таб нэмсэн</translation>
 <translation id="2586657967955657006">Түр санах ой</translation>
 <translation id="2587841377698384444">Хадгалалтын сангийн API ID:</translation>
 <translation id="2594318783181750337">Вебийн шуурхай харагдац:</translation>
@@ -2403,6 +2406,7 @@
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5305716236436927587">Сурталчилгаа, маркетинг</translation>
 <translation id="5306593769196050043">Хүснэгтийн аль алинд нь</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> бүлгийн өнгийг өөрчилсөн</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Холбо</translation>
 <translation id="5308689395849655368">Гарсан доголдлын талаарх мэдэгдлийг идэвхгүй болгосон байна.</translation>
@@ -2434,6 +2438,7 @@
 <translation id="5363309033720083897">Танай администраторын зөвшөөрсөн цуваа порт</translation>
 <translation id="5363532265530011914">Оймс болон хөлийн өмсгөл</translation>
 <translation id="5371425731340848620">Картыг шинэчлэх</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> таб өөрчилсөн</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Таны цаг хоцорч байна" эсвэл "Таны цаг түрүүлж байна" эсвэл "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Энэ нууц үгийг бүх төхөөрөмж дээрээ авахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
@@ -2448,6 +2453,7 @@
 <translation id="5392506727170022660">Металл (хагас гялгар)</translation>
 <translation id="5394069166371280357">ТВ-ийн гэр бүлд чиглэсэн шоунууд</translation>
 <translation id="5396631636586785122">Баруун ирмэгийг нь нийлүүлж үдэх</translation>
+<translation id="5397794290049113714">Та</translation>
 <translation id="5398772614898833570">Зарыг блоклосон</translation>
 <translation id="5400836586163650660">Саарал</translation>
 <translation id="5401344472773249513">Олны танил хүмүүс болон энтертэйнмент мэдээ</translation>
@@ -2833,6 +2839,7 @@
 <translation id="6105460996796456817">Сайт үүсгэх</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />-ын веб хуудас түр хугацаанд ажиллахгүй, эсвэл шинэ хуудас болон бүрмөсөн солигдсон байж болзошгүй.</translation>
 <translation id="6107012941649240045">руу олгосон</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> бүлгийн нэрийг өөрчилсөн</translation>
 <translation id="6107924765192360631">Бичих зөвлөмж авахын тулд ердөө хэдхэн үг эсвэл анхны нооргоос эхэлнэ үү.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" />-г харьцуулах</translation>
 <translation id="6108580855199168381">Сертификатын дэлгэрэнгүй</translation>
@@ -3717,6 +3724,7 @@
 <translation id="7660456820368115565">Маш олон тоглогчтой тоглоомууд</translation>
 <translation id="7661591871037163355">Таны харьцуулалтын хүснэгт дүүрсэн байна. Шинийг нэмэхийн тулд багана хасна уу.</translation>
 <translation id="7662298039739062396">Тохируулгыг өргөтгөлөөр хянадаг</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> бүлгээс гарсан</translation>
 <translation id="7663736086183791259">Гэрчилгээ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Нууцлалтай горимд зөвшөөрдөггүй</translation>
 <translation id="7667346355482952095">Буцаасан удирдамжийн тэмдэг нь хоосон, эсвэл одоогийн тэмдэгтэй тохирохгүй байна</translation>

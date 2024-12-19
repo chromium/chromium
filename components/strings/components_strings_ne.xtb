@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="1617276713587758852">क्रसओभर गाडीहरू</translation>
 <translation id="1619007254056372606">डिभाइसमा रहेका साइट डेटा व्यवस्थापन गर्नुहोस्</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ले एउटा ट्याब हटाउनुभयो</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1622966923835127638">व्यवसाय तथा वित्तीय</translation>
 <translation id="1623104350909869708">यो पृष्ठलाई अतिरिक्त संवादहरू सिर्जना गर्नबाट रोक्नुहोस्</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल खोल्न पाइँदैन}other{एड्मिनले तोक्नुभएको नीतिअनुसार # वटा फाइल खोल्न पाइँदैन}}</translation>
 <translation id="1633941398432788136">कार्यक्रमको योजना</translation>
 <translation id="1634828734222219955">कुल</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> यो समूहमा सामेल हुनुभयो</translation>
 <translation id="163826442096818926">छोट्याइयोस्</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1640180200866533862">प्रयोगकर्ता नीतिहरू</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">सुरक्षाको सुनिश्चितताका लागि उक्त सङ्गठनले डिभाइसको OS, ब्राउजरको संस्करण र त्यसमा कुन कुन सफ्टवेयर इन्स्टल गरिएका छन् भन्ने कुरा पनि हेर्न सक्छ</translation>
 <translation id="2573170131138724450">टेलिभिजनहरू</translation>
 <translation id="257674075312929031">समूह</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ले एउटा ट्याब थप्नुभयो</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2587841377698384444">डाइरेक्ट्री API ID:</translation>
 <translation id="2594318783181750337">संक्षिप्त वेब भ्यू:</translation>
@@ -2400,6 +2403,7 @@
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5305716236436927587">विज्ञापन तथा मार्केटिङ</translation>
 <translation id="5306593769196050043">दुवै पाना</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ले समूहको रङ परिवर्तन गर्नुभयो</translation>
 <translation id="5307166000025436103">ठिक छ</translation>
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5308689395849655368">क्र्यास रिपोर्ट अक्षम छ।</translation>
@@ -2431,6 +2435,7 @@
 <translation id="5363309033720083897">तपाईंका एड्मिनले प्रयोग गर्ने अनुमति दिनुभएको सिरियल पोर्ट</translation>
 <translation id="5363532265530011914">मोजा तथा होजियरी</translation>
 <translation id="5371425731340848620">कार्ड अपडेट गर्नुहोस्</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ले एउटा ट्याब परिवर्तन गर्नुभयो</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"तपाईंको घडी ढिला छ" वा "तपाईंको घडी छिटो छ" अथवा "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">यो पासवर्ड आफ्ना सबै डिभाइसमा प्राप्त गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
@@ -2445,6 +2450,7 @@
 <translation id="5392506727170022660">मेटल (सेमी-ग्लस)</translation>
 <translation id="5394069166371280357">परिवार लक्षित टिभी सोहरू</translation>
 <translation id="5396631636586785122">दायाँ किनारमा स्टिच</translation>
+<translation id="5397794290049113714">तपाइँ</translation>
 <translation id="5398772614898833570">विज्ञापनहरूमाथि रोक लगाइयो</translation>
 <translation id="5400836586163650660">खरानी रङ्ग</translation>
 <translation id="5401344472773249513">सेलिब्रिटी तथा मनोरञ्जन समाचार</translation>
@@ -2720,7 +2726,7 @@
 <translation id="5918847752193018339">तपाईंको CVC सेभ भएपछि तपाईं द्रुत रूपमा चेक आउट गर्न सक्नुहुन्छ। <ph name="LINK_BEGIN" />सेभ गरिएका सेक्युरिटी कोडहरू मेटाउनुहोस्<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{१ प्रयोगमा छ}other{# प्रयोगमा छन्}}</translation>
-<translation id="5921185718311485855">सक्रिय छ</translation>
+<translation id="5921185718311485855">अन छ</translation>
 <translation id="5921639886840618607">कार्डलाई Google खातामा सुरक्षित गर्ने हो?</translation>
 <translation id="5921952831792678223">पिकअप ट्रकहरू</translation>
 <translation id="5922853866070715753">लगभग सकियो</translation>
@@ -2830,6 +2836,7 @@
 <translation id="6105460996796456817">साइट बनाउनुहोस्</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> को वेबपृष्ठ अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="6107012941649240045">लाई जारी गरिएको</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ले समूहको नाम परिवर्तन गर्नुभयो</translation>
 <translation id="6107924765192360631">लेखनसम्बन्धी सुझावहरू पाउन केही शब्द लेख्नुहोस् वा पहिलो ड्राफ्ट बनाउनुहोस्।</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> को तुलना गर्नुहोस्</translation>
 <translation id="6108580855199168381">प्रमाणपत्रसम्बन्धी विवरणहरू</translation>
@@ -3715,6 +3722,7 @@
 <translation id="7660456820368115565">अत्यन्तै धेरै मान्छेले एकसाथ खेल्न मिल्ने गेमहरू</translation>
 <translation id="7661591871037163355">तुलमा गर्ने तालिका भरिएको छ। नयाँ कोलम हाल्न कोलमहरू हटाउनुहोस्।</translation>
 <translation id="7662298039739062396">कुनै विस्तारले नियन्त्रित गरेको सेटिङ</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> समूहबाट बाहिरिनुभयो</translation>
 <translation id="7663736086183791259">प्रमाणपत्र <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">इन्कोग्निटो मोडमा अनुमति दिइँदैन</translation>
 <translation id="7667346355482952095">फिर्ता गरिएको नीतिको टोकन खाली छ वा हालको टोकनसँग मेल खाँदैन</translation>

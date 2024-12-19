@@ -100,6 +100,7 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="5339733443032484186">Eich tab diwethaf</translation>
 <translation id="5380159289133845234">Archifo tabiau dyblyg</translation>
 <translation id="5400836586163650660">Llwyd</translation>
+<translation id="5446043142172831860">Tynnu'r tab a gadael y grŵp</translation>
 <translation id="5490235265819901748">Mae'r grŵp tabiau wedi'i ehangu</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cau grŵp tabiau gydag <ph name="TABS_COUNT_ONE" /> tab, lliw <ph name="COLOR_NAME" />.}zero{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}two{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> dab, lliw <ph name="COLOR_NAME" />.}few{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}many{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}other{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}}</translation>

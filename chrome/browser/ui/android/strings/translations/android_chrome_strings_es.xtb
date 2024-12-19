@@ -146,10 +146,8 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> elementos sugeridos en la lista siguiente.</translation>
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Si se activa, usa y guarda los datos en tu cuenta de Google. Si se desactiva, los datos solo se guardan en este dispositivo.</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ha eliminado una pestaña</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 marcador y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}other{# marcadores y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
-<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> se ha unido al grupo</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás viendo una copia sin conexión de esta página del <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -349,7 +347,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2578337197553672982">Contenido de Google para mentes jóvenes</translation>
 <translation id="2579297619530305344">Contraseñas en todos tus dispositivos abierto a altura completa</translation>
 <translation id="2581165646603367611">Se borrarán las cookies, la caché y otros datos de los sitios que Chrome no considere importantes.</translation>
-<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ha añadido una pestaña</translation>
 <translation id="2587052924345400782">Hay una nueva versión disponible</translation>
 <translation id="2593272815202181319">Monoespaciado</translation>
 <translation id="2603212228005142861">Inicia sesión para gestionar tus preferencias</translation>
@@ -863,7 +860,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4912413785358399818">Mover pestaña</translation>
 <translation id="4913169188695071480">Dejar de actualizar</translation>
 <translation id="4918086044614829423">Aceptar</translation>
-<translation id="492284538114688557">Bajada de precio detectada</translation>
 <translation id="4925120120285606924">Captura de pantalla <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Tus contraseñas se exportarán y descargarán como un archivo de texto. Todos los usuarios y aplicaciones que tengan acceso a la carpeta de destino podrán ver tus contraseñas.</translation>
 <translation id="4926901776383726965">Puedes guardar imágenes y archivos para verlos sin conexión o compartirlos en otras aplicaciones</translation>
@@ -944,7 +940,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5301876394151419436">Has iniciado sesión como <ph name="EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="5304593522240415983">Este campo no puede estar vacío</translation>
 <translation id="5306014156308790439">Añadir a colección inhabilitado</translation>
-<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ha cambiado el color del grupo</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5310963254742922113">Contraseña utilizada.</translation>
 <translation id="5316947901395241499">Tu administrador ha desactivado la función de guardar contraseñas</translation>
@@ -956,12 +951,10 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="534580735623577507">No hay sitios en <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">La protección mejorada está activada</translation>
 <translation id="5364112109233799727">La URL de la página sobre la que estás enviando comentarios se enviará a Google y es posible que un equipo de personas la revise para mejorar esta función</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ha cambiado una pestaña</translation>
 <translation id="5375374982898812658">Perderás inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se eliminará de todos tus dispositivos</translation>
 <translation id="5375577065097716013">Buscar imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Salir del modo Incógnito</translation>
 <translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu cuenta de Google</translation>
-<translation id="5397794290049113714">Tú</translation>
 <translation id="539881862970320163">Contraseña segura sugerida. Teclado oculto.</translation>
 <translation id="5409881200985013443">¿Enviar el código <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) quiere que te unas a un grupo de pestañas. Cualquier persona que tenga el enlace puede editar todas las pestañas, así que únete con prudencia. El enlace caduca en 48 horas.</translation>
@@ -990,7 +983,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5515439363601853141">Desbloquea la pantalla para ver tu contraseña</translation>
 <translation id="5517095782334947753">Tienes marcadores, historial, contraseñas y otros ajustes de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Hoja inferior de actividad reciente</translation>
-<translation id="5524843473235508879">Redirección bloqueada.</translation>
 <translation id="5526281268548144413">No se puede cerrar en varias ventanas</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Hace # min}other{Hace # min}}</translation>
 <translation id="5548606607480005320">Comprobación de seguridad</translation>
@@ -1120,7 +1112,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="60923314841986378">Quedan <ph name="HOURS" /> horas</translation>
 <translation id="6095578583683628124">Si Google también es tu buscador predeterminado, verás mejores sugerencias relevantes según el contexto</translation>
 <translation id="610630277578876674">Abre enlaces de mensajes rápidamente y más</translation>
-<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ha cambiado el nombre del grupo</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
 <translation id="6112702117600201073">Actualizando página</translation>
 <translation id="6122831415929794347">¿Desactivar Navegación segura?</translation>
@@ -1233,7 +1224,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6565959834589222080">Se utiliza la red Wi‑Fi si está disponible</translation>
 <translation id="6569373978618239158">Ahora verás historias de <ph name="SITE_NAME" /> cuando abras una pestaña nueva. Los sitios que sigues se guardan en tu cuenta de Google. Puedes gestionarlos en los ajustes de Discover.</translation>
 <translation id="6570116402456758630">Resumen de la página</translation>
-<translation id="6573096386450695060">Permitir siempre</translation>
 <translation id="6573431926118603307">Las pestañas que hayas abierto en Chrome en otros dispositivos aparecerán aquí.</translation>
 <translation id="6583199322650523874">Añade la página actual a marcadores</translation>
 <translation id="6588043302623806746">Usar DNS seguro</translation>
@@ -1349,6 +1339,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6978717888677691380">Sitios que has bloqueado</translation>
 <translation id="6979737339423435258">Desde siempre</translation>
+<translation id="6983306615164277634">También puedes mantener pulsada la barra de direcciones para cambiar la posición.</translation>
 <translation id="6987047470128880212">El modo Incógnito no está disponible en este dispositivo</translation>
 <translation id="6991701761229081516">Tus contraseñas se descargarán como un archivo CSV. Todas las personas y aplicaciones que puedan acceder al archivo podrán ver tus contraseñas. Las contraseñas exportadas se eliminarán de Chrome.</translation>
 <translation id="6996145122199359148">Descargar esta página</translation>
@@ -1360,7 +1351,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7035701931849773472">Otras opciones</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054588988317389591">¿Obtener descripciones de imágenes?</translation>
-<translation id="7055152154916055070">Redirección bloqueada:</translation>
 <translation id="7057969023583258980">Abrir historial completo de Chrome</translation>
 <translation id="7063006564040364415">No se ha podido conectar con el servidor de sincronización.</translation>
 <translation id="7071521146534760487">Gestionar cuenta</translation>
@@ -1505,7 +1495,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7656721520530864426">No hay sitios</translation>
 <translation id="7656862631699126784">Activar el bloqueo de pestañas de incógnito</translation>
 <translation id="7658239707568436148">Cancelar</translation>
-<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ha abandonado el grupo</translation>
 <translation id="7663320421139257046">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> de este sitio.</translation>
 <translation id="7665369617277396874">Añadir cuenta</translation>
 <translation id="766587987807204883">Los artículos se muestran aquí y los puedes leer aunque no tengas conexión a Internet</translation>

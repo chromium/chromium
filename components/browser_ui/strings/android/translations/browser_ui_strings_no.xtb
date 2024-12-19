@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Koblet til en USB-enhet</translation>
 <translation id="4194328954146351878">Spør før nettsteder får lov til å se og endre informasjon på NFC-enheter (anbefales)</translation>
 <translation id="4200726100658658164">Åpne posisjonsinnstillingene</translation>
+<translation id="4213239715282467974">Nå deler Chrome nylige faner med enheten din. Du kan raskt få tilgang til dem på enhetens appliste og i søkeresultater. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="4226663524361240545">Varsler kan gjøre at enheten vibrerer</translation>
 <translation id="4259722352634471385">Nettadressen er blokkert: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tillatt</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Nettsteder blokkeres fra å be deg om å bruke informasjon de har lagret om deg</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 til)}other{(+ # til)}}</translation>
 <translation id="5403592356182871684">Navn</translation>
+<translation id="5408906274948600065">La Chrome dele de nylige fanene dine med enheten din, slik at du kan se dem på enhetens appliste og i søkeresultater. Du kan slå dette på eller av når som helst i Chrome-innstillingene.</translation>
 <translation id="5438097262470833822">Dette valget tilbakestiller tillatelser for <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Når dette er på, kan nettsteder be om posisjonen din. Når dette er av, kan ikke nettsteder se posisjonen din.</translation>
 <translation id="5489227211564503167">Medgått tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>

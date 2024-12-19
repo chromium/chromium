@@ -100,6 +100,7 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="5339733443032484186">Azken fitxa</translation>
 <translation id="5380159289133845234">Artxibatu fitxa bikoiztuak</translation>
 <translation id="5400836586163650660">Grisa</translation>
+<translation id="5446043142172831860">Kendu fitxa eta irten taldetik</translation>
 <translation id="5490235265819901748">Fitxa taldea zabalduta</translation>
 <translation id="5494920125229734069">Hautatu guztiak</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Itxi <ph name="TABS_COUNT_ONE" /> fitxa duen fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}other{Itxi <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}}</translation>

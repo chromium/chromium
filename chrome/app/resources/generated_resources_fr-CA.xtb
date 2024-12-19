@@ -1907,6 +1907,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Les touches suivantes ne sont pas prises en charge : Tabulation, Majuscule, Contrôle, Échap., Verrouillage des majuscules et Volume</translation>
 <translation id="2309620859903500144">L'accès à vos capteurs de mouvement et de luminosité a été bloqué pour ce site.</translation>
+<translation id="2310414604104802967">Vérification de votre état de connexion en cours…</translation>
 <translation id="2310923358723722542">Affichage et agrandissement</translation>
 <translation id="2312219318583366810">URL de la page</translation>
 <translation id="2314165183524574721">Le paramètre de visibilité actuelle est réglé à caché</translation>
@@ -2326,6 +2327,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2606568927909309675">Génère automatiquement des sous-titres pour les contenus audio et vidéo en anglais. L'audio et les sous-titres ne quittent jamais votre appareil.</translation>
 <translation id="2606890864830643943">Exportation des données de diagnostic en cours…</translation>
 <translation id="2607101320794533334">Information sur la clé publique du destinataire</translation>
+<translation id="2608837922830967145">Ne plus afficher ce message</translation>
 <translation id="2609896558069604090">Créer des raccourcis...</translation>
 <translation id="2609980095400624569">Impossible d'établir la connexion</translation>
 <translation id="2610157865375787051">Veille</translation>
@@ -4377,7 +4379,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4043267180218562935">Taille du curseur</translation>
 <translation id="4043620984511647481">Ajouter une imprimante manuellement</translation>
 <translation id="4044612648082411741">Entrez le mot de passe de votre certificat</translation>
-<translation id="4044708573046946214">Mots de passe de verrouillage d'écran</translation>
+<translation id="4044708573046946214">Mot de passe de verrouillage d'écran</translation>
 <translation id="4044883420905480380">Vous vous êtes connecté au Wi-Fi et à <ph name="USER_EMAIL" /> à l'aide de votre téléphone Android</translation>
 <translation id="404493185430269859">Moteur de recherche par défaut</translation>
 <translation id="4044964245574571633">Utilise l'espace de stockage Microsoft OneDrive</translation>
@@ -11254,6 +11256,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9007688236643268728">&amp;Se connecter à nouveau</translation>
 <translation id="9008201768610948239">OK</translation>
 <translation id="9008201858626224558">Bouton retour vers la page de détails de <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008425116680857079">Chrome peut modifier votre mot de passe une fois que vous êtes connecté.</translation>
 <translation id="9008828754342192581">Vous avez précédemment choisi d'autoriser toutes les extensions sur <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Téléversement en cours (<ph name="PROGRESS_PERCENT" /> %)...</translation>
 <translation id="9009707268312089299">Importés de Windows</translation>

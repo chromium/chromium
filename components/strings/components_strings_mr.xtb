@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
 <translation id="1617276713587758852">क्रॉसओव्हर</translation>
 <translation id="1619007254056372606">डिव्‍हाइसवरील साइट डेटा व्यवस्थापित करणे</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> यांनी टॅब काढून टाकला आहे</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1622966923835127638">व्यावसायिक अर्थव्यवहार</translation>
 <translation id="1623104350909869708">या पृष्ठास अतिरिक्त संवाद तयार करण्यापासून प्रतिबंधित करा</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ही फाइल उघडणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे}other{# फाइल उघडणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे}}</translation>
 <translation id="1633941398432788136">इव्हेंट प्लॅनिंग</translation>
 <translation id="1634828734222219955">एकूण</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> गटामध्ये सामील झाले आहेत</translation>
 <translation id="163826442096818926">लहान करा</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
 <translation id="1640180200866533862">वापरकर्ता धोरणे</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">सुरक्षा सुनिश्चित करण्यासाठी, ती डिव्हाइसची OS, ब्राउझरची आवृत्ती आणि कोणते सॉफ्टवेअर इंस्टॉल केले आहे हेदेखील पाहू शकते</translation>
 <translation id="2573170131138724450">टेलिव्‍हिजन</translation>
 <translation id="257674075312929031">गट</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> यांनी टॅब जोडला आहे</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2587841377698384444">शब्दकोश API आयडी:</translation>
 <translation id="2594318783181750337">जलद वेब दृश्य:</translation>
@@ -2401,6 +2404,7 @@
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5305716236436927587">जाहिरात आणि मार्केटिंग</translation>
 <translation id="5306593769196050043">दोन्ही पत्रके</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> यांनी गटाचा रंग बदलला आहे</translation>
 <translation id="5307166000025436103">ओके</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5308689395849655368">क्रॅश अहवाल बंद केला आहे.</translation>
@@ -2432,6 +2436,7 @@
 <translation id="5363309033720083897">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अनुमती दिलेला सिरीअल पोर्ट</translation>
 <translation id="5363532265530011914">मोजे आणि होजियरी</translation>
 <translation id="5371425731340848620">कार्ड अपडेट करा</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> यांनी टॅब बदलला आहे</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"तुमचे क्लॉक मागे पडले आहे" किंवा "तुमचे क्लॉक वेळेपेक्षा पुढे आहे" किंवा "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">हा पासवर्ड तुमच्या सर्व डिव्हाइसवर मिळवण्यासाठी, ते तुम्हीच असल्याची पडताळणी करा</translation>
@@ -2446,6 +2451,7 @@
 <translation id="5392506727170022660">मेटल (सेमी-ग्लॉस)</translation>
 <translation id="5394069166371280357">टीव्हीवरील कुटुंब अभिमुख शो</translation>
 <translation id="5396631636586785122">एज स्टिच राइट</translation>
+<translation id="5397794290049113714">तुम्ही</translation>
 <translation id="5398772614898833570">जाहिराती ब्लॉक केल्या</translation>
 <translation id="5400836586163650660">राखाडी</translation>
 <translation id="5401344472773249513">सेलिब्रिटी आणि मनोरंजनासंबंधित बातम्या</translation>
@@ -2831,6 +2837,7 @@
 <translation id="6105460996796456817">साइट तयार करा</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> वरील वेबपेज कदाचित तात्पुरते बंद आहे किंवा ते कदाचित कायमचे नवीन वेब पत्त्यावर हलवले आहे.</translation>
 <translation id="6107012941649240045">यांना जारी केलेले</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> यांनी गटाचे नाव बदलले आहे</translation>
 <translation id="6107924765192360631">लेखनाशी संबंधित सूचना मिळवण्यासाठी फक्त काही शब्दांनी किंवा पहिल्या मसुद्याने सुरुवात करा.</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> ची तुलना करा</translation>
 <translation id="6108580855199168381">सर्टिफिकेटचे तपशील</translation>
@@ -3718,6 +3725,7 @@
 <translation id="7660456820368115565">खूप मल्टीप्लेअर असलेले गेम</translation>
 <translation id="7661591871037163355">तुमची तुलना सारणी भरली आहे. नवीन स्तंभ जोडण्यासाठी स्तंभ काढून टाका.</translation>
 <translation id="7662298039739062396">सेटिंग एका एक्स्टेंशनद्वारे नियंत्रित केली आहेत</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> यांनी गट सोडला आहे</translation>
 <translation id="7663736086183791259">सर्टिफिकेट <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">गुप्त मोडमध्ये अनुमती नाही</translation>
 <translation id="7667346355482952095">परत केलेले धोरण टोकन रिक्त आहे किंवा वर्तमान टोकनशी जुळत नाही</translation>

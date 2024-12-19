@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் திரையைப் படமெடுப்பதை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
 <translation id="1617276713587758852">கிராஸ்ஓவர் வாகனங்கள்</translation>
 <translation id="1619007254056372606">சாதனத்தில் உள்ள தளத் தரவை நிர்வகித்தல்</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> பக்கத்தை அகற்றியுள்ளார்</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1622966923835127638">பிசினஸ் நிதி</translation>
 <translation id="1623104350909869708">கூடுதல் உரையாடல்களை உருவாக்குவதிலிருந்து இந்தப் பக்கத்தைத் தடு</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{இந்த ஃபைலைத் திறப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது}other{# ஃபைல்களைத் திறப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது}}</translation>
 <translation id="1633941398432788136">நிகழ்ச்சித் திட்டமிடல்</translation>
 <translation id="1634828734222219955">மொத்தம்</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> குழுவில் சேர்ந்துள்ளார்</translation>
 <translation id="163826442096818926">சுருக்கு</translation>
 <translation id="1639239467298939599">ஏற்றுகிறது</translation>
 <translation id="1640180200866533862">பயனர் கொள்கைகள்</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">பாதுகாப்பை உறுதிப்படுத்துவதில் உதவ சாதனத்தின் OS, உலாவியின் பதிப்பு, நிறுவப்பட்டுள்ள மென்பொருள் ஆகியவற்றையும் இதனால் பார்க்க முடியும்.</translation>
 <translation id="2573170131138724450">தொலைக்காட்சிகள்</translation>
 <translation id="257674075312929031">குழு</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> பக்கத்தைச் சேர்த்துள்ளார்</translation>
 <translation id="2586657967955657006">கிளிப்போர்டு</translation>
 <translation id="2587841377698384444">கோப்பக API ஐடி:</translation>
 <translation id="2594318783181750337">விரைவான இணையக் காட்சி:</translation>
@@ -1141,6 +1144,7 @@
 <translation id="306573536155379004">கேம் தொடங்கியது.</translation>
 <translation id="3067505415088964188">விலை குறைந்துள்ளது</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />க்கு உங்கள் ஃபைல் பதிவேற்றம் இன்னும் ஒரு நிமிடத்தில் தொடங்கும்</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} பொருள்}other{{ITEMS} பொருட்கள்}}</translation>
 <translation id="3076865167425975822">ஆப்ரேட்டிங் சிஸ்டங்கள்</translation>
 <translation id="3080254622891793721">கிராஃபிக்</translation>
 <translation id="3082007635241601060">பிரத்தியேகத் தள்ளுபடிகள் கிடைக்கும்போது அவற்றைத் தெரியப்படுத்த, உங்கள் கார்ட்டை Google பயன்படுத்த அனுமதியுங்கள்</translation>
@@ -2397,6 +2401,7 @@
 <translation id="5300589172476337783">காண்பி</translation>
 <translation id="5305716236436927587">விளம்பரப்படுத்தல் மற்றும் மார்க்கெட்டிங்</translation>
 <translation id="5306593769196050043">இரு தாள்கள்</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> குழுவின் வண்ணத்தை மாற்றியுள்ளார்</translation>
 <translation id="5307166000025436103">சரி</translation>
 <translation id="5308380583665731573">இணை</translation>
 <translation id="5308689395849655368">செயலிழப்பு புகாரளித்தல் முடக்கப்பட்டுள்ளது.</translation>
@@ -2428,6 +2433,7 @@
 <translation id="5363309033720083897">உங்கள் நிர்வாகி அனுமதித்துள்ள சீரியல் போர்ட்</translation>
 <translation id="5363532265530011914">சாக்ஸ் &amp; ஹோசியரி</translation>
 <translation id="5371425731340848620">கார்டை மாற்றவும்</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> பக்கத்தை மாற்றியுள்ளார்</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"நேரம் பின்தங்கியுள்ளது" அல்லது "நேரம் கூடுதலாக அமைக்கப்பட்டுள்ளது" அல்லது "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">இந்தக் கடவுச்சொல்லை உங்கள் சாதனங்கள் அனைத்திலும் பெற, இது நீங்கள்தான் என்பதை உறுதிப்படுத்தவும்</translation>
@@ -2442,6 +2448,7 @@
 <translation id="5392506727170022660">செமி க்ளாஸ்ஸி மெட்டல்</translation>
 <translation id="5394069166371280357">குடும்பங்களுக்கான டிவி ஷோக்கள்</translation>
 <translation id="5396631636586785122">எட்ஜ் ஸ்டிட்ச் ரைட்</translation>
+<translation id="5397794290049113714">நீங்கள்</translation>
 <translation id="5398772614898833570">விளம்பரங்கள் தடுக்கப்பட்டன</translation>
 <translation id="5400836586163650660">கிரே</translation>
 <translation id="5401344472773249513">பிரபலங்கள் &amp; பொழுதுபோக்குச் செய்திகள்</translation>
@@ -2827,7 +2834,9 @@
 <translation id="6105460996796456817">தளத்தை உருவாக்கு</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> இல் உள்ள இணையப்பக்கம் தற்காலிகமாக இயங்கவில்லை அல்லது புதிய வலை முகவரிக்கு நிரந்தரமாக நகர்த்தப்பட்டிருக்கலாம்.</translation>
 <translation id="6107012941649240045">வழங்கப்பட்டது</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> குழுவின் பெயரை மாற்றியுள்ளார்</translation>
 <translation id="6107924765192360631">எழுதுவதற்கான பரிந்துரைகளைப் பெற, சில வார்த்தைகளையோ முதல் வரைவையோ எழுதுங்கள்.</translation>
+<translation id="6108508372809181847"><ph name="TABLE_NAME" /> ஐ ஒப்பிடுதல்</translation>
 <translation id="6108580855199168381">சான்றிதழ் விவரங்கள்</translation>
 <translation id="6108702513636120202">Chromiumமில் உங்கள் தேடல் இன்ஜின்</translation>
 <translation id="6108849843016142864">ஊர்வன மற்றும் நீர்நில வாழ் உயிரினங்கள்</translation>
@@ -3711,6 +3720,7 @@
 <translation id="7660456820368115565">மிக அதிகமானோர் விளையாடும் கேம்கள்</translation>
 <translation id="7661591871037163355">ஒப்பீட்டு அட்டவணை நிரம்பிவிட்டது. புதிய நெடுவரிசைகளைச் சேர்க்க சில நெடுவரிசைகளை அகற்றவும்.</translation>
 <translation id="7662298039739062396">அமைப்பை நீட்டிப்பு கட்டுப்படுத்துகிறது</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> குழுவில் இருந்து வெளியேறிவிட்டார்</translation>
 <translation id="7663736086183791259">சான்றிதழ் (<ph name="CERTIFICATE_VALIDITY" />)</translation>
 <translation id="7666397036351755929">மறைநிலையில் அனுமதிக்கப்படாது</translation>
 <translation id="7667346355482952095">கிடைத்த பாலிசி டோக்கன் காலியாக உள்ளது அல்லது தற்போதைய டோக்கனுடன் பொருந்தவில்லை</translation>

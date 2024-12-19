@@ -146,10 +146,8 @@
 <translation id="1594635596540195766">Предложенных объектов в списке: <ph name="SUGGESTIONS_COUNT" /></translation>
 <translation id="1598163867407640634">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Когда параметр включен, данные можно использовать и сохранять в аккаунте Google. В противном случае данные хранятся только на этом устройстве.</translation>
-<translation id="1619648179761984213">Пользователь <ph name="USER_DISPLAY_NAME" /> удалил вкладку</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Удалить 1 выбранный объект}one{Удалить # выбранный объект}few{Удалить # выбранных объекта}many{Удалить # выбранных объектов}other{Удалить # выбранного объекта}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 закладка и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}one{# закладка и другие данные сохранены только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}few{# закладки и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}many{# закладок и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}other{# закладки и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}}</translation>
-<translation id="1637407510758033366">Пользователь <ph name="USER_DISPLAY_NAME" /> присоединился к группе</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="164269334534774161">Эта офлайн-копия страницы была создана <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">История</translation>
@@ -349,7 +347,6 @@
 <translation id="2578337197553672982">Контент Google для детей</translation>
 <translation id="2579297619530305344">Экран "Пароли на всех ваших устройствах" открыт полностью</translation>
 <translation id="2581165646603367611">Будет очищен кеш, а также удалены файлы cookie и другие данные, которые система сочтет маловажными.</translation>
-<translation id="258135245577667916">Пользователь <ph name="USER_DISPLAY_NAME" /> добавил вкладку</translation>
 <translation id="2587052924345400782">Доступна новая версия</translation>
 <translation id="2593272815202181319">Моноширинный</translation>
 <translation id="2603212228005142861">Войдите в аккаунт, чтобы задать настройки</translation>
@@ -863,7 +860,6 @@
 <translation id="4912413785358399818">Переместить вкладку</translation>
 <translation id="4913169188695071480">Остановить обновление</translation>
 <translation id="4918086044614829423">Принять</translation>
-<translation id="492284538114688557">Обнаружено снижение цены</translation>
 <translation id="4925120120285606924">Скриншот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ваши пароли будут экспортированы и скачаны в виде текстового файла. Они будут видны всем пользователям и приложениям с доступом к папке назначения.</translation>
 <translation id="4926901776383726965">Вы можете сохранять изображения и файлы, чтобы просматривать офлайн или предоставлять к ним доступ другим приложениям.</translation>
@@ -944,7 +940,6 @@
 <translation id="5301876394151419436">Вы вошли как <ph name="EMAIL" />. Синхронизацию можно в любой момент отключить в настройках. Google может использовать историю браузера для персонализации Поиска и других сервисов.</translation>
 <translation id="5304593522240415983">Это поле нужно заполнить</translation>
 <translation id="5306014156308790439">Кнопка "Добавить в подборку" отключена</translation>
-<translation id="5307109011461144709">Пользователь <ph name="USER_DISPLAY_NAME" /> изменил цвет группы</translation>
 <translation id="5308380583665731573">Подключение</translation>
 <translation id="5310963254742922113">Пароль использован.</translation>
 <translation id="5316947901395241499">Администратор запретил сохранять пароли.</translation>
@@ -956,12 +951,10 @@
 <translation id="534580735623577507">0 сайтов <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
 <translation id="5364112109233799727">URL страницы, о которой вы оставляете отзыв, будет отправлен в Google. Наши специалисты могут проверять URL, чтобы улучшать функцию.</translation>
-<translation id="537425196847960924">Пользователь <ph name="USER_DISPLAY_NAME" /> изменил вкладку</translation>
 <translation id="5375374982898812658">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна вам и будет удалена со всех ваших устройств.</translation>
 <translation id="5375577065097716013">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Отключение режима инкогнито</translation>
 <translation id="5395376160638294582">Обеспечьте доступ к данным Chrome в аккаунте Google.</translation>
-<translation id="5397794290049113714">Вы</translation>
 <translation id="539881862970320163">Предложен надежный пароль. Клавиатура скрыта.</translation>
 <translation id="5409881200985013443">Отправить код <ph name="ONE_TIME_CODE" /> на устройство "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) хочет управлять с вами группой вкладок. Обратите внимание, что любой, у кого есть ссылка, может изменять все вкладки. Она действительна 48 часов.</translation>
@@ -990,7 +983,6 @@
 <translation id="5515439363601853141">Чтобы увидеть пароль, разблокируйте экран</translation>
 <translation id="5517095782334947753">Вам доступны закладки, история, пароли и другие настройки из аккаунта <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Нижний экран недавних действий</translation>
-<translation id="5524843473235508879">Попытка переадресации заблокирована.</translation>
 <translation id="5526281268548144413">Невозможно закрыть вкладки, открытые в нескольких окнах</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# мин. назад}one{# мин. назад}few{# мин. назад}many{# мин. назад}other{# мин. назад}}</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
@@ -1120,7 +1112,6 @@
 <translation id="60923314841986378">Осталось <ph name="HOURS" /> ч.</translation>
 <translation id="6095578583683628124">Если в качестве поисковой системы по умолчанию вы выбрали Google, вы будете видеть более подходящие по контексту подсказки.</translation>
 <translation id="610630277578876674">Вы сможете быстро открывать ссылки из сообщений и делать многое другое.</translation>
-<translation id="6107864469867367783">Пользователь <ph name="USER_DISPLAY_NAME" /> изменил название группы</translation>
 <translation id="6108923351542677676">Настройка…</translation>
 <translation id="6112702117600201073">Обновление страницы</translation>
 <translation id="6122831415929794347">Отключить Безопасный просмотр?</translation>
@@ -1233,7 +1224,6 @@
 <translation id="6565959834589222080">Использовать сеть Wi-Fi, когда она доступна</translation>
 <translation id="6569373978618239158">Открыв новую вкладку, вы увидите статьи с сайта "<ph name="SITE_NAME" />". Сайты, на которые вы подписаны, сохранены в вашем аккаунте Google. Управлять ими можно в настройках рекомендаций.</translation>
 <translation id="6570116402456758630">Общая информация о странице</translation>
-<translation id="6573096386450695060">Разрешать всегда</translation>
 <translation id="6573431926118603307">Здесь появятся вкладки, открытые в Chrome на других устройствах.</translation>
 <translation id="6583199322650523874">Добавить страницу в закладки</translation>
 <translation id="6588043302623806746">Использовать безопасный DNS-сервер</translation>
@@ -1349,6 +1339,7 @@
 <translation id="6971862865055170158">Не разрешать</translation>
 <translation id="6978717888677691380">Заблокированные сайты</translation>
 <translation id="6979737339423435258">Все время</translation>
+<translation id="6983306615164277634">Чтобы изменить расположение адресной строки, также можно нажать и удерживать ее.</translation>
 <translation id="6987047470128880212">Режим инкогнито недоступен на этом устройстве.</translation>
 <translation id="6991701761229081516">Файл с паролями будет скачан в формате CSV. Все, у кого есть доступ к этому файлу, включая приложения, смогут просматривать пароли. Экспортированные пароли будут удалены из Chrome.</translation>
 <translation id="6996145122199359148">Скачать эту страницу</translation>
@@ -1360,7 +1351,6 @@
 <translation id="7035701931849773472">Другие варианты</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7054588988317389591">Генерировать описания изображений?</translation>
-<translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
 <translation id="7057969023583258980">Открыть всю историю Chrome</translation>
 <translation id="7063006564040364415">Не удалось связаться с сервером синхронизации</translation>
 <translation id="7071521146534760487">Настройки аккаунта</translation>
@@ -1505,7 +1495,6 @@
 <translation id="7656721520530864426">0 сайтов</translation>
 <translation id="7656862631699126784">Включить блокировку вкладок инкогнито</translation>
 <translation id="7658239707568436148">Отмена</translation>
-<translation id="7662911501613893058">Пользователь <ph name="USER_DISPLAY_NAME" /> покинул группу</translation>
 <translation id="7663320421139257046">Чтобы вы могли продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши <ph name="FIELDS_STRING" />. Ознакомьтесь с <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> сайта.</translation>
 <translation id="7665369617277396874">Добавить аккаунт</translation>
 <translation id="766587987807204883">Здесь появляются статьи, которые можно читать даже в офлайн-режиме.</translation>

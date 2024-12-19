@@ -211,6 +211,7 @@
 <translation id="4169549551965910670">Wedi'i gysylltu â dyfais USB</translation>
 <translation id="4194328954146351878">Gofyn cyn caniatáu i wefannau weld a newid gwybodaeth ar ddyfeisiau NFC (argymhellir)</translation>
 <translation id="4200726100658658164">Agor Gosodiadau Lleoliad</translation>
+<translation id="4213239715282467974">Mae Chrome bellach yn rhannu'ch tabiau diweddar â'ch dyfais. Gallwch gael mynediad atynt yn gyflym yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="4226663524361240545">Mae'n bosib y bydd hysbysiadau ddirgrynu’r ddyfais</translation>
 <translation id="4259722352634471385">Llywio wedi'i rwystro: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Caniateir</translation>
@@ -292,6 +293,7 @@
 <translation id="5389626883706033615">Mae gwefannau'n cael eu rhwystro rhag gofyn i chi ddefnyddio gwybodaeth y maent wedi'i chadw amdanoch chi</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 arall)}zero{(+ # arall)}two{(+ # arall)}few{(+ # arall)}many{(+ # arall)}other{(+ # arall)}}</translation>
 <translation id="5403592356182871684">Enwau</translation>
+<translation id="5408906274948600065">Gadewch i Chrome rannu'ch tabiau diweddar gyda'ch dyfais i'w gweld yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch droi hwn ymlaen neu ei ddiffodd unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="5438097262470833822">Bydd y dewis hwn yn ailosod caniatadau ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am eich lleoliad. Pan fydd wedi'i ddiffodd, ni all gwefannau weld eich lleoliad.</translation>
 <translation id="5489227211564503167">Mae <ph name="ELAPSED_TIME" /> o <ph name="TOTAL_TIME" /> wedi mynd heibio.</translation>

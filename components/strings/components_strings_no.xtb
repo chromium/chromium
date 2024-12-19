@@ -362,6 +362,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1615402009686901181">På grunn av en administratorregel er skjermbilder deaktivert når konfidensielt innhold er synlig</translation>
 <translation id="1617276713587758852">Crossover-biler</translation>
 <translation id="1619007254056372606">Administrer nettstedsdata på enheten</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> fjernet en fane</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Handel og finans</translation>
 <translation id="1623104350909869708">Hindre denne siden i å opprette flere dialogruter</translation>
@@ -369,6 +370,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1633137413609266904">{0,plural, =1{Åpning av denne filen er blokkert på grunn av en administratorregel}other{Åpning av # filer er blokkert på grunn av en administratorregel}}</translation>
 <translation id="1633941398432788136">Arrangementsplanlegging</translation>
 <translation id="1634828734222219955">Totalt</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ble med i gruppen</translation>
 <translation id="163826442096818926">Forkort</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1640180200866533862">Brukerretningslinjer</translation>
@@ -904,6 +906,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2571488850200220306">For å ivareta sikkerheten kan den også se enhetens OS, nettleserversjon og hvilken programvare som er installert</translation>
 <translation id="2573170131138724450">TV-er</translation>
 <translation id="257674075312929031">Gruppér</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> la til en fane</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
 <translation id="2587841377698384444">ID for katalog-API:</translation>
 <translation id="2594318783181750337">Rask nettvisning:</translation>
@@ -1141,6 +1144,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3068118691172921711">Opplastingen av filen din til <ph name="CLOUD_PROVIDER" /> starter om 1 minutt</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} vare}other{{ITEMS} varer}}</translation>
 <translation id="3076865167425975822">Operativsystemer</translation>
 <translation id="3080254622891793721">Grafikk</translation>
 <translation id="3082007635241601060">La Google bruke handlevognene dine for å finne personlig tilpassede rabatter hvis tilgjengelig</translation>
@@ -2401,6 +2405,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5305716236436927587">Annonsering og markedsføring</translation>
 <translation id="5306593769196050043">Begge arkene</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> endret gruppefargen</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Koble til</translation>
 <translation id="5308689395849655368">Rapportering av krasj er deaktivert.</translation>
@@ -2432,6 +2437,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5363309033720083897">Den serielle porten tillates av administratoren din</translation>
 <translation id="5363532265530011914">Sokker, tights og strømper</translation>
 <translation id="5371425731340848620">Oppdater kortet</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> endret en fane</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">«Klokken går for sent», «Klokken går for fort» eller «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
 <translation id="5379618281582508161">For å få dette passordet på alle enhetene dine, bekreft at det er deg</translation>
@@ -2446,6 +2452,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5392506727170022660">Metall (halvglans)</translation>
 <translation id="5394069166371280357">Familievennlige TV-programmer</translation>
 <translation id="5396631636586785122">Kantstifting høyre</translation>
+<translation id="5397794290049113714">Deg</translation>
 <translation id="5398772614898833570">Annonser er blokkert</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5401344472773249513">Kjendis- og underholdningsnyheter</translation>
@@ -2831,7 +2838,9 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6105460996796456817">Opprett nettsted</translation>
 <translation id="6106989379647458772">Det kan hende at nettsiden på <ph name="PAGE" /> er midlertidig nede eller flyttet permanent til en ny nettadresse.</translation>
 <translation id="6107012941649240045">Utstedt til</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> endret gruppenavnet</translation>
 <translation id="6107924765192360631">Bare begynn med noen ord eller et førsteutkast for å få skriveforslag.</translation>
+<translation id="6108508372809181847">Sammenlign <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Sertifikatdetaljer</translation>
 <translation id="6108702513636120202">Søkemotoren din i Chromium</translation>
 <translation id="6108849843016142864">Reptiler og amfibier</translation>
@@ -3715,6 +3724,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7660456820368115565">MMO-spill</translation>
 <translation id="7661591871037163355">Sammenligningstabellen er full. Fjern kolonner for å legge til nye.</translation>
 <translation id="7662298039739062396">Innstillingen kontrolleres av en utvidelse</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> forlot gruppen</translation>
 <translation id="7663736086183791259">Sertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Ikke tillatt i Inkognito</translation>
 <translation id="7667346355482952095">Det returnerte regeltokenet er tomt eller samsvarer ikke med det nåværende tokenet</translation>

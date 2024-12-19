@@ -362,6 +362,7 @@
 <translation id="1615402009686901181">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገፅ ማንሳትን ያሰናክላል</translation>
 <translation id="1617276713587758852">ክሮስኦቨሮች</translation>
 <translation id="1619007254056372606">በመሣሪያ ላይ የጣቢያ ውሂብን ያስተዳድሩ</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ይህን ትር አስወግደዋል</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="1622966923835127638">የንግድ ፋይናንስ</translation>
 <translation id="1623104350909869708">ይህ ገፅ ተጨማሪ መገናኛዎችን እንዳይፈጥር አግድ</translation>
@@ -369,6 +370,7 @@
 <translation id="1633137413609266904">{0,plural, =1{ይህን ፋይል መክፈት በአስተዳዳሪ መመሪያ ታግዷል}one{# ፋይልን መክፈት በአስተዳዳሪ መመሪያ ታግዷል}other{# ፋይሎችን መክፈት በአስተዳዳሪ መመሪያ ታግዷል}}</translation>
 <translation id="1633941398432788136">ክስተት አዘጋጅ</translation>
 <translation id="1634828734222219955">ጠቅላላ</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ቡድኑን ተቀላቅለዋል</translation>
 <translation id="163826442096818926">ማሳጠር</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
 <translation id="1640180200866533862">የተጠቃሚ መምሪያዎች</translation>
@@ -904,6 +906,7 @@
 <translation id="2571488850200220306">ደህንነትን ለማረጋገጥ እንዲያግዝ የመሣሪያውን ሥርዓተ ክወና፣ የአሳሽ ሥሪት እና ምን ሶፍትዌር እንደተጫነ ማየት ይችላል</translation>
 <translation id="2573170131138724450">ቴሌቪዥኖች</translation>
 <translation id="257674075312929031">ቡድን</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ትር አክለዋል</translation>
 <translation id="2586657967955657006">የቅንጥብ ሰሌዳ</translation>
 <translation id="2587841377698384444">የማውጫ የኤፒአይ መታወቂያ፦</translation>
 <translation id="2594318783181750337">ፈጣን የድር ዕይታ፦</translation>
@@ -2401,6 +2404,7 @@
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5305716236436927587">ማስታወቂያ እና የገበያ ስራ</translation>
 <translation id="5306593769196050043">ሁለቱም ሉሆች</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> የቡድን ቀለሙን ለውጠዋል</translation>
 <translation id="5307166000025436103">እሺ</translation>
 <translation id="5308380583665731573">ይገናኙ</translation>
 <translation id="5308689395849655368">የብልሽት ሪፖርት ማድረግ ተሰናክሏል።</translation>
@@ -2432,6 +2436,7 @@
 <translation id="5363309033720083897">በአስተዳዳሪዎ የተፈቀደ ተከታታይ ወደብ</translation>
 <translation id="5363532265530011914">ካልሲዎች እና ረዥም ካልሲዎች</translation>
 <translation id="5371425731340848620">ካርድ ያዘምኑ</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ትር ለውጠዋል</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">«የእርስዎ ሰዓት ቀርቷል» ወይም «የእርስዎ ሰዓት ቀድሟል» ወይም «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
 <translation id="5379618281582508161">ይህን የይለፍ ቃል በሁሉም መሣሪያዎችዎ ላይ ለመግኘት እርስዎ መሆንዎን ያረጋግጡ</translation>
@@ -2446,6 +2451,7 @@
 <translation id="5392506727170022660">ብረት (በግማሽ አንጸባራቂ)</translation>
 <translation id="5394069166371280357">የቲቪ ቤተሰብ-ተኮር ትርዒቶች</translation>
 <translation id="5396631636586785122">ቀኝ ጫፍን ስፋ</translation>
+<translation id="5397794290049113714">እርስዎ</translation>
 <translation id="5398772614898833570">ማስታወቂያዎች ታግደዋል</translation>
 <translation id="5400836586163650660">ግራጫ</translation>
 <translation id="5401344472773249513">ዝነኛዎች እና የመዝናኛ ዜና</translation>
@@ -2831,6 +2837,7 @@
 <translation id="6105460996796456817">ጣቢያን ፍጠር</translation>
 <translation id="6106989379647458772">በ<ph name="PAGE" /> ላይ ያለው ድረ-ገፅ ለጊዜው ተበላሽቶ ሊሆን ይችላል ወይም በቋሚነት ወደ አዲስ የድር አድራሻ ተንቀሳቅሶ ሊሆን ይችላል።</translation>
 <translation id="6107012941649240045">ለእዚህ ቀርቧል</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> የቡድኑን ስም ለውጠዋል</translation>
 <translation id="6107924765192360631">የጽሑፍ ጥቆማዎችን ለማግኘት በጥቂት ቃላት ወይም በመጀመሪያ ረቂቅ ይጀምሩ።</translation>
 <translation id="6108508372809181847"><ph name="TABLE_NAME" /> ያነጻጽሩ</translation>
 <translation id="6108580855199168381">የዕውቅና ማረጋገጫ ዝርዝሮች</translation>
@@ -3717,6 +3724,7 @@
 <translation id="7660456820368115565">ግዙፍ ባለብዙ-ተጫዋች ጨዋታዎች</translation>
 <translation id="7661591871037163355">የንጽጽር ሰንጠረዥዎ ሙሉ ነው። አዳዲሶችን ለማከል ዓምዶችን ያስወግዱ።</translation>
 <translation id="7662298039739062396">ቅንብር በቅጥያ ቁጥጥር ይደረግበታል</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ቡድኑን ለቅቀው ወጥተዋል</translation>
 <translation id="7663736086183791259">የእውቅና ማረጋገጫ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ማንነት በማያሳውቅ ውስጥ አይፈቀድም</translation>
 <translation id="7667346355482952095">የተመለሰው የመመሪያ ማስመሰያ ባዶ ነው ወይም ከአሁኑ ማስመሰያ ጋር አይዛመድም</translation>
