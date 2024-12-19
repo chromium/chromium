@@ -157,7 +157,10 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
       dismiss_callback_(std::move(toast_data.dismiss_callback)) {
   // The provided callback is stored in the overlay's `dismiss_callback_`.
   overlay_view_ = std::make_unique<SystemToastView>(
-      toast_data.text, toast_data.dismiss_text, /*dismiss_callback=*/
+      toast_data.text,
+      dismiss_text_.empty() ? SystemToastView::ButtonType::kNone
+                            : SystemToastView::ButtonType::kTextButton,
+      dismiss_text_, /*button_icon=*/&gfx::kNoneIcon, /*button_callback=*/
       base::BindRepeating(
           &ToastOverlay::OnButtonClicked,
           // Unretained is safe because `this` owns `overlay_view_`.
