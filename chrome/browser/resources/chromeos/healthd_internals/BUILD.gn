@@ -25,6 +25,7 @@ build_webui("build") {
     "view/line_chart/line_chart.ts",
     "view/line_chart/menu.ts",
     "view/line_chart/scrollbar.ts",
+    "view/pages/info.ts",
     "view/pages/process.ts",
     "view/pages/system_trend.ts",
     "view/pages/telemetry.ts",

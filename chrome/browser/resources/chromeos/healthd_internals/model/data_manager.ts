@@ -7,6 +7,7 @@ import {sendWithPromise} from '//resources/js/cr.js';
 
 import type {SystemTrendController} from '../controller/system_trend_controller.js';
 import type {CrosSystemResult, HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiMemoryResult, HealthdApiTelemetryResult, HealthdApiThermalResult, SystemZramInfo} from '../utils/externs.js';
+import type {HealthdInternalsInfoElement} from '../view/pages/info.js';
 import type {HealthdInternalsTelemetryElement} from '../view/pages/telemetry.js';
 
 import {CpuUsageHelper} from './cpu_usage_helper.js';
@@ -52,11 +53,12 @@ function sortThermals(
  */
 export class DataManager {
   constructor(
-      dataRetentionDuration: number,
+      dataRetentionDuration: number, infoPage: HealthdInternalsInfoElement,
       telemetryPage: HealthdInternalsTelemetryElement,
       systemTrendController: SystemTrendController) {
     this.dataRetentionDuration = dataRetentionDuration;
 
+    this.infoPage = infoPage;
     this.telemetryPage = telemetryPage;
     this.systemTrendController = systemTrendController;
 
@@ -84,6 +86,7 @@ export class DataManager {
   private thermalDataSeries: DataSeries[] = [];
 
   // Set in constructor.
+  private readonly infoPage: HealthdInternalsInfoElement;
   private readonly telemetryPage: HealthdInternalsTelemetryElement;
   private readonly systemTrendController: SystemTrendController;
 
@@ -138,6 +141,7 @@ export class DataManager {
   private handleHealthdTelemetryInfo(data: HealthdApiTelemetryResult) {
     data.thermals.sort(sortThermals);
 
+    this.infoPage.updateTelemetryData(data);
     this.telemetryPage.updateTelemetryData(data);
 
     const timestamp: number = Date.now();
@@ -151,6 +155,7 @@ export class DataManager {
     const cpuUsage = this.cpuUsageHelper.getCpuUsage(data.cpu);
     if (cpuUsage !== null) {
       this.updateCpuUsageData(cpuUsage, timestamp);
+      this.infoPage.updateCpuUsageData(cpuUsage);
       this.telemetryPage.updateCpuUsageData(cpuUsage);
     }
 
@@ -161,6 +166,7 @@ export class DataManager {
     const timestamp: number = Date.now();
     if (data.zram !== undefined) {
       this.updateZramData(data.zram, timestamp);
+      this.infoPage.updateZramData(data.zram);
       this.telemetryPage.updateZramData(data.zram);
     }
     this.removeOutdatedData(timestamp);
