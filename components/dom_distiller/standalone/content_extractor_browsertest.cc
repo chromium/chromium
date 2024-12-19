@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <memory>
 #include <sstream>
 #include <unordered_map>
@@ -16,7 +17,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
+#include "components/dom_distiller/content/browser/test/test_util.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller.h"
@@ -44,7 +45,6 @@
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
-#include "ui/base/resource/resource_bundle.h"
 
 using content::ContentBrowserTest;
 
@@ -167,16 +167,6 @@ std::unique_ptr<DomDistillerService> CreateDomDistillerService(
       std::move(distiller_factory), std::move(distiller_page_factory),
       std::make_unique<DistilledPagePrefs>(pref_service),
       /* distiller_ui_handle */ nullptr);
-}
-
-void AddComponentsTestResources() {
-  base::FilePath pak_file;
-  base::FilePath pak_dir;
-  base::PathService::Get(base::DIR_ASSETS, &pak_dir);
-  pak_file =
-      pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_file, ui::kScaleFactorNone);
 }
 
 bool WriteProtobufWithSize(
@@ -323,7 +313,7 @@ class ContentExtractor : public ContentBrowserTest {
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableDnsSwitch)) {
       EnableDNSLookupForThisTest();
     }
-    AddComponentsTestResources();
+    AddComponentsResources();
   }
 
   void TearDownOnMainThread() override { DisableDNSLookupForThisTest(); }
