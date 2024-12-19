@@ -107,9 +107,9 @@ const char* kUrlAllowlist[] = {
     "https://translation.googleapis.com/language/translate/v2"};
 
 bool IsDVSPlaybackUrl(const std::string& url) {
-  return base::MatchPattern(url,
-                            "https://staging-workspacevideo-pa.googleapis.com/"
-                            "v1/drive/media/*/playback");
+  return base::MatchPattern(
+      url,
+      "https://workspacevideo-pa.googleapis.com/v1/drive/media/*/playback");
 }
 
 // Return true if the url matches the allowed URL prefix.
