@@ -132,6 +132,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
+  void FetchTokenAuthURL(id<SystemIdentity> identity,
+                         NSURL* target_url,
+                         AuthenticatedURLCallback callback) final;
 
  private:
   // Returns a weak pointer to the current instance.
