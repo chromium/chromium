@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -75,14 +76,18 @@ SkColor GetProfileHighlightColor(Profile* profile) {
 base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
   base::Value::Dict account_info_value;
   std::string_view avatar_badge = "";
+  std::string avatar_badge_alt_text = "";
   if (IsManaged(info)) {
     avatar_badge = kEnterprizeBadgeSource;
   } else if (IsSupervisedUser(info.capabilities) &&
              base::FeatureList::IsEnabled(
                  supervised_user::kShowKiteForSupervisedUsers)) {
     avatar_badge = kSupervisedBadgeSource;
+    avatar_badge_alt_text =
+        l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
   }
   account_info_value.Set("avatarBadge", avatar_badge);
+  account_info_value.Set("userBadgeAltText", avatar_badge_alt_text);
   account_info_value.Set("pictureUrl", signin::GetAccountPictureUrl(info));
   return account_info_value;
 }

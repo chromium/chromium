@@ -13,6 +13,9 @@ export interface AccountInfo {
   pictureUrl: string;
   // Empty if no badge should be set (for non-managed users).
   avatarBadge: string;
+  // Empty for non-managed users. Used to convey information about the shown
+  // badge.
+  userBadgeAltText: string;
 }
 
 export interface InterceptionParameters {

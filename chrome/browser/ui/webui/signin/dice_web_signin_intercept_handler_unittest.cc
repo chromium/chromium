@@ -61,6 +61,7 @@ struct TestParam {
   WebSigninInterceptor::SigninInterceptionType interception_type;
   policy::EnterpriseManagementAuthority management_authority;
   ExpectedStringGenerator expected_strings;
+  signin::Tribool is_supervised = signin::Tribool::kUnknown;
 };
 
 AccountInfo CreateAccount(std::string gaia_id,
@@ -94,115 +95,118 @@ AccountInfo intercepted_account = CreateAccount(
 // Permutations of supported bubbles.
 const TestParam kTestParams[] = {
     {
-        WebSigninInterceptor::SigninInterceptionType::kMultiUser,
-        policy::EnterpriseManagementAuthority::NONE,
-        /*expected_strings=*/base::BindRepeating([] {
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        .management_authority = policy::EnterpriseManagementAuthority::NONE,
+        .expected_strings = base::BindRepeating([] {
           return BubbleStrings{
-              /*header_text=*/"",
-              /*body_title=*/
-              l10n_util::GetStringUTF8(
+              .header_text = "",
+              .body_title = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
-              /*body_text=*/
-              l10n_util::GetStringFUTF8(
+              .body_text = l10n_util::GetStringFUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
                   base::UTF8ToUTF16(primary_account.given_name)),
-              /*confirm_button_label=*/
-              l10n_util::GetStringUTF8(
+              .confirm_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
-              /*cancel_button_label=*/
-              l10n_util::GetStringUTF8(
+              .cancel_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
           };
         }),
     },
     {
-        WebSigninInterceptor::SigninInterceptionType::kMultiUser,
-        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
-        /*expected_strings=*/base::BindRepeating([] {
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        .management_authority =
+            policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
+        .expected_strings = base::BindRepeating([] {
           return BubbleStrings{
-              /*header_text=*/"",
-              /*body_title=*/
-              l10n_util::GetStringUTF8(
+              .header_text = "",
+              .body_title = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
-              /*body_text=*/
-              l10n_util::GetStringFUTF8(
+              .body_text = l10n_util::GetStringFUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE,
                   base::UTF8ToUTF16(primary_account.given_name),
                   base::UTF8ToUTF16(intercepted_account.email)),
-              /*confirm_button_label=*/
-              l10n_util::GetStringUTF8(
+              .confirm_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
-              /*cancel_button_label=*/
-              l10n_util::GetStringUTF8(
+              .cancel_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
           };
         }),
     },
     {
-        WebSigninInterceptor::SigninInterceptionType::kEnterprise,
-        policy::EnterpriseManagementAuthority::NONE,
-        /*expected_strings=*/base::BindRepeating([] {
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kEnterprise,
+        .management_authority = policy::EnterpriseManagementAuthority::NONE,
+        .expected_strings = base::BindRepeating([] {
           return BubbleStrings{
-              /*header_text=*/"",
-              /*body_title=*/
-              l10n_util::GetStringUTF8(
+              .header_text = "",
+              .body_title = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
-              /*body_text=*/
-              l10n_util::GetStringFUTF8(
+              .body_text = l10n_util::GetStringFUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC,
                   base::UTF8ToUTF16(primary_account.email)),
-              /*confirm_button_label=*/
-              l10n_util::GetStringUTF8(
+              .confirm_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
-              /*cancel_button_label=*/
-              l10n_util::GetStringUTF8(
+              .cancel_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
           };
         }),
     },
+    {.interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kEnterprise,
+     .management_authority =
+         policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
+     .expected_strings = base::BindRepeating([] {
+       return BubbleStrings{
+           .header_text = "",
+           .body_title = l10n_util::GetStringUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
+           .body_text = l10n_util::GetStringFUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE,
+               base::UTF8ToUTF16(intercepted_account.email)),
+           .confirm_button_label = l10n_util::GetStringUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
+           .cancel_button_label = l10n_util::GetStringUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
+       };
+     }),
+     .is_supervised = signin::Tribool::kFalse},
     {
-        WebSigninInterceptor::SigninInterceptionType::kEnterprise,
-        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
-        /*expected_strings=*/base::BindRepeating([] {
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+        .management_authority = policy::EnterpriseManagementAuthority::NONE,
+        .expected_strings = base::BindRepeating([] {
           return BubbleStrings{
-              /*header_text=*/"",
-              /*body_title=*/
-              l10n_util::GetStringUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
-              /*body_text=*/
-              l10n_util::GetStringFUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE,
-                  base::UTF8ToUTF16(intercepted_account.email)),
-              /*confirm_button_label=*/
-              l10n_util::GetStringUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
-              /*cancel_button_label=*/
-              l10n_util::GetStringUTF8(
-                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
-          };
-        }),
-    },
-    {
-        WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-        policy::EnterpriseManagementAuthority::NONE,
-        /*expected_strings=*/base::BindRepeating([] {
-          return BubbleStrings{
-              /*header_text=*/intercepted_account.given_name,
-              /*body_title=*/
-              l10n_util::GetStringUTF8(
+              .header_text = intercepted_account.given_name,
+              .body_title = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE),
-              /*body_text=*/
-              l10n_util::GetStringUTF8(
+              .body_text = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC),
-              /*confirm_button_label=*/
-              l10n_util::GetStringUTF8(
+              .confirm_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL),
-              /*cancel_button_label=*/
-              l10n_util::GetStringUTF8(
+              .cancel_button_label = l10n_util::GetStringUTF8(
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL),
           };
         }),
     },
+    {.interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+     .management_authority = policy::EnterpriseManagementAuthority::NONE,
+     .expected_strings = base::BindRepeating([] {
+       return BubbleStrings{
+           .header_text = intercepted_account.given_name,
+           .body_title = l10n_util::GetStringUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE),
+           .body_text = l10n_util::GetStringUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC),
+           .confirm_button_label = l10n_util::GetStringUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL),
+           .cancel_button_label = l10n_util::GetStringUTF8(
+               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL),
+       };
+     }),
+     .is_supervised = signin::Tribool::kTrue},
 };
 
 }  // namespace
@@ -266,7 +270,20 @@ class DiceWebSigninInterceptHandlerTest
  public:
   DiceWebSigninInterceptHandlerTest() {
     feature_list_.InitWithFeatures(
-        {}, {switches::kExplicitBrowserSigninUIOnDesktop});
+        /*enabled_features=*/{supervised_user::kShowKiteForSupervisedUsers},
+        /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop});
+
+    AccountCapabilitiesTestMutator mutator(&intercepted_account.capabilities);
+    switch (GetParam().is_supervised) {
+      case signin::Tribool::kTrue:
+        mutator.set_is_subject_to_parental_controls(true);
+        break;
+      case signin::Tribool::kFalse:
+        mutator.set_is_subject_to_parental_controls(false);
+        break;
+      default:
+        break;
+    }
   }
 
  protected:
@@ -280,6 +297,19 @@ class DiceWebSigninInterceptHandlerTest
               expected_strings.confirm_button_label);
     EXPECT_EQ(*parameters.FindString("cancelButtonLabel"),
               expected_strings.cancel_button_label);
+
+    std::string avatar_badge_alt_text;
+    bool is_supervised = GetParam().is_supervised == signin::Tribool::kTrue;
+    if (is_supervised) {
+      avatar_badge_alt_text =
+          l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
+    }
+    EXPECT_EQ(*parameters.FindDict("interceptedAccount")
+                   ->FindString("userBadgeAltText"),
+              avatar_badge_alt_text);
+    EXPECT_EQ(is_supervised, !parameters.FindDict("interceptedAccount")
+                                  ->FindString("avatarBadge")
+                                  ->empty());
   }
 
   // DiceWebSigninInterceptHandlerTestBase override:
@@ -318,12 +348,15 @@ class DiceWebSigninInterceptHandlerChromeSigninInterceptionTest
   DiceWebSigninInterceptHandlerChromeSigninInterceptionTest() {
     CHECK(interception_type() ==
           WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+    const std::vector<base::test::FeatureRef> supervision_features = {
+        supervised_user::kCustomProfileStringsForSupervisedUsers,
+        supervised_user::kShowKiteForSupervisedUsers};
     if (IsSupervisedUsersUiFeatureEnabled()) {
-      feature_list_.InitWithFeatures(
-          {supervised_user::kCustomProfileStringsForSupervisedUsers}, {});
+      feature_list_.InitWithFeatures(/*enabled_features=*/supervision_features,
+                                     /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {supervised_user::kCustomProfileStringsForSupervisedUsers});
+          /*enabled_features=*/{}, /*disabled_features=*/supervision_features);
     }
 
     AccountCapabilitiesTestMutator mutator(&intercepted_account.capabilities);
@@ -344,16 +377,23 @@ class DiceWebSigninInterceptHandlerChromeSigninInterceptionTest
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE);
     std::string subtitle = l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
+    std::string avatar_badge_alt_text;
+    bool has_badge = false;
     if (IsSupervisedUsersUiFeatureEnabled() &&
         IsSupervisedUser() == signin::Tribool::kTrue) {
       title = l10n_util::GetStringUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED);
       subtitle = l10n_util::GetStringUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
+      avatar_badge_alt_text =
+          l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
+      has_badge = true;
     }
-
     EXPECT_EQ(*parameters.FindString("title"), title);
     EXPECT_EQ(*parameters.FindString("subtitle"), subtitle);
+    EXPECT_EQ(*parameters.FindString("userBadgeAltText"),
+              avatar_badge_alt_text);
+    EXPECT_EQ(parameters.FindString("managedUserBadge")->empty(), !has_badge);
   }
 
  protected:
