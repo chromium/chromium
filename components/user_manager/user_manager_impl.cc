@@ -49,8 +49,6 @@
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace user_manager {
@@ -83,12 +81,6 @@ UserType GetStoredUserType(const base::Value::Dict& prefs_user_types,
     return UserType::kRegular;
   }
   return static_cast<UserType>(int_user_type);
-}
-
-std::unique_ptr<UserImage> CreateStubImage() {
-  return std::make_unique<user_manager::UserImage>(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_LOGIN_DEFAULT_USER));
 }
 
 bool IsDeviceLocalAccountChanged(
@@ -1460,8 +1452,6 @@ User* UserManagerImpl::FindUserInListAndModify(const AccountId& account_id) {
 void UserManagerImpl::GuestUserLoggedIn() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* user = User::CreateGuestUser(GuestAccountId());
-  user->SetStubImage(CreateStubImage(), UserImage::Type::kInvalid,
-                     /*is_loading=*/false);
   user_storage_.emplace_back(user);
   active_user_ = user;
 }
@@ -1532,9 +1522,6 @@ void UserManagerImpl::PublicAccountUserLoggedIn(user_manager::User* user) {
 
 void UserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  user->SetStubImage(CreateStubImage(), UserImage::Type::kInvalid,
-                     /*is_loading=*/false);
   active_user_ = user;
 }
 

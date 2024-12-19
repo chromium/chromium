@@ -9,6 +9,8 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -69,6 +71,13 @@ std::unique_ptr<UserImage> UserImage::CreateAndEncode(
     return result;
   }
   return std::make_unique<UserImage>(image);
+}
+
+// static
+std::unique_ptr<UserImage> UserImage::CreateStub() {
+  return std::make_unique<user_manager::UserImage>(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_LOGIN_DEFAULT_USER));
 }
 
 // static
