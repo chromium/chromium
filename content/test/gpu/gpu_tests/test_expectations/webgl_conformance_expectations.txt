@@ -9,7 +9,7 @@
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
-#             android-pixel-6 android-shield-android-tv android-sm-a135m
+#             android-pixel-6 android-shield-android-tv android-sm-a137f
 #             android-sm-a235m android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
@@ -285,14 +285,14 @@ crbug.com/1136205 [ fuchsia ] conformance/textures/misc/video-rotation.html [ Sk
 [ android ] conformance/rendering/multisample-corruption.html [ Skip ]
 
 # Extensions not available on Samsung A13s
-crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_EXT_color_buffer_half_float [ Skip ]
-crbug.com/1372155 [ android android-sm-a135m arm ] WebglExtension_EXT_shader_texture_lod [ Skip ]
-crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_float [ Skip ]
-crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_float_linear [ Skip ]
-crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_half_float [ Skip ]
-crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_half_float_linear [ Skip ]
-crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_WEBGL_color_buffer_float [ Skip ]
-crbug.com/1372155 [ android android-sm-a135m arm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
+crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_EXT_color_buffer_half_float [ Skip ]
+crbug.com/1372155 [ android android-sm-a137f arm ] WebglExtension_EXT_shader_texture_lod [ Skip ]
+crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_OES_texture_float [ Skip ]
+crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_OES_texture_float_linear [ Skip ]
+crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_OES_texture_half_float [ Skip ]
+crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_OES_texture_half_float_linear [ Skip ]
+crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_WEBGL_color_buffer_float [ Skip ]
+crbug.com/1372155 [ android android-sm-a137f arm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -631,6 +631,11 @@ crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] confo
 
 ## Samsung failures ##
 
+crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
+crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
+crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
@@ -656,8 +661,6 @@ crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan
 crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-
-## Moto G Power 5G failures ##
 
 
 ############
