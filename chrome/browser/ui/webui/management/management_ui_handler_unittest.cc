@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
@@ -60,7 +59,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -86,6 +85,7 @@
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -114,25 +114,16 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/chromeos/devicetype_utils.h"
 #else
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "services/network/test/test_network_connection_tracker.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "components/device_signals/core/browser/mock_user_permission_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
-#else
-#include "chrome/browser/ui/webui/management/management_ui_handler.h"
-#endif
 
 using testing::_;
 using testing::AnyNumber;
@@ -147,23 +138,22 @@ struct ContextualManagementSourceUpdate {
   std::u16string extension_reporting_subtitle;
   std::u16string managed_websites_title;
   std::u16string subtitle;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::u16string management_overview;
   std::u16string update_required_eol;
   bool show_monitored_network_privacy_disclosure;
 #else
   std::u16string browser_management_notice;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   bool managed;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 const char kUser[] = "user@domain.com";
 const char kGaiaId[] = "gaia_id";
 }  // namespace
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 // This class is just to mock the behaviour of the few flags we need for
 // simulating the behaviour of the policy::DeviceStatusCollector.
 // The expected flags are passed to the constructor.
@@ -232,9 +222,7 @@ class TestDeviceCloudPolicyManagerAsh
  private:
   policy::FakeStartCrdSessionJobDelegate crd_delegate_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 using ManagementUIHandlerBase = ManagementUIHandlerChromeOS;
 #else
 using ManagementUIHandlerBase = ManagementUIHandler;
@@ -289,7 +277,7 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::u16string GetFilesUploadToCloudInfo(Profile* profile) {
     return ManagementUIHandlerBase::GetFilesUploadToCloudInfo(profile);
   }
@@ -312,7 +300,7 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
         local_state, user, /*is_profile_managed=*/true);
   }
   void DestroySecureDnsManagerForTesting() { secure_dns_manager_.reset(); }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   raw_ptr<policy::PolicyService> policy_service_ = nullptr;
@@ -321,9 +309,9 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   device_signals::MockUserPermissionService mock_user_permission_service_;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::SecureDnsManager> secure_dns_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 // We need to use a different base class for ChromeOS and non ChromeOS case.
@@ -338,7 +326,7 @@ class ManagementUIHandlerTests :
 #endif
 {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ManagementUIHandlerTests()
       : ash::DeviceSettingsTestBase(/*profile_creation_enabled=*/false),
         device_domain_(u"devicedomain.com"),
@@ -402,7 +390,7 @@ class ManagementUIHandlerTests :
     extracted_.managed_websites_title =
         ExtractPathFromDict(data, "managedWebsitesSubtitle");
     extracted_.subtitle = ExtractPathFromDict(data, "pageSubtitle");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     extracted_.management_overview = ExtractPathFromDict(data, "overview");
     extracted_.update_required_eol = ExtractPathFromDict(data, "eolMessage");
     std::optional<bool> showProxyDisclosure =
@@ -412,7 +400,7 @@ class ManagementUIHandlerTests :
 #else
     extracted_.browser_management_notice =
         ExtractPathFromDict(data, "browserManagementNotice");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     std::optional<bool> managed = data.FindBool("managed");
     extracted_.managed = managed.has_value() && managed.value();
   }
@@ -491,7 +479,7 @@ class ManagementUIHandlerTests :
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUp() override {
     SetUpLocalState();
 
@@ -645,7 +633,7 @@ class ManagementUIHandlerTests :
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   [[nodiscard]] bool SetUpProfileAndHandler() {
     if (profile_) {
@@ -672,12 +660,10 @@ class ManagementUIHandlerTests :
     handler_.SetAccountManagedForTesting(GetTestConfig().managed_account);
 #if BUILDFLAG(IS_CHROMEOS)
     handler_.SetDeviceManagedForTesting(GetTestConfig().managed_device);
-#else
-    handler_.SetBrowserManagedForTesting(GetTestConfig().managed_browser);
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     handler_.SetDeviceDomain(GetTestConfig().device_domain);
     handler_.CreateSecureDnsManagerForTesting(&local_state_, *user_.get());
+#else
+    handler_.SetBrowserManagedForTesting(GetTestConfig().managed_browser);
 #endif
     base::Value::Dict data =
         handler_.GetContextualManagedDataForTesting(profile_.get());
@@ -700,7 +686,7 @@ class ManagementUIHandlerTests :
 
   bool GetManaged() const { return extracted_.managed; }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::u16string GetManagementOverview() const {
     return extracted_.management_overview;
   }
@@ -746,7 +732,7 @@ class ManagementUIHandlerTests :
   ContextualManagementSourceUpdate extracted_;
   TestingPrefServiceSimple local_state_;
   TestingPrefServiceSimple user_prefs_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
   raw_ptr<user_manager::User> user_ = nullptr;
@@ -766,9 +752,6 @@ class ManagementUIHandlerTests :
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   TestManagementUIHandler handler_;
 };
 
@@ -815,7 +798,7 @@ AssertionResult MessagesToBeEQ(const char* infolist_expr,
   return AssertionSuccess();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 AssertionResult ReportingElementsToBeEQ(
     const char* elements_expr,
     const char* expected_elements_expr,
@@ -894,9 +877,7 @@ TEST_F(ManagementUIHandlerTests,
                     IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
   EXPECT_TRUE(GetManaged());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagementUIHandlerTests,
        ManagementContextualSourceUpdateUnmanagedNoDomain) {
   ResetTestConfig();
@@ -966,22 +947,12 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().managed_browser = false;
   ASSERT_TRUE(SetUpProfileAndHandler());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_EQ(GetExtensionReportingSubtitle(),
-            l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
-                                       base::UTF8ToUTF16(domain)));
-  EXPECT_EQ(
-      GetManagedWebsitesTitle(),
-      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
-                                 base::UTF8ToUTF16(domain)));
-#else
   EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
 
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_EQ(
       GetBrowserManagementNotice(),
       l10n_util::GetStringFUTF16(
@@ -1022,22 +993,12 @@ TEST_F(ManagementUIHandlerTests,
   GetTestConfig().override_policy_connector_is_managed = true;
   ASSERT_TRUE(SetUpProfileAndHandler());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_EQ(GetExtensionReportingSubtitle(),
-            l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
-                                       base::UTF8ToUTF16(domain)));
-  EXPECT_EQ(
-      GetManagedWebsitesTitle(),
-      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
-                                 base::UTF8ToUTF16(domain)));
-
-#else
   EXPECT_EQ(GetExtensionReportingSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_BROWSER_NOTICE, chrome::kManagedUiLearnMoreUrl,
@@ -1046,9 +1007,9 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_TRUE(GetManaged());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ManagementUIHandlerTests,
        ManagementContextualSourceUpdateManagedAccountKnownDomain) {
   const std::string domain = "manager.com";
@@ -1617,7 +1578,7 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
   ash::NetworkHandler::Get()->NetworkHandler::ShutdownPrefServices();
 }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
   ResetTestConfig();
@@ -1814,9 +1775,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   ASSERT_TRUE(SetUpNoDomainProfile());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   handler_.SetDeviceDomain("");
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_CALL(policy_service_, GetPolicies(chrome_policies_namespace))
       .WillRepeatedly(ReturnRef(chrome_policies));
@@ -1959,7 +1920,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   EXPECT_EQ(expected_info, *info.FindList("info"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {
   ResetTestConfig();
   ASSERT_TRUE(SetUpProfileAndHandler());
@@ -1971,4 +1932,4 @@ TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {
 
   EXPECT_FALSE(handler_.GetFilesUploadToCloudInfo(profile_.get()).empty());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

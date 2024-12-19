@@ -63,7 +63,6 @@
 #include "components/device_signals/core/browser/user_permission_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -411,7 +410,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
 
   response.Set("managed", managed());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return response;
 }
@@ -512,8 +511,7 @@ base::Value::List ManagementUIHandler::GetApplicationsInfo(
   base::Value::List applications;
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  // Only display web apps for the profile that contains them e.g. Lacros
-  // primary profile when Lacros is enabled.
+  // Only display web apps for the profile that contains them.
   if (provider == nullptr) {
     return applications;
   }
