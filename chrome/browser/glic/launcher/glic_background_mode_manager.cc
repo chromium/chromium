@@ -79,8 +79,8 @@ void GlicBackgroundModeManager::RegisterHotkey(ui::Accelerator updated_hotkey) {
   CHECK(!updated_hotkey.IsEmpty());
   auto* const global_shortcut_listener =
       extensions::GlobalShortcutListener::GetInstance();
-  CHECK(global_shortcut_listener);
-  if (global_shortcut_listener->RegisterAccelerator(updated_hotkey, this)) {
+  if (global_shortcut_listener &&
+      global_shortcut_listener->RegisterAccelerator(updated_hotkey, this)) {
     actual_registered_hotkey_ = updated_hotkey;
   }
 }
@@ -88,8 +88,7 @@ void GlicBackgroundModeManager::RegisterHotkey(ui::Accelerator updated_hotkey) {
 void GlicBackgroundModeManager::UnregisterHotkey() {
   auto* const global_shortcut_listener =
       extensions::GlobalShortcutListener::GetInstance();
-  CHECK(global_shortcut_listener);
-  if (!actual_registered_hotkey_.IsEmpty()) {
+  if (global_shortcut_listener && !actual_registered_hotkey_.IsEmpty()) {
     global_shortcut_listener->UnregisterAccelerator(actual_registered_hotkey_,
                                                     this);
   }

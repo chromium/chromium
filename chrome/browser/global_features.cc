@@ -68,7 +68,7 @@ void GlobalFeatures::Init() {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kGlic)) {
+  if (GlicEnabling::IsEnabledByFlags()) {
     glic_background_mode_manager_ =
         std::make_unique<glic::GlicBackgroundModeManager>(
             g_browser_process->status_tray());

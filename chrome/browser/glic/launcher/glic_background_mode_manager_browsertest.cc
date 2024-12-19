@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/launcher/glic_configuration.h"
 #include "chrome/browser/global_features.h"
@@ -27,7 +28,8 @@ namespace glic {
 class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kGlic);
+    feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -36,6 +38,12 @@ class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
     // browser process from closing which causes the test to hang.
     g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                  false);
+  }
+
+  bool IsHotkeySupported() {
+    auto* const global_shortcut_listener =
+        extensions::GlobalShortcutListener::GetInstance();
+    return global_shortcut_listener != nullptr;
   }
 
   void RegisterHotkey(ui::Accelerator updated_hotkey) {
@@ -87,6 +95,9 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, StatusIcon) {
 
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
                        UpdateHotkeyWhileEnabled) {
+  if (!IsHotkeySupported()) {
+    GTEST_SKIP() << "Test does not apply to this platform.";
+  }
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                true);
   GlicBackgroundModeManager* const manager =
@@ -100,6 +111,9 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
                        UpdateHotkeyWhileDisabled) {
+  if (!IsHotkeySupported()) {
+    GTEST_SKIP() << "Test does not apply to this platform.";
+  }
   PrefService* const pref_service = g_browser_process->local_state();
   ASSERT_FALSE(pref_service->GetBoolean(prefs::kGlicLauncherEnabled));
   GlicBackgroundModeManager* const manager =
@@ -119,6 +133,9 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
                        RegisterInvalidAccelerator) {
+  if (!IsHotkeySupported()) {
+    GTEST_SKIP() << "Test does not apply to this platform.";
+  }
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                true);
   GlicBackgroundModeManager* const manager =
