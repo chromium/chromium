@@ -38,8 +38,7 @@ Process::Process(Process&& other)
   other.Close();
 }
 
-Process::~Process() {
-}
+Process::~Process() = default;
 
 Process& Process::operator=(Process&& other) {
   DCHECK_NE(this, &other);

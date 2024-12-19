@@ -58,11 +58,9 @@ void MessagePumpIOSForIO::FdWatchController::OnFileCanWriteWithoutBlocking(
   watcher_->OnFileCanWriteWithoutBlocking(fd);
 }
 
-MessagePumpIOSForIO::MessagePumpIOSForIO() : weak_factory_(this) {
-}
+MessagePumpIOSForIO::MessagePumpIOSForIO() = default;
 
-MessagePumpIOSForIO::~MessagePumpIOSForIO() {
-}
+MessagePumpIOSForIO::~MessagePumpIOSForIO() = default;
 
 bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
                                               bool persistent,
