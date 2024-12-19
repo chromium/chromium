@@ -1265,21 +1265,24 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initCollaborationDelegatesOnProfile(Profile profile) {
+        // We must use the original non-OTR profile here.
+        Profile originalProfile = profile.getOriginalProfile();
+
         CollaborationService collaborationService =
-                CollaborationServiceFactory.getForProfile(profile);
+                CollaborationServiceFactory.getForProfile(originalProfile);
         @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
         if (!serviceStatus.isAllowedToJoin()) return;
 
         mDataSharingTabManager.initWithProfile(
-                profile,
-                DataSharingServiceFactory.getForProfile(profile),
-                MessagingBackendServiceFactory.getForProfile(profile));
+                originalProfile,
+                DataSharingServiceFactory.getForProfile(originalProfile),
+                MessagingBackendServiceFactory.getForProfile(originalProfile));
 
         TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
                 .runSyncOrOnAvailable(
                         selector -> {
                             mInstantMessageDelegateImpl =
-                                    InstantMessageDelegateFactory.getForProfile(profile);
+                                    InstantMessageDelegateFactory.getForProfile(originalProfile);
                             TabGroupModelFilter tabGroupModelFilter =
                                     selector.getTabGroupModelFilterProvider()
                                             .getTabGroupModelFilter(/* incognito= */ false);
