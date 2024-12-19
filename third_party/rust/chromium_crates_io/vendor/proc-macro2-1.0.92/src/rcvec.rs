@@ -22,19 +22,19 @@ pub(crate) struct RcVecIntoIter<T> {
 }
 
 impl<T> RcVec<T> {
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.inner.is_empty()
     }
 
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.inner.len()
     }
 
-    pub fn iter(&self) -> slice::Iter<T> {
+    pub(crate) fn iter(&self) -> slice::Iter<T> {
         self.inner.iter()
     }
 
-    pub fn make_mut(&mut self) -> RcVecMut<T>
+    pub(crate) fn make_mut(&mut self) -> RcVecMut<T>
     where
         T: Clone,
     {
@@ -43,12 +43,12 @@ impl<T> RcVec<T> {
         }
     }
 
-    pub fn get_mut(&mut self) -> Option<RcVecMut<T>> {
+    pub(crate) fn get_mut(&mut self) -> Option<RcVecMut<T>> {
         let inner = Rc::get_mut(&mut self.inner)?;
         Some(RcVecMut { inner })
     }
 
-    pub fn make_owned(mut self) -> RcVecBuilder<T>
+    pub(crate) fn make_owned(mut self) -> RcVecBuilder<T>
     where
         T: Clone,
     {
@@ -62,31 +62,31 @@ impl<T> RcVec<T> {
 }
 
 impl<T> RcVecBuilder<T> {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         RcVecBuilder { inner: Vec::new() }
     }
 
-    pub fn with_capacity(cap: usize) -> Self {
+    pub(crate) fn with_capacity(cap: usize) -> Self {
         RcVecBuilder {
             inner: Vec::with_capacity(cap),
         }
     }
 
-    pub fn push(&mut self, element: T) {
+    pub(crate) fn push(&mut self, element: T) {
         self.inner.push(element);
     }
 
-    pub fn extend(&mut self, iter: impl IntoIterator<Item = T>) {
+    pub(crate) fn extend(&mut self, iter: impl IntoIterator<Item = T>) {
         self.inner.extend(iter);
     }
 
-    pub fn as_mut(&mut self) -> RcVecMut<T> {
+    pub(crate) fn as_mut(&mut self) -> RcVecMut<T> {
         RcVecMut {
             inner: &mut self.inner,
         }
     }
 
-    pub fn build(self) -> RcVec<T> {
+    pub(crate) fn build(self) -> RcVec<T> {
         RcVec {
             inner: Rc::new(self.inner),
         }
@@ -94,19 +94,19 @@ impl<T> RcVecBuilder<T> {
 }
 
 impl<'a, T> RcVecMut<'a, T> {
-    pub fn push(&mut self, element: T) {
+    pub(crate) fn push(&mut self, element: T) {
         self.inner.push(element);
     }
 
-    pub fn extend(&mut self, iter: impl IntoIterator<Item = T>) {
+    pub(crate) fn extend(&mut self, iter: impl IntoIterator<Item = T>) {
         self.inner.extend(iter);
     }
 
-    pub fn pop(&mut self) -> Option<T> {
+    pub(crate) fn pop(&mut self) -> Option<T> {
         self.inner.pop()
     }
 
-    pub fn as_mut(&mut self) -> RcVecMut<T> {
+    pub(crate) fn as_mut(&mut self) -> RcVecMut<T> {
         RcVecMut { inner: self.inner }
     }
 }
