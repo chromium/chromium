@@ -5205,11 +5205,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "instance-switcher",
-    "owners": [ "jinsukkim@chromium.org" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "instant-hotspot-on-nearby",
     "owners": [ "joeantonetti@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 146
