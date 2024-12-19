@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.hub;
+package org.chromium.ui.animation;
 
 import android.view.View;
 
@@ -13,7 +13,38 @@ import java.util.List;
 
 /**
  * A delegate to implementation for {@link View}s that want to expose the ability for a runnable to
- * be executed on the next layout.
+ * be executed on the next layout. See {@link RunOnNextLayout} for the interface that this delegate
+ * helps with.
+ *
+ * <p>Usage:
+ *
+ * <pre>
+ * public class MyCustomView extends View implements RunOnNextLayout {
+ *     private RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
+ *
+ *     public MyCustomView(Context context) {
+ *         super(context);
+ *         mRunOnNextLayoutDelegate = new RunOnNextLayoutDelegate(this);
+ *     }
+ *
+ *     // ViewGroup requires onLayout(boolean, int, int, int, int) instead.
+ *     @Override
+ *     public void layout(int l, int t, int r, int b) {
+ *         super.layout(l, t, r, b);
+ *         runOnNextLayoutRunnables();
+ *     }
+ *
+ *     @Override
+ *     public void runOnNextLayout(Runnable r) {
+ *         mRunOnNextLayoutDelegate.runOnNextLayout(r);
+ *     }
+ *
+ *     @Override
+ *     public void runOnNextLayoutRunnables() {
+ *         mRunOnNextLayoutDelegate.runOnNextLayoutRunnables();
+ *     }
+ * }
+ * </pre>
  */
 public class RunOnNextLayoutDelegate implements RunOnNextLayout {
     private final ThreadChecker mThreadChecker = new ThreadChecker();

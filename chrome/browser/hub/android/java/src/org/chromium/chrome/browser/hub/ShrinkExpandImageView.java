@@ -19,6 +19,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
+import org.chromium.ui.animation.RunOnNextLayout;
+import org.chromium.ui.animation.RunOnNextLayoutDelegate;
 import org.chromium.ui.display.DisplayUtil;
 
 /** {@link ImageView} for the Shrink, Expand, and New Tab animations. */

@@ -38,8 +38,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneOrderController.java",
     "android/java/src/org/chromium/chrome/browser/hub/PresetHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonData.java",
-    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayout.java",
-    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegate.java",
     "android/java/src/org/chromium/chrome/browser/hub/ScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
@@ -99,7 +97,6 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/HubShowPaneHelperUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegateUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageViewUnitTest.java",
   ]
 
