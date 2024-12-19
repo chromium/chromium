@@ -155,7 +155,7 @@ CREATE PERFETTO TABLE chrome_scroll_update_input_info(
   -- Whether this is the first input that was presented in frame
   -- `presented_in_frame_id`.
   is_first_scroll_update_in_frame BOOL,
-  -- Whether the corresponding input event was coalesced into another.
+  -- Input generation timestamp (from the Android system).
   generation_ts TIMESTAMP,
   -- Duration from input generation to when the browser received the input.
   generation_to_browser_main_dur DURATION,
@@ -252,7 +252,13 @@ SELECT
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
   generation_ts,
-  touch_move_received_ts - generation_ts AS generation_to_browser_main_dur,
+  -- Flings don't have a touch move event so make GenerationToBrowserMain span
+  -- all the way to the creation of the gesture scroll update.
+  IIF(
+    is_inertial AND touch_move_received_ts IS NULL,
+    scroll_update_created_ts,
+    touch_move_received_ts
+  ) - generation_ts AS generation_to_browser_main_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   browser_utid,
   touch_move_received_slice_id,
