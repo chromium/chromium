@@ -8,12 +8,12 @@
 
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/browser/glic/launcher/glic_status_icon.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 namespace glic {
 
@@ -77,20 +77,20 @@ void GlicBackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 
 void GlicBackgroundModeManager::RegisterHotkey(ui::Accelerator updated_hotkey) {
   CHECK(!updated_hotkey.IsEmpty());
-  auto* const global_shortcut_listener =
-      extensions::GlobalShortcutListener::GetInstance();
-  if (global_shortcut_listener &&
-      global_shortcut_listener->RegisterAccelerator(updated_hotkey, this)) {
+  auto* const global_accelerator_listener =
+      ui::GlobalAcceleratorListener::GetInstance();
+  if (global_accelerator_listener &&
+      global_accelerator_listener->RegisterAccelerator(updated_hotkey, this)) {
     actual_registered_hotkey_ = updated_hotkey;
   }
 }
 
 void GlicBackgroundModeManager::UnregisterHotkey() {
-  auto* const global_shortcut_listener =
-      extensions::GlobalShortcutListener::GetInstance();
-  if (global_shortcut_listener && !actual_registered_hotkey_.IsEmpty()) {
-    global_shortcut_listener->UnregisterAccelerator(actual_registered_hotkey_,
-                                                    this);
+  auto* const global_accelerator_listener =
+      ui::GlobalAcceleratorListener::GetInstance();
+  if (global_accelerator_listener && !actual_registered_hotkey_.IsEmpty()) {
+    global_accelerator_listener->UnregisterAccelerator(
+        actual_registered_hotkey_, this);
   }
   actual_registered_hotkey_ = ui::Accelerator();
 }
