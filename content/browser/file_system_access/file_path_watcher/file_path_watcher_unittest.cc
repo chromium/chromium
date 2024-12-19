@@ -1929,7 +1929,7 @@ TEST_F(FilePathWatcherTest, InotifyLimitInWatch) {
   // "test_file()" is like "/tmp/__unique_path__/FilePathWatcherTest" and has 4
   // dir components ("/" + 3 named parts). "Watch()" creates inotify watches
   // for each dir component of the given dir. It would fail with limit set to 1.
-  ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
+  auto max_inotify_watches = FilePathWatcher::SetQuotaLimitForTesting(1);
   ASSERT_FALSE(watcher->Watch(
       test_file(), FilePathWatcher::Type::kNonRecursive,
       base::BindLambdaForTesting(
@@ -1980,7 +1980,7 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdate) {
     ASSERT_TRUE(watcher->Watch(
         test_file(), FilePathWatcher::Type::kNonRecursive, watcher_callback));
 
-    ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
+    auto max_inotify_watches = FilePathWatcher::SetQuotaLimitForTesting(1);
 
     // Triggers update and over limit.
     ASSERT_TRUE(WriteFile(test_file(), "content"));
@@ -2034,8 +2034,8 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdateRecursive) {
                                watcher_callback));
 
     constexpr size_t kMaxLimit = 10u;
-    ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(
-        kMaxLimit);
+    auto max_inotify_watches =
+        FilePathWatcher::SetQuotaLimitForTesting(kMaxLimit);
 
     // Triggers updates and over limit.
     for (size_t i = 0; i < kMaxLimit; ++i) {

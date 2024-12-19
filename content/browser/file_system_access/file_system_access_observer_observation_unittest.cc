@@ -419,20 +419,6 @@ class FileSystemAccessObserverObservationTest
     return fake_observer;
   }
 
-  bool SetQuotaLimit(const std::string& origin, size_t quota_limit) {
-    blink::StorageKey storage_key =
-        blink::StorageKey::CreateFromStringForTesting(origin);
-
-    FileSystemAccessObserverQuotaManager* quota_manager =
-        manager_->watcher_manager().GetQuotaManagerForTesting(storage_key);
-    if (!quota_manager) {
-      return false;
-    }
-
-    quota_manager->SetQuotaLimitForTesting(quota_limit);
-    return true;
-  }
-
  private:
   FileSystemAccessManagerImpl::BindingContext GetBindingContext(
       const std::string& origin) {
@@ -711,8 +697,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
   FakeObservation foo_documents_observation =
       foo_observer.Observe(foo_documents_handle.get(), /*recursive=*/false);
 
-  ASSERT_TRUE(SetQuotaLimit(foo_origin, 100));
-  ASSERT_TRUE(SetQuotaLimit(bar_origin, 100));
+  auto quota_override = FilePathWatcher::SetQuotaLimitForTesting(100);
 
   // Only foo is observing documents, so only its usage should rise. It is still
   // under the quota limit though.

@@ -68,9 +68,6 @@ constexpr size_t kDefaultInotifyMaxUserWatches = 8192u;
 class FilePathWatcherImpl;
 class InotifyReader;
 
-// Used by test to override inotify watcher limit.
-size_t g_override_max_inotify_watches = 0u;
-
 // Rounds `value` down to nearest multiple of `multiple`.
 size_t RoundDownToNearestMultiple(size_t value, size_t multiple) {
   return value / multiple * multiple;
@@ -931,7 +928,7 @@ void FilePathWatcherImpl::CancelAndRunCallbackOnExceededLimit(
 bool FilePathWatcherImpl::WouldExceedWatchLimit() const {
   DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
 
-  return current_usage() >= GetMaxNumberOfInotifyWatches();
+  return current_usage() >= FilePathWatcher::quota_limit();
 }
 
 InotifyReader::WatcherEntry FilePathWatcherImpl::GetWatcherEntry() {
@@ -1363,19 +1360,8 @@ size_t GetMaxNumberOfInotifyWatches() {
 
     return max_number_of_inotify_watches;
   }();
-  return g_override_max_inotify_watches ? g_override_max_inotify_watches : max;
+  return max;
 #endif  // if BUILDFLAG(IS_FUCHSIA)
-}
-
-ScopedMaxNumberOfInotifyWatchesOverrideForTest::
-    ScopedMaxNumberOfInotifyWatchesOverrideForTest(size_t override_max) {
-  DUMP_WILL_BE_CHECK_EQ(g_override_max_inotify_watches, 0u);
-  g_override_max_inotify_watches = override_max;
-}
-
-ScopedMaxNumberOfInotifyWatchesOverrideForTest::
-    ~ScopedMaxNumberOfInotifyWatchesOverrideForTest() {
-  g_override_max_inotify_watches = 0u;
 }
 
 size_t GetQuotaLimitFromSystemLimitForTesting(size_t system_limit) {

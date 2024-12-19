@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -126,6 +127,8 @@ class FileSystemAccessObserverQuotaManagerTest : public testing::Test {
 };
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, OnUsageChange) {
+  auto quota_limit_override = FilePathWatcher::SetQuotaLimitForTesting(10);
+
   {
     FileSystemAccessObserverQuotaManager::Handle observation_group1 =
         watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
@@ -139,8 +142,6 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, OnUsageChange) {
 
     ASSERT_EQ(observer_quota_manager,
               observation_group2.GetQuotaManagerForTesting());
-
-    observer_quota_manager->SetQuotaLimitForTesting(10);
 
     // The total usage should start at zero.
     EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 0U);
@@ -174,11 +175,12 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, OnUsageChange) {
 }
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaExceeded) {
+  auto quota_limit_override = FilePathWatcher::SetQuotaLimitForTesting(10);
+
   {
     FileSystemAccessObserverQuotaManager::Handle observation_group =
         watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
                                                             kSourceId);
-    observation_group.GetQuotaManagerForTesting()->SetQuotaLimitForTesting(10);
 
     EXPECT_EQ(observation_group.OnUsageChange(11),
               UsageChangeResult::kQuotaUnavailable);
@@ -191,11 +193,12 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaExceeded) {
 }
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaNotExceeded) {
+  auto quota_limit_override = FilePathWatcher::SetQuotaLimitForTesting(10);
+
   {
     FileSystemAccessObserverQuotaManager::Handle observation_group =
         watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
                                                             kSourceId);
-    observation_group.GetQuotaManagerForTesting()->SetQuotaLimitForTesting(10);
 
     EXPECT_EQ(observation_group.OnUsageChange(1), UsageChangeResult::kOk);
   }
@@ -208,11 +211,12 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaNotExceeded) {
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest,
        QuotaManagerRemovedFromWatcherManagerOnDestruction) {
+  auto quota_limit_override = FilePathWatcher::SetQuotaLimitForTesting(10);
+
   {
     FileSystemAccessObserverQuotaManager::Handle observation_group =
         watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
                                                             kSourceId);
-    observation_group.GetQuotaManagerForTesting()->SetQuotaLimitForTesting(10);
 
     EXPECT_EQ(observation_group.OnUsageChange(1), UsageChangeResult::kOk);
 

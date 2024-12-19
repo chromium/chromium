@@ -17,6 +17,9 @@
 
 namespace content {
 
+// static
+size_t FilePathWatcher::quota_limit_override_for_testing_ = 0;
+
 FilePathWatcher::ChangeInfo::ChangeInfo() = default;
 
 FilePathWatcher::ChangeInfo::ChangeInfo(
@@ -135,6 +138,10 @@ size_t FilePathWatcher::current_usage() const {
 
 // static
 size_t FilePathWatcher::quota_limit() {
+  if (FilePathWatcher::quota_limit_override_for_testing_ > 0) {
+    return FilePathWatcher::quota_limit_override_for_testing_;
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessObserverQuotaLimit)) {
     return GetQuotaLimitImpl();

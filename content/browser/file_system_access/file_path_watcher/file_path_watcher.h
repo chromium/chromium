@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -262,7 +263,16 @@ class CONTENT_EXPORT FilePathWatcher {
   base::Lock& GetWatchThreadLockForTest();
 #endif
 
+  static base::AutoReset<size_t> SetQuotaLimitForTesting(
+      size_t quota_limit_override) {
+    return base::AutoReset<size_t>(&quota_limit_override_for_testing_,
+                                   quota_limit_override);
+  }
+
  private:
+  // The quota limit returned by `quota_limit()` in tests if it is non-zero.
+  static size_t quota_limit_override_for_testing_;
+
   explicit FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate);
 
   static size_t GetQuotaLimitImpl();

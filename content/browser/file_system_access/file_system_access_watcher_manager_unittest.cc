@@ -1375,16 +1375,11 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 
 TEST_F(FileSystemAccessWatcherManagerTest,
        ObservationGroupNotCreatedOnQuotaError) {
+  auto quota_override = FilePathWatcher::SetQuotaLimitForTesting(30);
+
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("https://foo.com/");
-  base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
-  FakeChangeSource file_source(
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
-      file_system_context_);
-  watcher_manager().RegisterSourceForTesting(&file_source);
-
-  base::FilePath dir_path = dir_.GetPath().AppendASCII("bar");
+  base::FilePath dir_path = dir_.GetPath().AppendASCII("foo");
   auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
   FakeChangeSource dir_source(
       FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
@@ -1392,27 +1387,18 @@ TEST_F(FileSystemAccessWatcherManagerTest,
       file_system_context_);
   watcher_manager().RegisterSourceForTesting(&dir_source);
 
-  // Initially, set up an observation for `storage_key` so that the quota
-  // manager for this storage key can be obtained to override the quota limit.
-  file_source.SetCurrentUsage(20);
-  auto file_observation_or_error = ObserveFile(storage_key, file_url);
-  ASSERT_TRUE(file_observation_or_error.has_value());
-  auto* quota_manager =
-      watcher_manager().GetQuotaManagerForTesting(storage_key);
-  ASSERT_TRUE(quota_manager);
-  EXPECT_EQ(quota_manager->GetTotalUsageForTesting(), 20U);
-
-  // Set the current usage less than the quota limit, in order to simulate
+  // Set the current usage greater than the quota limit, in order to simulate
   // unavailable quota and check if setting up a new observation fails.
-  quota_manager->SetQuotaLimitForTesting(30);
-  dir_source.SetCurrentUsage(15);
+  dir_source.SetCurrentUsage(35);
   auto dir_observation_or_error =
       ObserveDirectory(storage_key, dir_url, /*is_recursive=*/false);
 
   ASSERT_FALSE(dir_observation_or_error.has_value());
   EXPECT_EQ(dir_observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kOperationFailed);
-  EXPECT_EQ(quota_manager->GetTotalUsageForTesting(), 20U);
+  auto* quota_manager =
+      watcher_manager().GetQuotaManagerForTesting(storage_key);
+  EXPECT_EQ(quota_manager, nullptr);
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest,
@@ -1453,8 +1439,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   FileSystemAccessObserverQuotaManager* bar_quota_manager =
       bar_file_observation_group->GetQuotaManagerForTesting();
 
-  foo_quota_manager->SetQuotaLimitForTesting(100);
-  bar_quota_manager->SetQuotaLimitForTesting(100);
+  auto quota_override = FilePathWatcher::SetQuotaLimitForTesting(100);
 
   ChangeAccumulator foo_file_accumulator1(
       std::move(foo_file_observation_or_error1));

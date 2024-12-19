@@ -46,9 +46,10 @@ FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
       watcher_manager_(watcher_manager) {}
 
 FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
-  CHECK(quota_limit_ > 0);
+  CHECK(FileSystemAccessChangeSource::quota_limit() > 0);
   // The percentile value, rounded down to the nearest integer.
-  size_t usage_rate = 100 * high_water_mark_usage_ / quota_limit_;
+  size_t usage_rate = 100 * high_water_mark_usage_ /
+                      FileSystemAccessChangeSource::quota_limit();
 
   // UMA logging.
   if (high_water_mark_usage_ > 0) {
@@ -91,7 +92,7 @@ FileSystemAccessObserverQuotaManager::OnUsageChange(size_t old_usage,
   CHECK_GE(total_usage_, old_usage);
 
   size_t updated_total_usage = total_usage_ + new_usage - old_usage;
-  if (updated_total_usage > quota_limit_) {
+  if (updated_total_usage > FileSystemAccessChangeSource::quota_limit()) {
     total_usage_ -= old_usage;
     reached_quota_limit_ = true;
     return UsageChangeResult::kQuotaUnavailable;

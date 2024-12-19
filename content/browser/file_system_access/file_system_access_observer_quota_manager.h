@@ -66,11 +66,6 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
 
   Handle CreateHandle();
 
-  void SetQuotaLimitForTesting(size_t quota_limit) {
-    CHECK(quota_limit > 0);
-    quota_limit_ = quota_limit;
-  }
-
   size_t GetTotalUsageForTesting() { return total_usage_; }
 
   // Since what OS resource represents differs by platform, the bucket sizing
@@ -107,8 +102,6 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
   ukm::SourceId ukm_source_id_;
 
   const raw_ref<FileSystemAccessWatcherManager> watcher_manager_;
-  // OS-specific quota limit. Must be greater than 0.
-  size_t quota_limit_ = FileSystemAccessChangeSource::quota_limit();
   size_t total_usage_ = 0;
   size_t high_water_mark_usage_ = 0;
   bool reached_quota_limit_ = false;
