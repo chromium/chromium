@@ -794,7 +794,8 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrame(
     LOG(ERROR) << "Failed to submit picture header";
     return false;
   }
-  if (!SubmitSegmentMap(segment_map_param)) {
+  if (pic_param.segments.seg_flags.bits.segmentation_enabled &&
+      !SubmitSegmentMap(segment_map_param)) {
     LOG(ERROR) << "Failed to submit segment map";
     return false;
   }
@@ -920,29 +921,31 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
   pic_param.filter_level_v = loop_filter_level.filter_level_v;
 
   aom::AV1SegmentationData seg_data;
-  constexpr uint32_t kSegmentGranularity = 4;
-  rate_ctrl_->GetSegmentationData(&seg_data);
-  CHECK_EQ(seg_data.segmentation_map_size,
-           base::bits::AlignUp(static_cast<uint32_t>(coded_size_.width()),
-                               kSegmentGranularity) /
-               kSegmentGranularity *
-               base::bits::AlignUp(static_cast<uint32_t>(coded_size_.height()),
-                                   kSegmentGranularity) /
-               kSegmentGranularity);
-  pic_param.segments.seg_flags.bits.segmentation_enabled = 1;
-  pic_param.segments.seg_flags.bits.segmentation_update_map = 1;
-  pic_param.segments.seg_flags.bits.segmentation_temporal_update = 0;
-  pic_param.segments.segment_number = seg_data.delta_q_size;
-  for (uint32_t i = 0; i < seg_data.delta_q_size; i++) {
-    pic_param.segments.feature_data[i][0] = seg_data.delta_q[i];
-    pic_param.segments.feature_mask[i] =
-        (1u << libgav1::kSegmentFeatureQuantizer);
+  if (rate_ctrl_->GetSegmentationData(&seg_data)) {
+    constexpr uint32_t kSegmentGranularity = 4;
+    CHECK_EQ(
+        seg_data.segmentation_map_size,
+        base::bits::AlignUp(static_cast<uint32_t>(coded_size_.width()),
+                            kSegmentGranularity) /
+            kSegmentGranularity *
+            base::bits::AlignUp(static_cast<uint32_t>(coded_size_.height()),
+                                kSegmentGranularity) /
+            kSegmentGranularity);
+    pic_param.segments.seg_flags.bits.segmentation_enabled = 1;
+    pic_param.segments.seg_flags.bits.segmentation_update_map = 1;
+    pic_param.segments.seg_flags.bits.segmentation_temporal_update = 0;
+    pic_param.segments.segment_number = seg_data.delta_q_size;
+    for (uint32_t i = 0; i < seg_data.delta_q_size; i++) {
+      pic_param.segments.feature_data[i][0] = seg_data.delta_q[i];
+      pic_param.segments.feature_mask[i] =
+          (1u << libgav1::kSegmentFeatureQuantizer);
+    }
+    segment_map_param.segmentMapDataSize = segmentation_map_.size();
+    DownscaleSegmentMap(seg_data.segmentation_map, kSegmentGranularity,
+                        seg_data.delta_q_size, segmentation_map_.data(),
+                        seg_size_, coded_size_);
+    segment_map_param.pSegmentMap = segmentation_map_.data();
   }
-  segment_map_param.segmentMapDataSize = segmentation_map_.size();
-  DownscaleSegmentMap(seg_data.segmentation_map, kSegmentGranularity,
-                      seg_data.delta_q_size, segmentation_map_.data(),
-                      seg_size_, coded_size_);
-  segment_map_param.pSegmentMap = segmentation_map_.data();
 
   DVLOGF(4) << "qp=" << pic_param.base_qindex
             << " filter_level[0]=" << loop_filter_level.filter_level[0]
