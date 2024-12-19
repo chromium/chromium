@@ -9,7 +9,6 @@
 #include <wrl.h>
 #include <wrl/client.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 
 namespace ui {
@@ -52,9 +51,6 @@ class AutoCloseDialogEventHandler
   IFACEMETHODIMP OnOverwrite(IFileDialog*,
                              IShellItem*,
                              FDE_OVERWRITE_RESPONSE*) override;
-
-  // Used by the event hook to notify the handler when a window is destroyed.
-  static raw_ptr<AutoCloseDialogEventHandler> instance_;
 
   // This is the owner window. When it closes, the dialog window also needs to
   // be closed.

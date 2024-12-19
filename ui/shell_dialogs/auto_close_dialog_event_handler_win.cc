@@ -11,11 +11,20 @@
 #include "base/threading/thread_checker.h"
 
 namespace ui {
+namespace {
+
+// Used by the event hook to notify the handler when awindow is destroyed.
+raw_ptr<AutoCloseDialogEventHandler>& GetInstance() {
+  static raw_ptr<AutoCloseDialogEventHandler> instance = nullptr;
+  return instance;
+}
+
+}  // namespace
 
 AutoCloseDialogEventHandler::AutoCloseDialogEventHandler(HWND owner_window)
     : owner_window_(owner_window) {
-  CHECK(!instance_);
-  instance_ = this;
+  CHECK(!GetInstance());
+  GetInstance() = this;
 
   CHECK(owner_window_);
 }
@@ -23,8 +32,8 @@ AutoCloseDialogEventHandler::AutoCloseDialogEventHandler(HWND owner_window)
 AutoCloseDialogEventHandler::~AutoCloseDialogEventHandler() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  CHECK(instance_);
-  instance_ = nullptr;
+  CHECK(GetInstance());
+  GetInstance() = nullptr;
 
   if (event_hook_) {
     ::UnhookWinEvent(event_hook_);
@@ -105,8 +114,8 @@ AutoCloseDialogEventHandler::EventHookCallback(HWINEVENTHOOK handle,
 
   // This is safe thread-wise because WINEVENT_OUTOFCONTEXT guarantee that the
   // hook callback will be invoked on the same thread that set the hook.
-  CHECK(instance_);
-  instance_->OnWindowDestroyedNotification(hwnd);
+  CHECK(GetInstance());
+  GetInstance()->OnWindowDestroyedNotification(hwnd);
 }
 
 HRESULT AutoCloseDialogEventHandler::OnTypeChange(IFileDialog* file_dialog) {
@@ -145,9 +154,5 @@ HRESULT AutoCloseDialogEventHandler::OnOverwrite(IFileDialog*,
                                                  FDE_OVERWRITE_RESPONSE*) {
   return E_NOTIMPL;
 }
-
-// static
-raw_ptr<AutoCloseDialogEventHandler> AutoCloseDialogEventHandler::instance_ =
-    nullptr;
 
 }  // namespace ui
