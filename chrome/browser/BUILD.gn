@@ -7531,6 +7531,8 @@ static_library("browser") {
       "autocomplete/keyword_extensions_delegate_impl.h",
       "autocomplete/shortcuts_extensions_manager.cc",
       "autocomplete/shortcuts_extensions_manager.h",
+      "autocomplete/unscoped_extension_provider_delegate_impl.cc",
+      "autocomplete/unscoped_extension_provider_delegate_impl.h",
       "browsing_data/counters/hosted_apps_counter.cc",
       "browsing_data/counters/hosted_apps_counter.h",
       "controlled_frame/controlled_frame_media_access_handler.cc",

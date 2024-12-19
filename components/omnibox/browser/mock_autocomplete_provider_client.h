@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/mock_tab_matcher.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
+#include "components/omnibox/browser/unscoped_extension_provider_delegate.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -93,6 +94,11 @@ class MockAutocompleteProviderClient
       KeywordProvider* keyword_provider) override {
     return nullptr;
   }
+  std::unique_ptr<UnscopedExtensionProviderDelegate>
+  GetUnscopedExtensionProviderDelegate(
+      UnscopedExtensionProvider* unscoped_extension_provider) override {
+    return std::move(unscoped_extension_provider_delegate_);
+  }
   OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const override {
     return omnibox_triggered_feature_service_.get();
@@ -157,6 +163,11 @@ class MockAutocompleteProviderClient
     pedal_provider_ = std::move(pedal_provider);
   }
 
+  void set_unscoped_extension_provider_delegate(
+      std::unique_ptr<UnscopedExtensionProviderDelegate> delegate) {
+    unscoped_extension_provider_delegate_ = std::move(delegate);
+  }
+
   void set_template_url_service(TemplateURLService* template_url_service) {
     template_url_service_ = template_url_service;
   }
@@ -189,6 +200,8 @@ class MockAutocompleteProviderClient
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
   std::unique_ptr<ProviderStateService> provider_state_service_;
+  std::unique_ptr<UnscopedExtensionProviderDelegate>
+      unscoped_extension_provider_delegate_;
   MockTabMatcher tab_matcher_;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;  // Not owned.
 };

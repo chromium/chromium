@@ -72,6 +72,7 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
+#include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/url_scoring_signals_annotator.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
@@ -1200,6 +1201,11 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
         new HistoryEmbeddingsProvider(provider_client_.get(), this));
   }
 #endif
+  if (provider_types & AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
+    unscoped_extension_provider_ =
+        new UnscopedExtensionProvider(provider_client_.get(), this);
+    providers_.push_back(unscoped_extension_provider_.get());
+  }
 }
 
 void AutocompleteController::InitializeSyncProviders(int provider_types) {

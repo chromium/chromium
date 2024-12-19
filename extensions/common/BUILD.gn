@@ -67,6 +67,14 @@ source_set("constants_impl") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("extension_features") {
+  sources = [
+    "extension_features.cc",
+    "extension_features.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
 mojom("mojom") {
   # We don't want Blink variants of bindings to be generated.
   disable_variants = true
@@ -292,8 +300,6 @@ static_library("common") {
     "extension.h",
     "extension_api.cc",
     "extension_api.h",
-    "extension_features.cc",
-    "extension_features.h",
     "extension_id.h",
     "extension_l10n_util.cc",
     "extension_l10n_util.h",
@@ -497,6 +503,7 @@ static_library("common") {
 
   public_deps = [
     ":common_constants",
+    ":extension_features",
     ":mojom",
     "//components/services/app_service",
     "//content/public/common",

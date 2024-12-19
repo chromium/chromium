@@ -297,6 +297,10 @@ static_library("browser") {
     "tailored_word_break_iterator.h",
     "titled_url_match_utils.cc",
     "titled_url_match_utils.h",
+    "unscoped_extension_provider.cc",
+    "unscoped_extension_provider.h",
+    "unscoped_extension_provider_delegate.cc",
+    "unscoped_extension_provider_delegate.h",
     "url_index_private_data.cc",
     "url_index_private_data.h",
     "url_prefix.cc",
@@ -415,7 +419,10 @@ static_library("browser") {
   }
 
   if (enable_extensions) {
-    deps += [ "//extensions/common:common_constants" ]
+    deps += [
+      "//extensions/common:common_constants",
+      "//extensions/common:extension_features",
+    ]
     sources += [
       "omnibox_input_watcher.cc",
       "omnibox_input_watcher.h",
@@ -835,6 +842,7 @@ source_set("unit_tests") {
     "suggestion_group_unittest.cc",
     "tailored_word_break_iterator_unittest.cc",
     "titled_url_match_utils_unittest.cc",
+    "unscoped_extension_provider_unittest.cc",
     "url_prefix_unittest.cc",
     "url_scoring_signals_annotator_unittest.cc",
     "voice_suggest_provider_unittest.cc",

@@ -265,6 +265,9 @@ class AutocompleteController : public AutocompleteProviderListener,
     return history_url_provider_;
   }
   KeywordProvider* keyword_provider() const { return keyword_provider_; }
+  UnscopedExtensionProvider* unscoped_extension_provider() const {
+    return unscoped_extension_provider_;
+  }
   SearchProvider* search_provider() const { return search_provider_; }
   ClipboardProvider* clipboard_provider() const { return clipboard_provider_; }
   VoiceSuggestProvider* voice_suggest_provider() const {
@@ -516,6 +519,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<HistoryURLProvider> history_url_provider_;
 
   raw_ptr<KeywordProvider> keyword_provider_;
+
+  raw_ptr<UnscopedExtensionProvider> unscoped_extension_provider_;
 
   raw_ptr<SearchProvider> search_provider_;
 

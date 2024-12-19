@@ -85,6 +85,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/autocomplete/keyword_extensions_delegate_impl.h"
+#include "chrome/browser/autocomplete/unscoped_extension_provider_delegate_impl.h"
+#include "extensions/common/extension_features.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -268,6 +270,19 @@ ChromeAutocompleteProviderClient::GetKeywordExtensionsDelegate(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return std::make_unique<KeywordExtensionsDelegateImpl>(profile_,
                                                          keyword_provider);
+#else
+  return nullptr;
+#endif
+}
+
+std::unique_ptr<UnscopedExtensionProviderDelegate>
+ChromeAutocompleteProviderClient::GetUnscopedExtensionProviderDelegate(
+    UnscopedExtensionProvider* provider) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExperimentalOmniboxLabs));
+  return std::make_unique<UnscopedExtensionProviderDelegateImpl>(profile_,
+                                                                 provider);
 #else
   return nullptr;
 #endif

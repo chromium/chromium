@@ -18,11 +18,16 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/history_clusters/core/config.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_features.h"  // nogncheck
 #endif
 
 AutocompleteClassifier::AutocompleteClassifier(
@@ -82,6 +87,14 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       (history_embeddings::GetFeatureParameters().omnibox_scoped ||
                history_embeddings::GetFeatureParameters().omnibox_unscoped
            ? AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS
+           : 0) |
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      // `UnscopedExtensionProvider` should only be included when extensions are
+      // enabled and the `ExperimentalOmniboxLabs` feature is enabled.
+      (base::FeatureList::IsEnabled(
+           extensions_features::kExperimentalOmniboxLabs)
+           ? AutocompleteProvider::TYPE_UNSCOPED_EXTENSION
            : 0)
 #else
       0
