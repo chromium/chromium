@@ -1472,12 +1472,12 @@ crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
 # Flipping the kill switch on this feature.
-crbug.com/379516109 external/wpt/ai/language_detection/canDetect.tentative.window.html [ Failure Timeout ]
-crbug.com/379516109 external/wpt/ai/language_detection/capabilities.tentative.https.window.html [ Failure Timeout ]
+crbug.com/379516109 external/wpt/ai/language_detection/capabilities.tentative.https.any.html [ Failure Timeout ]
+crbug.com/379516109 external/wpt/ai/language_detection/capabilities.tentative.https.any.worker.html [ Failure Timeout ]
 
 # Under development, passes with --no-sandbox. See also https://crbug.com/379516109
-crbug.com/354069716 external/wpt/ai/language_detection/detect-en.tentative.window.html [ Failure Timeout ]
-crbug.com/354069716 external/wpt/ai/language_detection/detector.https.tentative.window.html [ Failure Timeout ]
+crbug.com/354069716 external/wpt/ai/language_detection/detector.https.tentative.any.html [ Failure Timeout ]
+crbug.com/354069716 external/wpt/ai/language_detection/detector.https.tentative.any.worker.html [ Failure Timeout ]
 
 # Failing on Win ARM
 crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout ]
