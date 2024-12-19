@@ -36,6 +36,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -861,7 +862,7 @@ class ConsolidatedConsentScreenManagedUserTest
 
  private:
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
+      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
 };
 
@@ -1050,7 +1051,7 @@ class ConsolidatedConsentScreenManagedUserLocationPolicyInterplayTest
 
  private:
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
+      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
 
   base::test::ScopedFeatureList feature_list_;

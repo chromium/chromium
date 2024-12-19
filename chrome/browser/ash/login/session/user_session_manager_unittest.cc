@@ -31,6 +31,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,7 +99,7 @@ class UserSessionManagerTest : public testing::Test {
   // Creates a dummy user with a testing profile and logs in.
   TestingProfile* LoginTestUser() {
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId("demo@test.com", "demo_user"));
+        AccountId::FromUserEmailGaiaId("demo@test.com", GaiaId("demo_user")));
     // TODO(http://b/310599489): We are logging a Gaia type user as a Public
     // Session user here. This is inconsistent.
     test_user_ = fake_user_manager_->AddPublicAccountUser(account_id);

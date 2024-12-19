@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -303,12 +304,12 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
 // Tests that token handle errors display the expected error message.
 TEST_F(SigninErrorNotifierTest, TokenHandleTest) {
   // Setup.
-  const CoreAccountId core_account_id =
+  const GaiaId gaia_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+          .gaia;
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      /*user_email=*/kTestEmail, /*gaia_id=*/core_account_id.ToString());
+      /*user_email=*/kTestEmail, gaia_id);
   TokenHandleUtil::StoreTokenHandle(account_id, kTokenHandle);
   TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
   SigninErrorNotifier* signin_error_notifier =
@@ -335,12 +336,12 @@ TEST_F(SigninErrorNotifierTest,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   // Setup Device Account.
-  const CoreAccountId core_account_id =
+  const GaiaId gaia_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+          .gaia;
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      /*user_email=*/kTestEmail, /*gaia_id=*/core_account_id.ToString());
+      /*user_email=*/kTestEmail, gaia_id);
   TokenHandleUtil::StoreTokenHandle(account_id, kTokenHandle);
   TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
   SigninErrorNotifier* signin_error_notifier =

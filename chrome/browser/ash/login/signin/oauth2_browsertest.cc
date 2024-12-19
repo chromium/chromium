@@ -65,6 +65,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -290,7 +291,7 @@ class OAuth2Test : public OobeBaseTest {
                           ? kTestIdTokenAdvancedProtectionEnabled
                           : kTestIdTokenAdvancedProtectionDisabled;
     fake_gaia_.fake_gaia()->SetConfiguration(params);
-    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, kTestGaiaId,
+    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, GaiaId(kTestGaiaId),
                                      kTestRefreshToken);
   }
 
@@ -307,7 +308,7 @@ class OAuth2Test : public OobeBaseTest {
     FakeGaia::Configuration params;
     params.email = kTestEmail;
     fake_gaia_.fake_gaia()->SetConfiguration(params);
-    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, kTestGaiaId,
+    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, GaiaId(kTestGaiaId),
                                      kTestRefreshToken);
   }
 
@@ -316,7 +317,7 @@ class OAuth2Test : public OobeBaseTest {
     params.session_sid_cookie = kTestSession2SIDCookie;
     params.session_lsid_cookie = kTestSession2LSIDCookie;
     fake_gaia_.fake_gaia()->SetConfiguration(params);
-    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, kTestGaiaId,
+    fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, GaiaId(kTestGaiaId),
                                      kTestRefreshToken);
   }
 
@@ -328,7 +329,7 @@ class OAuth2Test : public OobeBaseTest {
 
     // Try login.  Primary profile has changed.
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
+        AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId));
     LoginScreenTestApi::SubmitPassword(account_id, kTestAccountPassword,
                                        true /*check_if_submittable */);
     test::WaitForPrimaryUserSessionStart();
@@ -345,7 +346,7 @@ class OAuth2Test : public OobeBaseTest {
     CoreAccountInfo primary_account =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     EXPECT_TRUE(gaia::AreEmailsSame(kTestEmail, primary_account.email));
-    EXPECT_EQ(kTestGaiaId, primary_account.gaia);
+    EXPECT_EQ(GaiaId(kTestGaiaId), primary_account.gaia);
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
         primary_account.account_id));
   }
@@ -533,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_PRE_PRE_MergeSession) {
                       /*is_under_advanced_protection=*/false);
   // Check for existence of refresh token.
   CoreAccountId account_id =
-      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
+      PickAccountId(GetProfile(), GaiaId(kTestGaiaId), kTestEmail);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(account_id));
@@ -591,12 +592,12 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_MergeSession) {
   EXPECT_EQ(GetOAuthStatusFromLocalState(kTestEmail),
             user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
-  EXPECT_TRUE(
-      TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
-                 kTestAccountPassword));
+  EXPECT_TRUE(TryToLogin(
+      AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId)),
+      kTestAccountPassword));
 
   CoreAccountId account_id =
-      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
+      PickAccountId(GetProfile(), GaiaId(kTestGaiaId), kTestEmail);
   ASSERT_EQ(kTestGaiaId, account_id.ToString());
 
   // Wait for the session merge to finish.
@@ -629,15 +630,15 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_OverlappingContinueSessionRestore) {
   auto thread_blocker = std::make_unique<ThreadBlocker>(nullptr);
 
   // Signs in as the existing user created in pre test.
-  EXPECT_TRUE(
-      TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
-                 kTestAccountPassword));
+  EXPECT_TRUE(TryToLogin(
+      AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId)),
+      kTestAccountPassword));
 
   // Checks that refresh token is not yet loaded.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   const CoreAccountId account_id =
-      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
+      PickAccountId(GetProfile(), GaiaId(kTestGaiaId), kTestEmail);
   EXPECT_FALSE(identity_manager->HasAccountWithRefreshToken(account_id));
 
   // Invokes ContinueSessionRestore multiple times and there should be

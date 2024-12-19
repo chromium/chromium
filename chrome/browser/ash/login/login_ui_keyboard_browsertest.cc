@@ -45,6 +45,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -86,9 +87,9 @@ class LoginUIKeyboardTest : public LoginManagerTest {
  public:
   LoginUIKeyboardTest() : LoginManagerTest() {
     test_users_.push_back(
-        AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId));
+        AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId)));
     test_users_.push_back(
-        AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId));
+        AccountId::FromUserEmailGaiaId(kTestUser2, GaiaId(kTestUser2GaiaId)));
   }
   ~LoginUIKeyboardTest() override = default;
 
@@ -121,7 +122,7 @@ class LoginUIUserAddingKeyboardTest : public LoginUIKeyboardTest {
  public:
   LoginUIUserAddingKeyboardTest() {
     test_users_.push_back(
-        AccountId::FromUserEmailGaiaId(kTestUser3, kTestUser3GaiaId));
+        AccountId::FromUserEmailGaiaId(kTestUser3, GaiaId(kTestUser3GaiaId)));
   }
 
  protected:
@@ -262,7 +263,7 @@ class LoginUIKeyboardTestWithUsersAndOwner : public LoginManagerTest {
         &user_input_methods);
 
     GetFakeUserManager().SetOwnerId(
-        AccountId::FromUserEmailGaiaId(kTestUser3, kTestUser3GaiaId));
+        AccountId::FromUserEmailGaiaId(kTestUser3, GaiaId(kTestUser3GaiaId)));
 
     LoginManagerTest::SetUpOnMainThread();
   }
@@ -271,13 +272,13 @@ class LoginUIKeyboardTestWithUsersAndOwner : public LoginManagerTest {
   // reloaded in the main test.
   void InitUserLastInputMethod() {
     input_method::SetUserLastInputMethodPreferenceForTesting(
-        AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId),
+        AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId)),
         user_input_methods[0]);
     input_method::SetUserLastInputMethodPreferenceForTesting(
-        AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId),
+        AccountId::FromUserEmailGaiaId(kTestUser2, GaiaId(kTestUser2GaiaId)),
         user_input_methods[1]);
     input_method::SetUserLastInputMethodPreferenceForTesting(
-        AccountId::FromUserEmailGaiaId(kTestUser3, kTestUser3GaiaId),
+        AccountId::FromUserEmailGaiaId(kTestUser3, GaiaId(kTestUser3GaiaId)),
         user_input_methods[2]);
 
     PrefService* local_state = g_browser_process->local_state();
@@ -313,9 +314,12 @@ void LoginUIKeyboardTestWithUsersAndOwner::CheckGaiaKeyboard() {
 
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
                        PRE_CheckPODScreenKeyboard) {
-  RegisterUser(AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId));
-  RegisterUser(AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId));
-  RegisterUser(AccountId::FromUserEmailGaiaId(kTestUser3, kTestUser3GaiaId));
+  RegisterUser(
+      AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId)));
+  RegisterUser(
+      AccountId::FromUserEmailGaiaId(kTestUser2, GaiaId(kTestUser2GaiaId)));
+  RegisterUser(
+      AccountId::FromUserEmailGaiaId(kTestUser3, GaiaId(kTestUser3GaiaId)));
 
   InitUserLastInputMethod();
 
@@ -469,7 +473,7 @@ class FirstLoginKeyboardTest : public LoginManagerTest {
 
  protected:
   AccountId test_user_{
-      AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)};
+      AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId))};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 };

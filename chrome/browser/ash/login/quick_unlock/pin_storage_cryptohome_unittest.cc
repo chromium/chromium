@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::quick_unlock {
@@ -228,7 +229,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
 
   std::unique_ptr<PinStorageCryptohome> storage_;
   AccountId test_account_id_{
-      AccountId::FromUserEmailGaiaId("user@example.com", "11111")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("11111"))};
   std::unique_ptr<UserContext> user_context_ =
       std::make_unique<UserContext>(user_manager::UserType::kRegular,
                                     test_account_id_);

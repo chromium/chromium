@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -138,7 +139,7 @@ class KioskBaseTest : public OobeBaseTest {
   std::unique_ptr<FakeOwnerSettingsService> owner_settings_service_;
 
   const AccountId test_owner_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestOwnerEmail, "111");
+      AccountId::FromUserEmailGaiaId(kTestOwnerEmail, GaiaId("111"));
 
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 

@@ -54,6 +54,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -287,7 +288,8 @@ class SyncConsentTest : public OobeBaseTest {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     AccountInfo account_info =
-        identity_manager->FindExtendedAccountInfoByGaiaId(test::kTestGaiaId);
+        identity_manager->FindExtendedAccountInfoByGaiaId(
+            GaiaId(test::kTestGaiaId));
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
         !is_minor_user);

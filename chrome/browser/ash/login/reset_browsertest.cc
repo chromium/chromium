@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -147,7 +148,7 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
 
  private:
   LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)};
+      AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId))};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };

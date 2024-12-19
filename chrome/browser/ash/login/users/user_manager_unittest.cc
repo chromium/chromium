@@ -56,6 +56,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -72,11 +73,11 @@ AccountId CreateDeviceLocalAccountId(const std::string& account_id,
 constexpr char kDeviceLocalAccountId[] = "device_local_account";
 
 const AccountId kOwnerAccountId =
-    AccountId::FromUserEmailGaiaId("owner@example.com", "1234567890");
+    AccountId::FromUserEmailGaiaId("owner@example.com", GaiaId("1234567890"));
 const AccountId kAccountId0 =
-    AccountId::FromUserEmailGaiaId("user0@example.com", "0123456789");
+    AccountId::FromUserEmailGaiaId("user0@example.com", GaiaId("0123456789"));
 const AccountId kAccountId1 =
-    AccountId::FromUserEmailGaiaId("user1@example.com", "9012345678");
+    AccountId::FromUserEmailGaiaId("user1@example.com", GaiaId("9012345678"));
 const AccountId kKioskAccountId =
     CreateDeviceLocalAccountId(kDeviceLocalAccountId,
                                policy::DeviceLocalAccountType::kKioskApp);
@@ -269,7 +270,8 @@ class UserManagerTest : public testing::Test {
         user_manager::prefs::kDeviceLocalAccountsWithSavedData,
         base::Value(base::Value::List().Append(email)));
     user_manager::KnownUser(local_state_->Get())
-        .SaveKnownUser(AccountId::FromUserEmailGaiaId(email, "fake_gaia_id"));
+        .SaveKnownUser(
+            AccountId::FromUserEmailGaiaId(email, GaiaId("fake_gaia_id")));
   }
 
   size_t GetArcKioskAccountsWithSavedDataCount() {

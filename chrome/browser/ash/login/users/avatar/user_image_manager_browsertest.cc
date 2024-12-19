@@ -72,6 +72,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/rsa_private_key.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -521,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromProfileImage) {
 
 IN_PROC_BROWSER_TEST_F(UserImageManagerTest, ProfileImageSetForNewUser) {
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      "testing-new-user@example.com", "testing-new-user-gaia-id");
+      "testing-new-user@example.com", GaiaId("testing-new-user-gaia-id"));
   SetupFakeGaia(account_id);
 
   UserContext user_context = {user_manager::UserType::kRegular, account_id};
@@ -597,7 +598,8 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
     ASSERT_TRUE(base::WriteFile(user_key_file, user_key_bits));
     user_policy_.policy_data().set_username(
         enterprise_account_id_.GetUserEmail());
-    user_policy_.policy_data().set_gaia_id(enterprise_account_id_.GetGaiaId());
+    user_policy_.policy_data().set_gaia_id(
+        enterprise_account_id_.GetGaiaId().ToString());
 
     policy_image_ = test::ImageLoader(test_data_dir_.Append(
                                           test::kUserAvatarImage2RelativePath))

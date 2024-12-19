@@ -142,8 +142,8 @@ class DemoLoginControllerTest : public testing::Test {
           EXPECT_EQ(g_browser_process->local_state()->GetString(
                         prefs::kDemoModeSessionIdentifier),
                     device_id);
-          EXPECT_EQ(g_browser_process->local_state()->GetString(
-                        prefs::kDemoAccountGaiaId),
+          EXPECT_EQ(GaiaId(g_browser_process->local_state()->GetString(
+                        prefs::kDemoAccountGaiaId)),
                     gaia_id);
 
           loop.Quit();
@@ -164,7 +164,7 @@ class DemoLoginControllerTest : public testing::Test {
   void AppendTestUserToUserList() {
     EXPECT_EQ(1U, fake_user_manager_->GetUsers().size());
     fake_user_manager_->AddUser(AccountId::FromNonCanonicalEmail(
-        kTestEmail, kTestGaiaId, AccountType::GOOGLE));
+        kTestEmail, GaiaId(kTestGaiaId), AccountType::GOOGLE));
     // Expect 2 users: test user with `kTestGaiaId` and public account user.
     EXPECT_EQ(2U, fake_user_manager_->GetUsers().size());
   }
@@ -226,8 +226,8 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
         EXPECT_EQ(g_browser_process->local_state()->GetString(
                       prefs::kDemoModeSessionIdentifier),
                   device_id);
-        EXPECT_EQ(g_browser_process->local_state()->GetString(
-                      prefs::kDemoAccountGaiaId),
+        EXPECT_EQ(GaiaId(g_browser_process->local_state()->GetString(
+                      prefs::kDemoAccountGaiaId)),
                   gaia_id);
         loop.Quit();
       }));
@@ -272,7 +272,7 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
   ASSERT_TRUE(test_url_loader_factory_.IsPending(GetCleanUpUrl().spec()));
   test_url_loader_factory_.AddResponse(GetCleanUpUrl().spec(), "{}");
 
-  MockSuccessSetupResponseAndVerifyLogin(/*gaia_id=*/"234");
+  MockSuccessSetupResponseAndVerifyLogin(GaiaId("234"));
   const auto new_session_id =
       local_state->GetString(prefs::kDemoModeSessionIdentifier);
   EXPECT_NE(new_session_id, last_session_id);
@@ -303,7 +303,7 @@ TEST_F(DemoLoginControllerTest, ServerCleanUpFailed) {
   loop.Run();
 
   // Verify login:
-  MockSuccessSetupResponseAndVerifyLogin(/*gaia_id=*/"234");
+  MockSuccessSetupResponseAndVerifyLogin(GaiaId("234"));
 
   const auto new_session_id =
       local_state->GetString(prefs::kDemoModeSessionIdentifier);

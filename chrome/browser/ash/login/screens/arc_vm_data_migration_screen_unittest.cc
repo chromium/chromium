@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/time_format.h"
 
@@ -211,8 +212,8 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile(kProfileName);
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), kGaiaId);
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        profile_->GetProfileUserName(), GaiaId(kGaiaId));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(profile_));

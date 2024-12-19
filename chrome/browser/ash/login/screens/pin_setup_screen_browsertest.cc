@@ -46,6 +46,7 @@
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -271,7 +272,7 @@ class PinSetupScreenTest : public OobeBaseTest {
         auto user_context = LoginManagerMixin::CreateDefaultUserContext(
             LoginManagerMixin::TestUserInfo(
                 AccountId::FromUserEmailGaiaId(test::kTestEmail,
-                                               test::kTestGaiaId),
+                                               GaiaId(test::kTestGaiaId)),
                 /*factors=*/{}));
         login_manager_mixin_.LoginAsNewRegularUser(std::move(user_context));
       } else {
@@ -390,8 +391,9 @@ class PinSetupScreenTest : public OobeBaseTest {
   EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{
       &mixin_host_,
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)),
       &policy_server_};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   CryptohomeMixin cryptohome_{&mixin_host_};

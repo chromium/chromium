@@ -29,6 +29,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -63,10 +64,10 @@ class LockScreenReauthManagerTest : public testing::Test {
   void LockScreen();
 
   const AccountId saml_login_account_id1_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, kSAMLUserId1);
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, GaiaId(kSAMLUserId1));
 
   const AccountId saml_login_account_id2_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail2, kSAMLUserId2);
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail2, GaiaId(kSAMLUserId2));
 
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,

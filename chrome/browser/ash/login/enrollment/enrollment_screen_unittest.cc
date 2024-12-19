@@ -289,7 +289,7 @@ class EnrollmentScreenBaseTest : public testing::Test {
     EXPECT_CALL(mock_view_, Show()).WillOnce([this, license_type]() {
       login::OnlineSigninArtifacts signin_artifacts;
       signin_artifacts.email = kTestUserEmail;
-      signin_artifacts.gaia_id = kTestUserGaiaId;
+      signin_artifacts.gaia_id = GaiaId(kTestUserGaiaId);
       signin_artifacts.password = kTestUserPassword;
       signin_artifacts.using_saml = false;
 

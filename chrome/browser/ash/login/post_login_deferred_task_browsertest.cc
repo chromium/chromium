@@ -27,6 +27,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ash::full_restore::RestoreOption;
@@ -121,7 +122,7 @@ class PostLoginDeferredTaskTest
   RestoreOption restore_option() const { return std::get<1>(GetParam()); }
 
   AccountId account_id() const {
-    return AccountId::FromUserEmailGaiaId(kTestUser, kTestGaiaId);
+    return AccountId::FromUserEmailGaiaId(kTestUser, GaiaId(kTestGaiaId));
   }
 
   SessionState session_state() const {

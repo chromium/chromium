@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -57,7 +58,7 @@ class EnterpriseEnrollmentTestBase : public OobeBaseTest {
   void SubmitEnrollmentCredentials() {
     login::OnlineSigninArtifacts signin_artifacts;
     signin_artifacts.email = kTestUserEmail;
-    signin_artifacts.gaia_id = kTestUserGaiaId;
+    signin_artifacts.gaia_id = GaiaId(kTestUserGaiaId);
     signin_artifacts.password = kTestUserPassword;
     signin_artifacts.using_saml = false;
 
