@@ -106,9 +106,6 @@ found in the LICENSE file.
 
     <color name="google_green_300">@color/baseline_tertiary_80</color>
     <color name="google_green_600">@color/baseline_tertiary_40</color>
-    <color name="modern_grey_500" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
-    <color name="modern_grey_600">@color/baseline_neutral_40</color>
-    <color name="modern_grey_700">@color/baseline_neutral_30</color>
     <color name="modern_grey_800" tools:ignore="UnusedResources">@color/baseline_neutral_20</color>
     <color name="modern_grey_800_alpha_38">@color/baseline_neutral_20_alpha_38</color>
     <color name="modern_grey_900">@color/baseline_neutral_10</color>
