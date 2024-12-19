@@ -45,17 +45,19 @@ std::string ChromeAndroidImpl::GetOperatingSystemName() {
   return "ANDROID";
 }
 
-Status ChromeAndroidImpl::GetWindow(const std::string& target_id,
+Status ChromeAndroidImpl::GetWindow(const std::string& tab_target_id,
                                     internal::Window& window) {
-  WebView* web_view = nullptr;
-  Status status = GetWebViewById(target_id, &web_view);
-  if (status.IsError())
+  WebView* page = nullptr;
+  Status status =
+      GetActivePageByWebViewId(tab_target_id, &page, /*wait_for_page=*/true);
+  if (status.IsError()) {
     return status;
+  }
 
   std::unique_ptr<base::Value> result;
   std::string expression =
       "[window.screenX, window.screenY, window.outerWidth, window.outerHeight]";
-  status = web_view->EvaluateScript(target_id, expression, false, &result);
+  status = page->EvaluateScript(page->GetId(), expression, false, &result);
   if (status.IsError())
     return status;
 
@@ -92,4 +94,3 @@ bool ChromeAndroidImpl::HasTouchScreen() const {
 Status ChromeAndroidImpl::QuitImpl() {
   return device_->TearDown();
 }
-
