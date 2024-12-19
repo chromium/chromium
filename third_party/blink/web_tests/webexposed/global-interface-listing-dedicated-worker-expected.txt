@@ -735,6 +735,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method requestAdapter
 [Worker] interface GPUAdapter
 [Worker]     attribute @@toStringTag
+[Worker]     getter featureLevel
 [Worker]     getter features
 [Worker]     getter info
 [Worker]     getter isCompatibilityMode

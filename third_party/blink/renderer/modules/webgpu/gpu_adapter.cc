@@ -147,6 +147,8 @@ GPUAdapter::GPUAdapter(
   adapter_type_ = info.adapterType;
   backend_type_ = info.backendType;
   is_compatibility_mode_ = info.compatibilityMode;
+  // TODO(crbug.com/382291443): Report feature level from wgpu::Adapter.
+  feature_level_ = info.compatibilityMode ? "compatibility" : "core";
 
   // TODO(crbug.com/359418629): Report xr compatibility in GetInfo()
   is_xr_compatible_ = options->xrCompatible();
@@ -247,6 +249,10 @@ bool GPUAdapter::SupportsMultiPlanarFormats() const {
 
 bool GPUAdapter::isCompatibilityMode() const {
   return is_compatibility_mode_;
+}
+
+String GPUAdapter::featureLevel() const {
+  return feature_level_;
 }
 
 void GPUAdapter::OnRequestDeviceCallback(
