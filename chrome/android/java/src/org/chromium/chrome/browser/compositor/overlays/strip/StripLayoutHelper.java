@@ -2015,8 +2015,7 @@ public class StripLayoutHelper
                             mActionConfirmationManager,
                             mModalDialogManager,
                             mWindowAndroid,
-                            mDataSharingTabManager,
-                            (unused) -> {});
+                            mDataSharingTabManager);
         }
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
         RectProvider anchorRectProvider = new RectProvider();
