@@ -427,10 +427,11 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
 
 scoped_refptr<FileSystemAccessObserverQuotaManager>
 FileSystemAccessWatcherManager::GetOrCreateQuotaManagerForTesting(
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    ukm::SourceId ukm_source_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return GetOrCreateQuotaManager(storage_key, ukm::kInvalidSourceId);
+  return GetOrCreateQuotaManager(storage_key, ukm_source_id);
 }
 
 scoped_refptr<FileSystemAccessObserverQuotaManager>

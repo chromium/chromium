@@ -105,7 +105,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   }
 
   scoped_refptr<FileSystemAccessObserverQuotaManager>
-  GetOrCreateQuotaManagerForTesting(const blink::StorageKey& storage_key);
+  GetOrCreateQuotaManagerForTesting(const blink::StorageKey& storage_key,
+                                    ukm::SourceId ukm_source_id);
   FileSystemAccessObserverQuotaManager* GetQuotaManagerForTesting(
       const blink::StorageKey& storage_key);
 
