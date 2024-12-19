@@ -137,6 +137,7 @@ class DataSharingServiceImpl : public DataSharingService,
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUiDelegate() override;
+  void AddGroupDataForTesting(GroupData group_data) override;
 
   // GroupDataModel::Observer implementation.
   void OnModelLoaded() override;
@@ -212,6 +213,9 @@ class DataSharingServiceImpl : public DataSharingService,
   // required to be able to inform users about which groups they have been
   // removed from.
   std::unordered_map<GroupId, GroupData> deleted_groups_this_session_;
+
+  // Stores arbitrary GroupData used for testing.
+  std::unordered_map<GroupId, GroupData> group_data_for_testing_;
 
   base::WeakPtrFactory<DataSharingServiceImpl> weak_ptr_factory_{this};
 };

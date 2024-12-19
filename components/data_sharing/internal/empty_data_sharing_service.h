@@ -89,6 +89,7 @@ class EmptyDataSharingService : public DataSharingService {
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUiDelegate() override;
+  void AddGroupDataForTesting(GroupData group_data) override;
 };
 
 }  // namespace data_sharing

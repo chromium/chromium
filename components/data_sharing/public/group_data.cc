@@ -11,6 +11,19 @@ namespace data_sharing {
 
 GroupMember::GroupMember() = default;
 
+GroupMember::GroupMember(GaiaId gaia_id,
+                         std::string display_name,
+                         std::string email,
+                         MemberRole role,
+                         GURL avatar_url,
+                         std::string given_name)
+    : gaia_id(gaia_id),
+      display_name(display_name),
+      email(email),
+      role(role),
+      avatar_url(avatar_url),
+      given_name(given_name) {}
+
 GroupMember::GroupMember(const GroupMember&) = default;
 GroupMember& GroupMember::operator=(const GroupMember&) = default;
 

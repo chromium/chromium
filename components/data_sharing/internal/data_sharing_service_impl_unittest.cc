@@ -18,6 +18,7 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/features.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/data_sharing/public/protocol/group_data.pb.h"
 #include "components/data_sharing/test_support/fake_data_sharing_sdk_delegate.h"
@@ -334,6 +335,39 @@ TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {
   // Verify invalid group data.
   result_url = data_sharing_service_->GetDataSharingUrl(GroupData());
   EXPECT_FALSE(result_url);
+}
+
+TEST_P(DataSharingServiceImplTest, AddGroupDataForTesting) {
+  data_sharing::GroupId group_id = data_sharing::GroupId(kGroupId);
+
+  const GaiaId gaia_id = "gaia_id";
+  const std::string display_name = "Invitee Display Name";
+  const std::string email = "invitee@mail.com";
+  const MemberRole role = MemberRole::kInvitee;
+  const GURL avatar_url = GURL("chrome://newtab");
+  const std::string given_name = "Invitee Given Name";
+  const std::string access_token = "fake_access_token";
+
+  GroupMember group_member =
+      GroupMember(gaia_id, display_name, email, role, avatar_url, given_name);
+  GroupData group_data =
+      GroupData(group_id, display_name, {group_member}, access_token);
+
+  data_sharing_service_->AddGroupDataForTesting(std::move(group_data));
+
+  std::optional<GroupData> returned_group_data =
+      data_sharing_service_->ReadGroup(group_id);
+
+  EXPECT_EQ(returned_group_data->members.size(), 1u);
+  EXPECT_EQ(returned_group_data->display_name, display_name);
+  EXPECT_EQ(returned_group_data->group_token.group_id, group_id);
+  EXPECT_EQ(returned_group_data->group_token.access_token, access_token);
+  EXPECT_EQ(returned_group_data->members[0].gaia_id, gaia_id);
+  EXPECT_EQ(returned_group_data->members[0].display_name, display_name);
+  EXPECT_EQ(returned_group_data->members[0].email, email);
+  EXPECT_EQ(returned_group_data->members[0].role, role);
+  EXPECT_EQ(returned_group_data->members[0].avatar_url, avatar_url);
+  EXPECT_EQ(returned_group_data->members[0].given_name, given_name);
 }
 
 INSTANTIATE_TEST_SUITE_P(DataSharingServiceImplTestInstantiation,

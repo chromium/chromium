@@ -4,12 +4,16 @@
 
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 
+#include <optional>
+
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version_info/channel.h"
 #include "components/data_sharing/internal/avatar_fetcher.h"
@@ -153,6 +157,11 @@ bool DataSharingServiceImpl::IsGroupDataModelLoaded() {
 
 std::optional<GroupData> DataSharingServiceImpl::ReadGroup(
     const GroupId& group_id) {
+  if (group_data_for_testing_.contains(group_id)) {
+    CHECK_IS_TEST();
+    return group_data_for_testing_[group_id];
+  }
+
   if (!group_data_model_) {
     return std::nullopt;
   }
@@ -620,6 +629,10 @@ void DataSharingServiceImpl::SetUIDelegate(
 
 DataSharingUIDelegate* DataSharingServiceImpl::GetUiDelegate() {
   return ui_delegate_.get();
+}
+
+void DataSharingServiceImpl::AddGroupDataForTesting(GroupData group_data) {
+  group_data_for_testing_.emplace(group_data.group_token.group_id, group_data);
 }
 
 void DataSharingServiceImpl::OnAccessTokenAdded(

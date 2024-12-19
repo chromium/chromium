@@ -266,6 +266,12 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
 
   // Get the current DataSharingUIDelegate instance.
   virtual DataSharingUIDelegate* GetUiDelegate() = 0;
+
+  // Sets a group for testing. When ReadGroup is called, the GroupData that
+  // matches GroupId will be returned. This function does not notify observers
+  // of the group being added. Settings 2 groups with the same GroupId will
+  // replace the existing GroupData.
+  virtual void AddGroupDataForTesting(GroupData group_data) = 0;
 };
 
 }  // namespace data_sharing

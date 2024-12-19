@@ -139,4 +139,6 @@ DataSharingUIDelegate* EmptyDataSharingService::GetUiDelegate() {
   return nullptr;
 }
 
+void EmptyDataSharingService::AddGroupDataForTesting(GroupData group_data) {}
+
 }  // namespace data_sharing

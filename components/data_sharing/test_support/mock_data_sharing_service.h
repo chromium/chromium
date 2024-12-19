@@ -11,6 +11,7 @@
 #include "base/types/expected.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/group_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace data_sharing {
@@ -93,6 +94,7 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD1(SetSDKDelegate, void(std::unique_ptr<DataSharingSDKDelegate>));
   MOCK_METHOD1(SetUIDelegate, void(std::unique_ptr<DataSharingUIDelegate>));
   MOCK_METHOD0(GetUiDelegate, DataSharingUIDelegate*());
+  MOCK_METHOD1(AddGroupDataForTesting, void(GroupData));
 };
 
 }  // namespace data_sharing

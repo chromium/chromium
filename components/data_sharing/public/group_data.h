@@ -23,6 +23,13 @@ enum class MemberRole { kUnknown = 0, kOwner = 1, kMember = 2, kInvitee = 3 };
 struct GroupMember {
   GroupMember();
 
+  GroupMember(GaiaId gaia_id,
+              std::string display_name,
+              std::string email,
+              MemberRole role,
+              GURL avatar_url,
+              std::string given_name);
+
   GroupMember(const GroupMember&);
   GroupMember& operator=(const GroupMember&);
 
