@@ -739,7 +739,9 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SAFETY_HUB_MAGIC_STACK, false);
     public static final CachedFlag sSafetyHubWeakAndReusedPasswords =
             newCachedFlag(SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS, false);
-    public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
+    public static final CachedFlag sSearchInCCT =
+            newCachedFlag(
+                    SEARCH_IN_CCT, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sSearchInCCTAlternateTapHandling =
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING, false);
     public static final CachedFlag sSettingsSingleActivity =

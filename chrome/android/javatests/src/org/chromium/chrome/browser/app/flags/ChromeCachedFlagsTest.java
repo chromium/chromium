@@ -56,7 +56,6 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
                     ChromeFeatureList.sSafetyHubMagicStack,
-                    ChromeFeatureList.sSearchInCCT,
                     ChromeFeatureList.sTabGroupPaneAndroid,
                     ChromeFeatureList.sTabResumptionModuleAndroid,
                     ChromeFeatureList.sTabStateFlatBuffer,
