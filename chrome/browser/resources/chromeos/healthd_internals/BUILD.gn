@@ -45,6 +45,7 @@ build_webui("build") {
     "utils/cpu_usage_utils.ts",
     "utils/externs.ts",
     "utils/line_chart_configs.ts",
+    "utils/memory_utils.ts",
     "utils/number_utils.ts",
     "utils/page_interface.ts",
     "utils/ui_update_helper.ts",

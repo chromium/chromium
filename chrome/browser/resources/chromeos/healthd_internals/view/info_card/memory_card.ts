@@ -7,20 +7,11 @@ import './info_card.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HealthdApiMemoryResult, HealthdApiTelemetryResult, SystemZramInfo} from '../../utils/externs.js';
+import {getFormattedMemory, getFormattedMemoryFromRaw, getFormattedMemoryWithPercentage, MemoryUnitEnum} from '../../utils/memory_utils.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
 
 import type {HealthdInternalsInfoCardElement} from './info_card.js';
 import {getTemplate} from './memory_card.html.js';
-
-/**
- * The value of memory unit in selected menu.
- */
-enum MemoryUnitEnum {
-  AUTO = 'auto',
-  GIBI = 'gibibyte',
-  MEBI = 'mebibyte',
-  KIBI = 'kibibyte',
-}
 
 export interface HealthdInternalsMemoryCardElement {
   $: {
@@ -97,25 +88,27 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
       totalMemoryKib: number, freeMemoryKib: number,
       availableMemoryKib: number) {
     const usedMemoryKib = totalMemoryKib - availableMemoryKib;
+    const unit = this.memoryUnit;
     this.$.infoCard.updateDisplayedInfo(0, {
-      'Total': this.getFormattedMemory(totalMemoryKib),
+      'Total': getFormattedMemory(unit, totalMemoryKib),
       'Used':
-          this.getFormattedMemoryWithPercentage(usedMemoryKib, totalMemoryKib),
-      'Avail': this.getFormattedMemoryWithPercentage(
-          availableMemoryKib, totalMemoryKib),
+          getFormattedMemoryWithPercentage(unit, usedMemoryKib, totalMemoryKib),
+      'Avail': getFormattedMemoryWithPercentage(
+          unit, availableMemoryKib, totalMemoryKib),
       'Free':
-          this.getFormattedMemoryWithPercentage(freeMemoryKib, totalMemoryKib),
+          getFormattedMemoryWithPercentage(unit, freeMemoryKib, totalMemoryKib),
     });
   }
 
   private updateSwapRow(totalSwapMemoryKib: number, freeSwapMemoryKib: number) {
     const usedSwapMemoryKib = totalSwapMemoryKib - freeSwapMemoryKib;
+    const unit = this.memoryUnit;
     this.$.infoCard.updateDisplayedInfo(1, {
-      'Total': this.getFormattedMemory(totalSwapMemoryKib),
-      'Used': this.getFormattedMemoryWithPercentage(
-          usedSwapMemoryKib, totalSwapMemoryKib),
-      'Free': this.getFormattedMemoryWithPercentage(
-          freeSwapMemoryKib, totalSwapMemoryKib),
+      'Total': getFormattedMemory(unit, totalSwapMemoryKib),
+      'Used': getFormattedMemoryWithPercentage(
+          unit, usedSwapMemoryKib, totalSwapMemoryKib),
+      'Free': getFormattedMemoryWithPercentage(
+          unit, freeSwapMemoryKib, totalSwapMemoryKib),
     });
   }
 
@@ -130,70 +123,35 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
         (originalDataSizeKib - compressedDataSizeKib) / originalDataSizeKib *
         100;
 
+    const unit = this.memoryUnit;
     this.$.infoCard.updateDisplayedInfo(2, {
-      'Total Used': this.getFormattedMemory(totalUsedMemoryKib),
-      'Original Size': this.getFormattedMemory(originalDataSizeKib),
-      'Compressed Size': this.getFormattedMemory(compressedDataSizeKib),
+      'Total Used': getFormattedMemory(unit, totalUsedMemoryKib),
+      'Original Size': getFormattedMemory(unit, originalDataSizeKib),
+      'Compressed Size': getFormattedMemory(unit, compressedDataSizeKib),
       'Compression Ratio': toFixedFloat(compressionRatio, 2),
       'Space Reduction': `${toFixedFloat(spaceReductionPercentage, 2)}%`,
     });
   }
 
   private updateDetailsRow(memory: HealthdApiMemoryResult) {
+    const unit = this.memoryUnit;
     this.$.infoCard.updateDisplayedInfo(3, {
-      'Buffers': this.getFormattedMemoryFromRaw(memory.buffersKib),
-      'Page Cache': this.getFormattedMemoryFromRaw(memory.pageCacheKib),
-      'Shared': this.getFormattedMemoryFromRaw(memory.sharedMemoryKib),
-      'Active': this.getFormattedMemoryFromRaw(memory.activeMemoryKib),
-      'Inactive': this.getFormattedMemoryFromRaw(memory.inactiveMemoryKib),
-      'Total Slab': this.getFormattedMemoryFromRaw(memory.totalSlabMemoryKib),
+      'Buffers': getFormattedMemoryFromRaw(unit, memory.buffersKib),
+      'Page Cache': getFormattedMemoryFromRaw(unit, memory.pageCacheKib),
+      'Shared': getFormattedMemoryFromRaw(unit, memory.sharedMemoryKib),
+      'Active': getFormattedMemoryFromRaw(unit, memory.activeMemoryKib),
+      'Inactive': getFormattedMemoryFromRaw(unit, memory.inactiveMemoryKib),
+      'Total Slab': getFormattedMemoryFromRaw(unit, memory.totalSlabMemoryKib),
       'Reclaimable Slab':
-          this.getFormattedMemoryFromRaw(memory.reclaimableSlabMemoryKib),
+          getFormattedMemoryFromRaw(unit, memory.reclaimableSlabMemoryKib),
       'Unreclaimable Slab':
-          this.getFormattedMemoryFromRaw(memory.unreclaimableSlabMemoryKib),
-      'Cached Swap': this.getFormattedMemoryFromRaw(memory.cachedSwapMemoryKib),
+          getFormattedMemoryFromRaw(unit, memory.unreclaimableSlabMemoryKib),
+      'Cached Swap':
+          getFormattedMemoryFromRaw(unit, memory.cachedSwapMemoryKib),
     });
   }
 
-  private getFormattedMemoryFromRaw(rawMemoryKiB?: string): string {
-    if (rawMemoryKiB === undefined) {
-      return 'N/A';
-    }
-    return this.getFormattedMemory(parseInt(rawMemoryKiB));
-  }
 
-  private getFormattedMemoryWithPercentage(memory: number, totalMemory: number):
-      string {
-    return `${this.getFormattedMemory(memory)} (${
-        toFixedFloat(memory / totalMemory * 100, 2)}%)`;
-  }
-
-  private getFormattedMemory(memory: number): string {
-    switch (this.memoryUnit) {
-      case MemoryUnitEnum.AUTO: {
-        const units = ['KiB', 'MiB', 'GiB'];
-        let unitIdx = 0;
-        while (memory > 1024 && unitIdx + 1 < units.length) {
-          memory /= 1024;
-          unitIdx++;
-        }
-        return `${toFixedFloat(memory, 2)} ${units[unitIdx]}`;
-      }
-      case MemoryUnitEnum.GIBI: {
-        return `${toFixedFloat(memory / 1024 / 1024, 2)} GiB`;
-      }
-      case MemoryUnitEnum.MEBI: {
-        return `${toFixedFloat(memory / 1024, 2)} MiB`;
-      }
-      case MemoryUnitEnum.KIBI: {
-        return `${memory} KiB`;
-      }
-      default: {
-        console.error('Unknown memory unit: ', this.memoryUnit);
-        return 'N/A';
-      }
-    }
-  }
 
   private onMemoryUnitChanged() {
     this.memoryUnit = this.$.memoryUnitSelector.value as MemoryUnitEnum;
