@@ -87,18 +87,30 @@ const TestParam kTestParams[] = {
 
     // Hero type means the type will be shown in the subtitle of the dialog.
     // Password is a hero type.
-    {.test_suffix = "SingleSectionHeroTypeWithOneItem",
+    {.test_suffix = "SingleSectionPasswordsHeroTypeWithOneItem",
      .section_item_count_type = {{1, syncer::DataType::PASSWORDS}}},
-    {.test_suffix = "SingleSectionHeroTypeWithMultipleItems",
+    {.test_suffix = "SingleSectionPasswordsHeroTypeWithMultipleItems",
      .section_item_count_type = {{5, syncer::DataType::PASSWORDS}}},
 
     // Hero type with multiple sections. Should show "and other items" in the
     // subtitle of the dialog.
-    {.test_suffix = "MultipleSectionsHeroTypeWithOneItem",
+    {.test_suffix = "MultipleSectionsPasswordsHeroTypeWithOneItem",
      .section_item_count_type = {{1, syncer::DataType::PASSWORDS},
                                  {3, syncer::DataType::CONTACT_INFO}}},
-    {.test_suffix = "MultipleSectionsHeroTypeWithMultipleItems",
+    {.test_suffix = "MultipleSectionsPasswordsHeroTypeWithMultipleItems",
      .section_item_count_type = {{5, syncer::DataType::PASSWORDS},
+                                 {3, syncer::DataType::CONTACT_INFO}}},
+
+    // Bookmarks hero type.
+    {.test_suffix = "SingleSectionBookmarksHeroTypeWithOneItem",
+     .section_item_count_type = {{1, syncer::DataType::BOOKMARKS}}},
+    {.test_suffix = "SingleSectionBookmarksHeroTypeWithMultipleItems",
+     .section_item_count_type = {{5, syncer::DataType::BOOKMARKS}}},
+    {.test_suffix = "MultipleSectionsBookmarksHeroTypeWithOneItem",
+     .section_item_count_type = {{1, syncer::DataType::BOOKMARKS},
+                                 {3, syncer::DataType::CONTACT_INFO}}},
+    {.test_suffix = "MultipleSectionsBookmarksHeroTypeWithMultipleItems",
+     .section_item_count_type = {{5, syncer::DataType::BOOKMARKS},
                                  {3, syncer::DataType::CONTACT_INFO}}},
 
     // Addresses is not a hero type. It should not show in the subtitle.
