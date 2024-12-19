@@ -4,7 +4,7 @@
 This file contains definitions of resources that will be translated for each
 locale.  The variables is_win, is_macosx, is_linux, and is_posix are available
 for making strings OS specific.  Other platform defines such as use_titlecase
-are declared in tools/grit/grit_rule.gni.
+are declared in tools/grit/grit_args.gni.
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
@@ -18806,7 +18806,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Glic status tray icon strings -->
-    <if expr="is_win or is_macosx">
+    <if expr="enable_glic">
       <!-- TODO(https://crbug.com/382287104): Replace with finalized strings -->
       <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
         Open

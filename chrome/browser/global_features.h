@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "chrome/common/buildflags.h"
 
 namespace system_permission_settings {
 class PlatformHandle;
@@ -17,6 +18,8 @@ class PlatformHandle;
 namespace whats_new {
 class WhatsNewRegistry;
 }  // namespace whats_new
+#endif
+#if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
 class GlicBackgroundModeManager;
 class GlicProfileManager;
@@ -53,13 +56,13 @@ class GlobalFeatures {
   whats_new::WhatsNewRegistry* whats_new_registry() {
     return whats_new_registry_.get();
   }
+#endif
 
+#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicProfileManager* glic_profile_manager() {
     return glic_profile_manager_.get();
   }
-#endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   glic::GlicBackgroundModeManager* glic_background_mode_manager() {
     return glic_background_mode_manager_.get();
   }
@@ -86,10 +89,10 @@ class GlobalFeatures {
       system_permissions_platform_handle_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::unique_ptr<whats_new::WhatsNewRegistry> whats_new_registry_;
-  std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;
 #endif
