@@ -52,6 +52,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -265,7 +266,7 @@ class GuestOsSharePathTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
     account_id_ = AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), "12345");
+        profile()->GetProfileUserName(), GaiaId("12345"));
     GetFakeUserManager()->AddUser(account_id_);
     profile()->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
     drivefs_ =

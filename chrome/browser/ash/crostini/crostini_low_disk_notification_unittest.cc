@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -142,10 +143,10 @@ TEST_F(CrostiniLowDiskNotificationTest,
 }
 
 TEST_F(CrostiniLowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
-  fake_user_manager_->AddUser(
-      AccountId::FromUserEmailGaiaId("test_user1@example.com", "1234567891"));
-  fake_user_manager_->AddUser(
-      AccountId::FromUserEmailGaiaId("test_user2@example.com", "1234567892"));
+  fake_user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
+      "test_user1@example.com", GaiaId("1234567891")));
+  fake_user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
+      "test_user2@example.com", GaiaId("1234567892")));
 
   SetNotificationThrottlingInterval(-1);
   low_disk_notification_->OnLowDiskSpaceTriggered(high_notification);
@@ -153,10 +154,10 @@ TEST_F(CrostiniLowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
 }
 
 TEST_F(CrostiniLowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
-  fake_user_manager_->AddUser(
-      AccountId::FromUserEmailGaiaId("test_user1@example.com", "1234567891"));
-  fake_user_manager_->AddUser(
-      AccountId::FromUserEmailGaiaId("test_user2@example.com", "1234567892"));
+  fake_user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
+      "test_user1@example.com", GaiaId("1234567891")));
+  fake_user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
+      "test_user2@example.com", GaiaId("1234567892")));
 
   GetCrosSettingsHelper()->SetBoolean(ash::kDeviceShowLowDiskSpaceNotification,
                                       false);
