@@ -513,6 +513,8 @@ class MenuControllerTest : public ViewsTestBase,
   gfx::Insets GetBorderAndShadowInsets(bool is_submenu);
 
  private:
+  virtual bool for_drop() const { return false; }
+
   std::unique_ptr<GestureTestWidget> owner_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<MenuItemView> menu_item_;
@@ -547,7 +549,7 @@ void MenuControllerTest::SetUp() {
 
   menu_controller_delegate_ = std::make_unique<TestMenuControllerDelegate>();
   menu_controller_ =
-      new MenuController(/*for_drop=*/false, menu_controller_delegate_.get());
+      new MenuController(for_drop(), menu_controller_delegate_.get());
   menu_controller_->owner_ = owner();
   menu_controller_->showing_ = true;
   menu_controller_->SetSelection(menu_item(),
@@ -558,6 +560,7 @@ void MenuControllerTest::SetUp() {
 void MenuControllerTest::TearDown() {
   owner_->CloseNow();
   DestroyMenuController();
+  menu_controller_delegate_.reset();
   // `menu_item_` must be torn down before `ViewsTestBase::TearDown()`, since
   // it may transitively own a `Compositor` that is registered with a context
   // factory that `TearDown()` will destroy.
@@ -992,6 +995,17 @@ gfx::Insets MenuControllerTest::GetBorderAndShadowInsets(bool is_submenu) {
 #endif
   return BubbleBorder::GetBorderAndShadowInsets(elevation, shadow_type);
 }
+
+// Creates the menu controller with `for_drop` set to true. I.e., the menu is
+// being shown because something was dragged over it.
+class MenuControllerForDropTest : public MenuControllerTest {
+ public:
+  MenuControllerForDropTest() = default;
+  ~MenuControllerForDropTest() override = default;
+
+ private:
+  bool for_drop() const override { return true; }
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          MenuControllerTest,
@@ -1680,8 +1694,7 @@ TEST_F(MenuControllerTest, AsynchronousNestedDelegate) {
   EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
 }
 
-// Tests that dropping within an asynchronous menu stops the menu from showing
-// and does not notify the controller.
+// Tests that dropping within an asynchronous menu does not hide the menu.
 TEST_F(MenuControllerTest, AsynchronousPerformDrop) {
   SubmenuView* const source = menu_item()->GetSubmenu();
   MenuItemView* const target = source->GetMenuItemAt(0);
@@ -1700,7 +1713,7 @@ TEST_F(MenuControllerTest, AsynchronousPerformDrop) {
 
   EXPECT_TRUE(static_cast<test::TestMenuDelegate*>(target->GetDelegate())
                   ->is_drop_performed());
-  EXPECT_FALSE(showing());
+  EXPECT_TRUE(showing());
   EXPECT_EQ(0, menu_controller_delegate()->on_menu_closed_called());
 }
 
@@ -1759,8 +1772,7 @@ TEST_F(MenuControllerTest, AsynchronousDragHostDeleted) {
   MenuHostOnDragComplete(host);
 }
 
-// Tests that getting the drop callback stops the menu from showing and
-// does not notify the controller.
+// Tests that getting the drop callback does not hide the menu.
 TEST_F(MenuControllerTest, AsyncDropCallback) {
   SubmenuView* const source = menu_item()->GetSubmenu();
   MenuItemView* const target = source->GetMenuItemAt(0);
@@ -1776,8 +1788,34 @@ TEST_F(MenuControllerTest, AsyncDropCallback) {
   const auto* const menu_delegate =
       static_cast<test::TestMenuDelegate*>(target->GetDelegate());
   EXPECT_FALSE(menu_delegate->is_drop_performed());
-  EXPECT_FALSE(showing());
+  EXPECT_TRUE(showing());
   EXPECT_EQ(0, menu_controller_delegate()->on_menu_closed_called());
+
+  DragOperation output_drag_op;
+  std::move(drop_cb).Run(target_event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
+  EXPECT_TRUE(menu_delegate->is_drop_performed());
+}
+
+// Tests that getting the drop callback hides the menu when it's being shown for
+// a drop.
+TEST_F(MenuControllerForDropTest, AsyncDropCallback) {
+  SubmenuView* const source = menu_item()->GetSubmenu();
+  MenuItemView* const target = source->GetMenuItemAt(0);
+
+  SetDropMenuItem(target, MenuDelegate::DropPosition::kAfter);
+
+  ui::OSExchangeData drop_data;
+  gfx::PointF location(target->origin());
+  const ui::DropTargetEvent target_event(drop_data, location, location,
+                                         ui::DragDropTypes::DRAG_MOVE);
+  auto drop_cb = menu_controller()->GetDropCallback(source, target_event);
+
+  const auto* const menu_delegate =
+      static_cast<test::TestMenuDelegate*>(target->GetDelegate());
+  EXPECT_FALSE(menu_delegate->is_drop_performed());
+  EXPECT_FALSE(showing());
+  EXPECT_EQ(1, menu_controller_delegate()->on_menu_closed_called());
 
   DragOperation output_drag_op;
   std::move(drop_cb).Run(target_event, output_drag_op,

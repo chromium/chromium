@@ -1238,29 +1238,27 @@ views::View::DropCallback MenuController::GetDropCallback(
     SubmenuView* source,
     const ui::DropTargetEvent& event) {
   DCHECK(drop_target_);
-  // NOTE: the delegate may delete us after invoking GetDropCallback, as such
-  // we don't call cancel here.
 
   MenuItemView* item = state_.item;
   DCHECK(item);
 
+  // If over an empty menu item, drop occurs on the parent.
+  if (IsViewClass<EmptyMenuMenuItem>(drop_target_)) {
+    drop_target_ = drop_target_->GetParentMenuItem();
+  }
+
   MenuItemView* drop_target = drop_target_;
   MenuDelegate::DropPosition drop_position = drop_position_;
 
-  // Close all menus, including any nested menus.
-  SetSelection(nullptr, SELECTION_UPDATE_IMMEDIATELY | SELECTION_EXIT);
-  CloseAllNestedMenus();
-
-  // Set state such that we exit.
-  showing_ = false;
-  SetExitType(ExitType::kAll);
-
-  // If over an empty menu item, drop occurs on the parent.
-  if (IsViewClass<EmptyMenuMenuItem>(drop_target)) {
-    drop_target = drop_target->GetParentMenuItem();
-  }
-
   if (for_drop_) {
+    // Close all menus, including any nested menus.
+    SetSelection(nullptr, SELECTION_UPDATE_IMMEDIATELY | SELECTION_EXIT);
+    CloseAllNestedMenus();
+
+    // Set state such that we exit.
+    showing_ = false;
+    SetExitType(ExitType::kAll);
+
     delegate_->OnMenuClosed(
         internal::MenuControllerDelegate::DONT_NOTIFY_DELEGATE,
         item->GetRootMenuItem(), accept_event_flags_);

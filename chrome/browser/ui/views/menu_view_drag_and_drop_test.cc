@@ -381,7 +381,12 @@ void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragComplete(
   EXPECT_TRUE(performed_in_menu_drop());
   EXPECT_FALSE(target_view()->dropped());
   EXPECT_TRUE(asked_to_close());
-  EXPECT_FALSE(menu()->GetSubmenu()->IsShowing());
+
+// TODO(crbug.com/375959961): For X11, the menu is always closed on drag
+// completion because the native widget's state is not properly updated.
+#if !BUILDFLAG(IS_OZONE_X11)
+  EXPECT_TRUE(menu()->GetSubmenu()->IsShowing());
+#endif
 
   Done();
 }
