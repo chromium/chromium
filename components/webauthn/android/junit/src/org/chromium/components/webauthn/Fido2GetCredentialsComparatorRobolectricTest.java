@@ -8,33 +8,67 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.webauthn.Fido2GetCredentialsComparator.SuccessState;
 
+import java.util.concurrent.TimeUnit;
+
 @RunWith(BaseRobolectricTestRunner.class)
 public class Fido2GetCredentialsComparatorRobolectricTest {
+    private static final String HISTOGRAM_BASE = "WebAuthentication.Android.Fido2VsPasskeyCache.";
+    private static final String PASSKEY_CACHE_COUNT_HISTOGRAM =
+            HISTOGRAM_BASE + "PasskeyCacheCredentialCountWhenDifferent";
     private static final String PASSKEY_CACHE_FASTER_HISTOGRAM =
-            "WebAuthentication.Android.Fido2VsPasskeyCache.PasskeyCacheFasterMs";
-    private static final String FIDO2_FASTER_HISTOGRAM =
-            "WebAuthentication.Android.Fido2VsPasskeyCache.Fido2FasterMs";
-    private static final String SUCCESS_HISTOGRAM =
-            "WebAuthentication.Android.Fido2VsPasskeyCache.SuccessState";
+            HISTOGRAM_BASE + "PasskeyCacheFasterMs";
+    private static final String FIDO2_COUNT_HISTOGRAM =
+            HISTOGRAM_BASE + "Fido2CredentialCountWhenDifferent";
+    private static final String FIDO2_FASTER_HISTOGRAM = HISTOGRAM_BASE + "Fido2FasterMs";
+    private static final String SUCCESS_HISTOGRAM = HISTOGRAM_BASE + "SuccessState";
 
     @Test
     @SmallTest
     public void testFido2SuccessfulThenPasskeyCacheSuccessful() {
+        int fido2CredentialCount = 1;
+        int passkeyCacheCredentialCount = 1;
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(FIDO2_FASTER_HISTOGRAM)
+                        .expectNoRecords(PASSKEY_CACHE_FASTER_HISTOGRAM)
+                        .expectIntRecord(
+                                SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)
+                        .expectNoRecords(FIDO2_COUNT_HISTOGRAM)
+                        .expectNoRecords(PASSKEY_CACHE_COUNT_HISTOGRAM)
+                        .build();
+        var comparator = Fido2GetCredentialsComparator.Factory.get();
+
+        comparator.onGetCredentialsSuccessful(fido2CredentialCount);
+        Robolectric.getForegroundThreadScheduler().advanceBy(100, TimeUnit.MILLISECONDS);
+        comparator.onCachedGetCredentialsSuccessful(passkeyCacheCredentialCount);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testFido2SuccessfulThenPasskeyCacheSuccessfulWithCountDifference() {
+        int fido2CredentialCount = 0;
+        int passkeyCacheCredentialCount = 2;
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(FIDO2_FASTER_HISTOGRAM)
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)
+                        .expectIntRecord(FIDO2_COUNT_HISTOGRAM, fido2CredentialCount)
+                        .expectIntRecord(PASSKEY_CACHE_COUNT_HISTOGRAM, passkeyCacheCredentialCount)
                         .build();
         var comparator = Fido2GetCredentialsComparator.Factory.get();
 
-        comparator.onGetCredentialsSuccessful(0);
-        comparator.onCachedGetCredentialsSuccessful(0);
+        comparator.onGetCredentialsSuccessful(fido2CredentialCount);
+        Robolectric.getForegroundThreadScheduler().advanceBy(100, TimeUnit.MILLISECONDS);
+        comparator.onCachedGetCredentialsSuccessful(passkeyCacheCredentialCount);
 
         watcher.assertExpected();
     }
@@ -92,12 +126,14 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(PASSKEY_CACHE_FASTER_HISTOGRAM)
+                        .expectNoRecords(FIDO2_FASTER_HISTOGRAM)
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)
                         .build();
         var comparator = Fido2GetCredentialsComparator.Factory.get();
 
         comparator.onCachedGetCredentialsSuccessful(0);
+        Robolectric.getForegroundThreadScheduler().advanceBy(100, TimeUnit.MILLISECONDS);
         comparator.onGetCredentialsSuccessful(0);
 
         watcher.assertExpected();

@@ -93,6 +93,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAuthentication.Android.Fido2VsPasskeyCache.Fido2CredentialCountWhenDifferent"
+    units="passkeys" expires_after="2025-06-08">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the number of credentials received from the FIDO2 call. Recorded
+    when the FIDO2 and Passkey Cache getCredential calls are successful AND the
+    number of received credentials are different. Recorded after both calls
+    complete.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Android.Fido2VsPasskeyCache.Fido2FasterMs"
     units="ms" expires_after="2025-06-08">
   <owner>derinel@google.com</owner>
@@ -101,6 +114,19 @@ chromium-metrics-reviews@google.com.
     Records the difference in duration between the normal FIDO2 getCredentials
     request and the Passkey Cache getCredentials request, when the normal FIDO2
     request is faster.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebAuthentication.Android.Fido2VsPasskeyCache.PasskeyCacheCredentialCountWhenDifferent"
+    units="passkeys" expires_after="2025-06-08">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the number of credentials received from the Passkey Cache call.
+    Recorded when FIDO2 and Passkey Cache getCredential calls are successful AND
+    the number of received credentials are different. Recorded after both calls
+    complete.
   </summary>
 </histogram>
 
