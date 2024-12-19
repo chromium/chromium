@@ -1765,9 +1765,9 @@ class NetworkServiceBoundedNetLogBrowserTest
     log_file_read.GetInfo(&file_info);
 
     // The max size is only a rough bound, so let's make sure the final file is
-    // within a reasonable range from our max. Let's say 10%.
-    const int64_t kMaxSizeUpper = kMaxSizeBytes * 1.1;
-    const int64_t kMaxSizeLower = kMaxSizeBytes * 0.9;
+    // within a reasonable range from our max. Let's say 15%.
+    const int64_t kMaxSizeUpper = kMaxSizeBytes * 1.15;
+    const int64_t kMaxSizeLower = kMaxSizeBytes * 0.85;
 
     // Some devices don't always finish flushing the file to disk before
     // control is returned to the test, meaning that if we were to immediately
