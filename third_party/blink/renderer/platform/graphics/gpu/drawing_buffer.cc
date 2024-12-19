@@ -807,19 +807,6 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
 
   scoped_refptr<ColorBuffer> color_buffer =
       using_swap_chain_ ? front_color_buffer_ : back_color_buffer_;
-  viz::TransferableResource resource;
-
-  resource.set_mailbox(color_buffer->shared_image->mailbox());
-  resource.set_texture_target(color_buffer->shared_image->GetTextureTarget());
-  resource.size = color_buffer->shared_image->size();
-  resource.format = color_buffer->shared_image->format();
-  resource.is_overlay_candidate =
-      color_buffer->shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
-  resource.color_space = color_buffer->shared_image->color_space();
-  resource.origin = color_buffer->shared_image->surface_origin();
-  resource.hdr_metadata = hdr_metadata_;
-  resource.resource_source =
-      viz::TransferableResource::ResourceSource::kDrawingBuffer;
 
   if (contents_changed_ && !using_swap_chain_) {
     // Restart SharedImage access on the single SharedImage to ensure a write
@@ -831,9 +818,10 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   }
 
   return ExternalCanvasResource::Create(
-      color_buffer->shared_image, resource.sync_token(),
-      resource.resource_source, resource.hdr_metadata, viz::ReleaseCallback(),
-      context_provider_->GetWeakPtr(), resource_provider);
+      color_buffer->shared_image, gpu::SyncToken(),
+      viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
+      viz::ReleaseCallback(), context_provider_->GetWeakPtr(),
+      resource_provider);
 }
 
 scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
