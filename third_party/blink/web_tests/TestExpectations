@@ -2917,7 +2917,7 @@ crbug.com/378158966 [ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https
 crbug.com/377977965 [ Linux ] external/wpt/webdriver/tests/bidi/browser/get_client_windows/get_client_windows.py [ Failure ]
 crbug.com/377572928 external/wpt/css/css-masking/clip-path/clip-path-shape-hline-vline-keywords.tentative.html [ Failure ]
 crbug.com/377576485 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
-crbug.com/377543821 [ Mac13 ] external/wpt/css/css-shapes/shape-functions/shape-function-valid.tentative.html [ Failure ]
+crbug.com/384990511 [ Mac ] external/wpt/css/css-shapes/shape-functions/shape-function-valid.tentative.html [ Failure Pass ]
 crbug.com/377576478 external/wpt/css/css-masking/clip-path/clip-path-shape-007.tentative.html [ Failure ]
 crbug.com/377576478 [ Win11 ] external/wpt/css/css-masking/clip-path/clip-path-shape-008.tentative.html [ Failure ]
 crbug.com/377576478 [ Win11-arm64 ] external/wpt/css/css-masking/clip-path/clip-path-shape-008.tentative.html [ Failure Timeout ]
