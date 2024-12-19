@@ -10737,25 +10737,6 @@
             ]
         }
     ],
-    "HappyEyeballsV3": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HappyEyeballsV3"
-                    ]
-                }
-            ]
-        }
-    ],
     "HatsArcGames": [
         {
             "platforms": [
