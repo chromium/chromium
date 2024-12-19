@@ -213,6 +213,9 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     DCHECK(is_primary_);
     backing()->RegisterImageFactory(factory);
   }
+  void SetSharedImagePoolId(SharedImagePoolId pool_id) {
+    backing()->SetSharedImagePoolId(std::move(pool_id));
+  }
 
  private:
   const bool is_primary_;

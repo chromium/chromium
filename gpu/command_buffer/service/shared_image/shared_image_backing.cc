@@ -386,6 +386,12 @@ void SharedImageBacking::UnregisterImageFactory() {
   factory_ = nullptr;
 }
 
+void SharedImageBacking::SetSharedImagePoolId(SharedImagePoolId pool_id) {
+  // There should be no existing pool_id already on this backing.
+  CHECK(!pool_id_);
+  pool_id_ = std::move(pool_id);
+}
+
 const char* SharedImageBacking::GetName() const {
   return BackingTypeToString(GetType());
 }

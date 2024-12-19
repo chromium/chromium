@@ -144,7 +144,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   bool is_thread_safe() const { return !!lock_; }
   bool is_ref_counted() const { return is_ref_counted_; }
   gfx::BufferUsage buffer_usage() const { return buffer_usage_.value(); }
-  SharedImagePoolId pool_id() const { return pool_id_.value(); }
   const std::string& debug_label() const { return debug_label_; }
 
   void OnContextLost();
@@ -178,6 +177,10 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // SharedImageRepresentationFactoryRef.
   void RegisterImageFactory(SharedImageFactory* factory);
   void UnregisterImageFactory();
+
+  // Sets the SharedImagePoolId on the backing.
+  void SetSharedImagePoolId(SharedImagePoolId pool_id);
+  SharedImagePoolId pool_id() const { return pool_id_.value(); }
 
   // Returns string corresponding to GetType() for logging purposes.
   const char* GetName() const;
@@ -424,8 +427,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   // An optional SharedImagePoolId if the backing was created via a client side
   // SharedImagePool. It will be null for backings which are not created via a
-  // SharedImagePool.
-  const std::optional<SharedImagePoolId> pool_id_;
+  // SharedImagePool. This pool_id_ will be set by SharedImageFactory while
+  // registering the backing.
+  std::optional<SharedImagePoolId> pool_id_;
 
   bool is_ref_counted_ = true;
 
