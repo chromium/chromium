@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_BUTTON_PSEUDO_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
-#include "third_party/blink/renderer/core/input/scroll_manager.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 
 namespace blink {
@@ -37,7 +36,9 @@ class ScrollButtonPseudoElement : public PseudoElement,
   bool UpdateSnapshotInternal();
 
   bool enabled_ = true;
-  Member<ScrollManager> scroll_manager_;
+  // As per https://drafts.csswg.org/css-overflow-5/#scroll-buttons
+  // defines a "page" size to be 85% of the scrollport size.
+  static constexpr double PageSizePercent = 0.85;
 };
 
 template <>

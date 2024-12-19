@@ -19,37 +19,15 @@
 
 namespace blink {
 
-namespace {
-
-mojom::blink::ScrollDirection ScrollButtonPseudoIdToScrollDirection(
-    PseudoId pseudo_id) {
-  if (pseudo_id == kPseudoIdScrollButtonBlockEnd) {
-    return mojom::blink::ScrollDirection::kScrollBlockDirectionForward;
-  }
-  if (pseudo_id == kPseudoIdScrollButtonInlineStart) {
-    return mojom::blink::ScrollDirection::kScrollInlineDirectionBackward;
-  }
-  if (pseudo_id == kPseudoIdScrollButtonInlineEnd) {
-    return mojom::blink::ScrollDirection::kScrollInlineDirectionForward;
-  }
-  DCHECK_EQ(pseudo_id, kPseudoIdScrollButtonBlockStart);
-  return mojom::blink::ScrollDirection::kScrollBlockDirectionBackward;
-}
-
-}  // namespace
-
 ScrollButtonPseudoElement::ScrollButtonPseudoElement(
     Element* originating_element,
     PseudoId pseudo_id)
     : PseudoElement(originating_element, pseudo_id),
-      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()),
-      scroll_manager_(
-          MakeGarbageCollected<ScrollManager>(*GetDocument().GetFrame())) {
+      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
   SetTabIndexExplicitly();
 }
 
 void ScrollButtonPseudoElement::Trace(Visitor* v) const {
-  v->Trace(scroll_manager_);
   PseudoElement::Trace(v);
 }
 
@@ -65,10 +43,25 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
       event.target() == this && (is_click || is_enter_or_space);
   if (should_intercept) {
     Element* scroller = UltimateOriginatingElement();
-    mojom::blink::ScrollDirection direction =
-        ScrollButtonPseudoIdToScrollDirection(GetPseudoId());
-    scroll_manager_->BubblingScroll(
-        direction, ui::ScrollGranularity::kScrollByPage, scroller, scroller);
+    double dx =
+        PageSizePercent * scroller->GetLayoutBox()->Size().width.ToDouble();
+    double dy =
+        PageSizePercent * scroller->GetLayoutBox()->Size().height.ToDouble();
+    LogicalToPhysical<bool> mapping(
+        scroller->GetComputedStyle()->GetWritingDirection(),
+        GetPseudoId() == kPseudoIdScrollButtonInlineStart,
+        GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
+        GetPseudoId() == kPseudoIdScrollButtonBlockStart,
+        GetPseudoId() == kPseudoIdScrollButtonBlockEnd);
+    if (mapping.Top()) {
+      scroller->scrollBy(0, -dy);
+    } else if (mapping.Bottom()) {
+      scroller->scrollBy(0, dy);
+    } else if (mapping.Left()) {
+      scroller->scrollBy(-dx, 0);
+    } else if (mapping.Right()) {
+      scroller->scrollBy(dx, 0);
+    }
     GetDocument().SetFocusedElement(this,
                                     FocusParams(SelectionBehaviorOnFocus::kNone,
                                                 mojom::blink::FocusType::kNone,
