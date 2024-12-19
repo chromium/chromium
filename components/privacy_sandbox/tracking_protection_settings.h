@@ -80,6 +80,7 @@ class TrackingProtectionSettings : public KeyedService {
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
   void OnIpProtectionPrefChanged();
+  void OnFpProtectionPrefChanged();
 
   base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;

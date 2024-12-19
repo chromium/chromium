@@ -34,6 +34,7 @@ class MockTrackingProtectionSettingsObserver
  public:
   MOCK_METHOD(void, OnDoNotTrackEnabledChanged, (), (override));
   MOCK_METHOD(void, OnIpProtectionEnabledChanged, (), (override));
+  MOCK_METHOD(void, OnFpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
   MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
 };
@@ -54,7 +55,10 @@ class TrackingProtectionSettingsTest : public testing::Test {
         prefs(), /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false,
         /*should_record_metrics=*/false);
-    feature_list_.InitWithFeatures({privacy_sandbox::kIpProtectionV1}, {});
+    feature_list_.InitWithFeatures(
+        {privacy_sandbox::kIpProtectionV1,
+         privacy_sandbox::kFingerprintingProtectionUx},
+        {});
     tracking_protection_settings_ =
         std::make_unique<TrackingProtectionSettings>(
             prefs(), host_content_settings_map_.get(),
@@ -100,6 +104,13 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
   EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
 
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kIpProtectionInitializedByDogfood));
+}
+
+TEST_F(TrackingProtectionSettingsTest, ReturnsFpProtectionStatus) {
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kFingerprintingProtectionEnabled));
+  EXPECT_FALSE(tracking_protection_settings()->IsFpProtectionEnabled());
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
+  EXPECT_TRUE(tracking_protection_settings()->IsFpProtectionEnabled());
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
@@ -232,6 +243,19 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForIpProtection) {
 
   EXPECT_CALL(observer, OnIpProtectionEnabledChanged());
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForFpp) {
+  MockTrackingProtectionSettingsObserver observer;
+  tracking_protection_settings()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnFpProtectionEnabledChanged());
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnFpProtectionEnabledChanged());
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 

@@ -44,6 +44,11 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnIpProtectionPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
+      prefs::kFingerprintingProtectionEnabled,
+      base::BindRepeating(
+          &TrackingProtectionSettings::OnFpProtectionPrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
       prefs::kBlockAll3pcToggleEnabled,
       base::BindRepeating(
           &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
@@ -215,6 +220,12 @@ void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
 void TrackingProtectionSettings::OnIpProtectionPrefChanged() {
   for (auto& observer : observers_) {
     observer.OnIpProtectionEnabledChanged();
+  }
+}
+
+void TrackingProtectionSettings::OnFpProtectionPrefChanged() {
+  for (auto& observer : observers_) {
+    observer.OnFpProtectionEnabledChanged();
   }
 }
 
