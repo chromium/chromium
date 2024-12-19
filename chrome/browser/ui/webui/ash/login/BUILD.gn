@@ -376,7 +376,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "oobe_display_chooser_browsertest.cc" ]
+  sources = [
+    "network_state_informer_browsertest.cc",
+    "oobe_display_chooser_browsertest.cc",
+  ]
 
   deps = [
     ":login",
@@ -384,7 +387,11 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/login/test:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//components/proxy_config",
     "//content/test:test_support",
     "//ui/display",
     "//ui/display:display_manager_test_api",

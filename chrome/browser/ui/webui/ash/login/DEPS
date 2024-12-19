@@ -65,6 +65,11 @@ specific_include_rules = {
   "core_oobe_handler\.cc": [
     "+ash/shell.h",
   ],
+  "network_state_informer_browsertest\.cc": [
+    "+ash/shell.h",
+    "+components/proxy_config",
+    "+ash/test/ash_test_base.h",
+  ],
   "oobe_ui\.cc": [
     "+ash/shell.h",
     "+remoting/host/chromeos:features"
