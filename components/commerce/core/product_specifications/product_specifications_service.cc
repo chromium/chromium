@@ -83,13 +83,8 @@ std::vector<sync_pb::ProductComparisonSpecifics> CreateItemLevelSpecifics(
     new_item.set_update_time_unix_epoch_millis(
         now.InMillisecondsSinceUnixEpoch());
     new_item.mutable_product_comparison_item()->set_url(url_info.url.spec());
-    // Title additions will be phased in over several CLs and we don't want to
-    // start saving/syncing until all changes are landed.
-    if (base::FeatureList::IsEnabled(
-            commerce::kProductSpecificationsSyncTitle)) {
-      new_item.mutable_product_comparison_item()->set_title(
-          base::UTF16ToUTF8(url_info.title));
-    }
+    new_item.mutable_product_comparison_item()->set_title(
+        base::UTF16ToUTF8(url_info.title));
     new_item.mutable_product_comparison_item()->set_product_comparison_uuid(
         top_level_uuid);
     syncer::UniquePosition position =
@@ -136,14 +131,8 @@ GetProductSpecificationsSetFromMultiSpecifics(
   // on the latest specific - be it an item level or top level.
   long update_time = top_level_specific->update_time_unix_epoch_millis();
   for (const auto& item_specific : item_specifics) {
-    std::u16string title = u"";
-    // Title additions will be phased in over several CLs and we don't want to
-    // start saving/syncing until all changes are landed.
-    if (base::FeatureList::IsEnabled(
-            commerce::kProductSpecificationsSyncTitle)) {
-      title =
-          base::UTF8ToUTF16(item_specific.product_comparison_item().title());
-    }
+    std::u16string title =
+        base::UTF8ToUTF16(item_specific.product_comparison_item().title());
     url_infos.emplace_back(GURL(item_specific.product_comparison_item().url()),
                            title);
     if (update_time < item_specific.update_time_unix_epoch_millis()) {
@@ -233,15 +222,8 @@ ProductSpecificationsService::GetAllProductSpecifications() {
         std::vector<UrlInfo> url_infos;
         if (base::FindOrNull(items_lookup, uuid)) {
           for (auto& specific : items_lookup.find(uuid)->second) {
-            std::u16string title = u"";
-            // Title additions will be phased in over several CLs and we don't
-            // want to start saving/syncing until all changes are landed.
-
-            if (base::FeatureList::IsEnabled(
-                    commerce::kProductSpecificationsSyncTitle)) {
-              title =
-                  base::UTF8ToUTF16(specific.product_comparison_item().title());
-            }
+            std::u16string title =
+                base::UTF8ToUTF16(specific.product_comparison_item().title());
             url_infos.emplace_back(
                 GURL(specific.product_comparison_item().url()), title);
           }

@@ -402,16 +402,6 @@ class ProductSpecificationsServiceSyncDisabledTest
   std::unique_ptr<ProductSpecificationsSet> initial_set_;
 };
 
-class ProductSpecificationsServiceWithTitleTest
-    : public ProductSpecificationsServiceTest {
- public:
-  void SetUp() override {
-    ProductSpecificationsServiceTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        commerce::kProductSpecificationsSyncTitle);
-  }
-};
-
 TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
   DisableMultiSpecFlag();
   for (const sync_pb::ProductComparisonSpecifics& specifics :
@@ -1347,7 +1337,7 @@ TEST_F(ProductSpecificationsServiceTest,
   EXPECT_EQ("https://a.example.com/", iter->urls()[0].spec());
 }
 
-TEST_F(ProductSpecificationsServiceWithTitleTest, TestTitle) {
+TEST_F(ProductSpecificationsServiceTest, TestTitle) {
   const ProductSpecificationsSet added_set_with_titles =
       service()
           ->AddProductSpecificationsSet(
@@ -1369,7 +1359,7 @@ TEST_F(ProductSpecificationsServiceWithTitleTest, TestTitle) {
   }
 }
 
-TEST_F(ProductSpecificationsServiceWithTitleTest, SetUrlWithTitle) {
+TEST_F(ProductSpecificationsServiceTest, SetUrlWithTitle) {
   const ProductSpecificationsSet added_set =
       service()
           ->AddProductSpecificationsSet(
