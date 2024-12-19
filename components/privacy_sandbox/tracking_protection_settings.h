@@ -71,7 +71,6 @@ class TrackingProtectionSettings : public KeyedService {
 
  private:
   void OnEnterpriseControlForPrefsChanged();
-  void MaybeInitializeIppPref();
   void MigrateUserBypassExceptions(ContentSettingsType from,
                                    ContentSettingsType to);
 

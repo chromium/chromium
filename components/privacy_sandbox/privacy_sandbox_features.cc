@@ -123,16 +123,16 @@ BASE_FEATURE(kRelatedWebsiteSetsDevUI,
              "RelatedWebsiteSetsDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFingerprintingProtectionUx,
-             "FingerprintingProtectionUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAddLimit3pcsSetting,
              "AddLimit3pcsSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlwaysBlock3pcsIncognito,
              "AlwaysBlock3pcsIncognito",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFingerprintingProtectionUx,
+             "FingerprintingProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFingerprintingProtectionUserBypass,
@@ -143,20 +143,12 @@ BASE_FEATURE(kIpProtectionV1,
              "IpProtectionV1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIpProtectionDogfoodDefaultOn,
-             "IpProtectionDogfoodDefaultOn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIpProtectionUx,
              "IpProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIpProtectionUserBypass,
              "IpProtectionUserBypass",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
-             "PrivacySandboxRelatedWebsiteSetsUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackingProtectionContentSettingInSettings,
@@ -169,6 +161,10 @@ BASE_FEATURE(kTrackingProtectionContentSettingUbControl,
 
 BASE_FEATURE(kTrackingProtectionContentSettingFor3pcb,
              "TrackingProtectionContentSettingFor3pcb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
+             "PrivacySandboxRelatedWebsiteSetsUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

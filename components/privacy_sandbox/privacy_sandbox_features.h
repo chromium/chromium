@@ -173,10 +173,6 @@ BASE_DECLARE_FEATURE(kFingerprintingProtectionUserBypass);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionV1);
 
-// Enables IP Protection by default. For use in dogfood only.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kIpProtectionDogfoodDefaultOn);
-
 // Enables showing IP Protection toggle on the settings page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionUx);
@@ -184,10 +180,6 @@ BASE_DECLARE_FEATURE(kIpProtectionUx);
 // Enables displaying IP protection status in User Bypass and Page Info.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionUserBypass);
-
-// Enables showing new RWS UI.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi);
 
 // Enables TP settings page to display TRACKING_PROTECTION content settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
@@ -200,6 +192,10 @@ BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingUbControl);
 // Enables TRACKING_PROTECTION content settings to control 3pcb.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingFor3pcb);
+
+// Enables showing new RWS UI.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi);
 
 // Privacy UX features end
 

@@ -70,7 +70,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged,
           base::Unretained(this)));
 
-  MaybeInitializeIppPref();
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
 
@@ -157,15 +156,6 @@ bool TrackingProtectionSettings::HasTrackingProtectionException(
   return host_content_settings_map_->GetContentSetting(
              GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION,
              info) == CONTENT_SETTING_ALLOW;
-}
-
-void TrackingProtectionSettings::MaybeInitializeIppPref() {
-  if (pref_service_->GetBoolean(prefs::kIpProtectionInitializedByDogfood) ||
-      !base::FeatureList::IsEnabled(kIpProtectionDogfoodDefaultOn)) {
-    return;
-  }
-  pref_service_->SetBoolean(prefs::kIpProtectionEnabled, true);
-  pref_service_->SetBoolean(prefs::kIpProtectionInitializedByDogfood, true);
 }
 
 // TODO(https://b/333527273): Delete with Mode B cleanup

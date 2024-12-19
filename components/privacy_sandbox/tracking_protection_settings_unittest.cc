@@ -102,8 +102,6 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
   EXPECT_FALSE(tracking_protection_settings()->IsIpProtectionEnabled());
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
   EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
-
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kIpProtectionInitializedByDogfood));
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsFpProtectionStatus) {
@@ -271,25 +269,5 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
-
-// IPP
-
-class TrackingProtectionSettingsTestWithIppDogfood
-    : public TrackingProtectionSettingsTest {
- public:
-  TrackingProtectionSettingsTestWithIppDogfood() {
-    features_.InitAndEnableFeature(
-        privacy_sandbox::kIpProtectionDogfoodDefaultOn);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(TrackingProtectionSettingsTestWithIppDogfood, VerifyDogfoodPrefs) {
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kIpProtectionEnabled));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kIpProtectionInitializedByDogfood));
-}
-
 }  // namespace
 }  // namespace privacy_sandbox
