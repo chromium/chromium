@@ -205,7 +205,7 @@ fn librustc_parenthesize(mut librustc_expr: P<ast::Expr>) -> P<ast::Expr> {
         ExprKind, GenericArg, GenericBound, Local, LocalKind, Pat, PolyTraitRef, Stmt, StmtKind,
         StructExpr, StructRest, TraitBoundModifiers, Ty,
     };
-    use rustc_ast::mut_visit::{walk_flat_map_item, MutVisitor};
+    use rustc_ast::mut_visit::{walk_flat_map_assoc_item, MutVisitor};
     use rustc_ast::visit::{AssocCtxt, BoundKind};
     use rustc_data_structures::flat_map_in_place::FlatMapInPlace;
     use rustc_span::DUMMY_SP;
@@ -349,7 +349,7 @@ fn librustc_parenthesize(mut librustc_expr: P<ast::Expr>) -> P<ast::Expr> {
         fn flat_map_assoc_item(
             &mut self,
             item: P<AssocItem>,
-            _ctxt: AssocCtxt,
+            ctxt: AssocCtxt,
         ) -> SmallVec<[P<AssocItem>; 1]> {
             match &item.kind {
                 AssocItemKind::Const(const_item)
@@ -358,7 +358,7 @@ fn librustc_parenthesize(mut librustc_expr: P<ast::Expr>) -> P<ast::Expr> {
                 {
                     SmallVec::from([item])
                 }
-                _ => walk_flat_map_item(self, item),
+                _ => walk_flat_map_assoc_item(self, item, ctxt),
             }
         }
 

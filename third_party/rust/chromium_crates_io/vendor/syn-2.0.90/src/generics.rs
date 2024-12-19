@@ -188,11 +188,7 @@ impl<'a> Iterator for Lifetimes<'a> {
     type Item = &'a LifetimeParam;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = match self.0.next() {
-            Some(item) => item,
-            None => return None,
-        };
-        if let GenericParam::Lifetime(lifetime) = next {
+        if let GenericParam::Lifetime(lifetime) = self.0.next()? {
             Some(lifetime)
         } else {
             self.next()
@@ -206,11 +202,7 @@ impl<'a> Iterator for LifetimesMut<'a> {
     type Item = &'a mut LifetimeParam;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = match self.0.next() {
-            Some(item) => item,
-            None => return None,
-        };
-        if let GenericParam::Lifetime(lifetime) = next {
+        if let GenericParam::Lifetime(lifetime) = self.0.next()? {
             Some(lifetime)
         } else {
             self.next()
@@ -224,11 +216,7 @@ impl<'a> Iterator for TypeParams<'a> {
     type Item = &'a TypeParam;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = match self.0.next() {
-            Some(item) => item,
-            None => return None,
-        };
-        if let GenericParam::Type(type_param) = next {
+        if let GenericParam::Type(type_param) = self.0.next()? {
             Some(type_param)
         } else {
             self.next()
@@ -242,11 +230,7 @@ impl<'a> Iterator for TypeParamsMut<'a> {
     type Item = &'a mut TypeParam;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = match self.0.next() {
-            Some(item) => item,
-            None => return None,
-        };
-        if let GenericParam::Type(type_param) = next {
+        if let GenericParam::Type(type_param) = self.0.next()? {
             Some(type_param)
         } else {
             self.next()
@@ -260,11 +244,7 @@ impl<'a> Iterator for ConstParams<'a> {
     type Item = &'a ConstParam;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = match self.0.next() {
-            Some(item) => item,
-            None => return None,
-        };
-        if let GenericParam::Const(const_param) = next {
+        if let GenericParam::Const(const_param) = self.0.next()? {
             Some(const_param)
         } else {
             self.next()
@@ -278,11 +258,7 @@ impl<'a> Iterator for ConstParamsMut<'a> {
     type Item = &'a mut ConstParam;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = match self.0.next() {
-            Some(item) => item,
-            None => return None,
-        };
-        if let GenericParam::Const(const_param) = next {
+        if let GenericParam::Const(const_param) = self.0.next()? {
             Some(const_param)
         } else {
             self.next()
