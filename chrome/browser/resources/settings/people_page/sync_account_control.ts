@@ -243,9 +243,10 @@ export class SettingsSyncAccountControlElement extends
         email;
   }
 
-  private getSyncPausedButtonLabel_(
-      syncPausedButtonLabel: string, givenName: string): string {
-    return loadTimeData.substituteString(syncPausedButtonLabel, givenName);
+  private getAccountAwareSigninButtonLabel_(
+      accountAwareSigninButtonLabel: string, givenName: string): string {
+    return loadTimeData.substituteString(
+        accountAwareSigninButtonLabel, givenName);
   }
 
   private getTurnOnSyncLabel_(peopleSignIn: string, turnOnSync: string):
@@ -359,10 +360,10 @@ export class SettingsSyncAccountControlElement extends
     switch (this.syncStatus.signedInState) {
       case SignedInState.SYNCING:
       case SignedInState.SIGNED_IN:
-      case SignedInState.SIGNED_IN_PAUSED:
       case SignedInState.SIGNED_OUT:
-        return false;
       case SignedInState.WEB_ONLY_SIGNED_IN:
+        return false;
+      case SignedInState.SIGNED_IN_PAUSED:
         return true;
     }
 
@@ -375,6 +376,11 @@ export class SettingsSyncAccountControlElement extends
    * the banner was explicitly set.
    */
   private shouldHideSyncButton_(): boolean {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+      return true;
+    }
+
     return this.hideButtons ||
         (!!this.syncStatus &&
          (this.isSyncing_() ||
@@ -382,22 +388,10 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldShowTurnOffButton_(): boolean {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        (this.syncStatus.signedInState === SignedInState.SYNCING) &&
-        !!this.syncStatus.hasError) {
-      return false;
-    }
-
     return !this.hideButtons && !this.showSetupButtons_ && this.isSyncing_();
   }
 
   private shouldShowErrorActionButton_(): boolean {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.signedInState === SignedInState.SYNCING &&
-        !!this.syncStatus.hasError) {
-      return false;
-    }
-
     if (this.embeddedInSubpage &&
         this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
       // In a subpage the passphrase button is not required.
@@ -408,11 +402,10 @@ export class SettingsSyncAccountControlElement extends
         this.syncStatus.statusAction !== StatusAction.NO_ACTION;
   }
 
-  private shouldSyncPausedSigninButton_(): boolean {
+  private shouldShowAccountAwareSigninButton_(): boolean {
     // Only show the button when user is in sync paused state
     return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.signedInState === SignedInState.SYNCING &&
-        !!this.syncStatus.hasError;
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN;
   }
 
 
@@ -428,8 +421,8 @@ export class SettingsSyncAccountControlElement extends
 
     switch (this.syncStatus.signedInState) {
       case SignedInState.SIGNED_OUT:
-      case SignedInState.WEB_ONLY_SIGNED_IN:
         return true;
+      case SignedInState.WEB_ONLY_SIGNED_IN:
       case SignedInState.SIGNED_IN_PAUSED:
       case SignedInState.SYNCING:
         return false;
@@ -447,6 +440,10 @@ export class SettingsSyncAccountControlElement extends
   private computeShouldShowAvatarRow_(): boolean {
     if (this.storedAccounts_ === undefined || this.syncStatus === undefined) {
       return false;
+    }
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+      return true;
     }
 
     return (this.isSyncing_() || this.storedAccounts_.length > 0) &&

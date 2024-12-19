@@ -442,7 +442,7 @@ suite('SyncAccountControl', function() {
   });
 
   test(
-      'signed out with account awareness, kImprovedSettingsUIOnDesktop enabled',
+      'user in sync paused state, kImprovedSettingsUIOnDesktop enabled',
       function() {
         loadTimeData.overrideValues(
             {isImprovedSettingsUIOnDesktopEnabled: true});
@@ -462,7 +462,6 @@ suite('SyncAccountControl', function() {
             userInfo.querySelector<HTMLElement>(
                         'div:not([hidden])')!.textContent!;
 
-        assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
         assertTrue(
             testElement.shadowRoot!
                 .querySelector<HTMLElement>(
@@ -472,15 +471,12 @@ suite('SyncAccountControl', function() {
         assertFalse(displayedText.includes('barName'));
         assertFalse(displayedText.includes('fooName'));
         assertTrue(displayedText.includes('Sync is paused'));
-
-        // The sync error button is no longer shown to resolve the error.
-        assertFalse(isChildVisible(testElement, '#sync-error-button'));
-        assertTrue(isChildVisible(testElement, '#sync-paused'));
+        // The sync error button is shown to resolve the error.
+        assertTrue(isChildVisible(testElement, '#sync-error-button'));
       });
 
-
   test(
-      'signed out with account awareness, kImprovedSettingsUIOnDesktop disabled',
+      'user in sync paused state, kImprovedSettingsUIOnDesktop disabled',
       function() {
         loadTimeData.overrideValues(
             {isImprovedSettingsUIOnDesktopEnabled: false});
@@ -698,6 +694,8 @@ suite('SyncAccountControl', function() {
   });
 
   test('webOnlySignedIn effects', function() {
+    loadTimeData.overrideValues({isImprovedSettingsUIOnDesktopEnabled: false});
+
     const signedInAccount: StoredAccount = {
       fullName: 'fooName',
       givenName: 'foo',
@@ -724,4 +722,27 @@ suite('SyncAccountControl', function() {
 
     assertFalse(isChildVisible(testElement, '#avatar-row'));
   });
+
+  test(
+      'signed out with account awareness, kImprovedSettingsUIOnDesktop enabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: true});
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.WEB_ONLY_SIGNED_IN,
+          signedInUsername: 'bar@bar.com',
+          hasError: false,
+          hasUnrecoverableError: false,
+          statusAction: StatusAction.REAUTHENTICATE,
+          disabled: false,
+        };
+
+        assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
+        assertTrue(isChildVisible(testElement, '#account-aware'));
+      });
+
+
+
 });
