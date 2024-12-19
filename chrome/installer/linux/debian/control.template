@@ -9,6 +9,6 @@ Package: @@PACKAGE@@-@@CHANNEL@@
 Provides: @@PROVIDES@@
 Pre-Depends: @@PREDEPENDS@@
 Depends: @@DEPENDS@@
-Architecture: @@ARCHITECTURE@@
+Architecture: @@TEMPLATE_ARCH@@
 Description: @@SHORTDESC@@
  @@FULLDESC@@

@@ -66,7 +66,8 @@ process_template() {
 
   # Substitute templated variables from the environment.
   local sed_args=""
-  for varname in $(compgen -v); do
+  for varname in $(comm -3 <(compgen -v | sort) \
+      <(env -0 | cut -z -f1 -d= | tr '\0' '\n' | sort)); do
     if [[ "$TMPLINCL" == *"@@${varname}@@"* ]]; then
       val=$(printf '%s' "${!varname}" | sed 's/[#\/&]/\\&/g')
       sed_args="${sed_args}s#@@${varname}@@#${val}#g;"

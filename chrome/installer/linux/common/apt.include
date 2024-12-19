@@ -388,7 +388,7 @@ handle_distro_upgrade() {
   fi
 }
 
-DEFAULT_ARCH="@@ARCHITECTURE@@"
+DEFAULT_ARCH="@@TEMPLATE_ARCH@@"
 
 get_lib_dir() {
   if [ "$DEFAULT_ARCH" = "i386" ]; then
