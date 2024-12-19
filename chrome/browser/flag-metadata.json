@@ -7623,11 +7623,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "responsive-toolbar",
-    "owners": [ "chrome-cros@google.com", "yuhengh@chromium.org", "pengchaocai@chromium.org" ],
-    "expiry_milestone" : 130
-  },
-  {
     "name": "restrict-gamepad-access",
     "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
     "expiry_milestone": 96

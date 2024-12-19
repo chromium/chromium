@@ -4180,11 +4180,6 @@ const char kVulkanFromAngleName[] = "Vulkan from ANGLE";
 const char kVulkanFromAngleDescription[] =
     "Initialize Vulkan from inside ANGLE and share the instance with Chrome.";
 
-const char kResponsiveToolbarName[] = "Responsive toolbar";
-const char kResponsiveToolbarDescription[] =
-    "Toolbar icons overflow to a chevron icon when the browser width is "
-    "resized small than normal";
-
 const char kSharedHighlightingManagerName[] = "Refactoring Shared Highlighting";
 const char kSharedHighlightingManagerDescription[] =
     "Refactors Shared Highlighting by centralizing the IPC calls in a Manager.";

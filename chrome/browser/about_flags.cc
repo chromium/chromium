@@ -8600,10 +8600,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPressAndHoldEscToExitBrowserFullscreen)},
 #endif
 
-    {"responsive-toolbar", flag_descriptions::kResponsiveToolbarName,
-     flag_descriptions::kResponsiveToolbarDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kResponsiveToolbar)},
-
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,

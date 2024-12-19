@@ -183,12 +183,6 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
-// the browser width is resized smaller than normal.
-BASE_FEATURE(kResponsiveToolbar,
-             "ResponsiveToolbar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",
              base::FEATURE_DISABLED_BY_DEFAULT);

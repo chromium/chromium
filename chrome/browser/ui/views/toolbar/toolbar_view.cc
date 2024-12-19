@@ -245,9 +245,7 @@ ToolbarView::~ToolbarView() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    overflow_button_->set_toolbar_controller(nullptr);
-  }
+  overflow_button_->set_toolbar_controller(nullptr);
 
   for (const auto& view_and_command : GetViewCommandMap())
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
@@ -497,11 +495,9 @@ void ToolbarView::Init() {
   new_tab_button_ = container_view_->AddChildView(std::move(new_tab_button));
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    overflow_button_ =
-        container_view_->AddChildView(std::make_unique<OverflowButton>());
-    overflow_button_->SetVisible(false);
-  }
+  overflow_button_ =
+      container_view_->AddChildView(std::make_unique<OverflowButton>());
+  overflow_button_->SetVisible(false);
 
   auto app_menu_button = std::make_unique<BrowserAppMenuButton>(this);
   app_menu_button->SetFlipCanvasOnPaintForRTLUI(true);
@@ -1003,17 +999,15 @@ void ToolbarView::InitLayout() {
         gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
   }
 
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    constexpr int kToolbarFlexOrderStart = 1;
+  constexpr int kToolbarFlexOrderStart = 1;
 
-    // TODO(crbug.com/40929989): Ignore containers till issue addressed.
-    toolbar_controller_ = std::make_unique<ToolbarController>(
-        ToolbarController::GetDefaultResponsiveElements(browser_),
-        ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
-        container_view_, overflow_button_, pinned_toolbar_actions_container_,
-        PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
-    overflow_button_->set_toolbar_controller(toolbar_controller_.get());
-  }
+  // TODO(crbug.com/40929989): Ignore containers till issue addressed.
+  toolbar_controller_ = std::make_unique<ToolbarController>(
+      ToolbarController::GetDefaultResponsiveElements(browser_),
+      ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
+      container_view_, overflow_button_, pinned_toolbar_actions_container_,
+      PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
+  overflow_button_->set_toolbar_controller(toolbar_controller_.get());
 
   LayoutCommon();
 }

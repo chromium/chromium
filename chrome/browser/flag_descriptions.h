@@ -2419,9 +2419,6 @@ extern const char kDefaultAngleVulkanDescription[];
 extern const char kVulkanFromAngleName[];
 extern const char kVulkanFromAngleDescription[];
 
-extern const char kResponsiveToolbarName[];
-extern const char kResponsiveToolbarDescription[];
-
 extern const char kSharedHighlightingManagerName[];
 extern const char kSharedHighlightingManagerDescription[];
 

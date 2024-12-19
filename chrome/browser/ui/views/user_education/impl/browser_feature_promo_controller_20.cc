@@ -100,12 +100,10 @@ bool BrowserFeaturePromoController20::CanShowPromoForElement(
   // example, a toast IPH anchored to an element that's actually visible should
   // be fine, but we might want to avoid Tutorial and Custom Action IPH even if
   // the initial anchor is present.
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    if (const auto* const controller =
-            browser_view_->toolbar()->toolbar_controller()) {
-      if (controller->InOverflowMode()) {
-        return false;
-      }
+  if (const auto* const controller =
+          browser_view_->toolbar()->toolbar_controller()) {
+    if (controller->InOverflowMode()) {
+      return false;
     }
   }
 
