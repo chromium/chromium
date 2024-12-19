@@ -16659,9 +16659,6 @@
                         "MojoBindingsInlineSLS",
                         "ReduceCpuUtilization2",
                         "SharedStorageAPIEnableWALForDatabase"
-                    ],
-                    "disable_features": [
-                        "EnableHangWatcher"
                     ]
                 }
             ]

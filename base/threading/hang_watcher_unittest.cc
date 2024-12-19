@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -951,6 +952,9 @@ TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
   // invoked enough times.
   hang_watcher_.SetAfterMonitorClosureForTesting(BarrierClosure(
       kMinimumMonitorCount, base::BindLambdaForTesting([&run_loop] {
+        // This should only run if there are threads to watch.
+        EXPECT_TRUE(base::FeatureList::IsEnabled(kEnableHangWatcher));
+
         // Test condition are confirmed, stop monitoring.
         HangWatcher::StopMonitoringForTesting();
 
@@ -969,7 +973,10 @@ TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
   unregister_thread_closure_ =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
-  run_loop.Run();
+  // The "after monitor" closure only runs if there are threads to watch.
+  if (base::FeatureList::IsEnabled(kEnableHangWatcher)) {
+    run_loop.Run();
+  }
 
   // No monitored scope means no possible hangs.
   ASSERT_FALSE(hang_event_.IsSignaled());
