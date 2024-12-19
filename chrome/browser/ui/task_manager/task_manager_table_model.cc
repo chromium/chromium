@@ -121,7 +121,7 @@ int OrderUnavailableValue(bool v1, bool v2) {
 
 bool ShouldKeepTaskForTabs(Task::Type type, Task::SubType subtype) {
   return type == Task::RENDERER && subtype != Task::SubType::kSpareRenderer &&
-         subtype != Task::SubType::kSpareRenderer;
+         subtype != Task::SubType::kUnknownRenderer;
 }
 
 bool ShouldKeepTaskForExtensions(Task::Type type) {
