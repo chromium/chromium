@@ -16,14 +16,12 @@ interface ReorderStrategy {
      * @param stripGroupTitles The list of {@link StripLayoutGroupTitle}.
      * @param interactingView The interacting {@link StripLayoutView}.
      * @param startPoint The (x,y) coordinate that the reorder action began at.
-     * @param reorderType The {@link ReorderDelegate.ReorderType} for this reorder.
      */
     void startReorderMode(
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle[] stripGroupTitles,
             @NonNull StripLayoutView interactingView,
-            PointF startPoint,
-            int reorderType);
+            PointF startPoint);
 
     /**
      * Updates the location of the reordering tab. This 1. visually offsets the tab (clamped to the

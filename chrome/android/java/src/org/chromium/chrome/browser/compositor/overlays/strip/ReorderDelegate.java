@@ -249,8 +249,7 @@ public class ReorderDelegate {
             @ReorderType int reorderType) {
         assert mInitialized && mActiveStrategy == null && !getInReorderMode();
         mActiveStrategy = getReorderStrategy(interactingView, reorderType);
-        mActiveStrategy.startReorderMode(
-                stripTabs, stripGroupTitles, interactingView, startPoint, reorderType);
+        mActiveStrategy.startReorderMode(stripTabs, stripGroupTitles, interactingView, startPoint);
     }
 
     /** See {@link ReorderStrategy#updateReorderPosition} */
@@ -429,8 +428,7 @@ public class ReorderDelegate {
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 StripLayoutView interactingTab,
-                PointF startPoint,
-                @ReorderType int reorderType) {
+                PointF startPoint) {
             RecordUserAction.record("MobileToolbarStartReorderTab");
             setInteractingTab((StripLayoutTab) interactingTab);
             interactingTab.setIsForegrounded(/* isForegrounded= */ true);
@@ -807,8 +805,7 @@ public class ReorderDelegate {
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
-                PointF startPoint,
-                @ReorderType int reorderType) {
+                PointF startPoint) {
             // Store the relevant interacting views. We'll update their offsets as we drag.
             mInteractingGroupTitle = (StripLayoutGroupTitle) interactingView;
             mInteractingViews.add(mInteractingGroupTitle);
@@ -924,8 +921,7 @@ public class ReorderDelegate {
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
-                PointF startPoint,
-                @ReorderType int reorderType) {
+                PointF startPoint) {
             Tab tab = mModel.getTabById(((StripLayoutTab) interactingView).getTabId());
             boolean dragStarted =
                     mTabDragSource.startTabDragAction(
@@ -995,8 +991,7 @@ public class ReorderDelegate {
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
-                PointF startPoint,
-                @ReorderType int reorderType) {
+                PointF startPoint) {
             // 1. Set initial state and add edge margins.
             setInteractingTab((StripLayoutTab) interactingView);
             setInReorderMode(true);
