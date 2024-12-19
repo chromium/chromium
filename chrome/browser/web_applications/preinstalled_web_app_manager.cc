@@ -727,14 +727,6 @@ void PreinstalledWebAppManager::LoadAndSynchronize(
 }
 
 void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
-  bool preinstalling_enabled =
-      base::FeatureList::IsEnabled(features::kPreinstalledWebAppInstallation);
-
-  if (!preinstalling_enabled) {
-    std::move(callback).Run({});
-    return;
-  }
-
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   RunChainedCallbacks(
       base::BindOnce(&PreinstalledWebAppManager::LoadDeviceInfo, weak_ptr),

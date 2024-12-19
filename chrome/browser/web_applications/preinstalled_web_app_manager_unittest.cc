@@ -19,7 +19,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -483,22 +482,6 @@ TEST_F(PreinstalledWebAppManagerTest, InvalidUninstallAndReplace) {
   // correct except for invalid "uninstall_and_replace" fields.
   EXPECT_EQ(0u, app_infos.size());
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/2);
-}
-
-TEST_F(PreinstalledWebAppManagerTest, PreinstalledWebAppInstallDisabled) {
-  set_profile(CreateProfileAndLogin());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPreinstalledWebAppInstallation);
-  const auto app_infos = LoadApps(kGoodJsonTestDir);
-
-  EXPECT_EQ(0u, app_infos.size());
-  histograms_.ExpectTotalCount(
-      PreinstalledWebAppManager::kHistogramConfigErrorCount, 0);
-  histograms_.ExpectTotalCount(
-      PreinstalledWebAppManager::kHistogramEnabledCount, 0);
-  histograms_.ExpectTotalCount(
-      PreinstalledWebAppManager::kHistogramDisabledCount, 0);
 }
 
 TEST_F(PreinstalledWebAppManagerTest, EnabledByFinch) {

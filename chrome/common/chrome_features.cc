@@ -200,13 +200,6 @@ BASE_FEATURE(kDataLeakPreventionFilesRestriction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-// Whether to allow installed-by-default web apps to be installed or not.
-BASE_FEATURE(kPreinstalledWebAppInstallation,
-             "DefaultWebAppInstallation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // If enabled, specified extensions cannot be closed via the task manager.
 BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
