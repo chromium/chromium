@@ -258,26 +258,30 @@ void PageContainerLayoutAlgorithm::LayoutAllMarginBoxes(
                      GetConstraintSpace().GetWritingMode());
   PhysicalBoxStrut margins = logical_margins.ConvertToPhysical(
       GetConstraintSpace().GetWritingDirection());
+  LayoutUnit left_width = margins.left.ClampNegativeToZero();
+  LayoutUnit right_width = margins.right.ClampNegativeToZero();
+  LayoutUnit top_height = margins.top.ClampNegativeToZero();
+  LayoutUnit bottom_height = margins.bottom.ClampNegativeToZero();
   LayoutUnit right_edge = page_box_size.width - margins.right;
   LayoutUnit bottom_edge = page_box_size.height - margins.bottom;
 
-  PhysicalRect top_left_corner_rect(LayoutUnit(), LayoutUnit(), margins.left,
-                                    margins.top);
-  PhysicalRect top_right_corner_rect(right_edge, LayoutUnit(), margins.right,
-                                     margins.top);
-  PhysicalRect bottom_right_corner_rect(right_edge, bottom_edge, margins.right,
-                                        margins.bottom);
-  PhysicalRect bottom_left_corner_rect(LayoutUnit(), bottom_edge, margins.left,
-                                       margins.bottom);
+  PhysicalRect top_left_corner_rect(LayoutUnit(), LayoutUnit(), left_width,
+                                    top_height);
+  PhysicalRect top_right_corner_rect(right_edge, LayoutUnit(), right_width,
+                                     top_height);
+  PhysicalRect bottom_right_corner_rect(right_edge, bottom_edge, right_width,
+                                        bottom_height);
+  PhysicalRect bottom_left_corner_rect(LayoutUnit(), bottom_edge, left_width,
+                                       bottom_height);
   PhysicalRect top_edge_rect(margins.left, LayoutUnit(),
                              page_box_size.width - margins.HorizontalSum(),
-                             margins.top);
-  PhysicalRect right_edge_rect(right_edge, margins.top, margins.right,
+                             top_height);
+  PhysicalRect right_edge_rect(right_edge, margins.top, right_width,
                                page_box_size.height - margins.VerticalSum());
   PhysicalRect bottom_edge_rect(margins.left, bottom_edge,
                                 page_box_size.width - margins.HorizontalSum(),
-                                margins.bottom);
-  PhysicalRect left_edge_rect(LayoutUnit(), margins.top, margins.left,
+                                margins.bottom.ClampNegativeToZero());
+  PhysicalRect left_edge_rect(LayoutUnit(), margins.top, left_width,
                               page_box_size.height - margins.VerticalSum());
 
   // Lay out in default paint order. Start in the top left corner and go
