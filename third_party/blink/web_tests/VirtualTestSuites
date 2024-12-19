@@ -1857,7 +1857,7 @@
       "--enable-features=PrefetchReusable,Prerender2FallbackPrefetchSpecRules"
     ],
     "owners": ["kenoss@chromium.org"],
-    "expires": "Dec 12, 2024"
+    "expires": "May 12, 2025"
   },
   "prerender2-fallback-prefetch-spec-rules for exclusive tests http/tests/inspector-protocol/prefetch",
   "We maintain this separated from prerender2-fallback-prefetch-spec-rules because",
@@ -1878,7 +1878,7 @@
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "owners": ["kenoss@chromium.org"],
-    "expires": "Dec 12, 2024"
+    "expires": "May 12, 2025"
   },
   {
     "prefix": "cookie-reject-domain-non-ascii",
