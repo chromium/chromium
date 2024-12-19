@@ -106,6 +106,8 @@ message ModelPrototypingRequest {
     BrowserCollectedInformation browser_collected_information = 1;
 
     string user_input = 2;
+
+    ExtensionAddedInformation extension_added_information = 3;
   }
 }
 
@@ -129,7 +131,7 @@ message ConversationTurn {
 
 // All the information collected from the browser along with the user input
 // (for features like Compose).
-// NEXT ID: 14
+// NEXT ID: 15
 message BrowserCollectedInformation {
   // The page context of the page the model is acting on.
   PageContext page_context = 1;
@@ -173,6 +175,11 @@ message BrowserCollectedInformation {
   FormsPredictionsRequest forms_predictions_request = 12;
 
   FormsPredictionsResponse forms_predictions_response = 13;
+
+  // Specifies which data is included in this request to the browser.
+  // For example, some requests only include foreground tab data,
+  // whereas others include all profile data.
+  ModelPrototypingCollectionSpecifier collection_specifier = 14;
 }
 
 message HistoryQueryResult {
@@ -216,6 +223,126 @@ message DateTimeRange {
   Timestamp start_time = 1;
 
   Timestamp end_time = 2;
+}
+
+message ModelPrototypingCollectionSpecifier {
+  // The feature data collection specifier.
+  FeatureDataCollectionSpecifier feature_data_collection_specifier = 1;
+
+  // The browser data collection specifier.
+  BrowserDataCollectionSpecifier browser_data_collection_specifier = 2;
+}
+
+// Used to specify the feature protos that should be collected.
+message FeatureDataCollectionSpecifier {
+  // Whether to collect the forms request.
+  bool collect_forms_request = 1;
+
+  // Whether to collect the compose request.
+  bool collect_compose_request = 2;
+
+  // Whether to collect the tab organization request.
+  bool collect_tab_organization_request = 3;
+}
+
+// Input used to tell Chrome what data to collect.
+message BrowserDataCollectionSpecifier {
+  // The page context specifier for the foreground tab.
+  PageContextSpecifier foreground_tab_page_context_specifier = 1;
+
+  // The tabs context specifier for the foreground window's tab.
+  TabsContextSpecifier tabs_context_specifier = 2;
+
+  // Whether to collect the site engagement information for the user.
+  bool site_engagement = 3;
+
+  // Whether to collect the tab groups information for the user.
+  bool tab_groups = 4;
+
+  // Whether to collect the user annotations.
+  bool user_annotations = 5;
+
+  // Which history queries to collect data for.
+  HistoryQuerySpecifiers history_query_specifiers = 6;
+}
+
+// Specifies the context to collect for a single page.
+message PageContextSpecifier {
+  // Send the default data (a subset of the data below) in addition to any
+  // other fields set to true below.
+  bool default_data = 1;
+
+  // Whether to collect the inner text of the page.
+  bool inner_text = 2;
+
+  // The DOM node ID of the inner text where the "focus" is.
+  int64 inner_text_dom_node_id = 3;
+
+  // Whether to collect the tab screenshot.
+  bool tab_screenshot = 4;
+
+  // Whether to collect the accessibility tree.
+  bool ax_tree = 5;
+
+  // Whether to collect the PDF data.
+  bool pdf_data = 6;
+
+  // Whether to collect the forms data.
+  bool forms_data = 7;
+}
+
+// Used to specify the context to collect for a set of tabs.
+message TabsContextSpecifier {
+  oneof specifier {
+    PerTabSpecifiers per_tab_specifiers = 1;
+
+    GeneralTabSpecifier general_tab_specifier = 2;
+  }
+}
+
+// Repeated version of PerTabSpecifier for oneof.
+message PerTabSpecifiers {
+  // The specifiers for each tab.
+  repeated PerTabSpecifier per_tab_specifier = 1;
+}
+
+// Used to specify the context to collect for a single tab.
+message PerTabSpecifier {
+  // The tab ID to collect the context for. Corresponds to the index in the
+  // foreground window's tabs.
+  int64 tab_id = 1;
+
+  // The page context specifiers to use for this tab.
+  PageContextSpecifier page_context_specifier = 2;
+}
+
+// Used to specify the context to collect for a set of tabs, generally limited
+// to the first N tabs.
+message GeneralTabSpecifier {
+  // The page context specifiers to use for the tabs.
+  PageContextSpecifier page_context_specifier = 1;
+
+  // The maximum number of tabs to collect the context for (collects tab index
+  // 0,...,n-1).
+  int64 tab_limit = 2;
+}
+
+message HistoryQuerySpecifiers {
+  repeated HistoryQuery history_queries = 1;
+}
+
+message ExtensionAddedInformation {
+  // Free form data that a prototyper can inject into prompts.
+  repeated string free_form_data = 1;
+
+  // The local annotated page content as a json string.
+  string local_annotated_page_content_as_json = 2;
+
+  // The local annotated page content as a markdown string.
+  string local_annotated_page_content_as_markdown = 3;
+
+  // The local annotated page content as a list of passages.
+  string local_annotated_page_content_as_passages = 4;
 }
 
 message ModelPrototypingResponse {
