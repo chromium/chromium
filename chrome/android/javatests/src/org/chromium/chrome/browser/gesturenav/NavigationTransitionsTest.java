@@ -87,6 +87,7 @@ import java.util.concurrent.atomic.AtomicInteger;
     "hide-scrollbars"
 })
 @Batch(Batch.PER_CLASS)
+// Native fence extension doesn't work properly on Android emulator
 @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
 @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")
 public class NavigationTransitionsTest {
@@ -461,6 +462,7 @@ public class NavigationTransitionsTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/385189006")
     public void startBackNavWithTopControlHidden() throws Throwable {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
