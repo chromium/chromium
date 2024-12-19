@@ -348,6 +348,9 @@ class CC_EXPORT CompositorFrameReporter {
   // Erase and return all EventMetrics objects from our list.
   EventMetrics::List TakeEventsMetrics();
 
+  void set_normalized_invalidated_area(
+      std::optional<float> normalized_invalidated_area);
+
   size_t stage_history_size_for_testing() const {
     return stage_history_.size();
   }
@@ -499,6 +502,8 @@ class CC_EXPORT CompositorFrameReporter {
   void ReportEventLatencyTraceEvents() const;
   void ReportScrollJankMetrics() const;
 
+  void ReportPaintMetric() const;
+
   void EnableReportType(FrameReportType report_type) {
     report_types_.set(static_cast<size_t>(report_type));
   }
@@ -549,6 +554,10 @@ class CC_EXPORT CompositorFrameReporter {
 
   // List of metrics for events affecting this frame.
   EventMetrics::List events_metrics_;
+
+  // Total invalidated (repainted) area of a frame, normalized by the frame's
+  // output size.
+  std::optional<float> paint_metric_;
 
   FrameReportTypes report_types_;
 

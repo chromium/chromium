@@ -42,6 +42,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/metrics/submit_info.h"
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/scheduler/begin_frame_tracker.h"
@@ -1207,6 +1208,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool resourceless_software_draw_ = false;
 
   gfx::Rect viewport_damage_rect_;
+  std::optional<base::CheckedNumeric<uint32_t>> total_invalidated_area_ = 0;
 
   std::unique_ptr<MutatorHost> mutator_host_;
   std::unique_ptr<MutatorEvents> mutator_events_;

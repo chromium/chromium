@@ -1190,6 +1190,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Graphics.Paint.UI.NormalizedInvalidatedArea" units="%"
+    expires_after="2025-10-16">
+  <owner>zoraiznaeem@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Tracks the total invalidated area (i.e repainted area) per frame. It is
+    normalized by a frame's output size.
+
+    Frames with zero invalidated area are not reported in the histogram.
+
+    The paint metric is only tracked for nat UI compositor, meaning that
+    invalidated area of renderers are not taken into account.
+
+    Note: the metric is logged as `invalidated_area * 100,000`.
+  </summary>
+</histogram>
+
 <histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
     units="%" expires_after="2025-04-13">
   <owner>jonross@chromium.org</owner>

@@ -389,6 +389,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     impl_reporter->set_reporter_type_to_impl();
     impl_reporter->set_top_controls_moved(submit_info.top_controls_moved);
     impl_reporter->set_created_new_tree(submit_info.drawn_with_new_layer_tree);
+    impl_reporter->set_normalized_invalidated_area(
+        submit_info.normalized_invalidated_area);
     submitted_compositor_frames_.emplace_back(submit_info.frame_token,
                                               std::move(impl_reporter));
   }

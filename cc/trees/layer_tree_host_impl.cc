@@ -69,6 +69,7 @@
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/lcd_text_metrics_reporter.h"
+#include "cc/metrics/submit_info.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_worklet_job.h"
@@ -165,6 +166,22 @@ constexpr size_t kContainsSrgbCacheSize = 3;
 static_assert(kContainsSrgbCacheSize ==
                   gfx::DisplayColorSpaces::kConfigCount / 2,
               "sRGB cache must match the size of DisplayColorSpaces");
+
+void AccumulateInvalidatedArea(
+    LayerImpl* layer,
+    base::CheckedNumeric<uint32_t>& total_invalidated_area_out) {
+  const Region invalidation_region = layer->GetInvalidationRegionForDebugging();
+  if (invalidation_region.IsEmpty() || !layer->draws_content()) {
+    return;
+  }
+
+  for (gfx::Rect rect : invalidation_region) {
+    total_invalidated_area_out +=
+        MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(), rect)
+            .size()
+            .GetCheckedArea();
+  }
+}
 
 bool IsMobileOptimized(LayerTreeImpl* active_tree) {
   return util::IsMobileOptimized(active_tree->min_page_scale_factor(),
@@ -529,6 +546,10 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   frame_trackers_.set_custom_tracker_results_added_callback(base::BindRepeating(
       &LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults,
       weak_factory_.GetWeakPtr()));
+
+  if (settings_.is_layer_tree_for_ui) {
+    total_invalidated_area_ = 0u;
+  }
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
@@ -1473,6 +1494,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
       if (append_quads_data.num_missing_tiles > 0) {
         have_missing_animated_tiles |=
             layer->screen_space_transform_is_animating();
+      }
+      if (settings_.is_layer_tree_for_ui) {
+        AccumulateInvalidatedArea(layer, total_invalidated_area_.value());
       }
     }
     frame->activation_dependencies.insert(
@@ -2778,6 +2802,20 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   lag_tracking_manager_.CollectScrollEventsFromFrame(frame_token,
                                                      events_metrics);
 
+  std::optional<float> normalized_invalidated_area;
+  if (settings_.is_layer_tree_for_ui) {
+    CHECK(total_invalidated_area_.has_value());
+
+    const gfx::Rect& output_rect =
+        active_tree()->RootRenderSurface()->content_rect();
+    normalized_invalidated_area =
+        static_cast<float>(
+            total_invalidated_area_.value().ValueOrDefault(UINT_MAX)) /
+        output_rect.size().GetArea();
+
+    total_invalidated_area_ = 0;
+  }
+
   // Dump property trees and layers if VerboseLogEnabled().
   VERBOSE_LOG() << "Submitting a frame:\n"
                 << viz::TransitionUtils::RenderPassListToString(
@@ -2879,7 +2917,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
                     frame->checkerboarded_needs_record,
                     top_controls_moved,
                     std::move(events_metrics),
-                    drawn_with_new_layer_tree};
+                    drawn_with_new_layer_tree,
+                    normalized_invalidated_area};
 }
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(

@@ -14,10 +14,12 @@
 #include <cstdint>
 #include <deque>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/cpu_reduction_experiment.h"
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
@@ -32,6 +34,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/rolling_time_delta_history.h"
+#include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
 #include "cc/metrics/event_latency_tracker.h"
@@ -901,6 +904,11 @@ EventMetrics::List CompositorFrameReporter::TakeEventsMetrics() {
   return result;
 }
 
+void CompositorFrameReporter::set_normalized_invalidated_area(
+    std::optional<float> normalized_invalidated_area) {
+  paint_metric_ = normalized_invalidated_area;
+}
+
 EventMetrics::List CompositorFrameReporter::TakeMainBlockedEventsMetrics() {
   auto mid = std::partition(events_metrics_.begin(), events_metrics_.end(),
                             [](std::unique_ptr<EventMetrics>& metrics) {
@@ -982,6 +990,11 @@ void CompositorFrameReporter::TerminateReporter() {
     if (TestReportType(FrameReportType::kNonDroppedFrame)) {
       ReportEventLatencyMetrics();
     }
+  }
+
+  // Paint metrics are only reported for UI compositors.
+  if (paint_metric_) {
+    ReportPaintMetric();
   }
 
   if (TestReportType(FrameReportType::kDroppedFrame)) {
@@ -1708,6 +1721,29 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     global_trackers_.scroll_jank_ukm_reporter
         ->UpdateLatestFrameAndEmitPredictorJank(end_timestamp);
   }
+}
+
+void CompositorFrameReporter::ReportPaintMetric() const {
+  CHECK(paint_metric_.has_value());
+  constexpr static char kAverageInvalidatedArea[] =
+      "Graphics.Paint.UI.NormalizedInvalidatedArea";
+
+  // For optimal histogram bucketing, convert floating-point values into
+  // integers while preserving the desired level of decimal precision.
+  constexpr static int kConversionFactor = 100'000;
+
+  // During layer animations (and other cases), many frames are generated but
+  // without any repainting. Skipping such frames as reporting these frames will
+  // create a bias towards zero when averaging buckets.
+  if (paint_metric_ == 0) {
+    return;
+  }
+
+  // The expected ranges is [0, 6].
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      kAverageInvalidatedArea, paint_metric_.value() * kConversionFactor,
+      /*minimum=*/0,
+      /*maximum=*/(6 * kConversionFactor) + 1, /*bucket_count=*/50);
 }
 
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
