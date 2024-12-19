@@ -399,6 +399,13 @@ AXBlockFlowIterator::NextOnLine() {
   const AXBlockFlowData::FragmentProperties& properties =
       block_flow_data_->GetProperties(current_index_.value());
   if (properties.next_on_line) {
+    const FragmentItem* item =
+        block_flow_data_->ItemAt(properties.next_on_line.value());
+    if (!item || !item->GetLayoutObject() ||
+        !item->GetLayoutObject()->IsText()) {
+      return std::nullopt;
+    }
+
     const AXBlockFlowData::Position position =
         block_flow_data_->GetPosition(properties.next_on_line.value());
     const PhysicalBoxFragment* box_fragment =
@@ -418,6 +425,13 @@ AXBlockFlowIterator::PreviousOnLine() {
   const AXBlockFlowData::FragmentProperties& properties =
       block_flow_data_->GetProperties(current_index_.value());
   if (properties.previous_on_line) {
+    const FragmentItem* item =
+        block_flow_data_->ItemAt(properties.previous_on_line.value());
+    if (!item || !item->GetLayoutObject() ||
+        !item->GetLayoutObject()->IsText()) {
+      return std::nullopt;
+    }
+
     const AXBlockFlowData::Position position =
         block_flow_data_->GetPosition(properties.previous_on_line.value());
     const PhysicalBoxFragment* box_fragment =
