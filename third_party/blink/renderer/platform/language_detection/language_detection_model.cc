@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/types/expected.h"
+#include "components/language_detection/content/common/language_detection.mojom-blink.h"
 #include "components/language_detection/content/renderer/language_detection_model_manager.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -50,6 +51,14 @@ void LanguageDetectionModel::Create(
       WTF::BindOnce(OnModelResponseReceived, std::move(callback)));
 }
 
+// static
+void LanguageDetectionModel::GetStatus(
+    const blink::BrowserInterfaceBrokerProxy& interface_broker,
+    LanguageDetectionModelStatusCallback callback) {
+  GetLanguageDetectionModelManager().GetLanguageDetectionModelStatus(
+      interface_broker, std::move(callback));
+}
+
 void LanguageDetectionModel::OnModelResponseReceived(
     CreateLanguageDetectionModelCallback callback,
     language_detection::LanguageDetectionModel* model) {
@@ -83,6 +92,13 @@ void LanguageDetectionModel::DetectLanguage(
     predictions.emplace_back(it.language, it.score);
   }
   std::move(on_complete).Run(predictions);
+}
+
+int64_t LanguageDetectionModel::GetModelSize() const {
+  if (!language_detection_model_->IsAvailable()) {
+    return 0;
+  }
+  return language_detection_model_->GetModelSize();
 }
 
 }  // namespace blink

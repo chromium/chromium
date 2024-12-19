@@ -49,10 +49,24 @@ class ScopedLanguageDetectionModelStateRecorder {
   language_detection::LanguageDetectionModelState state_;
 };
 
-// Loads model from |model_file| using |num_threads|. This can be called on
-// any thread.
-std::optional<std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>>
-LoadModelFromFile(base::File model_file, int num_threads) {
+}  // namespace
+
+#if !BUILDFLAG(IS_WIN)
+BASE_FEATURE(kMmapLanguageDetectionModel,
+             "MmapLanguageDetectionModel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+Prediction TopPrediction(const std::vector<Prediction>& predictions) {
+  auto elem = std::max_element(predictions.begin(), predictions.end());
+  CHECK(elem != predictions.end());
+  return *elem;
+}
+
+// static
+std::optional<LanguageDetectionModel::ModelAndSize>
+LanguageDetectionModel::LoadModelFromFile(base::File model_file,
+                                          int num_threads) {
   ScopedLanguageDetectionModelStateRecorder recorder(
       LanguageDetectionModelState::kModelFileInvalid);
 
@@ -107,21 +121,8 @@ LoadModelFromFile(base::File model_file, int num_threads) {
 
   recorder.set_state(LanguageDetectionModelState::kModelAvailable);
 
-  return std::move(statusor_classifier).value();
-}
-
-}  // namespace
-
-#if !BUILDFLAG(IS_WIN)
-BASE_FEATURE(kMmapLanguageDetectionModel,
-             "MmapLanguageDetectionModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-Prediction TopPrediction(const std::vector<Prediction>& predictions) {
-  auto elem = std::max_element(predictions.begin(), predictions.end());
-  CHECK(elem != predictions.end());
-  return *elem;
+  return std::make_pair(std::move(statusor_classifier).value(),
+                        model_file.GetLength());
 }
 
 LanguageDetectionModel::LanguageDetectionModel()
@@ -241,6 +242,7 @@ Prediction LanguageDetectionModel::PredictTopLanguageWithSamples(
 
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   SetModel(LoadModelFromFile(std::move(model_file), num_threads_));
 }
 
@@ -260,6 +262,13 @@ bool LanguageDetectionModel::IsAvailable() const {
   return lang_detection_model_ != nullptr;
 }
 
+int64_t LanguageDetectionModel::GetModelSize() const {
+  if (!IsAvailable()) {
+    return 0;
+  }
+  return model_file_size_;
+}
+
 std::string LanguageDetectionModel::GetModelVersion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/40748826): Return the model version provided
@@ -268,10 +277,13 @@ std::string LanguageDetectionModel::GetModelVersion() const {
 }
 
 void LanguageDetectionModel::SetModel(
-    std::optional<OwnedNLClassifier> optional_model) {
+    std::optional<ModelAndSize> model_and_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (optional_model.has_value()) {
-    lang_detection_model_ = std::move(optional_model).value();
+  if (model_and_size.has_value()) {
+    lang_detection_model_ = std::move(model_and_size.value().first);
+    model_file_size_ = model_and_size.value().second;
+  } else {
+    model_file_size_ = 0;
   }
   NotifyModelLoaded();
 }

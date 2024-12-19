@@ -17,5 +17,5 @@ interface AILanguageDetectorFactory {
 
 dictionary AILanguageDetectorCreateOptions {
   AbortSignal signal;
-  // TODO(crbug.com/349927087): Add AICreateMonitorCallback.
+  AICreateMonitorCallback monitor;
 };
