@@ -329,6 +329,9 @@ enum WebDXFeature {
   kClipboardCustomFormat = 271,
   kClipboardSvg = 272,
   kClipboardSupports = 273,
+  kBarProp = 274,
+  kBeforeUnload = 275,
+  kBfcacheBlockingReasons = 276,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -324,6 +324,14 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kWebAppWindowControlsOverlay,
            WebDXFeature::kWindowControlsOverlay},
           {WebFeature::kPriorityHints, WebDXFeature::kFetchPriority},
+          {WebFeature::kBarPropLocationbar, WebDXFeature::kBarProp},
+          {WebFeature::kBarPropMenubar, WebDXFeature::kBarProp},
+          {WebFeature::kBarPropPersonalbar, WebDXFeature::kBarProp},
+          {WebFeature::kBarPropScrollbars, WebDXFeature::kBarProp},
+          {WebFeature::kBarPropStatusbar, WebDXFeature::kBarProp},
+          {WebFeature::kBarPropToolbar, WebDXFeature::kBarProp},
+          {WebFeature::kDocumentBeforeUnloadRegistered,
+           WebDXFeature::kBeforeUnload},
       }};
 
   return *kMap;
