@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'chrome://settings/settings.js';
+import 'chrome://settings/settings.js';
 
 import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName, UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {AiPageInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {AiPageInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
 
 suite('ExperimentalAdvancedPage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
