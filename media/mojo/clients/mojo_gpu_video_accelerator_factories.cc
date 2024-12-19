@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/gpu/gpu_video_accelerator_factories_impl.h"
+#include "media/mojo/clients/mojo_gpu_video_accelerator_factories.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -18,9 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/public/common/content_features.h"
-#include "content/renderer/media/codec_factory.h"
-#include "content/renderer/render_thread_impl.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -28,11 +25,12 @@
 #include "media/base/media_switches.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/buildflags.h"
+#include "media/mojo/clients/mojo_codec_factory.h"
 #include "media/video/video_encode_accelerator.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
-namespace content {
+namespace media {
 
 #if BUILDFLAG(IS_WIN)
 namespace {
@@ -49,39 +47,19 @@ BASE_FEATURE(kUseNV12OutputFormat,
 #endif
 
 // static
-std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>
-GpuVideoAcceleratorFactoriesImpl::Create(
+std::unique_ptr<MojoGpuVideoAcceleratorFactories>
+MojoGpuVideoAcceleratorFactories::Create(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
     const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
-    std::unique_ptr<CodecFactory> codec_factory,
-    bool enable_video_gpu_memory_buffers,
-    bool enable_media_stream_gpu_memory_buffers,
-    bool enable_video_decode_accelerator,
-    bool enable_video_encode_accelerator) {
-  return base::WrapUnique(new GpuVideoAcceleratorFactoriesImpl(
-      std::move(gpu_channel_host), main_thread_task_runner, task_runner,
-      std::move(context_provider), std::move(codec_factory),
-      RenderThreadImpl::current()->GetGpuMemoryBufferManager(),
-      enable_video_gpu_memory_buffers, enable_media_stream_gpu_memory_buffers,
-      enable_video_decode_accelerator, enable_video_encode_accelerator));
-}
-
-// static
-std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>
-GpuVideoAcceleratorFactoriesImpl::CreateForTesting(
-    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
-    const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
-    std::unique_ptr<CodecFactory> codec_factory,
+    std::unique_ptr<MojoCodecFactory> codec_factory,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     bool enable_video_gpu_memory_buffers,
     bool enable_media_stream_gpu_memory_buffers,
     bool enable_video_decode_accelerator,
     bool enable_video_encode_accelerator) {
-  return base::WrapUnique(new GpuVideoAcceleratorFactoriesImpl(
+  return base::WrapUnique(new MojoGpuVideoAcceleratorFactories(
       std::move(gpu_channel_host), main_thread_task_runner, task_runner,
       std::move(context_provider), std::move(codec_factory),
       std::move(gpu_memory_buffer_manager), enable_video_gpu_memory_buffers,
@@ -89,12 +67,12 @@ GpuVideoAcceleratorFactoriesImpl::CreateForTesting(
       enable_video_encode_accelerator));
 }
 
-GpuVideoAcceleratorFactoriesImpl::GpuVideoAcceleratorFactoriesImpl(
+MojoGpuVideoAcceleratorFactories::MojoGpuVideoAcceleratorFactories(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
     const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
-    std::unique_ptr<CodecFactory> codec_factory,
+    std::unique_ptr<MojoCodecFactory> codec_factory,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     bool enable_video_gpu_memory_buffers,
     bool enable_media_stream_gpu_memory_buffers,
@@ -116,13 +94,15 @@ GpuVideoAcceleratorFactoriesImpl::GpuVideoAcceleratorFactoriesImpl(
 
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner,
+      base::BindOnce(&MojoGpuVideoAcceleratorFactories::BindOnTaskRunner,
                      base::Unretained(this)));
 }
 
-GpuVideoAcceleratorFactoriesImpl::~GpuVideoAcceleratorFactoriesImpl() {}
+MojoGpuVideoAcceleratorFactories::~MojoGpuVideoAcceleratorFactories() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+}
 
-void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner() {
+void MojoGpuVideoAcceleratorFactories::BindOnTaskRunner() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(context_provider_);
 
@@ -136,32 +116,33 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner() {
 
   // Request the channel token.
   context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
-      base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady,
+      base::BindOnce(&MojoGpuVideoAcceleratorFactories::OnChannelTokenReady,
                      base::Unretained(this)));
 }
 
-bool GpuVideoAcceleratorFactoriesImpl::IsDecoderSupportKnown() {
+bool MojoGpuVideoAcceleratorFactories::IsDecoderSupportKnown() {
   return codec_factory_->IsDecoderSupportKnown();
 }
 
-void GpuVideoAcceleratorFactoriesImpl::NotifyDecoderSupportKnown(
+void MojoGpuVideoAcceleratorFactories::NotifyDecoderSupportKnown(
     base::OnceClosure callback) {
   codec_factory_->NotifyDecoderSupportKnown(std::move(callback));
 }
 
-bool GpuVideoAcceleratorFactoriesImpl::IsEncoderSupportKnown() {
+bool MojoGpuVideoAcceleratorFactories::IsEncoderSupportKnown() {
   return codec_factory_->IsEncoderSupportKnown();
 }
 
-void GpuVideoAcceleratorFactoriesImpl::NotifyEncoderSupportKnown(
+void MojoGpuVideoAcceleratorFactories::NotifyEncoderSupportKnown(
     base::OnceClosure callback) {
   codec_factory_->NotifyEncoderSupportKnown(std::move(callback));
 }
 
-bool GpuVideoAcceleratorFactoriesImpl::CheckContextLost() {
+bool MojoGpuVideoAcceleratorFactories::CheckContextLost() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (context_provider_lost_on_media_thread_)
+  if (context_provider_lost_on_media_thread_) {
     return true;
+  }
   if (context_provider_->ContextGL()->GetGraphicsResetStatusKHR() !=
       GL_NO_ERROR) {
     OnContextLost();
@@ -170,25 +151,26 @@ bool GpuVideoAcceleratorFactoriesImpl::CheckContextLost() {
   return false;
 }
 
-void GpuVideoAcceleratorFactoriesImpl::DestroyContext() {
+void MojoGpuVideoAcceleratorFactories::DestroyContext() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(context_provider_lost_on_media_thread_);
 
-  if (!context_provider_)
+  if (!context_provider_) {
     return;
+  }
 
   context_provider_->RemoveObserver(this);
   context_provider_ = nullptr;
 }
 
-bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoDecodeAcceleratorEnabled() {
+bool MojoGpuVideoAcceleratorFactories::IsGpuVideoDecodeAcceleratorEnabled() {
   return video_decode_accelerator_enabled_;
 }
-bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoEncodeAcceleratorEnabled() {
+bool MojoGpuVideoAcceleratorFactories::IsGpuVideoEncodeAcceleratorEnabled() {
   return video_encode_accelerator_enabled_;
 }
 
-void GpuVideoAcceleratorFactoriesImpl::GetChannelToken(
+void MojoGpuVideoAcceleratorFactories::GetChannelToken(
     gpu::mojom::GpuChannel::GetChannelTokenCallback cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (CheckContextLost()) {
@@ -206,7 +188,7 @@ void GpuVideoAcceleratorFactoriesImpl::GetChannelToken(
   channel_token_callbacks_.AddUnsafe(std::move(cb));
 }
 
-void GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady(
+void MojoGpuVideoAcceleratorFactories::OnChannelTokenReady(
     const base::UnguessableToken& token) {
   channel_token_ = token;
   channel_token_callbacks_.Notify(channel_token_);
@@ -215,15 +197,16 @@ void GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady(
       token, context_provider_->GetCommandBufferProxy()->route_id());
 }
 
-int32_t GpuVideoAcceleratorFactoriesImpl::GetCommandBufferRouteId() {
+int32_t MojoGpuVideoAcceleratorFactories::GetCommandBufferRouteId() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (CheckContextLost())
+  if (CheckContextLost()) {
     return 0;
+  }
   return context_provider_->GetCommandBufferProxy()->route_id();
 }
 
 media::GpuVideoAcceleratorFactories::Supported
-GpuVideoAcceleratorFactoriesImpl::IsDecoderConfigSupported(
+MojoGpuVideoAcceleratorFactories::IsDecoderConfigSupported(
     const media::VideoDecoderConfig& config) {
   // There is no support for alpha channel hardware decoding yet.
   // HEVC is the codec that only has platform hardware decoder support, and
@@ -242,55 +225,61 @@ GpuVideoAcceleratorFactoriesImpl::IsDecoderConfigSupported(
 
   // Iterate over the supported configs.
   for (const auto& supported : *supported_decoder_configs) {
-    if (supported.Matches(config))
+    if (supported.Matches(config)) {
       return Supported::kTrue;
+    }
   }
   return Supported::kFalse;
 }
 
-media::VideoDecoderType GpuVideoAcceleratorFactoriesImpl::GetDecoderType() {
+media::VideoDecoderType MojoGpuVideoAcceleratorFactories::GetDecoderType() {
   return codec_factory_->GetVideoDecoderType();
 }
 
 std::unique_ptr<media::VideoDecoder>
-GpuVideoAcceleratorFactoriesImpl::CreateVideoDecoder(
+MojoGpuVideoAcceleratorFactories::CreateVideoDecoder(
     media::MediaLog* media_log,
     media::RequestOverlayInfoCB request_overlay_info_cb) {
   DCHECK(video_decode_accelerator_enabled_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (CheckContextLost())
+  if (CheckContextLost()) {
     return nullptr;
+  }
 
   return codec_factory_->CreateVideoDecoder(
       this, media_log, request_overlay_info_cb, rendering_color_space_);
 }
 
 std::unique_ptr<media::VideoEncodeAccelerator>
-GpuVideoAcceleratorFactoriesImpl::CreateVideoEncodeAccelerator() {
+MojoGpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator() {
   DCHECK(video_encode_accelerator_enabled_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (CheckContextLost())
+  if (CheckContextLost()) {
     return nullptr;
+  }
 
   return codec_factory_->CreateVideoEncodeAccelerator();
 }
 
 std::unique_ptr<gfx::GpuMemoryBuffer>
-GpuVideoAcceleratorFactoriesImpl::CreateGpuMemoryBuffer(
+MojoGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  return gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-      size, format, usage, gpu::kNullSurfaceHandle, nullptr);
+  if (gpu_memory_buffer_manager_) {
+    return gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
+        size, format, usage, gpu::kNullSurfaceHandle, nullptr);
+  }
+  return nullptr;
 }
-bool GpuVideoAcceleratorFactoriesImpl::ShouldUseGpuMemoryBuffersForVideoFrames(
+bool MojoGpuVideoAcceleratorFactories::ShouldUseGpuMemoryBuffersForVideoFrames(
     bool for_media_stream) const {
   return for_media_stream ? enable_media_stream_gpu_memory_buffers_
                           : enable_video_gpu_memory_buffers_;
 }
 
 media::GpuVideoAcceleratorFactories::OutputFormat
-GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
+MojoGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
     media::VideoPixelFormat pixel_format) {
   auto format = VideoFrameOutputFormatImpl(pixel_format);
   UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormat", format);
@@ -298,7 +287,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
 }
 
 media::GpuVideoAcceleratorFactories::OutputFormat
-GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
+MojoGpuVideoAcceleratorFactories::VideoFrameOutputFormatImpl(
     media::VideoPixelFormat pixel_format) {
   using OutputFormat = media::GpuVideoAcceleratorFactories::OutputFormat;
 
@@ -387,68 +376,68 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
 }
 
 gpu::SharedImageInterface*
-GpuVideoAcceleratorFactoriesImpl::SharedImageInterface() {
+MojoGpuVideoAcceleratorFactories::SharedImageInterface() {
   return CheckContextLost() ? nullptr
                             : context_provider_->SharedImageInterface();
 }
 
 gpu::GpuMemoryBufferManager*
-GpuVideoAcceleratorFactoriesImpl::GpuMemoryBufferManager() {
+MojoGpuVideoAcceleratorFactories::GpuMemoryBufferManager() {
   return gpu_memory_buffer_manager_;
 }
 
 base::UnsafeSharedMemoryRegion
-GpuVideoAcceleratorFactoriesImpl::CreateSharedMemoryRegion(size_t size) {
+MojoGpuVideoAcceleratorFactories::CreateSharedMemoryRegion(size_t size) {
   // If necessary, this call will make a synchronous request to a privileged
   // process to create the shared region.
   return base::UnsafeSharedMemoryRegion::Create(size);
 }
 
 scoped_refptr<base::SequencedTaskRunner>
-GpuVideoAcceleratorFactoriesImpl::GetTaskRunner() {
+MojoGpuVideoAcceleratorFactories::GetTaskRunner() {
   return task_runner_;
 }
 
 std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
-GpuVideoAcceleratorFactoriesImpl::GetVideoEncodeAcceleratorSupportedProfiles() {
+MojoGpuVideoAcceleratorFactories::GetVideoEncodeAcceleratorSupportedProfiles() {
   return codec_factory_->GetVideoEncodeAcceleratorSupportedProfiles();
 }
 
 std::optional<media::SupportedVideoDecoderConfigs>
-GpuVideoAcceleratorFactoriesImpl::GetSupportedVideoDecoderConfigs() {
+MojoGpuVideoAcceleratorFactories::GetSupportedVideoDecoderConfigs() {
   return codec_factory_->GetSupportedVideoDecoderConfigs();
 }
 
 viz::RasterContextProvider*
-GpuVideoAcceleratorFactoriesImpl::GetMediaContextProvider() {
+MojoGpuVideoAcceleratorFactories::GetMediaContextProvider() {
   return CheckContextLost() ? nullptr : context_provider_.get();
 }
 
 const gpu::Capabilities*
-GpuVideoAcceleratorFactoriesImpl::ContextCapabilities() {
+MojoGpuVideoAcceleratorFactories::ContextCapabilities() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   return CheckContextLost() ? nullptr
                             : &(context_provider_->ContextCapabilities());
 }
 
-void GpuVideoAcceleratorFactoriesImpl::SetRenderingColorSpace(
+void MojoGpuVideoAcceleratorFactories::SetRenderingColorSpace(
     const gfx::ColorSpace& color_space) {
   rendering_color_space_ = color_space;
 }
 
 const gfx::ColorSpace&
-GpuVideoAcceleratorFactoriesImpl::GetRenderingColorSpace() const {
+MojoGpuVideoAcceleratorFactories::GetRenderingColorSpace() const {
   return rendering_color_space_;
 }
 
-bool GpuVideoAcceleratorFactoriesImpl::CheckContextProviderLostOnMainThread() {
+bool MojoGpuVideoAcceleratorFactories::CheckContextProviderLostOnMainThread() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   return context_provider_lost_;
 }
 
-void GpuVideoAcceleratorFactoriesImpl::OnContextLost() {
+void MojoGpuVideoAcceleratorFactories::OnContextLost() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("media", "GpuVideoAcceleratorFactoriesImpl::OnContextLost");
+  TRACE_EVENT0("media", "MojoGpuVideoAcceleratorFactories::OnContextLost");
 
   // Don't delete the |context_provider_| here, we could be in the middle of
   // it notifying about the loss, and we'd be destroying it while it's on
@@ -459,13 +448,13 @@ void GpuVideoAcceleratorFactoriesImpl::OnContextLost() {
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &GpuVideoAcceleratorFactoriesImpl::SetContextProviderLostOnMainThread,
+          &MojoGpuVideoAcceleratorFactories::SetContextProviderLostOnMainThread,
           base::Unretained(this)));
 }
 
-void GpuVideoAcceleratorFactoriesImpl::SetContextProviderLostOnMainThread() {
+void MojoGpuVideoAcceleratorFactories::SetContextProviderLostOnMainThread() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   context_provider_lost_ = true;
 }
 
-}  // namespace content
+}  // namespace media

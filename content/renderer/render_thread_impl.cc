@@ -96,8 +96,6 @@
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/browser_exposed_renderer_interfaces.h"
 #include "content/renderer/effective_connection_type_helper.h"
-#include "content/renderer/media/codec_factory.h"
-#include "content/renderer/media/gpu/gpu_video_accelerator_factories_impl.h"
 #include "content/renderer/media/media_factory.h"
 #include "content/renderer/media/render_media_client.h"
 #include "content/renderer/net_info_helper.h"
@@ -127,6 +125,8 @@
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_codec_factory.h"
+#include "media/mojo/clients/mojo_gpu_video_accelerator_factories.h"
 #include "media/renderers/default_decoder_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -216,12 +216,12 @@
 #endif
 
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-#include "content/renderer/media/codec_factory_mojo.h"
+#include "media/mojo/clients/mojo_codec_factory_mojo_decoder.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "content/renderer/media/codec_factory_fuchsia.h"
+#include "media/mojo/clients/mojo_codec_factory_fuchsia.h"
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #endif
 
@@ -1014,7 +1014,7 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
 
     GetMediaSequencedTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::DestroyContext,
+        base::BindOnce(&media::MojoGpuVideoAcceleratorFactories::DestroyContext,
                        base::Unretained(gpu_factories_.back().get())));
   }
 
@@ -1081,16 +1081,16 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
        gpu_channel_host->gpu_info().overlay_info.supports_overlays);
 #endif  // BUILDFLAG(IS_WIN)
 
-  auto codec_factory = CreateMediaCodecFactory(media_context_provider,
-                                               enable_video_decode_accelerator,
-                                               enable_video_encode_accelerator);
-  gpu_factories_.push_back(GpuVideoAcceleratorFactoriesImpl::Create(
+  auto codec_factory = CreateMediaMojoCodecFactory(
+      media_context_provider, enable_video_decode_accelerator,
+      enable_video_encode_accelerator);
+  gpu_factories_.push_back(media::MojoGpuVideoAcceleratorFactories::Create(
       std::move(gpu_channel_host),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       GetMediaSequencedTaskRunner(), std::move(media_context_provider),
-      std::move(codec_factory), enable_video_gpu_memory_buffers,
-      enable_media_stream_gpu_memory_buffers, enable_video_decode_accelerator,
-      enable_video_encode_accelerator));
+      std::move(codec_factory), GetGpuMemoryBufferManager(),
+      enable_video_gpu_memory_buffers, enable_media_stream_gpu_memory_buffers,
+      enable_video_decode_accelerator, enable_video_encode_accelerator));
 
   gpu_factories_.back()->SetRenderingColorSpace(rendering_color_space_);
   return gpu_factories_.back().get();
@@ -1842,7 +1842,8 @@ gfx::ColorSpace RenderThreadImpl::GetRenderingColorSpace() {
   return rendering_color_space_;
 }
 
-std::unique_ptr<CodecFactory> RenderThreadImpl::CreateMediaCodecFactory(
+std::unique_ptr<media::MojoCodecFactory>
+RenderThreadImpl::CreateMediaMojoCodecFactory(
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
     bool enable_video_decode_accelerator,
     bool enable_video_encode_accelerator) {
@@ -1863,7 +1864,7 @@ std::unique_ptr<CodecFactory> RenderThreadImpl::CreateMediaCodecFactory(
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
   mojo::PendingRemote<media::mojom::InterfaceFactory> interface_factory;
   BindHostReceiver(interface_factory.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<CodecFactoryMojo>(
+  return std::make_unique<media::MojoCodecFactoryMojoDecoder>(
       GetMediaSequencedTaskRunner(), context_provider,
       enable_video_decode_accelerator, enable_video_encode_accelerator,
       std::move(vea_provider), std::move(interface_factory));
@@ -1871,12 +1872,12 @@ std::unique_ptr<CodecFactory> RenderThreadImpl::CreateMediaCodecFactory(
   mojo::PendingRemote<media::mojom::FuchsiaMediaCodecProvider>
       media_codec_provider;
   BindHostReceiver(media_codec_provider.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<CodecFactoryFuchsia>(
+  return std::make_unique<media::MojoCodecFactoryFuchsia>(
       GetMediaSequencedTaskRunner(), context_provider,
       enable_video_decode_accelerator, enable_video_encode_accelerator,
       std::move(vea_provider), std::move(media_codec_provider));
 #else
-  return std::make_unique<CodecFactoryDefault>(
+  return std::make_unique<media::MojoCodecFactoryDefault>(
       GetMediaSequencedTaskRunner(), context_provider,
       enable_video_decode_accelerator, enable_video_encode_accelerator,
       std::move(vea_provider));

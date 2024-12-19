@@ -2940,7 +2940,6 @@ test("content_unittests") {
     "../renderer/accessibility/annotations/ax_image_stopwords_unittest.cc",
     "../renderer/content_security_policy_util_unittest.cc",
     "../renderer/media/batching_media_log_unittest.cc",
-    "../renderer/media/gpu/gpu_video_accelerator_factories_impl_unittest.cc",
     "../renderer/media/inspector_media_event_handler_unittest.cc",
     "../renderer/media/renderer_webaudiodevice_impl_unittest.cc",
     "../renderer/render_thread_impl_unittest.cc",

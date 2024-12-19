@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEDIA_CODEC_FACTORY_H_
-#define CONTENT_RENDERER_MEDIA_CODEC_FACTORY_H_
+#ifndef MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_H_
+#define MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_H_
 
 #include <memory>
 
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
-#include "content/common/content_export.h"
 #include "media/base/decoder.h"
 #include "media/base/media_log.h"
 #include "media/base/overlay_info.h"
@@ -21,15 +20,15 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 
-namespace content {
+namespace media {
 
-// Assists to GpuVideoAcceleratorFactoriesImpl on hardware decoder and encoder
-// functionalities.
+// Assists the MojoGpuVideoAcceleratorFactories class with hardware decoder and
+// encoder functionalities.
 //
 // It is a base class that handles the encoder resources
-// via media::mojom::VideoEncodeAcceleratorProvider. Its derived classes need
-// to implement how to connect to hardware decoder resources.
-class CONTENT_EXPORT CodecFactory {
+// via media::mojom::VideoEncodeAcceleratorProvider. Its derived classes
+// implement how to connect to hardware decoder resources.
+class MojoCodecFactory {
  public:
   // `media_task_runner` - task runner for running multi-media operations.
   // `context_provider` - context provider for creating a video decoder.
@@ -39,7 +38,7 @@ class CONTENT_EXPORT CodecFactory {
   //    is enabled.
   // `pending_vea_provider_remote` - bound pending
   //    media::mojom::VideoEncodeAcceleratorProvider remote.
-  CodecFactory(
+  MojoCodecFactory(
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
       bool video_decode_accelerator_enabled,
@@ -47,9 +46,9 @@ class CONTENT_EXPORT CodecFactory {
       mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
           pending_vea_provider_remote);
 
-  CodecFactory(const CodecFactory&) = delete;
-  CodecFactory& operator=(const CodecFactory&) = delete;
-  virtual ~CodecFactory();
+  MojoCodecFactory(const MojoCodecFactory&) = delete;
+  MojoCodecFactory& operator=(const MojoCodecFactory&) = delete;
+  virtual ~MojoCodecFactory();
 
   // `gpu_factories` - pointer to the GpuVideoAcceleratorFactories that
   //    owns |this|.
@@ -178,19 +177,19 @@ class CONTENT_EXPORT CodecFactory {
   int32_t route_id_;
 };
 
-// CodecFactoryDefault is the default derived class, which has no
+// MojoCodecFactoryDefault is the default derived class, which has no
 // decoder provider. It does not have any supported video decoder configs and
 // returns a null pointer when creating a hardware video decoder.
-class CONTENT_EXPORT CodecFactoryDefault final : public CodecFactory {
+class MojoCodecFactoryDefault final : public MojoCodecFactory {
  public:
-  CodecFactoryDefault(
+  MojoCodecFactoryDefault(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
       bool video_decode_accelerator_enabled,
       bool video_encode_accelerator_enabled,
       mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
           pending_vea_provider_remote);
-  ~CodecFactoryDefault() override;
+  ~MojoCodecFactoryDefault() override;
 
   // Returns nullptr since there is no decoder provider.
   std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
@@ -200,6 +199,6 @@ class CONTENT_EXPORT CodecFactoryDefault final : public CodecFactory {
       const gfx::ColorSpace& rendering_color_space) override;
 };
 
-}  // namespace content
+}  // namespace media
 
-#endif  // CONTENT_RENDERER_MEDIA_CODEC_FACTORY_H_
+#endif  // MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_H_

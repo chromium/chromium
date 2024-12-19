@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/codec_factory_mojo.h"
+#include "media/mojo/clients/mojo_codec_factory_mojo_decoder.h"
 
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "content/renderer/media/codec_factory.h"
 #include "media/base/overlay_info.h"
 #include "media/mojo/clients/mojo_video_decoder.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -21,9 +20,9 @@
 #include "media/mojo/clients/mojo_stable_video_decoder.h"
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
-namespace content {
+namespace media {
 
-CodecFactoryMojo::CodecFactoryMojo(
+MojoCodecFactoryMojoDecoder::MojoCodecFactoryMojoDecoder(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
     bool video_decode_accelerator_enabled,
@@ -32,19 +31,20 @@ CodecFactoryMojo::CodecFactoryMojo(
         pending_vea_provider_remote,
     mojo::PendingRemote<media::mojom::InterfaceFactory>
         pending_interface_factory_remote)
-    : CodecFactory(std::move(media_task_runner),
-                   std::move(context_provider),
-                   video_decode_accelerator_enabled,
-                   video_encode_accelerator_enabled,
-                   std::move(pending_vea_provider_remote)) {
+    : MojoCodecFactory(std::move(media_task_runner),
+                       std::move(context_provider),
+                       video_decode_accelerator_enabled,
+                       video_encode_accelerator_enabled,
+                       std::move(pending_vea_provider_remote)) {
   media_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&CodecFactoryMojo::BindOnTaskRunner,
+      FROM_HERE, base::BindOnce(&MojoCodecFactoryMojoDecoder::BindOnTaskRunner,
                                 base::Unretained(this),
                                 std::move(pending_interface_factory_remote)));
 }
-CodecFactoryMojo::~CodecFactoryMojo() = default;
+MojoCodecFactoryMojoDecoder::~MojoCodecFactoryMojoDecoder() = default;
 
-std::unique_ptr<media::VideoDecoder> CodecFactoryMojo::CreateVideoDecoder(
+std::unique_ptr<media::VideoDecoder>
+MojoCodecFactoryMojoDecoder::CreateVideoDecoder(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     media::MediaLog* media_log,
     media::RequestOverlayInfoCB request_overlay_info_cb,
@@ -77,7 +77,7 @@ std::unique_ptr<media::VideoDecoder> CodecFactoryMojo::CreateVideoDecoder(
       std::move(request_overlay_info_cb), rendering_color_space);
 }
 
-void CodecFactoryMojo::BindOnTaskRunner(
+void MojoCodecFactoryMojoDecoder::BindOnTaskRunner(
     mojo::PendingRemote<media::mojom::InterfaceFactory>
         interface_factory_remote) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
@@ -98,7 +98,7 @@ void CodecFactoryMojo::BindOnTaskRunner(
   // example a GPU driver failure. Set a disconnect handler to watch these
   // types of failures and treat them as if there are no supported decoder
   // configs.
-  // Unretained is safe since CodecFactory is never destroyed.
+  // Unretained is safe since MojoCodecFactory is never destroyed.
   // It lives until the process shuts down.
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -108,11 +108,12 @@ void CodecFactoryMojo::BindOnTaskRunner(
           stable_video_decoder;
       interface_factory_->CreateStableVideoDecoder(
           stable_video_decoder.BindNewPipeAndPassReceiver());
-      stable_video_decoder.set_disconnect_handler(base::BindOnce(
-          &CodecFactoryMojo::OnDecoderSupportFailed, base::Unretained(this)));
-      stable_video_decoder->GetSupportedConfigs(
-          base::BindOnce(&CodecFactoryMojo::OnGetSupportedDecoderConfigs,
+      stable_video_decoder.set_disconnect_handler(
+          base::BindOnce(&MojoCodecFactoryMojoDecoder::OnDecoderSupportFailed,
                          base::Unretained(this)));
+      stable_video_decoder->GetSupportedConfigs(base::BindOnce(
+          &MojoCodecFactoryMojoDecoder::OnGetSupportedDecoderConfigs,
+          base::Unretained(this)));
       video_decoder_
           .emplace<mojo::Remote<media::stable::mojom::StableVideoDecoder>>(
               std::move(stable_video_decoder));
@@ -127,15 +128,17 @@ void CodecFactoryMojo::BindOnTaskRunner(
   mojo::Remote<media::mojom::VideoDecoder> video_decoder;
   interface_factory_->CreateVideoDecoder(
       video_decoder.BindNewPipeAndPassReceiver(), /*dst_video_decoder=*/{});
-  video_decoder.set_disconnect_handler(base::BindOnce(
-      &CodecFactoryMojo::OnDecoderSupportFailed, base::Unretained(this)));
-  video_decoder->GetSupportedConfigs(base::BindOnce(
-      &CodecFactoryMojo::OnGetSupportedDecoderConfigs, base::Unretained(this)));
+  video_decoder.set_disconnect_handler(
+      base::BindOnce(&MojoCodecFactoryMojoDecoder::OnDecoderSupportFailed,
+                     base::Unretained(this)));
+  video_decoder->GetSupportedConfigs(
+      base::BindOnce(&MojoCodecFactoryMojoDecoder::OnGetSupportedDecoderConfigs,
+                     base::Unretained(this)));
   video_decoder_.emplace<mojo::Remote<media::mojom::VideoDecoder>>(
       std::move(video_decoder));
 }
 
-void CodecFactoryMojo::OnGetSupportedDecoderConfigs(
+void MojoCodecFactoryMojoDecoder::OnGetSupportedDecoderConfigs(
     const media::SupportedVideoDecoderConfigs& supported_configs,
     media::VideoDecoderType decoder_type) {
   {
@@ -144,7 +147,7 @@ void CodecFactoryMojo::OnGetSupportedDecoderConfigs(
     supported_decoder_configs_.emplace(supported_configs);
     video_decoder_type_ = decoder_type;
   }
-  CodecFactory::OnGetSupportedDecoderConfigs();
+  MojoCodecFactory::OnGetSupportedDecoderConfigs();
 }
 
-}  // namespace content
+}  // namespace media

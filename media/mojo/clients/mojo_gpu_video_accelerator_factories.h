@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEDIA_GPU_GPU_VIDEO_ACCELERATOR_FACTORIES_IMPL_H_
-#define CONTENT_RENDERER_MEDIA_GPU_GPU_VIDEO_ACCELERATOR_FACTORIES_IMPL_H_
+#ifndef MEDIA_MOJO_CLIENTS_MOJO_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
+#define MEDIA_MOJO_CLIENTS_MOJO_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -18,9 +18,8 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
-#include "content/common/content_export.h"
-#include "content/renderer/media/codec_factory.h"
 #include "media/mojo/buildflags.h"
+#include "media/mojo/clients/mojo_codec_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -40,40 +39,29 @@ namespace viz {
 class ContextProviderCommandBuffer;
 }  // namespace viz
 
-namespace content {
+namespace media {
 
+// Default implementation of the GpuVideoAcceleratorFactories implementation,
+// to allow various media/video classes to access necessary GPU functionality.
 // Glue code to expose functionality needed by media::GpuVideoAccelerator to
-// RenderViewImpl.  This class is entirely an implementation detail of
-// RenderViewImpl and only has its own header to allow extraction of its
-// implementation from render_view_impl.cc which is already far too large.
 //
-// The GpuVideoAcceleratorFactoriesImpl can be constructed on any thread,
+// The MojoGpuVideoAcceleratorFactories can be constructed on any thread,
 // but subsequent calls to all public methods of the class must be called from
 // the |task_runner_|, as provided during construction.
 // |context_provider| should not support locking and will be bound to
 // |task_runner_| where all the operations on the context should also happen.
-class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
+class MojoGpuVideoAcceleratorFactories
     : public media::GpuVideoAcceleratorFactories,
       public viz::ContextLostObserver {
  public:
   // Takes a ref on |gpu_channel_host| and tests |context| for loss before each
   // use.  Safe to call from any thread.
-  static std::unique_ptr<GpuVideoAcceleratorFactoriesImpl> Create(
+  static std::unique_ptr<MojoGpuVideoAcceleratorFactories> Create(
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
       const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
-      std::unique_ptr<CodecFactory> codec_factory,
-      bool enable_video_gpu_memory_buffers,
-      bool enable_media_stream_gpu_memory_buffers,
-      bool enable_video_decode_accelerator,
-      bool enable_video_encode_accelerator);
-  static std::unique_ptr<GpuVideoAcceleratorFactoriesImpl> CreateForTesting(
-      scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
-      const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
-      std::unique_ptr<CodecFactory> codec_factory,
+      std::unique_ptr<MojoCodecFactory> codec_factory,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       bool enable_video_gpu_memory_buffers,
       bool enable_media_stream_gpu_memory_buffers,
@@ -141,20 +129,20 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   // with a new ContextProvider.
   bool CheckContextProviderLostOnMainThread();
 
-  GpuVideoAcceleratorFactoriesImpl(const GpuVideoAcceleratorFactoriesImpl&) =
+  MojoGpuVideoAcceleratorFactories(const MojoGpuVideoAcceleratorFactories&) =
       delete;
-  GpuVideoAcceleratorFactoriesImpl& operator=(
-      const GpuVideoAcceleratorFactoriesImpl&) = delete;
+  MojoGpuVideoAcceleratorFactories& operator=(
+      const MojoGpuVideoAcceleratorFactories&) = delete;
 
-  ~GpuVideoAcceleratorFactoriesImpl() override;
+  ~MojoGpuVideoAcceleratorFactories() override;
 
  private:
-  GpuVideoAcceleratorFactoriesImpl(
+  MojoGpuVideoAcceleratorFactories(
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
       const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
-      std::unique_ptr<CodecFactory> codec_factory,
+      std::unique_ptr<MojoCodecFactory> codec_factory,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       bool enable_gpu_memory_buffer_video_frames_for_video,
       bool enable_gpu_memory_buffer_video_frames_for_media_stream,
@@ -176,7 +164,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
 
-  const std::unique_ptr<CodecFactory> codec_factory_;
+  const std::unique_ptr<MojoCodecFactory> codec_factory_;
 
   // Shared pointer to a shared context provider. It is initially set on main
   // thread, but all subsequent access and destruction should happen only on the
@@ -204,6 +192,6 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   const raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 };
 
-}  // namespace content
+}  // namespace media
 
-#endif  // CONTENT_RENDERER_MEDIA_GPU_GPU_VIDEO_ACCELERATOR_FACTORIES_IMPL_H_
+#endif  // MEDIA_MOJO_CLIENTS_MOJO_GPU_VIDEO_ACCELERATOR_FACTORIES_H_

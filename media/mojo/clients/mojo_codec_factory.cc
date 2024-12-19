@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/media/codec_factory.h"
+#include "media/mojo/clients/mojo_codec_factory.h"
 
 #include <memory>
 #include <optional>
@@ -19,9 +19,9 @@
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
-namespace content {
+namespace media {
 
-CodecFactory::CodecFactory(
+MojoCodecFactory::MojoCodecFactory(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
     bool video_decode_accelerator_enabled,
@@ -33,14 +33,14 @@ CodecFactory::CodecFactory(
       video_decode_accelerator_enabled_(video_decode_accelerator_enabled),
       video_encode_accelerator_enabled_(video_encode_accelerator_enabled) {
   media_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CodecFactory::BindOnTaskRunner, base::Unretained(this),
-                     std::move(pending_vea_provider_remote)));
+      FROM_HERE, base::BindOnce(&MojoCodecFactory::BindOnTaskRunner,
+                                base::Unretained(this),
+                                std::move(pending_vea_provider_remote)));
 }
-CodecFactory::~CodecFactory() = default;
+MojoCodecFactory::~MojoCodecFactory() = default;
 
 std::unique_ptr<media::VideoEncodeAccelerator>
-CodecFactory::CreateVideoEncodeAccelerator() {
+MojoCodecFactory::CreateVideoEncodeAccelerator() {
   DCHECK(video_encode_accelerator_enabled_);
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(vea_provider_.is_bound());
@@ -72,47 +72,47 @@ CodecFactory::CreateVideoEncodeAccelerator() {
       new media::MojoVideoEncodeAccelerator(std::move(vea)));
 }
 
-media::VideoDecoderType CodecFactory::GetVideoDecoderType() {
+media::VideoDecoderType MojoCodecFactory::GetVideoDecoderType() {
   base::AutoLock lock(supported_profiles_lock_);
   return video_decoder_type_;
 }
 
 std::optional<media::SupportedVideoDecoderConfigs>
-CodecFactory::GetSupportedVideoDecoderConfigs() {
+MojoCodecFactory::GetSupportedVideoDecoderConfigs() {
   base::AutoLock lock(supported_profiles_lock_);
   return supported_decoder_configs_;
 }
 
 std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
-CodecFactory::GetVideoEncodeAcceleratorSupportedProfiles() {
+MojoCodecFactory::GetVideoEncodeAcceleratorSupportedProfiles() {
   base::AutoLock lock(supported_profiles_lock_);
   return supported_vea_profiles_;
 }
 
-bool CodecFactory::IsDecoderSupportKnown() {
+bool MojoCodecFactory::IsDecoderSupportKnown() {
   base::AutoLock lock(supported_profiles_lock_);
   return decoder_support_notifier_.is_notified();
 }
 
-bool CodecFactory::IsEncoderSupportKnown() {
+bool MojoCodecFactory::IsEncoderSupportKnown() {
   base::AutoLock lock(supported_profiles_lock_);
   return encoder_support_notifier_.is_notified();
 }
 
-void CodecFactory::NotifyDecoderSupportKnown(base::OnceClosure callback) {
+void MojoCodecFactory::NotifyDecoderSupportKnown(base::OnceClosure callback) {
   base::AutoLock lock(supported_profiles_lock_);
   decoder_support_notifier_.Register(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void CodecFactory::NotifyEncoderSupportKnown(base::OnceClosure callback) {
+void MojoCodecFactory::NotifyEncoderSupportKnown(base::OnceClosure callback) {
   base::AutoLock lock(supported_profiles_lock_);
   encoder_support_notifier_.Register(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void CodecFactory::OnChannelTokenReady(const base::UnguessableToken& token,
-                                       int32_t route_id) {
+void MojoCodecFactory::OnChannelTokenReady(const base::UnguessableToken& token,
+                                           int32_t route_id) {
   base::AutoLock lock(supported_profiles_lock_);
   channel_token_ = token;
   route_id_ = route_id;
@@ -123,10 +123,10 @@ void CodecFactory::OnChannelTokenReady(const base::UnguessableToken& token,
   }
 }
 
-CodecFactory::Notifier::Notifier() = default;
-CodecFactory::Notifier::~Notifier() = default;
+MojoCodecFactory::Notifier::Notifier() = default;
+MojoCodecFactory::Notifier::~Notifier() = default;
 
-void CodecFactory::Notifier::Register(base::OnceClosure callback) {
+void MojoCodecFactory::Notifier::Register(base::OnceClosure callback) {
   if (is_notified_) {
     std::move(callback).Run();
     return;
@@ -134,7 +134,7 @@ void CodecFactory::Notifier::Register(base::OnceClosure callback) {
   callbacks_.push_back(std::move(callback));
 }
 
-void CodecFactory::Notifier::Notify() {
+void MojoCodecFactory::Notifier::Notify() {
   DCHECK(!is_notified_);
   is_notified_ = true;
   while (!callbacks_.empty()) {
@@ -143,7 +143,7 @@ void CodecFactory::Notifier::Notify() {
   }
 }
 
-void CodecFactory::OnDecoderSupportFailed() {
+void MojoCodecFactory::OnDecoderSupportFailed() {
   base::AutoLock lock(supported_profiles_lock_);
   if (decoder_support_notifier_.is_notified()) {
     return;
@@ -152,12 +152,12 @@ void CodecFactory::OnDecoderSupportFailed() {
   decoder_support_notifier_.Notify();
 }
 
-void CodecFactory::OnGetSupportedDecoderConfigs() {
+void MojoCodecFactory::OnGetSupportedDecoderConfigs() {
   base::AutoLock lock(supported_profiles_lock_);
   decoder_support_notifier_.Notify();
 }
 
-void CodecFactory::OnEncoderSupportFailed() {
+void MojoCodecFactory::OnEncoderSupportFailed() {
   base::AutoLock lock(supported_profiles_lock_);
   if (encoder_support_notifier_.is_notified()) {
     return;
@@ -166,7 +166,7 @@ void CodecFactory::OnEncoderSupportFailed() {
   encoder_support_notifier_.Notify();
 }
 
-void CodecFactory::OnGetVideoEncodeAcceleratorSupportedProfiles(
+void MojoCodecFactory::OnGetVideoEncodeAcceleratorSupportedProfiles(
     const media::VideoEncodeAccelerator::SupportedProfiles&
         supported_profiles) {
   base::AutoLock lock(supported_profiles_lock_);
@@ -176,11 +176,11 @@ void CodecFactory::OnGetVideoEncodeAcceleratorSupportedProfiles(
   }
 }
 
-bool CodecFactory::IsEncoderReady() {
+bool MojoCodecFactory::IsEncoderReady() {
   return supported_vea_profiles_ && !channel_token_.is_empty();
 }
 
-void CodecFactory::BindOnTaskRunner(
+void MojoCodecFactory::BindOnTaskRunner(
     mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
         pending_vea_provider_remote) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
@@ -200,12 +200,12 @@ void CodecFactory::BindOnTaskRunner(
     // example a GPU driver failure. Set a disconnect handler to watch these
     // types of failures and treat them as if there are no supported encoder
     // profiles.
-    // Unretained is safe since CodecFactory is never destroyed.
+    // Unretained is safe since MojoCodecFactory is never destroyed.
     // It lives until the process shuts down.
     vea_provider_.set_disconnect_handler(base::BindOnce(
-        &CodecFactory::OnEncoderSupportFailed, base::Unretained(this)));
+        &MojoCodecFactory::OnEncoderSupportFailed, base::Unretained(this)));
     vea_provider_->GetVideoEncodeAcceleratorSupportedProfiles(base::BindOnce(
-        &CodecFactory::OnGetVideoEncodeAcceleratorSupportedProfiles,
+        &MojoCodecFactory::OnGetVideoEncodeAcceleratorSupportedProfiles,
         base::Unretained(this)));
   } else {
     OnEncoderSupportFailed();
@@ -216,33 +216,34 @@ void CodecFactory::BindOnTaskRunner(
   }
 }
 
-CodecFactoryDefault::CodecFactoryDefault(
+MojoCodecFactoryDefault::MojoCodecFactoryDefault(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
     bool video_decode_accelerator_enabled,
     bool video_encode_accelerator_enabled,
     mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
         pending_vea_provider_remote)
-    : CodecFactory(std::move(task_runner),
-                   std::move(context_provider),
-                   video_decode_accelerator_enabled,
-                   video_encode_accelerator_enabled,
-                   std::move(pending_vea_provider_remote)) {
+    : MojoCodecFactory(std::move(task_runner),
+                       std::move(context_provider),
+                       video_decode_accelerator_enabled,
+                       video_encode_accelerator_enabled,
+                       std::move(pending_vea_provider_remote)) {
   // There is no decoder provider.
   OnDecoderSupportFailed();
 }
 
-CodecFactoryDefault::~CodecFactoryDefault() = default;
+MojoCodecFactoryDefault::~MojoCodecFactoryDefault() = default;
 
-std::unique_ptr<media::VideoDecoder> CodecFactoryDefault::CreateVideoDecoder(
+std::unique_ptr<media::VideoDecoder>
+MojoCodecFactoryDefault::CreateVideoDecoder(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     media::MediaLog* media_log,
     media::RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& rendering_color_space) {
   NOTIMPLEMENTED()
-      << "CodecFactoryDefault does not have a provider to create a "
+      << "MojoCodecFactoryDefault does not have a provider to create a "
          "hardware video decoder.";
   return nullptr;
 }
 
-}  // namespace content
+}  // namespace media
