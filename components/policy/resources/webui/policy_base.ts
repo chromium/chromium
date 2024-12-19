@@ -88,9 +88,12 @@ export class Page {
       const promotionRedirectButton =
           promotionSection.shadowRoot!.getElementById(
               'promotion-redirect-button');
-
       promotionRedirectButton?.addEventListener('click', () => {
         chrome.send('recordBannerRedirected');
+        window.open(
+            'https://admin.google.com/ac/chrome/guides/?ref=browser&utm_source=chrome_policy_cec',
+            '_blank',
+        );
       });
     });
 

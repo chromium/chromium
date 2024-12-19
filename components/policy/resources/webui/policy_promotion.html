@@ -34,7 +34,6 @@
 .blue-pill-button {
   background-color: var(--promotion-pill-button-color);
   width: 202px;
-  height: 20px;
   padding: 8px 0px 8px 0px;
   text-align: center;
   line-height: 20px;
@@ -128,11 +127,9 @@
           </div>
         </div>
         <!-- TODO(crbug.com/380495561): Replace with redirect logic once rpc service is ready -->
-        <a id="promotion-redirect-button" class="blue-pill-button" target="_blank"
-          href="https://admin.google.com/ac/chrome/guides/?ref=browser&utm_source=chrome_policy_cec"
-        >
+        <button id="promotion-redirect-button" class="blue-pill-button">
           $i18n{promotionBannerBtn}
-        </a>
+        </button>
       </div>
       <button id="promotion-dismiss-button" class="dismiss-button" tabindex="0">
         <div id="close-icon-container"></div>
