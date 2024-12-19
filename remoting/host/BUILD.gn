@@ -212,6 +212,8 @@ source_set("platform_interfaces") {
     "desktop_display_info.cc",
     "desktop_display_info.h",
     "desktop_display_info_loader.h",
+    "desktop_interaction_strategy.cc",
+    "desktop_interaction_strategy.h",
     "desktop_resizer.h",
     "input_injector.h",
     "input_injector_metadata.h",
