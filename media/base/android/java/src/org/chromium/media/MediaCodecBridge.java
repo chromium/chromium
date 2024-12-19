@@ -161,8 +161,7 @@ class MediaCodecBridge {
                 : translateCryptoExceptionPostS(e.getErrorCode());
     }
 
-    private static int convertCodecException(
-            MediaCodec.CodecException e, long nativeMediaCodecBridge, MediaCodecBridge caller) {
+    private static int convertCodecException(MediaCodec.CodecException e) {
         // https://developer.android.com/reference/android/media/MediaCodec.CodecException
         switch (e.getErrorCode()) {
             case MediaCodec.CodecException.ERROR_INSUFFICIENT_RESOURCE:
@@ -171,9 +170,6 @@ class MediaCodecBridge {
                 return MediaCodecStatus.RECLAIMED;
             default:
                 Log.e(TAG, "Unknown CodecException error: " + e.getErrorCode());
-                MediaCodecBridgeJni.get()
-                        .onUnrecognizedMediaCodecException(
-                                nativeMediaCodecBridge, caller, e.getErrorCode(), e.getMessage());
                 return MediaCodecStatus.UNKNOWN_CODEC_EXCEPTION;
         }
     }
@@ -364,11 +360,9 @@ class MediaCodecBridge {
     // of the MediaCodec. The MediaCodecBridge methods it calls are synchronized
     // to avoid race conditions.
     static class MediaCodecCallback extends MediaCodec.Callback {
-        private long mNativeMediaCodecBridge;
         private MediaCodecBridge mMediaCodecBridge;
 
-        MediaCodecCallback(long nativeBridge, MediaCodecBridge bridge) {
-            mNativeMediaCodecBridge = nativeBridge;
+        MediaCodecCallback(MediaCodecBridge bridge) {
             mMediaCodecBridge = bridge;
         }
 
@@ -382,8 +376,7 @@ class MediaCodecBridge {
         public void onError(MediaCodec codec, MediaCodec.CodecException e) {
             // TODO(dalecurtis): We may want to drop transient errors here.
             Log.e(TAG, "MediaCodec.onError: %s", e.getDiagnosticInfo());
-            mMediaCodecBridge.onError(
-                    convertCodecException(e, mNativeMediaCodecBridge, mMediaCodecBridge));
+            mMediaCodecBridge.onError(convertCodecException(e));
         }
 
         @Override
@@ -428,8 +421,7 @@ class MediaCodecBridge {
         mPendingFormat = new LinkedList<MediaFormatWrapper>();
         mPendingInputBuffers = new LinkedList<DequeueInputResult>();
         mPendingOutputBuffers = new LinkedList<DequeueOutputResult>();
-        mMediaCodec.setCallback(
-                new MediaCodecCallback(mNativeMediaCodecBridge, this), sCallbackHandler);
+        mMediaCodec.setCallback(new MediaCodecCallback(this), sCallbackHandler);
     }
 
     // The methods below are all synchronized because we may receive callbacks
@@ -561,8 +553,7 @@ class MediaCodecBridge {
             mMediaCodec.start();
         } catch (MediaCodec.CodecException e) {
             Log.e(TAG, "Cannot start the media codec", e);
-            mPendingErrorCode =
-                    convertCodecException(e, mNativeMediaCodecBridge, MediaCodecBridge.this);
+            mPendingErrorCode = convertCodecException(e);
             return false;
         } catch (IllegalStateException e) {
             Log.e(TAG, "Cannot start the media codec", e);
@@ -605,7 +596,7 @@ class MediaCodecBridge {
             }
         } catch (MediaCodec.CodecException e) {
             Log.e(TAG, "Failed to dequeue input buffer", e);
-            status = convertCodecException(e, mNativeMediaCodecBridge, MediaCodecBridge.this);
+            status = convertCodecException(e);
         } catch (Exception e) {
             Log.e(TAG, "Failed to dequeue input buffer", e);
         }
@@ -659,7 +650,7 @@ class MediaCodecBridge {
             }
         } catch (MediaCodec.CodecException e) {
             Log.e(TAG, "Failed to flush MediaCodec", e);
-            return convertCodecException(e, mNativeMediaCodecBridge, MediaCodecBridge.this);
+            return convertCodecException(e);
         } catch (Exception e) {
             Log.e(TAG, "Failed to flush MediaCodec", e);
             return MediaCodecStatus.ERROR;
@@ -747,7 +738,7 @@ class MediaCodecBridge {
             mMediaCodec.queueInputBuffer(index, offset, size, presentationTimeUs, flags);
         } catch (MediaCodec.CodecException e) {
             Log.e(TAG, "Failed to queue input buffer", e);
-            return convertCodecException(e, mNativeMediaCodecBridge, MediaCodecBridge.this);
+            return convertCodecException(e);
         } catch (MediaCodec.CryptoException e) {
             Log.e(TAG, "Failed to queue input buffer", e);
             return convertCryptoException(e);
@@ -902,7 +893,7 @@ class MediaCodecBridge {
         } catch (MediaCodec.CodecException e) {
             Log.e(TAG, "Failed to queue secure input buffer.", e);
             Log.e(TAG, "Diagnostic: %s", e.getDiagnosticInfo());
-            return convertCodecException(e, mNativeMediaCodecBridge, MediaCodecBridge.this);
+            return convertCodecException(e);
         } catch (IllegalArgumentException e) {
             // IllegalArgumentException can occur when release() is called on the MediaCrypto
             // object, but the MediaCodecBridge is unaware of the change.
@@ -1109,11 +1100,5 @@ class MediaCodecBridge {
     @NativeMethods
     interface Natives {
         void onBuffersAvailable(long nativeMediaCodecBridge, MediaCodecBridge caller);
-
-        void onUnrecognizedMediaCodecException(
-                long nativeMediaCodecBridge,
-                MediaCodecBridge caller,
-                int errorCode,
-                @Nullable String errorMessage);
     }
 }
