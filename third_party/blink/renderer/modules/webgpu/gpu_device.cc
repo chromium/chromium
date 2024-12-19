@@ -206,7 +206,11 @@ GPUDevice::~GPUDevice() {
 
   // Clear the callbacks since we can't handle callbacks after finalization.
   if (GetHandle().Get() != nullptr) {
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+    GetHandle().SetLoggingCallback([](wgpu::LoggingType, wgpu::StringView) {});
+#else
     GetHandle().SetLoggingCallback(nullptr, nullptr);
+#endif
   }
 }
 
@@ -370,6 +374,43 @@ void GPUDevice::OnUncapturedError(const wgpu::Device& device,
   }
 }
 
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+void GPUDevice::OnLogging(wgpu::LoggingType loggingType,
+                          wgpu::StringView message) {
+  std::string_view messageView = {message.data, message.length};
+  // Callback function for WebGPU logging return command
+  mojom::blink::ConsoleMessageLevel level;
+  switch (loggingType) {
+    case (wgpu::LoggingType::Verbose): {
+      level = mojom::blink::ConsoleMessageLevel::kVerbose;
+      break;
+    }
+    case (wgpu::LoggingType::Info): {
+      level = mojom::blink::ConsoleMessageLevel::kInfo;
+      break;
+    }
+    case (wgpu::LoggingType::Warning): {
+      level = mojom::blink::ConsoleMessageLevel::kWarning;
+      break;
+    }
+    case (wgpu::LoggingType::Error): {
+      level = mojom::blink::ConsoleMessageLevel::kError;
+      break;
+    }
+    default: {
+      level = mojom::blink::ConsoleMessageLevel::kError;
+      break;
+    }
+  }
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (execution_context) {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering, level,
+        StringFromASCIIAndUTF8(messageView));
+    execution_context->AddConsoleMessage(console_message);
+  }
+}
+#else
 void GPUDevice::OnLogging(WGPULoggingType cLoggingType,
                           WGPUStringView message) {
   std::string_view messageView = {message.data, message.length};
@@ -406,6 +447,7 @@ void GPUDevice::OnLogging(WGPULoggingType cLoggingType,
     execution_context->AddConsoleMessage(console_message);
   }
 }
+#endif
 
 void GPUDevice::OnDeviceLost(
     std::unique_ptr<WGPURepeatingCallback<wgpu::UncapturedErrorCallback<void>>>,
