@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -435,7 +437,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
 
         DataSharingTabSwitcherDelegate dataSharingTabSwitcherDelegate =
-                (int tabId) -> mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
+                createDataSharingTabSwitcherDelegate();
 
         mDataSharingTabManager =
                 new DataSharingTabManager(
@@ -1289,6 +1291,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     dataSharingNotificationManager,
                                     mDataSharingTabManager);
                         });
+    }
+
+    private DataSharingTabSwitcherDelegate createDataSharingTabSwitcherDelegate() {
+        return new DataSharingTabSwitcherDelegate() {
+
+            @Override
+            public void openTabGroupWithTabId(int tabId) {
+                mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
+            }
+
+            @Override
+            public void openLearnMoreSharedTabGroupsPage(Context context, String url) {
+                CustomTabActivity.showInfoPage(context, url);
+            }
+        };
     }
 
     @Override

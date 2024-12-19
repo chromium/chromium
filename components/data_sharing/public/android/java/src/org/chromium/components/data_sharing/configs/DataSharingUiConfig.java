@@ -27,7 +27,10 @@ public class DataSharingUiConfig {
 
     /** Callback interface for common data sharing UI events. */
     public interface DataSharingCallback {
+        // TODO (ritikagup) : Cleanup this method, once the overloaded method is fully integrated.
         default void onLearnMoreAboutSharedTabGroupsClicked(GURL url) {}
+
+        default void onLearnMoreAboutSharedTabGroupsClicked(Context context, String url) {}
     }
 
     private DataSharingUiConfig(Builder builder) {

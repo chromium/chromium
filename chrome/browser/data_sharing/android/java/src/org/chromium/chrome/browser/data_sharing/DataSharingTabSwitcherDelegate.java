@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
-/** An interface to handle actions on the TabSwitcher. */
+import android.content.Context;
+
+/** An interface to handle actions related to tab groups. */
 public interface DataSharingTabSwitcherDelegate {
     /**
      * Open the tab group dialog of the given tab group id.
@@ -12,4 +14,12 @@ public interface DataSharingTabSwitcherDelegate {
      * @param id The tabId of the first tab in the group.
      */
     public void openTabGroupWithTabId(int tabId);
+
+    /**
+     * Open url in the Chrome Custom Tab.
+     *
+     * @param context The context of the current activity.
+     * @param url The URL of the page to be opened in CCT.
+     */
+    public void openLearnMoreSharedTabGroupsPage(Context context, String url);
 }

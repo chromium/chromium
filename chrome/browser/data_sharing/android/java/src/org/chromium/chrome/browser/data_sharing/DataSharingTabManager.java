@@ -75,6 +75,8 @@ import java.util.Map;
  */
 public class DataSharingTabManager {
     private static final String TAG = "DataSharing";
+    private static final String LEARN_MORE_SHARED_TAB_GROUP_PAGE_URL =
+            "https://support.google.com/chrome/?p=chrome_collaboration";
 
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
@@ -260,8 +262,7 @@ public class DataSharingTabManager {
     }
 
     private GURL getTabGroupHelpUrl() {
-        // TODO(ssid): Fix the right help URL link here.
-        return new GURL("https://www.example.com/");
+        return new GURL(LEARN_MORE_SHARED_TAB_GROUP_PAGE_URL);
     }
 
     private void initiateJoinFlowWithProfile(Activity activity, GURL dataSharingUrl) {
@@ -375,14 +376,6 @@ public class DataSharingTabManager {
                                 DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
                                 R.string.collaboration_learn_about_shared_groups)
                         .build();
-        DataSharingUiConfig commonConfig =
-                new DataSharingUiConfig.Builder()
-                        .setActivity(activity)
-                        .setTabGroupName(preview.title)
-                        .setIsTablet(false)
-                        .setLearnMoreHyperLink(getTabGroupHelpUrl())
-                        .setDataSharingStringConfig(stringConfig)
-                        .build();
         DataSharingJoinUiConfig.JoinCallback joinCallback =
                 new DataSharingJoinUiConfig.JoinCallback() {
                     @Override
@@ -400,7 +393,9 @@ public class DataSharingTabManager {
                         .getUiDelegate()
                         .showJoinFlow(
                                 new DataSharingJoinUiConfig.Builder()
-                                        .setCommonConfig(commonConfig)
+                                        .setCommonConfig(
+                                                getCommonConfig(
+                                                        activity, preview.title, stringConfig))
                                         .setJoinCallback(joinCallback)
                                         .setGroupToken(groupToken)
                                         .setSharedDataPreview(previewData.sharedDataPreview)
@@ -595,14 +590,6 @@ public class DataSharingTabManager {
                                     DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
                                     R.string.collaboration_learn_about_shared_groups)
                             .build();
-            DataSharingUiConfig commonConfig =
-                    new DataSharingUiConfig.Builder()
-                            .setActivity(activity)
-                            .setTabGroupName(tabGroupDisplayName)
-                            .setLearnMoreHyperLink(getTabGroupHelpUrl())
-                            .setIsTablet(false)
-                            .setDataSharingStringConfig(stringConfig)
-                            .build();
 
             DataSharingCreateUiConfig.CreateCallback createCallback =
                     new DataSharingCreateUiConfig.CreateCallback() {
@@ -651,7 +638,8 @@ public class DataSharingTabManager {
                     };
             uiDelegate.showCreateFlow(
                     new DataSharingCreateUiConfig.Builder()
-                            .setCommonConfig(commonConfig)
+                            .setCommonConfig(
+                                    getCommonConfig(activity, tabGroupDisplayName, stringConfig))
                             .setCreateCallback(createCallback)
                             .build());
 
@@ -758,13 +746,6 @@ public class DataSharingTabManager {
                                 DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
                                 R.string.collaboration_learn_about_shared_groups)
                         .build();
-        DataSharingUiConfig commonConfig =
-                new DataSharingUiConfig.Builder()
-                        .setActivity(activity)
-                        .setIsTablet(false)
-                        .setLearnMoreHyperLink(getTabGroupHelpUrl())
-                        .setDataSharingStringConfig(stringConfig)
-                        .build();
 
         DataSharingManageUiConfig.ManageCallback manageCallback =
                 new DataSharingManageUiConfig.ManageCallback() {
@@ -798,9 +779,34 @@ public class DataSharingTabManager {
                 new DataSharingManageUiConfig.Builder()
                         .setGroupToken(new GroupToken(collaborationId, null))
                         .setManageCallback(manageCallback)
-                        .setCommonConfig(commonConfig)
+                        .setCommonConfig(getCommonConfig(activity, null, stringConfig))
                         .build();
         uiDelegate.showManageFlow(manageConfig);
+    }
+
+    private DataSharingUiConfig getCommonConfig(
+            Activity activity, String tabGroupName, DataSharingStringConfig stringConfig) {
+        DataSharingUiConfig.DataSharingCallback dataSharingCallback =
+                new DataSharingUiConfig.DataSharingCallback() {
+                    @Override
+                    public void onLearnMoreAboutSharedTabGroupsClicked(
+                            Context context, String url) {
+                        mDataSharingTabSwitcherDelegate.openLearnMoreSharedTabGroupsPage(
+                                context, url);
+                    }
+                };
+        // TODO (b/384978418) : Fix it appropriately for tablet.
+        DataSharingUiConfig.Builder commonConfig =
+                new DataSharingUiConfig.Builder()
+                        .setActivity(activity)
+                        .setIsTablet(false)
+                        .setLearnMoreHyperLink(getTabGroupHelpUrl())
+                        .setDataSharingStringConfig(stringConfig)
+                        .setDataSharingCallback(dataSharingCallback);
+        if (tabGroupName != null) {
+            commonConfig.setTabGroupName(tabGroupName);
+        }
+        return commonConfig.build();
     }
 
     /**
