@@ -55,6 +55,7 @@ class SafetyChecker final {
   explicit SafetyChecker(base::WeakPtr<TextSafetyClient> client,
                          on_device_model::TextSafetyLoaderParams params,
                          SafetyConfig safety_cfg);
+  SafetyChecker(const SafetyChecker&);
   ~SafetyChecker();
 
   // Runs all of the configured request checks for a request.

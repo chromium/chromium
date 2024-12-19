@@ -445,6 +445,12 @@ OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
 OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
     default;
 
+std::unique_ptr<SessionImpl::OnDeviceModelClient>
+OnDeviceModelServiceController::OnDeviceModelClient::Clone() const {
+  return std::make_unique<OnDeviceModelServiceController::OnDeviceModelClient>(
+      feature_, controller_, model_paths_, adaptation_assets_);
+}
+
 bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
   return controller_ &&
          controller_->access_controller_->ShouldStartNewSession() ==

@@ -7,6 +7,7 @@
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
+#include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
@@ -135,6 +136,10 @@ SafetyChecker::SafetyChecker(base::WeakPtr<TextSafetyClient> client,
     : client_(std::move(client)),
       params_(std::move(params)),
       safety_cfg_(std::move(safety_cfg)) {}
+SafetyChecker::SafetyChecker(const SafetyChecker& orig)
+    : client_(orig.client_),
+      params_(orig.params_),
+      safety_cfg_(orig.safety_cfg_) {}
 SafetyChecker::~SafetyChecker() = default;
 
 void SafetyChecker::RunRequestChecks(

@@ -46,6 +46,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   class OnDeviceModelClient {
    public:
     virtual ~OnDeviceModelClient() = 0;
+    // Create another client for the same model.
+    virtual std::unique_ptr<OnDeviceModelClient> Clone() const = 0;
     // Called to check whether this client is still usable.
     virtual bool ShouldUse() = 0;
     // Called to retrieve connection the managed model.
@@ -57,6 +59,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   struct OnDeviceOptions final {
     OnDeviceOptions();
+    OnDeviceOptions(const OnDeviceOptions&);
     OnDeviceOptions(OnDeviceOptions&&);
     ~OnDeviceOptions();
 

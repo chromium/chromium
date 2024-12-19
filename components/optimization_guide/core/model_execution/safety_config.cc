@@ -91,6 +91,7 @@ SafetyConfig::SafetyConfig() = default;
 SafetyConfig::SafetyConfig(
     std::optional<proto::FeatureTextSafetyConfiguration> proto)
     : proto_(proto) {}
+SafetyConfig::SafetyConfig(const SafetyConfig&) = default;
 SafetyConfig::SafetyConfig(SafetyConfig&&) = default;
 SafetyConfig::~SafetyConfig() = default;
 SafetyConfig& SafetyConfig::operator=(SafetyConfig&&) = default;

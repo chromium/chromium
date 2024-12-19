@@ -19,6 +19,7 @@ class SafetyConfig final {
  public:
   SafetyConfig();
   explicit SafetyConfig(std::optional<proto::FeatureTextSafetyConfiguration>);
+  SafetyConfig(const SafetyConfig&);
   SafetyConfig(SafetyConfig&&);
   SafetyConfig& operator=(SafetyConfig&&);
   ~SafetyConfig();
