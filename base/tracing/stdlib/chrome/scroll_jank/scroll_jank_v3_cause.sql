@@ -9,8 +9,6 @@ CREATE PERFETTO FUNCTION _direct_children_slice(
 RETURNS TABLE(
   -- Alias for `slice.id`.
   id LONG,
-  -- Alias for `slice.type`.
-  type STRING,
   -- Alias for `slice.ts`.
   ts TIMESTAMP,
   -- Alias for `slice.dur`.
@@ -34,7 +32,6 @@ RETURNS TABLE(
 ) AS
 SELECT
   slice.id,
-  slice.type,
   slice.ts,
   slice.dur,
   slice.category,
