@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/one_shot_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -73,14 +74,6 @@ class IwaKeyDistributionInfoProvider {
   const KeyRotationInfo* GetKeyRotationInfo(
       const std::string& web_bundle_id) const;
 
-  // Attempts to fetch the latest version of the Iwa Key Distribution component
-  // from Omaha on session startup if the currently available version is
-  // preloaded. Returns `true` if the fetch task has been queued, and `false`
-  // otherwise.
-  // Note that `true` can only be returned once.
-  bool MaybeQueueComponentUpdateOnce(
-      base::PassKey<IsolatedWebAppPolicyManager>);
-
   // Asynchronously loads new component data and replaces the current `data_`
   // upon success and if `component_version` is greater than the stored one, and
   // informs observers about the operation result.
@@ -105,7 +98,17 @@ class IwaKeyDistributionInfoProvider {
   // Writes component metadata (version and whether it's preloaded) to `log`.
   void WriteComponentMetadata(base::Value::Dict& log) const;
 
-  bool Ready() const;
+  // Use this to post IWA-related tasks if they rely on the key distribution
+  // component. The event will be signalled
+  //  * Immediately if the kIwaKeyDistributionComponent flag is disabled
+  //  * Upon component loading if the available component is downloaded and not
+  //    preloaded
+  //  * In 15 seconds after the first call to this function if the available
+  //  component is preloaded and the component updater is unable to fetch a
+  //  newer version.
+  base::OneShotEvent& OnMaybeDownloadedComponentDataReady();
+
+  std::optional<bool> IsPreloadedForTesting() const;
 
  private:
   struct ComponentData {
@@ -123,6 +126,18 @@ class IwaKeyDistributionInfoProvider {
 
   IwaKeyDistributionInfoProvider();
 
+  // Posts `MaybeQueueComponentUpdate()` onto `any_data_ready_` once.
+  void PostMaybeQueueComponentUpdateOnceOnDataReady();
+
+  // Queues a component update request with a fallback.
+  // By the time of this call, `any_data_ready_` is already signalled.
+  //  * If the request succeeds, will signal `maybe_downloaded_data_ready_` via
+  //    OnKeyDistributionDataLoaded();
+  //  * If not, will signal `maybe_downloaded_data_ready_` in 15 seconds after
+  //    the call. Note that the fallback preloaded version is guaranteed to be
+  //    loaded in this case.
+  void MaybeQueueComponentUpdate();
+
   void OnKeyDistributionDataLoaded(
       const base::Version& version,
       bool is_preloaded,
@@ -134,9 +149,22 @@ class IwaKeyDistributionInfoProvider {
   void DispatchComponentUpdateError(const base::Version& version,
                                     IwaComponentUpdateError error) const;
 
+  void SignalOnDataReady(bool is_preloaded);
+
   // Component data protobuf parsing tasks are posted to a sequenced runner
   // instead of a thread pool to prevent possible version races.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Will be signalled once any component version (regardless of whether
+  // preloaded or downloaded) is loaded.
+  base::OneShotEvent any_data_ready_;
+
+  // Will be signalled either if a downloaded component version is loaded or in
+  // 15 seconds after the preloaded version has been loaded. See
+  // OnMaybeDownloadedComponentDataReady() for details.
+  base::OneShotEvent maybe_downloaded_data_ready_;
+
+  bool maybe_queue_component_update_posted_ = false;
 
   std::optional<ComponentData> data_;
   base::ObserverList<Observer> observers_;

@@ -51,6 +51,8 @@ class IsolatedWebAppPolicyManager
   base::Value GetDebugValue() const;
 
  private:
+  void StartImpl();
+
   void ConfigureObserversOnSessionStart();
   void CleanupAndProcessPolicyOnSessionStart();
   int GetPendingInitCount();
@@ -111,11 +113,6 @@ class IsolatedWebAppPolicyManager
   net::BackoffEntry install_retry_backoff_entry_;
 
   base::OnceClosure initial_policy_processing_finished_cb_;
-
-  // This timer will be set to run in ~15 seconds if the available component is
-  // preloaded to give the system a chance to fetch the latest component data.
-  // Will call `ProcessPolicy()` upon firing.
-  base::OneShotTimer process_policy_fallback_timer_;
 
   // We must execute install tasks in a queue, because each task uses a
   // `WebContents`, and installing an unbound number of apps in parallel would

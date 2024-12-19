@@ -64,11 +64,6 @@ namespace web_app {
 
 namespace {
 
-constexpr base::FeatureParam<base::TimeDelta>
-    kComponentUpdatePolicyProcessingDelay{
-        &kIwaPolicyManagerOnDemandComponentUpdate,
-        "component_update_policy_processing_delay", base::Seconds(15)};
-
 constexpr net::BackoffEntry::Policy kInstallRetryBackoffPolicy = {
     .num_errors_to_ignore = 0,
     .initial_delay_ms = 60 * 1000,
@@ -219,6 +214,28 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  process_logs_.AppendCompletedStep(
+      base::Value::Dict()
+          .Set("start_time",
+               base::TimeFormatFriendlyDateAndTime(base::Time::Now()))
+          .Set("info", "IsolatedWebAppPolicyManager::Start()"));
+
+  if (base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate) &&
+      !profile_->GetPrefs()
+           ->GetList(prefs::kIsolatedWebAppInstallForceList)
+           .empty()) {
+    IwaKeyDistributionInfoProvider::GetInstance()
+        ->OnMaybeDownloadedComponentDataReady()
+        .Post(FROM_HERE, base::BindOnce(&IsolatedWebAppPolicyManager::StartImpl,
+                                        weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    StartImpl();
+  }
+
+  std::move(on_started_callback).Run();
+}
+
+void IsolatedWebAppPolicyManager::StartImpl() {
   const int pending_inits_count = GetPendingInitCount();
   SetPendingInitCount(pending_inits_count + 1);
   if (pending_inits_count <= kIsolatedWebAppForceInstallMaxRetryTreshold) {
@@ -238,8 +255,6 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
             .Then(std::move(cleanup_and_process_policy)),
         kIsolatedWebAppForceInstallEmergencyDelay);
   }
-
-  std::move(on_started_callback).Run();
 }
 
 void IsolatedWebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
@@ -263,55 +278,6 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
   base::Value::Dict process_log;
   process_log.Set("start_time",
                   base::TimeFormatFriendlyDateAndTime(base::Time::Now()));
-
-  auto* key_provider = IwaKeyDistributionInfoProvider::GetInstance();
-  if (!key_provider->Ready()) {
-    // Will be signalled via `OnComponentUpdateSuccess()`.
-    process_log.Set("info", "Iwa Key Distribution component is not ready");
-    process_logs_.AppendCompletedStep(std::move(process_log));
-    return;
-  }
-
-  if (process_policy_fallback_timer_.IsRunning()) {
-    process_log.Set(
-        "info",
-        "running an on-demand update for the IWA Distribution component");
-    process_logs_.AppendCompletedStep(std::move(process_log));
-    return;
-  }
-
-  // This branch will be called at most once during the lifetime of the
-  // browser process. We delay the initial processing of the policy by 15
-  // seconds to give the system a chance to pull the latest component data (this
-  // only makes sense if the policy is not empty). If the component gets updated
-  // quicker, then the policy processor will be called from
-  // `OnComponentUpdateSuccess()`.
-  if (base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate) &&
-      !profile_->GetPrefs()
-           ->GetList(prefs::kIsolatedWebAppInstallForceList)
-           .empty() &&
-      key_provider->MaybeQueueComponentUpdateOnce(
-          base::PassKey<IsolatedWebAppPolicyManager>())) {
-    CHECK(key_distribution_info_observation_.IsObserving());
-
-    process_log.Set(
-        "info",
-        base::StringPrintf(
-            "running an on-demand update for the IWA Distribution "
-            "component; ProcessPolicy() will be delayed by %lld seconds",
-            kComponentUpdatePolicyProcessingDelay.Get().InSeconds()));
-    process_logs_.AppendCompletedStep(std::move(process_log));
-
-    // More specifically, if the currently used component data comes from the
-    // bundled (preloaded) component, then we request an on-demand update once
-    // on session startup (this branch will be called at most once during the
-    // lifetime of the browser process).
-    CHECK(!process_policy_fallback_timer_.IsRunning());
-    process_policy_fallback_timer_.Start(
-        FROM_HERE, kComponentUpdatePolicyProcessingDelay.Get(), this,
-        &IsolatedWebAppPolicyManager::ProcessPolicy);
-    return;
-  }
 
   // Ensure that only one policy resolution can happen at one time.
   if (policy_is_being_processed_) {
@@ -644,7 +610,6 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
     const base::Version& version,
     bool is_preloaded) {
-  process_policy_fallback_timer_.Stop();
   ProcessPolicy();
 }
 

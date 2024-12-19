@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -23,8 +24,6 @@
 namespace web_app {
 
 namespace {
-
-bool g_component_update_on_session_start_requested = false;
 
 IwaKeyDistributionInfoProvider::KeyRotations& GetDevModeKeyRotationData() {
   static base::NoDestructor<IwaKeyDistributionInfoProvider::KeyRotations>
@@ -76,6 +75,14 @@ GetGlobalIwaKeyDistributionInfoProviderInstance() {
   return *instance;
 }
 
+base::OneShotEvent& AlreadySignalled() {
+  static base::NoDestructor<base::OneShotEvent> kEvent;
+  if (!kEvent->is_signaled()) {
+    kEvent->Signal();
+  }
+  return *kEvent;
+}
+
 }  // namespace
 
 BASE_FEATURE(kIwaKeyDistributionDevMode,
@@ -107,9 +114,6 @@ IwaKeyDistributionInfoProvider* IwaKeyDistributionInfoProvider::GetInstance() {
 
 void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
   GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
-
-  // This allows new on-demand updates in subsequent tests.
-  g_component_update_on_session_start_requested = false;
 }
 
 const IwaKeyDistributionInfoProvider::KeyRotationInfo*
@@ -131,21 +135,6 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
   base::UmaHistogramEnumeration(kIwaKeyRotationInfoSource,
                                 KeyRotationInfoSource::kNone);
   return nullptr;
-}
-
-bool IwaKeyDistributionInfoProvider::MaybeQueueComponentUpdateOnce(
-    base::PassKey<IsolatedWebAppPolicyManager>) {
-  if (g_component_update_on_session_start_requested) {
-    return false;
-  }
-  g_component_update_on_session_start_requested = true;
-
-  if (data_ && !data_->is_preloaded) {
-    return false;
-  }
-
-  return component_updater::IwaKeyDistributionComponentInstallerPolicy::
-      QueueOnDemandUpdate(base::PassKey<IwaKeyDistributionInfoProvider>());
 }
 
 void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
@@ -191,6 +180,7 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
 
   data_ =
       ComponentData(component_version, std::move(key_rotations), is_preloaded);
+  SignalOnDataReady(is_preloaded);
   DispatchComponentUpdateSuccess(component_version, is_preloaded);
 }
 
@@ -211,15 +201,23 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
   DispatchComponentUpdateSuccess(base::Version(), /*is_preloaded=*/false);
 }
 
-bool IwaKeyDistributionInfoProvider::Ready() const {
+base::OneShotEvent&
+IwaKeyDistributionInfoProvider::OnMaybeDownloadedComponentDataReady() {
   if (!base::FeatureList::IsEnabled(
           component_updater::kIwaKeyDistributionComponent) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableComponentUpdate)) {
     // `switches::kDisableComponentUpdate` is set by default in browsertests.
-    return true;
+    return AlreadySignalled();
   }
-  return data_.has_value();
+
+  PostMaybeQueueComponentUpdateOnceOnDataReady();
+  return maybe_downloaded_data_ready_;
+}
+
+std::optional<bool> IwaKeyDistributionInfoProvider::IsPreloadedForTesting()
+    const {
+  return data_ ? std::make_optional(data_->is_preloaded) : std::nullopt;
 }
 
 base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
@@ -288,6 +286,44 @@ void IwaKeyDistributionInfoProvider::DispatchComponentUpdateError(
 
   for (auto& observer : observers_) {
     observer.OnComponentUpdateError(component_version, error);
+  }
+}
+
+void IwaKeyDistributionInfoProvider::
+    PostMaybeQueueComponentUpdateOnceOnDataReady() {
+  if (maybe_queue_component_update_posted_) {
+    return;
+  }
+  maybe_queue_component_update_posted_ = true;
+  any_data_ready_.Post(
+      FROM_HERE,
+      base::BindOnce(&IwaKeyDistributionInfoProvider::MaybeQueueComponentUpdate,
+                     base::Unretained(this)));
+}
+
+void IwaKeyDistributionInfoProvider::MaybeQueueComponentUpdate() {
+  CHECK(maybe_queue_component_update_posted_);
+  CHECK(any_data_ready_.is_signaled());
+
+  if (!data_ || data_->is_preloaded) {
+    component_updater::IwaKeyDistributionComponentInstallerPolicy::
+        QueueOnDemandUpdate(base::PassKey<IwaKeyDistributionInfoProvider>());
+    //  Schedule a fallback signaller.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&IwaKeyDistributionInfoProvider::SignalOnDataReady,
+                       base::Unretained(this),
+                       /*is_preloaded=*/false),
+        base::Seconds(15));
+  }
+}
+
+void IwaKeyDistributionInfoProvider::SignalOnDataReady(bool is_preloaded) {
+  if (!any_data_ready_.is_signaled()) {
+    any_data_ready_.Signal();
+  }
+  if (!is_preloaded && !maybe_downloaded_data_ready_.is_signaled()) {
+    maybe_downloaded_data_ready_.Signal();
   }
 }
 
