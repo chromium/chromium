@@ -19,9 +19,9 @@ public class Fido2GetCredentialsComparator {
     public static class Factory {
         private static Fido2GetCredentialsComparator sInstanceForTesting;
 
-        public static Fido2GetCredentialsComparator get() {
+        public static Fido2GetCredentialsComparator get(boolean isGoogleRp) {
             return sInstanceForTesting == null
-                    ? new Fido2GetCredentialsComparator()
+                    ? new Fido2GetCredentialsComparator(isGoogleRp)
                     : sInstanceForTesting;
         }
 
@@ -50,7 +50,16 @@ public class Fido2GetCredentialsComparator {
         public final long completionTime;
         public final int credentialCount;
 
-        public State(boolean successful, long completionTime, int credentialCount) {
+        public static State failed() {
+            return new State(
+                    /* successful= */ false, /* completionTime= */ 0, /* credentialCount= */ -1);
+        }
+
+        public static State successful(long completionTime, int credentialCount) {
+            return new State(/* successful= */ true, completionTime, credentialCount);
+        }
+
+        private State(boolean successful, long completionTime, int credentialCount) {
             this.successful = successful;
             this.completionTime = completionTime;
             this.credentialCount = credentialCount;
@@ -61,12 +70,13 @@ public class Fido2GetCredentialsComparator {
 
     private State mPasskeysCacheResultState;
     private State mFido2ResultState;
+    private boolean mIsGoogleRp;
 
     void onGetCredentialsSuccessful(int credentialCount) {
         if (mFido2ResultState != null) {
             return;
         }
-        mFido2ResultState = new State(true, SystemClock.elapsedRealtime(), credentialCount);
+        mFido2ResultState = State.successful(SystemClock.elapsedRealtime(), credentialCount);
         performComparison();
     }
 
@@ -74,7 +84,7 @@ public class Fido2GetCredentialsComparator {
         if (mFido2ResultState != null) {
             return;
         }
-        mFido2ResultState = new State(false, SystemClock.elapsedRealtime(), -1);
+        mFido2ResultState = State.failed();
         performComparison();
     }
 
@@ -82,7 +92,8 @@ public class Fido2GetCredentialsComparator {
         if (mPasskeysCacheResultState != null) {
             return;
         }
-        mPasskeysCacheResultState = new State(true, SystemClock.elapsedRealtime(), credentialCount);
+        mPasskeysCacheResultState =
+                State.successful(SystemClock.elapsedRealtime(), credentialCount);
         performComparison();
     }
 
@@ -90,7 +101,7 @@ public class Fido2GetCredentialsComparator {
         if (mPasskeysCacheResultState != null) {
             return;
         }
-        mPasskeysCacheResultState = new State(false, SystemClock.elapsedRealtime(), -1);
+        mPasskeysCacheResultState = State.failed();
         performComparison();
     }
 
@@ -114,11 +125,17 @@ public class Fido2GetCredentialsComparator {
                         : "PasskeyCacheFasterMs";
 
         RecordHistogram.recordTimesHistogram(HISTOGRAM_PREFIX + histogramName, timeDifference);
-        RecordHistogram.recordCount100Histogram(
-                HISTOGRAM_PREFIX + "CredentialCountDifference",
+        int credentialCountDifference =
                 Math.abs(
                         mFido2ResultState.credentialCount
-                                - mPasskeysCacheResultState.credentialCount));
+                                - mPasskeysCacheResultState.credentialCount);
+        RecordHistogram.recordCount100Histogram(
+                HISTOGRAM_PREFIX + "CredentialCountDifference", credentialCountDifference);
+        RecordHistogram.recordCount100Histogram(
+                HISTOGRAM_PREFIX
+                        + "CredentialCountDifference."
+                        + (mIsGoogleRp ? "GoogleRp" : "NonGoogleRp"),
+                credentialCountDifference);
         if (mFido2ResultState.credentialCount != mPasskeysCacheResultState.credentialCount) {
             // The difference we see between the two APIs are significant. Also emit the
             // credential counts.
@@ -143,5 +160,7 @@ public class Fido2GetCredentialsComparator {
     }
 
     // Use the factory to create an instance.
-    private Fido2GetCredentialsComparator() {}
+    private Fido2GetCredentialsComparator(boolean isGoogleRp) {
+        mIsGoogleRp = isGoogleRp;
+    }
 }

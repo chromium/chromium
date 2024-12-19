@@ -66,6 +66,7 @@ import java.util.List;
 public class Fido2CredentialRequest
         implements Callback<Pair<Integer, Intent>>, WebauthnBrowserBridge.Provider {
     private static final String TAG = "Fido2Request";
+    private static final String GOOGLE_RP_ID = "google.com";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
     static final String NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG =
@@ -572,7 +573,10 @@ public class Fido2CredentialRequest
                     DeviceFeatureMap.isEnabled(
                             DeviceFeatureList.WEBAUTHN_ANDROID_USE_PASSKEY_CACHE);
             Fido2GetCredentialsComparator comparator =
-                    passkeyCacheEnabled ? Fido2GetCredentialsComparator.Factory.get() : null;
+                    passkeyCacheEnabled
+                            ? Fido2GetCredentialsComparator.Factory.get(
+                                    GOOGLE_RP_ID.equals(options.relyingPartyId))
+                            : null;
             Fido2ApiCallHelper.getInstance()
                     .invokeFido2GetCredentials(
                             mAuthenticationContextProvider,

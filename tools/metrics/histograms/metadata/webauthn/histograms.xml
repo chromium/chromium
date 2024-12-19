@@ -88,9 +88,28 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-webauthn@google.com</owner>
   <summary>
     Records the difference between the number of credentials received from FIDO2
-    and Passkey Cache calls. Recorded only if FIDO2 and Passkey Cache
-    getCredential calls are successful.
+    and Passkey Cache calls. Recorded when the FIDO2 and Passkey Cache
+    getCredential calls are successful for a get assertion request triggered by
+    the website.
   </summary>
+</histogram>
+
+<histogram
+    name="WebAuthentication.Android.Fido2VsPasskeyCache.CredentialCountDifference.{RpType}"
+    units="passkeys" expires_after="2025-06-08">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the difference between the number of credentials received from FIDO2
+    and Passkey Cache calls. Recorded when the FIDO2 and Passkey Cache
+    getCredential calls are successful for a get assertion request triggered by
+    the website. This is emitted only if the request's relying party is
+    {RpType}.
+  </summary>
+  <token key="RpType">
+    <variant name="GoogleRp" summary="request is for google.com RP"/>
+    <variant name="NonGoogleRp" summary="request is for a non-google.com RP"/>
+  </token>
 </histogram>
 
 <histogram
@@ -101,8 +120,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of credentials received from the FIDO2 call. Recorded
     when the FIDO2 and Passkey Cache getCredential calls are successful AND the
-    number of received credentials are different. Recorded after both calls
-    complete.
+    number of received credentials are different, for a get assertion request
+    triggered by the website.
   </summary>
 </histogram>
 
@@ -113,7 +132,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the difference in duration between the normal FIDO2 getCredentials
     request and the Passkey Cache getCredentials request, when the normal FIDO2
-    request is faster.
+    request is faster. This is recorded for a get assertion request triggered by
+    the website.
   </summary>
 </histogram>
 
@@ -125,8 +145,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of credentials received from the Passkey Cache call.
     Recorded when FIDO2 and Passkey Cache getCredential calls are successful AND
-    the number of received credentials are different. Recorded after both calls
-    complete.
+    the number of received credentials are different, for a get assertion
+    request triggered by the website.
   </summary>
 </histogram>
 
@@ -138,7 +158,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the difference in duration between the normal FIDO2 getCredentials
     request and the Passkey Cache getCredentials request, when the Passkey Cache
-    getCredentials request is faster.
+    getCredentials request is faster. This is recorded for a get assertion
+    request triggered by the website.
   </summary>
 </histogram>
 
@@ -148,6 +169,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-webauthn@google.com</owner>
   <summary>
     Records the success/failure of FIDO2 and Passkey Cache getCredentials calls.
+    This is recorded for a get assertion request triggered by the website.
   </summary>
 </histogram>
 

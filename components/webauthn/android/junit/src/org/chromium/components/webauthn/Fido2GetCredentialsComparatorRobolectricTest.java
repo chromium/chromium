@@ -27,10 +27,16 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
             HISTOGRAM_BASE + "Fido2CredentialCountWhenDifferent";
     private static final String FIDO2_FASTER_HISTOGRAM = HISTOGRAM_BASE + "Fido2FasterMs";
     private static final String SUCCESS_HISTOGRAM = HISTOGRAM_BASE + "SuccessState";
+    private static final String COUNT_DIFFERENCE_HISTOGRAM =
+            HISTOGRAM_BASE + "CredentialCountDifference";
+    private static final String GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM =
+            HISTOGRAM_BASE + "CredentialCountDifference.GoogleRp";
+    private static final String NON_GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM =
+            HISTOGRAM_BASE + "CredentialCountDifference.NonGoogleRp";
 
     @Test
     @SmallTest
-    public void testFido2SuccessfulThenPasskeyCacheSuccessful() {
+    public void testFido2SuccessfulThenPasskeyCacheSuccessfulNonGoogleRp() {
         int fido2CredentialCount = 1;
         int passkeyCacheCredentialCount = 1;
         HistogramWatcher watcher =
@@ -39,10 +45,39 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
                         .expectNoRecords(PASSKEY_CACHE_FASTER_HISTOGRAM)
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)
+                        .expectIntRecord(COUNT_DIFFERENCE_HISTOGRAM, 0)
+                        .expectNoRecords(GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM)
+                        .expectIntRecord(NON_GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM, 0)
                         .expectNoRecords(FIDO2_COUNT_HISTOGRAM)
                         .expectNoRecords(PASSKEY_CACHE_COUNT_HISTOGRAM)
                         .build();
-        var comparator = Fido2GetCredentialsComparator.Factory.get();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ false);
+
+        comparator.onGetCredentialsSuccessful(fido2CredentialCount);
+        Robolectric.getForegroundThreadScheduler().advanceBy(100, TimeUnit.MILLISECONDS);
+        comparator.onCachedGetCredentialsSuccessful(passkeyCacheCredentialCount);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testFido2SuccessfulThenPasskeyCacheSuccessfulGoogleRp() {
+        int fido2CredentialCount = 1;
+        int passkeyCacheCredentialCount = 1;
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(FIDO2_FASTER_HISTOGRAM)
+                        .expectNoRecords(PASSKEY_CACHE_FASTER_HISTOGRAM)
+                        .expectIntRecord(
+                                SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)
+                        .expectIntRecord(COUNT_DIFFERENCE_HISTOGRAM, 0)
+                        .expectNoRecords(NON_GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM)
+                        .expectIntRecord(GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM, 0)
+                        .expectNoRecords(FIDO2_COUNT_HISTOGRAM)
+                        .expectNoRecords(PASSKEY_CACHE_COUNT_HISTOGRAM)
+                        .build();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ true);
 
         comparator.onGetCredentialsSuccessful(fido2CredentialCount);
         Robolectric.getForegroundThreadScheduler().advanceBy(100, TimeUnit.MILLISECONDS);
@@ -64,7 +99,7 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
                         .expectIntRecord(FIDO2_COUNT_HISTOGRAM, fido2CredentialCount)
                         .expectIntRecord(PASSKEY_CACHE_COUNT_HISTOGRAM, passkeyCacheCredentialCount)
                         .build();
-        var comparator = Fido2GetCredentialsComparator.Factory.get();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ false);
 
         comparator.onGetCredentialsSuccessful(fido2CredentialCount);
         Robolectric.getForegroundThreadScheduler().advanceBy(100, TimeUnit.MILLISECONDS);
@@ -81,7 +116,7 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_FAILED)
                         .build();
-        var comparator = Fido2GetCredentialsComparator.Factory.get();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ false);
 
         comparator.onGetCredentialsSuccessful(0);
         comparator.onCachedGetCredentialsFailed();
@@ -97,7 +132,7 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_FAILED_CACHE_SUCCESSFUL)
                         .build();
-        var comparator = Fido2GetCredentialsComparator.Factory.get();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ false);
 
         comparator.onGetCredentialsFailed();
         comparator.onCachedGetCredentialsSuccessful(0);
@@ -112,7 +147,7 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(SUCCESS_HISTOGRAM, SuccessState.FIDO2_FAILED_CACHE_FAILED)
                         .build();
-        var comparator = Fido2GetCredentialsComparator.Factory.get();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ false);
 
         comparator.onGetCredentialsFailed();
         comparator.onCachedGetCredentialsFailed();
@@ -122,15 +157,40 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
 
     @Test
     @SmallTest
-    public void testPasskeyCacheSuccessfulThenFido2Successful() {
+    public void testPasskeyCacheSuccessfulThenFido2SuccessfulNonGoogleRp() {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(PASSKEY_CACHE_FASTER_HISTOGRAM)
                         .expectNoRecords(FIDO2_FASTER_HISTOGRAM)
+                        .expectIntRecord(COUNT_DIFFERENCE_HISTOGRAM, 0)
+                        .expectNoRecords(GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM)
+                        .expectIntRecord(NON_GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM, 0)
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)
                         .build();
-        var comparator = Fido2GetCredentialsComparator.Factory.get();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ false);
+
+        comparator.onCachedGetCredentialsSuccessful(0);
+        Robolectric.getForegroundThreadScheduler().advanceBy(100, TimeUnit.MILLISECONDS);
+        comparator.onGetCredentialsSuccessful(0);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testPasskeyCacheSuccessfulThenFido2SuccessfulGoogleRp() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(PASSKEY_CACHE_FASTER_HISTOGRAM)
+                        .expectNoRecords(FIDO2_FASTER_HISTOGRAM)
+                        .expectIntRecord(COUNT_DIFFERENCE_HISTOGRAM, 0)
+                        .expectNoRecords(NON_GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM)
+                        .expectIntRecord(GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM, 0)
+                        .expectIntRecord(
+                                SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)
+                        .build();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ true);
 
         comparator.onCachedGetCredentialsSuccessful(0);
         Robolectric.getForegroundThreadScheduler().advanceBy(100, TimeUnit.MILLISECONDS);
@@ -147,7 +207,7 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_FAILED_CACHE_SUCCESSFUL)
                         .build();
-        var comparator = Fido2GetCredentialsComparator.Factory.get();
+        var comparator = Fido2GetCredentialsComparator.Factory.get(/* isGoogleRp= */ false);
 
         comparator.onCachedGetCredentialsSuccessful(0);
         comparator.onGetCredentialsFailed();
