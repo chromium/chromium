@@ -142,7 +142,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
        * The keyboard being tested, or null if none is being tested at the
        * moment.
        */
-      keyboard: {type: Object},
+      keyboard: KeyboardInfo,
 
       shouldDisplayDiagram: {
         type: Boolean,
@@ -232,7 +232,6 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
       return null;
     }
     return {
-      [MechanicalLayout.kUnmappedEnumField]: null,
       [MechanicalLayout.kUnknown]: null,
       [MechanicalLayout.kAnsi]: DiagramMechanicalLayout.ANSI,
       [MechanicalLayout.kIso]: DiagramMechanicalLayout.ISO,
@@ -246,7 +245,6 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
       return null;
     }
     return {
-      [PhysicalLayout.kUnmappedEnumField]: null,
       [PhysicalLayout.kUnknown]: null,
       [PhysicalLayout.kChromeOS]: DiagramPhysicalLayout.CHROME_OS,
       [PhysicalLayout.kChromeOSDellEnterpriseWilco]:
@@ -262,7 +260,6 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
       return null;
     }
     return {
-      [TopRightKey.kUnmappedEnumField]: null,
       [TopRightKey.kUnknown]: null,
       [TopRightKey.kPower]: DiagramTopRightKey.POWER,
       [TopRightKey.kLock]: DiagramTopRightKey.LOCK,

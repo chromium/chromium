@@ -27,8 +27,7 @@ suite('wifiInfoTestSuite', function() {
     wifiInfoElement = null;
   });
 
-  function initializeWifiInfo(network: Network = fakeWifiNetwork):
-      Promise<void> {
+  function initializeWifiInfo(network = fakeWifiNetwork): Promise<void> {
     // Add the wifi info to the DOM.
     wifiInfoElement = document.createElement('wifi-info');
     assert(wifiInfoElement);
