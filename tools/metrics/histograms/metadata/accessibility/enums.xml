@@ -1314,6 +1314,16 @@ Unknown properties are collapsed to zero. -->
   <int value="22" label="Zoom in"/>
   <int value="23" label="Zoom out"/>
   <int value="24" label="Zoom reset"/>
+  <int value="25" label="NOT_IMPLEMENTED_FOCUS_SEARCH"/>
+  <int value="26" label="NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE"/>
+  <int value="27" label="NOT_IMPLEMENTED_SHOW_DOWNLOADS"/>
+  <int value="28" label="NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING"/>
+  <int value="29" label="NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD"/>
+  <int value="30" label="NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD"/>
+  <int value="31" label="NOT_IMPLEMENTED_HELP"/>
+  <int value="32" label="NOT_IMPLEMENTED_CLEAR_BROWSING_DATA"/>
+  <int value="33" label="NOT_IMPLEMENTED_CLOSE_WINDOW"/>
+  <int value="34" label="NOT_IMPLEMENTED_HOME"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->

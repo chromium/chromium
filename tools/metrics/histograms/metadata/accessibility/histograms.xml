@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}"
+<histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}2"
     enum="KeyboardShortcutsSemanticMeaning" expires_after="2025-08-30">
   <owner>mschillaci@google.com</owner>
   <owner>katie@chromium.org</owner>
