@@ -463,8 +463,7 @@ void ComputeSectionInlineConstraints(
 // specified size.
 Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     LayoutUnit target_inline_size,
-    const TableTypes::Column* start_column,
-    const TableTypes::Column* end_column,
+    base::span<const TableTypes::Column> column_span,
     const bool treat_target_size_as_constrained) {
   unsigned all_columns_count = 0;
   unsigned percent_columns_count = 0;
@@ -480,47 +479,45 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
   LayoutUnit total_auto_max_inline_size;
   LayoutUnit total_fixed_max_inline_size;
 
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  for (const TableTypes::Column* column = start_column; column != end_column;
-       UNSAFE_TODO(++column)) {
+  for (const TableTypes::Column& column : column_span) {
     all_columns_count++;
-    DCHECK(column->min_inline_size);
-    DCHECK(column->max_inline_size);
+    DCHECK(column.min_inline_size);
+    DCHECK(column.max_inline_size);
 
     // Mergeable columns are ignored.
-    if (column->is_mergeable) {
+    if (column.is_mergeable) {
       continue;
     }
 
-    if (column->percent) {
+    if (column.percent) {
       percent_columns_count++;
-      total_percent += *column->percent;
+      total_percent += *column.percent;
       LayoutUnit percent_inline_size =
-          column->ResolvePercentInlineSize(target_inline_size);
-      guess_sizes[kMinGuess] += *column->min_inline_size;
+          column.ResolvePercentInlineSize(target_inline_size);
+      guess_sizes[kMinGuess] += *column.min_inline_size;
       guess_sizes[kPercentageGuess] += percent_inline_size;
       guess_sizes[kSpecifiedGuess] += percent_inline_size;
       guess_sizes[kMaxGuess] += percent_inline_size;
       guess_size_total_increases[kPercentageGuess] +=
-          percent_inline_size - *column->min_inline_size;
-    } else if (column->is_constrained) {  // Fixed column
+          percent_inline_size - *column.min_inline_size;
+    } else if (column.is_constrained) {  // Fixed column
       fixed_columns_count++;
-      total_fixed_max_inline_size += *column->max_inline_size;
-      guess_sizes[kMinGuess] += *column->min_inline_size;
-      guess_sizes[kPercentageGuess] += *column->min_inline_size;
-      guess_sizes[kSpecifiedGuess] += *column->max_inline_size;
-      guess_sizes[kMaxGuess] += *column->max_inline_size;
+      total_fixed_max_inline_size += *column.max_inline_size;
+      guess_sizes[kMinGuess] += *column.min_inline_size;
+      guess_sizes[kPercentageGuess] += *column.min_inline_size;
+      guess_sizes[kSpecifiedGuess] += *column.max_inline_size;
+      guess_sizes[kMaxGuess] += *column.max_inline_size;
       guess_size_total_increases[kSpecifiedGuess] +=
-          *column->max_inline_size - *column->min_inline_size;
+          *column.max_inline_size - *column.min_inline_size;
     } else {  // Auto column
       auto_columns_count++;
-      total_auto_max_inline_size += *column->max_inline_size;
-      guess_sizes[kMinGuess] += *column->min_inline_size;
-      guess_sizes[kPercentageGuess] += *column->min_inline_size;
-      guess_sizes[kSpecifiedGuess] += *column->min_inline_size;
-      guess_sizes[kMaxGuess] += *column->max_inline_size;
+      total_auto_max_inline_size += *column.max_inline_size;
+      guess_sizes[kMinGuess] += *column.min_inline_size;
+      guess_sizes[kPercentageGuess] += *column.min_inline_size;
+      guess_sizes[kSpecifiedGuess] += *column.min_inline_size;
+      guess_sizes[kMaxGuess] += *column.max_inline_size;
       guess_size_total_increases[kMaxGuess] +=
-          *column->max_inline_size - *column->min_inline_size;
+          *column.max_inline_size - *column.min_inline_size;
     }
   }
 
@@ -542,18 +539,15 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
   }
 
   switch (starting_guess) {
-    case kMinGuess: {
+    case kMinGuess:
       // All columns are their min inline-size.
-      LayoutUnit* computed_size = computed_sizes.data();
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      for (const TableTypes::Column* column = start_column;
-           column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
-        if (column->is_mergeable) {
-          continue;
+      for (wtf_size_t i = 0; const TableTypes::Column& column : column_span) {
+        if (!column.is_mergeable) {
+          computed_sizes[i] = column.min_inline_size.value_or(LayoutUnit());
         }
-        *computed_size = column->min_inline_size.value_or(LayoutUnit());
+        ++i;
       }
-    } break;
+      break;
     case kPercentageGuess: {
       // Percent columns grow in proportion to difference between their
       // percentage size and their minimum size.
@@ -562,20 +556,18 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       LayoutUnit distributable_inline_size =
           target_inline_size - guess_sizes[kMinGuess];
       LayoutUnit remaining_deficit = distributable_inline_size;
-      LayoutUnit* computed_size = computed_sizes.data();
-      LayoutUnit* last_computed_size = nullptr;
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      for (const TableTypes::Column* column = start_column;
-           column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
-        if (column->is_mergeable) {
+      wtf_size_t last_computed_size = kNotFound;
+      for (wtf_size_t i = 0; const TableTypes::Column& column : column_span) {
+        if (column.is_mergeable) {
+          ++i;
           continue;
         }
-        if (column->percent) {
-          last_computed_size = computed_size;
+        if (column.percent) {
+          last_computed_size = i;
           LayoutUnit percent_inline_size =
-              column->ResolvePercentInlineSize(target_inline_size);
+              column.ResolvePercentInlineSize(target_inline_size);
           LayoutUnit column_inline_size_increase =
-              percent_inline_size - *column->min_inline_size;
+              percent_inline_size - *column.min_inline_size;
           LayoutUnit delta;
           if (percent_inline_size_increase > LayoutUnit()) {
             delta = distributable_inline_size.MulDiv(
@@ -584,15 +576,16 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
             delta = distributable_inline_size / percent_columns_count;
           }
           remaining_deficit -= delta;
-          *computed_size = *column->min_inline_size + delta;
+          computed_sizes[i] = *column.min_inline_size + delta;
         } else {
           // Auto/Fixed columns get their min inline-size.
-          *computed_size = *column->min_inline_size;
+          computed_sizes[i] = *column.min_inline_size;
         }
+        ++i;
       }
       if (remaining_deficit != LayoutUnit()) {
-        DCHECK(last_computed_size);
-        *last_computed_size += remaining_deficit;
+        DCHECK_NE(last_computed_size, kNotFound);
+        computed_sizes[last_computed_size] += remaining_deficit;
       }
     } break;
     case kSpecifiedGuess: {
@@ -602,19 +595,19 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       LayoutUnit distributable_inline_size =
           target_inline_size - guess_sizes[kPercentageGuess];
       LayoutUnit remaining_deficit = distributable_inline_size;
-      LayoutUnit* last_computed_size = nullptr;
-      LayoutUnit* computed_size = computed_sizes.data();
-      for (const TableTypes::Column* column = start_column;
-           column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
-        if (column->is_mergeable) {
+      wtf_size_t last_computed_size = kNotFound;
+      for (wtf_size_t i = 0; const TableTypes::Column& column : column_span) {
+        if (column.is_mergeable) {
+          ++i;
           continue;
         }
-        if (column->percent) {
-          *computed_size = column->ResolvePercentInlineSize(target_inline_size);
-        } else if (column->is_constrained) {
-          last_computed_size = computed_size;
+        if (column.percent) {
+          computed_sizes[i] =
+              column.ResolvePercentInlineSize(target_inline_size);
+        } else if (column.is_constrained) {
+          last_computed_size = i;
           LayoutUnit column_inline_size_increase =
-              *column->max_inline_size - *column->min_inline_size;
+              *column.max_inline_size - *column.min_inline_size;
           LayoutUnit delta;
           if (fixed_inline_size_increase > LayoutUnit()) {
             delta = distributable_inline_size.MulDiv(
@@ -623,14 +616,15 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
             delta = distributable_inline_size / fixed_columns_count;
           }
           remaining_deficit -= delta;
-          *computed_size = *column->min_inline_size + delta;
+          computed_sizes[i] = *column.min_inline_size + delta;
         } else {
-          *computed_size = *column->min_inline_size;
+          computed_sizes[i] = *column.min_inline_size;
         }
+        ++i;
       }
       if (remaining_deficit != LayoutUnit()) {
-        DCHECK(last_computed_size);
-        *last_computed_size += remaining_deficit;
+        DCHECK_NE(last_computed_size, kNotFound);
+        computed_sizes[last_computed_size] += remaining_deficit;
       }
     } break;
     case kMaxGuess: {
@@ -648,22 +642,21 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       bool is_exact_match = target_inline_size == guess_sizes[kMaxGuess];
       LayoutUnit remaining_deficit =
           is_exact_match ? LayoutUnit() : distributable_inline_size;
-      LayoutUnit* last_computed_size = nullptr;
-      LayoutUnit* computed_size = computed_sizes.data();
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      for (const TableTypes::Column* column = start_column;
-           column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
-        if (column->is_mergeable) {
+      wtf_size_t last_computed_size = kNotFound;
+      for (wtf_size_t i = 0; const TableTypes::Column& column : column_span) {
+        if (column.is_mergeable) {
+          ++i;
           continue;
         }
-        if (column->percent) {
-          *computed_size = column->ResolvePercentInlineSize(target_inline_size);
-        } else if (column->is_constrained || is_exact_match) {
-          *computed_size = *column->max_inline_size;
+        if (column.percent) {
+          computed_sizes[i] =
+              column.ResolvePercentInlineSize(target_inline_size);
+        } else if (column.is_constrained || is_exact_match) {
+          computed_sizes[i] = *column.max_inline_size;
         } else {
-          last_computed_size = computed_size;
+          last_computed_size = i;
           LayoutUnit column_inline_size_increase =
-              *column->max_inline_size - *column->min_inline_size;
+              *column.max_inline_size - *column.min_inline_size;
           LayoutUnit delta;
           if (auto_inline_size_increase > LayoutUnit()) {
             delta = distributable_inline_size.MulDiv(
@@ -672,12 +665,13 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
             delta = distributable_inline_size / auto_columns_count;
           }
           remaining_deficit -= delta;
-          *computed_size = *column->min_inline_size + delta;
+          computed_sizes[i] = *column.min_inline_size + delta;
         }
+        ++i;
       }
       if (remaining_deficit != LayoutUnit()) {
-        DCHECK(last_computed_size);
-        *last_computed_size += remaining_deficit;
+        DCHECK_NE(last_computed_size, kNotFound);
+        computed_sizes[last_computed_size] += remaining_deficit;
       }
     } break;
     case kAboveMax: {
@@ -686,97 +680,93 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       if (auto_columns_count > 0) {
         // Grow auto columns if available.
         LayoutUnit remaining_deficit = distributable_inline_size;
-        LayoutUnit* last_computed_size = nullptr;
-        LayoutUnit* computed_size = computed_sizes.data();
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        for (const TableTypes::Column* column = start_column;
-             column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
-          if (column->is_mergeable) {
+        wtf_size_t last_computed_size = kNotFound;
+        for (wtf_size_t i = 0; const TableTypes::Column& column : column_span) {
+          if (column.is_mergeable) {
+            ++i;
             continue;
           }
-          if (column->percent) {
-            *computed_size =
-                column->ResolvePercentInlineSize(target_inline_size);
-          } else if (column->is_constrained) {
-            *computed_size = *column->max_inline_size;
+          if (column.percent) {
+            computed_sizes[i] =
+                column.ResolvePercentInlineSize(target_inline_size);
+          } else if (column.is_constrained) {
+            computed_sizes[i] = *column.max_inline_size;
           } else {
-            last_computed_size = computed_size;
+            last_computed_size = i;
             LayoutUnit delta;
             if (total_auto_max_inline_size > LayoutUnit()) {
               delta = distributable_inline_size.MulDiv(
-                  *column->max_inline_size, total_auto_max_inline_size);
+                  *column.max_inline_size, total_auto_max_inline_size);
             } else {
               delta = distributable_inline_size / auto_columns_count;
             }
             remaining_deficit -= delta;
-            *computed_size = *column->max_inline_size + delta;
+            computed_sizes[i] = *column.max_inline_size + delta;
           }
+          ++i;
         }
         if (remaining_deficit != LayoutUnit()) {
-          DCHECK(last_computed_size);
-          *last_computed_size += remaining_deficit;
+          DCHECK_NE(last_computed_size, kNotFound);
+          computed_sizes[last_computed_size] += remaining_deficit;
         }
       } else if (fixed_columns_count > 0 && treat_target_size_as_constrained) {
         // Grow fixed columns if available.
         LayoutUnit remaining_deficit = distributable_inline_size;
-        LayoutUnit* last_computed_size = nullptr;
-        LayoutUnit* computed_size = computed_sizes.data();
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        for (const TableTypes::Column* column = start_column;
-             column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
-          if (column->is_mergeable) {
+        wtf_size_t last_computed_size = kNotFound;
+        for (wtf_size_t i = 0; const TableTypes::Column& column : column_span) {
+          if (column.is_mergeable) {
+            ++i;
             continue;
           }
-          if (column->percent) {
-            *computed_size =
-                column->ResolvePercentInlineSize(target_inline_size);
-          } else if (column->is_constrained) {
-            last_computed_size = computed_size;
+          if (column.percent) {
+            computed_sizes[i] =
+                column.ResolvePercentInlineSize(target_inline_size);
+          } else if (column.is_constrained) {
+            last_computed_size = i;
             LayoutUnit delta;
             if (total_fixed_max_inline_size > LayoutUnit()) {
               delta = distributable_inline_size.MulDiv(
-                  *column->max_inline_size, total_fixed_max_inline_size);
+                  *column.max_inline_size, total_fixed_max_inline_size);
             } else {
               delta = distributable_inline_size / fixed_columns_count;
             }
             remaining_deficit -= delta;
-            *computed_size = *column->max_inline_size + delta;
+            computed_sizes[i] = *column.max_inline_size + delta;
           } else {
             NOTREACHED();
           }
+          ++i;
         }
         if (remaining_deficit != LayoutUnit()) {
-          DCHECK(last_computed_size);
-          *last_computed_size += remaining_deficit;
+          DCHECK_NE(last_computed_size, kNotFound);
+          computed_sizes[last_computed_size] += remaining_deficit;
         }
       } else if (percent_columns_count > 0) {
         // All remaining columns are percent.
         // They grow to max(col minimum, %ge size) + additional size
         // proportional to column percent.
         LayoutUnit remaining_deficit = distributable_inline_size;
-        LayoutUnit* last_computed_size = nullptr;
-        LayoutUnit* computed_size = computed_sizes.data();
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        for (const TableTypes::Column* column = start_column;
-             column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
-          if (column->is_mergeable || !column->percent) {
+        wtf_size_t last_computed_size = kNotFound;
+        for (wtf_size_t i = 0; const TableTypes::Column& column : column_span) {
+          if (column.is_mergeable || !column.percent) {
+            ++i;
             continue;
           }
-          last_computed_size = computed_size;
+          last_computed_size = i;
           LayoutUnit percent_inline_size =
-              column->ResolvePercentInlineSize(target_inline_size);
+              column.ResolvePercentInlineSize(target_inline_size);
           LayoutUnit delta;
           if (total_percent != 0.0f) {
-            delta = LayoutUnit(distributable_inline_size * *column->percent /
+            delta = LayoutUnit(distributable_inline_size * *column.percent /
                                total_percent);
           } else {
             delta = distributable_inline_size / percent_columns_count;
           }
           remaining_deficit -= delta;
-          *computed_size = percent_inline_size + delta;
+          computed_sizes[i++] = percent_inline_size + delta;
         }
         if (remaining_deficit != LayoutUnit() && last_computed_size) {
-          *last_computed_size += remaining_deficit;
+          computed_sizes[last_computed_size] += remaining_deficit;
         }
       }
     }
@@ -1033,10 +1023,6 @@ void DistributeColspanCellToColumnsAuto(
   unsigned effective_span =
       std::min(colspan_cell.span,
                column_constraints->data.size() - colspan_cell.start_column);
-  TableTypes::Column* start_column =
-      &column_constraints->data[colspan_cell.start_column];
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  TableTypes::Column* end_column = UNSAFE_TODO(start_column + effective_span);
   auto column_span = base::span(column_constraints->data)
                          .subspan(colspan_cell.start_column, effective_span);
 
@@ -1126,15 +1112,15 @@ void DistributeColspanCellToColumnsAuto(
     }
   }
   Vector<LayoutUnit> computed_sizes =
-      DistributeInlineSizeToComputedInlineSizeAuto(
-          colspan_cell_min_inline_size, start_column, end_column, true);
+      DistributeInlineSizeToComputedInlineSizeAuto(colspan_cell_min_inline_size,
+                                                   column_span, true);
   for (wtf_size_t i = 0; TableTypes::Column & column : column_span) {
     column.min_inline_size =
         std::max(*column.min_inline_size, computed_sizes[i++]);
   }
   computed_sizes = DistributeInlineSizeToComputedInlineSizeAuto(
-      colspan_cell_max_inline_size, start_column,
-      end_column, /* treat_target_size_as_constrained */
+      colspan_cell_max_inline_size, column_span,
+      /* treat_target_size_as_constrained */
       colspan_cell.cell_inline_constraint.is_constrained);
   for (wtf_size_t i = 0; TableTypes::Column & column : column_span) {
     column.max_inline_size =
@@ -1878,12 +1864,8 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
     return SynchronizeAssignableTableInlineSizeAndColumnsFixed(
         assignable_table_inline_size, column_constraints);
   } else {
-    const TableTypes::Column* start_column = &column_constraints.data[0];
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    const TableTypes::Column* end_column =
-        UNSAFE_TODO(start_column + column_constraints.data.size());
     return DistributeInlineSizeToComputedInlineSizeAuto(
-        assignable_table_inline_size, start_column, end_column,
+        assignable_table_inline_size, base::span(column_constraints.data),
         /* treat_target_size_as_constrained */ true);
   }
 }
