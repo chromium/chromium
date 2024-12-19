@@ -10274,11 +10274,27 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP" desc="Dynamic tooltip to display on hover over named tab group.">
         <ph name="GROUP_NAME">$1<ex>New Group</ex></ph> - <ph name="GROUP_CONTENT_STRING">$2<ex>"New Tab" and one other</ex></ph>
       </message>
-      <message name="IDS_TAB_AUDIO_MUTING_PROMO" desc="Text shown on the promotional UI appearing next to the tab alert indicator.">
-        Click the speaker icon to mute this tab
+      <message name="IDS_GLIC_PROMO_TITLE" desc="Glic promo title.">
+        [placeholder text]
       </message>
+      <message name="IDS_GLIC_PROMO_BODY" desc="Glic promo body text.">
+        [placeholder text]
+      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption.">
+          Try It Out
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption.">
+          Try it out
+        </message>
+      </if>
       <message name="IDS_SHARED_HIGHLIGHTING_PROMO" desc="The title of in-product-help message encouraging users to interact with the highlight">
         To create a highlight like this one, select any text and right-click.
+      </message>
+      <message name="IDS_TAB_AUDIO_MUTING_PROMO" desc="Text shown on the promotional UI appearing next to the tab alert indicator.">
+        Click the speaker icon to mute this tab
       </message>
       <if expr="use_titlecase">
         <message name="IDS_BATTERY_SAVER_MODE_PROMO_TITLE" desc="In Title Case: The title for the battery saver mode in-product promo bubble.">

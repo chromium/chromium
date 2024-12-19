@@ -47062,6 +47062,7 @@ should be able to be added at any place in this file.
       label="For Follow While-Browsing IPH feature."/>
   <suffix name="GenericAlwaysTriggerHelpUiFeature"
       label="For generic always show help UI feature."/>
+  <suffix name="GlicPromo" label="For Glic feature."/>
   <suffix name="GlobalMediaControls" label="For GlobalMediaControls feature."/>
   <suffix name="GMCCastStartStop"
       label="For Global Media Controls Cast start and stop feature."/>

@@ -226,6 +226,7 @@ chromium-metrics-reviews@google.com.
       summary="IPH for following the current site"/>
   <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
       summary="generic feature to always show help Ui whenever asked"/>
+  <variant name="IPH_GlicPromo" summary="Glic promotion"/>
   <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
   <variant name="IPH_GMCCastStartStop"
       summary="Cast start stop in the Zenith dialog"/>

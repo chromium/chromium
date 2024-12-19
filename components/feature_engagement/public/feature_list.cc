@@ -180,6 +180,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDownloadEsbPromoFeature,
     &kIPHExperimentalAIPromoFeature,
     &kIPHExplicitBrowserSigninPreferenceRememberedFeature,
+    &kIPHGlicPromoFeature,
     &kIPHHistorySearchFeature,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     &kIPHExtensionsMenuFeature,

@@ -305,6 +305,7 @@ DEFINE_VARIATION_PARAM(kIPHExperimentalAIPromoFeature,
                        "IPH_ExperimentalAIPromo");
 DEFINE_VARIATION_PARAM(kIPHExplicitBrowserSigninPreferenceRememberedFeature,
                        "IPH_ExplicitBrowserSigninPreferenceRemembered");
+DEFINE_VARIATION_PARAM(kIPHGlicPromoFeature, "IPH_GlicPromo");
 DEFINE_VARIATION_PARAM(kIPHHistorySearchFeature, "IPH_HistorySearch");
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 DEFINE_VARIATION_PARAM(kIPHExtensionsMenuFeature, "IPH_ExtensionsMenu");
@@ -658,6 +659,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDiscardRingFeature),
         VARIATION_ENTRY(kIPHExperimentalAIPromoFeature),
         VARIATION_ENTRY(kIPHExplicitBrowserSigninPreferenceRememberedFeature),
+        VARIATION_ENTRY(kIPHGlicPromoFeature),
         VARIATION_ENTRY(kIPHPwaQuietNotificationFeature),
         VARIATION_ENTRY(kIPHHistorySearchFeature),
 #if BUILDFLAG(ENABLE_EXTENSIONS)

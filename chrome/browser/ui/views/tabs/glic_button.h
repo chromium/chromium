@@ -27,8 +27,8 @@ class GlicButton : public TabStripControlButton {
   GlicButton& operator=(const GlicButton&) = delete;
   ~GlicButton() override;
 
-  // TabStripControlsButton:
-  void NotifyClick(const ui::Event& event) final;
+  // Launches the UI programmatically.
+  void LaunchUI();
 
  private:
   // Tab strip that contains this button.
