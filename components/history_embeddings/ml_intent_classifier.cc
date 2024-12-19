@@ -29,8 +29,8 @@ using Session = ::optimization_guide::OptimizationGuideModelExecutor::Session;
 
 using ::optimization_guide::ParsedAnyMetadata;
 using ::optimization_guide::proto::HistoryQueryIntentModelMetadata;
-using ::optimization_guide::proto::features::HistoryQueryIntentRequest;
-using ::optimization_guide::proto::features::HistoryQueryIntentResponse;
+using ::optimization_guide::proto::HistoryQueryIntentRequest;
+using ::optimization_guide::proto::HistoryQueryIntentResponse;
 
 }  // namespace
 

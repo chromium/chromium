@@ -39,7 +39,7 @@ void AIRewriter::Rewrite(
     const std::optional<std::string>& context,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  optimization_guide::proto::features::ComposePageMetadata page_metadata;
+  optimization_guide::proto::ComposePageMetadata page_metadata;
   std::string context_string = base::JoinString(
       {options_->shared_context.value_or(""), context.value_or("")}, "\n");
   base::TrimString(context_string, "\n", &context_string);
@@ -47,26 +47,26 @@ void AIRewriter::Rewrite(
       context_string.substr(0, AIUtils::kTrimmedInnerTextMaxChars));
   page_metadata.set_page_inner_text(context_string);
 
-  optimization_guide::proto::features::ComposeRequest context_request;
+  optimization_guide::proto::ComposeRequest context_request;
   *context_request.mutable_page_metadata() = std::move(page_metadata);
 
   session_->AddContext(context_request);
 
-  optimization_guide::proto::features::ComposeRequest execute_request;
+  optimization_guide::proto::ComposeRequest execute_request;
   // TODO(crbug.com/358214322): We don't support the combination of tone and
   // length.
   if (options_->tone == blink::mojom::AIRewriterTone::kMoreFormal) {
     execute_request.mutable_rewrite_params()->set_tone(
-        optimization_guide::proto::features::ComposeTone::COMPOSE_FORMAL);
+        optimization_guide::proto::ComposeTone::COMPOSE_FORMAL);
   } else if (options_->tone == blink::mojom::AIRewriterTone::kMoreCasual) {
     execute_request.mutable_rewrite_params()->set_tone(
-        optimization_guide::proto::features::ComposeTone::COMPOSE_INFORMAL);
+        optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL);
   } else if (options_->length == blink::mojom::AIRewriterLength::kLonger) {
     execute_request.mutable_rewrite_params()->set_length(
-        optimization_guide::proto::features::ComposeLength::COMPOSE_LONGER);
+        optimization_guide::proto::ComposeLength::COMPOSE_LONGER);
   } else if (options_->length == blink::mojom::AIRewriterLength::kShorter) {
     execute_request.mutable_rewrite_params()->set_length(
-        optimization_guide::proto::features::ComposeLength::COMPOSE_SHORTER);
+        optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
   } else {
     execute_request.mutable_rewrite_params()->set_regenerate(true);
   }
@@ -94,8 +94,7 @@ void AIRewriter::ModelExecutionCallback(
   }
 
   auto compose_response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::features::ComposeResponse>(
-      result.response->response);
+      optimization_guide::proto::ComposeResponse>(result.response->response);
   if (compose_response) {
     responder->OnStreaming(compose_response->output());
   }

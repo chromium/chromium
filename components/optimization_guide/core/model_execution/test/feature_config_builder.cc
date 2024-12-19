@@ -88,8 +88,7 @@ proto::OnDeviceModelExecutionFeatureConfig SimpleComposeConfig() {
   config.set_feature(
       ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
   auto& input_config = *config.mutable_input_config();
-  input_config.set_request_base_name(
-      proto::features::ComposeRequest().GetTypeName());
+  input_config.set_request_base_name(proto::ComposeRequest().GetTypeName());
 
   // Execute call prefixes with execute:.
   auto& substitution = *input_config.add_execute_substitutions();
@@ -107,8 +106,7 @@ proto::OnDeviceModelExecutionFeatureConfig SimpleComposeConfig() {
        ->mutable_proto_field() = UserInputField();
 
   auto& output_config = *config.mutable_output_config();
-  output_config.set_proto_type(
-      proto::features::ComposeResponse().GetTypeName());
+  output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
   *output_config.mutable_proto_field() = OutputField();
   return config;
 }

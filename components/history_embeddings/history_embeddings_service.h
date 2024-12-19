@@ -206,12 +206,11 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Submit quality logging data after user selects an item from search result.
   // Note, the `result` contains a log entry that will be consumed by this call.
-  void SendQualityLog(
-      SearchResult& result,
-      std::set<size_t> selections,
-      size_t num_entered_characters,
-      optimization_guide::proto::features::UserFeedback user_feedback,
-      optimization_guide::proto::features::UiSurface ui_surface);
+  void SendQualityLog(SearchResult& result,
+                      std::set<size_t> selections,
+                      size_t num_entered_characters,
+                      optimization_guide::proto::UserFeedback user_feedback,
+                      optimization_guide::proto::UiSurface ui_surface);
 
   // KeyedService:
   void Shutdown() override;

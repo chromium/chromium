@@ -8,32 +8,30 @@
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-optimization_guide::proto::features::ComposeLength ComposeLength(
+optimization_guide::proto::ComposeLength ComposeLength(
     compose::mojom::StyleModifier modifier) {
   switch (modifier) {
     case compose::mojom::StyleModifier::kShorter:
-      return optimization_guide::proto::features::ComposeLength::
-          COMPOSE_SHORTER;
+      return optimization_guide::proto::ComposeLength::COMPOSE_SHORTER;
     case compose::mojom::StyleModifier::kLonger:
-      return optimization_guide::proto::features::ComposeLength::COMPOSE_LONGER;
+      return optimization_guide::proto::ComposeLength::COMPOSE_LONGER;
     case compose::mojom::StyleModifier::kUnset:
     default:
-      return optimization_guide::proto::features::ComposeLength::
+      return optimization_guide::proto::ComposeLength::
           COMPOSE_UNSPECIFIED_LENGTH;
   }
 }
 
-optimization_guide::proto::features::ComposeTone ComposeTone(
+optimization_guide::proto::ComposeTone ComposeTone(
     compose::mojom::StyleModifier modifier) {
   switch (modifier) {
     case compose::mojom::StyleModifier::kCasual:
-      return optimization_guide::proto::features::ComposeTone::COMPOSE_INFORMAL;
+      return optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL;
     case compose::mojom::StyleModifier::kFormal:
-      return optimization_guide::proto::features::ComposeTone::COMPOSE_FORMAL;
+      return optimization_guide::proto::ComposeTone::COMPOSE_FORMAL;
     case compose::mojom::StyleModifier::kUnset:
     default:
-      return optimization_guide::proto::features::ComposeTone::
-          COMPOSE_UNSPECIFIED_TONE;
+      return optimization_guide::proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE;
   }
 }
 
@@ -69,35 +67,32 @@ compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
   }
 }
 
-optimization_guide::proto::features::UserFeedback
-OptimizationFeedbackFromComposeFeedback(compose::mojom::UserFeedback feedback) {
+optimization_guide::proto::UserFeedback OptimizationFeedbackFromComposeFeedback(
+    compose::mojom::UserFeedback feedback) {
   switch (feedback) {
     case compose::mojom::UserFeedback::kUserFeedbackPositive:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_UP;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
     case compose::mojom::UserFeedback::kUserFeedbackNegative:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_DOWN;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
     default:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_UNSPECIFIED;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
   }
 }
 
-optimization_guide::proto::features::ComposeUpfrontInputMode
-ComposeUpfrontInputMode(compose::mojom::InputMode mode) {
+optimization_guide::proto::ComposeUpfrontInputMode ComposeUpfrontInputMode(
+    compose::mojom::InputMode mode) {
   switch (mode) {
     case compose::mojom::InputMode::kPolish:
-      return optimization_guide::proto::features::ComposeUpfrontInputMode::
+      return optimization_guide::proto::ComposeUpfrontInputMode::
           COMPOSE_POLISH_MODE;
     case compose::mojom::InputMode::kElaborate:
-      return optimization_guide::proto::features::ComposeUpfrontInputMode::
+      return optimization_guide::proto::ComposeUpfrontInputMode::
           COMPOSE_ELABORATE_MODE;
     case compose::mojom::InputMode::kFormalize:
-      return optimization_guide::proto::features::ComposeUpfrontInputMode::
+      return optimization_guide::proto::ComposeUpfrontInputMode::
           COMPOSE_FORMALIZE_MODE;
     case compose::mojom::InputMode::kUnset:
-      return optimization_guide::proto::features::ComposeUpfrontInputMode::
+      return optimization_guide::proto::ComposeUpfrontInputMode::
           COMPOSE_UNSPECIFIED_MODE;
   }
 }

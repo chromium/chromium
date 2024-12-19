@@ -174,7 +174,7 @@ UserAnnotationsDatabase::RetrieveAllEntries() {
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectAllEntries));
   while (statement.Step()) {
-    optimization_guide::proto::features::UserAnnotationsEntry entry;
+    optimization_guide::proto::UserAnnotationsEntry entry;
     entry.set_entry_id(statement.ColumnInt64(0));
     entry.set_key(statement.ColumnString(1));
     auto decrypted_value = encryptor_.DecryptData(statement.ColumnBlob(2));

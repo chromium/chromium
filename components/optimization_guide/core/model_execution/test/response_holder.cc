@@ -16,8 +16,7 @@ namespace optimization_guide {
 namespace {
 
 std::string GetOutput(const StreamingResponse& response) {
-  return ParsedAnyMetadata<proto::features::ComposeResponse>(response.response)
-      ->output();
+  return ParsedAnyMetadata<proto::ComposeResponse>(response.response)->output();
 }
 
 }  // namespace

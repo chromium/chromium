@@ -7,20 +7,22 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 
-namespace optimization_guide::proto::features {
+namespace optimization_guide {
+namespace proto {
 class TabOrganizationQuality;
-}  // namespace optimization_guide::proto::features
+}  // namespace proto
+}  // namespace optimization_guide
 
 class TabOrganizationSession;
 class TabOrganization;
 
 void AddOrganizationDetailsToQualityOrganization(
-    optimization_guide::proto::features::TabOrganizationQuality* quality,
+    optimization_guide::proto::TabOrganizationQuality* quality,
     const TabOrganization* organization,
     const TabOrganizationResponse::Organization* response_organization);
 
 void AddSessionDetailsToQuality(
-    optimization_guide::proto::features::TabOrganizationQuality* quality,
+    optimization_guide::proto::TabOrganizationQuality* quality,
     const TabOrganizationSession* session);
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_LOGGING_UTIL_H_

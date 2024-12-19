@@ -51,18 +51,16 @@ class MockAutofillAiModelExecutor
       (autofill::FormData form_data,
        (base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map),
        (base::flat_map<autofill::FieldGlobalId, bool> sensitivity_map),
-       optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
+       optimization_guide::proto::AXTreeUpdate ax_tree_update,
        PredictionsReceivedCallback callback),
       (override));
   MOCK_METHOD(
-      const std::optional<
-          optimization_guide::proto::features::FormsPredictionsRequest>&,
+      const std::optional<optimization_guide::proto::FormsPredictionsRequest>&,
       GetLatestRequest,
       (),
       (const override));
   MOCK_METHOD(
-      const std::optional<
-          optimization_guide::proto::features::FormsPredictionsResponse>&,
+      const std::optional<optimization_guide::proto::FormsPredictionsResponse>&,
       GetLatestResponse,
       (),
       (const override));
@@ -260,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
   const auto& content_attributes =
       page_content.root_node().content_attributes();
   EXPECT_EQ(content_attributes.attribute_type(),
-            optimization_guide::proto::features::CONTENT_ATTRIBUTE_ROOT);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
 }
 #if !BUILDFLAG(IS_ANDROID)
 class AiDataKeyedServiceBrowserTestWithFormsPredictions
@@ -281,17 +279,17 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithFormsPredictions,
       autofill::prefs::kAutofillPredictionImprovementsEnabled, true);
 
   // Set up test data.
-  auto request = std::make_optional<
-      optimization_guide::proto::features::FormsPredictionsRequest>();
-  optimization_guide::proto::features::UserAnnotationsEntry* entry =
+  auto request =
+      std::make_optional<optimization_guide::proto::FormsPredictionsRequest>();
+  optimization_guide::proto::UserAnnotationsEntry* entry =
       request->add_entries();
   entry->set_key("test_key");
   entry->set_value("test_value");
-  auto response = std::make_optional<
-      optimization_guide::proto::features::FormsPredictionsResponse>();
-  optimization_guide::proto::features::FilledFormData* filled_form_data =
+  auto response =
+      std::make_optional<optimization_guide::proto::FormsPredictionsResponse>();
+  optimization_guide::proto::FilledFormData* filled_form_data =
       response->mutable_form_data();
-  optimization_guide::proto::features::FilledFormFieldData* filled_field =
+  optimization_guide::proto::FilledFormFieldData* filled_field =
       filled_form_data->add_filled_form_field_data();
   filled_field->set_normalized_label("test_label");
 

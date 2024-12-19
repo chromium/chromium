@@ -34,13 +34,13 @@ class SaveAutofillAiDataControllerImpl
 
   // SaveAutofillAiDataController:
   void OfferSave(
-      std::vector<optimization_guide::proto::features::UserAnnotationsEntry>
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
           autofill_ai_data,
       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
       LearnMoreClickedCallback learn_more_clicked_callback,
       UserFeedbackCallback user_feedback_callback) override;
   void OnSaveButtonClicked() override;
-  const std::vector<optimization_guide::proto::features::UserAnnotationsEntry>&
+  const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
   GetAutofillAiData() const override;
   void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) override;
   base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() override;
@@ -63,7 +63,7 @@ class SaveAutofillAiDataControllerImpl
 
   // A list of Autofill AI data keys and values that the user can accept
   // to save.
-  std::vector<optimization_guide::proto::features::UserAnnotationsEntry>
+  std::vector<optimization_guide::proto::UserAnnotationsEntry>
       autofill_ai_data_;
 
   // Callback to notify the data provider about the user decision for the save

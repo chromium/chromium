@@ -11,7 +11,7 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
-namespace optimization_guide::proto::features {
+namespace optimization_guide::proto {
 class UserAnnotationsEntry;
 }
 
@@ -23,7 +23,7 @@ namespace user_annotations {
 
 typedef int64_t EntryID;
 
-typedef std::vector<optimization_guide::proto::features::UserAnnotationsEntry>
+typedef std::vector<optimization_guide::proto::UserAnnotationsEntry>
     UserAnnotationsEntries;
 
 struct Entry {
@@ -32,7 +32,7 @@ struct Entry {
   EntryID entry_id;
 
   // The proto for this entry.
-  optimization_guide::proto::features::UserAnnotationsEntry entry_proto;
+  optimization_guide::proto::UserAnnotationsEntry entry_proto;
 };
 
 // Encapsulates the result of various operations with user annotations entries.
@@ -50,9 +50,9 @@ enum class UserAnnotationsExecutionResult {
   kMaxValue = kResponseTimedOut
 };
 
-using UserAnnotationsEntryRetrievalResult = base::expected<
-    std::vector<optimization_guide::proto::features::UserAnnotationsEntry>,
-    UserAnnotationsExecutionResult>;
+using UserAnnotationsEntryRetrievalResult =
+    base::expected<std::vector<optimization_guide::proto::UserAnnotationsEntry>,
+                   UserAnnotationsExecutionResult>;
 
 // Encapsulates the result of user interaction with the prediction improvements
 // prompt.
@@ -68,13 +68,12 @@ struct PromptAcceptanceResult {
 // Autofill prediction improvements prompt. `model_execution_id` is the server
 // log id for model execution, and can be sent in any user submitted feedback.
 struct FormAnnotationResponse {
-  std::vector<optimization_guide::proto::features::UserAnnotationsEntry>
+  std::vector<optimization_guide::proto::UserAnnotationsEntry>
       to_be_upserted_entries;
   std::string model_execution_id;
 
   FormAnnotationResponse(
-      const std::vector<
-          optimization_guide::proto::features::UserAnnotationsEntry>&
+      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
           to_be_upserted_entries,
       const std::string& model_execution_id);
   ~FormAnnotationResponse();

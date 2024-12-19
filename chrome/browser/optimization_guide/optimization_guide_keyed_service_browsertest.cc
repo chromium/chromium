@@ -365,7 +365,7 @@ class OptimizationGuideKeyedServiceBrowserTest
     auto log_entry = std::make_unique<ModelQualityLogEntry>(
         service()->GetModelQualityLogsUploaderService()->GetWeakPtr());
     *log_entry->log_ai_data_request()->mutable_compose() =
-        proto::features::ComposeLoggingData();
+        proto::ComposeLoggingData();
     return log_entry;
   }
 

@@ -813,8 +813,7 @@ void ClientSideDetectionService::InquireOnDeviceModel(
     ClientPhishingRequest* verdict,
     std::string rendered_texts,
     base::OnceCallback<
-        void(std::optional<
-             optimization_guide::proto::features::ScamDetectionResponse>)>
+        void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
         callback) {
   if (!IsOnDeviceModelAvailable()) {
     std::move(callback).Run(std::nullopt);
@@ -875,7 +874,7 @@ void ClientSideDetectionService::ModelExecutionCallback(
                                           session_execution_start_time_);
 
   auto scam_detection_response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::features::ScamDetectionResponse>(
+      optimization_guide::proto::ScamDetectionResponse>(
       result.response->response);
 
   if (!scam_detection_response) {

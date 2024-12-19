@@ -7,8 +7,7 @@
 namespace user_annotations {
 
 FormAnnotationResponse::FormAnnotationResponse(
-    const std::vector<
-        optimization_guide::proto::features::UserAnnotationsEntry>&
+    const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
         to_be_upserted_entries,
     const std::string& model_execution_id)
     : to_be_upserted_entries(to_be_upserted_entries),

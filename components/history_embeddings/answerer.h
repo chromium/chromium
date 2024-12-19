@@ -54,13 +54,13 @@ struct AnswererResult {
   AnswererResult(
       ComputeAnswerStatus status,
       std::string query,
-      optimization_guide::proto::features::Answer answer,
+      optimization_guide::proto::Answer answer,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
       std::string url,
       std::vector<std::string> text_directives);
   AnswererResult(ComputeAnswerStatus status,
                  std::string query,
-                 optimization_guide::proto::features::Answer answer);
+                 optimization_guide::proto::Answer answer);
   AnswererResult(AnswererResult&&);
   ~AnswererResult();
   AnswererResult& operator=(AnswererResult&&);
@@ -71,7 +71,7 @@ struct AnswererResult {
 
   ComputeAnswerStatus status = ComputeAnswerStatus::kUnspecified;
   std::string query;
-  optimization_guide::proto::features::Answer answer;
+  optimization_guide::proto::Answer answer;
   // The partially populated v2 quality log entry. This will be dropped
   // on destruction to avoid logging when logging is disabled. If logging
   // is enabled, then it will be taken from here by

@@ -663,7 +663,7 @@ TEST_F(WallpaperSearchHandlerTest, GetDescriptors_Failure_DataIsUnreachable) {
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
-  optimization_guide::proto::features::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -715,7 +715,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   EXPECT_EQ("baz", request.descriptors().mood());
   EXPECT_EQ("#FFFFFF", request.descriptors().color());
 
-  optimization_guide::proto::features::WallpaperSearchResponse response;
+  optimization_guide::proto::WallpaperSearchResponse response;
 
   // Create test bitmap 1 and add it to response.
   SkBitmap bitmap1;
@@ -816,7 +816,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   // FIRST REQUEST.
-  optimization_guide::proto::features::WallpaperSearchRequest request1;
+  optimization_guide::proto::WallpaperSearchRequest request1;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback1;
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
@@ -851,7 +851,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   EXPECT_EQ("#FFFFFF", request1.descriptors().color());
 
   // Serialize and set result to later send to done_callback.
-  optimization_guide::proto::features::WallpaperSearchResponse response1;
+  optimization_guide::proto::WallpaperSearchResponse response1;
   std::string serialized_metadata1;
   response1.SerializeToString(&serialized_metadata1);
   optimization_guide::proto::Any result1;
@@ -881,7 +881,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
       {}, base::Time::Now().InMillisecondsFSinceUnixEpoch());
 
   // SECOND REQUEST.
-  optimization_guide::proto::features::WallpaperSearchRequest request2;
+  optimization_guide::proto::WallpaperSearchRequest request2;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback2;
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
@@ -915,7 +915,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   EXPECT_EQ("baz2", request2.descriptors().mood());
   EXPECT_EQ("#FF0000", request2.descriptors().color());
 
-  optimization_guide::proto::features::WallpaperSearchResponse response2;
+  optimization_guide::proto::WallpaperSearchResponse response2;
   std::string serialized_metadata2;
   response2.SerializeToString(&serialized_metadata2);
   optimization_guide::proto::Any result2;
@@ -977,7 +977,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
 
 TEST_F(WallpaperSearchHandlerTest,
        GetWallpaperSearchResults_TwoDescriptorsQueryFormatCorrect) {
-  optimization_guide::proto::features::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
@@ -1012,7 +1012,7 @@ TEST_F(WallpaperSearchHandlerTest,
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_ConvertsHueToHex) {
-  optimization_guide::proto::features::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
@@ -1046,7 +1046,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_ConvertsHueToHex) {
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
-  optimization_guide::proto::features::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -1116,7 +1116,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
-  optimization_guide::proto::features::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -1147,7 +1147,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   EXPECT_TRUE(request.descriptors().mood().empty());
   EXPECT_TRUE(request.descriptors().color().empty());
 
-  optimization_guide::proto::features::WallpaperSearchResponse response;
+  optimization_guide::proto::WallpaperSearchResponse response;
   std::string serialized_metadata;
   response.SerializeToString(&serialized_metadata);
   optimization_guide::proto::Any result;
@@ -1187,7 +1187,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
-  optimization_guide::proto::features::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -1372,7 +1372,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   // Fill wallpaper_search_results_ with 2 bitmaps.
-  optimization_guide::proto::features::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -1419,7 +1419,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_TRUE(request.descriptors().mood().empty());
   EXPECT_TRUE(request.descriptors().color().empty());
 
-  optimization_guide::proto::features::WallpaperSearchResponse response;
+  optimization_guide::proto::WallpaperSearchResponse response;
 
   // Create test bitmap 1 and add it to response.
   SkBitmap bitmap1;
@@ -1553,7 +1553,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
 
 TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   // Mock first request, then mark as thumbs down.
-  optimization_guide::proto::features::WallpaperSearchRequest request1;
+  optimization_guide::proto::WallpaperSearchRequest request1;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback1;
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
@@ -1580,7 +1580,7 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
           SK_ColorWHITE);
   handler->GetWallpaperSearchResults(std::move(result_descriptors),
                                      callback1.Get());
-  optimization_guide::proto::features::WallpaperSearchResponse response1;
+  optimization_guide::proto::WallpaperSearchResponse response1;
   std::string serialized_metadata1;
   response1.SerializeToString(&serialized_metadata1);
   optimization_guide::proto::Any result1;
@@ -1600,7 +1600,7 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
       side_panel::customize_chrome::mojom::UserFeedback::kThumbsDown);
 
   // Mock second request, then mark as thumbs up.
-  optimization_guide::proto::features::WallpaperSearchRequest request2;
+  optimization_guide::proto::WallpaperSearchRequest request2;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback2;
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
@@ -1628,7 +1628,7 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
           SK_ColorRED);
   handler->GetWallpaperSearchResults(std::move(result_descriptors2),
                                      callback2.Get());
-  optimization_guide::proto::features::WallpaperSearchResponse response2;
+  optimization_guide::proto::WallpaperSearchResponse response2;
   std::string serialized_metadata2;
   response2.SerializeToString(&serialized_metadata2);
   optimization_guide::proto::Any result2;
@@ -1652,11 +1652,9 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   const auto& log1 = logs[0]->mutable_wallpaper_search()->quality();
   const auto& log2 = logs[1]->mutable_wallpaper_search()->quality();
 
-  EXPECT_EQ(optimization_guide::proto::features::UserFeedback::
-                USER_FEEDBACK_THUMBS_DOWN,
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
             log1.user_feedback());
-  EXPECT_EQ(optimization_guide::proto::features::UserFeedback::
-                USER_FEEDBACK_THUMBS_UP,
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
             log2.user_feedback());
 }
 

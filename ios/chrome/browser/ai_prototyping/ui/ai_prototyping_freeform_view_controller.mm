@@ -172,7 +172,7 @@ constexpr CGFloat kButtonStackViewSpacing = 10;
 
 - (void)serverSideSubmitButtonPressed:(UIButton*)button {
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  optimization_guide::proto::features::BlingPrototypingRequest request;
+  optimization_guide::proto::BlingPrototypingRequest request;
   request.set_query(base::SysNSStringToUTF8(_queryField.text));
   request.set_name(base::SysNSStringToUTF8(_nameField.text));
   [self.mutator executeServerQuery:request];

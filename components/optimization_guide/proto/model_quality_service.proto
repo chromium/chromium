@@ -37,39 +37,29 @@ message LogAiDataRequest {
 
   oneof feature {
     // Add feature specific LoggingData here.
-    optimization_guide.proto.features.ComposeLoggingData compose = 3;
+    ComposeLoggingData compose = 3;
 
-    optimization_guide.proto.features.TabOrganizationLoggingData
-        tab_organization = 4;
+    TabOrganizationLoggingData tab_organization = 4;
 
-    optimization_guide.proto.features.WallpaperSearchLoggingData
-        wallpaper_search = 5;
+    WallpaperSearchLoggingData wallpaper_search = 5;
 
-    optimization_guide.proto.features.HistoryQueryLoggingData history_query = 7;
+    HistoryQueryLoggingData history_query = 7;
 
-    optimization_guide.proto.features.HistoryAnswerLoggingData history_answer =
-        8;
+    HistoryAnswerLoggingData history_answer = 8;
 
-    optimization_guide.proto.features.HistoryQueryIntentLoggingData
-        history_query_intent = 13;
+    HistoryQueryIntentLoggingData history_query_intent = 13;
 
-    optimization_guide.proto.features.ProductSpecificationsLoggingData
-        product_specifications = 9;
+    ProductSpecificationsLoggingData product_specifications = 9;
 
-    optimization_guide.proto.features.FormsAnnotationsLoggingData
-        forms_annotations = 10;
+    FormsAnnotationsLoggingData forms_annotations = 10;
 
-    optimization_guide.proto.features.FormsPredictionsLoggingData
-        forms_predictions = 11;
+    FormsPredictionsLoggingData forms_predictions = 11;
 
-    optimization_guide.proto.features.ModelPrototypingLoggingData
-        model_prototyping = 12;
+    ModelPrototypingLoggingData model_prototyping = 12;
 
-    optimization_guide.proto.features.BlingPrototypingLoggingData
-        bling_prototyping = 14;
+    BlingPrototypingLoggingData bling_prototyping = 14;
 
-    optimization_guide.proto.features.PasswordChangeSubmissionLoggingData
-        password_change_submission = 16;
+    PasswordChangeSubmissionLoggingData password_change_submission = 16;
 
     DefaultLoggingData default = 1000;
   }

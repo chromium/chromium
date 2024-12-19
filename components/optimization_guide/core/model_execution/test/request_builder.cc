@@ -8,24 +8,23 @@
 
 namespace optimization_guide {
 
-proto::features::ComposeRequest PageUrlRequest(const std::string& input) {
-  proto::features::ComposeRequest req;
+proto::ComposeRequest PageUrlRequest(const std::string& input) {
+  proto::ComposeRequest req;
   req.mutable_page_metadata()->set_page_url(std::string(input));
   return req;
 }
 
-proto::features::ComposeRequest UserInputRequest(const std::string& input) {
-  proto::features::ComposeRequest req;
+proto::ComposeRequest UserInputRequest(const std::string& input) {
+  proto::ComposeRequest req;
   req.mutable_generate_params()->set_user_input(input);
   return req;
 }
 
-proto::features::ComposeRequest RewriteRequest(
-    const std::string& previous_response) {
-  proto::features::ComposeRequest req;
+proto::ComposeRequest RewriteRequest(const std::string& previous_response) {
+  proto::ComposeRequest req;
   auto& rewrite_params = *req.mutable_rewrite_params();
   rewrite_params.set_previous_response(previous_response);
-  rewrite_params.set_tone(proto::features::COMPOSE_FORMAL);
+  rewrite_params.set_tone(proto::COMPOSE_FORMAL);
   return req;
 }
 

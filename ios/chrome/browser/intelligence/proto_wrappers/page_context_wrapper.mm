@@ -50,24 +50,23 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   // The callback to execute once all async work is complete, whichs
   // relinquishes ownership of the PageContext proto to the callback's handler.
   base::OnceCallback<void(
-      std::unique_ptr<optimization_guide::proto::features::PageContext>)>
+      std::unique_ptr<optimization_guide::proto::PageContext>)>
       _completion_callback;
 
   // Unique pointer to the PageContext proto.
-  std::unique_ptr<optimization_guide::proto::features::PageContext>
-      _page_context;
+  std::unique_ptr<optimization_guide::proto::PageContext> _page_context;
 
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 }
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-              completionCallback:
-                  (base::OnceCallback<
-                      void(std::unique_ptr<
-                           optimization_guide::proto::features::PageContext>)>)
-                      completionCallback {
+- (instancetype)
+      initWithWebState:(web::WebState*)webState
+    completionCallback:
+        (base::OnceCallback<
+            void(std::unique_ptr<optimization_guide::proto::PageContext>)>)
+            completionCallback {
   self = [super init];
   if (self) {
     _asyncTasksToComplete = 0;
@@ -76,8 +75,7 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
     _webFramesInnerTexts = [[NSMutableArray alloc] init];
 
     // Create the PageContext proto/object.
-    _page_context =
-        std::make_unique<optimization_guide::proto::features::PageContext>();
+    _page_context = std::make_unique<optimization_guide::proto::PageContext>();
     _page_context->set_url(_webState->GetVisibleURL().spec());
     _page_context->set_title(base::UTF16ToUTF8(_webState->GetTitle()));
   }

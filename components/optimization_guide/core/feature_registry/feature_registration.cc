@@ -108,10 +108,10 @@ void RegisterTabOrganization() {
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
         // If there is no tab organization, we don't have any user_feedback mark
         // it as unspecified.
-        const proto::features::TabOrganizationQuality& quality =
+        const proto::TabOrganizationQuality& quality =
             request_proto.tab_organization().quality();
         if (quality.organizations().empty()) {
-          return proto::features::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+          return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
         }
         if (quality.user_feedback()) {
           return quality.user_feedback();
@@ -173,7 +173,7 @@ void RegisterHistorySearch() {
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
         // There is no user feedback on history answer. It's recorded on history
         // query.
-        return proto::features::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       });
   auto mqls_metadata_answer = std::make_unique<MqlsFeatureMetadata>(
       "HistoryAnswer", proto::LogAiDataRequest::FeatureCase::kHistoryAnswer,

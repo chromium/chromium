@@ -10,7 +10,7 @@ namespace switches {
 
 extern const char kFormsAnnotationsOverride[];
 
-std::optional<optimization_guide::proto::features::FormsAnnotationsResponse>
+std::optional<optimization_guide::proto::FormsAnnotationsResponse>
 ParseFormsAnnotationsFromCommandLine();
 
 }  // namespace switches

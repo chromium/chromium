@@ -9,9 +9,7 @@
 
 namespace optimization_guide::proto {
 class Any;
-namespace features {
 class AXTreeUpdate;
-}  // namespace features
 }  // namespace optimization_guide::proto
 
 namespace ui {
@@ -26,7 +24,7 @@ proto::Any AnyWrapProto(const google::protobuf::MessageLite& m);
 // Populate the AXTreeUpdate proto structure from the ui structure.
 void PopulateAXTreeUpdateProto(
     const ui::AXTreeUpdate& source,
-    optimization_guide::proto::features::AXTreeUpdate* destination);
+    optimization_guide::proto::AXTreeUpdate* destination);
 
 }  // namespace optimization_guide
 

@@ -23,8 +23,7 @@ class LogAiDataRequest;
 }  // namespace proto
 
 using UserFeedbackCallback =
-    base::RepeatingCallback<proto::features::UserFeedback(
-        proto::LogAiDataRequest&)>;
+    base::RepeatingCallback<proto::UserFeedback(proto::LogAiDataRequest&)>;
 
 // MqlsFeatureMetadata holds metadata for each proto logged using the Model
 // Quality Logging Service (MQLS). Note that for a given user-visible feature,

@@ -345,12 +345,10 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   // This will dictate whether we consider the form ready to be filled or not.
   user_annotations_service_.ReplaceAllEntries(
       {user_has_data()
-           ? std::vector<
-                 optimization_guide::proto::features::
-                     UserAnnotationsEntry>{optimization_guide::proto::features::
-                                               UserAnnotationsEntry()}
-           : std::vector<
-                 optimization_guide::proto::features::UserAnnotationsEntry>{}});
+           ? std::vector<optimization_guide::proto::
+                             UserAnnotationsEntry>{optimization_guide::proto::
+                                                       UserAnnotationsEntry()}
+           : std::vector<optimization_guide::proto::UserAnnotationsEntry>{}});
   manager().OnFormSeen(*form);
 
   if (user_saw_suggestions()) {

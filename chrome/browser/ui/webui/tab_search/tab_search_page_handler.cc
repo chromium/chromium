@@ -1034,19 +1034,19 @@ void TabSearchPageHandler::SetUserFeedback(
     int32_t session_id,
     int32_t organization_id,
     tab_search::mojom::UserFeedback feedback) {
-  optimization_guide::proto::features::UserFeedback user_feedback;
+  optimization_guide::proto::UserFeedback user_feedback;
   switch (feedback) {
     case tab_search::mojom::UserFeedback::kUserFeedBackPositive:
-      user_feedback = optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_UP;
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
       break;
     case tab_search::mojom::UserFeedback::kUserFeedBackNegative:
-      user_feedback = optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_DOWN;
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
       break;
     case tab_search::mojom::UserFeedback::kUserFeedBackUnspecified:
-      user_feedback = optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_UNSPECIFIED;
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       break;
   }
   if (base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {

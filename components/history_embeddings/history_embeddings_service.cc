@@ -442,8 +442,8 @@ void HistoryEmbeddingsService::SendQualityLog(
     SearchResult& result,
     std::set<size_t> selections,
     size_t num_entered_characters,
-    optimization_guide::proto::features::UserFeedback user_feedback,
-    optimization_guide::proto::features::UiSurface ui_surface) {
+    optimization_guide::proto::UserFeedback user_feedback,
+    optimization_guide::proto::UiSurface ui_surface) {
   // Exit early if logging is not enabled.
   if (!GetFeatureParameters().send_quality_log ||
       !embedder_metadata_.has_value()) {
@@ -471,7 +471,7 @@ void HistoryEmbeddingsService::SendQualityLog(
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
     }));
 
-    optimization_guide::proto::features::HistoryQueryQuality* query_quality =
+    optimization_guide::proto::HistoryQueryQuality* query_quality =
         optimization_guide::HistoryQueryFeatureTypeMap::GetLoggingData(*request)
             ->mutable_quality();
     if (!query_quality) {
@@ -496,7 +496,7 @@ void HistoryEmbeddingsService::SendQualityLog(
     for (size_t row_index = 0; row_index < result.scored_url_rows.size();
          ++row_index) {
       const ScoredUrlRow& scored_url_row = result.scored_url_rows[row_index];
-      optimization_guide::proto::features::DocumentShown* document_shown =
+      optimization_guide::proto::DocumentShown* document_shown =
           query_quality->add_top_documents_shown();
       document_shown->set_url(scored_url_row.row.url().spec());
       document_shown->set_was_clicked(selections.contains(row_index));
@@ -510,7 +510,7 @@ void HistoryEmbeddingsService::SendQualityLog(
       // Log the top passages that may be used as context for the Answerer.
       for (size_t passage_index : scored_url_row.GetBestScoreIndices(
                0, GetFeatureParameters().context_passages_minimum_word_count)) {
-        optimization_guide::proto::features::PassageData* passage_data =
+        optimization_guide::proto::PassageData* passage_data =
             document_shown->add_passages();
         passage_data->set_text(
             scored_url_row.passages_embeddings.passages.passages(
@@ -527,11 +527,10 @@ void HistoryEmbeddingsService::SendQualityLog(
     }
     if (result.scored_url_rows.size() > 0) {
       query_quality->set_final_model_status(
-          any_document_clicked
-              ? optimization_guide::proto::features::FinalModelStatus::
-                    FINAL_MODEL_STATUS_SUCCESS
-              : optimization_guide::proto::features::FinalModelStatus::
-                    FINAL_MODEL_STATUS_FAILURE);
+          any_document_clicked ? optimization_guide::proto::FinalModelStatus::
+                                     FINAL_MODEL_STATUS_SUCCESS
+                               : optimization_guide::proto::FinalModelStatus::
+                                     FINAL_MODEL_STATUS_FAILURE);
     }
 
     // The data is sent when `log_entry` destructs.
@@ -547,9 +546,9 @@ void HistoryEmbeddingsService::SendQualityLog(
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
         std::move(result.answerer_result.log_entry);
     if (log_entry) {
-      optimization_guide::proto::features::HistoryAnswerQuality*
-          answer_quality = log_entry->quality_data<
-              optimization_guide::HistoryAnswerFeatureTypeMap>();
+      optimization_guide::proto::HistoryAnswerQuality* answer_quality =
+          log_entry
+              ->quality_data<optimization_guide::HistoryAnswerFeatureTypeMap>();
       if (answer_quality) {
         answer_quality->set_session_id(result.session_id);
         answer_quality->set_url(result.answerer_result.url);
@@ -1097,7 +1096,7 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
   SearchResult loadingResult = result.Clone();
   loadingResult.answerer_result =
       AnswererResult(ComputeAnswerStatus::kLoading, result.query,
-                     optimization_guide::proto::features::Answer());
+                     optimization_guide::proto::Answer());
   callback.Run(std::move(loadingResult));
 
   Answerer::Context context(result.session_id);

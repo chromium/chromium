@@ -68,7 +68,7 @@ void RecordUserFeedbackHistogram(proto::LogAiDataRequest* log_ai_data_request) {
       MqlsFeatureRegistry::GetInstance().GetFeature(
           log_ai_data_request->feature_case());
   CHECK(metadata);
-  proto::features::UserFeedback user_feedback =
+  proto::UserFeedback user_feedback =
       metadata->get_user_feedback_callback().Run(*log_ai_data_request);
   base::UmaHistogramEnumeration(
       base::StrCat(

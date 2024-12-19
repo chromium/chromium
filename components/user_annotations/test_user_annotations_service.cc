@@ -25,7 +25,7 @@ void TestUserAnnotationsService::ReplaceAllEntries(
 void TestUserAnnotationsService::RemoveEntry(EntryID entry_id,
                                              base::OnceClosure callback) {
   size_t count = 0;
-  for (const optimization_guide::proto::features::UserAnnotationsEntry& entry :
+  for (const optimization_guide::proto::UserAnnotationsEntry& entry :
        entries_) {
     if (entry_id == entry.entry_id()) {
       entries_.erase(entries_.begin() + count);
@@ -44,14 +44,14 @@ void TestUserAnnotationsService::RemoveAllEntries(base::OnceClosure callback) {
 void TestUserAnnotationsService::AddFormSubmission(
     const GURL& url,
     const std::string& title,
-    optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
+    optimization_guide::proto::AXTreeUpdate ax_tree_update,
     std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback) {
   if (should_import_form_data_) {
     int64_t entry_id = 0;
     for (const std::unique_ptr<autofill::AutofillField>& field :
          form->fields()) {
-      optimization_guide::proto::features::UserAnnotationsEntry entry;
+      optimization_guide::proto::UserAnnotationsEntry entry;
       entry.set_entry_id(entry_id++);
       entry.set_key(base::UTF16ToUTF8(field->label()));
       entry.set_value(

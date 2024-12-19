@@ -239,11 +239,11 @@ PrepareQualityLogEntry(optimization_guide::ModelQualityLogsUploaderService*
 
 void ConvertDescriptionTextToProto(
     ProductSpecifications::DescriptionText description_text,
-    optimization_guide::proto::features::DescriptionText* description_proto) {
+    optimization_guide::proto::DescriptionText* description_proto) {
   description_proto->set_text(description_text.text);
   for (auto url_info : description_text.urls) {
-    optimization_guide::proto::features::DescriptionText::ReferenceUrl*
-        reference_url = description_proto->add_urls();
+    optimization_guide::proto::DescriptionText::ReferenceUrl* reference_url =
+        description_proto->add_urls();
     reference_url->set_url(url_info.url.spec());
     reference_url->set_title(base::UTF16ToUTF8(url_info.title));
     if (url_info.favicon_url.has_value()) {
@@ -257,17 +257,16 @@ void ConvertDescriptionTextToProto(
 
 void ConvertProductSpecificationsToProto(
     ProductSpecifications specs,
-    optimization_guide::proto::features::ProductSpecificationData*
-        product_spec_data) {
+    optimization_guide::proto::ProductSpecificationData* product_spec_data) {
   for (auto pair : specs.product_dimension_map) {
-    optimization_guide::proto::features::ProductSpecificationSection* section =
+    optimization_guide::proto::ProductSpecificationSection* section =
         product_spec_data->add_product_specification_sections();
     section->set_key(base::NumberToString(pair.first));
     section->set_title(pair.second);
   }
 
   for (auto product : specs.products) {
-    optimization_guide::proto::features::ProductSpecification* product_spec =
+    optimization_guide::proto::ProductSpecification* product_spec =
         product_spec_data->add_product_specifications();
     product_spec->mutable_identifiers()->set_gpc_id(product.product_cluster_id);
     product_spec->mutable_identifiers()->set_mid(product.mid);
@@ -275,41 +274,39 @@ void ConvertProductSpecificationsToProto(
     product_spec->set_image_url(product.image_url.spec());
 
     for (auto pair : product.product_dimension_values) {
-      optimization_guide::proto::features::ProductSpecificationValue*
+      optimization_guide::proto::ProductSpecificationValue*
           product_specification_value =
               product_spec->add_product_specification_values();
       product_specification_value->set_key(base::NumberToString(pair.first));
 
       for (auto description : pair.second.descriptions) {
-        optimization_guide::proto::features::ProductSpecificationDescription*
+        optimization_guide::proto::ProductSpecificationDescription*
             product_specification_description =
                 product_specification_value->add_specification_descriptions();
         product_specification_description->set_label(description.label);
         product_specification_description->set_alternative_text(
             description.alt_text);
         for (auto option : description.options) {
-          optimization_guide::proto::features::ProductSpecificationDescription::
-              Option* option_proto =
-                  product_specification_description->add_options();
+          optimization_guide::proto::ProductSpecificationDescription::Option*
+              option_proto = product_specification_description->add_options();
           for (auto option_description : option.descriptions) {
-            optimization_guide::proto::features::DescriptionText*
-                description_text = option_proto->add_description();
+            optimization_guide::proto::DescriptionText* description_text =
+                option_proto->add_description();
             ConvertDescriptionTextToProto(option_description, description_text);
           }
         }
       }
 
       for (auto summary : pair.second.summary) {
-        optimization_guide::proto::features::DescriptionText*
-            summary_description =
-                product_specification_value->add_summary_description();
+        optimization_guide::proto::DescriptionText* summary_description =
+            product_specification_value->add_summary_description();
         ConvertDescriptionTextToProto(summary, summary_description);
       }
     }
 
     for (auto description_text : product.summary) {
-      optimization_guide::proto::features::DescriptionText*
-          summary_description = product_spec->add_summary_description();
+      optimization_guide::proto::DescriptionText* summary_description =
+          product_spec->add_summary_description();
       ConvertDescriptionTextToProto(description_text, summary_description);
     }
   }
@@ -318,19 +315,18 @@ void ConvertProductSpecificationsToProto(
 // TODO(b/347064310): Move this method to some lower-level layers instead of
 // here which is only usable in WebUI.
 void RecordQualityEntry(
-    optimization_guide::proto::features::ProductSpecificationsQuality*
-        quality_proto,
+    optimization_guide::proto::ProductSpecificationsQuality* quality_proto,
     std::vector<GURL> input_urls,
     ProductSpecifications specs) {
   // Record input.
   for (auto url : input_urls) {
-    optimization_guide::proto::features::ProductIdentifier* identifider =
+    optimization_guide::proto::ProductIdentifier* identifider =
         quality_proto->add_product_identifiers();
     identifider->set_product_url(url.spec());
   }
   // Record product spec table.
-  optimization_guide::proto::features::ProductSpecificationData*
-      product_spec_data = quality_proto->mutable_product_specification_data();
+  optimization_guide::proto::ProductSpecificationData* product_spec_data =
+      quality_proto->mutable_product_specification_data();
   ConvertProductSpecificationsToProto(specs, product_spec_data);
 }
 }  // namespace
@@ -692,23 +688,23 @@ void ShoppingServiceHandler::SetUrlsForProductSpecificationsSet(
 
 void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
     shopping_service::mojom::UserFeedback feedback) {
-  optimization_guide::proto::features::UserFeedback user_feedback;
+  optimization_guide::proto::UserFeedback user_feedback;
   switch (feedback) {
     case shopping_service::mojom::UserFeedback::kThumbsUp:
-      user_feedback = optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_UP;
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
       break;
     case shopping_service::mojom::UserFeedback::kThumbsDown:
-      user_feedback = optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_DOWN;
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
       break;
     case shopping_service::mojom::UserFeedback::kUnspecified:
-      user_feedback = optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_UNSPECIFIED;
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       break;
   }
-  if (user_feedback == optimization_guide::proto::features::UserFeedback::
-                           USER_FEEDBACK_THUMBS_DOWN) {
+  if (user_feedback ==
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN) {
     // If quality log is enabled, `log_id` of the feedback will be the same as
     // the `execution_id` of the log entry so that they can be matched later;
     // otherwise it will be a random ID.
@@ -729,10 +725,10 @@ void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
   if (!request) {
     return;
   }
-  optimization_guide::proto::features::ProductSpecificationsQuality*
-      quality_proto = optimization_guide::ProductSpecificationsFeatureTypeMap::
-                          GetLoggingData(*request)
-                              ->mutable_quality();
+  optimization_guide::proto::ProductSpecificationsQuality* quality_proto =
+      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
+          *request)
+          ->mutable_quality();
   quality_proto->set_user_feedback(user_feedback);
 }
 

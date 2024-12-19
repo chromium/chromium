@@ -53,7 +53,7 @@ class MockCreateRewriterClient
 
 optimization_guide::OptimizationGuideModelStreamingExecutionResult
 CreateExecutionResult(std::string_view output, bool is_complete) {
-  optimization_guide::proto::features::ComposeResponse response;
+  optimization_guide::proto::ComposeResponse response;
   *response.mutable_output() = output;
   return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
       optimization_guide::StreamingResponse{
@@ -74,8 +74,8 @@ CreateExecutionErrorResult(
 void CheckComposeRequestContext(
     const google::protobuf::MessageLite& request_metadata,
     const std::string& expected_context_string) {
-  const optimization_guide::proto::features::ComposeRequest* request =
-      static_cast<const optimization_guide::proto::features::ComposeRequest*>(
+  const optimization_guide::proto::ComposeRequest* request =
+      static_cast<const optimization_guide::proto::ComposeRequest*>(
           &request_metadata);
   EXPECT_THAT(request->page_metadata().page_inner_text(),
               expected_context_string);
@@ -86,34 +86,34 @@ void CheckComposeRequestContext(
 void CheckComposeRequestRewriteParamsPreviousResponse(
     const google::protobuf::MessageLite& request_metadata,
     const std::string& previous_response) {
-  const optimization_guide::proto::features::ComposeRequest* request =
-      static_cast<const optimization_guide::proto::features::ComposeRequest*>(
+  const optimization_guide::proto::ComposeRequest* request =
+      static_cast<const optimization_guide::proto::ComposeRequest*>(
           &request_metadata);
   EXPECT_THAT(request->rewrite_params().previous_response(), previous_response);
 }
 
 void CheckComposeRequestRewriteParamsTone(
     const google::protobuf::MessageLite& request_metadata,
-    optimization_guide::proto::features::ComposeTone tone) {
-  const optimization_guide::proto::features::ComposeRequest* request =
-      static_cast<const optimization_guide::proto::features::ComposeRequest*>(
+    optimization_guide::proto::ComposeTone tone) {
+  const optimization_guide::proto::ComposeRequest* request =
+      static_cast<const optimization_guide::proto::ComposeRequest*>(
           &request_metadata);
   EXPECT_EQ(request->rewrite_params().tone(), tone);
 }
 
 void CheckComposeRequestRewriteParamsLength(
     const google::protobuf::MessageLite& request_metadata,
-    optimization_guide::proto::features::ComposeLength length) {
-  const optimization_guide::proto::features::ComposeRequest* request =
-      static_cast<const optimization_guide::proto::features::ComposeRequest*>(
+    optimization_guide::proto::ComposeLength length) {
+  const optimization_guide::proto::ComposeRequest* request =
+      static_cast<const optimization_guide::proto::ComposeRequest*>(
           &request_metadata);
   EXPECT_EQ(request->rewrite_params().length(), length);
 }
 
 void CheckComposeRequestRewriteParamsRegenerateFlag(
     const google::protobuf::MessageLite& request_metadata) {
-  const optimization_guide::proto::features::ComposeRequest* request =
-      static_cast<const optimization_guide::proto::features::ComposeRequest*>(
+  const optimization_guide::proto::ComposeRequest* request =
+      static_cast<const optimization_guide::proto::ComposeRequest*>(
           &request_metadata);
   EXPECT_TRUE(request->rewrite_params().regenerate());
 }
@@ -447,12 +447,12 @@ TEST_F(AIRewriterTest, RewriteMoreCasual) {
       blink::mojom::AIRewriterTone::kMoreCasual,
       blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kAsIs,
-      base::BindLambdaForTesting([&](const google::protobuf::MessageLite&
-                                         request_metadata) {
-        CheckComposeRequestRewriteParamsTone(
-            request_metadata,
-            optimization_guide::proto::features::ComposeTone::COMPOSE_INFORMAL);
-      }));
+      base::BindLambdaForTesting(
+          [&](const google::protobuf::MessageLite& request_metadata) {
+            CheckComposeRequestRewriteParamsTone(
+                request_metadata,
+                optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL);
+          }));
 }
 
 TEST_F(AIRewriterTest, RewriteMoreFormal) {
@@ -460,12 +460,12 @@ TEST_F(AIRewriterTest, RewriteMoreFormal) {
       blink::mojom::AIRewriterTone::kMoreFormal,
       blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kAsIs,
-      base::BindLambdaForTesting([&](const google::protobuf::MessageLite&
-                                         request_metadata) {
-        CheckComposeRequestRewriteParamsTone(
-            request_metadata,
-            optimization_guide::proto::features::ComposeTone::COMPOSE_FORMAL);
-      }));
+      base::BindLambdaForTesting(
+          [&](const google::protobuf::MessageLite& request_metadata) {
+            CheckComposeRequestRewriteParamsTone(
+                request_metadata,
+                optimization_guide::proto::ComposeTone::COMPOSE_FORMAL);
+          }));
 }
 
 TEST_F(AIRewriterTest, RewriteLonger) {
@@ -473,12 +473,12 @@ TEST_F(AIRewriterTest, RewriteLonger) {
       blink::mojom::AIRewriterTone::kAsIs,
       blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kLonger,
-      base::BindLambdaForTesting([&](const google::protobuf::MessageLite&
-                                         request_metadata) {
-        CheckComposeRequestRewriteParamsLength(
-            request_metadata,
-            optimization_guide::proto::features::ComposeLength::COMPOSE_LONGER);
-      }));
+      base::BindLambdaForTesting(
+          [&](const google::protobuf::MessageLite& request_metadata) {
+            CheckComposeRequestRewriteParamsLength(
+                request_metadata,
+                optimization_guide::proto::ComposeLength::COMPOSE_LONGER);
+          }));
 }
 
 TEST_F(AIRewriterTest, RewriteShorter) {
@@ -489,8 +489,8 @@ TEST_F(AIRewriterTest, RewriteShorter) {
       base::BindLambdaForTesting(
           [&](const google::protobuf::MessageLite& request_metadata) {
             CheckComposeRequestRewriteParamsLength(
-                request_metadata, optimization_guide::proto::features::
-                                      ComposeLength::COMPOSE_SHORTER);
+                request_metadata,
+                optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
           }));
 }
 

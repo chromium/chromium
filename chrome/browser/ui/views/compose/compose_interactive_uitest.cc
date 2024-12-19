@@ -262,8 +262,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   optimization_guide::StreamingResponse OptimizationGuideResponse(
-      const optimization_guide::proto::features::ComposeResponse
-          compose_response,
+      const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true) {
     return optimization_guide::StreamingResponse{
         .response = optimization_guide::AnyWrapProto(compose_response),
@@ -273,8 +272,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 
   optimization_guide::OptimizationGuideModelStreamingExecutionResult
   OptimizationGuideStreamingResult(
-      const optimization_guide::proto::features::ComposeResponse
-          compose_response,
+      const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true,
       bool provided_by_on_device = false,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
@@ -284,10 +282,10 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
         provided_by_on_device, std::move(log_entry));
   }
 
-  optimization_guide::proto::features::ComposeResponse ComposeResponse(
+  optimization_guide::proto::ComposeResponse ComposeResponse(
       bool ok,
       std::string output) {
-    optimization_guide::proto::features::ComposeResponse response;
+    optimization_guide::proto::ComposeResponse response;
     response.set_output(ok ? output : "");
     return response;
   }

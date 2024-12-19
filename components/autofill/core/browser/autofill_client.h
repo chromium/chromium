@@ -60,7 +60,7 @@ namespace ukm {
 class UkmRecorder;
 }
 
-namespace optimization_guide::proto::features {
+namespace optimization_guide::proto {
 class UserAnnotationsEntry;
 }
 

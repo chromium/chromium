@@ -61,16 +61,16 @@ bool GetIsUnsafe(const proto::InternalOnDeviceModelExecutionInfo& log) {
   return log.response().text_safety_model_response().is_unsafe();
 }
 
-proto::features::ComposeRequest UrlAndInputRequest(const std::string& url,
-                                                   const std::string& input) {
-  proto::features::ComposeRequest req;
+proto::ComposeRequest UrlAndInputRequest(const std::string& url,
+                                         const std::string& input) {
+  proto::ComposeRequest req;
   req.mutable_page_metadata()->set_page_url(url);
   req.mutable_generate_params()->set_user_input(input);
   return req;
 }
 
 proto::Any SimpleResponse(const std::string& output) {
-  proto::features::ComposeResponse resp;
+  proto::ComposeResponse resp;
   resp.set_output(output);
   return AnyWrapProto(resp);
 }

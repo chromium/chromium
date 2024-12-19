@@ -39,7 +39,7 @@ class ModelExecutionLoggingWrappersTest : public testing::Test {
 };
 
 TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
-  proto::features::TabOrganizationResponse response;
+  proto::TabOrganizationResponse response;
   response.add_tab_groups()->set_label("foo");
   proto::ModelExecutionInfo model_execution_info;
   model_execution_info.set_execution_id("id");
@@ -59,16 +59,16 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
                         model_execution_info)),
                 /*log_entry=*/nullptr);
           }));
-  proto::features::TabOrganizationRequest request;
+  proto::TabOrganizationRequest request;
   auto* tabs = request.mutable_tabs();
   auto* tab = tabs->Add();
   tab->set_title("tab");
   tab->set_tab_id(1);
-  ModelExecutionCallbackWithLogging<proto::features::TabOrganizationLoggingData>
+  ModelExecutionCallbackWithLogging<proto::TabOrganizationLoggingData>
       callback = base::BindLambdaForTesting(
           [&request, &response, &model_execution_info](
               OptimizationGuideModelExecutionResult result,
-              std::unique_ptr<proto::features::TabOrganizationLoggingData>
+              std::unique_ptr<proto::TabOrganizationLoggingData>
                   model_execution_proto) {
             ASSERT_TRUE(model_execution_proto);
             EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
@@ -103,17 +103,16 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
                     nullptr),
                 /*log_entry=*/nullptr);
           }));
-  proto::features::TabOrganizationRequest request;
+  proto::TabOrganizationRequest request;
   auto* tabs = request.mutable_tabs();
   auto* tab = tabs->Add();
   tab->set_title("tab");
   tab->set_tab_id(1);
-  ModelExecutionCallbackWithLogging<proto::features::TabOrganizationLoggingData>
+  ModelExecutionCallbackWithLogging<proto::TabOrganizationLoggingData>
       callback = base::BindLambdaForTesting(
-          [&request](
-              OptimizationGuideModelExecutionResult result,
-              std::unique_ptr<proto::features::TabOrganizationLoggingData>
-                  model_execution_proto) {
+          [&request](OptimizationGuideModelExecutionResult result,
+                     std::unique_ptr<proto::TabOrganizationLoggingData>
+                         model_execution_proto) {
             ASSERT_TRUE(model_execution_proto);
             EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
             EXPECT_EQ(
@@ -130,7 +129,7 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
 TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelSessionWithLogging) {
   testing::NiceMock<MockSession> session;
 
-  proto::features::ComposeResponse response;
+  proto::ComposeResponse response;
   response.set_output("foo");
   proto::ModelExecutionInfo model_execution_info;
   model_execution_info.set_execution_id("id");
@@ -151,13 +150,13 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelSessionWithLogging) {
                     std::make_unique<proto::ModelExecutionInfo>(
                         model_execution_info)));
           }));
-  proto::features::ComposeRequest request;
+  proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
-  ModelExecutionSessionCallbackWithLogging<proto::features::ComposeLoggingData>
-      callback = base::BindLambdaForTesting(
+  ModelExecutionSessionCallbackWithLogging<proto::ComposeLoggingData> callback =
+      base::BindLambdaForTesting(
           [&request, &response, &model_execution_info](
               OptimizationGuideModelStreamingExecutionResult result,
-              std::unique_ptr<proto::features::ComposeLoggingData>
+              std::unique_ptr<proto::ComposeLoggingData>
                   model_execution_proto) {
             ASSERT_TRUE(model_execution_proto);
             EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
@@ -193,12 +192,12 @@ TEST_F(ModelExecutionLoggingWrappersTest,
                     // won't have a ModelExecutionInfo.
                     nullptr));
           }));
-  proto::features::ComposeRequest request;
+  proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
-  ModelExecutionSessionCallbackWithLogging<proto::features::ComposeLoggingData>
-      callback = base::BindLambdaForTesting(
+  ModelExecutionSessionCallbackWithLogging<proto::ComposeLoggingData> callback =
+      base::BindLambdaForTesting(
           [&request](OptimizationGuideModelStreamingExecutionResult result,
-                     std::unique_ptr<proto::features::ComposeLoggingData>
+                     std::unique_ptr<proto::ComposeLoggingData>
                          model_execution_proto) {
             ASSERT_TRUE(model_execution_proto);
             EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
@@ -215,7 +214,7 @@ TEST_F(ModelExecutionLoggingWrappersTest,
        ExecuteModelSessionWithLogging_IncompleteResponse) {
   testing::NiceMock<MockSession> session;
 
-  proto::features::ComposeResponse response;
+  proto::ComposeResponse response;
   response.set_output("foo");
   EXPECT_CALL(
       session,
@@ -234,13 +233,12 @@ TEST_F(ModelExecutionLoggingWrappersTest,
                     // execution_info is not set for incomplete responses.
                     /*execution_info=*/nullptr));
           }));
-  proto::features::ComposeRequest request;
+  proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
   ModelExecutionSessionCallbackWithLogging callback =
       base::BindLambdaForTesting(
           [](OptimizationGuideModelStreamingExecutionResult result,
-             std::unique_ptr<proto::features::ComposeLoggingData>
-                 model_execution_proto) {
+             std::unique_ptr<proto::ComposeLoggingData> model_execution_proto) {
             ASSERT_FALSE(model_execution_proto);
           });
   ExecuteModelSessionWithLogging(&session, request, std::move(callback));

@@ -84,7 +84,7 @@ class UserAnnotationsServiceTest : public testing::Test {
   }
 
   UserAnnotationsEntries AddAndImportFormSubmission(
-      optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
+      optimization_guide::proto::AXTreeUpdate ax_tree_update,
       const autofill::FormData& form_data) {
     UserAnnotationsEntries entries;
     std::unique_ptr<autofill::FormStructure> form =
@@ -172,7 +172,7 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
 
 struct FormsAnnotationsTestRequest {
   optimization_guide::proto::Any forms_annotations_response;
-  optimization_guide::proto::features::AXTreeUpdate ax_tree;
+  optimization_guide::proto::AXTreeUpdate ax_tree;
   autofill::FormData form_data;
   GURL url;
   std::string title;
@@ -195,9 +195,9 @@ FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest(
         {0, "label", "whatever"},
         {0, "nolabel", "value"},
     }) {
-  optimization_guide::proto::features::FormsAnnotationsResponse response;
+  optimization_guide::proto::FormsAnnotationsResponse response;
   for (const auto& entry : response_upserted_entries) {
-    optimization_guide::proto::features::UserAnnotationsEntry* new_entry =
+    optimization_guide::proto::UserAnnotationsEntry* new_entry =
         response.add_upserted_entries();
     new_entry->set_entry_id(entry.entry_id);
     new_entry->set_key(entry.key);
@@ -214,7 +214,7 @@ FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest(
   }
   autofill::FormData form_data;
   form_data.set_fields(form_fields);
-  optimization_guide::proto::features::AXTreeUpdate ax_tree;
+  optimization_guide::proto::AXTreeUpdate ax_tree;
   ax_tree.mutable_tree_data()->set_title("title");
 
   return {optimization_guide::AnyWrapProto(response), ax_tree, form_data,
@@ -225,31 +225,30 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
   {
     base::HistogramTester histogram_tester;
 
-    optimization_guide::proto::features::FormsAnnotationsRequest
-        expected_request;
+    optimization_guide::proto::FormsAnnotationsRequest expected_request;
     expected_request.mutable_page_context()
         ->mutable_ax_tree_data()
         ->mutable_tree_data()
         ->set_title("title");
     expected_request.mutable_page_context()->set_title("title");
-    optimization_guide::proto::features::FormData* form_proto =
+    optimization_guide::proto::FormData* form_proto =
         expected_request.mutable_form_data();
-    optimization_guide::proto::features::FormFieldData* field_proto1 =
+    optimization_guide::proto::FormFieldData* field_proto1 =
         form_proto->add_fields();
     field_proto1->set_field_label("label");
     field_proto1->set_field_value("whatever");
     field_proto1->set_is_visible(true);
     field_proto1->set_is_focusable(true);
     field_proto1->set_form_control_type(
-        optimization_guide::proto::features::FORM_CONTROL_TYPE_INPUT_TEXT);
-    optimization_guide::proto::features::FormFieldData* field_proto2 =
+        optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
+    optimization_guide::proto::FormFieldData* field_proto2 =
         form_proto->add_fields();
     field_proto2->set_field_name("nolabel");
     field_proto2->set_field_value("value");
     field_proto2->set_is_visible(true);
     field_proto2->set_is_focusable(true);
     field_proto2->set_form_control_type(
-        optimization_guide::proto::features::FORM_CONTROL_TYPE_INPUT_TEXT);
+        optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
 
     auto test_request = CreateSampleFormsAnnotationsTestRequest();
     EXPECT_CALL(
@@ -284,7 +283,7 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
   {
     base::HistogramTester histogram_tester;
 
-    optimization_guide::proto::features::FormsAnnotationsResponse response;
+    optimization_guide::proto::FormsAnnotationsResponse response;
     EXPECT_CALL(
         *model_executor(),
         ExecuteModel(
@@ -298,7 +297,7 @@ TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
             CreateLogEntry()));
 
     autofill::FormData empty_form_data;
-    optimization_guide::proto::features::AXTreeUpdate ax_tree;
+    optimization_guide::proto::AXTreeUpdate ax_tree;
 
     EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, empty_form_data).empty());
 
@@ -345,7 +344,7 @@ TEST_F(UserAnnotationsServiceTest, ExecuteFailed) {
   form_field_data2.set_value(u"value");
   autofill::FormData form_data;
   form_data.set_fields({form_field_data, form_field_data2});
-  optimization_guide::proto::features::AXTreeUpdate ax_tree;
+  optimization_guide::proto::AXTreeUpdate ax_tree;
 
   EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, form_data).empty());
 
@@ -379,7 +378,7 @@ TEST_F(UserAnnotationsServiceTest, UnexpectedResponseType) {
   form_field_data2.set_value(u"value");
   autofill::FormData form_data;
   form_data.set_fields({form_field_data, form_field_data2});
-  optimization_guide::proto::features::AXTreeUpdate ax_tree;
+  optimization_guide::proto::AXTreeUpdate ax_tree;
   EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, form_data).empty());
 
   histogram_tester.ExpectUniqueSample(
@@ -632,9 +631,9 @@ class UserAnnotationsServiceSeededAnnotationTest
         {0, "label", "whatever"},
         {0, "nolabel", "value"},
     };
-    optimization_guide::proto::features::FormsAnnotationsResponse response;
+    optimization_guide::proto::FormsAnnotationsResponse response;
     for (const auto& entry : response_upserted_entries) {
-      optimization_guide::proto::features::UserAnnotationsEntry* new_entry =
+      optimization_guide::proto::UserAnnotationsEntry* new_entry =
           response.add_upserted_entries();
       new_entry->set_entry_id(entry.entry_id);
       new_entry->set_key(entry.key);

@@ -1113,8 +1113,7 @@ void AutofillPrivateGetUserAnnotationsEntriesFunction::OnEntriesRetrieved(
     user_annotations::UserAnnotationsEntries response) {
   std::vector<autofill_private::UserAnnotationsEntry> result;
   result.reserve(response.size());
-  for (optimization_guide::proto::features::UserAnnotationsEntry& entry :
-       response) {
+  for (optimization_guide::proto::UserAnnotationsEntry& entry : response) {
     result.emplace_back();
     result.back().entry_id = entry.entry_id();
     result.back().key = std::move(entry.key());

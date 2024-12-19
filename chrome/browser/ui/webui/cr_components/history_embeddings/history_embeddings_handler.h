@@ -86,7 +86,7 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   raw_ptr<content::WebUI> web_ui_;
 
   history_embeddings::SearchResult last_result_;
-  optimization_guide::proto::features::UserFeedback user_feedback_;
+  optimization_guide::proto::UserFeedback user_feedback_;
 
   base::WeakPtrFactory<HistoryEmbeddingsHandler> weak_ptr_factory_{this};
 };

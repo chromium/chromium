@@ -44,7 +44,7 @@ using ::base::test::TestMessage;
 using ::testing::HasSubstr;
 
 proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
-  proto::features::ComposeResponse compose_response;
+  proto::ComposeResponse compose_response;
   compose_response.set_output(output);
   proto::ExecuteResponse execute_response;
   proto::Any* any_metadata = execute_response.mutable_response_metadata();
@@ -531,7 +531,7 @@ TEST_F(ModelExecutionManagerTest,
   // Message is added through AddContext().
   session->AddContext(UserInputRequest("some test"));
   // ExecuteModel() uses empty message.
-  session->ExecuteModel(proto::features::ComposeRequest(),
+  session->ExecuteModel(proto::ComposeRequest(),
                         response_holder.GetStreamingCallback());
   CheckPendingRequestMessage("some test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
@@ -548,7 +548,7 @@ TEST_F(ModelExecutionManagerTest,
   session->AddContext(UserInputRequest("first test"));
   session->AddContext(UserInputRequest("second test"));
   // ExecuteModel() uses empty message.
-  session->ExecuteModel(proto::features::ComposeRequest(),
+  session->ExecuteModel(proto::ComposeRequest(),
                         response_holder.GetStreamingCallback());
   CheckPendingRequestMessage("second test");
   EXPECT_TRUE(SimulateSuccessfulResponse());

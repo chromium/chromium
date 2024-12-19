@@ -52,7 +52,7 @@ TEST(PageContentProtoUtilTest, IframeNodeWithNoData) {
         NOTREACHED();
       });
 
-  proto::features::AnnotatedPageContent proto;
+  proto::AnnotatedPageContent proto;
   EXPECT_FALSE(ConvertAIPageContentToProto(main_frame_token, page_content_map,
                                            get_render_frame_info, &proto));
 }
@@ -80,7 +80,7 @@ TEST(PageContentProtoUtilTest, IframeDestroyed) {
         return std::nullopt;
       });
 
-  proto::features::AnnotatedPageContent proto;
+  proto::AnnotatedPageContent proto;
   EXPECT_FALSE(ConvertAIPageContentToProto(main_frame_token, page_content_map,
                                            get_render_frame_info, &proto));
   ASSERT_TRUE(query_token.has_value());

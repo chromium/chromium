@@ -443,8 +443,7 @@ TEST_F(ShoppingServiceHandlerTest,
   optimization_guide::proto::LogAiDataRequest* request =
       handler_->current_log_quality_entry_for_testing()->log_ai_data_request();
   ASSERT_EQ(
-      optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_UP,
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
       optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
           *request)
           ->quality()
@@ -454,8 +453,7 @@ TEST_F(ShoppingServiceHandlerTest,
       shopping_service::mojom::UserFeedback::kUnspecified);
 
   ASSERT_EQ(
-      optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_UNSPECIFIED,
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED,
       optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
           *request)
           ->quality()
@@ -481,8 +479,7 @@ TEST_F(ShoppingServiceHandlerTest,
   optimization_guide::proto::LogAiDataRequest* request =
       handler_->current_log_quality_entry_for_testing()->log_ai_data_request();
   ASSERT_EQ(
-      optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_DOWN,
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
       optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
           *request)
           ->quality()

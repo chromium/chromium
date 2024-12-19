@@ -17,7 +17,7 @@ namespace optimization_guide {
 // Provides AIPageContent representation for the primary page displayed in a
 // WebContents.
 using OnAIPageContentDone = base::OnceCallback<void(
-    std::optional<optimization_guide::proto::features::AnnotatedPageContent>)>;
+    std::optional<optimization_guide::proto::AnnotatedPageContent>)>;
 void GetAIPageContent(content::WebContents* web_contents,
                       OnAIPageContentDone done_callback);
 

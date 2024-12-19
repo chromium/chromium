@@ -78,7 +78,7 @@ autofill::ContentAutofillClient& ChromeAutofillAiClient::GetAutofillClient() {
 }
 
 void ChromeAutofillAiClient::GetAXTree(AXTreeCallback callback) {
-  using ProtoTreeUpdate = optimization_guide::proto::features::AXTreeUpdate;
+  using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
   base::OnceCallback<ProtoTreeUpdate(ui::AXTreeUpdate&)> processing_callback =
       base::BindOnce([](ui::AXTreeUpdate& ax_tree_update) {
         ProtoTreeUpdate ax_tree_proto;

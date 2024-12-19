@@ -384,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, UserAnnotations) {
   WaitForCounting();
   EXPECT_EQ(0, GetNumUserAnnotations());
 
-  SetUserAnnotations(std::vector(
-      10, optimization_guide::proto::features::UserAnnotationsEntry{}));
+  SetUserAnnotations(
+      std::vector(10, optimization_guide::proto::UserAnnotationsEntry{}));
   counter.Restart();
   WaitForCounting();
   EXPECT_EQ(10, GetNumUserAnnotations());

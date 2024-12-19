@@ -357,10 +357,10 @@ ComposeSession::~ComposeSession() {
   if (close_reason_ == compose::ComposeSessionCloseReason::kAbandoned) {
     base::RecordAction(
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
-    final_model_status_ = optimization_guide::proto::features::
-        FinalModelStatus::FINAL_MODEL_STATUS_FAILURE;
-    final_status_ = optimization_guide::proto::features::FinalStatus::
-        STATUS_FINISHED_WITHOUT_INSERT;
+    final_model_status_ =
+        optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_FAILURE;
+    final_status_ =
+        optimization_guide::proto::FinalStatus::STATUS_FINISHED_WITHOUT_INSERT;
   }
 
   LogComposeSessionCloseMetrics(close_reason_, session_events_);
@@ -429,9 +429,9 @@ void ComposeSession::Compose(const std::string& input,
         base::UserMetricsAction("Compose.ComposeRequest.CreateClicked"));
     request_reason = GetRequestReasonForInputMode(mode);
   }
-  optimization_guide::proto::features::ComposeRequest request;
+  optimization_guide::proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input(input);
-  optimization_guide::proto::features::ComposeUpfrontInputMode request_mode =
+  optimization_guide::proto::ComposeUpfrontInputMode request_mode =
       ComposeUpfrontInputMode(mode);
   request.mutable_generate_params()->set_upfront_input_mode(request_mode);
 
@@ -441,29 +441,29 @@ void ComposeSession::Compose(const std::string& input,
 void ComposeSession::Rewrite(compose::mojom::StyleModifier style) {
   compose::ComposeRequestReason request_reason;
 
-  optimization_guide::proto::features::ComposeRequest request;
+  optimization_guide::proto::ComposeRequest request;
   switch (style) {
     case compose::mojom::StyleModifier::kFormal:
       request.mutable_rewrite_params()->set_tone(
-          optimization_guide::proto::features::ComposeTone::COMPOSE_FORMAL);
+          optimization_guide::proto::ComposeTone::COMPOSE_FORMAL);
       session_events_.formal_count++;
       request_reason = compose::ComposeRequestReason::kToneFormalRequest;
       break;
     case compose::mojom::StyleModifier::kCasual:
       request.mutable_rewrite_params()->set_tone(
-          optimization_guide::proto::features::ComposeTone::COMPOSE_INFORMAL);
+          optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL);
       session_events_.casual_count++;
       request_reason = compose::ComposeRequestReason::kToneCasualRequest;
       break;
     case compose::mojom::StyleModifier::kShorter:
       request.mutable_rewrite_params()->set_length(
-          optimization_guide::proto::features::ComposeLength::COMPOSE_SHORTER);
+          optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
       session_events_.shorten_count++;
       request_reason = compose::ComposeRequestReason::kLengthShortenRequest;
       break;
     case compose::mojom::StyleModifier::kLonger:
       request.mutable_rewrite_params()->set_length(
-          optimization_guide::proto::features::ComposeLength::COMPOSE_LONGER);
+          optimization_guide::proto::ComposeLength::COMPOSE_LONGER);
       session_events_.lengthen_count++;
       request_reason = compose::ComposeRequestReason::kLengthElaborateRequest;
       break;
@@ -487,7 +487,7 @@ void ComposeSession::LogEditInput() {
 }
 
 void ComposeSession::MakeRequest(
-    optimization_guide::proto::features::ComposeRequest request,
+    optimization_guide::proto::ComposeRequest request,
     compose::ComposeRequestReason request_reason,
     bool is_input_edited) {
   active_mojo_state_->has_pending_request = true;
@@ -524,7 +524,7 @@ bool ComposeSession::HasNecessaryPageContext() const {
 }
 
 void ComposeSession::RequestWithSession(
-    const optimization_guide::proto::features::ComposeRequest& request,
+    const optimization_guide::proto::ComposeRequest& request,
     compose::ComposeRequestReason request_reason,
     bool is_input_edited) {
   // Add timeout for high latency Compose requests.
@@ -574,7 +574,7 @@ void ComposeSession::ModelExecutionCallback(
     compose::ComposeRequestReason request_reason,
     bool was_input_edited,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-    std::unique_ptr<optimization_guide::proto::features::ComposeLoggingData>
+    std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
         logging_data) {
   base::TimeDelta request_delta = request_timer.Elapsed();
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry;
@@ -639,7 +639,7 @@ void ComposeSession::ModelExecutionProgress(
     return;
   }
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::features::ComposeResponse>(result.response);
+      optimization_guide::proto::ComposeResponse>(result.response);
   if (!response) {
     DLOG(ERROR) << "Failed to parse partial compose response";
     return;
@@ -694,8 +694,7 @@ void ComposeSession::ModelExecutionComplete(
   CHECK(result.response->is_complete);
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::features::ComposeResponse>(
-      result.response->response);
+      optimization_guide::proto::ComposeResponse>(result.response->response);
 
   if (!response) {
     compose::LogComposeRequestDuration(request_delta, eval_location,
@@ -715,7 +714,7 @@ void ComposeSession::ModelExecutionComplete(
             session_events_.started_with_proactive_nudge);
     log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_delta.InMilliseconds());
-    optimization_guide::proto::features::Int128* token =
+    optimization_guide::proto::Int128* token =
         log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
             ->mutable_session_id();
 
@@ -1016,11 +1015,11 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
   if (active_mojo_state_->response) {
     active_mojo_state_->feedback = feedback;
   }
-  optimization_guide::proto::features::UserFeedback user_feedback =
+  optimization_guide::proto::UserFeedback user_feedback =
       OptimizationFeedbackFromComposeFeedback(feedback);
 
   // Apply feedback to the last saved state with a valid response.
-  optimization_guide::proto::features::ComposeQuality* quality =
+  optimization_guide::proto::ComposeQuality* quality =
       last_response_state->modeling_log_entry()
           ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
   if (quality) {
@@ -1206,7 +1205,7 @@ void ComposeSession::TryContinueComposeWithContext() {
     page_metadata_.emplace();
   }
 
-  optimization_guide::proto::features::ComposeRequest request;
+  optimization_guide::proto::ComposeRequest request;
   if (page_metadata_) {
     page_metadata_->set_page_url(web_contents_->GetLastCommittedURL().spec());
     page_metadata_->set_page_title(
@@ -1302,30 +1301,27 @@ void ComposeSession::SetCloseReason(
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
     case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
-      final_status_ =
-          optimization_guide::proto::features::FinalStatus::STATUS_ABANDONED;
-      final_model_status_ = optimization_guide::proto::features::
-          FinalModelStatus::FINAL_MODEL_STATUS_FAILURE;
+      final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
       session_events_.close_clicked = true;
       break;
     case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
-      final_status_ =
-          optimization_guide::proto::features::FinalStatus::STATUS_ABANDONED;
-      final_model_status_ = optimization_guide::proto::features::
-          FinalModelStatus::FINAL_MODEL_STATUS_FAILURE;
+      final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
       break;
     case compose::ComposeSessionCloseReason::kExceededMaxDuration:
     case compose::ComposeSessionCloseReason::kAbandoned:
-      final_status_ = optimization_guide::proto::features::FinalStatus::
+      final_status_ = optimization_guide::proto::FinalStatus::
           STATUS_FINISHED_WITHOUT_INSERT;
-      final_model_status_ = optimization_guide::proto::features::
-          FinalModelStatus::FINAL_MODEL_STATUS_FAILURE;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
       break;
     case compose::ComposeSessionCloseReason::kInsertedResponse:
-      final_status_ =
-          optimization_guide::proto::features::FinalStatus::STATUS_INSERTED;
-      final_model_status_ = optimization_guide::proto::features::
-          FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS;
+      final_status_ = optimization_guide::proto::FinalStatus::STATUS_INSERTED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_SUCCESS;
       session_events_.inserted_results = true;
       if (CurrentState().has_value() && CurrentState()->is_user_edited()) {
         session_events_.edited_result_inserted = true;
@@ -1351,7 +1347,7 @@ void ComposeSession::SetQualityLogEntryUponError(
   if (log_entry) {
     log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_time.InMilliseconds());
-    optimization_guide::proto::features::Int128* token =
+    optimization_guide::proto::Int128* token =
         log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
             ->mutable_session_id();
 

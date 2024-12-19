@@ -15,9 +15,9 @@ namespace autofill {
 class FormStructure;
 }
 
-namespace optimization_guide::proto::features {
+namespace optimization_guide::proto {
 class UserAnnotationsEntry;
-}  // namespace optimization_guide::proto::features
+}  // namespace optimization_guide::proto
 
 namespace user_annotations {
 
@@ -43,12 +43,11 @@ class TestUserAnnotationsService : public UserAnnotationsService {
 
   // UserAnnotationsService:
   bool ShouldAddFormSubmissionForURL(const GURL& url) override;
-  void AddFormSubmission(
-      const GURL& url,
-      const std::string& title,
-      optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
-      std::unique_ptr<autofill::FormStructure> form,
-      ImportFormCallback callback) override;
+  void AddFormSubmission(const GURL& url,
+                         const std::string& title,
+                         optimization_guide::proto::AXTreeUpdate ax_tree_update,
+                         std::unique_ptr<autofill::FormStructure> form,
+                         ImportFormCallback callback) override;
   void RetrieveAllEntries(
       base::OnceCallback<void(UserAnnotationsEntries)> callback) override;
   void RemoveEntry(EntryID entry_id, base::OnceClosure callback) override;
@@ -76,8 +75,7 @@ class TestUserAnnotationsService : public UserAnnotationsService {
 
  private:
   // An in-memory representation of the "database" of user annotation entries.
-  std::vector<optimization_guide::proto::features::UserAnnotationsEntry>
-      entries_;
+  std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_;
 
   // Used in `AddFormSubmission()` to decide if form data should be imported.
   bool should_import_form_data_ = true;

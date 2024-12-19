@@ -294,8 +294,7 @@ class WallpaperSearchOptimizationGuideInteractiveTest
                     gfx::PNGCodec::EncodeBGRASkBitmap(
                         bitmap, /*discard_transparency=*/false);
 
-                optimization_guide::proto::features::WallpaperSearchResponse
-                    response;
+                optimization_guide::proto::WallpaperSearchResponse response;
                 auto* image = response.add_images();
                 image->set_encoded_image(
                     std::string(base::as_string_view(encoded.value())));

@@ -13,55 +13,48 @@ namespace autofill {
 namespace {
 
 // Converts `form_control_type` to its corresponding proto enum.
-optimization_guide::proto::features::FormControlType ToFormControlTypeProto(
+optimization_guide::proto::FormControlType ToFormControlTypeProto(
     FormControlType form_control_type) {
   switch (form_control_type) {
     case FormControlType::kContentEditable:
-      return optimization_guide::proto::features::
-          FORM_CONTROL_TYPE_CONTENT_EDITABLE;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_CONTENT_EDITABLE;
     case FormControlType::kInputCheckbox:
-      return optimization_guide::proto::features::
-          FORM_CONTROL_TYPE_INPUT_CHECKBOX;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_CHECKBOX;
     case FormControlType::kInputEmail:
-      return optimization_guide::proto::features::FORM_CONTROL_TYPE_INPUT_EMAIL;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_EMAIL;
     case FormControlType::kInputMonth:
-      return optimization_guide::proto::features::FORM_CONTROL_TYPE_INPUT_MONTH;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_MONTH;
     case FormControlType::kInputNumber:
-      return optimization_guide::proto::features::
-          FORM_CONTROL_TYPE_INPUT_NUMBER;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_NUMBER;
     case FormControlType::kInputPassword:
-      return optimization_guide::proto::features::
-          FORM_CONTROL_TYPE_INPUT_PASSWORD;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_PASSWORD;
     case FormControlType::kInputRadio:
-      return optimization_guide::proto::features::FORM_CONTROL_TYPE_INPUT_RADIO;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_RADIO;
     case FormControlType::kInputSearch:
-      return optimization_guide::proto::features::
-          FORM_CONTROL_TYPE_INPUT_SEARCH;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_SEARCH;
     case FormControlType::kInputTelephone:
-      return optimization_guide::proto::features::
-          FORM_CONTROL_TYPE_INPUT_TELEPHONE;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TELEPHONE;
     case FormControlType::kInputText:
-      return optimization_guide::proto::features::FORM_CONTROL_TYPE_INPUT_TEXT;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT;
     case FormControlType::kInputUrl:
-      return optimization_guide::proto::features::FORM_CONTROL_TYPE_INPUT_URL;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_URL;
     case FormControlType::kSelectOne:
-      return optimization_guide::proto::features::FORM_CONTROL_TYPE_SELECT_ONE;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_ONE;
     case FormControlType::kSelectMultiple:
-      return optimization_guide::proto::features::
-          FORM_CONTROL_TYPE_SELECT_MULTIPLE;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_SELECT_MULTIPLE;
     case FormControlType::kTextArea:
-      return optimization_guide::proto::features::FORM_CONTROL_TYPE_TEXT_AREA;
+      return optimization_guide::proto::FORM_CONTROL_TYPE_TEXT_AREA;
   }
-  return optimization_guide::proto::features::FORM_CONTROL_TYPE_UNSPECIFIED;
+  return optimization_guide::proto::FORM_CONTROL_TYPE_UNSPECIFIED;
 }
 
 }  // namespace
 
-optimization_guide::proto::features::FormData ToFormDataProto(
+optimization_guide::proto::FormData ToFormDataProto(
     const FormData& form_data,
     const base::flat_map<FieldGlobalId, bool>& field_eligibility_map,
     const base::flat_map<FieldGlobalId, bool>& field_value_sensitivity_map) {
-  optimization_guide::proto::features::FormData form_data_proto;
+  optimization_guide::proto::FormData form_data_proto;
   form_data_proto.set_form_name(base::UTF16ToUTF8(form_data.name()));
   for (const auto& field : form_data.fields()) {
     auto* field_proto = form_data_proto.add_fields();
@@ -100,7 +93,7 @@ optimization_guide::proto::features::FormData ToFormDataProto(
   return form_data_proto;
 }
 
-optimization_guide::proto::features::FormData ToFormDataProto(
+optimization_guide::proto::FormData ToFormDataProto(
     const FormStructure& form_structure) {
   auto field_eligibility_map = base::MakeFlatMap<FieldGlobalId, bool>(
       form_structure.fields(), {}, [](const auto& field) {

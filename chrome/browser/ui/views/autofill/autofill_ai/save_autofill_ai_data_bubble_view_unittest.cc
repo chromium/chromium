@@ -32,16 +32,16 @@ class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
   MOCK_METHOD(
       void,
       OfferSave,
-      (std::vector<optimization_guide::proto::features::UserAnnotationsEntry>,
+      (std::vector<optimization_guide::proto::UserAnnotationsEntry>,
        user_annotations::PromptAcceptanceCallback PromptAcceptanceCallback,
        LearnMoreClickedCallback,
        UserFeedbackCallback),
       (override));
-  MOCK_METHOD(const std::vector<
-                  optimization_guide::proto::features::UserAnnotationsEntry>&,
-              GetAutofillAiData,
-              (),
-              (const override));
+  MOCK_METHOD(
+      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&,
+      GetAutofillAiData,
+      (),
+      (const override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
   MOCK_METHOD(void, OnThumbsUpClicked, (), (override));
   MOCK_METHOD(void, OnThumbsDownClicked, (), (override));
@@ -108,8 +108,7 @@ void SaveAutofillAiDataBubbleViewTest::CreateViewAndShow() {
 
   ON_CALL(mock_controller(), GetAutofillAiData())
       .WillByDefault(testing::ReturnRefOfCopy(
-          std::vector<
-              optimization_guide::proto::features::UserAnnotationsEntry>()));
+          std::vector<optimization_guide::proto::UserAnnotationsEntry>()));
 
   auto view_unique = std::make_unique<SaveAutofillAiDataBubbleView>(
       anchor_widget_->GetContentsView(), web_contents_.get(),

@@ -69,7 +69,7 @@ class UserAnnotationsService : public KeyedService {
   virtual void AddFormSubmission(
       const GURL& url,
       const std::string& title,
-      optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
+      optimization_guide::proto::AXTreeUpdate ax_tree_update,
       std::unique_ptr<autofill::FormStructure> form,
       ImportFormCallback callback);
 
@@ -123,7 +123,7 @@ class UserAnnotationsService : public KeyedService {
                            bool success);
 
   void InitializeFormsAnnotationsFromCommandLine(
-      const optimization_guide::proto::features::FormsAnnotationsResponse&
+      const optimization_guide::proto::FormsAnnotationsResponse&
           manual_entries);
 
   // Returns whether the database initialization is complete.
@@ -134,8 +134,7 @@ class UserAnnotationsService : public KeyedService {
 
   // Saves the entries to database.
   void SaveEntries(
-      const optimization_guide::proto::features::FormsAnnotationsResponse&
-          entries);
+      const optimization_guide::proto::FormsAnnotationsResponse& entries);
 
   // Called when the form submission is fully complete.
   void OnFormSubmissionComplete();

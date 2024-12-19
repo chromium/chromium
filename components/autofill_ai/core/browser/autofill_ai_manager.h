@@ -142,7 +142,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
 
   void OnReceivedAXTree(const autofill::FormData& form,
                         const autofill::FormFieldData& trigger_field,
-                        optimization_guide::proto::features::AXTreeUpdate);
+                        optimization_guide::proto::AXTreeUpdate);
 
   // The unexpected value is always `false` if there was an error retrieving
   // predictions.
@@ -172,7 +172,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const std::string& title,
       std::unique_ptr<autofill::FormStructure> form,
       user_annotations::ImportFormCallback callback,
-      optimization_guide::proto::features::AXTreeUpdate ax_tree_update);
+      optimization_guide::proto::AXTreeUpdate ax_tree_update);
 
   // Returns true if the user has the flag enabled and is overall eligible for
   // the feature, such as signin state (check the implementation for details).

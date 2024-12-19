@@ -12,7 +12,7 @@
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/web_contents.h"
 
-namespace optimization_guide::proto::features {
+namespace optimization_guide::proto {
 class UserAnnotationsEntry;
 }
 
@@ -52,7 +52,7 @@ class SaveAutofillAiDataController {
 
   // Shows a save Autofill AI data bubble which the user can accept or decline.
   virtual void OfferSave(
-      std::vector<optimization_guide::proto::features::UserAnnotationsEntry>
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
           prediction_improvements,
       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
       LearnMoreClickedCallback learn_more_clicked_callback,
@@ -71,8 +71,7 @@ class SaveAutofillAiDataController {
   virtual void OnLearnMoreClicked() = 0;
 
   // Returns the Autofill AI data to be displayed in the UI.
-  virtual const std::vector<
-      optimization_guide::proto::features::UserAnnotationsEntry>&
+  virtual const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
   GetAutofillAiData() const = 0;
 
   // Called when the Autofill AI data bubble is closed.

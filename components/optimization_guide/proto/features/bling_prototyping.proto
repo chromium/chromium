@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-package optimization_guide.proto.features;
+package optimization_guide.proto;
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";

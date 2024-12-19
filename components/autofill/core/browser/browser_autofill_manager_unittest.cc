@@ -6629,7 +6629,7 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
 // when the submitted form was imported into user annotations successfully.
 TEST_F(BrowserAutofillManagerTest,
        ProfileNotImportedOnSuccessfulUserAnnotationsImport) {
-  using optimization_guide::proto::features::UserAnnotationsEntry;
+  using optimization_guide::proto::UserAnnotationsEntry;
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});

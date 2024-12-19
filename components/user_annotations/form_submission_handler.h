@@ -20,9 +20,9 @@ class FormStructure;
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
-namespace proto::features {
+namespace proto {
 class AXTreeUpdate;
-}  // namespace proto::features
+}  // namespace proto
 }  // namespace optimization_guide
 
 namespace user_annotations {
@@ -33,13 +33,12 @@ namespace user_annotations {
 // sent for user confirmation, before they are persisted to the database.
 class FormSubmissionHandler {
  public:
-  FormSubmissionHandler(
-      UserAnnotationsService* user_annotations_service,
-      const GURL& url,
-      const std::string& title,
-      optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
-      std::unique_ptr<autofill::FormStructure> form,
-      ImportFormCallback callback);
+  FormSubmissionHandler(UserAnnotationsService* user_annotations_service,
+                        const GURL& url,
+                        const std::string& title,
+                        optimization_guide::proto::AXTreeUpdate ax_tree_update,
+                        std::unique_ptr<autofill::FormStructure> form,
+                        ImportFormCallback callback);
   ~FormSubmissionHandler();
 
   FormSubmissionHandler(const FormSubmissionHandler&) = delete;
@@ -49,9 +48,9 @@ class FormSubmissionHandler {
   void Start();
 
  private:
-  using FormSubmissionResult = base::expected<
-      optimization_guide::proto::features::FormsAnnotationsResponse,
-      UserAnnotationsExecutionResult>;
+  using FormSubmissionResult =
+      base::expected<optimization_guide::proto::FormsAnnotationsResponse,
+                     UserAnnotationsExecutionResult>;
 
   void ExecuteModelWithEntries(UserAnnotationsEntries entries);
 
@@ -82,7 +81,7 @@ class FormSubmissionHandler {
 
   GURL url_;
   std::string title_;
-  optimization_guide::proto::features::AXTreeUpdate ax_tree_update_;
+  optimization_guide::proto::AXTreeUpdate ax_tree_update_;
   std::unique_ptr<autofill::FormStructure> form_;
   ImportFormCallback callback_;
 

@@ -372,43 +372,41 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  optimization_guide::proto::features::ComposePageMetadata
-  ComposePageMetadata() {
-    optimization_guide::proto::features::ComposePageMetadata page_metadata;
+  optimization_guide::proto::ComposePageMetadata ComposePageMetadata() {
+    optimization_guide::proto::ComposePageMetadata page_metadata;
     page_metadata.set_page_url(GetPageUrl().spec());
     page_metadata.set_page_title(base::UTF16ToUTF8(
         browser()->tab_strip_model()->GetWebContentsAt(0)->GetTitle()));
     return page_metadata;
   }
 
-  optimization_guide::proto::features::ComposeRequest ComposeRequest(
+  optimization_guide::proto::ComposeRequest ComposeRequest(
       std::string user_input,
-      optimization_guide::proto::features::ComposeUpfrontInputMode mode) {
-    optimization_guide::proto::features::ComposeRequest request;
+      optimization_guide::proto::ComposeUpfrontInputMode mode) {
+    optimization_guide::proto::ComposeRequest request;
     request.mutable_generate_params()->set_user_input(user_input);
     request.mutable_generate_params()->set_upfront_input_mode(mode);
     return request;
   }
 
-  optimization_guide::proto::features::ComposeRequest RegenerateRequest(
+  optimization_guide::proto::ComposeRequest RegenerateRequest(
       std::string previous_response) {
-    optimization_guide::proto::features::ComposeRequest request;
+    optimization_guide::proto::ComposeRequest request;
     request.mutable_rewrite_params()->set_regenerate(true);
     request.mutable_rewrite_params()->set_previous_response(previous_response);
     return request;
   }
 
-  optimization_guide::proto::features::ComposeResponse ComposeResponse(
+  optimization_guide::proto::ComposeResponse ComposeResponse(
       bool ok,
       std::string output) {
-    optimization_guide::proto::features::ComposeResponse response;
+    optimization_guide::proto::ComposeResponse response;
     response.set_output(ok ? output : "");
     return response;
   }
 
   StreamingResponse OptimizationGuideResponse(
-      const optimization_guide::proto::features::ComposeResponse
-          compose_response,
+      const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true) {
     return StreamingResponse{
         .response = optimization_guide::AnyWrapProto(compose_response),
@@ -418,8 +416,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   OptimizationGuideModelStreamingExecutionResult
   OptimizationGuideStreamingResult(
-      const optimization_guide::proto::features::ComposeResponse
-          compose_response,
+      const optimization_guide::proto::ComposeResponse compose_response,
       bool is_complete = true,
       bool provided_by_on_device = false,
       std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr) {
@@ -1208,7 +1205,7 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponsesAnimated) {
       {});
 
   const std::string input = "a user typed this";
-  optimization_guide::proto::features::ComposeRequest context_request;
+  optimization_guide::proto::ComposeRequest context_request;
   *context_request.mutable_page_metadata() = ComposePageMetadata();
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       saved_callback;
@@ -1216,7 +1213,7 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponsesAnimated) {
   EXPECT_CALL(session(),
               ExecuteModel(
                   EqualsProto(ComposeRequest(
-                      input, optimization_guide::proto::features::
+                      input, optimization_guide::proto::
                                  ComposeUpfrontInputMode::COMPOSE_POLISH_MODE)),
                   _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -1290,7 +1287,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResultAnimation) {
       {optimization_guide::features::kOptimizationGuideOnDeviceModel}, {});
 
   const std::string input = "a user typed this";
-  optimization_guide::proto::features::ComposeRequest context_request;
+  optimization_guide::proto::ComposeRequest context_request;
   *context_request.mutable_page_metadata() = ComposePageMetadata();
   base::test::TestFuture<
       optimization_guide::
@@ -1300,7 +1297,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResultAnimation) {
   EXPECT_CALL(session(),
               ExecuteModel(
                   EqualsProto(ComposeRequest(
-                      input, optimization_guide::proto::features::
+                      input, optimization_guide::proto::
                                  ComposeUpfrontInputMode::COMPOSE_POLISH_MODE)),
                   _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -1335,7 +1332,7 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
 
   const std::string input = "a user typed this";
   const std::string input2 = "another input";
-  optimization_guide::proto::features::ComposeRequest context_request;
+  optimization_guide::proto::ComposeRequest context_request;
   *context_request.mutable_page_metadata() = ComposePageMetadata();
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       original_callback;
@@ -1343,7 +1340,7 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
   EXPECT_CALL(session(),
               ExecuteModel(
                   EqualsProto(ComposeRequest(
-                      input, optimization_guide::proto::features::
+                      input, optimization_guide::proto::
                                  ComposeUpfrontInputMode::COMPOSE_POLISH_MODE)),
                   _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -1361,8 +1358,8 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
       session(),
       ExecuteModel(
           EqualsProto(ComposeRequest(
-              input2, optimization_guide::proto::features::
-                          ComposeUpfrontInputMode::COMPOSE_POLISH_MODE)),
+              input2, optimization_guide::proto::ComposeUpfrontInputMode::
+                          COMPOSE_POLISH_MODE)),
           _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::
@@ -1437,8 +1434,8 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
   ShowDialogAndBindMojo();
   std::string user_input = "a user typed this";
   auto matcher = EqualsProto(ComposeRequest(
-      user_input, optimization_guide::proto::features::ComposeUpfrontInputMode::
-                      COMPOSE_POLISH_MODE));
+      user_input,
+      optimization_guide::proto::ComposeUpfrontInputMode::COMPOSE_POLISH_MODE));
   EXPECT_CALL(session(), ExecuteModel(matcher, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::
@@ -3747,9 +3744,9 @@ TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
       uploaded_logs()[2]->compose().quality().session_id();
   EXPECT_EQ(kSessionIdHigh, session_id3.high());
   EXPECT_EQ(kSessionIdLow, session_id3.low());
-  EXPECT_EQ(optimization_guide::proto::features::FinalModelStatus::
-                FINAL_MODEL_STATUS_SUCCESS,
-            uploaded_logs()[1]->compose().quality().final_model_status());
+  EXPECT_EQ(
+      optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS,
+      uploaded_logs()[1]->compose().quality().final_model_status());
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
@@ -3918,11 +3915,10 @@ TEST_F(ChromeComposeClientTest,
 
   EXPECT_TRUE(log_uploaded_signal.Wait());
   ASSERT_EQ(2u, uploaded_logs().size());
-  EXPECT_EQ(optimization_guide::proto::features::FinalStatus::STATUS_ABANDONED,
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
             uploaded_logs()[0]->compose().quality().final_status());
-  EXPECT_EQ(
-      optimization_guide::proto::features::FinalStatus::STATUS_UNSPECIFIED,
-      uploaded_logs()[1]->compose().quality().final_status());
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
+            uploaded_logs()[1]->compose().quality().final_status());
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
@@ -3948,7 +3944,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
   // Get quality result from the abandoned session.
   EXPECT_TRUE(log_uploaded_signal.Wait());
   ASSERT_EQ(1u, uploaded_logs().size());
-  EXPECT_EQ(optimization_guide::proto::features::FinalStatus::STATUS_ABANDONED,
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
             uploaded_logs()[0]->compose().quality().final_status());
 
   page_handler()->Compose("a user typed this",
@@ -3962,7 +3958,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
 
   EXPECT_TRUE(log_uploaded_signal.Wait());
   ASSERT_EQ(2u, uploaded_logs().size());
-  EXPECT_EQ(optimization_guide::proto::features::FinalStatus::STATUS_ABANDONED,
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
             uploaded_logs()[1]->compose().quality().final_status());
 }
 
@@ -3988,9 +3984,9 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFinishedWithoutInsert) {
   // Get quality result from the abandoned session.
   EXPECT_TRUE(log_uploaded_signal.Wait());
   ASSERT_EQ(1u, uploaded_logs().size());
-  EXPECT_EQ(optimization_guide::proto::features::FinalStatus::
-                STATUS_FINISHED_WITHOUT_INSERT,
-            uploaded_logs()[0]->compose().quality().final_status());
+  EXPECT_EQ(
+      optimization_guide::proto::FinalStatus::STATUS_FINISHED_WITHOUT_INSERT,
+      uploaded_logs()[0]->compose().quality().final_status());
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
@@ -4018,8 +4014,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
   // Get quality logs sent for the Compose Request.
   EXPECT_TRUE(log_uploaded_signal.Wait());
   ASSERT_EQ(1u, uploaded_logs().size());
-  EXPECT_EQ(optimization_guide::proto::features::UserFeedback::
-                USER_FEEDBACK_THUMBS_UP,
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
             uploaded_logs()[0]->compose().quality().user_feedback());
 
   // Check that the histogram was sent for request feedback.
@@ -4053,13 +4048,12 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackNegative) {
   // Get quality logs sent for the Compose Request.
   EXPECT_TRUE(log_uploaded_signal.Wait());
   ASSERT_EQ(1u, uploaded_logs().size());
-  EXPECT_EQ(optimization_guide::proto::features::UserFeedback::
-                USER_FEEDBACK_THUMBS_DOWN,
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
             uploaded_logs()[0]->compose().quality().user_feedback());
 
-  EXPECT_EQ(optimization_guide::proto::features::FinalModelStatus::
-                FINAL_MODEL_STATUS_FAILURE,
-            uploaded_logs()[0]->compose().quality().final_model_status());
+  EXPECT_EQ(
+      optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_FAILURE,
+      uploaded_logs()[0]->compose().quality().final_model_status());
 
   // Check that the histogram was sent for request feedback.
   histograms().ExpectUniqueSample(
@@ -4101,9 +4095,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
   EXPECT_TRUE(uploaded_logs()[0]->compose().quality().was_generated_via_edit());
   EXPECT_FALSE(
       uploaded_logs()[1]->compose().quality().was_generated_via_edit());
-  EXPECT_EQ(
-      optimization_guide::proto::features::FinalStatus::STATUS_UNSPECIFIED,
-      uploaded_logs()[1]->compose().quality().final_status());
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
+            uploaded_logs()[1]->compose().quality().final_status());
 
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,
@@ -4128,8 +4121,8 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   ShowDialogAndBindMojo();
   std::string user_input = "a user typed this";
   auto matcher = EqualsProto(ComposeRequest(
-      user_input, optimization_guide::proto::features::ComposeUpfrontInputMode::
-                      COMPOSE_POLISH_MODE));
+      user_input,
+      optimization_guide::proto::ComposeUpfrontInputMode::COMPOSE_POLISH_MODE));
   EXPECT_CALL(session(), ExecuteModel(matcher, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::
@@ -4213,8 +4206,8 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   ShowDialogAndBindMojo();
   std::string user_input = "a user typed this";
   auto compose_matcher = EqualsProto(ComposeRequest(
-      user_input, optimization_guide::proto::features::ComposeUpfrontInputMode::
-                      COMPOSE_POLISH_MODE));
+      user_input,
+      optimization_guide::proto::ComposeUpfrontInputMode::COMPOSE_POLISH_MODE));
   EXPECT_CALL(session(), ExecuteModel(compose_matcher, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::
@@ -4224,10 +4217,10 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
                 ComposeResponse(true, "Cucumbers")));
           })));
   // Rewrite with Formal.
-  optimization_guide::proto::features::ComposeRequest request;
+  optimization_guide::proto::ComposeRequest request;
   request.mutable_rewrite_params()->set_previous_response("Cucumbers");
   request.mutable_rewrite_params()->set_tone(
-      optimization_guide::proto::features::ComposeTone::COMPOSE_FORMAL);
+      optimization_guide::proto::ComposeTone::COMPOSE_FORMAL);
   auto rewrite_matcher = EqualsProto(request);
   EXPECT_CALL(session(), ExecuteModel(rewrite_matcher, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -4240,7 +4233,7 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   // Rewrite with Casual.
   request.mutable_rewrite_params()->set_previous_response("Tomatoes");
   request.mutable_rewrite_params()->set_tone(
-      optimization_guide::proto::features::ComposeTone::COMPOSE_INFORMAL);
+      optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL);
   auto rewrite_matcher_informal = EqualsProto(request);
   EXPECT_CALL(session(), ExecuteModel(rewrite_matcher_informal, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -4331,8 +4324,8 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   ShowDialogAndBindMojo();
   std::string user_input = "a user typed this";
   auto compose_matcher = EqualsProto(ComposeRequest(
-      user_input, optimization_guide::proto::features::ComposeUpfrontInputMode::
-                      COMPOSE_POLISH_MODE));
+      user_input,
+      optimization_guide::proto::ComposeUpfrontInputMode::COMPOSE_POLISH_MODE));
   EXPECT_CALL(session(), ExecuteModel(compose_matcher, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::
@@ -4343,10 +4336,10 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
           })));
 
   // Rewrite with Elaborate.
-  optimization_guide::proto::features::ComposeRequest request;
+  optimization_guide::proto::ComposeRequest request;
   request.mutable_rewrite_params()->set_previous_response("Cucumbers");
   request.mutable_rewrite_params()->set_length(
-      optimization_guide::proto::features::ComposeLength::COMPOSE_LONGER);
+      optimization_guide::proto::ComposeLength::COMPOSE_LONGER);
   auto rewrite_matcher = EqualsProto(request);
   EXPECT_CALL(session(), ExecuteModel(rewrite_matcher, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -4360,7 +4353,7 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   // Rewrite with Shorten.
   request.mutable_rewrite_params()->set_previous_response("Tomatoes");
   request.mutable_rewrite_params()->set_length(
-      optimization_guide::proto::features::ComposeLength::COMPOSE_SHORTER);
+      optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
   auto rewrite_shorten_matcher = EqualsProto(request);
   EXPECT_CALL(session(), ExecuteModel(rewrite_shorten_matcher, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -4495,12 +4488,11 @@ TEST_F(ChromeComposeClientTest, TestInnerText) {
             std::move(callback).Run(std::move(expected_inner_text));
           })));
 
-  base::test::TestFuture<optimization_guide::proto::features::ComposeRequest>
-      test_future;
+  base::test::TestFuture<optimization_guide::proto::ComposeRequest> test_future;
   EXPECT_CALL(session(), AddContext(_))
       .WillOnce(testing::WithArg<0>(testing::Invoke(
           [&](const google::protobuf::MessageLite& request_metadata) {
-            optimization_guide::proto::features::ComposeRequest request;
+            optimization_guide::proto::ComposeRequest request;
             request.CheckTypeAndMergeFrom(request_metadata);
             test_future.SetValue(request);
           })));
@@ -4508,8 +4500,7 @@ TEST_F(ChromeComposeClientTest, TestInnerText) {
   ShowDialogAndBindMojo();
   page_handler()->Compose("a user typed this",
                           compose::mojom::InputMode::kPolish, false);
-  optimization_guide::proto::features::ComposeRequest result =
-      test_future.Take();
+  optimization_guide::proto::ComposeRequest result = test_future.Take();
 
   std::string result_string;
   EXPECT_TRUE(result.SerializeToString(&result_string));
@@ -4528,12 +4519,11 @@ TEST_F(ChromeComposeClientTest, TestInnerTextNodeOffsetNotFound) {
             std::move(callback).Run(std::move(expected_inner_text));
           })));
 
-  base::test::TestFuture<optimization_guide::proto::features::ComposeRequest>
-      test_future;
+  base::test::TestFuture<optimization_guide::proto::ComposeRequest> test_future;
   EXPECT_CALL(session(), AddContext(_))
       .WillOnce(testing::WithArg<0>(testing::Invoke(
           [&](const google::protobuf::MessageLite& request_metadata) {
-            optimization_guide::proto::features::ComposeRequest request;
+            optimization_guide::proto::ComposeRequest request;
             request.CheckTypeAndMergeFrom(request_metadata);
             test_future.SetValue(request);
           })));
@@ -4541,8 +4531,7 @@ TEST_F(ChromeComposeClientTest, TestInnerTextNodeOffsetNotFound) {
   ShowDialogAndBindMojo();
   page_handler()->Compose("a user typed this",
                           compose::mojom::InputMode::kPolish, false);
-  optimization_guide::proto::features::ComposeRequest result =
-      test_future.Take();
+  optimization_guide::proto::ComposeRequest result = test_future.Take();
 
   std::string result_string;
   EXPECT_TRUE(result.SerializeToString(&result_string));

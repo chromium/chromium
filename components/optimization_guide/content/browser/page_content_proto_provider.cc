@@ -51,7 +51,7 @@ void OnGotAIPageContentForAllFrames(
     content::GlobalRenderFrameHostToken main_frame_token,
     std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
     OnAIPageContentDone done_callback) {
-  optimization_guide::proto::features::AnnotatedPageContent proto;
+  optimization_guide::proto::AnnotatedPageContent proto;
   if (optimization_guide::ConvertAIPageContentToProto(
           main_frame_token, *page_content_map,
           base::BindRepeating(&GetRenderFrameInfo), &proto)) {

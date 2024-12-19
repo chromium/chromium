@@ -16,7 +16,7 @@ namespace switches {
 const char kFormsAnnotationsOverride[] =
     "user-annotations-forms-annotation-override";
 
-std::optional<optimization_guide::proto::features::FormsAnnotationsResponse>
+std::optional<optimization_guide::proto::FormsAnnotationsResponse>
 ParseFormsAnnotationsFromCommandLine() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!cmd_line->HasSwitch(kFormsAnnotationsOverride)) {
@@ -31,9 +31,8 @@ ParseFormsAnnotationsFromCommandLine() {
     return std::nullopt;
   }
 
-  optimization_guide::proto::features::FormsAnnotationsResponse
-      forms_annotations =
-          optimization_guide::proto::features::FormsAnnotationsResponse();
+  optimization_guide::proto::FormsAnnotationsResponse forms_annotations =
+      optimization_guide::proto::FormsAnnotationsResponse();
 
   if (!forms_annotations.ParseFromString(binary_pb)) {
     LOG(ERROR) << "Invalid proto provided to the Forms Annotation Override";

@@ -66,8 +66,7 @@ constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
 
 void OnGotAIPageContentForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback,
-    std::optional<optimization_guide::proto::features::AnnotatedPageContent>
-        proto) {
+    std::optional<optimization_guide::proto::AnnotatedPageContent> proto) {
   TRACE_EVENT("browser", "OnGotAIPageContentForModelPrototyping");
 
   AiDataKeyedService::BrowserData data;
@@ -349,14 +348,12 @@ void GetFormsPredictionsDataForModelPrototyping(
     std::move(continue_callback).Run(std::move(data));
     return;
   }
-  if (std::optional<
-          optimization_guide::proto::features::FormsPredictionsRequest>
+  if (std::optional<optimization_guide::proto::FormsPredictionsRequest>
           request = client->GetModelExecutor()->GetLatestRequest();
       request) {
     *data->mutable_forms_predictions_request() = *request;
   }
-  if (std::optional<
-          optimization_guide::proto::features::FormsPredictionsResponse>
+  if (std::optional<optimization_guide::proto::FormsPredictionsResponse>
           response = client->GetModelExecutor()->GetLatestResponse();
       response) {
     *data->mutable_forms_predictions_response() = *response;

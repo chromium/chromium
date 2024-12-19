@@ -14,30 +14,28 @@
 namespace optimization_guide {
 
 namespace {
-optimization_guide::proto::features::ContentAttributeType ConvertAttributeType(
+optimization_guide::proto::ContentAttributeType ConvertAttributeType(
     blink::mojom::AIPageContentAttributeType type) {
   switch (type) {
     case blink::mojom::AIPageContentAttributeType::kRoot:
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_ROOT;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT;
     case blink::mojom::AIPageContentAttributeType::kContainer:
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_CONTAINER;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER;
     case blink::mojom::AIPageContentAttributeType::kIframe:
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_IFRAME;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME;
     case blink::mojom::AIPageContentAttributeType::kParagraph:
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_PARAGRAPH;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH;
     case blink::mojom::AIPageContentAttributeType::kHeading:
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_HEADING;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_HEADING;
     case blink::mojom::AIPageContentAttributeType::kOrderedList:
-      return optimization_guide::proto::features::
-          CONTENT_ATTRIBUTE_ORDERED_LIST;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_ORDERED_LIST;
     case blink::mojom::AIPageContentAttributeType::kUnorderedList:
-      return optimization_guide::proto::features::
-          CONTENT_ATTRIBUTE_UNORDERED_LIST;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNORDERED_LIST;
     case blink::mojom::AIPageContentAttributeType::kAnchor:
       // TODO(crbug.com/382083796): Add this type to the proto.
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_UNKNOWN;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNKNOWN;
     case blink::mojom::AIPageContentAttributeType::kForm:
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_FORM;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM;
     case blink::mojom::AIPageContentAttributeType::kFigure:
     case blink::mojom::AIPageContentAttributeType::kHeader:
     case blink::mojom::AIPageContentAttributeType::kNav:
@@ -48,29 +46,27 @@ optimization_guide::proto::features::ContentAttributeType ConvertAttributeType(
     case blink::mojom::AIPageContentAttributeType::kAside:
     case blink::mojom::AIPageContentAttributeType::kFooter:
       // TODO(crbug.com/382083796): Add this type to the proto.
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_UNKNOWN;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNKNOWN;
     case blink::mojom::AIPageContentAttributeType::kTable:
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_TABLE;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE;
     case blink::mojom::AIPageContentAttributeType::kTableCell:
       // TODO(crbug.com/382083796): Add this type to the proto.
-      return optimization_guide::proto::features::CONTENT_ATTRIBUTE_UNKNOWN;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNKNOWN;
   }
 
   NOTREACHED();
 }
 
-void ConvertRect(
-    const gfx::Rect& mojom_rect,
-    optimization_guide::proto::features::BoundingRect* proto_rect) {
+void ConvertRect(const gfx::Rect& mojom_rect,
+                 optimization_guide::proto::BoundingRect* proto_rect) {
   proto_rect->set_x(mojom_rect.x());
   proto_rect->set_y(mojom_rect.y());
   proto_rect->set_width(mojom_rect.width());
   proto_rect->set_height(mojom_rect.height());
 }
 
-void ConvertGeometry(
-    const blink::mojom::AIPageContentGeometry& mojom_geometry,
-    optimization_guide::proto::features::Geometry* proto_geometry) {
+void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
+                     optimization_guide::proto::Geometry* proto_geometry) {
   ConvertRect(mojom_geometry.outer_bounding_box,
               proto_geometry->mutable_outer_bounding_box());
   ConvertRect(mojom_geometry.visible_bounding_box,
@@ -79,8 +75,8 @@ void ConvertGeometry(
 
 void ConvertTextInfo(
     const std::vector<blink::mojom::AIPageContentTextInfoPtr>& mojom_text_info,
-    google::protobuf::RepeatedPtrField<
-        optimization_guide::proto::features::TextInfo>* proto_text_info) {
+    google::protobuf::RepeatedPtrField<optimization_guide::proto::TextInfo>*
+        proto_text_info) {
   for (const auto& mojom_text : mojom_text_info) {
     auto* proto_text = proto_text_info->Add();
     proto_text->set_text_content(mojom_text->text_content);
@@ -96,8 +92,8 @@ void ConvertTextInfo(
 void ConvertImageInfo(
     const std::vector<blink::mojom::AIPageContentImageInfoPtr>&
         mojom_image_info,
-    google::protobuf::RepeatedPtrField<
-        optimization_guide::proto::features::ImageInfo>* proto_image_info) {
+    google::protobuf::RepeatedPtrField<optimization_guide::proto::ImageInfo>*
+        proto_image_info) {
   for (const auto& mojom_image : mojom_image_info) {
     auto* proto_image = proto_image_info->Add();
     if (mojom_image->image_caption) {
@@ -118,7 +114,7 @@ void ConvertImageInfo(
 
 void ConvertAttributes(
     const blink::mojom::AIPageContentAttributes& mojom_attributes,
-    optimization_guide::proto::features::ContentAttributes* proto_attributes) {
+    optimization_guide::proto::ContentAttributes* proto_attributes) {
   for (const auto& dom_node_id : mojom_attributes.dom_node_ids) {
     proto_attributes->add_dom_node_ids(dom_node_id);
   }
@@ -145,7 +141,7 @@ void ConvertAttributes(
 void ConvertIframeData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentIframeData& iframe_data,
-    optimization_guide::proto::features::IframeData* proto_iframe_data) {
+    optimization_guide::proto::IframeData* proto_iframe_data) {
   proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
   proto_iframe_data->set_likely_ad_frame(iframe_data.likely_ad_frame);
 }
@@ -154,7 +150,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
                  const blink::mojom::AIPageContentNode& mojom_node,
                  const AIPageContentMap& page_content_map,
                  GetRenderFrameInfo get_render_frame_info,
-                 optimization_guide::proto::features::ContentNode* proto_node) {
+                 optimization_guide::proto::ContentNode* proto_node) {
   const auto& mojom_attributes = *mojom_node.content_attributes;
   ConvertAttributes(mojom_attributes, proto_node->mutable_content_attributes());
 
@@ -221,7 +217,7 @@ bool ConvertAIPageContentToProto(
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
     GetRenderFrameInfo get_render_frame_info,
-    optimization_guide::proto::features::AnnotatedPageContent* proto) {
+    optimization_guide::proto::AnnotatedPageContent* proto) {
   auto it = page_content_map.find(main_frame_token);
   if (it == page_content_map.end()) {
     return false;
@@ -235,7 +231,7 @@ bool ConvertAIPageContentToProto(
   }
 
   proto->set_version(
-      optimization_guide::proto::features::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   return true;
 }
 

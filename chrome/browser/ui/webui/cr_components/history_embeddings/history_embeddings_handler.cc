@@ -31,19 +31,16 @@
 
 namespace {
 
-optimization_guide::proto::features::UserFeedback
+optimization_guide::proto::UserFeedback
 OptimizationFeedbackFromMojoUserFeedback(
     history_embeddings::mojom::UserFeedback feedback) {
   switch (feedback) {
     case history_embeddings::mojom::UserFeedback::kUserFeedbackPositive:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_UP;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
     case history_embeddings::mojom::UserFeedback::kUserFeedbackNegative:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_DOWN;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
     case history_embeddings::mojom::UserFeedback::kUserFeedbackUnspecified:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_UNSPECIFIED;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
   }
 }
 
@@ -117,8 +114,8 @@ void HistoryEmbeddingsHandler::PublishResultToPageForTesting(
 
 void HistoryEmbeddingsHandler::PublishResultToPage(
     const history_embeddings::SearchResult& native_search_result) {
-  user_feedback_ = optimization_guide::proto::features::UserFeedback::
-      USER_FEEDBACK_UNSPECIFIED;
+  user_feedback_ =
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
 
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
   mojom_search_result->query = native_search_result.query;
@@ -191,10 +188,9 @@ void HistoryEmbeddingsHandler::SendQualityLog(
                                selected_indices.end());
   service->SendQualityLog(
       last_result_, indices_set, num_chars_for_query, user_feedback_,
-      for_side_panel_ ? optimization_guide::proto::features::UiSurface::
-                            UI_SURFACE_SIDE_PANEL
-                      : optimization_guide::proto::features::UiSurface::
-                            UI_SURFACE_HISTORY_PAGE);
+      for_side_panel_
+          ? optimization_guide::proto::UiSurface::UI_SURFACE_SIDE_PANEL
+          : optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
 }
 
 void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(

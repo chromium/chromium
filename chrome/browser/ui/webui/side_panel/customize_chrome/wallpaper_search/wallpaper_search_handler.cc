@@ -108,18 +108,15 @@ std::string ReadFile(const base::FilePath& path) {
   return result;
 }
 
-optimization_guide::proto::features::UserFeedback
+optimization_guide::proto::UserFeedback
 OptimizationFeedbackFromWallpaperSearchFeedback(UserFeedback feedback) {
   switch (feedback) {
     case UserFeedback::kThumbsUp:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_UP;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
     case UserFeedback::kThumbsDown:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_THUMBS_DOWN;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
     case UserFeedback::kUnspecified:
-      return optimization_guide::proto::features::UserFeedback::
-          USER_FEEDBACK_UNSPECIFIED;
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
   }
 }
 
@@ -368,7 +365,7 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
   if (!optimization_guide_keyed_service) {
     return;
   }
-  optimization_guide::proto::features::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   auto& descriptors = *request.mutable_descriptors();
   CHECK(result_descriptors->subject);
   descriptors.set_subject(*result_descriptors->subject);
@@ -389,7 +386,7 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
   }
 
   optimization_guide::ModelExecutionCallbackWithLogging<
-      optimization_guide::proto::features::WallpaperSearchLoggingData>
+      optimization_guide::proto::WallpaperSearchLoggingData>
       wrapper_callback = base::BindOnce(
           &WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -540,7 +537,7 @@ void WallpaperSearchHandler::SetUserFeedback(UserFeedback selected_option) {
     ShowFeedbackPage();
   }
 
-  optimization_guide::proto::features::UserFeedback user_feedback =
+  optimization_guide::proto::UserFeedback user_feedback =
       OptimizationFeedbackFromWallpaperSearchFeedback(selected_option);
   if (!log_entries_.empty()) {
     auto* quality =
@@ -956,8 +953,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     GetWallpaperSearchResultsCallback callback,
     base::ElapsedTimer request_timer,
     optimization_guide::OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<
-        optimization_guide::proto::features::WallpaperSearchLoggingData>
+    std::unique_ptr<optimization_guide::proto::WallpaperSearchLoggingData>
         logging_data) {
   if (!log_entries_.empty()) {
     auto& [prev_log_entry, render_time] = log_entries_.back();
@@ -1013,14 +1009,13 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     return;
   }
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::features::WallpaperSearchResponse>(
+      optimization_guide::proto::WallpaperSearchResponse>(
       result.response.value());
   if (response->images().empty()) {
     return;
   }
   auto barrier = base::BarrierCallback<std::pair<
-      optimization_guide::proto::features::WallpaperSearchImageQuality*,
-      SkBitmap>>(
+      optimization_guide::proto::WallpaperSearchImageQuality*, SkBitmap>>(
       response->images_size(),
       base::BindOnce(&WallpaperSearchHandler::OnWallpaperSearchResultsDecoded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -1030,8 +1025,8 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
   // from gfx::Image to SkBitmap before passing to the barrier callback because
   // of some issues with const gfx::Image& and base::BarrierCallback.
   for (auto& image : response->images()) {
-    optimization_guide::proto::features::WallpaperSearchImageQuality*
-        image_quality = nullptr;
+    optimization_guide::proto::WallpaperSearchImageQuality* image_quality =
+        nullptr;
     if (!log_entries_.empty()) {
       auto* quality =
           log_entries_.back()
@@ -1047,10 +1042,10 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
         image.encoded_image(), gfx::Size(), nullptr,
         base::BindOnce(
             [](base::RepeatingCallback<void(
-                   std::pair<optimization_guide::proto::features::
-                                 WallpaperSearchImageQuality*,
-                             SkBitmap>)> barrier,
-               optimization_guide::proto::features::WallpaperSearchImageQuality*
+                   std::pair<
+                       optimization_guide::proto::WallpaperSearchImageQuality*,
+                       SkBitmap>)> barrier,
+               optimization_guide::proto::WallpaperSearchImageQuality*
                    image_quality,
                const gfx::Image& image) {
               std::move(barrier).Run(
@@ -1081,9 +1076,9 @@ void WallpaperSearchHandler::SetResultRenderTime(
 void WallpaperSearchHandler::OnWallpaperSearchResultsDecoded(
     GetWallpaperSearchResultsCallback callback,
     base::ElapsedTimer processing_timer,
-    std::vector<std::pair<
-        optimization_guide::proto::features::WallpaperSearchImageQuality*,
-        SkBitmap>> bitmaps) {
+    std::vector<
+        std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
+                  SkBitmap>> bitmaps) {
   std::vector<WallpaperSearchResultPtr> thumbnails;
 
   for (auto& [image_quality, bitmap] : bitmaps) {

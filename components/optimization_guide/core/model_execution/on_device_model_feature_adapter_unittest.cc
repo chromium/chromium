@@ -26,7 +26,7 @@ TEST(OnDeviceModelFeatureAdapterTest,
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  proto::features::ComposeRequest request;
+  proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("whatever");
   EXPECT_EQ(std::nullopt, adapter->ConstructTextSafetyRequest(request, "text"));
 }
@@ -37,7 +37,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructTextSafetyRequestNoUrlField) {
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  proto::features::ComposeRequest request;
+  proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("whatever");
   auto safety_request = adapter->ConstructTextSafetyRequest(request, "text");
 
@@ -55,7 +55,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructTextSafetyRequestWithUrlField) {
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  proto::features::ComposeRequest request;
+  proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
   auto safety_request = adapter->ConstructTextSafetyRequest(request, "text");
 
@@ -74,7 +74,7 @@ TEST(OnDeviceModelFeatureAdapterTest,
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  proto::features::ComposeRequest request;
+  proto::ComposeRequest request;
   request.mutable_page_metadata()->set_page_url("url");
   EXPECT_EQ(std::nullopt, adapter->ConstructTextSafetyRequest(request, "text"));
 }
@@ -161,7 +161,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_NoOutputConfig) {
 TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_DefaultSimple) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* oc = config.mutable_output_config();
-  oc->set_proto_type("optimization_guide.proto.features.ComposeResponse");
+  oc->set_proto_type("optimization_guide.proto.ComposeResponse");
   oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
@@ -172,16 +172,16 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_DefaultSimple) {
   auto maybe_metadata = response_future.Get();
 
   ASSERT_TRUE(maybe_metadata.has_value());
-  EXPECT_EQ("output",
-            ParsedAnyMetadata<proto::features::ComposeResponse>(*maybe_metadata)
-                ->output());
+  EXPECT_EQ(
+      "output",
+      ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
 }
 
 TEST(OnDeviceModelFeatureAdapterTest,
      ConstructOutputMetadata_DefaultSimple_ChunkByChunkWithStartingPos) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* oc = config.mutable_output_config();
-  oc->set_proto_type("optimization_guide.proto.features.ComposeResponse");
+  oc->set_proto_type("optimization_guide.proto.ComposeResponse");
   oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
   oc->set_response_streaming_mode(
       proto::ResponseStreamingMode::STREAMING_MODE_CHUNK_BY_CHUNK);
@@ -197,16 +197,16 @@ TEST(OnDeviceModelFeatureAdapterTest,
   auto maybe_metadata = response_future.Get();
 
   ASSERT_TRUE(maybe_metadata.has_value());
-  EXPECT_EQ("put",
-            ParsedAnyMetadata<proto::features::ComposeResponse>(*maybe_metadata)
-                ->output());
+  EXPECT_EQ(
+      "put",
+      ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
 }
 
 TEST(OnDeviceModelFeatureAdapterTest,
      ConstructOutputMetadata_DefaultSimple_CurrentResponseWithStartingPos) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* oc = config.mutable_output_config();
-  oc->set_proto_type("optimization_guide.proto.features.ComposeResponse");
+  oc->set_proto_type("optimization_guide.proto.ComposeResponse");
   oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
   oc->set_response_streaming_mode(
       proto::ResponseStreamingMode::STREAMING_MODE_CURRENT_RESPONSE);
@@ -222,9 +222,9 @@ TEST(OnDeviceModelFeatureAdapterTest,
   auto maybe_metadata = response_future.Get();
 
   ASSERT_TRUE(maybe_metadata.has_value());
-  EXPECT_EQ("output",
-            ParsedAnyMetadata<proto::features::ComposeResponse>(*maybe_metadata)
-                ->output());
+  EXPECT_EQ(
+      "output",
+      ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_JSON) {
@@ -233,7 +233,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_JSON) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* oc = config.mutable_output_config();
   oc->set_parser_kind(proto::PARSER_KIND_JSON);
-  oc->set_proto_type("optimization_guide.proto.features.ComposeResponse");
+  oc->set_proto_type("optimization_guide.proto.ComposeResponse");
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
@@ -243,9 +243,9 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_JSON) {
   auto maybe_metadata = response_future.Get();
 
   ASSERT_TRUE(maybe_metadata.has_value());
-  EXPECT_EQ("abc",
-            ParsedAnyMetadata<proto::features::ComposeResponse>(*maybe_metadata)
-                ->output());
+  EXPECT_EQ(
+      "abc",
+      ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ShouldParseResponseCompleteOnly) {

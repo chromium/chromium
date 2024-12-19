@@ -20,9 +20,9 @@ using ModelExecutionError = optimization_guide::
 using optimization_guide::OptimizationGuideModelExecutionError;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using optimization_guide::SessionConfigParams;
-using optimization_guide::proto::features::Answer;
-using optimization_guide::proto::features::HistoryAnswerRequest;
-using optimization_guide::proto::features::Passage;
+using optimization_guide::proto::Answer;
+using optimization_guide::proto::HistoryAnswerRequest;
+using optimization_guide::proto::Passage;
 
 namespace {
 
@@ -194,7 +194,7 @@ class MlAnswerer::SessionManager {
                                     std::move(result.log_entry), "", {}));
     } else if (result.response->is_complete) {
       auto response = optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::features::HistoryAnswerResponse>(
+          optimization_guide::proto::HistoryAnswerResponse>(
           std::move(result.response).value().response);
       AnswererResult answerer_result(
           ComputeAnswerStatus::kSuccess, query_, response->answer(),
@@ -239,7 +239,7 @@ class MlAnswerer::SessionManager {
     // Use a dummy request here since both passages and query are already added
     // to context.
     if (!sessions_.empty()) {
-      optimization_guide::proto::features::HistoryAnswerRequest request;
+      optimization_guide::proto::HistoryAnswerRequest request;
       const size_t session_index = std::get<0>(session_scores[max_index]);
       VLOG(3) << "Running ExecuteModel for session " << session_index;
       sessions_[session_index]->ExecuteModel(

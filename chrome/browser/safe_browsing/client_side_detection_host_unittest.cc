@@ -168,9 +168,8 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
       InquireOnDeviceModel,
       (ClientPhishingRequest*,
        std::string,
-       base::OnceCallback<
-           void(std::optional<
-                optimization_guide::proto::features::ScamDetectionResponse>)>));
+       base::OnceCallback<void(
+           std::optional<optimization_guide::proto::ScamDetectionResponse>)>));
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -2226,8 +2225,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       .WillOnce(testing::Invoke(
           [&](ClientPhishingRequest* verdict, std::string rendered_text,
               base::OnceCallback<void(
-                  std::optional<optimization_guide::proto::features::
-                                    ScamDetectionResponse>)> callback) {
+                  std::optional<
+                      optimization_guide::proto::ScamDetectionResponse>)>
+                  callback) {
             run_loop_for_inquire_on_device_model.Quit();
             std::move(callback).Run(std::nullopt);
           }));
@@ -2282,10 +2282,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       .WillOnce(testing::Invoke(
           [&](ClientPhishingRequest* verdict, std::string rendered_text,
               base::OnceCallback<void(
-                  std::optional<optimization_guide::proto::features::
-                                    ScamDetectionResponse>)> callback) {
+                  std::optional<
+                      optimization_guide::proto::ScamDetectionResponse>)>
+                  callback) {
             run_loop_for_inquire_on_device_model.Quit();
-            optimization_guide::proto::features::ScamDetectionResponse
+            optimization_guide::proto::ScamDetectionResponse
                 scam_detection_response;
             scam_detection_response.set_brand("Example Brand");
             scam_detection_response.set_intent("Example Intent");
@@ -2391,10 +2392,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       .WillOnce(testing::Invoke(
           [&](ClientPhishingRequest* verdict, std::string rendered_text,
               base::OnceCallback<void(
-                  std::optional<optimization_guide::proto::features::
-                                    ScamDetectionResponse>)> callback) {
+                  std::optional<
+                      optimization_guide::proto::ScamDetectionResponse>)>
+                  callback) {
             run_loop_for_inquire_on_device_model.Quit();
-            optimization_guide::proto::features::ScamDetectionResponse
+            optimization_guide::proto::ScamDetectionResponse
                 scam_detection_response;
             scam_detection_response.set_brand("Example Brand");
             scam_detection_response.set_intent("Example Intent");
@@ -2471,10 +2473,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       .WillOnce(testing::Invoke(
           [&](ClientPhishingRequest* verdict, std::string rendered_text,
               base::OnceCallback<void(
-                  std::optional<optimization_guide::proto::features::
-                                    ScamDetectionResponse>)> callback) {
+                  std::optional<
+                      optimization_guide::proto::ScamDetectionResponse>)>
+                  callback) {
             run_loop_for_inquire_on_device_model.Quit();
-            optimization_guide::proto::features::ScamDetectionResponse
+            optimization_guide::proto::ScamDetectionResponse
                 scam_detection_response;
             scam_detection_response.set_brand("Example Brand");
             scam_detection_response.set_intent("Example Intent");

@@ -72,12 +72,11 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
       /*is_sensitive=*/false);
   field3.set_field_is_eligible_for_autofill_ai(false);
 
-  optimization_guide::proto::features::FormData form_data_proto =
-      ToFormDataProto(form);
+  optimization_guide::proto::FormData form_data_proto = ToFormDataProto(form);
   EXPECT_EQ(form_data_proto.fields_size(), 3);
 
   // The first field should contain everything including the value.
-  optimization_guide::proto::features::FormFieldData field_data1 =
+  optimization_guide::proto::FormFieldData field_data1 =
       form_data_proto.fields(0);
   EXPECT_EQ(field_data1.field_label(), "label");
   EXPECT_EQ(field_data1.field_value(), "val");
@@ -90,7 +89,7 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
 
   // The second field should contain an empty value because it was marked as
   // sensitive.
-  optimization_guide::proto::features::FormFieldData field_data2 =
+  optimization_guide::proto::FormFieldData field_data2 =
       form_data_proto.fields(1);
   EXPECT_EQ(field_data2.field_label(), "label2");
   EXPECT_EQ(field_data2.field_value(), "");
@@ -102,17 +101,17 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
   EXPECT_EQ(field_data2.is_eligible(), false);
 
   // Check that the options are corectly extracted from the select element.
-  optimization_guide::proto::features::FormFieldData field_data3 =
+  optimization_guide::proto::FormFieldData field_data3 =
       form_data_proto.fields(2);
   EXPECT_EQ(field_data3.field_label(), "select");
   EXPECT_TRUE(field_data3.field_value().empty());
   EXPECT_TRUE(field_data3.field_name().empty());
   EXPECT_EQ(2, field_data3.select_options_size());
-  optimization_guide::proto::features::SelectOption select_option1 =
+  optimization_guide::proto::SelectOption select_option1 =
       field_data3.select_options(0);
   EXPECT_EQ("1", select_option1.value());
   EXPECT_EQ("text1", select_option1.text());
-  optimization_guide::proto::features::SelectOption select_option2 =
+  optimization_guide::proto::SelectOption select_option2 =
       field_data3.select_options(1);
   EXPECT_EQ("2", select_option2.value());
   EXPECT_EQ("text2", select_option2.text());

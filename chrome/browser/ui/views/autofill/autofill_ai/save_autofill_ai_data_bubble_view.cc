@@ -221,7 +221,7 @@ SaveAutofillAiDataBubbleView::SaveAutofillAiDataBubbleView(
                        .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                        .Build());
 
-  for (const optimization_guide::proto::features::UserAnnotationsEntry&
+  for (const optimization_guide::proto::UserAnnotationsEntry&
            prediction_improvement : controller_->GetAutofillAiData()) {
     improved_predicted_values_container->AddChildView(BuildPredictedValueRow(
         prediction_improvement.key(), prediction_improvement.value()));
