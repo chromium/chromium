@@ -108,6 +108,7 @@ source_set("unit_tests") {
   }
 
   sources = [
+    "file_stream_reader_to_data_pipe_unittest.cc",
     "indexed_db_context_unittest.cc",
     "indexed_db_leveldb_coding_unittest.cc",
     "indexed_db_quota_client_unittest.cc",

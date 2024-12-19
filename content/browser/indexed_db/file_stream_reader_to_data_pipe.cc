@@ -113,8 +113,8 @@ void FileStreamReaderToDataPipe::ReadMore() {
     std::optional<size_t> result =
         file_.Read(offset_ + transferred_bytes_, buffer);
 
-    if (!result || !*result) {
-      // Error or EOF.
+    if (!result) {
+      // Read error.
       dest_ = pending_write_->Complete(0);
       OnComplete(net::ERR_FAILED);
       return;
@@ -123,7 +123,13 @@ void FileStreamReaderToDataPipe::ReadMore() {
     dest_ = pending_write_->Complete(*result);
     transferred_bytes_ += *result;
 
-    if (transferred_bytes_ >= read_length_) {
+    // The file read may receive less than `read_length_` in some environments,
+    // causing `ReadMore()` to reach the end of the file.  When this happens,
+    // report success with `transferred_bytes_` in the data pipe.  See
+    // crbug.com/383157185 for more details.
+    const bool end_of_file = (*result == 0);
+
+    if (transferred_bytes_ >= read_length_ || end_of_file) {
       OnComplete(net::OK);
       return;
     }

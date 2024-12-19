@@ -7,15 +7,17 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
 namespace content::indexed_db {
 
-void OpenFileAndReadIntoPipe(const base::FilePath& file_path,
-                             uint64_t offset,
-                             uint64_t read_length,
-                             mojo::ScopedDataPipeProducerHandle dest,
-                             base::OnceCallback<void(int)> completion_callback);
+CONTENT_EXPORT void OpenFileAndReadIntoPipe(
+    const base::FilePath& file_path,
+    uint64_t offset,
+    uint64_t read_length,
+    mojo::ScopedDataPipeProducerHandle dest,
+    base::OnceCallback<void(int)> completion_callback);
 
 }  // namespace content::indexed_db
 
