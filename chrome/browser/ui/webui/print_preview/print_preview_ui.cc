@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -353,6 +354,11 @@ void CreateAndAddPrintPreviewUISource(Profile* profile) {
       profile, chrome::kChromeUIPrintHost);
   webui::SetupWebUIDataSource(source, kPrintPreviewResources,
                               IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
+  // Add TrustedTypes policy for creating the PDF plugin.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      base::StrCat({webui::kDefaultTrustedTypesPolicies,
+                    " print-preview-plugin-loader;"}));
   AddPrintPreviewStrings(source);
   source->AddResourcePaths(kPdfResources);
   SetupPrintPreviewPlugin(source);
