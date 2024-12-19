@@ -851,7 +851,7 @@
 <translation id="2521736961081452453">Создать форму</translation>
 <translation id="2523886232349826891">Карта будет сохранена только на этом устройстве</translation>
 <translation id="2524461107774643265">Укажите дополнительную информацию</translation>
-<translation id="2526280916094749336">Адрес будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />). Сохраненные адреса можно использовать в разных продуктах Google.</translation>
+<translation id="2526280916094749336">Сохраненные адреса можно использовать в разных продуктах Google. Этот адрес будет сохранен в вашем аккаунте Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-код находится на лицевой стороне вашей карты. Это 4 цифры справа над номером карты.</translation>
 <translation id="2529899080962247600">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи будут игнорироваться.</translation>
 <translation id="2530042584066815841">Управление мышью</translation>
@@ -2192,7 +2192,7 @@
 <translation id="5018422839182700155">Не удалось открыть страницу</translation>
 <translation id="5018802455907704660">16 x 20 дюймов</translation>
 <translation id="5019198164206649151">Данные в хранилище повреждены</translation>
-<translation id="5019293549442035120">Адрес будет сохранен в аккаунте <ph name="USER_EMAIL" />. Его и другие сохраненные данные можно использовать в продуктах Google.</translation>
+<translation id="5019293549442035120">Сохраненные адреса можно использовать в разных продуктах Google. Этот адрес будет сохранен в вашем аккаунте Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019952743397118625">Настроено правило <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> не будет управлять доступом к режиму разработчика на странице расширений.</translation>
 <translation id="5021557570875267742">Следите за ценами с помощью Chrome</translation>
 <translation id="5023310440958281426">Проверьте правила, установленные администратором</translation>
@@ -2743,7 +2743,7 @@
 <translation id="6051898664905071243">Количество страниц:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="605237284704429106">Получение кода IBAN…</translation>
-<translation id="6053584886670442526">Адрес сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />). Сохраненные адреса можно использовать в разных продуктах Google.</translation>
+<translation id="6053584886670442526">Сохраненные адреса можно использовать в разных продуктах Google. Этот адрес сохранен в вашем аккаунте Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Чтобы узнать больше о том, как Google защищает ваши данные, ознакомьтесь с нашей Политикой конфиденциальности.</translation>
 <translation id="6055888660316801977">Экран несоответствия учетных данных для защищенных платежей</translation>
 <translation id="6055982527635883756">Конверт (архивный)</translation>

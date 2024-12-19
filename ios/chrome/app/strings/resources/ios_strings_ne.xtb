@@ -379,7 +379,7 @@
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2772667768515195373">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="USER_EMAIL" />) मा सेभ गरिन्छ।</translation>
 <translation id="2773344962924806829">इमेल नोटिफिकेसनहरू</translation>
-<translation id="2781331604911854368">सक्रिय छ</translation>
+<translation id="2781331604911854368">अन छ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{यो पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएको छ}other{यी पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएका छन्}}</translation>
 <translation id="2791174088547598693">पासवर्ड हाल्नुहोस्…</translation>
@@ -692,7 +692,7 @@
 <translation id="4402672425188312225">{COUNT,plural, =1{एउटा ट्याब}other{# वटा ट्याब}}</translation>
 <translation id="4405320213589929829">स्थानीय जानकारी र जाने बाटो प्राप्त गर्न वेबपेजमा ठेगानाहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="441218095371040430">किबोर्ड प्रयोग गर्नुहोस्</translation>
-<translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="4415276339145661267">आफ्नो Google खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4431224949908513835">आफूले हाल्न चाहेको भुक्तानी विधि चयन गर्नुहोस्।</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />सेटिङ<ph name="END_BOLD" /> खोल्नुहोस्</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> का थप विकल्पहरू</translation>

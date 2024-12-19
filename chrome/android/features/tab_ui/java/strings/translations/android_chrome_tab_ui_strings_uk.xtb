@@ -158,7 +158,7 @@
 <translation id="7792771145871471484">Переглянути ці вкладки.</translation>
 <translation id="7825973332242257878">Групи вкладок</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Додати <ph name="TABS_COUNT_ONE" /> вибрану вкладку в групу}one{Додати <ph name="TABS_COUNT_MANY" /> вибрану вкладку в групу}few{Додати <ph name="TABS_COUNT_MANY" /> вибрані вкладки в групу}many{Додати <ph name="TABS_COUNT_MANY" /> вибраних вкладок у групу}other{Додати <ph name="TABS_COUNT_MANY" /> вибраної вкладки в групу}}</translation>
-<translation id="7853202427316060426">Активність</translation>
+<translation id="7853202427316060426">Дії</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> відгук}one{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгук}few{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуки}many{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуків}other{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуку}}</translation>
 <translation id="7885132941432959125">Перемістити вкладку праворуч</translation>
 <translation id="7939917283308035850">Не вибрано: <ph name="COLOR_NAME" /></translation>

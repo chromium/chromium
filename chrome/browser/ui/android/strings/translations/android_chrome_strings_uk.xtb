@@ -773,7 +773,7 @@
 <translation id="469286762610133730">Отримуйте кращий контент</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Тут можна переглянути неактивні вкладки</translation>
-<translation id="4699172675775169585">Кешовані зображення та файли</translation>
+<translation id="4699172675775169585">Кешовані зображення й файли</translation>
 <translation id="4710167854527459075">Сортувати за новішими</translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720556299488643018">Скасувати</translation>
@@ -1500,7 +1500,7 @@
 <translation id="7846296061357476882">Сервіси Google</translation>
 <translation id="784934925303690534">Період часу</translation>
 <translation id="7851858861565204677">Інші пристрої</translation>
-<translation id="7853202427316060426">Активність</translation>
+<translation id="7853202427316060426">Дії</translation>
 <translation id="7859988229622350291">Мови, з яких не потрібно перекладати</translation>
 <translation id="7864208933699511058">Персоналізація реклами залежить від цього параметра, <ph name="BEGIN_LINK_1" />пропонованих сайтами оголошень<ph name="END_LINK_1" /> і <ph name="BEGIN_LINK_2" />налаштувань файлів cookie<ph name="END_LINK_2" />, а також від налаштувань персоналізації, визначених сайтом, який ви переглядаєте.</translation>
 <translation id="7866213166286285359">Натисніть тут, щоб відобразити перемикач "Перекласти сторінки"</translation>
