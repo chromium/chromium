@@ -137,15 +137,9 @@ BASE_FEATURE(kCommerceAllowServerImages,
 BASE_FEATURE(kCommerceMerchantViewer,
              "CommerceMerchantViewer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kCommerceMerchantViewerRegionLaunched,
-             "CommerceMerchantViewerRegionLaunched",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
 BASE_FEATURE(kCommerceMerchantViewerRegionLaunched,
              "CommerceMerchantViewerRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kCommerceLocalPDPDetection,
              "CommerceLocalPDPDetection",
