@@ -237,6 +237,7 @@ source_set("unit_tests") {
     "//extensions:test_support",
     "//extensions/browser/updater",
     "//extensions/common:common",
+    "//google_apis",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
