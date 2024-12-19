@@ -336,7 +336,9 @@
     <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
         on-blur="handleSearchboxBlurred">
     </cr-searchbox>
-    <cr-searchbox-ghost-loader id="searchboxGhostLoader"></cr-searchbox-ghost-loader>
+    <cr-searchbox-ghost-loader id="searchboxGhostLoader"
+        show-error-state="{{showErrorState}}">
+    </cr-searchbox-ghost-loader>
   </div>
   <div id="translateButtonContainer" class="button-container">
     <translate-button id="translateButton"

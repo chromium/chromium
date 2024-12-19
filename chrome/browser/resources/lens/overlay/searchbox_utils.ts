@@ -30,5 +30,6 @@ export function onSearchboxKeydown(
   // query zero suggest again and the ghost loader should not be suppressed.
   if (!searchbox.isInputEmpty()) {
     element.suppressGhostLoader = false;
+    element.showErrorState = false;
   }
 }

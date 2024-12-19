@@ -45,7 +45,6 @@ interface LensSidePanelPage {
   // image request times out.
   SetShowErrorPage(bool should_show_error_page);
 
-  // Updates the ghost loader state. Loading state is reset on page navigation.
-  // |suppress_ghost_loader| is true when the page bytes can't be uploaded.
-  UpdateGhostLoaderState(bool suppress_ghost_loader, bool reset_loading_state);
+  // Suppress the ghost loader when no bytes are returned for the page.
+  SuppressGhostLoader();
 };

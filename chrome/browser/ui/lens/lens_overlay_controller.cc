@@ -1369,8 +1369,6 @@ class LensOverlayController::UnderlyingWebContentsObserver
     }
     if (lens_overlay_controller_->state() == State::kLivePageAndResults) {
       lens_overlay_controller_->UpdateNavigationTime();
-      lens_overlay_controller_->UpdateGhostLoaderState(
-          /*suppress_ghost_loader=*/false, /*reset_loading_state=*/true);
       return;
     }
     lens_overlay_controller_->CloseUISync(
@@ -1775,9 +1773,9 @@ void LensOverlayController::UpdatePageContextualization(
   // contextulized. Notify the side panel so the ghost loader isn't shown. No
   // need to update update the overlay as this update only happens on navigation
   // where the side panel will already be open.
-  UpdateGhostLoaderState(
-      /*suppress_ghost_loader=*/bytes.empty(),
-      /*reset_loading_state=*/false);
+  if (bytes.empty()) {
+    SuppressGhostLoader();
+  }
 
   // If the new page is a PDF, fetch the text from the page to be used as early
   // suggest signals.
@@ -1792,11 +1790,9 @@ void LensOverlayController::UpdatePageContextualization(
   RecordDocumentMetrics(page_count);
 }
 
-void LensOverlayController::UpdateGhostLoaderState(bool suppress_ghost_loader,
-                                                   bool reset_loading_state) {
+void LensOverlayController::SuppressGhostLoader() {
   if (side_panel_page_) {
-    side_panel_page_->UpdateGhostLoaderState(suppress_ghost_loader,
-                                             reset_loading_state);
+    side_panel_page_->SuppressGhostLoader();
   }
 }
 

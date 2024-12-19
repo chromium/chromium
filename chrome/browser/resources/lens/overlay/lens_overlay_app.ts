@@ -146,6 +146,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
             suppressGhostLoader)`,
         reflectToAttribute: true,
       },
+      showErrorState: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
       areLanguagePickersOpen: Boolean,
       toastMessage: String,
     };
@@ -157,6 +162,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // the searchbox when there's text (this doesn't create a zero suggset
   // request).
   suppressGhostLoader: boolean;
+  // Whether the ghost loader should show its error state.
+  showErrorState: boolean;
   // Whether the translate button is enabled.
   private isTranslateButtonEnabled: boolean;
   // Whether the image has finished rendering.
@@ -362,6 +369,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private handleSearchboxBlurred() {
     this.isSearchboxFocused = false;
+    this.showErrorState = false;
     this.$.translateButtonContainer.classList.add('searchbox-unfocused');
 
     // Unfocus the shimmer.

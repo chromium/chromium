@@ -611,7 +611,8 @@ void RealboxHandler::OnAutocompleteStopTimerTriggered(
     const AutocompleteInput& input) {
   // Only notify the lens controller when autocomplete stop timer is triggered
   // for zero suggest inputs.
-  if (lens_searchbox_client_ && input.IsZeroSuggest()) {
+  if (lens_searchbox_client_ && input.IsZeroSuggest() &&
+      autocomplete_controller()->done()) {
     lens_searchbox_client_->ShowGhostLoaderErrorState();
   }
 }
@@ -619,10 +620,16 @@ void RealboxHandler::OnAutocompleteStopTimerTriggered(
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
                                      bool default_match_changed) {
   SearchboxHandler::OnResultChanged(controller, default_match_changed);
-  // Show the ghost loader error state if the result is empty on the last async
-  // pass of the autocomplete controller (there will not be anymore updates).
+  // Show the ghost loader error state if the result is empty on the last
+  // async pass of the autocomplete controller (there will not be anymore
+  // updates). controller->done() itself is not a sufficient check since it
+  // takes into account kStop update types which occurs when a user unfocuses
+  // the searchbox, and the error state should not be shown in this case.
   if (lens_searchbox_client_) {
-    if (controller->done() && controller->result().empty()) {
+    if (controller->done() &&
+        controller->last_update_type() ==
+            AutocompleteController::UpdateType::kLastAsyncPass &&
+        controller->result().empty()) {
       lens_searchbox_client_->ShowGhostLoaderErrorState();
     }
 

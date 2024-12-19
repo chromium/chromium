@@ -329,7 +329,7 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   isInputEmpty(): boolean {
-    return !!this.$.input.value.trim();
+    return !this.$.input.value.trim();
   }
 
   //============================================================================

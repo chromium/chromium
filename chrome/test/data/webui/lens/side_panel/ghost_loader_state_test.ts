@@ -38,8 +38,7 @@ suite('SearchboxBackButton', () => {
     assertTrue(isVisible(ghostLoader));
     await waitAfterNextRender(lensSidePanelElement);
     // Notify side panel to hide ghost loader.
-    testBrowserProxy.page.updateGhostLoaderState(
-        /*suppress_ghost_loader=*/ true, /*reset_loading_state=*/ true);
+    testBrowserProxy.page.suppressGhostLoader();
     await waitAfterNextRender(lensSidePanelElement);
     assertFalse(isVisible(ghostLoader));
   });
@@ -53,9 +52,17 @@ suite('SearchboxBackButton', () => {
     await waitAfterNextRender(lensSidePanelElement);
     assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
     // Notify side panel to reset the ghost loader to loading state.
-    testBrowserProxy.page.updateGhostLoaderState(
-        /*suppress_ghost_loader=*/ false, /*reset_loading_state=*/ true);
+    assertTrue(isVisible(lensSidePanelElement.$.searchbox));
+    // Mock sending input to the searchbox.
+    lensSidePanelElement.$.searchbox.$.input.value = 'hello';
+    lensSidePanelElement.dispatchEvent(new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'o',
+    }));
+
     await waitAfterNextRender(lensSidePanelElement);
+    // State should be switched back to loading state after any input.
     assertTrue(
         isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
   });

@@ -116,13 +116,14 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   // the searchbox when there's text or when page bytes aren't successfully
   // uploaded.
   suppressGhostLoader: boolean;
+  // Whether the ghost loader should show its error state.
+  showErrorState: boolean;
   private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side
   // panel can open before a navigation has started.
   private isLoadingResults: boolean;
   private isContextualSearchbox: boolean;
-  private showErrorState: boolean;
   // The URL for the loading image shown when results frame is loading a new
   // page.
   private readonly loadingImageUrl: string;
@@ -167,8 +168,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.setBackArrowVisible.bind(this)),
       this.browserProxy.callbackRouter.setShowErrorPage.addListener(
           this.setShowErrorPage.bind(this)),
-      this.browserProxy.callbackRouter.updateGhostLoaderState.addListener(
-          this.updateGhostLoaderState.bind(this)),
+      this.browserProxy.callbackRouter.suppressGhostLoader.addListener(
+          this.suppressGhostLoader_.bind(this)),
     ];
 
     this.eventTracker_.add(this.$.searchbox, 'focusin', () => {
@@ -249,6 +250,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private onSearchboxFocusOut_() {
     this.isBackArrowVisible = this.wasBackArrowAvailable;
     this.isSearchboxFocused = false;
+    this.showErrorState = false;
   }
 
   private computeShowGhostLoader(): boolean {
@@ -256,14 +258,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         this.isContextualSearchbox;
   }
 
-  private updateGhostLoaderState(
-      suppressGhostLoader: boolean, resetLoadingState: boolean) {
+  private suppressGhostLoader_() {
     // If page bytes weren't successfully uploaded, ghost loader shouldn't be
     // visible.
-    this.suppressGhostLoader = suppressGhostLoader;
-    if (resetLoadingState) {
-      this.showErrorState = false;
-    }
+    this.suppressGhostLoader = true;
   }
 
   makeGhostLoaderVisibleForTesting() {
