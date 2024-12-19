@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -26,19 +27,44 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
     kOk,
     kQuotaUnavailable,
   };
-
-  explicit FileSystemAccessObserverQuotaManager(
-      const blink::StorageKey& storage_key,
-      ukm::SourceId ukm_source_id,
-      FileSystemAccessWatcherManager& watcher_manager);
-
-  // Updates the total usage if the quota is available.
-  // Otherwise, returns `UsageChangeResult::kQuotaUnavailable`.
+  // Handle to a `FileSystemObserverQuotaManager`.
   //
-  // The first call to it must always have an `old_usage` of zero. Subsequent
-  // calls must use `new_usage` of the last call as their `old_usage`.
-  // A caller should not call this again if it receives `kQuotaUnavailable`.
-  UsageChangeResult OnUsageChange(size_t old_usage, size_t new_usage);
+  // Holds a `scoped_refptr` to that `FileSystemObserverQuotaManager` so that it
+  // is deleted when there are no `Handle`s to it.
+  //
+  // Acts as a proxy to a `FileSystemObserverQuotaManager`. Calling
+  // `FileSystemAccessObserverQuotaManager::OnUsageChange` directly could lead
+  // to bugs if the caller is not implemented correctly. This provides a layer
+  // that provides a safe `OnUsageChange`.
+  class CONTENT_EXPORT Handle {
+   public:
+    ~Handle();
+
+    // Movable but not copyable.
+    Handle(Handle&&);
+    Handle& operator=(Handle&&);
+
+    // Called when an observation group's usage changes and returns whether the
+    // quota exceeded (kQuotaUnavailable) or not (kOk).
+    UsageChangeResult OnUsageChange(size_t usage);
+
+    FileSystemAccessObserverQuotaManager* GetQuotaManagerForTesting() {
+      return quota_manager_.get();
+    }
+
+   private:
+    friend FileSystemAccessObserverQuotaManager;
+
+    explicit Handle(
+        scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager);
+
+    scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager_;
+
+    size_t old_usage_ = 0;
+    bool errored_ = false;
+  };
+
+  Handle CreateHandle();
 
   void SetQuotaLimitForTesting(size_t quota_limit) {
     CHECK(quota_limit > 0);
@@ -58,10 +84,24 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
   static constexpr double kHighWaterMarkBucketSpacing = 1.1;
 
  private:
+  friend FileSystemAccessWatcherManager;
   friend class base::RefCountedDeleteOnSequence<
       FileSystemAccessObserverQuotaManager>;
   friend class base::DeleteHelper<FileSystemAccessObserverQuotaManager>;
   ~FileSystemAccessObserverQuotaManager();
+
+  explicit FileSystemAccessObserverQuotaManager(
+      const blink::StorageKey& storage_key,
+      ukm::SourceId ukm_source_id,
+      FileSystemAccessWatcherManager& watcher_manager);
+
+  // Updates the total usage if the quota is available.
+  // Otherwise, returns `UsageChangeResult::kQuotaUnavailable`.
+  //
+  // The first call to it must always have an `old_usage` of zero. Subsequent
+  // calls must use `new_usage` of the last call as their `old_usage`.
+  // A caller should not call this again if it receives `kQuotaUnavailable`.
+  UsageChangeResult OnUsageChange(size_t old_usage, size_t new_usage);
 
   const blink::StorageKey storage_key_;
   ukm::SourceId ukm_source_id_;

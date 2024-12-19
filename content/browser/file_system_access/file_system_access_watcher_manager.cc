@@ -425,7 +425,7 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
       .Run(std::move(result), source->current_usage());
 }
 
-scoped_refptr<FileSystemAccessObserverQuotaManager>
+FileSystemAccessObserverQuotaManager::Handle
 FileSystemAccessWatcherManager::GetOrCreateQuotaManagerForTesting(
     const blink::StorageKey& storage_key,
     ukm::SourceId ukm_source_id) {
@@ -434,7 +434,7 @@ FileSystemAccessWatcherManager::GetOrCreateQuotaManagerForTesting(
   return GetOrCreateQuotaManager(storage_key, ukm_source_id);
 }
 
-scoped_refptr<FileSystemAccessObserverQuotaManager>
+FileSystemAccessObserverQuotaManager::Handle
 FileSystemAccessWatcherManager::GetOrCreateQuotaManager(
     blink::StorageKey storage_key,
     ukm::SourceId ukm_source_id) {
@@ -442,8 +442,7 @@ FileSystemAccessWatcherManager::GetOrCreateQuotaManager(
 
   auto quota_manager_iter = quota_managers_.find(storage_key);
   if (quota_manager_iter != quota_managers_.end()) {
-    return base::WrapRefCounted<FileSystemAccessObserverQuotaManager>(
-        &quota_manager_iter->second.get());
+    return quota_manager_iter->second.get().CreateHandle();
   }
 
   // ukm_source_id is expected to be unique per navigation ID and could be
@@ -451,14 +450,15 @@ FileSystemAccessWatcherManager::GetOrCreateQuotaManager(
   // For the purpose of UKM analysis, the first ukm_source_id used to create
   // FileSystemAccessObserverQuotaManager is used for the same StorageKey,
   // since it will be sliced per URL anyways.
-  scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager =
-      base::MakeRefCounted<FileSystemAccessObserverQuotaManager>(
-          storage_key, ukm_source_id, *this);
+  FileSystemAccessObserverQuotaManager* quota_manager =
+      new FileSystemAccessObserverQuotaManager(storage_key, ukm_source_id,
+                                               *this);
+
   quota_managers_.emplace(std::piecewise_construct,
                           std::forward_as_tuple(std::move(storage_key)),
-                          std::forward_as_tuple(*quota_manager.get()));
+                          std::forward_as_tuple(*quota_manager));
 
-  return quota_manager;
+  return quota_manager->CreateHandle();
 }
 
 base::optional_ref<FileSystemAccessObservationGroup>
@@ -477,10 +477,10 @@ FileSystemAccessWatcherManager::GetOrCreateObservationGroup(
     return observation_group_iter->second;
   }
 
-  scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager =
+  FileSystemAccessObserverQuotaManager::Handle quota_manager =
       GetOrCreateQuotaManager(storage_key, ukm_source_id);
   UsageChangeResult usage_change_result =
-      quota_manager->OnUsageChange(0, source_current_usage);
+      quota_manager.OnUsageChange(source_current_usage);
   if (usage_change_result == UsageChangeResult::kQuotaUnavailable) {
     return std::nullopt;
   }

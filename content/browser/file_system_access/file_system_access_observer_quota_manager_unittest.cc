@@ -126,39 +126,47 @@ class FileSystemAccessObserverQuotaManagerTest : public testing::Test {
 };
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, OnUsageChange) {
-  scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager =
-      watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
-                                                          kSourceId);
-  observer_quota_manager->SetQuotaLimitForTesting(10);
+  {
+    FileSystemAccessObserverQuotaManager::Handle observation_group1 =
+        watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
+                                                            kSourceId);
+    FileSystemAccessObserverQuotaManager::Handle observation_group2 =
+        watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
+                                                            kSourceId);
 
-  // There are two observation groups under the same storage key calling
-  // usage change method. All is expected to succeeds except for the observation
-  // group 2's call on 6 -> 8 due to unavailable quota.
-  //    Observation group 1: 0 -> 4 -> 0
-  //    Observation group 2: 0 -> 6 -> 8
-  EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 0U);
-  EXPECT_EQ(
-      observer_quota_manager->OnUsageChange(/*old_usage=*/0, /*new_usage=*/4),
-      UsageChangeResult::kOk);
-  EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 4U);
-  EXPECT_EQ(
-      observer_quota_manager->OnUsageChange(/*old_usage=*/0, /*new_usage=*/6),
-      UsageChangeResult::kOk);
-  EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 10U);
-  EXPECT_EQ(
-      observer_quota_manager->OnUsageChange(/*old_usage=*/6, /*new_usage=*/8),
-      UsageChangeResult::kQuotaUnavailable);
-  // Total usage should subtract old usage only, but not add new usage if
-  // it is `kQuotaUnavailable`.
-  EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 4U);
-  EXPECT_EQ(
-      observer_quota_manager->OnUsageChange(/*old_usage=*/4, /*new_usage=*/0),
-      UsageChangeResult::kOk);
-  // The new total usage should not go below 0, even though old usage to
-  // subtract is larger than the previous total usage.
-  EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 0U);
+    FileSystemAccessObserverQuotaManager* observer_quota_manager =
+        observation_group1.GetQuotaManagerForTesting();
 
-  observer_quota_manager.reset();
+    ASSERT_EQ(observer_quota_manager,
+              observation_group2.GetQuotaManagerForTesting());
+
+    observer_quota_manager->SetQuotaLimitForTesting(10);
+
+    // The total usage should start at zero.
+    EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 0U);
+
+    // Increasing the usage of an observation group, should increase the quota
+    // manager's total usage by the same amount.
+    EXPECT_EQ(observation_group1.OnUsageChange(4), UsageChangeResult::kOk);
+    EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 4U);
+
+    // The total usage should be the sum of the observation group's usages.
+    EXPECT_EQ(observation_group2.OnUsageChange(6), UsageChangeResult::kOk);
+    EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 10U);
+
+    // We are already at the quota limit, so increasing it would put us over it.
+    // This should remove `observation_group2`'s usage from the quota manager's
+    // total usage. Leaving just `observation_group1`'s usage remaining.
+    EXPECT_EQ(observation_group2.OnUsageChange(8),
+              UsageChangeResult::kQuotaUnavailable);
+    EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 4U);
+
+    // Decreasing the usage of an observation group, should decrease the quota
+    // manager's total usage by the same amount.
+    EXPECT_EQ(observation_group1.OnUsageChange(0), UsageChangeResult::kOk);
+    EXPECT_EQ(observer_quota_manager->GetTotalUsageForTesting(), 0U);
+  }
+
   // 10 usage out of 10 quota limit = 100%
   ExpectHistogramsOnQuotaManagerDestruction(/*highmark_usage=*/10,
                                             /*highmark_usage_percentage=*/100,
@@ -166,16 +174,16 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, OnUsageChange) {
 }
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaExceeded) {
-  scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager =
-      watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
-                                                          kSourceId);
-  observer_quota_manager->SetQuotaLimitForTesting(10);
+  {
+    FileSystemAccessObserverQuotaManager::Handle observation_group =
+        watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
+                                                            kSourceId);
+    observation_group.GetQuotaManagerForTesting()->SetQuotaLimitForTesting(10);
 
-  EXPECT_EQ(
-      observer_quota_manager->OnUsageChange(/*old_usage=*/0, /*new_usage=*/11),
-      UsageChangeResult::kQuotaUnavailable);
+    EXPECT_EQ(observation_group.OnUsageChange(11),
+              UsageChangeResult::kQuotaUnavailable);
+  }
 
-  observer_quota_manager.reset();
   // 0 usage out of 10 quota limit = 0%
   ExpectHistogramsOnQuotaManagerDestruction(/*highmark_usage=*/0,
                                             /*highmark_usage_percentage=*/0,
@@ -183,16 +191,15 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaExceeded) {
 }
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaNotExceeded) {
-  scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager =
-      watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
-                                                          kSourceId);
-  observer_quota_manager->SetQuotaLimitForTesting(10);
+  {
+    FileSystemAccessObserverQuotaManager::Handle observation_group =
+        watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
+                                                            kSourceId);
+    observation_group.GetQuotaManagerForTesting()->SetQuotaLimitForTesting(10);
 
-  EXPECT_EQ(
-      observer_quota_manager->OnUsageChange(/*old_usage=*/0, /*new_usage=*/1),
-      UsageChangeResult::kOk);
+    EXPECT_EQ(observation_group.OnUsageChange(1), UsageChangeResult::kOk);
+  }
 
-  observer_quota_manager.reset();
   // 1 usage out of 10 quota limit = 10%
   ExpectHistogramsOnQuotaManagerDestruction(/*highmark_usage=*/1,
                                             /*highmark_usage_percentage=*/10,
@@ -201,19 +208,17 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaNotExceeded) {
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest,
        QuotaManagerRemovedFromWatcherManagerOnDestruction) {
-  scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager =
-      watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
-                                                          kSourceId);
-  observer_quota_manager->SetQuotaLimitForTesting(10);
+  {
+    FileSystemAccessObserverQuotaManager::Handle observation_group =
+        watcher_manager().GetOrCreateQuotaManagerForTesting(kTestStorageKey,
+                                                            kSourceId);
+    observation_group.GetQuotaManagerForTesting()->SetQuotaLimitForTesting(10);
 
-  EXPECT_EQ(
-      observer_quota_manager->OnUsageChange(/*old_usage=*/0, /*new_usage=*/1),
-      UsageChangeResult::kOk);
+    EXPECT_EQ(observation_group.OnUsageChange(1), UsageChangeResult::kOk);
 
-  EXPECT_NE(watcher_manager().GetQuotaManagerForTesting(kTestStorageKey),
-            nullptr);
-
-  observer_quota_manager.reset();
+    EXPECT_NE(watcher_manager().GetQuotaManagerForTesting(kTestStorageKey),
+              nullptr);
+  }
   EXPECT_EQ(watcher_manager().GetQuotaManagerForTesting(kTestStorageKey),
             nullptr);
 

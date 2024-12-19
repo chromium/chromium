@@ -4,12 +4,36 @@
 
 #include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
+FileSystemAccessObserverQuotaManager::Handle::Handle(
+    scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager)
+    : quota_manager_(std::move(quota_manager)) {}
+
+FileSystemAccessObserverQuotaManager::Handle::~Handle() = default;
+
+FileSystemAccessObserverQuotaManager::Handle::Handle(Handle&&) = default;
+FileSystemAccessObserverQuotaManager::Handle&
+FileSystemAccessObserverQuotaManager::Handle::operator=(Handle&&) = default;
+
+FileSystemAccessObserverQuotaManager::UsageChangeResult
+FileSystemAccessObserverQuotaManager::Handle::OnUsageChange(size_t usage) {
+  if (errored_) {
+    return UsageChangeResult::kQuotaUnavailable;
+  }
+
+  UsageChangeResult result = quota_manager_->OnUsageChange(old_usage_, usage);
+
+  old_usage_ = usage;
+  errored_ = result == UsageChangeResult::kQuotaUnavailable;
+
+  return result;
+}
 
 FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
     const blink::StorageKey& storage_key,
@@ -51,6 +75,11 @@ FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
   }
 
   watcher_manager_->RemoveQuotaManager(storage_key_);
+}
+
+FileSystemAccessObserverQuotaManager::Handle
+FileSystemAccessObserverQuotaManager::CreateHandle() {
+  return Handle(base::WrapRefCounted(this));
 }
 
 FileSystemAccessObserverQuotaManager::UsageChangeResult

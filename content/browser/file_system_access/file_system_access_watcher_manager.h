@@ -104,7 +104,7 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     return observation_groups_.HasObserver(observation_group);
   }
 
-  scoped_refptr<FileSystemAccessObserverQuotaManager>
+  FileSystemAccessObserverQuotaManager::Handle
   GetOrCreateQuotaManagerForTesting(const blink::StorageKey& storage_key,
                                     ukm::SourceId ukm_source_id);
   FileSystemAccessObserverQuotaManager* GetQuotaManagerForTesting(
@@ -165,7 +165,7 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
           on_source_initialized,
       blink::mojom::FileSystemAccessErrorPtr result);
 
-  scoped_refptr<FileSystemAccessObserverQuotaManager> GetOrCreateQuotaManager(
+  FileSystemAccessObserverQuotaManager::Handle GetOrCreateQuotaManager(
       blink::StorageKey storage_key,
       ukm::SourceId ukm_source_id);
 
