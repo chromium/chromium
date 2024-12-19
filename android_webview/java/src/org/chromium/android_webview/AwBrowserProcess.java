@@ -212,7 +212,7 @@ public final class AwBrowserProcess {
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT,
                         () -> {
-                            ChildProcessLauncherHelper.warmUpOnAnyThread(appContext, true);
+                            ChildProcessLauncherHelper.warmUpOnAnyThread(appContext);
                         });
             }
             configureDisplayAndroidManager();

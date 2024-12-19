@@ -234,19 +234,19 @@ public class ChildProcessLauncherHelperTest {
                 0, ChildProcessLauncherTestUtils.getConnectionServiceNumber(connection));
     }
 
-    private static void warmUpOnUiThreadBlocking(final Context context, boolean sandboxed) {
+    private static void warmUpOnUiThreadBlocking(final Context context) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context, sandboxed);
+                    ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context);
                 });
-        ChildProcessConnection connection = getWarmUpConnection(sandboxed);
+        ChildProcessConnection connection = getWarmUpConnection();
         Assert.assertNotNull(connection);
         blockUntilConnected(connection);
     }
 
     private void testWarmUpImpl() {
         Context context = InstrumentationRegistry.getTargetContext();
-        warmUpOnUiThreadBlocking(context, /* sandboxed= */ true);
+        warmUpOnUiThreadBlocking(context);
 
         Assert.assertEquals(1, getConnectedSandboxedServicesCount());
 
@@ -306,12 +306,12 @@ public class ChildProcessLauncherHelperTest {
         Assert.assertEquals(0, getConnectedSandboxedServicesCount());
 
         Context context = InstrumentationRegistry.getTargetContext();
-        warmUpOnUiThreadBlocking(context, /* sandboxed= */ true);
+        warmUpOnUiThreadBlocking(context);
 
         Assert.assertEquals(1, getConnectedSandboxedServicesCount());
 
         // Crash the warm-up connection before it gets used.
-        ChildProcessConnection connection = getWarmUpConnection(/* sandboxed= */ true);
+        ChildProcessConnection connection = getWarmUpConnection();
         Assert.assertNotNull(connection);
         connection.crashServiceForTesting();
 
@@ -334,7 +334,7 @@ public class ChildProcessLauncherHelperTest {
             message = "Broken in 14+, crbug.com/354765949")
     public void testWarmUpProcessCrashAfterUse() {
         Context context = InstrumentationRegistry.getTargetContext();
-        warmUpOnUiThreadBlocking(context, /* sandboxed= */ true);
+        warmUpOnUiThreadBlocking(context);
 
         Assert.assertEquals(1, getConnectedSandboxedServicesCount());
 
@@ -351,35 +351,6 @@ public class ChildProcessLauncherHelperTest {
         connection.crashServiceForTesting();
 
         waitForConnectedSandboxedServicesCount(0);
-    }
-
-    // Tests that the warm-up the previleged process connection.
-    @Test
-    @MediumTest
-    @Feature({"ProcessManagement"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Broken in 14+, crbug.com/354765949")
-    public void testWarmUpPrivilegedProcess() {
-        Assert.assertEquals(0, getConnectedServicesCount());
-
-        Context context = InstrumentationRegistry.getTargetContext();
-        warmUpOnUiThreadBlocking(context, /* sandboxed= */ false);
-
-        Assert.assertEquals(0, getConnectedSandboxedServicesCount());
-        Assert.assertEquals(1, getConnectedServicesCount());
-
-        // And subsequent process launches should work.
-        ChildProcessLauncherHelperImpl launcher =
-                startChildProcess(
-                        BLOCK_UNTIL_SETUP,
-                        /* doSetupConnection= */ true,
-                        /* sandboxed= */ false,
-                        /* reducePriorityOnBackground= */ false,
-                        /* canUseWarmUpConnection= */ true);
-        Assert.assertEquals(1, getConnectedServicesCount());
-        Assert.assertEquals(0, getConnectedSandboxedServicesCount());
-        Assert.assertNotNull(ChildProcessLauncherTestUtils.getConnection(launcher));
     }
 
     @Test
@@ -534,17 +505,6 @@ public class ChildProcessLauncherHelperTest {
                 });
     }
 
-    // Returns the number of all connection currently connected.
-    private static int getConnectedServicesCount() {
-        return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                new Callable<Integer>() {
-                    @Override
-                    public Integer call() {
-                        return ChildProcessLauncherHelperImpl.getConnectedServicesCountForTesting();
-                    }
-                });
-    }
-
     // Returns the number of sandboxed connection currently connected,
     private static int getConnectedSandboxedServicesCount() {
         return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
@@ -599,13 +559,12 @@ public class ChildProcessLauncherHelperTest {
                 });
     }
 
-    private static ChildProcessConnection getWarmUpConnection(boolean sandboxed) {
+    private static ChildProcessConnection getWarmUpConnection() {
         return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                 new Callable<ChildProcessConnection>() {
                     @Override
                     public ChildProcessConnection call() {
-                        return ChildProcessLauncherHelperImpl.getWarmUpConnectionForTesting(
-                                sandboxed);
+                        return ChildProcessLauncherHelperImpl.getWarmUpConnectionForTesting();
                     }
                 });
     }
