@@ -4,11 +4,14 @@
 
 package org.chromium.components.zoom;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Holds all constants related zooming in/out WebContents.
  * <p>This class uses the term 'zoom' for legacy reasons, but relates
  * to what chrome calls the 'page scale factor'.
  */
+@NullMarked
 public class ZoomConstants {
     public static final float ZOOM_IN_DELTA = 1.25f;
     public static final float ZOOM_OUT_DELTA = .8f;
