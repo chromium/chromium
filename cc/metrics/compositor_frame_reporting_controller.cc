@@ -391,6 +391,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     impl_reporter->set_created_new_tree(submit_info.drawn_with_new_layer_tree);
     impl_reporter->set_normalized_invalidated_area(
         submit_info.normalized_invalidated_area);
+    impl_reporter->set_invalidate_raster_scroll(
+        submit_info.invalidate_raster_scroll);
     submitted_compositor_frames_.emplace_back(submit_info.frame_token,
                                               std::move(impl_reporter));
   }
@@ -737,6 +739,8 @@ void CompositorFrameReportingController::SetThreadAffectsSmoothness(
 
   if (thread_type == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     is_compositor_thread_driving_smoothness_ = affects_smoothness;
+  } else if (thread_type == FrameInfo::SmoothEffectDrivingThread::kRaster) {
+    is_raster_thread_driving_smoothness_ = affects_smoothness;
   } else {
     DCHECK_EQ(thread_type, FrameInfo::SmoothEffectDrivingThread::kMain);
     is_main_thread_driving_smoothness_ = affects_smoothness;
@@ -841,6 +845,9 @@ CompositorFrameReportingController::GetSmoothThread() const {
   if (is_main_thread_driving_smoothness_) {
     return is_compositor_thread_driving_smoothness_ ? SmoothThread::kSmoothBoth
                                                     : SmoothThread::kSmoothMain;
+  }
+  if (is_raster_thread_driving_smoothness_) {
+    return SmoothThread::kSmoothRaster;
   }
 
   return is_compositor_thread_driving_smoothness_

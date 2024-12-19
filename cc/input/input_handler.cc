@@ -145,6 +145,9 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     // node.
     DCHECK(deferred_scroll_end_);
     deferred_scroll_end_ = false;
+    scroll_status.raster_inducing =
+        GetScrollTree().CanRealizeScrollsOnPendingTree(
+            *CurrentlyScrollingNode());
     return scroll_status;
   }
 
@@ -270,6 +273,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
       scroll_tree.GetMainThreadRepaintReasons(*scrolling_node);
   CHECK(MainThreadScrollingReason::AreRepaintReasons(
       scroll_status.main_thread_repaint_reasons));
+  scroll_status.raster_inducing =
+      scroll_tree.CanRealizeScrollsOnPendingTree(*scrolling_node);
 
   DidLatchToScroller(*scroll_state, type);
 
@@ -586,7 +591,11 @@ void InputHandler::RecordScrollBegin(
       break;
     case ScrollBeginThreadState::kScrollingOnMain:
     case ScrollBeginThreadState::kScrollingOnCompositorBlockedOnMain:
+    case ScrollBeginThreadState::kRasterInducingScrollBlockedOnMain:
       scrolling_thread = FrameInfo::SmoothEffectDrivingThread::kMain;
+      break;
+    case ScrollBeginThreadState::kRasterInducingScroll:
+      scrolling_thread = FrameInfo::SmoothEffectDrivingThread::kRaster;
       break;
   }
   compositor_delegate_->GetImplDeprecated()

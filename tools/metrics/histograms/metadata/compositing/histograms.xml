@@ -74,6 +74,7 @@ chromium-metrics-reviews@google.com.
 <variants name="SmoothnessThread">
   <variant name="CompositorThread."/>
   <variant name="MainThread."/>
+  <variant name="RasterThread."/>
 </variants>
 
 <variants name="TileManagerProcessType">

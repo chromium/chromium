@@ -21,6 +21,7 @@ struct CC_EXPORT SubmitInfo {
              bool top_controls_moved,
              EventMetricsSet events_metrics,
              bool drawn_with_new_layer_tree,
+             bool invalidate_raster_scroll,
              std::optional<float> normalized_invalidated_area);
 
   SubmitInfo(uint32_t frame_token, base::TimeTicks time);
@@ -40,6 +41,7 @@ struct CC_EXPORT SubmitInfo {
   bool top_controls_moved = false;
   EventMetricsSet events_metrics;
   bool drawn_with_new_layer_tree = true;
+  bool invalidate_raster_scroll = false;
 
   // total_invalidated_area / output_area of frame.
   std::optional<float> normalized_invalidated_area;

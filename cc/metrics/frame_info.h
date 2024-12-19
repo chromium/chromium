@@ -42,9 +42,11 @@ struct CC_EXPORT FrameInfo {
   FrameFinalState final_state = FrameFinalState::kNoUpdateDesired;
   FrameFinalState final_state_raster_property =
       FrameFinalState::kNoUpdateDesired;
+  FrameFinalState final_state_raster_scroll = FrameFinalState::kNoUpdateDesired;
 
   enum class SmoothThread {
     kSmoothNone,
+    kSmoothRaster,
     kSmoothCompositor,
     kSmoothMain,
     kSmoothBoth
@@ -58,11 +60,18 @@ struct CC_EXPORT FrameInfo {
   };
   MainThreadResponse main_thread_response = MainThreadResponse::kIncluded;
 
-  enum class SmoothEffectDrivingThread { kMain, kCompositor, kUnknown };
+  enum class SmoothEffectDrivingThread {
+    kMain = 0,
+    kCompositor = 1,
+    kRaster = 2,
+    kUnknown = 3,
+    kMaxValue = kUnknown,
+  };
   SmoothEffectDrivingThread scroll_thread = SmoothEffectDrivingThread::kUnknown;
 
   bool checkerboarded_needs_raster = false;
   bool checkerboarded_needs_record = false;
+  bool did_raster_inducing_scroll = false;
 
   // The time when the frame was terminated. If the frame had to be 'split'
   // (i.e. compositor-thread update and main-thread updates were presented in
@@ -83,6 +92,7 @@ struct CC_EXPORT FrameInfo {
   // whether the update was part of a smooth sequence.
   bool WasSmoothCompositorUpdateDropped() const;
   bool WasSmoothRasterPropertyUpdateDropped() const;
+  bool WasSmoothRasterScrollUpdateDropped() const;
   bool WasSmoothMainUpdateDropped() const;
   bool WasSmoothMainUpdateExpected() const;
 
@@ -99,6 +109,7 @@ struct CC_EXPORT FrameInfo {
   bool was_merged = false;
   bool compositor_update_was_dropped = false;
   bool raster_property_was_dropped = false;
+  bool raster_scroll_was_dropped = false;
   bool main_update_was_dropped = false;
 
   // A frame that `was_merged` could have differing final states, and differing

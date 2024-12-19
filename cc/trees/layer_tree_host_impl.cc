@@ -868,6 +868,7 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
 
   sync_tree()->InvalidateRegionForImages(images_to_invalidate);
 
+  sync_tree()->set_did_raster_inducing_scroll(false);
   if (!pending_invalidation_raster_inducing_scrolls_.empty()) {
     base::flat_set<ElementId> scrolls_to_invalidate;
     std::swap(scrolls_to_invalidate,
@@ -2918,6 +2919,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
                     top_controls_moved,
                     std::move(events_metrics),
                     drawn_with_new_layer_tree,
+                    active_tree_->did_raster_inducing_scroll(),
                     normalized_invalidated_area};
 }
 

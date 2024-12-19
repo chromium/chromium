@@ -334,7 +334,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   void RecordScrollBegin(blink::WebGestureDevice device,
                          uint32_t main_thread_hit_tested_reasons,
-                         uint32_t main_thread_repaint_reasons);
+                         uint32_t main_thread_repaint_reasons,
+                         bool raster_inducing = false);
 
   bool HasQueuedEventsReadyForDispatch(bool frame_aligned) const;
 

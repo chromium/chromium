@@ -438,6 +438,7 @@ void LayerTreeImpl::InvalidateRasterInducingScrolls(
     return;
   }
   DCHECK(IsSyncTree());
+  set_did_raster_inducing_scroll(true);
   for (PictureLayerImpl* picture_layer : picture_layers_) {
     picture_layer->InvalidateRasterInducingScrolls(scrolls_to_invalidate);
   }
@@ -946,6 +947,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   target_tree->set_trace_id(trace_id());
   target_tree->set_background_color(background_color());
   target_tree->set_have_scroll_event_handlers(have_scroll_event_handlers());
+  target_tree->set_did_raster_inducing_scroll(did_raster_inducing_scroll());
   target_tree->set_event_listener_properties(
       EventListenerClass::kTouchStartOrMove,
       event_listener_properties(EventListenerClass::kTouchStartOrMove));

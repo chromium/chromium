@@ -1515,6 +1515,9 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
           case FrameInfo::SmoothEffectDrivingThread::kCompositor:
             scroll_state = ChromeFrameReporter::SCROLL_COMPOSITOR_THREAD;
             break;
+          case FrameInfo::SmoothEffectDrivingThread::kRaster:
+            scroll_state = ChromeFrameReporter::SCROLL_RASTER;
+            break;
           case FrameInfo::SmoothEffectDrivingThread::kUnknown:
             scroll_state = ChromeFrameReporter::SCROLL_NONE;
             break;
@@ -2094,6 +2097,7 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   FrameFinalState final_state = FrameFinalState::kNoUpdateDesired;
   FrameFinalState final_state_raster_property =
       FrameFinalState::kNoUpdateDesired;
+  FrameFinalState final_state_raster_scroll = FrameFinalState::kNoUpdateDesired;
   auto smooth_thread = smooth_thread_;
   auto scrolling_thread = scrolling_thread_;
 
@@ -2108,8 +2112,14 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
       }
 
       final_state_raster_property = final_state;
+      final_state_raster_scroll = final_state;
       if (want_new_tree_ && !created_new_tree_) {
         final_state_raster_property = FrameFinalState::kDropped;
+      }
+      if (scrolling_thread == FrameInfo::SmoothEffectDrivingThread::kRaster) {
+        if (invalidate_raster_scroll_ && !created_new_tree_) {
+          final_state_raster_scroll = FrameFinalState::kDropped;
+        }
       }
       break;
 
@@ -2117,6 +2127,7 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
     case FrameTerminationStatus::kReplacedByNewReporter:
       final_state = FrameFinalState::kDropped;
       final_state_raster_property = FrameFinalState::kDropped;
+      final_state_raster_scroll = FrameFinalState::kDropped;
       break;
 
     case FrameTerminationStatus::kDidNotProduceFrame: {
@@ -2142,6 +2153,11 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
       final_state_raster_property = final_state;
       if (want_new_tree_ && !created_new_tree_) {
         final_state_raster_property = FrameFinalState::kDropped;
+      }
+      final_state_raster_scroll = final_state;
+      if (scrolling_thread == FrameInfo::SmoothEffectDrivingThread::kRaster &&
+          !invalidate_raster_scroll_) {
+        final_state_raster_scroll = FrameFinalState::kDropped;
       }
 
       // TDOD(crbug.com/369633237): The following assumption is no longer
@@ -2181,12 +2197,14 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   // about dropped frames, resulting in different final FrameInfo states.
   info.final_state = final_state;
   info.final_state_raster_property = final_state_raster_property;
+  info.final_state_raster_scroll = final_state_raster_scroll;
   info.smooth_thread = smooth_thread;
   info.smooth_thread_raster_property = smooth_thread_;
   info.scroll_thread = scrolling_thread;
   info.checkerboarded_needs_raster = checkerboarded_needs_raster_;
   info.checkerboarded_needs_record = checkerboarded_needs_record_;
   info.sequence_number = args_.frame_id.sequence_number;
+  info.did_raster_inducing_scroll = invalidate_raster_scroll_;
 
   if (frame_skip_reason_.has_value() &&
       frame_skip_reason() == FrameSkippedReason::kNoDamage) {

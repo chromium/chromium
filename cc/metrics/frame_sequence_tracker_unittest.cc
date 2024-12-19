@@ -139,6 +139,7 @@ class FrameSequenceTrackerTest : public testing::Test {
         case 'P':
         case 'n':
         case 's':
+        case 'r':
           ASSERT_EQ(*str, '(') << command;
           str = ParseNumber(++str, &sequence);
           ASSERT_EQ(*str, ')');
@@ -181,6 +182,8 @@ class FrameSequenceTrackerTest : public testing::Test {
           FrameInfo frame_info;
           frame_info.final_state = FrameInfo::FrameFinalState::kDropped;
           frame_info.final_state_raster_property =
+              FrameInfo::FrameFinalState::kDropped;
+          frame_info.final_state_raster_scroll =
               FrameInfo::FrameFinalState::kDropped;
           frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothCompositor;
           frame_info.smooth_thread_raster_property =
@@ -257,7 +260,19 @@ class FrameSequenceTrackerTest : public testing::Test {
           collection_.AddSortedFrame(args, frame_info);
           break;
         }
-
+        case 'r': {
+          // Raster scrolls should be accounted for separately from other
+          // scroll types.
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kNoUpdateDesired;
+          frame_info.scroll_thread =
+              FrameInfo::SmoothEffectDrivingThread::kRaster;
+          frame_info.final_state_raster_scroll =
+              FrameInfo::FrameFinalState::kDropped;
+          collection_.AddSortedFrame(args, frame_info);
+          break;
+        }
         default:
           NOTREACHED();
       }
@@ -428,6 +443,17 @@ TEST_F(FrameSequenceTrackerTest, CompositorDroppedFramesV3vsV4Metrics) {
   EXPECT_EQ(frames_expected(), 9u);
   EXPECT_EQ(frames_produced(), 6u);     // 9 expected - 3 dropped = 6
   EXPECT_EQ(frames_produced_v4(), 2u);  // 9 expected - 7 dropped = 2
+}
+
+TEST_F(FrameSequenceTrackerTest, RasterScrollDroppedFramesIsSeparate) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kRaster);
+  // Begin, present frame 1, drop it once.
+  // Present frame 2, and trigger a raster scroll that
+  // drops 2 frames. Total dropped frames should be 3.
+  const char sequence[] = "b(1)p(1)d(2)p(3)r(4)r(5)";
+  GenerateSequence(sequence);
+  EXPECT_EQ(frames_expected(), 5u);
+  EXPECT_EQ(frames_produced_v4(), 2u);  // 5 expected - 3 dropped = 2
 }
 
 TEST_F(FrameSequenceTrackerTest, SimpleSequenceOneFrame) {

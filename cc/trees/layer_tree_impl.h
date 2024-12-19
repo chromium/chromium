@@ -715,6 +715,12 @@ class CC_EXPORT LayerTreeImpl {
   void set_have_scroll_event_handlers(bool have_event_handlers) {
     have_scroll_event_handlers_ = have_event_handlers;
   }
+  bool did_raster_inducing_scroll() const {
+    return did_raster_inducing_scroll_;
+  }
+  void set_did_raster_inducing_scroll(bool did_raster_scroll_impl) {
+    did_raster_inducing_scroll_ = did_raster_scroll_impl;
+  }
 
   // See LayerTreeHost.
   EventListenerProperties event_listener_properties(
@@ -880,6 +886,8 @@ class CC_EXPORT LayerTreeImpl {
   bool handle_visibility_changed_ : 1 = false;
 
   bool have_scroll_event_handlers_ : 1 = false;
+
+  bool did_raster_inducing_scroll_ : 1 = false;
 
   // Contains the physical rect of the device viewport, to be used in
   // determining what needs to be drawn.

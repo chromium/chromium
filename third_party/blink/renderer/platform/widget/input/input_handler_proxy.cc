@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/input_handler.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
@@ -163,12 +164,19 @@ cc::SnapFlingController::GestureScrollUpdateInfo GetGestureScrollUpdateInfo(
 cc::ScrollBeginThreadState RecordScrollingThread(
     bool scrolling_on_compositor_thread,
     bool blocked_on_main_at_begin,
-    WebGestureDevice device) {
+    WebGestureDevice device,
+    bool raster_inducing) {
   const char* kWheelHistogramName = "Renderer4.ScrollingThread.Wheel";
   const char* kTouchHistogramName = "Renderer4.ScrollingThread.Touch";
 
   auto status = cc::ScrollBeginThreadState::kScrollingOnMain;
-  if (scrolling_on_compositor_thread) {
+  if (raster_inducing) {
+    DCHECK(scrolling_on_compositor_thread);
+    status =
+        blocked_on_main_at_begin
+            ? cc::ScrollBeginThreadState::kRasterInducingScrollBlockedOnMain
+            : cc::ScrollBeginThreadState::kRasterInducingScroll;
+  } else if (scrolling_on_compositor_thread) {
     status =
         blocked_on_main_at_begin
             ? cc::ScrollBeginThreadState::kScrollingOnCompositorBlockedOnMain
@@ -957,7 +965,8 @@ WebInputEventAttribution InputHandlerProxy::PerformEventAttribution(
 void InputHandlerProxy::RecordScrollBegin(
     WebGestureDevice device,
     uint32_t main_thread_hit_tested_reasons,
-    uint32_t main_thread_repaint_reasons) {
+    uint32_t main_thread_repaint_reasons,
+    bool raster_inducing) {
   DCHECK(cc::MainThreadScrollingReason::AreHitTestReasons(
       main_thread_hit_tested_reasons));
   DCHECK(cc::MainThreadScrollingReason::AreRepaintReasons(
@@ -989,7 +998,7 @@ void InputHandlerProxy::RecordScrollBegin(
       blocked_on_main_thread_handler || main_thread_hit_tested_reasons;
 
   auto scroll_start_state = RecordScrollingThread(
-      is_compositor_scroll, blocked_on_main_at_begin, device);
+      is_compositor_scroll, blocked_on_main_at_begin, device, raster_inducing);
   input_handler_->RecordScrollBegin(GestureScrollInputType(device),
                                     scroll_start_state);
 
@@ -1110,7 +1119,8 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
   if (scroll_status.thread != ScrollThread::kScrollIgnored) {
     RecordScrollBegin(gesture_event.SourceDevice(),
                       scroll_state.main_thread_hit_tested_reasons(),
-                      scroll_status.main_thread_repaint_reasons);
+                      scroll_status.main_thread_repaint_reasons,
+                      scroll_status.raster_inducing);
   }
 
   InputHandlerProxy::EventDisposition result = DID_NOT_HANDLE;
