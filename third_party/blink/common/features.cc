@@ -31,11 +31,6 @@ namespace blink::features {
 // `RuntimeEnabledFeatures)`, they should still be ordered in this section based
 // on the identifier name of the generated feature.
 
-// Enable the Protected Audience's reporting with ad macro API.
-BASE_FEATURE(kAdAuctionReportingWithMacroApi,
-             "AdAuctionReportingWithMacroApi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls the capturing of the Ad-Auction-Signals header, and the maximum
 // allowed Ad-Auction-Signals header value.
 BASE_FEATURE(kAdAuctionSignals,

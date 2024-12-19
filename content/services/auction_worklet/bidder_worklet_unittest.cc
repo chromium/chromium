@@ -14304,19 +14304,7 @@ TEST_F(BidderWorkletTest,
   )");
 }
 
-class BidderWorkletAdMacroReportingEnabledTest : public BidderWorkletTest {
- public:
-  BidderWorkletAdMacroReportingEnabledTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kAdAuctionReportingWithMacroApi},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
+TEST_F(BidderWorkletTest, ReportWinRegisterAdMacro) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdMacro('campaign', '111');
         registerAdMacro('', '111');
@@ -14394,8 +14382,7 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
       {{"campaign", "111"}, {"publisher", "abc"}});
 }
 
-TEST_F(BidderWorkletAdMacroReportingEnabledTest,
-       ReportWinRegisterAdMacroInvalidArgs) {
+TEST_F(BidderWorkletTest, ReportWinRegisterAdMacroInvalidArgs) {
   struct TestCase {
     const char* call;
     const char* expected_error;

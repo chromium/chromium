@@ -2030,8 +2030,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       disabled_features.push_back(blink::features::kPrivateAggregationApi);
     }
 
-    enabled_features.push_back(
-        {blink::features::kAdAuctionReportingWithMacroApi, {}});
     enabled_features.push_back({blink::features::kFledgeRealTimeReporting, {}});
     enabled_features.push_back(
         {blink::features::kFledgeAuctionDealSupport, {}});
