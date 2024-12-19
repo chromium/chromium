@@ -56,7 +56,6 @@ export interface HealthdInternalsAppElement {
     processPage: HealthdInternalsProcessElement,
     systemTrendPage: HealthdInternalsSystemTrendElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
-    appContainer: HTMLElement,
     sidebar: HTMLElement,
     sidebarToggleButton: HTMLElement,
   };
@@ -234,10 +233,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
   }
 
   private toggleSidebar() {
-    this.$.sidebar.hidden = !this.$.sidebar.hidden;
-    this.$.sidebarToggleButton.innerText = this.$.sidebar.hidden ? '>' : '<';
-    this.$.appContainer.style.setProperty(
-        '--sidebar-width', this.$.sidebar.hidden ? '0px' : '220px');
+    this.$.sidebar.classList.toggle('collapsed');
+    this.$.sidebarToggleButton.innerText =
+        this.$.sidebar.classList.contains('collapsed') ? '>' : '<';
   }
 }
 

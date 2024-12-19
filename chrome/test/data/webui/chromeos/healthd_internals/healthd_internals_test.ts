@@ -73,19 +73,19 @@ suite('healthdInternalsTestSuite', function() {
     const sidebarToggleButton = strictQuery(
         '#sidebarToggleButton', healthdInternalsApp.shadowRoot, HTMLElement);
 
-    // Sidebar is displyed by default.
-    assertEquals(sidebar.hidden, false);
+    // Sidebar is displayed by default.
+    assertEquals(sidebar.classList.contains('collapsed'), false);
     assertEquals(sidebarToggleButton.innerText, '<');
 
     for (let index = 0; index < 10; index++) {
       // Hide the sidebar and check.
       sidebarToggleButton.click();
-      assertEquals(sidebar.hidden, true);
+      assertEquals(sidebar.classList.contains('collapsed'), true);
       assertEquals(sidebarToggleButton.innerText, '>');
 
       // Show the sidebar and check.
       sidebarToggleButton.click();
-      assertEquals(sidebar.hidden, false);
+      assertEquals(sidebar.classList.contains('collapsed'), false);
       assertEquals(sidebarToggleButton.innerText, '<');
     }
   });

@@ -1,6 +1,5 @@
 <style include="cr-nav-menu-item-style healthd-internals-shared">
   #appContainer {
-    --sidebar-width: 220px;
     display: flex;
     height: 100vh;
     width: 100vw;
@@ -8,7 +7,7 @@
 
   #main {
     height: 100%;
-    width: calc(100vw - var(--sidebar-width) - 20px);
+    flex-grow: 1;
   }
 
   #sidebarContainer {
@@ -20,9 +19,13 @@
     border-inline-end: 1px solid var(--cr-separator-color);
     box-sizing: border-box;
     overflow: auto;
-    padding-block-end: 8px;
-    padding-inline-end: 8px;
-    width: 220px;
+    width: 240px;
+    white-space: nowrap;
+    transition: width .2s ease-in-out;
+  }
+
+  #sidebar.collapsed {
+    width: 0px;
   }
 
   #selector {
@@ -34,7 +37,6 @@
     justify-content: center;
   }
 
-
   #sidebarToggleButton {
     display: flex;
     align-items: center;
@@ -44,6 +46,10 @@
     width: 20px;
     cursor: pointer;
     color: var(--cr-primary-text-color);
+  }
+
+  #sidebarToggleButton:hover {
+    background-color: var(--cros-sys-highlight_shape);
   }
 </style>
 
