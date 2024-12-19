@@ -67,7 +67,7 @@ export class SystemTrendController {
       memory: {
         dataList: [],
         selectedIndices: [],
-        unitLabel: new UnitLabel(['KiB', 'MiB', 'GiB'], 1024),
+        unitLabel: new UnitLabel(['KB', 'MB', 'GB'], 1024),
       },
       thermal: {
         dataList: [],
@@ -77,7 +77,7 @@ export class SystemTrendController {
       zram: {
         dataList: [],
         selectedIndices: [],
-        unitLabel: new UnitLabel(['B', 'KiB', 'MiB', 'GiB'], 1024),
+        unitLabel: new UnitLabel(['B', 'KB', 'MB', 'GB'], 1024),
       },
     };
   }

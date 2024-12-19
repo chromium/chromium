@@ -55,7 +55,7 @@ export function getFormattedMemory(
     memoryUnit: MemoryUnitEnum, memory: number): string {
   switch (memoryUnit) {
     case MemoryUnitEnum.AUTO: {
-      const units = ['KiB', 'MiB', 'GiB'];
+      const units = ['KB', 'MB', 'GB'];
       let unitIdx = 0;
       while (memory > 1024 && unitIdx + 1 < units.length) {
         memory /= 1024;
@@ -64,13 +64,13 @@ export function getFormattedMemory(
       return `${toFixedFloat(memory, 2)} ${units[unitIdx]}`;
     }
     case MemoryUnitEnum.GIBI: {
-      return `${toFixedFloat(memory / 1024 / 1024, 2)} GiB`;
+      return `${toFixedFloat(memory / 1024 / 1024, 2)} GB`;
     }
     case MemoryUnitEnum.MEBI: {
-      return `${toFixedFloat(memory / 1024, 2)} MiB`;
+      return `${toFixedFloat(memory / 1024, 2)} MB`;
     }
     case MemoryUnitEnum.KIBI: {
-      return `${memory} KiB`;
+      return `${memory} KB`;
     }
     default: {
       console.error('Unknown memory unit: ', memoryUnit);
