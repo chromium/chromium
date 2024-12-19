@@ -849,6 +849,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_BOOKMARK_BAR:
       ToggleBookmarkBar(browser_);
       break;
+    case IDC_SHOW_ALL_COMPARISON_TABLES:
+      ShowAllComparisonTables(browser_);
+      break;
     case IDC_SHOW_FULL_URLS:
       ToggleShowFullURLs(browser_);
       break;
@@ -1459,6 +1462,10 @@ void BrowserCommandController::InitCommandState() {
   if (IsChromeLabsEnabled()) {
     command_updater_.UpdateCommandEnabled(IDC_SHOW_CHROME_LABS, true);
   }
+
+  // Compare commands.
+  command_updater_.UpdateCommandEnabled(IDC_COMPARE_MENU, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_ALL_COMPARISON_TABLES, true);
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();

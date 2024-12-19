@@ -52,6 +52,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
@@ -755,5 +756,9 @@ void ShowWebAppSettings(Profile* profile,
   ShowWebAppSettingsImpl(/*browser=*/nullptr, profile, app_id, entry_point);
 }
 #endif
+
+void ShowAllComparisonTables(Browser* browser) {
+  ShowSingletonTab(browser, GURL(commerce::kChromeUICompareUrl));
+}
 
 }  // namespace chrome

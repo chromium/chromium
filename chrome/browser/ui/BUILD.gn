@@ -1703,6 +1703,7 @@ static_library("ui") {
       "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:impl",
       "//chrome/browser/ui/customize_chrome",
@@ -1855,6 +1856,7 @@ static_library("ui") {
       "//chrome/browser/importer:impl",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_list_impl",
+      "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/side_panel",
     ]

@@ -720,4 +720,23 @@
       No thanks
     </message>
   </if> <!-- not use_titlecase -->
+  <!-- For Comparison tables app menu -->
+  <if expr="use_titlecase">
+    <then>
+      <message name="IDS_COMPARE_MENU_LABEL" desc="The label for the comparison tables submenu item under the bookmarks and lists app menu.">
+        Comparison Tables
+      </message>
+      <message name="IDS_COMPARE_SHOW_ALL_COMPARISON_TABLES" desc="The label for the menu option for showing all of a user's existing comparison tables.">
+        Show All Comparison Tables
+      </message>
+    </then>
+    <else>
+      <message name="IDS_COMPARE_MENU_LABEL" desc="The label for the comparison tables submenu item under the bookmarks and lists app menu.">
+        Comparison tables
+      </message>
+      <message name="IDS_COMPARE_SHOW_ALL_COMPARISON_TABLES" desc="The label for the menu option for showing all of a user's existing comparison tables.">
+        Show all comparison tables
+      </message>
+    </else>
+  </if> <!-- use_titlecase -->
 </grit-part>

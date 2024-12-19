@@ -8,6 +8,7 @@ source_set("commerce") {
   sources = [
     "commerce_page_action_controller.h",
     "commerce_ui_tab_helper.h",
+    "compare_sub_menu_model.h",
     "discounts_page_action_controller.h",
     "price_tracking_page_action_controller.h",
     "product_specifications_entry_point_controller.h",
@@ -36,6 +37,7 @@ source_set("impl") {
   sources = [
     "commerce_page_action_controller.cc",
     "commerce_ui_tab_helper.cc",
+    "compare_sub_menu_model.cc",
     "discounts_page_action_controller.cc",
     "price_tracking_page_action_controller.cc",
     "product_specifications_entry_point_controller.cc",
@@ -58,6 +60,7 @@ source_set("impl") {
     "//components/commerce/core:pref_names",
     "//components/commerce/core:utils",
     "//components/commerce/core/mojom:mojo_bindings",
+    "//components/strings",
     "//components/vector_icons",
     "//services/metrics/public/cpp:gen_ukm_builders",
     "//services/metrics/public/cpp:metrics_cpp",

@@ -185,6 +185,8 @@ void ShowWebAppSettings(Profile* profile,
                         web_app::AppSettingsPageEntryPoint entry_point);
 #endif
 
+void ShowAllComparisonTables(Browser* browser);
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_CHROME_PAGES_H_

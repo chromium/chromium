@@ -272,6 +272,8 @@
 #define IDC_TASK_MANAGER_SHORTCUT       40286
 #define IDC_TASK_MANAGER_CONTEXT_MENU   40287
 #define IDC_TASK_MANAGER_MAIN_MENU      40288
+#define IDC_COMPARE_MENU                40289
+#define IDC_SHOW_ALL_COMPARISON_TABLES  40290
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

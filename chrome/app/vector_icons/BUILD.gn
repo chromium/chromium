@@ -49,6 +49,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "close_chrome_refresh.icon",
     "close_group_refresh.icon",
     "close_tab_chrome_refresh.icon",
+    "compare.icon",
     "computer_with_circle_background.icon",
     "copy.icon",
     "copy_menu.icon",
