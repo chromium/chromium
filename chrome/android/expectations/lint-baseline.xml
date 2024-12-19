@@ -2499,17 +2499,6 @@
     </issue>
 
     <issue
-        id="ClickableViewAccessibility"
-        message="Custom view `TouchRestrictingFrameLayout` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
-        errorLine2="                   ~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
-            line="42"
-            column="20"/>
-    </issue>
-
-    <issue
         id="AccessibilityWindowStateChangedEvent"
         message="Manually populating or sending TYPE_WINDOW_STATE_CHANGED events should be avoided. They may be ignored on certain versions of Android. Prefer setting UI metadata using `View.onInitializeAccessibilityNodeInfo`, `Activity.setTitle`, `ViewCompat.setAccessibilityPaneTitle`, etc. to inform users of crucial changes to the UI."
         errorLine1="            mListView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);"
