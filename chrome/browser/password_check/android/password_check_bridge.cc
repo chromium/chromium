@@ -133,11 +133,8 @@ void PasswordCheckBridge::LaunchCheckupInAccount(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& activity) {
   PasswordCheckupLauncherHelperImpl checkup_launcher;
-  checkup_launcher.LaunchCheckupOnlineWithActivity(
-      env,
-      base::android::ConvertUTF8ToJavaString(
-          env, password_manager::GetPasswordCheckupURL().spec()),
-      activity);
+  std::string spec = password_manager::GetPasswordCheckupURL().spec();
+  checkup_launcher.LaunchCheckupOnlineWithActivity(env, spec, activity);
 }
 
 void PasswordCheckBridge::UpdateCredential(

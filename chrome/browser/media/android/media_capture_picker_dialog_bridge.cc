@@ -47,8 +47,7 @@ void MediaCapturePickerDialogBridge::Show(
   }
 
   Java_MediaCapturePickerDialogBridge_showDialog(
-      env, java_object_, window_android->GetJavaObject(),
-      base::android::ConvertUTF16ToJavaString(env, app_name));
+      env, java_object_, window_android->GetJavaObject(), app_name);
 }
 
 void MediaCapturePickerDialogBridge::OnResult(

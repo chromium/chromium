@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.offlinepages;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -30,7 +31,7 @@ public class PublishPageCallback implements Callback<String> {
     /** Report results of publishing. */
     @Override
     @CalledByNative
-    public void onResult(String newFilePath) {
+    public void onResult(@JniType("std::string") String newFilePath) {
         OfflinePageItem page = null;
         // If the sharing failed, the file path will be empty.  We'll call the share callback
         // with a null page to indicate failure.

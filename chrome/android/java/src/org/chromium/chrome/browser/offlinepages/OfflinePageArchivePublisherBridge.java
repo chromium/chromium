@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
@@ -57,23 +58,24 @@ public class OfflinePageArchivePublisherBridge {
 
     /**
      * This is a pass through to the {@link AndroidDownloadManager} function of the same name.
+     *
      * @param title The display name for this download.
      * @param description Long description for this download.
      * @param path File system path for this download.
      * @param length Length in bytes of this downloaded item.
-     * @param uri The origin of this download.  Used in API 24+ only.
-     * @param referer Where this download was refered from.  Used in API 24+ only.
+     * @param uri The origin of this download. Used in API 24+ only.
+     * @param referer Where this download was refered from. Used in API 24+ only.
      * @return the download ID of this item as assigned by the download manager.
      */
     @CalledByNative
     @VisibleForTesting
     public static long addCompletedDownload(
-            String title,
-            String description,
-            String path,
+            @JniType("std::string") String title,
+            @JniType("std::string") String description,
+            @JniType("std::string") String path,
             long length,
-            String uri,
-            String referer) {
+            @JniType("std::string") String uri,
+            @JniType("std::string") String referer) {
         try {
             return callAddCompletedDownload(title, description, path, length, uri, referer);
         } catch (Exception e) {
@@ -133,14 +135,15 @@ public class OfflinePageArchivePublisherBridge {
      * Adds an archive to the downloads collection on Android Q+. Preferred alternative to
      * addCompletedDownload for Android Q and later.
      *
-     * TODO(iwells): Remove reflection once API level 29 is supported.
+     * <p>TODO(iwells): Remove reflection once API level 29 is supported.
      *
      * @param page Offline page to be published.
      * @return Content URI referring to the published page.
      */
     @CalledByNative
     @VisibleForTesting
-    public static String publishArchiveToDownloadsCollection(OfflinePageItem page) {
+    public static @JniType("std::string") String publishArchiveToDownloadsCollection(
+            OfflinePageItem page) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
         final String isPending = "is_pending"; // MediaStore.IS_PENDING

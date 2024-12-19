@@ -28,8 +28,6 @@ void ShowAutoSigninPrompt(content::WebContents* web_contents,
   if (tab == nullptr) {
     return;
   }
-  ScopedJavaLocalRef<jstring> java_message =
-      base::android::ConvertUTF16ToJavaString(env, message);
   Java_AutoSigninSnackbarController_showSnackbar(env, tab->GetJavaObject(),
-                                                 java_message);
+                                                 message);
 }

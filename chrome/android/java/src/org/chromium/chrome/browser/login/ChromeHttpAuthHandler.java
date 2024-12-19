@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.WindowManager;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -139,7 +140,9 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
     }
 
     @CalledByNative
-    private void onAutofillDataAvailable(String username, String password) {
+    private void onAutofillDataAvailable(
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password) {
         mAutofillUsername = username;
         mAutofillPassword = password;
         if (mLoginPrompt != null) {
@@ -152,11 +155,12 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
         void setAuth(
                 long nativeChromeHttpAuthHandler,
                 ChromeHttpAuthHandler caller,
-                String username,
-                String password);
+                @JniType("std::u16string") String username,
+                @JniType("std::u16string") String password);
 
         void cancelAuth(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller);
 
+        @JniType("std::u16string")
         String getMessageBody(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller);
     }
 }

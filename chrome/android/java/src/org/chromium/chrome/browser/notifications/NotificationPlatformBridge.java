@@ -1146,18 +1146,18 @@ public class NotificationPlatformBridge {
      *
      * @param notificationId The id of the notification.
      * @param scopeUrl The scope of the service worker registered by the site where the notification
-     *                 comes from.
+     *     comes from.
      * @param hasQueriedWebApkPackage Whether has done the query of is there a WebAPK can handle
-     *                                this notification.
-     * @param webApkPackage The package of the WebAPK associated with the notification.
-     *                      Empty if the notification is not associated with a WebAPK.
+     *     this notification.
+     * @param webApkPackage The package of the WebAPK associated with the notification. Empty if the
+     *     notification is not associated with a WebAPK.
      */
     @CalledByNative
     private void closeNotification(
-            final String notificationId,
-            String scopeUrl,
+            final @JniType("std::string") String notificationId,
+            @JniType("std::string") String scopeUrl,
             boolean hasQueriedWebApkPackage,
-            String webApkPackage) {
+            @JniType("std::string") String webApkPackage) {
         if (!hasQueriedWebApkPackage) {
             final String webApkPackageFound =
                     WebApkValidator.queryFirstWebApkPackage(
@@ -1505,7 +1505,7 @@ public class NotificationPlatformBridge {
     }
 
     @CalledByNative
-    private void onNotificationProcessed(String notificationId) {
+    private void onNotificationProcessed(@JniType("std::string") String notificationId) {
         TrampolineActivityTracker.getInstance().onIntentCompleted(notificationId);
     }
 
