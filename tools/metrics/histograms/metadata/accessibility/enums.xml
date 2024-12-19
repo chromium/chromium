@@ -1710,12 +1710,13 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudSettingsChange) -->
 
-<!-- LINT.IfChange(ReadAnythingReadAloudVoice) -->
+<!-- LINT.IfChange(ReadAnythingReadAloudVoice2) -->
 
-<enum name="ReadAnythingReadAloudVoice">
+<enum name="ReadAnythingReadAloudVoice2">
   <int value="0" label="Natural voice"/>
   <int value="1" label="eSpeak voice"/>
   <int value="2" label="ChromeOS voice"/>
+  <int value="3" label="System voice"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingVoiceType) -->
