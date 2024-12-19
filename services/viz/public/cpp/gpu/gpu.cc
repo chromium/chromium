@@ -301,16 +301,6 @@ Gpu::~Gpu() {
 
 // static
 std::unique_ptr<Gpu> Gpu::Create(
-    service_manager::Connector* connector,
-    const std::string& service_name,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  mojo::PendingRemote<mojom::Gpu> remote;
-  connector->Connect(service_name, remote.InitWithNewPipeAndPassReceiver());
-  return Create(std::move(remote), std::move(task_runner));
-}
-
-// static
-std::unique_ptr<Gpu> Gpu::Create(
     mojo::PendingRemote<mojom::Gpu> remote,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   return base::WrapUnique(
