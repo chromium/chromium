@@ -213,7 +213,8 @@ void PrintJobSubmitter::OnPdfReadAndFlattened(
 // PDF to the printer like we would if it had been submitted directly.
 void PrintJobSubmitter::OnImageDataRead(std::string data,
                                         int64_t /*blob_total_size*/) {
-  sk_sp<SkData> image_data = SkData::MakeWithCopy(data.data(), data.size());
+  // Note: `data` must outlive `image_data` and `codec`.
+  sk_sp<SkData> image_data = SkData::MakeWithoutCopy(data.data(), data.size());
   std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(image_data, nullptr);
   if (!codec) {
     LOG(WARNING) << "Failed to decode PNG";
@@ -222,7 +223,7 @@ void PrintJobSubmitter::OnImageDataRead(std::string data,
   }
 
   auto img_tuple = codec->getImage();
-  CHECK(std::get<1>(img_tuple) == SkCodec::Result::kSuccess);
+  CHECK_EQ(std::get<1>(img_tuple), SkCodec::Result::kSuccess);
   sk_sp<SkImage> image = std::get<0>(img_tuple);
 
   SkDynamicMemoryWStream buffer;
