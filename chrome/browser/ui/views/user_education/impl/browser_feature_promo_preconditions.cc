@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
@@ -15,6 +21,7 @@
 #include "ui/views/widget/widget.h"
 
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kOmniboxNotOpenPrecondition);
 
 WindowActivePrecondition::WindowActivePrecondition()
     : FeaturePromoPreconditionBase(kWindowActivePrecondition,
@@ -37,4 +44,22 @@ user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
   return widget && widget->GetPrimaryWindowWidget()->ShouldPaintAsActive()
              ? user_education::FeaturePromoResult::Success()
              : user_education::FeaturePromoResult::kBlockedByUi;
+}
+
+OmniboxNotOpenPrecondition::OmniboxNotOpenPrecondition(
+    const BrowserView& browser_view)
+    : FeaturePromoPreconditionBase(kOmniboxNotOpenPrecondition,
+                                   "Omnibox is not open"),
+      browser_view_(browser_view) {}
+OmniboxNotOpenPrecondition::~OmniboxNotOpenPrecondition() = default;
+
+user_education::FeaturePromoResult
+OmniboxNotOpenPrecondition::CheckPrecondition(ComputedData&) const {
+  const OmniboxPopupView* const popup = browser_view_->GetLocationBarView()
+                                            ->GetOmniboxView()
+                                            ->model()
+                                            ->get_popup_view();
+  return popup && popup->IsOpen()
+             ? user_education::FeaturePromoResult::kBlockedByUi
+             : user_education::FeaturePromoResult::Success();
 }

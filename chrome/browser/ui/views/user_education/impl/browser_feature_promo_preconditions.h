@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_PRECONDITIONS_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_PRECONDITIONS_H_
 
+#include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kOmniboxNotOpenPrecondition);
 
 // Requires that the window a promo will be shown in is active.
 class WindowActivePrecondition
@@ -20,6 +24,21 @@ class WindowActivePrecondition
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
       ComputedData& data) const override;
+};
+
+// Precondition that the Omnibox isn't open.
+class OmniboxNotOpenPrecondition
+    : public user_education::FeaturePromoPreconditionBase {
+ public:
+  explicit OmniboxNotOpenPrecondition(const BrowserView& browser_view);
+  ~OmniboxNotOpenPrecondition() override;
+
+  // FeaturePromoPreconditionBase:
+  user_education::FeaturePromoResult CheckPrecondition(
+      ComputedData& data) const override;
+
+ private:
+  const raw_ref<const BrowserView> browser_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_PRECONDITIONS_H_

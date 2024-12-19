@@ -4,10 +4,15 @@
 
 #include <memory>
 
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -160,4 +165,37 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
             return active_precond.CheckPrecondition(data);
           },
           user_education::FeaturePromoResult::Success()));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
+                       OmniboxNotOpenPrecondition) {
+  RunTestSequence(
+      CheckView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            OmniboxNotOpenPrecondition precond(*browser_view);
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::Success()),
+      WithView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            AutocompleteInput input(
+                u"chrome", metrics::OmniboxEventProto::NTP,
+                ChromeAutocompleteSchemeClassifier(browser_view->GetProfile()));
+            browser_view->GetLocationBarView()
+                ->GetOmniboxView()
+                ->controller()
+                ->autocomplete_controller()
+                ->Start(input);
+          }),
+      CheckView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            OmniboxNotOpenPrecondition precond(*browser_view);
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::kBlockedByUi));
 }
