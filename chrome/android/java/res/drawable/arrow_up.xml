@@ -22,7 +22,7 @@ found in the LICENSE file.
     <path
         android:pathData="M4,20l16,-0l0,-16l-16,-0z"
         android:strokeWidth="1"
-        android:fillColor="@color/modern_grey_800"
+        android:fillColor="@color/baseline_neutral_20"
         android:fillType="evenOdd"
         android:strokeColor="@color/black_alpha_11"/>
     </group>

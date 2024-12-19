@@ -78,6 +78,6 @@ found in the LICENSE file.
         <item name="android:layout_height">60dp</item>
         <item name="android:background">@drawable/circular_progress_bar_background_large</item>
         <item name="android:src">@drawable/ic_play_arrow_white_36dp</item>
-        <item name="android:tint">@color/modern_grey_800</item>
+        <item name="android:tint">@color/baseline_neutral_20</item>
     </style>
 </resources>
