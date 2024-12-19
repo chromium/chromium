@@ -558,6 +558,7 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
   std::unique_ptr<Label> result;
   if (style_info.text_style == style::STYLE_LINK ||
       style_info.text_style == style::STYLE_LINK_3 ||
+      style_info.text_style == style::STYLE_LINK_4 ||
       style_info.text_style == style::STYLE_LINK_5) {
     // Nothing should (and nothing does) use a custom font for links.
     DCHECK(!style_info.custom_font);

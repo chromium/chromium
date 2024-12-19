@@ -73,7 +73,7 @@ PageInfoMerchantTrustContentView::CreateDescriptionLabel() {
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
 
   description_label->SetProperty(views::kMarginsKey, button_insets);
-  description_label->SetDefaultTextStyle(views::style::STYLE_BODY_3);
+  description_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
   description_label->SetDefaultEnabledColorId(kColorPageInfoSubtitleForeground);
   description_label->SizeToFit(PageInfoViewFactory::kMinBubbleWidth -
                                button_insets.width());
@@ -89,9 +89,7 @@ PageInfoMerchantTrustContentView::CreateDescriptionLabel() {
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PageInfoMerchantTrustContentView::NotifyLearnMoreLinkPressed,
           base::Unretained(this)));
-  // TODO(crbug.com/378854730): Add STYLE_LINK_4 and change the label text style
-  // to STYLE_BODY_4.
-  link_style.text_style = views::style::STYLE_LINK_3;
+  link_style.text_style = views::style::STYLE_LINK_4;
   description_label->AddStyleRange(link_range, link_style);
   return description_label;
 }
