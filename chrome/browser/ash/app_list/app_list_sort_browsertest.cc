@@ -7,6 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -131,7 +132,9 @@ class FakeIconLoader : public apps::IconLoader {
 
 class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  AppListSortBrowserTest() = default;
+  AppListSortBrowserTest() {
+    ash::AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
+  }
   AppListSortBrowserTest(const AppListSortBrowserTest&) = delete;
   AppListSortBrowserTest& operator=(const AppListSortBrowserTest&) = delete;
   ~AppListSortBrowserTest() override = default;

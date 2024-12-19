@@ -1339,8 +1339,6 @@ class SunfishLauncherButtonTest : public AshTestBase,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::AutoReset<bool> ignore_sunfish_secret_key =
-      switches::SetIgnoreSunfishSecretKeyForTest();
 };
 
 INSTANTIATE_TEST_SUITE_P(All, SunfishLauncherButtonTest, testing::Bool());
@@ -1398,56 +1396,6 @@ TEST_P(SunfishLauncherButtonTest, TabletModeAppList) {
   ASSERT_TRUE(sunfish_button);
   GestureTapOn(sunfish_button);
   EXPECT_TRUE(presenter->GetTargetVisibility());
-}
-
-class SunfishLauncherButtonGooglerTest : public NoSessionAshTestBase {
- public:
-  SunfishLauncherButtonGooglerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{{features::kSunfishFeature}},
-        /*disabled_features=*/{
-            {features::kScannerUpdate, features::kScannerDogfood}});
-  }
-  ~SunfishLauncherButtonGooglerTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that switching from a non-Googler user to a Googler user does not crash
-// the session, and updates the Sunfish button visibility.
-TEST_F(SunfishLauncherButtonGooglerTest, NonGooglerToGooglerSwitch) {
-  constexpr std::string_view kNonGoogler = "nongoogler@gmail.com";
-  constexpr std::string_view kGoogler = "googler@google.com";
-  AccountId kNonGooglerAccount = AccountId::FromUserEmail(kNonGoogler);
-  AccountId kGooglerAccount = AccountId::FromUserEmail(kGoogler);
-  TestSessionControllerClient* session = GetSessionControllerClient();
-  session->AddUserSession(std::string(kNonGoogler));
-  session->AddUserSession(std::string(kGoogler));
-
-  // Switch to the non-Googler account.
-  session->SwitchActiveUser(kNonGooglerAccount);
-  session->RequestHideLockScreen();
-  HomeButton* home_button =
-      GetPrimaryShelf()->navigation_widget()->GetHomeButton();
-  ASSERT_FALSE(home_button->IsShowingAppList());
-  LeftClickOn(home_button);
-  ASSERT_TRUE(home_button->IsShowingAppList());
-  auto* sunfish_button =
-      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
-  ASSERT_TRUE(sunfish_button);
-  EXPECT_FALSE(sunfish_button->GetVisible());
-  // Switch to the Googler account.
-  session->SwitchActiveUser(kGooglerAccount);
-  GetPrimaryShelf()->navigation_widget()->GetHomeButton();
-  ASSERT_FALSE(home_button->IsShowingAppList());
-  LeftClickOn(home_button);
-  ASSERT_TRUE(home_button->IsShowingAppList());
-  sunfish_button =
-      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
-
-  ASSERT_TRUE(sunfish_button);
-  EXPECT_TRUE(sunfish_button->GetVisible());
 }
 
 }  // namespace

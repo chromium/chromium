@@ -512,8 +512,6 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
 
 TEST_F(AppListControllerImplTest,
        SunfishButtonHiddenWhenPreferenceChangedToFalse) {
-  base::AutoReset<bool> ignore_sunfish_secret_key =
-      switches::SetIgnoreSunfishSecretKeyForTest();
   base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -529,8 +527,6 @@ TEST_F(AppListControllerImplTest,
 
 TEST_F(AppListControllerImplTest,
        SunfishButtonHiddenWhenPreferenceChangedToTrue) {
-  base::AutoReset<bool> ignore_sunfish_secret_key =
-      switches::SetIgnoreSunfishSecretKeyForTest();
   base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();

@@ -157,7 +157,7 @@ BEGIN_METADATA(SunfishSearchBoxView)
 END_METADATA
 
 SearchResultsPanel::SearchResultsPanel() {
-  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  DCHECK(features::IsSunfishFeatureEnabled());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)

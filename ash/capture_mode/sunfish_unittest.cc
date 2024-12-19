@@ -279,8 +279,6 @@ class SunfishTest : public SunfishTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
-  base::AutoReset<bool> ignore_sunfish_secret_key =
-      switches::SetIgnoreSunfishSecretKeyForTest();
 };
 
 // Tests that the accelerator starts capture mode in a new behavior.

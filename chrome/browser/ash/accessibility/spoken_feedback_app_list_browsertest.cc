@@ -191,12 +191,13 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
 
     // Disable the app list nudge in the spoken feedback app list test.
     AppListTestApi().DisableAppListNudge(true);
+    AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
 
     scoped_feature_list_.InitWithFeatures(
         {features::kProductivityLauncherImageSearch,
          features::kLauncherSearchControl,
          features::kFeatureManagementLocalImageSearch},
-        {features::kScannerDogfood});
+        {features::kScannerDogfood, features::kSunfishFeature});
 
     LoggedInSpokenFeedbackTest::SetUp();
   }

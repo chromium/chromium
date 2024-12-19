@@ -21,26 +21,11 @@ void CaptureScreenshotsOfAllDisplays() {
   CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
 }
 
-bool IsSunfishFeatureEnabledWithFeatureKey() {
-  const bool is_sunfish_feature_enabled =
-      base::FeatureList::IsEnabled(features::kSunfishFeature);
-  // Allow Google accounts to bypass the secret key check.
-  if (Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
-      shell && shell->session_controller() &&
-      gaia::IsGoogleInternalAccountEmail(
-          shell->session_controller()->GetActiveAccountId().GetUserEmail())) {
-    return is_sunfish_feature_enabled;
-  }
-
-  return is_sunfish_feature_enabled && switches::IsSunfishSecretKeyMatched();
-}
-
 bool IsSunfishOrScannerEnabled() {
   // Returns true if sunfish session can be started, which is true if either the
   // Sunfish or Scanner feature flag is enabled. Note Scanner operations will
   // only be available if the secret key is matched.
-  return IsSunfishFeatureEnabledWithFeatureKey() ||
-         features::IsScannerEnabled();
+  return features::IsSunfishFeatureEnabled() || features::IsScannerEnabled();
 }
 
 bool IsSunfishAllowedAndEnabled() {

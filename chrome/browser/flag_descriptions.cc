@@ -7301,13 +7301,6 @@ const char kSpectreVariant2MitigationDescription[] =
     "bootstrapping the Seccomp BPF sandbox. Can be overridden by "
     "#force-spectre-variant2-mitigation.";
 
-const char kSunfishName[] = "Sunfish feature";
-const char kSunfishDescription[] = "Enable Sunfish feature on ChromeOS.";
-
-const char kSunfishFeatureKeyName[] = "Feature key for Sunfish feature";
-const char kSunfishFeatureKeyDescription[] =
-    "Feature key to use the Sunfish feature on ChromeOS.";
-
 const char kSystemJapanesePhysicalTypingName[] =
     "Use system IME for Japanese typing";
 const char kSystemJapanesePhysicalTypingDescription[] =

@@ -93,8 +93,6 @@ TEST_F(SearchSectionTest, DoesNotIncludeSunfishSettingsByDefault) {
 }
 
 TEST_F(SearchSectionTest, IncludesSunfishSettingsWhenSunfishEnabled) {
-  base::AutoReset<bool> ignore_sunfish_secret_key =
-      switches::SetIgnoreSunfishSecretKeyForTest();
   base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
   search_section_ =
       std::make_unique<SearchSection>(profile(), search_tag_registry());

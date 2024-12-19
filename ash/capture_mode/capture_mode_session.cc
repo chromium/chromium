@@ -2661,7 +2661,7 @@ void CaptureModeSession::OnLocatedEventReleased(
   // TODO(b/377569542): Move and consolidate with `UpdateCaptureRegion()`.
   // TODO(b/367882127): May also need to check if the user has opted in.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
-    if (IsSunfishFeatureEnabledWithFeatureKey()) {
+    if (features::IsSunfishFeatureEnabled()) {
       RecordSearchButtonShown();
       capture_mode_util::AddActionButton(
           base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,

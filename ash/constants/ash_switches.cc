@@ -40,14 +40,6 @@ constexpr char kSparkyHashKey[] =
     "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
     "\x44\x77";
 
-// The hash value for the secret key of the Sunfish feature.
-constexpr std::string_view kSunfishFeatureHashKey(
-    "\xce\x89\xdb\x48\xdc\x19\x49\x2a\xba\xd8\xaa\x48\xaa\x28\xc0\xd1\xc0\x10"
-    "\xf4\x2e",
-    base::kSHA1Length);
-
-bool g_ignore_sunfish_secret_key = false;
-
 }  // namespace
 
 // Please keep the order of these switches synchronized with the header file
@@ -972,9 +964,6 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";
 
-// Supply the secret key for Sunfish.
-const char kSunfishFeatureKey[] = "sunfish-feature-key";
-
 // Supply secret key for Seal feature.
 const char kSealKey[] = "seal-key";
 
@@ -1336,31 +1325,6 @@ std::optional<std::string> ObtainSparkyServerUrl() {
             kSparkyServerUrl));
   }
   return std::nullopt;
-}
-
-bool IsSunfishSecretKeyMatched() {
-  if (g_ignore_sunfish_secret_key) {
-    return true;
-  }
-
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --sunfish-feature-key="INSERT KEY HERE" --enable-features=SunfishFeature
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kSunfishFeatureKey));
-
-  const bool sunfish_key_matched =
-      (provided_key_hash == kSunfishFeatureHashKey);
-  if (!sunfish_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
-
-  return sunfish_key_matched;
-}
-
-base::AutoReset<bool> SetIgnoreSunfishSecretKeyForTest() {
-  return {&g_ignore_sunfish_secret_key, true};
 }
 
 }  // namespace ash::switches

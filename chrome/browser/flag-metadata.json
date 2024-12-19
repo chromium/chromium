@@ -8280,16 +8280,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "sunfish",
-    "owners": ["sophiewen@chromium.org", "cros-super-select@google.com"],
-    "expiry_milestone": 142
-  },
-  {
-    "name": "sunfish-feature-key",
-    "owners": ["sophiewen@chromium.org", "cros-super-select@google.com"],
-    "expiry_milestone": 142
-  },
-  {
     "name": "supervised-profile-blocked-site-reauth",
     "owners": [
       "ljjlee@google.com",

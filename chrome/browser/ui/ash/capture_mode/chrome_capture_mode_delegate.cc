@@ -517,7 +517,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
   if (!profile || image.empty() || region.IsEmpty()) {
     return;
   }
-  DCHECK(ash::IsSunfishFeatureEnabledWithFeatureKey());
+  DCHECK(ash::features::IsSunfishFeatureEnabled());
   if (!lens_overlay_query_controller_) {
     lens_overlay_query_controller_ =
         std::make_unique<LensOverlayQueryController>(

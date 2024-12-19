@@ -1360,6 +1360,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsStartAssistantAudioDecoderOnDemandEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStoreOwnerKeyInPrivateSlotEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSunfishFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSuspendStateMachineEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemNudgeMigrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemTrayShadowEnabled();

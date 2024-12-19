@@ -10546,14 +10546,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSparkyServerUrlDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kSparkyServerUrl, "")},
 
-    {"sunfish", flag_descriptions::kSunfishName,
-     flag_descriptions::kSunfishDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSunfishFeature)},
-
-    {"sunfish-feature-key", flag_descriptions::kSunfishFeatureKeyName,
-     flag_descriptions::kSunfishFeatureKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kSunfishFeatureKey, "")},
-
     {"pompano", flag_descriptions::kPompanoName,
      flag_descriptions::kPompanoDescritpion, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPompano)},

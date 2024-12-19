@@ -532,7 +532,7 @@ bool ShouldFetchScannerActions(PerformCaptureType capture_type) {
 // Returns true if region search should be performed on a captured image with
 // the given `capture_type`.
 bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
-  return IsSunfishFeatureEnabledWithFeatureKey() &&
+  return features::IsSunfishFeatureEnabled() &&
          (capture_type == PerformCaptureType::kSunfish ||
           capture_type == PerformCaptureType::kSearch);
 }
@@ -689,7 +689,7 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
 
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                                                    GURL url) {
-  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  DCHECK(features::IsSunfishFeatureEnabled());
   const bool is_active = IsActive();
   if (!search_results_panel_widget_) {
     // A session must be active when the panel is first loaded, because it is
@@ -738,7 +738,7 @@ void CaptureModeController::MaybeUpdateSearchResultsPanelBounds() {
     return;
   }
 
-  CHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  CHECK(features::IsSunfishFeatureEnabled());
 
   // TODO: crbug.com/364718783 - Ensure this works with multi-display.
   const gfx::Rect work_area =
