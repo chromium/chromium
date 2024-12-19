@@ -51,6 +51,7 @@ class FEImage final : public FilterEffect {
 
  private:
   const LayoutObject* ReferencedLayoutObject() const;
+  scoped_refptr<Image> GetImage(const gfx::SizeF& container_size) const;
 
   FilterEffectType GetFilterEffectType() const override {
     return kFilterEffectTypeImage;
