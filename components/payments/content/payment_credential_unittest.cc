@@ -11,6 +11,7 @@
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
+#include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
@@ -71,10 +72,15 @@ class PaymentCredentialTest : public ::testing::Test {
         std::unique_ptr<PaymentCredential, PaymentCredentialDeleter>(
             new PaymentCredential(*web_contents_->GetPrimaryMainFrame(),
                                   /*receiver=*/std::move(receiver),
-                                  /*web_data_service=*/nullptr,
+                                  mock_web_data_service_,
                                   CreateMockInternalAuthenticator()));
     payment_credential->SetBrowserBoundKeyStoreForTesting(
         CreateFakeBrowserBoundKeyStore());
+    payment_credential->SetRandomBytesAsVectorForTesting(
+        base::BindLambdaForTesting([this](size_t length) {
+          EXPECT_EQ(length, 32u);
+          return fake_browser_bound_key_id_;
+        }));
     return payment_credential;
   }
 
@@ -82,10 +88,17 @@ class PaymentCredentialTest : public ::testing::Test {
   const std::vector<uint8_t> fake_credential_id_ = {0x10, 0x11, 0x12, 0x13};
   const std::vector<uint8_t> fake_signature_ = {0x20, 0x21, 0x22, 0x23};
   const std::vector<uint8_t> fake_client_data_json_ = {0x30, 0x31, 0x32, 0x33};
+  const std::vector<uint8_t> fake_browser_bound_key_id_ = {0x40, 0x41, 0x42,
+                                                           0x43};
+  const std::vector<uint8_t> fake_public_key_ = {0x50, 0x51, 0x52, 0x53};
+  const std::string fake_relying_party_id_ = "relying-party.example";
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
+  scoped_refptr<payments::MockPaymentManifestWebDataService>
+      mock_web_data_service_ =
+          base::MakeRefCounted<MockPaymentManifestWebDataService>();
   raw_ptr<webauthn::MockInternalAuthenticator> mock_internal_authenticator_;
   base::WeakPtr<FakeBrowserBoundKeyStore> fake_browser_bound_key_store_;
   base::MockCallback<mojom::PaymentCredential::MakePaymentCredentialCallback>
@@ -108,11 +121,12 @@ TEST_F(PaymentCredentialTest, MakePaymentCredentialAddsBrowserBoundKey) {
   std::unique_ptr<PaymentCredential, PaymentCredentialDeleter>
       payment_credential = CreatePaymentCredential();
   fake_browser_bound_key_store_->PutFakeKey(
-      fake_credential_id_, FakeBrowserBoundKey(
-                               /*public_key_as_cose_key=*/{}, fake_signature_,
-                               fake_client_data_json_));
+      fake_browser_bound_key_id_,
+      FakeBrowserBoundKey(fake_public_key_, fake_signature_,
+                          fake_client_data_json_));
   auto creation_options =
       blink::mojom::PublicKeyCredentialCreationOptions::New();
+  creation_options->relying_party.id = fake_relying_party_id_;
   creation_options->is_payment_credential_creation = true;
   creation_options->challenge = fake_challenge_;
   auto fake_authenticator_response =
@@ -122,6 +136,16 @@ TEST_F(PaymentCredentialTest, MakePaymentCredentialAddsBrowserBoundKey) {
   fake_authenticator_response->info->raw_id = fake_credential_id_;
   fake_authenticator_response->info->client_data_json = fake_client_data_json_;
 
+  EXPECT_CALL(*mock_web_data_service_,
+              SetBrowserBoundKey(fake_credential_id_, fake_relying_party_id_,
+                                 fake_browser_bound_key_id_, _));
+  ::blink::mojom::PaymentOptionsPtr actual_payment_options;
+  EXPECT_CALL(*mock_internal_authenticator_, SetPaymentOptions(_))
+      .Times(1)
+      .WillOnce([&actual_payment_options](
+                    ::blink::mojom::PaymentOptionsPtr payment_options) {
+        actual_payment_options = payment_options.Clone();
+      });
   EXPECT_CALL(*mock_internal_authenticator_,
               MakeCredential(Eq(std::ref(creation_options)), _))
       .WillRepeatedly(
@@ -140,6 +164,8 @@ TEST_F(PaymentCredentialTest, MakePaymentCredentialAddsBrowserBoundKey) {
 
   payment_credential->MakePaymentCredential(
       creation_options.Clone(), mock_payment_credential_callback_.Get());
+  ASSERT_FALSE(actual_payment_options.is_null());
+  EXPECT_EQ(actual_payment_options->browser_bound_public_key, fake_public_key_);
 }
 
 }  // namespace payments

@@ -236,6 +236,7 @@ source_set("unit_tests") {
     "mock_payment_app_factory_delegate.cc",
     "mock_payment_app_factory_delegate.h",
     "payment_event_response_util_unittest.cc",
+    "payment_manifest_web_data_service_unittest.cc",
     "payment_method_manifest_table_unittest.cc",
     "secure_payment_confirmation_app_unittest.cc",
     "secure_payment_confirmation_model_unittest.cc",

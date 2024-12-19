@@ -51,6 +51,10 @@ typedef enum {
   PAYMENT_INSTRUMENT_CREATION_OPTION_RESULT,  // WDResult<std::vector<
                                               //     sync_pb::PaymentInstrumentCreationOption>>
 #if BUILDFLAG(USE_BLINK)         //
+  // The browser bound key id is retrieved by the payments component
+  // during secure payment confirmation requests and payment credential
+  // creation.
+  BROWSER_BOUND_KEY,             // WDResult<std::vector<uint8_t>>
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>
   PAYMENT_METHOD_MANIFEST,       // WDResult<std::vector<std::string>>
