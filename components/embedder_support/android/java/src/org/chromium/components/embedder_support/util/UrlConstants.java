@@ -129,6 +129,12 @@ public class UrlConstants {
     public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE =
             "https://policies.google.com/privacy/embedded?color_scheme=dark";
 
+    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_CHINA =
+            "https://policies.google.cn/privacy/embedded";
+
+    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE_CHINA =
+            "https://policies.google.cn/privacy/embedded?color_scheme=dark";
+
     public static final String GOOGLE_URL = "https://www.google.com/";
 
     public static final String EXPLORE_HOST = "explore";

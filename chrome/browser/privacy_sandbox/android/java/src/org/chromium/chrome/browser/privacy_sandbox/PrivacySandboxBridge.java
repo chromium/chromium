@@ -137,6 +137,10 @@ public class PrivacySandboxBridge {
                 .privacySandboxPrivacyGuideShouldShowAdTopicsCard(mProfile);
     }
 
+    public boolean shouldUsePrivacyPolicyChinaDomain() {
+        return PrivacySandboxBridgeJni.get().shouldUsePrivacyPolicyChinaDomain(mProfile);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isPrivacySandboxRestricted(Profile profile);
@@ -186,5 +190,7 @@ public class PrivacySandboxBridge {
         void recordActivityType(Profile profile, int activityType);
 
         boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile);
+
+        boolean shouldUsePrivacyPolicyChinaDomain(Profile profile);
     }
 }

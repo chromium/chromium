@@ -263,3 +263,10 @@ JNI_PrivacySandboxBridge_PrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
   return GetPrivacySandboxService(j_profile)
       ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
 }
+
+static jboolean JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return GetPrivacySandboxService(j_profile)
+      ->ShouldUsePrivacyPolicyChinaDomain();
+}

@@ -292,6 +292,17 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
         }
     }
 
+    private String getPrivacyPolicyUrl() {
+        boolean isNightMode = ColorUtils.inNightMode(mActivityWindowAndroid.getContext().get());
+        return mPrivacySandboxBridge.shouldUsePrivacyPolicyChinaDomain()
+                ? (isNightMode
+                        ? UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE_CHINA
+                        : UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY_CHINA)
+                : (isNightMode
+                        ? UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE
+                        : UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY);
+    }
+
     private void handlePrivacyPolicyFeature() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)) {
             mLearnMoreDescription5V2 =
@@ -310,10 +321,6 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
                                             getContext(), this::onPrivacyPolicyClicked))));
             mLearnMoreDescription5V2.setMovementMethod(LinkMovementMethod.getInstance());
             if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
-                String privacyPolicyUrl =
-                        ColorUtils.inNightMode(mActivityWindowAndroid.getContext().get())
-                                ? UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE
-                                : UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY;
                 mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
                 mWebContentsObserver =
                         new WebContentsObserver(mWebContents) {
@@ -341,7 +348,10 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
                         };
                 mThinWebView =
                         PrivacySandboxDialogController.createThinWebView(
-                                mWebContents, mProfile, mActivityWindowAndroid, privacyPolicyUrl);
+                                mWebContents,
+                                mProfile,
+                                mActivityWindowAndroid,
+                                getPrivacyPolicyUrl());
             }
         }
     }
