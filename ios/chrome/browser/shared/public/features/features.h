@@ -975,4 +975,11 @@ BASE_DECLARE_FEATURE(kDefaultBrowserBannerPromo);
 // Returns whether `kDefaultBrowserBannerPromo` is enabled.
 bool IsDefaultBrowserBannerPromoEnabled();
 
+// Feature to enable different text for the secondary action on FRE sign-in
+// promo.
+BASE_DECLARE_FEATURE(kFRESignInSecondaryActionLabelUpdate);
+
+// Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled
+bool IsStaySignedOutFRESigninPromoEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

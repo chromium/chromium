@@ -1187,3 +1187,11 @@ BASE_FEATURE(kDefaultBrowserBannerPromo,
 bool IsDefaultBrowserBannerPromoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserBannerPromo);
 }
+
+BASE_FEATURE(kFRESignInSecondaryActionLabelUpdate,
+             "FRESignInSecondaryActionLabelUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsStaySignedOutFRESigninPromoEnabled() {
+  return base::FeatureList::IsEnabled(kFRESignInSecondaryActionLabelUpdate);
+}
