@@ -56,6 +56,7 @@ import java.io.IOException;
     ChromeSwitches.DISABLE_STARTUP_PROMOS,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
+@DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/338978357, crbug.com/384775466
 public class PageInfoViewDarkModeTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
 
@@ -141,7 +142,6 @@ public class PageInfoViewDarkModeTest {
     /** Tests PageInfo on internal page. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338978357
     @Feature({"RenderTest"})
     public void testChromePage() throws IOException {
         loadUrlAndOpenPageInfo("chrome://version/");
