@@ -42,6 +42,7 @@ class ASH_EXPORT CoralChipButton : public BirchChipButton {
 
   // BirchChipButton:
   void Init(BirchItem* item) override;
+  void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CoralBrowserTest, AsyncGroupTitle);

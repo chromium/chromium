@@ -5,21 +5,14 @@
 #include "ash/wm/overview/birch/birch_chip_button.h"
 
 #include "ash/birch/birch_item.h"
-#include "ash/constants/notifier_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
-#include "ash/system/toast/toast_manager_impl.h"
-#include "ash/wm/desks/templates/saved_desk_presenter.h"
-#include "ash/wm/overview/birch/birch_animation_utils.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_util.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_session.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -85,8 +78,6 @@ constexpr TypographyToken kTitleFont = TypographyToken::kCrosButton1;
 constexpr ui::ColorId kTitleColorId = cros_tokens::kCrosSysOnSurface;
 constexpr TypographyToken kSubtitleFont = TypographyToken::kCrosAnnotation1;
 constexpr ui::ColorId kSubtitleColorId = cros_tokens::kCrosSysOnSurfaceVariant;
-
-constexpr char kMaxSavedGroupsToastId[] = "coral_max_saved_groups_toast";
 
 BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
   switch (item_type) {
@@ -379,37 +370,8 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
                                                   /*show=*/false);
       break;
     case base::to_underlying(CommandId::kCoralNewDesk):
-      item_->PerformAction();
+    case base::to_underlying(CommandId::kCoralSaveForLater):
       break;
-    case base::to_underlying(CommandId::kCoralSaveForLater): {
-      CHECK_EQ(BirchItemType::kCoral, item_->GetType());
-
-      // Show a toast if we already have the max amount of allowed coral saved
-      // groups.
-      auto* saved_desk_presenter =
-          OverviewController::Get()->overview_session()->saved_desk_presenter();
-      if (saved_desk_presenter->GetEntryCount(DeskTemplateType::kCoral) >=
-          saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kCoral)) {
-        ToastData toast(kMaxSavedGroupsToastId,
-                        ToastCatalogName::kCoralSavedGroupLimitMax,
-                        l10n_util::GetStringUTF16(
-                            IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED),
-                        ToastData::kDefaultToastDuration,
-                        /*visible_on_lock_screen=*/false);
-        Shell::Get()->toast_manager()->Show(std::move(toast));
-        return;
-      }
-
-      // `CreateSavedDeskFromGroup()` will delete `this`.
-      aura::Window* root_window = GetWidget()->GetNativeWindow();
-
-      auto* coral_provider = BirchCoralProvider::Get();
-      Shell::Get()->coral_controller()->CreateSavedDeskFromGroup(
-          coral_provider->ExtractGroupById(
-              static_cast<BirchCoralItem*>(item_)->group_id()),
-          root_window);
-      break;
-    }
     case base::to_underlying(CommandId::kProvideFeedback):
       birch_bar_controller->ProvideFeedbackForCoral();
       break;

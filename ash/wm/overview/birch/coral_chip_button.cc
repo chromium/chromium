@@ -6,12 +6,17 @@
 
 #include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_coral_provider.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/toast/toast_manager_impl.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/overview/birch/birch_animation_utils.h"
 #include "ash/wm/overview/birch/birch_bar_util.h"
+#include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/birch/resources/grit/coral_resources.h"
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
+#include "ash/wm/overview/overview_session.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,6 +28,7 @@ namespace ash {
 namespace {
 
 constexpr gfx::Size kLoadingAnimationSize = gfx::Size(100, 20);
+constexpr char kMaxSavedGroupsToastId[] = "coral_max_saved_groups_toast";
 
 }  // namespace
 
@@ -110,6 +116,45 @@ void CoralChipButton::Init(BirchItem* item) {
   button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
   SetAddon(std::move(button));
+}
+
+void CoralChipButton::ExecuteCommand(int command_id, int event_flags) {
+  switch (command_id) {
+    case base::to_underlying(
+        BirchChipContextMenuModel::CommandId::kCoralNewDesk):
+      static_cast<BirchCoralItem*>(item_)->LaunchGroup(this);
+      break;
+    case base::to_underlying(
+        BirchChipContextMenuModel::CommandId::kCoralSaveForLater): {
+      // Show a toast if we already have the max amount of allowed coral saved
+      // groups.
+      auto* saved_desk_presenter =
+          OverviewController::Get()->overview_session()->saved_desk_presenter();
+      if (saved_desk_presenter->GetEntryCount(DeskTemplateType::kCoral) >=
+          saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kCoral)) {
+        ToastData toast(kMaxSavedGroupsToastId,
+                        ToastCatalogName::kCoralSavedGroupLimitMax,
+                        l10n_util::GetStringUTF16(
+                            IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED),
+                        ToastData::kDefaultToastDuration,
+                        /*visible_on_lock_screen=*/false);
+        Shell::Get()->toast_manager()->Show(std::move(toast));
+        return;
+      }
+
+      // `CreateSavedDeskFromGroup()` will delete `this`.
+      aura::Window* root_window = GetWidget()->GetNativeWindow();
+
+      auto* coral_provider = BirchCoralProvider::Get();
+      Shell::Get()->coral_controller()->CreateSavedDeskFromGroup(
+          coral_provider->ExtractGroupById(
+              static_cast<BirchCoralItem*>(item_)->group_id()),
+          root_window);
+      break;
+    }
+    default:
+      BirchChipButton::ExecuteCommand(command_id, event_flags);
+  }
 }
 
 void CoralChipButton::OnCoralAddonClicked() {

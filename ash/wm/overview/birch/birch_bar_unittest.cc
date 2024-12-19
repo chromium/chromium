@@ -1493,6 +1493,47 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsByTappingChipMenu) {
   EXPECT_TRUE(GetPrefService()->GetBoolean(prefs::kBirchUseCalendar));
 }
 
+// Tests that the coral chip can be activated from context menu.
+TEST_F(BirchBarMenuTest, ActivateCoralChipWithContextMenu) {
+  SetCoralItems(/*num=*/1);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+
+  // The birch bars should be shown.
+  ASSERT_TRUE(grid_test_api.birch_bar_view());
+
+  // There should be one coral chip.
+  ASSERT_EQ(grid_test_api.GetBirchChips().size(), 1u);
+
+  const auto& coral_chip = grid_test_api.GetBirchChips()[0];
+  ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
+
+  // Right clicking on a chip to show the chip menu.
+  RightClickOn(coral_chip);
+  auto* model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* open_chip_item = chip_menu->GetMenuItemAt(0);
+  ASSERT_EQ(
+      open_chip_item->GetCommand(),
+      base::to_underlying(BirchChipContextMenuModel::CommandId::kCoralNewDesk));
+
+  // There should be only one desk before activating the coral chip.
+  EXPECT_EQ(DesksController::Get()->GetNumberOfDesks(), 1);
+
+  // Clicking on the open chip item to create a new desk.
+  LeftClickOn(open_chip_item);
+
+  // There should be a new desk created.
+  EXPECT_EQ(DesksController::Get()->GetNumberOfDesks(), 2);
+}
+
 // The tests run with animations. Since the mock clock will be blocked by the
 // animation waiter, we don't use it in the tests.
 using BirchBarAnimationTest = BirchBarTestBase;
