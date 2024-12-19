@@ -53,7 +53,6 @@ public class ChromeCachedFlagsTest {
     private static final Set<CachedFlag> BASELINE =
             Set.of(
                     ChromeFeatureList.sCctFeatureUsage,
-                    ChromeFeatureList.sCctGoogleBottomBar,
                     ChromeFeatureList.sDownloadsMigrateToJobsAPI,
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,

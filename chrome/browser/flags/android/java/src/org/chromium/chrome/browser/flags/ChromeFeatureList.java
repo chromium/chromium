@@ -628,7 +628,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sCctGoogleBottomBar =
-            newCachedFlag(CCT_GOOGLE_BOTTOM_BAR, false);
+            newCachedFlag(
+                    CCT_GOOGLE_BOTTOM_BAR,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCctGoogleBottomBarVariantLayouts =
             newCachedFlag(CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS, false);
     public static final CachedFlag sCctResizableForThirdParties =
