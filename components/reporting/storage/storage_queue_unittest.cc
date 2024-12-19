@@ -429,12 +429,8 @@ class StorageQueueTest
       ASSERT_TRUE(wrapped_record.ParseFromString(
           encrypted_record.encrypted_wrapped_record()));
 
-      // Verify compression information is enabled or disabled.
-      if (CompressionModule::is_enabled()) {
-        EXPECT_TRUE(encrypted_record.has_compression_information());
-      } else {
-        EXPECT_FALSE(encrypted_record.has_compression_information());
-      }
+      // Verify compression information is enabled.
+      EXPECT_TRUE(encrypted_record.has_compression_information());
 
       std::optional<Record> possible_record_copy;
       if (encrypted_record.has_record_copy()) {
