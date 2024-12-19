@@ -915,8 +915,14 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(ContentFeatures.PWA_NAVIGATION_CAPTURING),
         Flag.baseFeature("TransportSecurityFileWriterSchedule"),
         Flag.commandLine(
-                AwSwitches.WEBVIEW_INTERCEPTED_COOKIE_HEADER,
+                AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER,
                 "When enabled, the cookie header will be included in the request headers"
+                        + " for shouldInterceptRequest, excepting when "
+                        + AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE
+                        + " is enabled."),
+        Flag.commandLine(
+                AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE,
+                "When enabled, the cookie header will not be included in the request headers"
                         + " for shouldInterceptRequest"),
         Flag.baseFeature(
                 VizFeatures.RENDER_PASS_DRAWN_RECT,

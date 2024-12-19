@@ -25490,6 +25490,21 @@
             ]
         }
     ],
+    "WebViewInterceptedCookieHeader": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewInterceptedCookieHeader"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewLazyFetchHandWritingIcon": [
         {
             "platforms": [

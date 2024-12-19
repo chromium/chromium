@@ -237,4 +237,17 @@ BASE_FEATURE(kWebViewWebauthn,
 BASE_FEATURE(kWebViewRenderDocument,
              "WebViewRenderDocument",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the cookie header will be included in the request headers
+// for shouldInterceptRequest, excepting when
+// kWebViewInterceptedCookieHeaderReadWrite is also enabled.
+BASE_FEATURE(kWebViewInterceptedCookieHeader,
+             "WebViewInterceptedCookieHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the cookie header will be included in the request headers
+// for shouldInterceptRequest.
+BASE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite,
+             "WebViewInterceptedCookieHeaderReadWrite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features

@@ -1420,8 +1420,10 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    @CommandLineFlags.Add("webview-intercepted-cookie-header")
-    public void testCookieHeaders() throws Throwable {
+    @CommandLineFlags.Add({
+        "enable-features=WebViewInterceptedCookieHeader,WebViewInterceptedCookieHeaderReadWrite"
+    })
+    public void testInterceptedCookieHeaders_readWriteEnabled() throws Throwable {
         var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
         final String destinationUrl =
                 mWebServer.setResponse("/hello.txt", "", new ArrayList<Pair<String, String>>());
@@ -1446,6 +1448,41 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
 
         // And then we should see our new value in the cookie manager.
         Assert.assertEquals("blah=yo; foo=bar", cookieManager.getCookie(destinationUrl));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"enable-features=WebViewInterceptedCookieHeader"})
+    public void testInterceptedCookieHeaders_readWriteDisabled() throws Throwable {
+        var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
+        final String destinationUrl =
+                mWebServer.setResponse("/hello.txt", "", new ArrayList<Pair<String, String>>());
+
+        cookieManager.setCookie(destinationUrl, "blah=yo");
+
+        var headersForInjectedResponse = new HashMap<String, String>();
+        // Forcing a cookie to be set in the response
+        headersForInjectedResponse.put("set-cookie", "foo=bar");
+
+        mShouldInterceptRequestHelper.setReturnValueForUrl(
+                destinationUrl,
+                stringWithHeadersToWebResourceResponseInfo("hello", headersForInjectedResponse));
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), destinationUrl);
+
+        // These are the cookies that were sent before we set a new one.
+        var resourceRequest = mShouldInterceptRequestHelper.getRequestsForUrl(destinationUrl);
+        Assert.assertFalse(
+                "Cookie jar should be empty", resourceRequest.requestHeaders.containsKey("Cookie"));
+        Assert.assertNotEquals(
+                "Cookie jar should be empty",
+                "blah=yo",
+                resourceRequest.requestHeaders.get("Cookie"));
+
+        // And then we should see our new value in the cookie manager.
+        Assert.assertEquals("blah=yo", cookieManager.getCookie(destinationUrl));
     }
 
     @Test

@@ -1276,7 +1276,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
-    @CommandLineFlags.Add("webview-intercepted-cookie-header")
+    @CommandLineFlags.Add("enable-features=WebViewInterceptedCookieHeader")
     public void testPartitionedNetCookies() throws Throwable {
         TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
@@ -1326,10 +1326,15 @@ public class CookieManagerTest extends AwParameterizedTest {
                     expectedCookies,
                     webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
 
+            // TODO(crbug.com/384986095): Re-add the real expected cookie behavior
+            // post-experimentation
+            String interceptRequestFailureMessage =
+                    "No cookies should be returned for shouldInterceptRequest";
+            expectedCookies = null;
             var interceptedRequest =
                     shouldInterceptRequestHelper.getRequestsForUrl(iframeUrl + "path_to_intercept");
             Assert.assertEquals(
-                    failureMessage,
+                    interceptRequestFailureMessage,
                     expectedCookies,
                     interceptedRequest.requestHeaders.get("Cookie"));
 
@@ -1343,10 +1348,13 @@ public class CookieManagerTest extends AwParameterizedTest {
                     expectedCookies,
                     webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
 
+            // TODO(crbug.com/384986095): Re-add the real expected cookie behavior
+            // post-experimentation
+            expectedCookies = null;
             interceptedRequest =
                     shouldInterceptRequestHelper.getRequestsForUrl(iframeUrl + "path_to_intercept");
             Assert.assertEquals(
-                    failureMessage,
+                    interceptRequestFailureMessage,
                     expectedCookies,
                     interceptedRequest.requestHeaders.get("Cookie"));
 
