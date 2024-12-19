@@ -400,6 +400,11 @@ NET_EXPORT bool IsPortBoundCookiesEnabled();
 
 NET_EXPORT bool IsSchemeBoundCookiesEnabled();
 
+// Takes the feature state and CookieScopeSemantics semantics into account to
+// determine if the behavior should be applied.
+NET_EXPORT bool IsSchemeBoundCookiesBehaviorActive(
+    CookieScopeSemantics scope_semantics);
+
 // Returns true if either portion of OBC is enabled.
 NET_EXPORT bool IsOriginBoundCookiesPartiallyEnabled();
 

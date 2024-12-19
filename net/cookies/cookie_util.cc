@@ -1009,6 +1009,11 @@ bool IsSchemeBoundCookiesEnabled() {
   return base::FeatureList::IsEnabled(features::kEnableSchemeBoundCookies);
 }
 
+bool IsSchemeBoundCookiesBehaviorActive(CookieScopeSemantics scope_semantics) {
+  return scope_semantics != CookieScopeSemantics::LEGACY &&
+         IsSchemeBoundCookiesEnabled();
+}
+
 bool IsOriginBoundCookiesPartiallyEnabled() {
   return IsPortBoundCookiesEnabled() || IsSchemeBoundCookiesEnabled();
 }

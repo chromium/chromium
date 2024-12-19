@@ -1543,7 +1543,14 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     cookie_map = cookie_partition_it.value()->second.get();
   }
 
+  // Vector to store aliasing cookies that are candidates for deletion.
+  std::vector<CookieMap::iterator> alias_cookie_deletion_candidates;
+  // Most recently created cookie that is aliasing cookie_being_set.
+  CanonicalCookie* most_recently_created_deletion_candidate = nullptr;
+
   bool found_equivalent_cookie = false;
+  bool legacy_behavior_active = GetScopeSemanticsForCookie(cookie_being_set) ==
+                                CookieScopeSemantics::LEGACY;
   CookieMap::iterator deletion_candidate_it = cookie_map->end();
   CanonicalCookie* skipped_secure_cookie = nullptr;
 
@@ -1566,7 +1573,9 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
     if (cur_existing_cookie->SecureAttribute() &&
         !allowed_to_set_secure_cookie &&
         cookie_being_set.IsEquivalentForSecureCookieMatching(
-            *cur_existing_cookie)) {
+            *cur_existing_cookie) &&
+        !cookie_util::IsSchemeBoundCookiesBehaviorActive(
+            GetScopeSemanticsForCookie(cookie_being_set))) {
       // Hold onto this for additional Netlogging later if we end up preserving
       // a would-have-been-deleted cookie because of this.
       skipped_secure_cookie = cur_existing_cookie;
@@ -1601,14 +1610,42 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
             CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY);
       } else {
         deletion_candidate_it = cur_it;
+        if (!most_recently_created_deletion_candidate ||
+            deletion_candidate_it->second->CreationDate() >
+                most_recently_created_deletion_candidate->CreationDate()) {
+          most_recently_created_deletion_candidate =
+              deletion_candidate_it->second.get();
+        }
       }
+    }
+    if (legacy_behavior_active) {
+      // Conditional check to check if cookies are aliasing each other when
+      // CookieScopeSemantics are LEGACY we want to delete all aliasing cookies.
+      if (cookie_being_set.LegacyUniqueKey() ==
+              cur_existing_cookie->LegacyUniqueKey() &&
+          deletion_candidate_it != cur_it) {
+        if (!most_recently_created_deletion_candidate ||
+            cur_existing_cookie->CreationDate() >
+                most_recently_created_deletion_candidate->CreationDate()) {
+          most_recently_created_deletion_candidate = cur_existing_cookie;
+        }
+        alias_cookie_deletion_candidates.emplace_back(cur_it);
+      }
+    }
+  }
+
+  if (most_recently_created_deletion_candidate) {
+    CHECK(!alias_cookie_deletion_candidates.empty() ||
+          deletion_candidate_it != cookie_map->end());
+    if (most_recently_created_deletion_candidate->Value() ==
+        cookie_being_set.Value()) {
+      *creation_date_to_inherit =
+          most_recently_created_deletion_candidate->CreationDate();
     }
   }
 
   if (deletion_candidate_it != cookie_map->end()) {
     CanonicalCookie* deletion_candidate = deletion_candidate_it->second.get();
-    if (deletion_candidate->Value() == cookie_being_set.Value())
-      *creation_date_to_inherit = deletion_candidate->CreationDate();
     if (status->IsInclude()) {
       if (cookie_being_set.IsPartitioned()) {
         InternalDeletePartitionedCookie(
@@ -1635,6 +1672,23 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
                 skipped_secure_cookie, deletion_candidate, &cookie_being_set,
                 capture_mode);
           });
+    }
+  }
+  // Delete any aliasing cookies.
+  if (status->IsInclude()) {
+    if (cookie_being_set.IsPartitioned()) {
+      for (auto& alias_cookie : alias_cookie_deletion_candidates) {
+        InternalDeletePartitionedCookie(
+            cookie_partition_it.value(), alias_cookie, /* sync_to_store */ true,
+            already_expired ? DELETE_COOKIE_EXPIRED_OVERWRITE
+                            : DELETE_COOKIE_OVERWRITE);
+      }
+    } else {
+      for (auto& alias_cookie : alias_cookie_deletion_candidates) {
+        InternalDeleteCookie(alias_cookie, /* sync_to_store */ true,
+                             already_expired ? DELETE_COOKIE_EXPIRED_OVERWRITE
+                                             : DELETE_COOKIE_OVERWRITE);
+      }
     }
   }
 }
