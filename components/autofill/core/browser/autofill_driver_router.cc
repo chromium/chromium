@@ -11,8 +11,10 @@
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -116,10 +118,27 @@ void AutofillDriverRouter::UnregisterDriver(AutofillDriver& driver,
 // TriggerFormExtractionExcept(source).
 void AutofillDriverRouter::TriggerFormExtractionExcept(
     AutofillDriver& exception) {
+#if BUILDFLAG(IS_IOS)
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIosTriggerFormExtraction)) {
+    return;
+  }
+#endif
+  // TODO(crbug.com/384874225): Cleanup that instrumentation once the feature is
+  // launched on iOS.
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Autofill.DriverRouter.TriggerFormExtractionExcept.Duration");
+  size_t frame_count = form_forest_.frame_datas().size();
+  base::UmaHistogramCounts10000(
+      "Autofill.DriverRouter.TriggerFormExtractionExcept.FrameCount",
+      frame_count);
+  SCOPED_CRASH_KEY_NUMBER("Autofill", "num_frame_extract_total", frame_count);
   base::flat_set<AutofillDriver*> already_triggered;
   ForEachFrame(form_forest_, [&](AutofillDriver& driver_ref) {
     AutofillDriver* driver = &driver_ref;
     do {
+      SCOPED_CRASH_KEY_NUMBER("Autofill", "num_frame_extract_so_far",
+                              already_triggered.size());
       if (driver == &exception) {
         continue;
       }

@@ -2303,6 +2303,31 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.DriverRouter.TriggerFormExtractionExcept.Duration"
+    units="microseconds" expires_after="2025-06-11">
+  <owner>vincb@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the time it takes to trigger form extraction in all frames. This
+    corresponds to the duration of FormForest::TriggerFormExtractionExcept() and
+    is emitted per each execution. Note that histogram samples for clients
+    without high-resolution clocks are dropped.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.DriverRouter.TriggerFormExtractionExcept.FrameCount"
+    units="frames" expires_after="2025-06-11">
+  <owner>vincb@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the number of frames on which to trigger form extraction on. This
+    corresponds to the number of frames that will be iterated when calling
+    FormForest::TriggerFormExtractionExcept() and is emitted per each execution.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission2.Aggregate"
     enum="AutofilledFieldUserEditingStatus" expires_after="2025-06-15">
   <owner>koerber@google.com</owner>
