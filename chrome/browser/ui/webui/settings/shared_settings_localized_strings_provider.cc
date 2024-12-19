@@ -37,14 +37,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#endif
-
 namespace settings {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
@@ -286,37 +278,8 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR},
       {"secureDnsCustomConnectionError",
        IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
-      {"secureDnsWithIdentifiersDescription",
-       IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
-      {"secureDnsWithIdentifiersAndDomainConfigDescription",
-       IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION},
-      {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
-      {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
-      {"secureDnsDialogCancel",
-       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
-      {"secureDnsDialogTurnOff",
-       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
-      {"secureDnsAutomaticModeDescription",
-       IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION},
-      {"secureDnsSecureDropdownModeNetworkDefaultDescription",
-       IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION},
-#endif
   };
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::u16string product_os_name =
-      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME);
-  html_source->AddString(
-      "secureDnsOsSettingsDescription",
-      l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION,
-                                 product_os_name));
-  html_source->AddString(
-      "secureDnsWithDomainConfigDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_OS_SETTINGS_SECURE_DNS_WITH_DOMAIN_CONFIG_DESCRIPTION,
-          product_os_name));
-#endif
+
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 

@@ -300,6 +300,38 @@ base::span<const SearchConcept> GetPrivacyControlsLocationSearchConcepts(
   return tags;
 }
 
+void AddChromeOsSecureDnsStrings(content::WebUIDataSource* html_source) {
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
+      {"secureDnsWithIdentifiersDescription",
+       IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
+      {"secureDnsWithIdentifiersAndDomainConfigDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION},
+      {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
+      {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
+      {"secureDnsDialogCancel",
+       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
+      {"secureDnsDialogTurnOff",
+       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
+      {"secureDnsAutomaticModeDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION},
+      {"secureDnsSecureDropdownModeNetworkDefaultDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION},
+  };
+  const std::u16string product_os_name =
+      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME);
+  html_source->AddString(
+      "secureDnsOsSettingsDescription",
+      l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION,
+                                 product_os_name));
+  html_source->AddString(
+      "secureDnsWithDomainConfigDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_SECURE_DNS_WITH_DOMAIN_CONFIG_DESCRIPTION,
+          product_os_name));
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 }  // namespace
 
 PrivacySection::PrivacySection(Profile* profile,
@@ -676,6 +708,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ash::features::IsOsSettingsDeprecateDnsDialogEnabled());
 
   ::settings::AddSecureDnsStrings(html_source);
+  AddChromeOsSecureDnsStrings(html_source);
 
   html_source->AddBoolean("isRevenBranding", switches::IsRevenBranding());
   if (switches::IsRevenBranding()) {
