@@ -13,3 +13,6 @@
 -PrerenderBrowserTest.SameOriginMainFrameNavigation
 -PrerenderBrowserTest.SameSiteCrossOriginMainFrameNavigation
 -SiteIsolationPolicyBrowserTest.NoPolicyNoTrialsFlags
+
+# crbug.com/384981000
+-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_Run_PrefsError_SiteSettings/ResolveSelectURLToURN
