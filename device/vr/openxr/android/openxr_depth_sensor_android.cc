@@ -204,15 +204,18 @@ void CopyDepthData(base::span<const float> input,
     for (size_t x = 0; x < width; x++) {
       // Assign a z value of 1 to convert from cartesian (screen) coordinates to
       // a homogeneous Euclidean (2D) coordinate space.
+      // Add a negative to the y coordinate because y=0 corresponds to the top
+      // of the image, i.e. 1 in clip space.
       const gfx::Point3F eye_screen_clip_coord{
-          ToClipSpace(ToTexCoord(x, width)), ToClipSpace(ToTexCoord(y, height)),
-          1};
+          ToClipSpace(ToTexCoord(x, width)),
+          -ToClipSpace(ToTexCoord(y, height)), 1};
       const gfx::Point3F depth_screen_clip_coord =
           depth_screen_from_eye_screen.MapPoint(eye_screen_clip_coord);
 
+      // Revert the -y to sample into the OpenXR depth texture.
       const gfx::PointF depth_screen_texture_coord(
           FromClipSpace(depth_screen_clip_coord.x()),
-          FromClipSpace(depth_screen_clip_coord.y()));
+          FromClipSpace(-depth_screen_clip_coord.y()));
 
       // If x or y is less than 0 it's out of bounds and we should ignore it.
       // We'll convert back to whole buffer coordinates before checking the
