@@ -5,13 +5,12 @@
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history_embeddings/history_embeddings_features.h"
-#include "components/history_embeddings/history_embeddings_service.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
@@ -74,6 +73,27 @@ bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile) {
                  optimization_guide::UserVisibleFeatureKey::kHistorySearch);
 }
 
+bool IsHistoryEmbeddingsAnswersEnabledForProfile(Profile* profile) {
+  if (!IsHistoryEmbeddingsAnswersFeatureEnabled()) {
+    return false;
+  }
+
+  if (optimization_guide::
+          GetGenAILocalFoundationalModelEnterprisePolicySettings(
+              g_browser_process->local_state()) ==
+      optimization_guide::model_execution::prefs::
+          GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed) {
+    return false;
+  }
+
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return optimization_guide_keyed_service &&
+         optimization_guide_keyed_service
+             ->ShouldFeatureAllowModelExecutionForSignedInUser(
+                 optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+}
+
 bool IsHistoryEmbeddingsSettingVisible(Profile* profile) {
   if (!IsHistoryEmbeddingsFeatureEnabled()) {
     return false;
@@ -86,15 +106,22 @@ bool IsHistoryEmbeddingsSettingVisible(Profile* profile) {
              optimization_guide::UserVisibleFeatureKey::kHistorySearch);
 }
 
+bool IsHistoryEmbeddingsAnswersSettingVisible(Profile* profile) {
+  if (!IsHistoryEmbeddingsAnswersFeatureEnabled()) {
+    return false;
+  }
+
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return optimization_guide_keyed_service &&
+         optimization_guide_keyed_service
+             ->ShouldModelExecutionBeAllowedForUser();
+}
+
 void PopulateSourceForWebUI(content::WebUIDataSource* source,
                             Profile* profile) {
-  auto* history_embeddings_service =
-      HistoryEmbeddingsServiceFactory::GetForProfile(profile);
-  source->AddBoolean(
-      "enableHistoryEmbeddingsAnswers",
-      history_embeddings::IsHistoryEmbeddingsAnswersFeatureEnabled() &&
-          history_embeddings_service &&
-          history_embeddings_service->IsAnswererUseAllowed());
+  source->AddBoolean("enableHistoryEmbeddingsAnswers",
+                     IsHistoryEmbeddingsAnswersEnabledForProfile(profile));
   source->AddBoolean(
       "enableHistoryEmbeddingsImages",
       history_embeddings::GetFeatureParameters().enable_images_for_results);

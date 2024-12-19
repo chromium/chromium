@@ -129,11 +129,6 @@ const base::FeatureParam<int> kMockAnswererStatus(&kHistoryEmbeddings,
                                                   "MockAnswererStatus",
                                                   2);
 
-const base::FeatureParam<bool> kForceAnswererUseAllowed(
-    &kHistoryEmbeddings,
-    "ForceAnswererUseAllowed",
-    false);
-
 const base::FeatureParam<bool> kEnableImagesForResults(&kHistoryEmbeddings,
                                                        "EnableImagesForResults",
                                                        false);
@@ -264,7 +259,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   ml_answerer_min_score = kMlAnswererMinScore.Get();
   mock_answerer_delay_ms = kMockAnswererDelayMS.Get();
   mock_answerer_status = kMockAnswererStatus.Get();
-  force_answerer_use_allowed = kForceAnswererUseAllowed.Get();
   enable_images_for_results = kEnableImagesForResults.Get();
   omnibox_scoped = kOmniboxScoped.Get();
   omnibox_unscoped = kOmniboxUnscoped.Get();

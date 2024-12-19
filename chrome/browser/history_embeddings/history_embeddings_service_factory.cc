@@ -93,6 +93,7 @@ std::unique_ptr<KeyedService> HistoryEmbeddingsServiceFactory::
   }
 
   return std::make_unique<history_embeddings::ChromeHistoryEmbeddingsService>(
+      profile,
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
@@ -150,6 +151,7 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<history_embeddings::ChromeHistoryEmbeddingsService>(
+      profile,
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),

@@ -18,12 +18,19 @@ namespace history_embeddings {
 // Do not use. For test only.
 BASE_DECLARE_FEATURE(kLaunchedHistoryEmbeddings);
 
-// Checks whether the feature behavior is enabled for given profile.
+// Checks whether the HistoryEmbeddings feature is enabled for `profile`.
 bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile);
+
+// Checks whether the HistoryEmbeddingsAnswers feature is enabled for `profile`.
+bool IsHistoryEmbeddingsAnswersEnabledForProfile(Profile* profile);
 
 // Return if the feature is enabled and the setting is visible; i.e. if users
 // have the option to opt-in/out of the history embeddings behavior.
 bool IsHistoryEmbeddingsSettingVisible(Profile* profile);
+
+// Return if the feature is enabled and the setting is visible; i.e. if users
+// have the option to opt-in/out of the history embeddings behavior.
+bool IsHistoryEmbeddingsAnswersSettingVisible(Profile* profile);
 
 void PopulateSourceForWebUI(content::WebUIDataSource* source, Profile* profile);
 
@@ -32,7 +39,9 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source, Profile* profile);
 // or eligibility based on the user profile.
 bool IsHistoryEmbeddingsFeatureEnabled();
 
-// Whether the HistoryEmbeddingsAnswers feature is enabled.
+// Whether the HistoryEmbeddingsAnswers feature is enabled. This only checks if
+// the feature flags are enabled and does not check the user's opt-in preference
+// or eligibility based on the user profile.
 bool IsHistoryEmbeddingsAnswersFeatureEnabled();
 
 }  // namespace history_embeddings

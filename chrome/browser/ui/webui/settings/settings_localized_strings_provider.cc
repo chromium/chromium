@@ -25,8 +25,6 @@
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -1747,14 +1745,9 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
           : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
 #endif
 
-  OptimizationGuideKeyedService* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   html_source->AddBoolean(
       "historyEmbeddingsAnswersFeatureEnabled",
-      history_embeddings::IsHistoryEmbeddingsAnswersFeatureEnabled() &&
-          optimization_guide_keyed_service &&
-          optimization_guide_keyed_service
-              ->ShouldModelExecutionBeAllowedForUser());
+      history_embeddings::IsHistoryEmbeddingsAnswersSettingVisible(profile));
 
   // Add Google Account URL and include UTM parameter to signal the source of
   // the navigation.

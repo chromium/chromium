@@ -122,6 +122,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
           {{"SendQualityLog", "true"},
            {"ContentVisibilityThreshold", "0.01"},
            {"UseUrlFilter", "false"}}},
+         {kHistoryEmbeddingsAnswers, {{}}},
          {page_content_annotations::features::kPageContentAnnotations, {{}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}

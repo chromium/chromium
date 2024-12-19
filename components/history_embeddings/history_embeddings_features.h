@@ -101,10 +101,6 @@ struct FeatureParameters {
   // development.
   int mock_answerer_status = 2;
 
-  // This can be used to bypass IsAnswererUseAllowed checks. It's necessary for
-  // testing and development but should remain false in real configurations.
-  bool force_answerer_use_allowed = false;
-
   // Specifies whether to show images in results for search results on the
   // chrome://history page.
   bool enable_images_for_results = false;
