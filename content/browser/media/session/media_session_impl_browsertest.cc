@@ -2557,15 +2557,51 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, Async_Unducking_Success) {
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
       media::MediaContentType::kPersistent);
 
+  // Start a player and duck it.
   StartNewPlayer(player_observer.get());
   EXPECT_TRUE(IsActive());
   EXPECT_TRUE(player_observer->IsPlaying(0));
-
+  ResolveAudioFocusSuccess();
   SystemStartDucking();
   EXPECT_TRUE(IsDucking());
 
+  // Pause and then play the player. This should re-request audio focus. Before
+  // audio focus is granted, this should still be ducked.
+  UISuspend();
+  UIResume();
+  EXPECT_TRUE(IsDucking());
+
+  // Once audio focus is gained, it should no longer be ducked.
   ResolveAudioFocusSuccess();
   EXPECT_FALSE(IsDucking());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       Async_Unducking_Success_Reduck) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      media::MediaContentType::kPersistent);
+
+  // Start a player and duck it.
+  StartNewPlayer(player_observer.get());
+  EXPECT_TRUE(IsActive());
+  EXPECT_TRUE(player_observer->IsPlaying(0));
+  ResolveAudioFocusSuccess();
+  SystemStartDucking();
+  EXPECT_TRUE(IsDucking());
+
+  // Pause and then play the player. This should re-request audio focus. Before
+  // audio focus is granted, this should still be ducked.
+  UISuspend();
+  UIResume();
+  EXPECT_TRUE(IsDucking());
+
+  // Re-enforce ducking.
+  SystemStartDucking();
+
+  // Once audio focus is gained, it should still be ducked since it was ducked
+  // after the request started.
+  ResolveAudioFocusSuccess();
+  EXPECT_TRUE(IsDucking());
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, Async_Unducking_Suspended) {

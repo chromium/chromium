@@ -577,6 +577,13 @@ class MediaSessionImpl : public MediaSession,
   // StopDucking().
   bool is_ducking_;
 
+  // True if we should unduck when we gain audio focus. This is set to true each
+  // time we request focus, and set to false if the AudioFocusManager tells us
+  // to duck. If our request is granted and this is still true, we will unduck.
+  // If false (because we were told to duck after our request began) we will
+  // remain ducked, as that is the intended state the AudioFocusManager expects.
+  bool should_unduck_on_focus_gained_ = true;
+
   base::UnguessableToken audio_focus_group_id_ = base::UnguessableToken::Null();
 
   double ducking_volume_multiplier_;
