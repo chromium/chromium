@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
@@ -288,6 +289,38 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
     // notifications for it being disabled.
     bool removed = registry_->RemoveTerminated(extension->id());
     DCHECK(removed);
+  }
+}
+
+void ExtensionRegistrar::DisableExtensionWithSource(
+    const Extension* source_extension,
+    const std::string& extension_id,
+    disable_reason::DisableReason disable_reasons) {
+  DCHECK(disable_reasons == disable_reason::DISABLE_USER_ACTION ||
+         disable_reasons == disable_reason::DISABLE_BLOCKED_BY_POLICY);
+  if (disable_reasons == disable_reason::DISABLE_BLOCKED_BY_POLICY) {
+    DCHECK(Manifest::IsPolicyLocation(source_extension->location()) ||
+           Manifest::IsComponentLocation(source_extension->location()));
+  }
+
+  const Extension* extension =
+      registry_->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
+  CHECK(extension_system_->management_policy()->ExtensionMayModifySettings(
+      source_extension, extension, nullptr));
+  DisableExtension(extension_id, disable_reasons);
+}
+
+void ExtensionRegistrar::RemoveDisableReasonAndMaybeEnable(
+    const std::string& extension_id,
+    disable_reason::DisableReason reason_to_remove) {
+  auto disable_reason = extension_prefs_->GetDisableReasons(extension_id);
+  if ((disable_reason & reason_to_remove) == 0) {
+    return;
+  }
+
+  extension_prefs_->RemoveDisableReason(extension_id, reason_to_remove);
+  if (disable_reason == reason_to_remove) {
+    EnableExtension(extension_id);
   }
 }
 

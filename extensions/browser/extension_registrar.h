@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
@@ -124,6 +125,20 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // Marks |extension| as disabled and deactivates it. The ExtensionRegistry
   // retains a reference to it, so it can be enabled later.
   void DisableExtension(const ExtensionId& extension_id, int disable_reasons);
+
+  // Same as `DisableExtension`, but assumes that the request to disable
+  // `extension_id` originates from `source_extension` when evaluating whether
+  // the extension can be disabled. Please see `ExtensionMayModifySettings`
+  // for details.
+  void DisableExtensionWithSource(
+      const Extension* source_extension,
+      const std::string& extension_id,
+      disable_reason::DisableReason disable_reasons);
+
+  // Removes the disable reason and enable the extension if there are no disable
+  // reasons left and is not blocked for another reason.
+  void RemoveDisableReasonAndMaybeEnable(const std::string& extension_id,
+                                         disable_reason::DisableReason reason);
 
   // Attempts to reload the specified extension by disabling it if it is enabled
   // and requesting the Delegate load it again.

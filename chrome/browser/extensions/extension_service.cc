@@ -1037,14 +1037,8 @@ void ExtensionService::OnBlocklistStateAdded(const std::string& extension_id) {
 void ExtensionService::RemoveDisableReasonAndMaybeEnable(
     const std::string& extension_id,
     disable_reason::DisableReason reason_to_remove) {
-  auto disable_reason = extension_prefs_->GetDisableReasons(extension_id);
-  if ((disable_reason & reason_to_remove) == 0)
-    return;
-
-  extension_prefs_->RemoveDisableReason(extension_id, reason_to_remove);
-  if (disable_reason == reason_to_remove) {
-    EnableExtension(extension_id);
-  }
+  extension_registrar_.RemoveDisableReasonAndMaybeEnable(extension_id,
+                                                         reason_to_remove);
 }
 
 void ExtensionService::EnableExtension(const std::string& extension_id) {
@@ -1063,19 +1057,8 @@ void ExtensionService::DisableExtensionWithSource(
     const std::string& extension_id,
     disable_reason::DisableReason disable_reasons) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-
-  DCHECK(disable_reasons == disable_reason::DISABLE_USER_ACTION ||
-         disable_reasons == disable_reason::DISABLE_BLOCKED_BY_POLICY);
-  if (disable_reasons == disable_reason::DISABLE_BLOCKED_BY_POLICY) {
-    DCHECK(Manifest::IsPolicyLocation(source_extension->location()) ||
-           Manifest::IsComponentLocation(source_extension->location()));
-  }
-
-  const Extension* extension =
-      registry_->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
-  CHECK(system_->management_policy()->ExtensionMayModifySettings(
-      source_extension, extension, nullptr));
-  extension_registrar_.DisableExtension(extension_id, disable_reasons);
+  extension_registrar_.DisableExtensionWithSource(
+      source_extension, extension_id, disable_reasons);
 }
 
 void ExtensionService::DisableUserExtensionsExcept(
