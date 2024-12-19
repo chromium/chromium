@@ -192,7 +192,7 @@ std::vector<auction_worklet::mojom::KAnonKeyPtr> KAnonKeysToMojom(
 // Finds InterestGroup::Ad in `ads` that matches `ad_descriptor`, if any.
 // Returns nullptr if `ad_descriptor` is invalid.
 const blink::InterestGroup::Ad* FindMatchingAd(
-    const std::vector<blink::InterestGroup::Ad>& ads,
+    const std::optional<std::vector<blink::InterestGroup::Ad>>& ads,
     const base::flat_set<std::string>& kanon_keys,
     const blink::InterestGroup& interest_group,
     auction_worklet::mojom::BidRole bid_role,
@@ -200,6 +200,9 @@ const blink::InterestGroup::Ad* FindMatchingAd(
         selected_buyer_and_seller_reporting_id,
     bool is_component_ad,
     const blink::AdDescriptor& ad_descriptor) {
+  if (!ads.has_value()) {
+    return nullptr;
+  }
   // TODO(mmenke): Validate render URLs on load and make this a DCHECK just
   // before the return instead, since then `ads` will necessarily only contain
   // valid URLs at that point.
@@ -212,7 +215,7 @@ const blink::InterestGroup::Ad* FindMatchingAd(
   }
 
   const blink::InterestGroup::Ad* maybe_matching_ad = nullptr;
-  for (const auto& ad : ads) {
+  for (const auto& ad : *ads) {
     if (ad.render_url() != ad_descriptor.url) {
       continue;
     }
@@ -1948,7 +1951,7 @@ class InterestGroupAuction::BuyerHelper
 
     // 1. Ads must be in the interest group (at specified k-anon level)
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
-        *interest_group.ads, bid_state->kanon_keys, interest_group, bid_role,
+        interest_group.ads, bid_state->kanon_keys, interest_group, bid_role,
         selected_buyer_and_seller_reporting_id,
         /*is_component_ad=*/false, ad_descriptor);
     if (!matching_ad) {
@@ -1989,8 +1992,8 @@ class InterestGroupAuction::BuyerHelper
       if (interest_group.ad_components.has_value()) {
         // selected_buyer_and_seller_reporting_id is ignored in ad components
         matching_ad_component = FindMatchingAd(
-            *interest_group.ad_components, bid_state->kanon_keys,
-            interest_group, bid_role,
+            interest_group.ad_components, bid_state->kanon_keys, interest_group,
+            bid_role,
             /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
             /*is_component_ad=*/true, ad_component_descriptor);
       }
@@ -2826,7 +2829,7 @@ class InterestGroupAuction::BuyerHelper
     const blink::InterestGroup& interest_group =
         bid_state.bidder->interest_group;
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
-        *interest_group.ads, bid_state.kanon_keys, interest_group,
+        interest_group.ads, bid_state.kanon_keys, interest_group,
         mojo_bid->bid_role, mojo_bid->selected_buyer_and_seller_reporting_id,
         /*is_component_ad=*/false, mojo_bid->ad_descriptor);
     if (!matching_ad) {
@@ -2863,7 +2866,7 @@ class InterestGroupAuction::BuyerHelper
       for (const blink::AdDescriptor& ad_component_descriptor :
            *mojo_bid->ad_component_descriptors) {
         const blink::InterestGroup::Ad* matching_ad_component = FindMatchingAd(
-            *interest_group.ad_components, bid_state.kanon_keys, interest_group,
+            interest_group.ad_components, bid_state.kanon_keys, interest_group,
             mojo_bid->bid_role,
             /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
             /*is_component_ad=*/true, ad_component_descriptor);
