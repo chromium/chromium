@@ -235,13 +235,6 @@ void LogCursorSizeCounter(LocalFrame* frame, const ui::Cursor& cursor) {
   }
 }
 
-gfx::QuadF GetQuadForTimelinePaintEvent(const scoped_refptr<cc::Layer>& layer) {
-  gfx::RectF rect(layer->update_rect());
-  if (layer->transform_tree_index() != -1)
-    rect = layer->ScreenSpaceTransform().MapRect(rect);
-  return gfx::QuadF(rect);
-}
-
 // Default value for how long we want to delay the
 // compositor commit beyond the start of document lifecycle updates to avoid
 // flash between navigations. The delay should be small enough so that it won't
@@ -2931,19 +2924,6 @@ const cc::Layer* LocalFrameView::RootCcLayer() const {
   return const_cast<LocalFrameView*>(this)->RootCcLayer();
 }
 
-void LocalFrameView::CreatePaintTimelineEvents() {
-  if (const cc::Layer* root_layer = paint_artifact_compositor_->RootLayer()) {
-    for (const auto& layer : root_layer->children()) {
-      if (!layer->update_rect().IsEmpty()) {
-        DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
-            "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
-            &GetFrame(), /*layout_object=*/nullptr,
-            GetQuadForTimelinePaintEvent(layer), layer->id());
-      }
-    }
-  }
-}
-
 void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   TRACE_EVENT0("blink", "LocalFrameView::pushPaintArtifactToCompositor");
   if (!frame_->GetSettings()->GetAcceleratedCompositingEnabled()) {
@@ -2977,9 +2957,6 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   // invalidations if possible.
   if (paint_artifact_compositor_->TryFastPathUpdate(
           paint_controller_persistent_data_->GetPaintArtifact())) {
-    if (repainted) {
-      CreatePaintTimelineEvents();
-    }
     // TODO(pdr): Should we clear the property tree state change bits (
     // |PaintArtifactCompositor::ClearPropertyTreeChangedState|)?
     return;
@@ -3033,8 +3010,6 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
       paint_controller_persistent_data_->GetPaintArtifact(),
       viewport_properties, scroll_translation_nodes,
       std::move(view_transition_requests));
-
-  CreatePaintTimelineEvents();
 }
 
 void LocalFrameView::AppendViewTransitionRequests(

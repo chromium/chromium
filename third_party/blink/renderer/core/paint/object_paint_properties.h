@@ -11,15 +11,16 @@
 #include <variant>
 
 #include "base/dcheck_is_on.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/sparse_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/sparse_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -449,6 +450,12 @@ class CORE_EXPORT ObjectPaintProperties
         ->DirectlyUpdateOpacity(opacity, animation_state);
   }
 
+  void ForAllTransformNodes(
+      base::FunctionRef<bool(const TransformPaintPropertyNode&)> action) const {
+    ForNodes<TransformPaintPropertyNode>(NodeId::kFirstTransform,
+                                         NodeId::kLastTransform, action);
+  }
+
  private:
   using NodeList = SparseVector<NodeId, Member<PaintPropertyNode>, 2>;
 
@@ -526,16 +533,28 @@ class CORE_EXPORT ObjectPaintProperties
     return false;
   }
 
+  template <typename NodeType>
+  void ForNodes(NodeId first_id,
+                NodeId last_id,
+                // Return false to break the loop.
+                base::FunctionRef<bool(const NodeType&)> action) const {
+    for (NodeId i = first_id; i <= last_id;
+         i = static_cast<NodeId>(static_cast<int>(i) + 1)) {
+      if (const auto* node = GetNode<NodeType>(i); node && !action(*node)) {
+        break;
+      }
+    }
+  }
+
 #if DCHECK_IS_ON()
   void AddNodesToPrinter(NodeId first_id,
                          NodeId last_id,
                          PropertyTreePrinter& printer) const {
-    for (NodeId i = first_id; i <= last_id;
-         i = static_cast<NodeId>(static_cast<int>(i) + 1)) {
-      if (nodes_.HasField(i)) {
-        printer.AddNode(nodes_.GetField(i).Get());
-      }
-    }
+    ForNodes<PaintPropertyNode>(first_id, last_id,
+                                [&](const PaintPropertyNode& node) {
+                                  printer.AddNode(&node);
+                                  return true;
+                                });
   }
 #endif
 
