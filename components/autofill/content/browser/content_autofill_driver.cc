@@ -62,16 +62,19 @@ FormData Lift(ContentAutofillDriver& source, FormData form) {
   content::RenderFrameHost& rfh = *source.render_frame_host();
   form.set_host_frame(source.GetFrameToken());
   form.set_main_frame_origin(rfh.GetMainFrame()->GetLastCommittedOrigin());
-  form.set_url([&] {
-    // GetLastCommittedURL() doesn't include URL updates due to
-    // document.open() and so it might be about:blank or about:srcdoc. In this
-    // case fallback to GetLastCommittedOrigin(). See crbug.com/1209270.
-    GURL url = StripAuthAndParams(rfh.GetLastCommittedURL());
-    if (url.SchemeIs(url::kAboutScheme)) {
-      url = StripAuthAndParams(rfh.GetLastCommittedOrigin().GetURL());
-    }
-    return url;
-  }());
+
+  // GetLastCommittedURL() doesn't include URL updates due to
+  // document.open() and so it might be about:blank or about:srcdoc. In this
+  // case fallback to GetLastCommittedOrigin(). See crbug.com/1209270.
+  GURL unstripped_url = rfh.GetLastCommittedURL();
+  if (unstripped_url.SchemeIs(url::kAboutScheme)) {
+    unstripped_url = rfh.GetLastCommittedOrigin().GetURL();
+  }
+  form.set_url(StripAuthAndParams(unstripped_url));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIncludeUrlInCrowdsourcing)) {
+    form.set_full_url(StripAuth(unstripped_url));
+  }
 
   // The form signature must be calculated after setting FormData::url.
   FormSignature signature = CalculateFormSignature(form);

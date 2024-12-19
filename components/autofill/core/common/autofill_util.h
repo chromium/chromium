@@ -63,6 +63,9 @@ bool IsFillable(mojom::FocusedFieldType focused_field_type);
 mojom::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
     mojom::SubmissionSource source);
 
+// Strips any authentication data from `gurl`.
+GURL StripAuth(const GURL& gurl);
+
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);
 

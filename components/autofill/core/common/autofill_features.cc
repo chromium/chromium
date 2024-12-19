@@ -287,6 +287,12 @@ const base::FeatureParam<bool>
         &kAutofillImprovedLabels,
         "autofill_improved_labels_with_differentiating_labels_in_front", false};
 
+// If enabled, we include a `FormData`'s URL in crowdsourcing votes.
+// TODO(crbug.com/385043924): Clean up when launched.
+BASE_FEATURE(kAutofillIncludeUrlInCrowdsourcing,
+             "AutofillIncludeUrlInCrowdsourcing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, we start forwarding submissions with source
 // DOM_MUTATION_AFTER_AUTOFILL, even for non-password forms.
 BASE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission,

@@ -137,6 +137,13 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
   NOTREACHED();
 }
 
+GURL StripAuth(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  return gurl.ReplaceComponents(rep);
+}
+
 GURL StripAuthAndParams(const GURL& gurl) {
   GURL::Replacements rep;
   rep.ClearUsername();

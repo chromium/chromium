@@ -545,6 +545,9 @@ class ContentAutofillDriverWithMultiFrameCreditCardForm
 };
 
 TEST_F(ContentAutofillDriverTest, Lift_Form) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillIncludeUrlInCrowdsourcing);
+
   NavigateAndCommit(GURL("https://username:password@a.test/path?query#hash"));
   FormData form;
   test_api(form).Append(FormFieldData());
@@ -559,6 +562,20 @@ TEST_F(ContentAutofillDriverTest, Lift_Form) {
             url::Origin::CreateFromNormalizedTuple("https", "a.test", 443));
   ASSERT_EQ(form.fields().size(), 1u);
   EXPECT_EQ(form.fields().front().host_frame(), frame_token());
+}
+
+// Tests that if `kAutofillIncludeUrlInCrowdsourcing` is enabled, the
+// FormData::full_url() returns the current URL stripped of auth parameters.
+TEST_F(ContentAutofillDriverTest, Lift_Form_WithUrlCrowdsourcing) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillIncludeUrlInCrowdsourcing};
+
+  NavigateAndCommit(GURL("https://username:password@a.test/path?query#hash"));
+  FormData form;
+  test_api(form).Append(FormFieldData());
+  test_api(driver()).LiftForTest(form);
+
+  EXPECT_EQ(form.full_url(), GURL("https://a.test/path?query#hash"));
 }
 
 // Test that forms in "about:" without parents have an empty FormData::url.

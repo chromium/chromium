@@ -2,23 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/content/browser/form_meta_data.h"
 
+#include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace password_manager {
-
-namespace {
-
-GURL StripAuth(const GURL& gurl) {
-  GURL::Replacements rep;
-  rep.ClearUsername();
-  rep.ClearPassword();
-  return gurl.ReplaceComponents(rep);
-}
-
-}  // namespace
 
 GURL GetURLFromRenderFrameHost(content::RenderFrameHost* render_frame_host) {
   GURL url = render_frame_host->GetLastCommittedURL();
@@ -39,7 +31,7 @@ void SetFrameAndFormMetaData(content::RenderFrameHost* rfh,
   DCHECK(url.is_valid());
   form.set_host_frame(autofill::LocalFrameToken(rfh->GetFrameToken().value()));
   form.set_url(password_manager_util::StripAuthAndParams(url));
-  form.set_full_url(StripAuth(url));
+  form.set_full_url(autofill::StripAuth(url));
   form.set_main_frame_origin(rfh->GetMainFrame()->GetLastCommittedOrigin());
 }
 
