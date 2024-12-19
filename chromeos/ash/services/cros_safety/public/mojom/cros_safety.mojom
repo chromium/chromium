@@ -1,7 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module ash.cros_safety.mojom;
 
@@ -15,6 +15,12 @@ enum SafetyClassifierVerdict {
   [Default] kGenericError,
   kFailedText,            // Meaning that the text failed the classification.
   kFailedImage,           // Meaning that the image failed the classification.
+  // Meaning that the input cannot be recognized by the classifier.
+  [MinVersion=1] kInvalidInput,
+  // Meaning that the classifier encountered some internal error.
+  [MinVersion=1] kBackendFailure,
+  // Meaning that actually the classification isn' triggered at all.
+  [MinVersion=1] kServiceNotAvailable,
 };
 
 // These enum entries identify which feature is requesting a verdict. This
@@ -26,6 +32,10 @@ enum SafetyClassifierVerdict {
 enum SafetyRuleset {
   [Default] kGeneric,
   kMantis,
+  [MinVersion=1] kMantisInputImage,
+  [MinVersion=1] kMantisOutputImage,
+  [MinVersion=1] kMantisGeneratedRegion,
+  [MinVersion=1] kCoral,
 };
 
 // CloudSafetySession is implemented within CrosSafetyService which connects
