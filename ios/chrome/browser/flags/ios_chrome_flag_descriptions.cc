@@ -572,6 +572,11 @@ const char kIOSNewFollowingFeedEntryPointsDescription[] =
     "existing toggle on the top of the feeds. No changes for users ineligible "
     "for query follow.";
 
+extern const char kIOSEnableDeleteAllSavedCredentialsName[] =
+    "Enable delete all saved credentials in PWM";
+extern const char kIOSEnableDeleteAllSavedCredentialsDescription[] =
+    "When enabled, the delete all data button in PWM will be presented.";
+
 const char kIOSKeyboardAccessoryUpgradeName[] =
     "Enable the keyboard accessory upgrade on iOS";
 const char kIOSKeyboardAccessoryUpgradeDescription[] =

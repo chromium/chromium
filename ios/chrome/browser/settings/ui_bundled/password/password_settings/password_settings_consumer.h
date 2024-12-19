@@ -20,6 +20,10 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 // the password settings submenu.
 @protocol PasswordSettingsConsumer
 
+// Indicates whether the delete flow can be started. Should be NO when no
+// credentials saved, and YES otherwise.
+- (void)setCanDeleteAllCredentials:(BOOL)canDeleteAllCredentials;
+
 // Indicates whether the export flow can be started. Should be NO when an
 // export is already in progress, and YES when idle.
 - (void)setCanExportPasswords:(BOOL)canExportPasswords;
@@ -45,6 +49,9 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 // Indicates the on-device encryption state according to the sync service.
 - (void)setOnDeviceEncryptionState:
     (PasswordSettingsOnDeviceEncryptionState)onDeviceEncryptionState;
+
+// Enables/disables the "Delete all data" button based on the current state.
+- (void)updateDeleteAllCredentialsButton;
 
 // Enables/disables the "Export Passwords..." button based on the current state.
 - (void)updateExportPasswordsButton;

@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -1317,6 +1318,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kModernTabStrip,
                                     kModernTabStripVariations,
                                     "ModernTabStrip")},
+    {"ios-enable-delete-all-saved-credentials",
+     flag_descriptions::kIOSEnableDeleteAllSavedCredentialsName,
+     flag_descriptions::kIOSEnableDeleteAllSavedCredentialsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kIOSEnableDeleteAllSavedCredentials)},
     {"ios-shared-highlighting-color-change",
      flag_descriptions::kIOSSharedHighlightingColorChangeName,
      flag_descriptions::kIOSSharedHighlightingColorChangeDescription,

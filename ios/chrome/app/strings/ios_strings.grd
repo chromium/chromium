@@ -1365,6 +1365,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DELETE_ACTION_TITLE" desc="Title of the action used to delete a selected item. Item types include, for example, a Bookmark or an History Entry. [iOS only]">
         Delete
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_SAVED_CREDENTIALS" desc="Button that user can press to delete all saved credentials. [iOS only]">
+        Delete all data
+      </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_BOTTOM_SHEET_FOOTER" desc="Footer message in the delete browsing data bottom sheet which informs the user they can seperately delete their search history and/or other forms of activity at the 2 links provided.">
         <ph name="BEGIN_LINK">BEGIN_LINK</ph>Search history<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>other forms of activity<ph name="END_LINK">END_LINK</ph> may be saved in your Google Account.
       </message>
@@ -3767,6 +3770,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_SET_UP" desc="Section title in settings &gt; password, allowing user to opt-in. [iOS Only]">
         Set up…
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user what data will be deleted. [iOS Only]">
+        Passwords, passkeys, and other data will be permanently deleted from Google Password Manager
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_PASSWORD_PLACEHOLDER_TEXT" desc="Placeholder text for the password field when adding a new credential manually via settings [Length: 10em]">
         password

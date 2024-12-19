@@ -5262,6 +5262,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "ios-enable-delete-all-saved-credentials",
+    "owners": ["mxlg@google.com", "bling-transactions@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "ios-interruptible-coordinator-always-dismissed",
     "owners": [
       "arthurmilchior@google.com",

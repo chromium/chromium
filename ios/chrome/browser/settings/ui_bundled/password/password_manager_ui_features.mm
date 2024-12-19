@@ -13,6 +13,12 @@ BASE_FEATURE(kIOSEnablePasscodeSettings,
              "IOSEnablePasscodeSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature switch for the logic that allows the user to delete all saved
+// credentials in GPM.
+BASE_FEATURE(kIOSEnableDeleteAllSavedCredentials,
+             "IOSEnableDeleteAllSavedCredentials",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables passkey syncing follow-up features.
 BASE_FEATURE(kIOSPasskeysM2,
              "IOSPasskeysM2",

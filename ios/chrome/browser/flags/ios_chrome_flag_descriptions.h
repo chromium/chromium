@@ -478,6 +478,11 @@ extern const char kIOSDisableParcelTrackingDescription[];
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
 
+// Title and description for the flag to enable delete all saved credentials in
+// GPM.
+extern const char kIOSEnableDeleteAllSavedCredentialsName[];
+extern const char kIOSEnableDeleteAllSavedCredentialsDescription[];
+
 // Title and description for the flag to enable the keyboard accessory upgrade.
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
