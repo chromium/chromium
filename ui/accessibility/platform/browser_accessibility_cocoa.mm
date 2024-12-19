@@ -19,6 +19,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -594,6 +595,13 @@ bool ui::IsNSRange(id value) {
 // Returns an array of BrowserAccessibilityCocoa objects, representing the
 // accessibility children of this object.
 - (NSArray*)accessibilityChildren {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.BrowserAccessibilityCocoa::"
+      "childrenChanged");
+  base::UmaHistogramBoolean("Accessibility.Performance."
+                            "BrowserAccessibilityCocoa::needsToUpdateChildren",
+                            _needsToUpdateChildren);
+
   if (![self instanceActive])
     return nil;
   if (_needsToUpdateChildren) {

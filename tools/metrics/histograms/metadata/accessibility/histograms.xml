@@ -2174,6 +2174,34 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
+    name="Accessibility.Performance.BrowserAccessibilityCocoa::childrenChanged"
+    units="microseconds" expires_after="2025-05-04">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the browser main thread handling requests for children
+    on Mac.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.Performance.BrowserAccessibilityCocoa::needsToUpdateChildren"
+    enum="Boolean" expires_after="2025-04-04">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if children need to be re-built on a request for children in the Mac
+    accessibility tree.
+  </summary>
+</histogram>
+
+<histogram
     name="Accessibility.Performance.BrowserAccessibilityManager::OnAccessibilityEvents2"
     units="microseconds" expires_after="never">
 <!-- expires-never: vital accessibility performance metric -->
