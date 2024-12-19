@@ -266,6 +266,9 @@ void ToastView::Init() {
             DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_MENU_BUTTON_SPACING) -
         insets.left();
     menu_button_->SetProperty(views::kMarginsKey, GetLeftMargin(left_margin));
+    if (!HasConfiguredInitiallyFocusedView()) {
+      SetInitiallyFocusedView(menu_button_);
+    }
     max_child_height =
         std::max(max_child_height,
                  lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE) +
@@ -296,7 +299,7 @@ void ToastView::Init() {
       top_margin, lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
       total_vertical_margins - top_margin, right_margin));
 
-  if (has_action_button_ || has_close_button_) {
+  if (has_action_button_ || has_close_button_ || menu_model_) {
     SetFocusTraversesOut(true);
   } else {
     set_focus_traversable_from_anchor_view(false);
