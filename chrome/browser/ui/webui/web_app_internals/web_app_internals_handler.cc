@@ -506,3 +506,16 @@ void WebAppInternalsHandler::SetUpdateChannelForIsolatedWebApp(
   iwa_handler_.SetUpdateChannelForIsolatedWebApp(app_id, update_channel,
                                                  std::move(callback));
 }
+
+void WebAppInternalsHandler::SetPinnedVersionForIsolatedWebApp(
+    const webapps::AppId& app_id,
+    const std::string& pinned_version,
+    SetPinnedVersionForIsolatedWebAppCallback callback) {
+  iwa_handler_.SetPinnedVersionForIsolatedWebApp(app_id, pinned_version,
+                                                 std::move(callback));
+}
+
+void WebAppInternalsHandler::ResetPinnedVersionForIsolatedWebApp(
+    const webapps::AppId& app_id) {
+  iwa_handler_.ResetPinnedVersionForIsolatedWebApp(app_id);
+}

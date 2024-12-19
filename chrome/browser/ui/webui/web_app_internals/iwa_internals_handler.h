@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
+#include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "components/webapps/common/web_app_id.h"
@@ -79,6 +80,13 @@ class IwaInternalsHandler {
       const std::string& update_channel,
       Handler::SetUpdateChannelForIsolatedWebAppCallback callback);
 
+  void SetPinnedVersionForIsolatedWebApp(
+      const webapps::AppId& app_id,
+      const std::string pinned_version,
+      Handler::SetPinnedVersionForIsolatedWebAppCallback callback);
+
+  void ResetPinnedVersionForIsolatedWebApp(const webapps::AppId& app_id);
+
  private:
   class IsolatedWebAppDevBundleSelectListener;
   class IwaManifestInstallUpdateHandler;
@@ -128,6 +136,8 @@ class IwaInternalsHandler {
 
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<Profile> profile_;
+
+  base::flat_map<webapps::AppId, base::Version> pinned_versions_;
 
   // Runs updates for manifest-installed dev-mode apps.
   // Will be nullptr if WebAppProvider is not available for the current

@@ -22,6 +22,7 @@ const debugInfoAsJsonString: Promise<string> =
 
 const iwaDevProxyInstallButton =
     getRequiredElement('iwa-dev-install-proxy-button') as HTMLButtonElement;
+
 const iwaDevProxyInstallUrl =
     getRequiredElement('iwa-dev-install-proxy-url') as HTMLInputElement;
 
@@ -39,6 +40,9 @@ const switchChannelButton =
 
 const closeSwitchChannelDialogButton =
     getRequiredElement('iwa-switch-channel-dialog-close') as HTMLButtonElement;
+
+const iwaPinnedVersionDialog =
+    getRequiredElement('iwa-pinned-version-input-dialog') as HTMLDialogElement;
 
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
@@ -258,6 +262,7 @@ async function iwaDevFetchUpdateManifest() {
             updateManifestUrl,
             // TODO(crbug.com/373396075): Allow selecting the channel.
             updateChannel: 'default',
+            pinnedVersion: null,
           },
         })).result;
     if (installResult.success) {
@@ -319,6 +324,54 @@ async function showSwitchChannelDialog(appId: string, name: string) {
 closeSwitchChannelDialogButton.addEventListener('click', () => {
   iwaSwitchChannelDialog.close();
 });
+
+// Logic for handling the version pinning for IWAs.
+async function showPinnedVersionDialog(appId: string, name: string) {
+  const pinButton =
+      getRequiredElement('iwa-pinned-version-dialog-pin') as HTMLButtonElement;
+  const unpinButton = getRequiredElement('iwa-pinned-version-dialog-unpin') as
+      HTMLButtonElement;
+
+  const pinnedVersion =
+      getRequiredElement('iwa-pinned-version') as HTMLInputElement;
+
+  pinButton.addEventListener('click', () => {
+    const version = pinnedVersion.value;
+    setDevInstallMessageText(`Pinning ${name} to version ${version}...`);
+
+    iwaPinnedVersionDialog.close();
+
+    setTimeout(async () => {
+      const {success} =
+          await webAppInternalsHandler.setPinnedVersionForIsolatedWebApp(
+              appId, version);
+
+      setDevInstallMessageText(
+          success ?
+              `Successfully pinned ${name} to version ${
+                  version}; Version will be applied when an
+          update is triggered.` :
+              `Something went wrong while setting pinned version of ${name}
+          to version ${version}.`);
+      if (success) {
+        refreshDevModeAppList();
+      }
+    }, 0);
+  }, {once: true});
+
+  unpinButton.addEventListener('click', () => {
+    iwaPinnedVersionDialog.close();
+    webAppInternalsHandler.resetPinnedVersionForIsolatedWebApp(appId);
+  });
+
+  iwaPinnedVersionDialog.showModal();
+}
+
+getRequiredElement('iwa-pinned-version-dialog-close')
+    .addEventListener('click', () => {
+      iwaPinnedVersionDialog.close();
+      setDevInstallMessageText('');
+    });
 
 iwaDevUpdateManifestUrl.addEventListener('enter', iwaDevFetchUpdateManifest);
 getRequiredElement('iwa-dev-update-manifest-fetch-button')
@@ -400,6 +453,11 @@ function describeIsolatedWebApp(
     name: string, installedVersion: string, location: IwaDevModeLocation,
     updateInfo: UpdateInfo|null): string {
   if (updateInfo) {
+    if (updateInfo.pinnedVersion) {
+      return `${name} (${installedVersion}) → ${
+          updateInfo.updateManifestUrl.url} (${
+          updateInfo.updateChannel}, pinned to: ${updateInfo.pinnedVersion})`;
+    }
     return `${name} (${installedVersion}) → ${
         updateInfo.updateManifestUrl.url} (${updateInfo.updateChannel})`;
   }
@@ -420,6 +478,7 @@ async function refreshDevModeAppList() {
   const devModeAppList = getRequiredElement('iwa-dev-updates-app-list');
 
   devModeAppList.replaceChildren();
+
   if (devModeApps.length === 0) {
     devModeUpdatesMessage.innerText = 'None';
   } else {
@@ -431,14 +490,22 @@ async function refreshDevModeAppList() {
           describeIsolatedWebApp(name, installedVersion, location, updateInfo);
       li.className = 'iwa-dev-mode-list-item';
 
-      const {updateMsg, updateBtn, switchChannelBtn} =
+      const {updateMsg, updateBtn, switchChannelBtn, pinnedVersionBtn} =
           prepareAppButtons(appId, name, location, updateInfo);
 
       li.appendChild(updateMsg);
-      li.appendChild(updateBtn);
+
+      const buttonsSection = document.createElement('div');
+      buttonsSection.className = 'dev-iwa-buttons';
+
+      buttonsSection.appendChild(updateBtn);
       if (switchChannelBtn) {
-        li.appendChild(switchChannelBtn);
+        buttonsSection.appendChild(switchChannelBtn);
       }
+      if (pinnedVersionBtn) {
+        buttonsSection.appendChild(pinnedVersionBtn);
+      }
+      li.appendChild(buttonsSection);
 
       devModeAppList.appendChild(li);
     }
@@ -454,11 +521,11 @@ function prepareAppButtons(
   updateMsg: HTMLParagraphElement,
   updateBtn: HTMLButtonElement,
   switchChannelBtn?: HTMLButtonElement,
+  pinnedVersionBtn?: HTMLButtonElement,
 } {
   const updateMsg = document.createElement('p');
 
   const updateBtn = document.createElement('button');
-  updateBtn.className = 'iwa-dev-update-button';
 
   updateBtn.innerText = 'Perform update now';
   updateBtn.onclick = async () => {
@@ -492,16 +559,22 @@ function prepareAppButtons(
   };
 
   let switchChannelBtn;
+  let pinnedVersionBtn;
   if (updateInfo) {
     switchChannelBtn = document.createElement('button');
-    switchChannelBtn.className = 'iwa-dev-switch-channel-button';
     switchChannelBtn.innerText = 'Switch channel';
     switchChannelBtn.onclick = async () => {
       showSwitchChannelDialog(appId, name);
     };
+
+    pinnedVersionBtn = document.createElement('button');
+    pinnedVersionBtn.innerText = 'Pin To Version';
+    pinnedVersionBtn.onclick = async () => {
+      showPinnedVersionDialog(appId, name);
+    };
   }
 
-  return {updateMsg, updateBtn, switchChannelBtn};
+  return {updateMsg, updateBtn, switchChannelBtn, pinnedVersionBtn};
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

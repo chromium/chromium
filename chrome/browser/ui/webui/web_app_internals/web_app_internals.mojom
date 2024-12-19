@@ -21,6 +21,7 @@ union InstallIsolatedWebAppResult {
 struct UpdateInfo {
   url.mojom.Url update_manifest_url;
   string update_channel;
+  string? pinned_version;
 };
 
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
@@ -104,6 +105,13 @@ interface WebAppInternalsHandler {
   // `app_id`.
   SetUpdateChannelForIsolatedWebApp(string app_id, string update_channel) =>
       (bool success);
+
+  // Sets `pinned_version` value for given `app_id`.
+  SetPinnedVersionForIsolatedWebApp(string app_id, string pinned_version) =>
+      (bool success);
+
+  // Unpins the IWA by setting `pinned_version` to null.
+  ResetPinnedVersionForIsolatedWebApp(string app_id);
 
   // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
   // Returns a string containing a success or error message.
