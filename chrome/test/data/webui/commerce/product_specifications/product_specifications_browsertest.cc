@@ -69,7 +69,8 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
   base::WeakPtrFactory<ProductSpecificationsTest> weak_ptr_factory_{this};
 };
 
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
+// TODO(crbug.com/385024070): Flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DISABLED_App) {
   RunTest("commerce/product_specifications/app_test.js", "mocha.run()");
 }
 
