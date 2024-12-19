@@ -33,7 +33,7 @@ namespace {
 
 BASE_FEATURE(kSqlWALModeOnDipsDatabase,
              "SqlWALModeOnDipsDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // NOTE: This is flag is intended for local testing and debugging only.
 BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,

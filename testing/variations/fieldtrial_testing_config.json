@@ -16573,9 +16573,7 @@
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "ReduceCpuUtilization2",
-                        "SharedStorageAPIEnableWALForDatabase",
-                        "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase"
+                        "SharedStorageAPIEnableWALForDatabase"
                     ]
                 }
             ]
@@ -16594,9 +16592,7 @@
                         "MojoBindingsInlineSLS",
                         "NumberOfCoresWithCpuSecurityMitigation",
                         "ReduceCpuUtilization2",
-                        "SharedStorageAPIEnableWALForDatabase",
-                        "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase"
+                        "SharedStorageAPIEnableWALForDatabase"
                     ]
                 }
             ]
@@ -16616,9 +16612,7 @@
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "ReduceCpuUtilization2",
-                        "SharedStorageAPIEnableWALForDatabase",
-                        "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase"
+                        "SharedStorageAPIEnableWALForDatabase"
                     ]
                 }
             ]
@@ -16633,9 +16627,7 @@
                     "enable_features": [
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
-                        "SharedStorageAPIEnableWALForDatabase",
-                        "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase"
+                        "SharedStorageAPIEnableWALForDatabase"
                     ]
                 }
             ]
@@ -16651,9 +16643,7 @@
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "ReduceCpuUtilization2",
-                        "SharedStorageAPIEnableWALForDatabase",
-                        "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase"
+                        "SharedStorageAPIEnableWALForDatabase"
                     ],
                     "disable_features": [
                         "EnableHangWatcher"
