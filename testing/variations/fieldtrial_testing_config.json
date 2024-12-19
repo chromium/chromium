@@ -23116,27 +23116,6 @@
             ]
         }
     ],
-    "TransportSecurityFileWriterSchedule": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled10Minutes_20241105",
-                    "params": {
-                        "commit_interval": "10m"
-                    },
-                    "enable_features": [
-                        "TransportSecurityFileWriterSchedule"
-                    ]
-                }
-            ]
-        }
-    ],
     "TransportSecurityFileWriterScheduleAndroid": [
         {
             "platforms": [

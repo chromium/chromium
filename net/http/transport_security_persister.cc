@@ -47,10 +47,18 @@ constexpr base::TimeDelta kMinCommitInterval = base::Seconds(10);
 constexpr base::TimeDelta kMaxCommitInterval = base::Minutes(10);
 
 // Overrides the default commit interval for the ImportantFileWriter.
+//
+// go/transport-security-file-writer-schedule-impact explains why the value
+// varies by platform.
 const base::FeatureParam<base::TimeDelta> kCommitIntervalParam(
     &kTransportSecurityFileWriterSchedule,
     "commit_interval",
-    kMinCommitInterval);
+#if BUILDFLAG(IS_ANDROID)
+    kMinCommitInterval
+#else
+    kMaxCommitInterval
+#endif
+);
 
 constexpr const char* kHistogramSuffix = "TransportSecurityPersister";
 
