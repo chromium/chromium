@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -39,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
@@ -53,6 +56,8 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/change_profile/change_profile_continuation.h"
+#import "ios/chrome/browser/ui/authentication/change_profile/change_profile_observer.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -61,6 +66,104 @@
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+// First part of a switch-account-after-switching-profile continuation: Sign out
+// the current account if it's different from the desired one.
+@interface ChangeProfileSignOutIfMismatchContinuation
+    : NSObject <ChangeProfileContinuation>
+
+- (instancetype)initWithDesiredIdentity:(id<SystemIdentity>)identity;
+
+@end
+
+@implementation ChangeProfileSignOutIfMismatchContinuation {
+  id<SystemIdentity> _identity;
+}
+
+- (instancetype)initWithDesiredIdentity:(id<SystemIdentity>)identity {
+  self = [super init];
+  if (self) {
+    _identity = identity;
+  }
+  return self;
+}
+
+#pragma mark - ChangeProfileContinuation
+
+- (void)executeWithSceneState:(SceneState*)sceneState
+                   completion:(ProceduralBlock)completion {
+  Browser* browser =
+      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+
+  if (!authenticationService->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    completion();
+    return;
+  }
+  id<SystemIdentity> existingIdentity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (existingIdentity == _identity) {
+    // The correct account is already signed in in the new profile.
+    completion();
+    return;
+  }
+
+  // Signing out is only allowed in the personal profile. Phrased another way,
+  // we shouldn't try to a work profile with a non-matching account.
+  // TODO(crbug.com/375605174): AuthenticationService should probably enforce
+  // this internally.
+  CHECK_EQ(browser->GetProfile()->GetProfileName(),
+           GetApplicationContext()
+               ->GetAccountProfileMapper()
+               ->GetPersonalProfileName());
+  authenticationService->SignOut(
+      signin_metrics::ProfileSignout::kChangeAccountInAccountMenu,
+      /*force_clear_browsing_data=*/false, completion);
+}
+
+@end
+
+// Second part of a switch-account-after-switching-profile continuation: Sign in
+// the desired account if it's not already signed in.
+@interface ChangeProfileSignInContinuation
+    : NSObject <ChangeProfileContinuation>
+
+- (instancetype)initWithDesiredIdentity:(id<SystemIdentity>)identity;
+
+@end
+
+@implementation ChangeProfileSignInContinuation {
+  id<SystemIdentity> _identity;
+}
+
+- (instancetype)initWithDesiredIdentity:(id<SystemIdentity>)identity {
+  self = [super init];
+  if (self) {
+    _identity = identity;
+  }
+  return self;
+}
+
+#pragma mark - ChangeProfileContinuation
+
+- (void)executeWithSceneState:(SceneState*)sceneState
+                   completion:(ProceduralBlock)completion {
+  Browser* browser =
+      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  // TODO(crbug.com/375604649): This should probably go through
+  // AuthenticationFlow rather than using AuthenticationService directly, so
+  // that the snackbar gets shown, and also the enterprise onboarding screen if
+  // necessary.
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+  authenticationService->SignIn(
+      _identity, signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  completion();
+}
+
+@end
 
 @interface AccountMenuCoordinator () <AccountMenuMediatorDelegate,
                                       ManageAccountsCoordinatorDelegate,
@@ -269,9 +372,20 @@
 }
 
 - (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
-                                  observer:
-                                      (id<ChangeProfileObserving>)observer {
+               andSigninWithSystemIdentity:(id<SystemIdentity>)identity {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   SceneState* sceneState = self.browser->GetSceneState();
+
+  ChangeProfileSignOutIfMismatchContinuation* signOutContinuation =
+      [[ChangeProfileSignOutIfMismatchContinuation alloc]
+          initWithDesiredIdentity:identity];
+  ChangeProfileSignInContinuation* signInContinuation =
+      [[ChangeProfileSignInContinuation alloc]
+          initWithDesiredIdentity:identity];
+
+  ChangeProfileObserver* observer = [[ChangeProfileObserver alloc]
+      initWithContinuations:@[ signOutContinuation, signInContinuation ]];
+
   [_changeProfileHandler changeProfile:profileName
                               forScene:sceneState.sceneSessionID
                               observer:observer];

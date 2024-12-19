@@ -299,6 +299,15 @@
     return;
   }
 
+  id<SystemIdentity> newIdentity = nil;
+  for (id<SystemIdentity> identity : _identities) {
+    if (identity.gaiaID == gaiaID) {
+      newIdentity = identity;
+      break;
+    }
+  }
+  CHECK(newIdentity);
+
   [self.consumer switchingStarted];
   [self.delegate blockOtherScenesIfPossible];
   _blockUpdates = YES;
@@ -313,24 +322,13 @@
         *profileName != _accountManagerService->GetProfileName()) {
       // TODO(crbug.com/375604649): Unblock the UI (and show some error?) if
       // switching failed.
-      // TODO(crbug.com/375604649): Provide an observer to take care of the
-      // transition (animation, continuation, ...) and to unblock the UI if
-      // the switching failed.
       [self.delegate triggerProfileSwitchToProfileNamed:base::SysUTF8ToNSString(
                                                             *profileName)
-                                               observer:nil];
+                            andSigninWithSystemIdentity:newIdentity];
       return;
     }
   }
 
-  id<SystemIdentity> newIdentity = nil;
-  for (id<SystemIdentity> identity : _identities) {
-    if (identity.gaiaID == gaiaID) {
-      newIdentity = identity;
-      break;
-    }
-  }
-  CHECK(newIdentity);
   _accountSwitchInProgress =
       _authenticationService->DeclareAccountSwitchInProgress();
   __weak __typeof(self) weakSelf = self;

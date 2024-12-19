@@ -45,14 +45,13 @@
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
   __weak SceneState* weakSceneState = sceneState;
   [_continuations[index]
       executeWithSceneState:sceneState
                  completion:^{
                    if (weakSceneState) {
-                     [weakSelf executeContinuationWithIndex:index + 1
-                                                 sceneState:weakSceneState];
+                     [self executeContinuationWithIndex:index + 1
+                                             sceneState:weakSceneState];
                    }
                  }];
 }

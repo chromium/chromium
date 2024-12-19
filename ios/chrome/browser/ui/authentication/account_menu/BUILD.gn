@@ -49,6 +49,7 @@ source_set("account_menu") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication:authentication",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/change_profile",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",

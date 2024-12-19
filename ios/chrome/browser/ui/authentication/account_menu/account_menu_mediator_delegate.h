@@ -41,7 +41,7 @@
 
 // Requests a switch to the profile with the given `profileName`.
 - (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
-                                  observer:(id<ChangeProfileObserving>)observer;
+               andSigninWithSystemIdentity:(id<SystemIdentity>)identity;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in
 // to Chrome. The content is displayed in a new view in the stack, i.e.
