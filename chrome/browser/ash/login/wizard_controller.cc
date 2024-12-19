@@ -453,10 +453,14 @@ WizardController::~WizardController() {
     obs.OnShutdown();
   }
 
-  if (GetOobeUI() && GetOobeUI()->GetOobeScreensHandlerFactory()) {
-      GetOobeUI()
-        ->GetOobeScreensHandlerFactory()
-        ->UnbindScreensHandlerFactory();
+  // Use `OobeUI` reference in `oobe_ui_observation_` because the destructor
+  // could be called after `LoginDisplayHost` resets its reference to OobeUI.
+  // As a result,`GetOobeUI()` would return nullptr but the actual OobeUI
+  // instance might still be alive and could call us.
+  // See http://crbug.com/384745864.
+  OobeUI* oobe_ui = oobe_ui_observation_.GetSource();
+  if (oobe_ui && oobe_ui->GetOobeScreensHandlerFactory()) {
+    oobe_ui->GetOobeScreensHandlerFactory()->UnbindScreensHandlerFactory();
   }
 
   previous_screens_.clear();
