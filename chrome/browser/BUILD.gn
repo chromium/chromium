@@ -3532,6 +3532,8 @@ static_library("browser") {
       "bookmarks/bookmark_merged_surface_service.h",
       "bookmarks/bookmark_merged_surface_service_factory.cc",
       "bookmarks/bookmark_merged_surface_service_factory.h",
+      "bookmarks/bookmark_parent_folder_children.cc",
+      "bookmarks/bookmark_parent_folder_children.h",
       "bookmarks/permanent_folder_ordering_tracker.cc",
       "bookmarks/permanent_folder_ordering_tracker.h",
       "bookmarks/url_and_id.h",
