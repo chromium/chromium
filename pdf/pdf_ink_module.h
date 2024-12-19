@@ -214,6 +214,9 @@ class PdfInkModule {
 
       // The event time.
       base::TimeTicks timestamp;
+
+      // The type of tool used to generate the input.
+      ink::StrokeInput::ToolType tool_type;
     };
 
     DrawingStrokeState();

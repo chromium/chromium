@@ -60,6 +60,12 @@ namespace chrome_pdf {
 
 namespace {
 
+// Some commonly used points with InitializeSimpleSinglePageBasicLayout().
+constexpr gfx::PointF kLeftVerticalStrokePoint1(10.0f, 15.0f);
+constexpr gfx::PointF kLeftVerticalStrokePoint2(10.0f, 35.0f);
+constexpr gfx::PointF kRightVerticalStrokePoint1(40.0f, 15.0f);
+constexpr gfx::PointF kRightVerticalStrokePoint2(40.0f, 35.0f);
+
 // Constants to support a layout of 2 pages, arranged vertically with a small
 // gap between them.
 constexpr gfx::RectF kVerticalLayout2Pages[] = {
@@ -1507,6 +1513,123 @@ TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringErasing) {
   SelectEraserToolOfSize(3.0f);
 
   RunStrokeMissedEndEventCheckTest();
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Draw an initial stroke.
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Start drawing another stroke.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1), _));
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kRightVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change to the eraser tool.  This
+  // causes the in-progress stroke to finish even before the mouse-up event.
+  SelectEraserToolOfSize(2.0f);
+  VerifyAndClearExpectations();
+
+  // Continue with mouse movement and then mouse up at a new location.  Notice
+  // that the events are not handled and there is no further effect for adding
+  // or erasing strokes, since the prior stroke was already finished.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kRightVerticalStrokePoint2)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kRightVerticalStrokePoint2)
+          .Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
+  VerifyAndClearExpectations();
+
+  // Do a simple stroke in the same place where the last stroke was added.
+  // Notice that the changed tool type has taken effect and the recently added
+  // stroke is erased.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  EXPECT_CALL(client(),
+              UpdateStrokeActive(kPageIndex, InkStrokeId(1), /*active=*/false));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Initialize to have two strokes, so there is something to erase.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0), _));
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1), _));
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+
+  ApplyStrokeWithMouseAtPoints(kLeftVerticalStrokePoint1,
+                               base::span_from_ref(kLeftVerticalStrokePoint2),
+                               kLeftVerticalStrokePoint2);
+
+  ApplyStrokeWithMouseAtPoints(kRightVerticalStrokePoint1,
+                               base::span_from_ref(kRightVerticalStrokePoint2),
+                               kRightVerticalStrokePoint2);
+
+  // Set up for erasing.
+  SelectEraserToolOfSize(2.0f);
+  VerifyAndClearExpectations();
+
+  // Start erasing from where the first stroke was added.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  EXPECT_CALL(client(), UpdateStrokeActive(kPageIndex, InkStrokeId(0), _));
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change the input tool type to a
+  // pen.  Note that this causes the in-progress erase stroke to finish even
+  // before the mouse-up event.
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
+                                                  /*color_g=*/0,
+                                                  /*color_b=*/0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, 8.0f, message_params);
+  VerifyAndClearExpectations();
+
+  // Continue with mouse movement and then mouse up at a new location.  Notice
+  // that the events are not handled and there is no further effect for adding
+  // or erasing strokes, since the prior stroke was already finished.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kRightVerticalStrokePoint2)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kRightVerticalStrokePoint1)
+          .Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
+  VerifyAndClearExpectations();
+
+  // Do another stroke.  Notice that the changed tool type has taken effect
+  // and a new stroke is added.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(2), _));
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
 class PdfInkModuleUndoRedoTest : public PdfInkModuleStrokeTest {

@@ -458,7 +458,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   // compensate for missed input events.
   CHECK(!state.input_last_event.has_value());
   state.input_last_event =
-      DrawingStrokeState::EventDetails{position, timestamp};
+      DrawingStrokeState::EventDetails{position, timestamp, tool_type};
 
   return true;
 }
@@ -486,7 +486,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
     // If `position` is outside the page, and so was `last_position`, then just
     // update `last_input_event` and treat the event as handled.
     state.input_last_event =
-        DrawingStrokeState::EventDetails{position, timestamp};
+        DrawingStrokeState::EventDetails{position, timestamp, tool_type};
     return true;
   }
 
@@ -508,7 +508,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
     // Remember `position` and `timestamp` for use in the next event and treat
     // event as handled.
     state.input_last_event =
-        DrawingStrokeState::EventDetails{position, timestamp};
+        DrawingStrokeState::EventDetails{position, timestamp, tool_type};
     return true;
   }
 
@@ -537,7 +537,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
 
   // Remember `position` and `timestamp` for use in the next event.
   state.input_last_event =
-      DrawingStrokeState::EventDetails{position, timestamp};
+      DrawingStrokeState::EventDetails{position, timestamp, tool_type};
 
   return true;
 }
@@ -809,10 +809,33 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
+    if (is_drawing_stroke()) {
+      DrawingStrokeState& state = drawing_stroke_state();
+      if (state.start_time.has_value()) {
+        // PdfInkModule is currently drawing a stroke.  Finish that before
+        // transitioning, using the last known input.
+        CHECK(state.input_last_event.has_value());
+        const DrawingStrokeState::EventDetails& input_last_event =
+            state.input_last_event.value();
+        FinishStroke(input_last_event.position, input_last_event.timestamp,
+                     input_last_event.tool_type);
+      }
+    }
+
     current_tool_state_.emplace<EraserState>();
     eraser_size_ = size;
     MaybeSetCursor();
     return;
+  }
+
+  if (is_erasing_stroke()) {
+    EraserState& state = erasing_stroke_state();
+    if (state.erasing) {
+      // An erasing stroke is in-progress.  Finish that off before
+      // transitioning, using the last known input.
+      CHECK(state.input_last_event_position.has_value());
+      FinishEraseStroke(state.input_last_event_position.value());
+    }
   }
 
   // All brush types except the eraser should have a color and size.
