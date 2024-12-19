@@ -541,17 +541,18 @@ void HistoryEmbeddingsService::SendQualityLog(
 
   // V2 HistoryAnswerLoggingData:
   if (GetFeatureParameters().send_quality_log_v2) {
-    // Take the entry out from the SearchResult so that it will log on
-    // destruction at the end of this block.
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
-        std::move(result.answerer_result.log_entry);
-    if (log_entry) {
+    if (result.answerer_result.log_entry) {
       optimization_guide::proto::HistoryAnswerQuality* answer_quality =
-          log_entry
+          result.answerer_result.log_entry
               ->quality_data<optimization_guide::HistoryAnswerFeatureTypeMap>();
       if (answer_quality) {
         answer_quality->set_session_id(result.session_id);
         answer_quality->set_url(result.answerer_result.url);
+
+        // Take the entry out from the SearchResult so that it will log on
+        // destruction at the end of this block.
+        std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+            std::move(result.answerer_result.log_entry);
       }
     }
   }
