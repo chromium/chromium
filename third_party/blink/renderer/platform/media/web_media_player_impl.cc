@@ -93,6 +93,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
+#include "third_party/blink/renderer/platform/media/player_id_generator.h"
 #include "third_party/blink/renderer/platform/media/power_status_helper.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
@@ -430,6 +431,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       encrypted_client_(encrypted_client),
       delegate_(delegate),
       delegate_has_audio_(HasUnmutedAudio()),
+      player_id_(GetNextMediaPlayerId()),
       defer_load_cb_(std::move(defer_load_cb)),
       isolate_(frame_->GetAgentGroupScheduler()->Isolate()),
       demuxer_manager_(std::make_unique<media::DemuxerManager>(
@@ -3650,10 +3652,6 @@ void WebMediaPlayerImpl::OnBecameVisible() {
 
 bool WebMediaPlayerImpl::IsOpaque() const {
   return opaque_;
-}
-
-int WebMediaPlayerImpl::GetDelegateId() {
-  return delegate_id_;
 }
 
 std::optional<viz::SurfaceId> WebMediaPlayerImpl::GetSurfaceId() {
