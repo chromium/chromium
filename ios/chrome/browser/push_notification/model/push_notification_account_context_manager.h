@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
-class PrefService;
 enum class PushNotificationClientId;
 
 // The purpose of this class is to manage the mapping between GaiaIDs and its
@@ -46,11 +45,6 @@ enum class PushNotificationClientId;
 // `clientID`.
 - (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
                                 forAccount:(const std::string&)gaiaID;
-
-// Copies the notification permissions from profile prefs to
-// ProfileAttributesIOS.
-- (void)setAttributesForProfile:(std::string_view)profileName
-                      fromPrefs:(PrefService*)prefs;
 
 // Returns a dictionary that maps PushNotificationClientIDs, stored as
 // NSString, to a boolean value, stored as NSNumber, indicating whether the
