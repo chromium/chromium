@@ -14,6 +14,20 @@ source_set("graph_config") {
   ]
 }
 
+source_set("blur") {
+  sources = [
+    "background_blur_calculator_webgpu.cc",
+    "background_blur_calculator_webgpu.h",
+  ]
+
+  deps = [
+    ":graph_config",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/mediapipe",
+  ]
+}
+
 source_set("inference") {
   sources = [
     "inference_calculator_webgpu.cc",

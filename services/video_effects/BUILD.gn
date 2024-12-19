@@ -44,6 +44,7 @@ source_set("service") {
 
   if (mediapipe_build_with_gpu_support) {
     deps += [
+      "//services/video_effects/calculators:blur",
       "//services/video_effects/calculators:inference",
       "//third_party/mediapipe",
     ]
