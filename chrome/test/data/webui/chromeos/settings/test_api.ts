@@ -468,24 +468,13 @@ class OsSettingsDriver implements OSSettingsDriverInterface {
   }
 
   private googleDriveSubpage(): SettingsGoogleDriveSubpageElement {
-    const isRevampWayfindingEnabled =
-        loadTimeData.getBoolean('isRevampWayfindingEnabled');
-
-    const elementPath = isRevampWayfindingEnabled ?
-        [
-          'os-settings-ui',
-          'os-settings-main',
-          'main-page-container',
-          'settings-system-preferences-page',
-          'settings-google-drive-subpage',
-        ] :
-        [
-          'os-settings-ui',
-          'os-settings-main',
-          'main-page-container',
-          'os-settings-files-page',
-          'settings-google-drive-subpage',
-        ];
+    const elementPath = [
+      'os-settings-ui',
+      'os-settings-main',
+      'main-page-container',
+      'settings-system-preferences-page',
+      'settings-google-drive-subpage',
+    ];
 
     const googleDriveSubpage = querySelectorShadow(document.body, elementPath);
     assertTrue(googleDriveSubpage instanceof HTMLElement);
