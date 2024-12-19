@@ -25380,24 +25380,6 @@
             ]
         }
     ],
-    "WebRtcThreadsUseResourceEfficientType": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebRtcThreadsUseResourceEfficientType"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebUITabStrip": [
         {
             "platforms": [

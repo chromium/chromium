@@ -2795,10 +2795,6 @@ BASE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace,
              "WebRtcIgnoreUnspecifiedColorSpace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebRtcThreadsUseResourceEfficientType,
-             "WebRtcThreadsUseResourceEfficientType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Instructs WebRTC to honor the Min/Max Video Encode Accelerator dimensions.
 BASE_FEATURE(kWebRtcUseMinMaxVEADimensions,
              "WebRtcUseMinMaxVEADimensions",
