@@ -7,7 +7,3 @@
 AdditionalFeaturesController::AdditionalFeaturesController() = default;
 
 AdditionalFeaturesController::~AdditionalFeaturesController() = default;
-
-void AdditionalFeaturesController::ShutDown() {
-  // TODO(crbug.com/384569776): Remove this block.
-}

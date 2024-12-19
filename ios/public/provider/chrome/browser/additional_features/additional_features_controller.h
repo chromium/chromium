@@ -31,7 +31,7 @@ class AdditionalFeaturesController {
   virtual void FeatureListDidCompleteSetup() = 0;
 
   // Cleans up the controller before deallocation.
-  virtual void ShutDown();
+  virtual void ShutDown() = 0;
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_ADDITIONAL_FEATURES_ADDITIONAL_FEATURES_CONTROLLER_H_
