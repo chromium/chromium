@@ -1709,10 +1709,10 @@ class PortTest(LoggingTestCase):
         self.assertEquals(
             ['virtual/virtual_passes/passes/test-virtual-passes.html'], tests)
 
-        tests = port.tests(['virtual/virtual_empty_bases'])
+        tests = sorted(port.tests(['virtual/virtual_empty_bases']))
         self.assertEquals([
+            'virtual/virtual_empty_bases/dir/physical2.html',
             'virtual/virtual_empty_bases/physical1.html',
-            'virtual/virtual_empty_bases/dir/physical2.html'
         ], tests)
 
         tests = port.tests(['virtual/virtual_empty_bases/dir'])
