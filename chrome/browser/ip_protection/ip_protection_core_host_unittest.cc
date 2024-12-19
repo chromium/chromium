@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -22,6 +23,7 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -39,6 +41,11 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#endif
 
 using ::ip_protection::BlindSignedAuthToken;
 using ::ip_protection::GeoHint;
@@ -102,8 +109,15 @@ class IpProtectionCoreHostTest : public testing::Test {
             /*is_incognito=*/false);
     auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
     bsa_ = bsa.get();
+#if BUILDFLAG(IS_CHROMEOS)
+    install_attributes_ = std::make_unique<ash::StubInstallAttributes>();
+    ash::InstallAttributes::SetForTesting(install_attributes_.get());
+#endif
+    management_service_ = std::make_unique<policy::ManagementService>(
+        std::vector<std::unique_ptr<policy::ManagementStatusProvider>>());
     core_host_ = std::make_unique<IpProtectionCoreHost>(
-        IdentityManager(), tracking_protection_settings_.get(), prefs(),
+        IdentityManager(), tracking_protection_settings_.get(),
+        management_service_.get(), prefs(),
         /*profile=*/nullptr);
     core_host_->SetUpForTesting(test_url_loader_factory_.GetSafeWeakWrapper(),
                                 std::move(bsa));
@@ -127,6 +141,9 @@ class IpProtectionCoreHostTest : public testing::Test {
     host_content_settings_map_->ShutdownOnUIThread();
     tracking_protection_settings_->Shutdown();
     core_host_->Shutdown();
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::InstallAttributes::ShutdownForTesting();
+#endif
   }
 
   // Get the IdentityManager for this test.
@@ -136,7 +153,7 @@ class IpProtectionCoreHostTest : public testing::Test {
 
   void SetupAccount() {
     if (primary_account_behavior_ == PrimaryAccountBehavior::kNone) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       // Simulate a log out event on all platforms except ChromeOS Ash where
       // this is not supported.
       identity_test_env_.ClearPrimaryAccount();
@@ -258,6 +275,10 @@ class IpProtectionCoreHostTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ash::StubInstallAttributes> install_attributes_;
+#endif
+  std::unique_ptr<policy::ManagementService> management_service_;
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 
@@ -601,7 +622,7 @@ TEST_F(IpProtectionCoreHostTest, TryGetAuthTokens_IpProtectionDisabled) {
 
 // No primary account initially but this changes when the account status
 // changes.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(IpProtectionCoreHostTest, AccountLoginTriggersBackoffReset) {
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
 

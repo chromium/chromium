@@ -21,6 +21,8 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -28,10 +30,12 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/common/api_key_request_util.h"
@@ -54,15 +58,18 @@ using ::ip_protection::TryGetAuthTokensResult;
 IpProtectionCoreHost::IpProtectionCoreHost(
     signin::IdentityManager* identity_manager,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+    policy::ManagementService* management_service,
     PrefService* pref_service,
     Profile* profile)
     : identity_manager_(identity_manager),
       tracking_protection_settings_(tracking_protection_settings),
+      management_service_(management_service),
       pref_service_(pref_service),
       profile_(profile) {
   CHECK(identity_manager);
   identity_manager_->AddObserver(this);
   CHECK(tracking_protection_settings);
+  CHECK(management_service);
   CHECK(pref_service_);
   tracking_protection_settings_->AddObserver(this);
 }
@@ -290,6 +297,7 @@ void IpProtectionCoreHost::Shutdown() {
   CHECK(tracking_protection_settings_);
   tracking_protection_settings_->RemoveObserver(this);
   tracking_protection_settings_ = nullptr;
+  management_service_ = nullptr;
   pref_service_ = nullptr;
   profile_ = nullptr;
   ip_protection_token_fetcher_.reset();
@@ -396,11 +404,37 @@ bool IpProtectionCoreHost::IsIpProtectionEnabled() {
     return false;
   }
 
-  // If the user's enterprise has a policy for IP, use this regardless of user
-  // UX feature status. Enterprises should have the ability to enable or
-  // disable IPP even when users do not have UX access to the feature.
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS the `IsManaged()` checks work differently than on other
+  // platforms, but to accomplish disabling by default for enterprise users we
+  // use the `default_for_enterprise_users=false` option in the enterprise
+  // policy definition. Thus, check whether the preference has been set via
+  // that (or by the admins overriding this).
   if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
-    return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
+#else
+  if (management_service_->IsManaged() ||
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
+#endif
+
+    variations::VariationsService* variations_service =
+        g_browser_process->variations_service();
+    if (variations_service && variations_service->IsLikelyDogfoodClient()) {
+      // For Googler/Dogfood devices we don't want to disable IP Protection by
+      // default so that we can carry out dogfood experiments via Finch instead
+      // of also needing to coordinate internal enterprise policy rollouts.
+      return true;
+    }
+
+    // If the user's enterprise has a policy for IP, use this regardless of user
+    // UX feature status. Enterprises should have the ability to enable or
+    // disable IPP even when users do not have UX access to the feature.
+    if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
+      return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
+    }
+
+    // Disable IP Protection for managed browsers and managed devices when the
+    // admins haven't explicitly opted in to it via enterprise policy.
+    return false;
   }
 
   // TODO(crbug.com/41494110): We should ultimately use
