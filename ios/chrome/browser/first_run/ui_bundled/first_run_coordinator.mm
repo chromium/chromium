@@ -68,6 +68,8 @@
   if (self.childCoordinator) {
     // If the child coordinator is not nil, then the FRE is stopped because
     // Chrome is being shutdown.
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kFirstRunInterrupted);
     InterruptibleChromeCoordinator* interruptibleChildCoordinator =
         base::apple::ObjCCast<InterruptibleChromeCoordinator>(
             self.childCoordinator);

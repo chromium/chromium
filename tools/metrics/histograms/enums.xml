@@ -11586,9 +11586,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Close sync screen without sync (deprecated)"/>
   <int value="5"
       label="Close sync screen on advance sync settings (deprecated)"/>
-  <int value="6" label="Show sign in screen"/>
-  <int value="7" label="Close sign in screen with sign in"/>
-  <int value="8" label="Close sign in screen without sign in"/>
+  <int value="6" label="Show sign in screen (deprecated)"/>
+  <int value="7" label="Close sign in screen with sign in (deprecated)"/>
+  <int value="8" label="Close sign in screen without sign in (deprecated)"/>
   <int value="9" label="Show default browser screen"/>
   <int value="10"
       label="Close default browser screen with opening Settings.app"/>
@@ -11597,12 +11597,20 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="Show welcome+sign-in screen"/>
   <int value="13" label="Close welcome+sign-in with sign-in"/>
   <int value="14" label="Close welcome+sign-in without sign-in"/>
-  <int value="15" label="Show tangible sync screen"/>
-  <int value="16" label="Close tangible sync with sync"/>
-  <int value="17" label="Close tangible sync without sync"/>
+  <int value="15" label="Show tangible sync screen (deprecated)"/>
+  <int value="16" label="Close tangible sync with sync (deprecated)"/>
+  <int value="17" label="Close tangible sync without sync (deprecated)"/>
   <int value="18" label="Show history sync screen"/>
   <int value="19" label="Close history sync with history sync enabled"/>
   <int value="20" label="Close history sync without history sync enabled"/>
+  <int value="21" label="Show search engine choice screen (added at M133)"/>
+  <int value="22"
+      label="Close search engine choice screen with search engine selected
+             (added at M133)"/>
+  <int value="23"
+      label="Close search engine choice screen without search engine selected
+             (added at M133)"/>
+  <int value="24" label="First Run Interrupted (added at M133)"/>
 </enum>
 
 <enum name="FirstUserActionType">

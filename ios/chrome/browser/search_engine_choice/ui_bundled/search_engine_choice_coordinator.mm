@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
@@ -108,6 +110,8 @@
     search_engines::RecordChoiceScreenEvent(
         search_engines::SearchEngineChoiceScreenEvents::
             kFreChoiceScreenWasDisplayed);
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kSearchEngineChoiceScreenStart);
   } else {
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
       _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -130,7 +134,6 @@
         dismissViewControllerAnimated:YES
                            completion:nil];
   }
-
   [_searchEngineChoiceLearnMoreCoordinator stop];
   _searchEngineChoiceLearnMoreCoordinator = nil;
   [_mediator disconnect];
@@ -179,6 +182,9 @@
   if (_firstRun) {
     search_engines::RecordChoiceScreenEvent(
         search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet);
+    base::UmaHistogramEnumeration(
+        first_run::kFirstRunStageHistogram,
+        first_run::kSearchEngineChoiceScreenCompletionWithSelection);
   } else {
     search_engines::RecordChoiceScreenEvent(
         search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet);
@@ -200,6 +206,9 @@
 - (void)dismissChoiceScreen {
   if (_firstRun) {
     [_firstRunDelegate screenWillFinishPresenting];
+    base::UmaHistogramEnumeration(
+        first_run::kFirstRunStageHistogram,
+        first_run::kSearchEngineChoiceScreenCompletionWithoutSelection);
   } else {
     [self.delegate choiceScreenWillBeDismissed:self];
   }

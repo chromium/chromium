@@ -26,6 +26,7 @@ source_set("ui_bundled") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
     "//ios/chrome/browser/search_engine_choice/model",
     "//ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_learn_more",
