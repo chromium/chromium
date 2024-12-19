@@ -347,6 +347,11 @@ class PageNodeObserver : public base::CheckedObserver {
   // Invoked when the UsesWebRTC property changes.
   virtual void OnPageUsesWebRTCChanged(const PageNode* page_node) {}
 
+  // Invoked when the GetNotificationPermissionStatus property changes.
+  virtual void OnPageNotificationPermissionStatusChange(
+      const PageNode* page_node,
+      std::optional<blink::mojom::PermissionStatus> previous_status) {}
+
   // Invoked when the MainFrameUrl property changes.
   virtual void OnMainFrameUrlChanged(const PageNode* page_node) {}
 

@@ -391,10 +391,17 @@ void FreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
     page_freezing_state.cannot_freeze_reasons.Put(CannotFreezeReason::kAudible);
   }
 
+  DCHECK(!page_node->HasFreezingOriginTrialOptOut());
+  DCHECK(!page_node->UsesWebRTC());
+  DCHECK(!page_node->GetNotificationPermissionStatus().has_value());
   DCHECK(!page_node->IsHoldingWebLock());
   DCHECK(!page_node->IsHoldingBlockingIndexedDBLock());
+  DCHECK_EQ(page_node->GetLoadingState(),
+            PageNode::LoadingState::kLoadingNotStarted);
   DCHECK(!IsPageConnectedToUSBDevice(page_node));
   DCHECK(!IsPageConnectedToBluetoothDevice(page_node));
+  DCHECK(!IsPageConnectedToHidDevice(page_node));
+  DCHECK(!IsPageConnectedToSerialPort(page_node));
   DCHECK(!IsPageCapturingVideo(page_node));
   DCHECK(!IsPageCapturingAudio(page_node));
   DCHECK(!IsPageBeingMirrored(page_node));
@@ -483,14 +490,33 @@ void FreezingPolicy::OnPageHasFreezingOriginTrialOptOutChanged(
                              CannotFreezeReason::kFreezingOriginTrialOptOut);
 }
 
-void FreezingPolicy::OnPageIsHoldingWebLockChanged(const PageNode* page_node) {
-  OnCannotFreezeReasonChange(page_node, /*add=*/page_node->IsHoldingWebLock(),
-                             CannotFreezeReason::kHoldingWebLock);
-}
-
 void FreezingPolicy::OnPageUsesWebRTCChanged(const PageNode* page_node) {
   OnCannotFreezeReasonChange(page_node, /*add=*/page_node->UsesWebRTC(),
                              CannotFreezeReason::kWebRTC);
+}
+
+void FreezingPolicy::OnPageNotificationPermissionStatusChange(
+    const PageNode* page_node,
+    std::optional<blink::mojom::PermissionStatus> previous_status) {
+  const bool had_notification_permission =
+      previous_status.value_or(blink::mojom::PermissionStatus::DENIED) ==
+      blink::mojom::PermissionStatus::GRANTED;
+  const auto new_status = page_node->GetNotificationPermissionStatus();
+  const bool has_notification_permission =
+      new_status.value_or(blink::mojom::PermissionStatus::DENIED) ==
+      blink::mojom::PermissionStatus::GRANTED;
+
+  if (had_notification_permission == has_notification_permission) {
+    return;
+  }
+
+  OnCannotFreezeReasonChange(page_node, /*add=*/has_notification_permission,
+                             CannotFreezeReason::kNotificationPermission);
+}
+
+void FreezingPolicy::OnPageIsHoldingWebLockChanged(const PageNode* page_node) {
+  OnCannotFreezeReasonChange(page_node, /*add=*/page_node->IsHoldingWebLock(),
+                             CannotFreezeReason::kHoldingWebLock);
 }
 
 void FreezingPolicy::OnPageIsHoldingBlockingIndexedDBLockChanged(

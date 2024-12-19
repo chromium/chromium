@@ -54,6 +54,10 @@ class LenientMockPageNodeObserver : public PageNodeObserver {
               (const PageNode*),
               (override));
   MOCK_METHOD(void, OnPageUsesWebRTCChanged, (const PageNode*), (override));
+  MOCK_METHOD(void,
+              OnPageNotificationPermissionStatusChange,
+              (const PageNode*, std::optional<blink::mojom::PermissionStatus>),
+              (override));
   MOCK_METHOD(void, OnMainFrameUrlChanged, (const PageNode*), (override));
   MOCK_METHOD(void, OnMainFrameDocumentChanged, (const PageNode*), (override));
   MOCK_METHOD(void, OnTitleUpdated, (const PageNode*), (override));

@@ -35,7 +35,8 @@ enum class CannotFreezeReason {
   kCapturingDisplay,
   kWebRTC,
   kLoading,
-  kMax = kLoading,  // Upper bound for EnumSet.
+  kNotificationPermission,
+  kMax = kNotificationPermission,  // Upper bound for EnumSet.
 };
 
 using CannotFreezeReasonSet = base::EnumSet<CannotFreezeReason,

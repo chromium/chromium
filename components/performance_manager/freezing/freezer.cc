@@ -7,15 +7,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_traits.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {
 namespace {
@@ -24,20 +21,6 @@ namespace {
 void MaybeFreezePageOnUIThread(base::WeakPtr<content::WebContents> contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!contents) {
-    return;
-  }
-
-  content::PermissionController* permission_controller =
-      contents->GetBrowserContext()->GetPermissionController();
-
-  // Page with the notification permission shouldn't be frozen as this is a
-  // strong signal that the user wants to receive updates from this page while
-  // it's in background. This information isn't available in the PM graph, this
-  // has to be checked on the UI thread.
-  if (permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::NOTIFICATIONS,
-          contents->GetPrimaryMainFrame()) ==
-      blink::mojom::PermissionStatus::GRANTED) {
     return;
   }
 

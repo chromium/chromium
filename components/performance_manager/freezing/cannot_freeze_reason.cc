@@ -46,6 +46,8 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "has an active WebRTC connection";
     case CannotFreezeReason::kLoading:
       return "loading";
+    case CannotFreezeReason::kNotificationPermission:
+      return "has notification permission";
   }
 }
 

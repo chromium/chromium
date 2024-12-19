@@ -89,7 +89,7 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   result.Set("had_user_edits", page_node_impl->had_user_edits_.value());
   result.Set("notification_permission",
              PermissionStatusToString(
-                 page_node_impl->notification_permission_status_));
+                 page_node_impl->notification_permission_status_.value()));
   if (page_node_impl->embedding_type_ != PageNode::EmbeddingType::kInvalid) {
     result.Set("embedding_type",
                PageNode::ToString(page_node_impl->embedding_type_));

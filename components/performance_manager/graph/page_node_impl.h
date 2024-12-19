@@ -305,8 +305,11 @@ class PageNodeImpl
 
   // The notification permission status for the last committed main frame
   // navigation.
-  std::optional<blink::mojom::PermissionStatus> notification_permission_status_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      std::optional<blink::mojom::PermissionStatus>,
+      std::optional<blink::mojom::PermissionStatus>,
+      &PageNodeObserver::OnPageNotificationPermissionStatusChange>
+      notification_permission_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The unique ID of the browser context that this page belongs to.
   const std::string browser_context_id_;

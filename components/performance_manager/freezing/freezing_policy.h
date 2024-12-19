@@ -45,19 +45,8 @@ namespace performance_manager {
 // - Page D hosts frames from browsing instance 3
 // The sets of connected pages are {A, B, C} and {D}.
 //
-// A page is opted-out from freezing when it is:
-//   - Visible;
-//   - Audible;
-//   - Recently audible;
-//   - Holding at least one WebLock;
-//   - Holding at least one IndexedDB lock;
-//   - Connected to a USB device;
-//   - Connected to a bluetooth device;
-//   - Capturing video;
-//   - Capturing audio;
-//   - Mirrored;
-//   - Capturing window;
-//   - Capturing display;
+// The `CannotFreezeReason` enum lists conditions that opt-out a page from
+// freezing.
 class FreezingPolicy : public PageNodeObserver,
                        public FrameNodeObserver,
                        public PageLiveStateObserverDefaultImpl,
@@ -153,6 +142,9 @@ class FreezingPolicy : public PageNodeObserver,
   void OnPageIsHoldingBlockingIndexedDBLockChanged(
       const PageNode* page_node) override;
   void OnPageUsesWebRTCChanged(const PageNode* page_node) override;
+  void OnPageNotificationPermissionStatusChange(
+      const PageNode* page_node,
+      std::optional<blink::mojom::PermissionStatus> previous_status) override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 

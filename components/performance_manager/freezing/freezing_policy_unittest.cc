@@ -817,6 +817,53 @@ TEST_F(FreezingPolicyTest, StartsUsingWebRTCWhenFrozen) {
   VerifyFreezerExpectations();
 }
 
+TEST_F(FreezingPolicyTest, FreezeVoteWithNotificationPermission) {
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
+
+  // Don't expect freezing.
+  policy()->AddFreezeVote(page_node());
+
+  // Expect freezing if the permission is revoked.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::DENIED);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyTest, NotificationPermissionWhenFrozen) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  policy()->AddFreezeVote(page_node());
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
+  VerifyFreezerExpectations();
+
+  // Changing to ASK removes the opt-out.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::ASK);
+  VerifyFreezerExpectations();
+
+  // Changing to DENIED does nothing, since there is already no opt-out.
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::DENIED);
+
+  // Changing to GRANTED adds the opt-out.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
+  VerifyFreezerExpectations();
+
+  // Changing to DENIED removes the opt-out.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::DENIED);
+  VerifyFreezerExpectations();
+}
+
 TEST_F(FreezingPolicyTest, FreezeVoteWhenLoading) {
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
 

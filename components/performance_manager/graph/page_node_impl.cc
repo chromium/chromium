@@ -169,7 +169,7 @@ const std::string& PageNodeImpl::GetContentsMimeType() const {
 std::optional<blink::mojom::PermissionStatus>
 PageNodeImpl::GetNotificationPermissionStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return notification_permission_status_;
+  return notification_permission_status_.value();
 }
 
 base::TimeDelta PageNodeImpl::GetTimeSinceLastNavigation() const {
@@ -349,8 +349,9 @@ void PageNodeImpl::SetMainFrameRestoredState(
     blink::mojom::PermissionStatus notification_permission_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(main_frame_url_.value().is_empty());
-  notification_permission_status_ = notification_permission_status;
   main_frame_url_.SetAndMaybeNotify(this, url);
+  notification_permission_status_.SetAndMaybeNotify(
+      this, notification_permission_status);
 }
 
 void PageNodeImpl::OnMainFrameNavigationCommitted(
@@ -369,8 +370,9 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
   navigation_committed_time_ = navigation_committed_time;
   navigation_id_ = navigation_id;
   contents_mime_type_ = contents_mime_type;
-  notification_permission_status_ = notification_permission_status;
   main_frame_url_.SetAndMaybeNotify(this, url);
+  notification_permission_status_.SetAndMaybeNotify(
+      this, notification_permission_status);
 
   // No mainframe document change notification on same-document navigations.
   if (same_document) {
@@ -385,7 +387,7 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
 void PageNodeImpl::OnNotificationPermissionStatusChange(
     blink::mojom::PermissionStatus permission_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  notification_permission_status_ = permission_status;
+  notification_permission_status_.SetAndMaybeNotify(this, permission_status);
 }
 
 FrameNodeImpl* PageNodeImpl::opener_frame_node() const {

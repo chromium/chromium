@@ -353,10 +353,21 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->SetLifecycleStateForTesting(PageNodeImpl::LifecycleState::kFrozen);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
+  EXPECT_CALL(obs, OnPageNotificationPermissionStatusChange(
+                       _, std::optional<blink::mojom::PermissionStatus>()))
+      .WillOnce(testing::WithArg<0>(
+          Invoke(&obs, &MockObserver::SetNotifiedPageNode)));
+  page_node->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
   const GURL kTestUrl = GURL("https://foo.com/");
   int64_t navigation_id = 0x1234;
   EXPECT_CALL(obs, OnMainFrameUrlChanged(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  EXPECT_CALL(
+      obs, OnPageNotificationPermissionStatusChange(
+               _, std::make_optional(blink::mojom::PermissionStatus::GRANTED)));
   // Expect no OnMainFrameDocumentChanged for same-document navigation
   page_node->OnMainFrameNavigationCommitted(
       true, base::TimeTicks::Now(), ++navigation_id, kTestUrl, kHtmlMimeType,
@@ -409,6 +420,8 @@ TEST_F(PageNodeImplTest, SetMainFrameRestoredState) {
 
   EXPECT_CALL(obs, OnMainFrameUrlChanged(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  EXPECT_CALL(obs, OnPageNotificationPermissionStatusChange(
+                       _, std::optional<blink::mojom::PermissionStatus>()));
   page->SetMainFrameRestoredState(kUrl,
                                   /* notification_permission_status=*/blink::
                                       mojom::PermissionStatus::GRANTED);
