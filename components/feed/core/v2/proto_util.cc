@@ -151,10 +151,6 @@ feedwire::Request CreateFeedQueryRequest(
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
 
-  if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
-    feed_request.add_client_capability(Capability::HEART);
-  }
-
   if (base::FeatureList::IsEnabled(kFeedStamp)) {
     feed_request.add_client_capability(Capability::SILK_AMP_OPEN_COMMAND);
     feed_request.add_client_capability(Capability::AMP_STORY_PLAYER);

@@ -369,7 +369,6 @@ public abstract class ChromeFeatureList {
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INSTALL_MESSAGE_THROTTLE = "InstallMessageThrottle";
-    public static final String INTEREST_FEED_V2_HEARTS = "InterestFeedV2Hearts";
     public static final String IP_PROTECTION_V1 = "IpProtectionV1";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
     public static final String IP_PROTECTION_USER_BYPASS = "IpProtectionUserBypass";

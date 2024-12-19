@@ -26,9 +26,6 @@ inline constexpr char kEnableRssLinkReader[] = "enable-rss-link-reader";
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kInterestFeedV2);
 
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
-
 // Use the new DiscoFeed endpoint.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);
