@@ -1075,15 +1075,6 @@ void ProfileNetworkContextService::FlushCachedClientCertIfNeeded(
       });
 }
 
-void ProfileNetworkContextService::FlushMatchingCachedClientCert(
-    const scoped_refptr<net::X509Certificate>& certificate) {
-  profile_->ForEachLoadedStoragePartition(
-      [&](content::StoragePartition* storage_partition) {
-        storage_partition->GetNetworkContext()->FlushMatchingCachedClientCert(
-            certificate);
-      });
-}
-
 void ProfileNetworkContextService::FlushProxyConfigMonitorForTesting() {
   proxy_config_monitor_.FlushForTesting();
 }
