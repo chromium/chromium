@@ -85,4 +85,7 @@ cargo_crate("cxxbridge") {
     "//third_party/rust/quote/v1:lib",
     "//third_party/rust/syn/v2:lib",
   ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 }

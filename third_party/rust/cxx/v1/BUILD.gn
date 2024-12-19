@@ -70,4 +70,7 @@ cargo_crate("lib") {
     "alloc",
     "std",
   ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 }

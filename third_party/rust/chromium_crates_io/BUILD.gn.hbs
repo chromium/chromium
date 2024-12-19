@@ -126,6 +126,9 @@ cargo_crate("{{this.name}}") {
     proc_macro_configs -= [ "{{this}}" ]
   {{/each}}
   {{/with}}
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
   {{#if output_dir}}
   output_dir = "{{output_dir}}"
   {{/if}}

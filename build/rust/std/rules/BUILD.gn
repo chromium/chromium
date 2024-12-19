@@ -60,6 +60,7 @@ cargo_crate("addr2line") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -113,6 +114,7 @@ cargo_crate("adler") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -233,6 +235,7 @@ cargo_crate("alloc") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -282,6 +285,7 @@ cargo_crate("cfg_if") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -497,6 +501,7 @@ cargo_crate("compiler_builtins") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1019,6 +1024,7 @@ cargo_crate("core") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1073,6 +1079,7 @@ cargo_crate("getopts") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1169,6 +1176,7 @@ cargo_crate("gimli") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1251,6 +1259,7 @@ cargo_crate("hashbrown") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1476,6 +1485,7 @@ cargo_crate("libc") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1571,6 +1581,7 @@ cargo_crate("memchr") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1635,6 +1646,7 @@ cargo_crate("miniz_oxide") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1777,6 +1789,7 @@ cargo_crate("object") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1826,6 +1839,7 @@ cargo_crate("panic_abort") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1880,6 +1894,7 @@ cargo_crate("panic_unwind") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1936,6 +1951,7 @@ cargo_crate("proc_macro") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -1971,6 +1987,7 @@ cargo_crate("profiler_builtins") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -2024,6 +2041,7 @@ cargo_crate("rustc_demangle") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -2063,6 +2081,7 @@ cargo_crate("rustc_std_workspace_alloc") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -2102,6 +2121,7 @@ cargo_crate("rustc_std_workspace_core") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -2141,6 +2161,7 @@ cargo_crate("rustc_std_workspace_std") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -2871,6 +2892,7 @@ cargo_crate("std") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -2967,6 +2989,7 @@ cargo_crate("std_detect") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -3041,6 +3064,7 @@ cargo_crate("test") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -3098,6 +3122,7 @@ cargo_crate("unicode_width") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -3146,6 +3171,7 @@ cargo_crate("unwind") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
     "-Zlink-directives=false",
   ]
   output_dir =
@@ -3183,6 +3209,7 @@ cargo_crate("windows_targets") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"

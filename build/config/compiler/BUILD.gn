@@ -2233,10 +2233,6 @@ config("no_chromium_code") {
     }
   }
 
-  # Suppress all warnings in third party, as Cargo does:
-  # https://doc.rust-lang.org/rustc/lints/levels.html#capping-lints
-  rustflags = [ "--cap-lints=allow" ]
-
   configs = [ ":default_warnings" ]
 
   # GCC may emit unsuppressible warnings so only apply this config when

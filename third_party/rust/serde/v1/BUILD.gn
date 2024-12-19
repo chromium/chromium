@@ -60,4 +60,7 @@ cargo_crate("lib") {
       "//third_party/rust/chromium_crates_io/vendor/serde-1.0.216/build.rs"
   build_sources =
       [ "//third_party/rust/chromium_crates_io/vendor/serde-1.0.216/build.rs" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 }

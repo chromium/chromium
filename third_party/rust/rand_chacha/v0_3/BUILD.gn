@@ -37,6 +37,9 @@ cargo_crate("lib") {
     "//third_party/rust/rand_core/v0_6:lib",
   ]
   features = [ "std" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

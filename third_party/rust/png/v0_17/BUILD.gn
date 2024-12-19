@@ -60,4 +60,7 @@ cargo_crate("lib") {
   library_configs -= [ "//build/config/compiler:disallow_unstable_features" ]
   executable_configs -= [ "//build/config/compiler:disallow_unstable_features" ]
   proc_macro_configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 }

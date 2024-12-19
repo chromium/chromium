@@ -48,6 +48,9 @@ cargo_crate("lib") {
     "derive",
     "std",
   ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 
   testonly = true
 }

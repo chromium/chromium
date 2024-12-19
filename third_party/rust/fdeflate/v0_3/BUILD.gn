@@ -42,6 +42,9 @@ cargo_crate("lib") {
       [ "//build/config/compiler:rust_integer_overflow_checks" ]
   proc_macro_configs -=
       [ "//build/config/compiler:rust_integer_overflow_checks" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
