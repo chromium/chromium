@@ -208,6 +208,16 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
             thenHoldForDuration:1.0];
 }
 
+// Long-presses on a tab with `title` to make the context menu appear.
+void LongPressTabWithTitle(NSString* title) {
+  // It happens that on certain bots, the grey_longPress action doesn't return
+  // an error for EarlGrey, but the context menu doesn't open accordingly.
+  // Waiting has been seen as fixing this.
+  base::PlatformThread::Sleep(base::Seconds(1));
+  [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(title)]
+      performAction:grey_longPress()];
+}
+
 }  // namespace
 
 // Tests for the tab strip shown on iPad.
@@ -457,10 +467,8 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
       assertWithMatcher:grey_notNil()];
 }
 
-// TODO(crbug.com/382480026): Deflake this test.
-//
 // Tests that a tab can be moved to another tab group.
-- (void)FLAKY_testTabStripMoveTabToGroup {
+- (void)testTabStripMoveTabToGroup {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
@@ -484,8 +492,8 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
 
   // Long press the tab "chrome://about" and move it to the other group using
   // the context menu.
-  [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
-      performAction:grey_longPress()];
+  LongPressTabWithTitle(aboutTabTitle);
+
   [[EarlGrey
       selectElementWithMatcher:ContextMenuButtonMatcher(
                                    IDS_IOS_CONTENT_CONTEXT_MOVETABTOGROUP)]
@@ -493,10 +501,13 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:ContextMenuButtonMatcher(kGroupTitle2)]
       performAction:grey_tap()];
 
+  // Check that the tab group with title `kGroupTitle1` disappeared.
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
+      assertWithMatcher:grey_nil()];
+
   // Long press the tab "chrome://about" and check the context menu still
   // contains "Move Tab to Group".
-  [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
-      performAction:grey_longPress()];
+  LongPressTabWithTitle(aboutTabTitle);
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           ContextMenuButtonMatcher(IDS_IOS_CONTENT_CONTEXT_CLOSETAB)];
@@ -504,9 +515,6 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
       selectElementWithMatcher:ContextMenuButtonMatcher(
                                    IDS_IOS_CONTENT_CONTEXT_MOVETABTOGROUP)]
       assertWithMatcher:grey_notNil()];
-  // Check that the tab group with title `kGroupTitle1` disappeared.
-  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
-      assertWithMatcher:grey_nil()];
 }
 
 // Tests that a tab group can be collapsed and expanded.

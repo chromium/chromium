@@ -23,6 +23,7 @@ using chrome_test_util::CloseGroupButton;
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::DeleteGroupButton;
 using chrome_test_util::DeleteGroupConfirmationButton;
+using chrome_test_util::TabGridCloseButtonForGroupCellAtIndex;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridGroupCellWithName;
 using chrome_test_util::TabGridOpenTabsPanelButton;
@@ -76,25 +77,6 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
              @"Expected %d %s entities but found %d", entity_count,
              syncer::DataTypeToDebugString(entity_type),
              [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type]);
-}
-
-// Displays the group cell context menu by long pressing at the group cell at
-// `group_cell_index`.
-void DisplayContextMenuForGroupCellAtIndex(int group_cell_index) {
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
-      performAction:grey_longPress()];
-}
-
-// Closes the group cell at index `group_cell_index`.
-void CloseGroupAtIndex(int group_cell_index) {
-  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
-  [[EarlGrey selectElementWithMatcher:CloseGroupButton()]
-      performAction:grey_tap()];
-
-  // Waits until the tab group cell disappears at `group_cell_index`.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(
-                                                 group_cell_index)];
 }
 
 }  // namespace
@@ -325,10 +307,8 @@ void CloseGroupAtIndex(int group_cell_index) {
   [SigninEarlGrey signOut];
 }
 
-// TODO(crbug.com/382480026): Deflake this test.
-//
 // Tests that tab groups don't get reopened after signing out and back in
-- (void)FLAKY_testSignOutAndBackInDoesNotReopenGroups {
+- (void)testSignOutAndBackInDoesNotReopenGroups {
   // Ensure that there are no tab groups initially.
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
@@ -354,7 +334,8 @@ void CloseGroupAtIndex(int group_cell_index) {
   WaitForEntitiesOnFakeServer(4);
 
   // Close the second group.
-  CloseGroupAtIndex(1);
+  [[EarlGrey selectElementWithMatcher:TabGridCloseButtonForGroupCellAtIndex(1)]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup2Name, 1)]
       assertWithMatcher:grey_nil()];
 
