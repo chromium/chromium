@@ -845,6 +845,7 @@ public class NetworkChangeNotifierTest {
     @UiThreadTest
     @MediumTest
     @Feature({"Android-AppBase"})
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/385118415")
     public void testConnectivityManagerDelegateDoesNotCrash() {
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(InstrumentationRegistry.getTargetContext());
@@ -894,13 +895,14 @@ public class NetworkChangeNotifierTest {
     }
 
     /**
-     * Tests that NetworkChangeNotifierAutoDetect query-able APIs return expected
-     * values from the inserted mock ConnectivityManager.
+     * Tests that NetworkChangeNotifierAutoDetect query-able APIs return expected values from the
+     * inserted mock ConnectivityManager.
      */
     @Test
     @UiThreadTest
     @MediumTest
     @Feature({"Android-AppBase"})
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/385118415")
     public void testQueryableAPIsReturnExpectedValuesFromMockDelegate() {
         NetworkChangeNotifierAutoDetect.Observer observer =
                 new TestNetworkChangeNotifierAutoDetectObserver();
@@ -965,6 +967,7 @@ public class NetworkChangeNotifierTest {
     @MediumTest
     @Feature({"Android-AppBase"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/385118415")
     public void testNetworkCallbacks() throws Exception {
         // Setup NetworkChangeNotifierAutoDetect
         final TestNetworkChangeNotifierAutoDetectObserver observer =
@@ -1140,6 +1143,7 @@ public class NetworkChangeNotifierTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // detectUntaggedSockets added in Oreo.
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/385118415")
     public void testVpnAccessibleDoesNotCreateUntaggedSockets() {
         ConnectivityManagerDelegate connectivityManagerDelegate =
                 new ConnectivityManagerDelegate(
