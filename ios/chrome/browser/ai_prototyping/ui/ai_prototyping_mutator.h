@@ -10,10 +10,8 @@
 namespace optimization_guide {
 namespace proto {
 class StringValue;
-namespace features {
 class BlingPrototypingRequest;
 enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
-}  // namespace features
 }  // namespace proto
 }  // namespace optimization_guide
 

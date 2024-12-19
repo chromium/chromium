@@ -104,8 +104,8 @@
     PageContextWrapper* pageContextWrapper = [[PageContextWrapper alloc]
           initWithWebState:webState
         completionCallback:base::BindOnce(^(
-                               std::unique_ptr<optimization_guide::proto::
-                                                   features::PageContext>
+                               std::unique_ptr<
+                                   optimization_guide::proto::PageContext>
                                    page_context) {
           [weakSelf asyncWorkCompleteForPageContext:std::move(page_context)
                                       associatedTab:tab];
