@@ -2658,28 +2658,7 @@ void CaptureModeSession::OnLocatedEventReleased(
     }
   };
 
-  // TODO(b/377569542): Move and consolidate with `UpdateCaptureRegion()`.
-  // TODO(b/367882127): May also need to check if the user has opted in.
-  if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
-    if (features::IsSunfishFeatureEnabled()) {
-      RecordSearchButtonShown();
-      capture_mode_util::AddActionButton(
-          base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
-                              weak_ptr_factory_.GetWeakPtr()),
-          u"Search with Lens", &kLensIcon,
-          ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
-          ActionButtonViewID::kSearchButton);
-    }
-  }
-
-  // TODO: crbug.com/375261308 - Prevent image search when the region stays the
-  // same or is within a throttling QPS after a release event.
-  // Notify the behavior that the region was selected or adjusted, in case it
-  // needs to do specific handling. Note `this` may be destroyed by
-  // `OnRegionSelectedOrAdjusted()`.
-  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  active_behavior_->OnRegionSelectedOrAdjusted();
-  if (!weak_ptr) {
+  if (ShowDefaultActionButtonsOrPerformSearch()) {
     return;
   }
 
@@ -2691,6 +2670,8 @@ void CaptureModeSession::OnLocatedEventReleased(
   is_selecting_region_ = false;
 
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
+  // Refresh the action container bounds after the capture label is updated.
+  UpdateActionContainerWidget();
 
   A11yAlertCaptureSource(/*trigger_now=*/true);
 }
@@ -2723,6 +2704,9 @@ void CaptureModeSession::UpdateCaptureRegion(
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
+  if (ShowDefaultActionButtonsOrPerformSearch()) {
+    return;
+  }
   InvalidateImageSearch();
 }
 
@@ -3344,6 +3328,39 @@ void CaptureModeSession::RemoveAllActionButtons() {
   }
 }
 
+[[nodiscard]] bool
+CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
+  // Early exit if we can't show the action container, i.e. a drag is in
+  // progress or capture region is empty. This will be checked again if an
+  // asynchronous function invokes `AddActionButton()`.
+  if (!ShouldShowActionContainerWidget()) {
+    return false;
+  }
+
+  // `ShouldShowActionContainerWidget()` checks `IsSunfishAllowedAndEnabled()`
+  // which checks if *either* Scanner or Sunfish is enabled. Check again if
+  // Sunfish specifically is enabled to show the Search button.
+  if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected() &&
+      features::IsSunfishFeatureEnabled()) {
+    RecordSearchButtonShown();
+    capture_mode_util::AddActionButton(
+        base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
+                            weak_ptr_factory_.GetWeakPtr()),
+        u"Search with Lens", &kLensIcon,
+        ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
+        ActionButtonViewID::kSearchButton);
+  }
+  // TODO: crbug.com/375261308 - Prevent image search when the region stays the
+  // same or is within a throttling QPS after a release event.
+  // Notify the behavior that the region was selected or adjusted, in case it
+  // needs to do specific handling. Note `this` may be destroyed by
+  // `OnRegionSelectedOrAdjusted()`.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  active_behavior_
+      ->OnRegionSelectedOrAdjusted();  // `this` may be deleted after this line.
+  return !weak_ptr;
+}
+
 void CaptureModeSession::UpdateFeedbackButtonWidget() {
   if (ShouldHideFeedbackWidget(feedback_button_widget_.get())) {
     if (feedback_button_widget_ && feedback_button_widget_->IsVisible()) {
@@ -3529,6 +3546,9 @@ void CaptureModeSession::InitInternal() {
 
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
+  if (ShowDefaultActionButtonsOrPerformSearch()) {
+    return;
+  }
   UpdateFeedbackButtonWidget();
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),

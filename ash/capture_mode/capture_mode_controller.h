@@ -825,7 +825,7 @@ class ASH_EXPORT CaptureModeController
 
   base::OnceClosure on_video_recording_started_callback_for_test_;
 
-  base::RepeatingCallback<void(PerformCaptureType capture_type)>
+  base::OnceCallback<void(PerformCaptureType capture_type)>
       on_image_captured_for_search_callback_for_test_;
 
   // Timers used to schedule recording of the number of screenshots taken.

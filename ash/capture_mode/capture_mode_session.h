@@ -436,6 +436,11 @@ class ASH_EXPORT CaptureModeSession
   // `action_container_widget_` exists.
   void RemoveAllActionButtons();
 
+  // In default mode, shows the Search button and performs text detection. In
+  // sunfish mode, performs image search. This may end the session, in which
+  // case returns true if `this` was deleted.
+  [[nodiscard]] bool ShowDefaultActionButtonsOrPerformSearch();
+
   // Checks if the controller needs to show the disclaimer and shows if
   // necessary. `accept_callback` is run if disclaimer is accepted.
   // Takes a repeating closure because the button that triggers this (Smart

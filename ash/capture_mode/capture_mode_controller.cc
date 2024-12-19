@@ -1918,7 +1918,8 @@ void CaptureModeController::OnImageCapturedForSearch(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
   absl::Cleanup run_test_callback_on_return = [this, capture_type] {
     if (on_image_captured_for_search_callback_for_test_) {
-      on_image_captured_for_search_callback_for_test_.Run(capture_type);
+      std::move(on_image_captured_for_search_callback_for_test_)
+          .Run(capture_type);
     }
   };
   // From here on, no matter where the function exits, the cursor must be
