@@ -293,10 +293,6 @@ bool PriceTrackingIconView::ShouldShowFirstUseExperienceBubble() const {
 }
 
 void PriceTrackingIconView::MaybeShowPageActionLabel() {
-  if (!base::FeatureList::IsEnabled(commerce::kCommerceAllowChipExpansion)) {
-    return;
-  }
-
   auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
                          ->GetTabFeatures()
                          ->commerce_ui_tab_helper();

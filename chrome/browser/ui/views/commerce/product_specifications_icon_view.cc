@@ -162,9 +162,6 @@ void ProductSpecificationsIconView::SetVisualState(bool is_added) {
 }
 
 void ProductSpecificationsIconView::MaybeShowPageActionLabel() {
-  if (!base::FeatureList::IsEnabled(commerce::kCommerceAllowChipExpansion)) {
-    return;
-  }
   auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
                          ->GetTabFeatures()
                          ->commerce_ui_tab_helper();

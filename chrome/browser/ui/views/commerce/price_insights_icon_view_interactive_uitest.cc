@@ -51,8 +51,7 @@ class PriceInsightsIconViewInteractiveTest
       : InteractiveFeaturePromoTest(
             UseDefaultTrackerAllowingPromos(std::move(iph_features))) {
     test_features_.InitWithFeatures(
-        /*enabled_features=*/{commerce::kCommerceAllowChipExpansion,
-                              commerce::kPriceInsights},
+        /*enabled_features=*/{commerce::kPriceInsights},
         /*disabled_features*/ {});
   }
 

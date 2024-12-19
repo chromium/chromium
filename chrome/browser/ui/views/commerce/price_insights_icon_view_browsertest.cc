@@ -33,7 +33,7 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
   PriceInsightsIconViewBrowserTest() {
     MockCommerceUiTabHelper::ReplaceFactory();
     test_features_.InitWithFeatures(
-        {commerce::kPriceInsights, commerce::kCommerceAllowChipExpansion}, {});
+        {commerce::kPriceInsights}, {});
   }
 
   // UiBrowserTest:

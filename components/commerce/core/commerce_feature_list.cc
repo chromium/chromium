@@ -114,10 +114,6 @@ const re2::RE2& GetCouponPartnerMerchantPattern() {
 
 }  // namespace
 
-BASE_FEATURE(kCommerceAllowChipExpansion,
-             "CommerceAllowChipExpansion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCommerceAllowLocalImages,
              "CommerceAllowLocalImages",
              base::FEATURE_DISABLED_BY_DEFAULT);

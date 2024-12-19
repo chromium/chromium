@@ -72,9 +72,6 @@ void PriceInsightsIconView::HidePageActionLabel() {
 }
 
 void PriceInsightsIconView::MaybeShowPageActionLabel() {
-  if (!base::FeatureList::IsEnabled(commerce::kCommerceAllowChipExpansion)) {
-    return;
-  }
   auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
                          ->GetTabFeatures()
                          ->commerce_ui_tab_helper();
