@@ -158,11 +158,9 @@ LayerTreeImpl::LayerTreeImpl(
     : host_impl_(&host_impl),
       created_begin_frame_args_(begin_frame_args),
       source_frame_number_(-1),
-      is_first_frame_after_commit_tracker_(-1),
       hud_layer_(nullptr),
       property_trees_(host_impl),
       background_color_(SkColors::kTransparent),
-      last_scrolled_scroll_node_index_(kInvalidPropertyNodeId),
       page_scale_factor_(page_scale_factor),
       min_page_scale_factor_(0),
       max_page_scale_factor_(0),
@@ -1158,14 +1156,7 @@ const ScrollNode* LayerTreeImpl::CurrentlyScrollingNode() const {
   return property_trees_.scroll_tree().CurrentlyScrollingNode();
 }
 
-int LayerTreeImpl::LastScrolledScrollNodeIndex() const {
-  return last_scrolled_scroll_node_index_;
-}
-
 void LayerTreeImpl::SetCurrentlyScrollingNode(const ScrollNode* node) {
-  if (node)
-    last_scrolled_scroll_node_index_ = node->id;
-
   ScrollTree& scroll_tree = property_trees()->scroll_tree_mutable();
   ScrollNode* old_node = scroll_tree.CurrentlyScrollingNode();
 

@@ -104,9 +104,6 @@ class LayerTreeLifecycle {
 
 class CC_EXPORT LayerTreeImpl {
  public:
-  // This is the number of times a fixed point has to be hit continuously by a
-  // layer to consider it as jittering.
-  enum : int { kFixedPointHitsThreshold = 3 };
   LayerTreeImpl(
       LayerTreeHostImpl& host_impl,
       viz::BeginFrameArgs begin_frame_args,
@@ -291,15 +288,6 @@ class CC_EXPORT LayerTreeImpl {
   BeginMainFrameTraceId trace_id() const { return trace_id_; }
   void set_trace_id(BeginMainFrameTraceId val) { trace_id_ = val; }
 
-  bool is_first_frame_after_commit() const {
-    return source_frame_number_ != is_first_frame_after_commit_tracker_;
-  }
-
-  void set_is_first_frame_after_commit(bool is_first_frame_after_commit) {
-    is_first_frame_after_commit_tracker_ =
-        is_first_frame_after_commit ? -1 : source_frame_number_;
-  }
-
   const HeadsUpDisplayLayerImpl* hud_layer() const { return hud_layer_; }
   HeadsUpDisplayLayerImpl* hud_layer() { return hud_layer_; }
   void set_hud_layer(HeadsUpDisplayLayerImpl* layer_impl) {
@@ -360,7 +348,6 @@ class CC_EXPORT LayerTreeImpl {
 
   ScrollNode* CurrentlyScrollingNode();
   const ScrollNode* CurrentlyScrollingNode() const;
-  int LastScrolledScrollNodeIndex() const;
   void SetCurrentlyScrollingNode(const ScrollNode* node);
   void ClearCurrentlyScrollingNode();
 
@@ -855,12 +842,9 @@ class CC_EXPORT LayerTreeImpl {
   viz::BeginFrameArgs created_begin_frame_args_;
   int source_frame_number_ = 0;
   BeginMainFrameTraceId trace_id_{0};
-  int is_first_frame_after_commit_tracker_;
   raw_ptr<HeadsUpDisplayLayerImpl, DanglingUntriaged> hud_layer_;
   PropertyTrees property_trees_;
   SkColor4f background_color_;
-
-  int last_scrolled_scroll_node_index_;
 
   ViewportPropertyIds viewport_property_ids_;
 
