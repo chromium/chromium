@@ -204,9 +204,14 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
 
   // Returns the direction of the last scroll event.
   FullscreenModelScrollDirection LastDirection() const {
-    return initial_y_offset_ - y_content_offset_ > 0
-               ? FullscreenModelScrollDirection::kUp
-               : FullscreenModelScrollDirection::kDown;
+    CGFloat delta = initial_progress_ - progress();
+    if (delta > 0) {
+      return FullscreenModelScrollDirection::kDown;
+    } else if (delta < 0) {
+      return FullscreenModelScrollDirection::kUp;
+    }
+    return initial_progress_ >= 0.5 ? FullscreenModelScrollDirection::kUp
+                                    : FullscreenModelScrollDirection::kDown;
   }
 
  private:
@@ -264,8 +269,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   CGFloat collapsed_bottom_toolbar_height_ = 0.0;
   // The current vertical content offset of the main content.
   CGFloat y_content_offset_ = 0.0;
-  // The vertical content offset at the start of a scroll event.
-  CGFloat initial_y_offset_ = 0.0;
+  // The progress at the start of a scroll event.
+  CGFloat initial_progress_ = 1.0;
   // The height of the scroll view displaying the current page.
   CGFloat scroll_view_height_ = 0.0;
   // The height of the current page's rendered content.
@@ -295,6 +300,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   size_t observer_callback_count_ = 0;
   // Whether updating insets is enabled.
   bool insets_update_enabled_ = true;
+  // Whether progress is currently being set.
+  bool setting_progress_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
