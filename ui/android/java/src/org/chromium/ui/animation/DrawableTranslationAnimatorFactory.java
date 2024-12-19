@@ -24,12 +24,21 @@ public class DrawableTranslationAnimatorFactory {
      * @param dY The initial amount the drawable is translated vertically (in px).
      */
     public static Animator build(Drawable drawable, int dX, int dY) {
-        Rect initialBounds = drawable.copyBounds();
-        Animator animator =
-                buildTranslationAnimation(
-                        dX, dY, (x, y) -> translateDrawable(drawable, initialBounds, x, y));
-        drawable.setBounds(initialBounds);
-        return animator;
+        return build(drawable, drawable.copyBounds(), dX, dY);
+    }
+
+    /**
+     * Creates an animation for translations. The animator will begin at the maximum displacement
+     * specified and will return to a the non-translated position.
+     *
+     * @param drawable The {@link Drawable} to be translated in the animation.
+     * @param initialBounds The initial bounds for the {@link Drawable} in the animation.
+     * @param dX The initial amount the drawable is to be translated horizontally (in px).
+     * @param dY The initial amount the drawable is translated vertically (in px).
+     */
+    public static Animator build(Drawable drawable, Rect initialBounds, int dX, int dY) {
+        return buildTranslationAnimation(
+                dX, dY, (x, y) -> translateDrawable(drawable, initialBounds, x, y));
     }
 
     /**
