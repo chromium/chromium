@@ -79,6 +79,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "crypto/crypto_buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "media/media_buildflags.h"
 #include "net/base/url_util.h"
 #include "net/ssl/ssl_info.h"
@@ -1076,7 +1077,8 @@ class ChromeContentSettingsPolicyTrustAnchor
   void SetUp() override {
     // Add a profile
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, "gaia_id");
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kEmail, GaiaId("gaia_id"));
     user_manager::User* user =
         fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
             account_id, false /*is_affiliated*/,

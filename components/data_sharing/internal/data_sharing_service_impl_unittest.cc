@@ -222,7 +222,7 @@ TEST_P(DataSharingServiceImplTest, ShouldInviteMember) {
   auto group = not_owned_sdk_delegate_->GetGroup(group_id);
   ASSERT_TRUE(group.has_value());
   ASSERT_THAT(group->members().size(), Eq(1));
-  EXPECT_THAT(group->members(0).gaia_id(), Eq(gaia_id));
+  EXPECT_THAT(group->members(0).gaia_id(), Eq(gaia_id.ToString()));
 }
 
 TEST_P(DataSharingServiceImplTest, ShouldRemoveMember) {
