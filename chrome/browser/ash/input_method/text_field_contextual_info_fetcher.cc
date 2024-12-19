@@ -15,19 +15,6 @@
 namespace ash {
 namespace input_method {
 
-namespace {
-
-void TextFieldContextualInfoWithUrl(TextFieldContextualInfoCallback cb,
-                                    TextFieldContextualInfo& info,
-                                    const std::optional<GURL>& url) {
-  if (url.has_value()) {
-    info.tab_url = url.value();
-  }
-  std::move(cb).Run(std::move(info));
-}
-
-}  // namespace
-
 TextFieldContextualInfo::TextFieldContextualInfo() = default;
 
 TextFieldContextualInfo::~TextFieldContextualInfo() = default;
@@ -51,10 +38,14 @@ void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
   TextFieldContextualInfo info;
   GetTextFieldAppTypeAndKey(info);
 
-  TextFieldContextualInfoWithUrl(std::move(cb), info,
-                                 info.app_type == chromeos::AppType::BROWSER
-                                     ? GetUrlForTextFieldOnAshChrome()
-                                     : std::nullopt);
+  if (info.app_type == chromeos::AppType::BROWSER) {
+    if (std::optional<GURL> url = GetUrlForTextFieldOnAshChrome();
+        url.has_value()) {
+      info.tab_url = *url;
+    }
+  }
+
+  std::move(cb).Run(std::move(info));
 }
 
 std::optional<GURL> GetUrlForTextFieldOnAshChrome() {
