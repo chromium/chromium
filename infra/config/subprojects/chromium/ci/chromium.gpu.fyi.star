@@ -1087,6 +1087,8 @@ ci.gpu.mac_builder(
         ],
     ),
     targets = targets.bundle(),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Builder",
         short_name = "asn",
