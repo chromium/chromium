@@ -1808,7 +1808,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '77a073aaa821300fc129ef24b3b052be2e670a3e',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + 'a32db4396635c706d9e862824bdf4e0ec0c3b257',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
