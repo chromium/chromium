@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/declarative_net_request/flat_ruleset_indexer.h"
 
 #include <string>
@@ -127,7 +122,7 @@ FlatOffset<flat::UrlTransform> BuildTransformOffset(
         DCHECK(!str->empty());
         DCHECK_EQ(separator, str->at(0));
 
-        return builder->CreateSharedString(str->c_str() + 1, str->length() - 1);
+        return builder->CreateSharedString(std::string_view(*str).substr(1));
       };
 
   auto should_clear_component = [](const std::optional<std::string>& str) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/user_script_loader.h"
 
 #include <stddef.h>
@@ -77,9 +72,7 @@ bool GetDeclarationValue(std::string_view line,
     return false;
   }
 
-  std::string temp(line.data() + index + prefix.length(),
-                   line.length() - index - prefix.length());
-
+  std::string temp(line.substr(index + prefix.length()));
   if (temp.empty() || !base::IsAsciiWhitespace(temp[0]))
     return false;
 

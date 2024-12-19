@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/web_request/form_data_parser.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -122,7 +118,7 @@ class FormDataParserUrlEncoded : public FormDataParser {
   std::string value_;
   const RE2::Arg arg_name_;
   const RE2::Arg arg_value_;
-  const RE2::Arg* args_[args_size_];
+  std::array<const RE2::Arg*, args_size_> args_;
 
   // Caching the pointer to g_patterns.Get().
   raw_ptr<const Patterns> patterns_;
@@ -291,8 +287,7 @@ FormDataParser::Result::Result() = default;
 FormDataParser::Result::~Result() = default;
 
 void FormDataParser::Result::SetBinaryValue(std::string_view str) {
-  value_ = base::Value(
-      base::Value::BlobStorage(str.data(), str.data() + str.size()));
+  value_ = base::Value(base::ToVector(str));
 }
 
 void FormDataParser::Result::SetStringValue(std::string str) {
@@ -378,7 +373,7 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
     return false;
   }
 
-  bool success = RE2::ConsumeN(&source_, pattern(), args_, args_size_);
+  bool success = RE2::ConsumeN(&source_, pattern(), args_.data(), args_size_);
   if (success) {
     const base::UnescapeRule::Type kUnescapeRules =
         base::UnescapeRule::REPLACE_PLUS_WITH_SPACE;

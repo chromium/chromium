@@ -83,7 +83,7 @@ class RawDataPresenter : public UploadDataPresenter {
   std::optional<base::Value> TakeResult() override;
 
  private:
-  void FeedNextBytes(const char* bytes, size_t size);
+  void FeedNextBytes(base::span<const uint8_t> bytes);
   void FeedNextFile(const std::string& filename);
   FRIEND_TEST_ALL_PREFIXES(WebRequestUploadDataPresenterTest, RawData);
 
