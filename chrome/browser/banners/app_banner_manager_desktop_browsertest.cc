@@ -57,9 +57,7 @@ using State = AppBannerManager::State;
 class AppBannerManagerDesktopBrowserTest
     : public AppBannerManagerBrowserTestBase {
  public:
-  AppBannerManagerDesktopBrowserTest()
-      : total_engagement_(
-            AppBannerSettingsHelper::ScopeTotalEngagementForTesting(0)) {}
+  AppBannerManagerDesktopBrowserTest() = default;
 
   void SetUp() override {
     TestAppBannerManagerDesktop::SetUp();
@@ -80,10 +78,6 @@ class AppBannerManagerDesktopBrowserTest
       const AppBannerManagerDesktopBrowserTest&) = delete;
   AppBannerManagerDesktopBrowserTest& operator=(
       const AppBannerManagerDesktopBrowserTest&) = delete;
-
- protected:
-  // Scope engagement needed to trigger banners instantly.
-  base::AutoReset<double> total_engagement_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,

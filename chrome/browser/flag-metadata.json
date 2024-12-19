@@ -1128,11 +1128,6 @@
       "expiry_milestone": 135
   },
   {
-    "name": "bypass-app-banner-engagement-checks",
-    "owners": [ "dmurph@chromium.org" ],
-    "expiry_milestone": 139
-  },
-  {
     "name": "calculate-native-win-occlusion",
     "owners": [ "davidbienvenu@chromium.org", "fdoray@chromium.org" ],
     "expiry_milestone": 130

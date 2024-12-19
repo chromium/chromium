@@ -135,11 +135,6 @@ class AppBannerSettingsHelper {
       const std::string& package_name_or_start_url,
       AppBannerEvent event);
 
-  // Returns true if |total_engagement| is sufficiently high to warrant
-  // triggering a banner, or if the command-line flag to bypass engagement
-  // checking is true.
-  static bool HasSufficientEngagement(double total_engagement);
-
   // Record a UMA statistic measuring the minutes between the first visit to the
   // site and the first showing of the banner.
   static void RecordMinutesFromFirstVisitToShow(
@@ -152,12 +147,6 @@ class AppBannerSettingsHelper {
   // a banner from showing.
   static void SetDaysAfterDismissAndIgnoreToTrigger(unsigned int dismiss_days,
                                                     unsigned int ignore_days);
-
-  // Set the total engagement weight required to trigger a banner.
-  static void SetTotalEngagementToTrigger(double total_engagement);
-
-  static base::AutoReset<double> ScopeTotalEngagementForTesting(
-      double total_engagement);
 
   // Returns whether we are out of |scope|'s animation suppression period and
   // can show an animation.

@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -66,7 +65,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesTestHelper;
-import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppData;
 import org.chromium.components.webapps.AppDetailsDelegate;
@@ -195,22 +193,11 @@ public class AmbientBadgeManagerTest {
                 });
 
         AppBannerManager.ignoreChromeChannelForTesting();
-        AppBannerManager.setTotalEngagementForTesting(10);
         AppBannerManager.setOverrideSegmentationResultForTesting(true);
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    }
-
-    private void resetEngagementForUrl(final String url, final double engagement) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                    SiteEngagementService.getForBrowserContext(
-                                    ProfileManager.getLastUsedRegularProfile())
-                            .resetBaseScoreForUrl(url, engagement);
-                });
     }
 
     private AppBannerManager getAppBannerManager(WebContents webContents) {
@@ -288,7 +275,6 @@ public class AmbientBadgeManagerTest {
 
     private void triggerInstallWebApp(
             ChromeActivityTestRule<? extends ChromeActivity> rule, String url) throws Exception {
-        resetEngagementForUrl(url, 10);
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
         waitUntilAmbientBadgePromptAppears(rule);
@@ -305,7 +291,6 @@ public class AmbientBadgeManagerTest {
             String url,
             String expectedReferrer)
             throws Exception {
-        resetEngagementForUrl(url, 10);
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
         waitUntilAppDetailsRetrieved(rule, 1);
@@ -474,7 +459,6 @@ public class AmbientBadgeManagerTest {
 
         // Visit a site that is a PWA. The ambient badge should show.
         String webBannerUrl = WebappTestPage.getNonServiceWorkerUrl(mTestServer);
-        resetEngagementForUrl(webBannerUrl, 10);
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
@@ -537,7 +521,6 @@ public class AmbientBadgeManagerTest {
     @MediumTest
     public void testAmbientBadgeAppearWithServiceWorkerPage() throws Exception {
         String webBannerUrl = WebappTestPage.getNonServiceWorkerUrl(mTestServer);
-        resetEngagementForUrl(webBannerUrl, 10);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
 
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
@@ -551,7 +534,6 @@ public class AmbientBadgeManagerTest {
         // The ambient badge should show if there is play app in related applications list but
         // preferred_related_applications is false.
         String webBannerUrl = WebappTestPage.getNonServiceWorkerUrl(mTestServer);
-        resetEngagementForUrl(webBannerUrl, 10);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
 
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
@@ -586,7 +568,6 @@ public class AmbientBadgeManagerTest {
         String url =
                 WebappTestPage.getNonServiceWorkerUrlWithManifest(
                         mTestServer, WEB_APP_MANIFEST_WITH_RELATED_APP_LIST);
-        resetEngagementForUrl(url, 10);
 
         final Context contextToRestore = ContextUtils.getApplicationContext();
         ContextUtils.initApplicationContextForTests(new TestContext(contextToRestore));
@@ -605,7 +586,6 @@ public class AmbientBadgeManagerTest {
     @SmallTest
     public void testMlShowAmbientBadge() throws Exception {
         String url = WebappTestPage.getNonServiceWorkerUrl(mTestServer);
-        resetEngagementForUrl(url, 10);
         AppBannerManager.setOverrideSegmentationResultForTesting(false);
 
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);

@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -61,7 +60,6 @@ import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppData;
 import org.chromium.components.webapps.AppDetailsDelegate;
@@ -195,7 +193,6 @@ public class AppBannerManagerTest {
                 });
 
         AppBannerManager.ignoreChromeChannelForTesting();
-        AppBannerManager.setTotalEngagementForTesting(10);
         AppBannerManager.setOverrideSegmentationResultForTesting(true);
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
@@ -207,16 +204,6 @@ public class AppBannerManagerTest {
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getBottomSheetController();
-    }
-
-    private void resetEngagementForUrl(final String url, final double engagement) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                    SiteEngagementService.getForBrowserContext(
-                                    ProfileManager.getLastUsedRegularProfile())
-                            .resetBaseScoreForUrl(url, engagement);
-                });
     }
 
     private AppBannerManager getAppBannerManager(WebContents webContents) {
@@ -281,7 +268,6 @@ public class AppBannerManagerTest {
     private void triggerModalWebAppBanner(
             ChromeActivityTestRule<? extends ChromeActivity> rule, String url, boolean installApp)
             throws Exception {
-        resetEngagementForUrl(url, 10);
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
 
@@ -300,7 +286,6 @@ public class AppBannerManagerTest {
             String expectedReferrer,
             boolean installApp)
             throws Exception {
-        resetEngagementForUrl(url, 10);
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
         waitUntilAppDetailsRetrieved(rule, 1);
@@ -340,7 +325,6 @@ public class AppBannerManagerTest {
             String url,
             boolean isForNativeApp)
             throws Exception {
-        resetEngagementForUrl(url, 10);
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
         if (isForNativeApp) {
@@ -363,7 +347,6 @@ public class AppBannerManagerTest {
     private void triggerBottomSheet(
             ChromeActivityTestRule<? extends ChromeActivity> rule, String url, boolean click)
             throws Exception {
-        resetEngagementForUrl(url, 10);
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
 
@@ -838,7 +821,6 @@ public class AppBannerManagerTest {
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
                         "call_stashed_prompt_on_click");
 
-        resetEngagementForUrl(url, 10);
         mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         // Create an extra tab so that there is a background tab.
@@ -874,7 +856,6 @@ public class AppBannerManagerTest {
         String url =
                 WebappTestPage.getServiceWorkerUrlWithAction(
                         mTestServer, "call_stashed_prompt_on_click");
-        resetEngagementForUrl(url, 10);
 
         mTabbedActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);

@@ -24,7 +24,6 @@
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
@@ -215,16 +214,6 @@ void AppBannerManager::RequestAppBanner() {
 
   UpdateState(State::ACTIVE);
 
-  // If we already have enough engagement, or require no engagement to trigger
-  // the banner, the rest of the banner pipeline should operate as if the
-  // engagement threshold has been met.
-  if (!has_sufficient_engagement_ &&
-      (AppBannerSettingsHelper::HasSufficientEngagement(0) ||
-       AppBannerSettingsHelper::HasSufficientEngagement(
-           GetSiteEngagementService()->GetScore(validated_url_)))) {
-    has_sufficient_engagement_ = true;
-  }
-
   status_reporter_ = std::make_unique<TrackingStatusReporter>();
 
   UpdateState(State::FETCHING_MANIFEST);
@@ -286,8 +275,6 @@ bool AppBannerManager::IsPromptAvailableForTesting() const {
 
 AppBannerManager::AppBannerManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      SiteEngagementObserver(site_engagement::SiteEngagementService::Get(
-          web_contents->GetBrowserContext())),
       manager_(InstallableManager::FromWebContents(web_contents)),
       status_reporter_(std::make_unique<NullStatusReporter>()) {
   DCHECK(manager_);
@@ -353,15 +340,6 @@ std::string AppBannerManager::GetBannerType() const {
   }
 }
 
-bool AppBannerManager::HasSufficientEngagement() const {
-  return has_sufficient_engagement_ || ShouldBypassEngagementChecks();
-}
-
-bool AppBannerManager::ShouldBypassEngagementChecks() const {
-  return base::FeatureList::IsEnabled(
-      webapps::features::kBypassAppBannerEngagementChecks);
-}
-
 void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   // The pipeline will be restarted from DidUpdateWebManifestURL.
   if (IsManifestUrlChange(data)) {
@@ -416,15 +394,6 @@ void AppBannerManager::OnNativeAppInstallableCheckComplete(
   CHECK(mode_ == AppBannerMode::kNativeApp);
 
   native_app_data_.emplace(result.value());
-
-  // If we triggered the installability check on page load, then it's possible
-  // we don't have enough engagement yet. If that's the case, return here but
-  // don't call Terminate(). We wait for OnEngagementEvent to tell us that we
-  // should trigger.
-  if (!HasSufficientEngagement()) {
-    UpdateState(State::PENDING_ENGAGEMENT);
-    return;
-  }
 
   SendBannerPromptRequest();
 }
@@ -515,18 +484,6 @@ void AppBannerManager::PostInstallableWebAppCheckValidation(
 
   SetInstallableWebAppCheckResult(
       InstallableWebAppCheckResult::kYes_Promotable);
-  CheckSufficientEngagement();
-}
-
-void AppBannerManager::CheckSufficientEngagement() {
-  // If we triggered the installability check on page load, then it's
-  // possible we don't have enough engagement yet. If that's the case,
-  // return here but don't call Terminate(). We wait for OnEngagementEvent
-  // to tell us that we should trigger.
-  if (!HasSufficientEngagement()) {
-    UpdateState(State::PENDING_ENGAGEMENT);
-    return;
-  }
 
   SendBannerPromptRequest();
 }
@@ -544,7 +501,6 @@ void AppBannerManager::ResetBindings() {
 void AppBannerManager::ResetCurrentPageDataInternal() {
   InvalidateWeakPtrsForThisNavigation();
   load_finished_ = false;
-  has_sufficient_engagement_ = false;
   active_media_players_.clear();
   web_app_data_.reset();
   native_app_data_.reset();
@@ -565,10 +521,6 @@ void AppBannerManager::Terminate(InstallableStatusCode code) {
       TrackBeforeInstallEvent(
           BEFORE_INSTALL_EVENT_PROMPT_NOT_CALLED_NOT_CANCELLED);
       break;
-    case State::PENDING_ENGAGEMENT:
-      if (!has_sufficient_engagement_)
-        TrackDisplayEvent(DISPLAY_EVENT_NOT_VISITED_ENOUGH);
-      break;
     default:
       break;
   }
@@ -581,10 +533,6 @@ InstallableStatusCode AppBannerManager::TerminationCodeFromState() const {
     case State::PENDING_PROMPT_CANCELED:
     case State::PENDING_PROMPT_NOT_CANCELED:
       return InstallableStatusCode::RENDERER_CANCELLED;
-    case State::PENDING_ENGAGEMENT:
-      return has_sufficient_engagement_
-                 ? InstallableStatusCode::NO_ERROR_DETECTED
-                 : InstallableStatusCode::INSUFFICIENT_ENGAGEMENT;
     case State::FETCHING_MANIFEST:
       return InstallableStatusCode::WAITING_FOR_MANIFEST;
     case State::FETCHING_NATIVE_DATA:
@@ -783,46 +731,12 @@ void AppBannerManager::WebContentsDestroyed() {
   manager_ = nullptr;
 }
 
-void AppBannerManager::OnEngagementEvent(
-    content::WebContents* contents,
-    const GURL& url,
-    double score,
-    double old_score,
-    site_engagement::EngagementType /*type*/,
-    const std::optional<webapps::AppId>& /*app_id*/) {
-  if (TriggeringDisabledForTesting() || ShouldBypassEngagementChecks()) {
-    return;
-  }
-
-  // Only trigger a banner using site engagement if:
-  //  1. engagement increased for the web contents which we are attached to; and
-  //  2. there are no currently active media players; and
-  //  3. we have accumulated sufficient engagement.
-  if (web_contents() == contents && active_media_players_.empty() &&
-      AppBannerSettingsHelper::HasSufficientEngagement(score)) {
-    has_sufficient_engagement_ = true;
-
-    if (state_ == State::PENDING_ENGAGEMENT) {
-      // We have already finished the installability eligibility checks. Proceed
-      // directly to sending the banner prompt request.
-      UpdateState(State::ACTIVE);
-      SendBannerPromptRequest();
-    } else if (load_finished_ && validated_url_ == url &&
-               state_ == State::INACTIVE) {
-      // This performs some simple tests and starts async checks to test
-      // installability. It should be safe to start in response to user input.
-      // Don't call if we're already working on processing a banner request.
-      RequestAppBanner();
-    }
-  }
-}
 
 bool AppBannerManager::IsRunning() const {
   switch (state_) {
     case State::INACTIVE:
     case State::PENDING_PROMPT_CANCELED:
     case State::PENDING_PROMPT_NOT_CANCELED:
-    case State::PENDING_ENGAGEMENT:
     case State::COMPLETE:
       return false;
     case State::ACTIVE:
@@ -952,13 +866,11 @@ void AppBannerManager::OnBannerPromptReply(
   bool event_canceled = reply == blink::mojom::AppBannerPromptReply::CANCEL;
   if (event_canceled) {
     TrackBeforeInstallEvent(BEFORE_INSTALL_EVENT_PREVENT_DEFAULT_CALLED);
-    if (ShouldBypassEngagementChecks()) {
-      web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kInfo,
-          "Banner not shown: beforeinstallpromptevent.preventDefault() called. "
-          "The page must call beforeinstallpromptevent.prompt() to show the "
-          "banner.");
-    }
+    web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kInfo,
+        "Banner not shown: beforeinstallpromptevent.preventDefault() called. "
+        "The page must call beforeinstallpromptevent.prompt() to show the "
+        "banner.");
   }
 
   if (state_ == State::SENDING_EVENT) {

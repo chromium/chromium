@@ -43,9 +43,6 @@ namespace {
 constexpr unsigned int kMinimumBannerBlockedToBannerShown = 90;
 constexpr unsigned int kMinimumDaysBetweenBannerShows = 7;
 
-// Default site engagement required to trigger the banner.
-constexpr unsigned int kDefaultTotalEngagementToTrigger = 2;
-
 // Max number of apps (including ServiceWorker based web apps) that a particular
 // site may show a banner for.
 const size_t kMaxAppsPerSite = 3;
@@ -60,9 +57,6 @@ constexpr const char* kBannerEventKeys[] = {
     "couldShowAmbientBadgeEvent",
     // clang-format on
 };
-
-// Total engagement score required before a banner will actually be triggered.
-double gTotalEngagementToTrigger = kDefaultTotalEngagementToTrigger;
 
 unsigned int gDaysAfterDismissedToShow = kMinimumBannerBlockedToBannerShown;
 unsigned int gDaysAfterIgnoredToShow = kMinimumDaysBetweenBannerShows;
@@ -320,27 +314,11 @@ std::optional<base::Time> AppBannerSettingsHelper::GetSingleBannerEvent(
                        : base::Time();
 }
 
-bool AppBannerSettingsHelper::HasSufficientEngagement(double total_engagement) {
-  return (base::FeatureList::IsEnabled(
-             webapps::features::kBypassAppBannerEngagementChecks)) ||
-         (total_engagement >= gTotalEngagementToTrigger);
-}
-
 void AppBannerSettingsHelper::SetDaysAfterDismissAndIgnoreToTrigger(
     unsigned int dismiss_days,
     unsigned int ignore_days) {
   gDaysAfterDismissedToShow = dismiss_days;
   gDaysAfterIgnoredToShow = ignore_days;
-}
-
-void AppBannerSettingsHelper::SetTotalEngagementToTrigger(
-    double total_engagement) {
-  gTotalEngagementToTrigger = total_engagement;
-}
-
-base::AutoReset<double> AppBannerSettingsHelper::ScopeTotalEngagementForTesting(
-    double total_engagement) {
-  return base::AutoReset<double>(&gTotalEngagementToTrigger, total_engagement);
 }
 
 bool AppBannerSettingsHelper::CanShowInstallTextAnimation(
