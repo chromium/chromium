@@ -4795,12 +4795,12 @@
   {
     "name": "freezing-on-energy-saver",
     "owners": [ "fdoray@chromium.org" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 134
   },
   {
     "name": "freezing-on-energy-saver-testing",
     "owners": [ "fdoray@chromium.org" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 134
   },
   {
     "name": "fullscreen-improvement",
