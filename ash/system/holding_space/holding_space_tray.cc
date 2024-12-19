@@ -125,8 +125,7 @@ bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
 }
 
 // Creates a model representing a foreground `tray` image with the specified
-// `vector_icon`. Note that when Jelly is enabled, the image must be repainted
-// on changes to `tray` activation.
+// `vector_icon`. The image must be repainted on changes to `tray` activation.
 ui::ImageModel CreateForegroundImageModel(const HoldingSpaceTray* tray,
                                           const gfx::VectorIcon& vector_icon) {
   // `tray` activation affects color.

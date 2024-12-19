@@ -168,8 +168,8 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // Updates the background layer.
   virtual void UpdateBackground();
 
-  // For Jelly: updates the color of either the icon or the label of this view
-  // based on the active state specified by `is_active`.
+  // Updates the color of either the icon or the label of this view based on the
+  // active state specified by `is_active`.
   virtual void UpdateTrayItemColor(bool is_active) = 0;
 
   // Calls `CloseBubbleInternal` which is implemented by each child tray view.

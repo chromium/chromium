@@ -43,7 +43,7 @@ class VerticalDateView : public views::View {
   // Updates the date label text.
   void UpdateText();
 
-  // For Jelly: updates `icon_` and `text_label_` color ids.
+  // Updates `icon_` and `text_label_` color ids.
   void UpdateIconAndLabelColorId(ui::ColorId color_id);
 
  private:
@@ -89,7 +89,7 @@ class ASH_EXPORT TimeView : public views::View, public ClockObserver {
   // Updates the time text shadow values.
   void SetTextShadowValues(const gfx::ShadowValues& shadows);
 
-  // For Jelly: updates `vertical_date_view_` color id if exists.
+  // Updates `vertical_date_view_` color id if exists.
   void SetDateViewColorId(ui::ColorId color_id);
 
   // Controls whether the horizontal time view shows "AM/PM" text.

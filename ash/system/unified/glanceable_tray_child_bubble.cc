@@ -49,9 +49,7 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
     SetBackground(views::CreateThemedSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kBubbleCornerRadius,
-        chromeos::features::IsJellyrollEnabled()
-            ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-            : views::HighlightBorder::Type::kHighlightBorder1));
+        views::HighlightBorder::Type::kHighlightBorderOnShadow));
   }
 }
 

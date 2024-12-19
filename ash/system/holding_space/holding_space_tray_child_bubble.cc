@@ -206,21 +206,16 @@ void HoldingSpaceTrayChildBubble::Init() {
   }
 
   const ui::ColorId background_color_id =
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(
-                chromeos::features::IsSystemBlurEnabled()
-                    ? cros_tokens::kCrosSysSystemBaseElevated
-                    : cros_tokens::kCrosSysSystemBaseElevatedOpaque)
-          : kColorAshShieldAndBase80;
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 
   SetBackground(views::CreateThemedSolidBackground(background_color_id));
 
   // Border.
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   // Corner radius.
   layer()->SetIsFastRoundedCorner(true);

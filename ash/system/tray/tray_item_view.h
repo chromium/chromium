@@ -216,9 +216,8 @@ class ASH_EXPORT TrayItemView : public views::View,
   // Use scale in animating in the item to the tray.
   bool use_scale_in_animation_ = true;
 
-  // For Material Next: if this view is active or not in `UnifiedSystemTray`.
+  // If this view is active or not in `UnifiedSystemTray`.
   // This is used for coloring and is set in `UpdateLabelOrImageViewColor()`.
-  // Note: the value is only accurate when the Jelly flag is set.
   bool is_active_ = false;
 
   // Only one of |label_| and |image_view_| should be non-null.
