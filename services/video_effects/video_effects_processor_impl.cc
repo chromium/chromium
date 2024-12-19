@@ -50,12 +50,8 @@ VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
   manager_remote_.set_disconnect_handler(
       base::BindOnce(&VideoEffectsProcessorImpl::OnMojoDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
-
   manager_remote_->AddObserver(
       configuration_observer_.BindNewPipeAndPassRemote());
-  manager_remote_->GetConfiguration(
-      base::BindOnce(&VideoEffectsProcessorImpl::OnConfigurationChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 VideoEffectsProcessorImpl::~VideoEffectsProcessorImpl() {

@@ -41,7 +41,9 @@ void VideoEffectsManagerImpl::SetConfiguration(
 void VideoEffectsManagerImpl::AddObserver(
     mojo::PendingRemote<media::mojom::VideoEffectsConfigurationObserver>
         observer) {
-  observers_.Add(std::move(observer));
+  auto id = observers_.Add(std::move(observer));
+  // Notify new observer of current config state.
+  observers_.Get(id)->OnConfigurationChanged(configuration_->Clone());
 }
 
 void VideoEffectsManagerImpl::OnReceiverDisconnected() {
