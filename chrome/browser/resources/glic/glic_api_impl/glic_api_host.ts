@@ -209,12 +209,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  async glicBrowserResizeWindow(
-      resizeDimensions:
-          HostRequestTypes['glicBrowserResizeWindow']['request']) {
-    const response = await this.handler.resizeWidget(resizeDimensions);
+  async glicBrowserResizeWindow(request: {width: number, height: number}) {
+    const response = await this.handler.resizeWidget(request);
     if (!response.actualSize) {
-      throw new Error('Can\'t resize the widget while it\'s closed');
+      return {};
     }
     return {
       actualWidth: response.actualSize.width,

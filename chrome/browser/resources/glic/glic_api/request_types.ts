@@ -78,8 +78,9 @@ export declare interface HostRequestTypes {
       height: number,
     },
     response: {
-      actualWidth: number,
-      actualHeight: number,
+      // Not set on error.
+      actualWidth?: number,
+      actualHeight?: number,
     },
   };
   glicBrowserSetWindowDraggableAreas: {
