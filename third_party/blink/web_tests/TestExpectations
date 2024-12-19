@@ -2697,9 +2697,9 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac13 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-[ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
-[ Mac13 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html [ Timeout ]
+crbug.com/384980894 [ Mac13 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
+crbug.com/384980894 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Timeout ]
+crbug.com/384972937 [ Mac13 ] virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html [ Timeout ]
 crbug.com/384773801 [ Mac13 ] external/wpt/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Timeout ]
 crbug.com/384773801 [ Mac14 ] external/wpt/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Timeout ]
 crbug.com/384549263 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-constructor.html [ Timeout ]
@@ -4125,7 +4125,7 @@ crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
 crbug.com/1244145 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/v8-code-cache.html [ Failure ]
 
 # ShadowRealm tests that crash in Modulator::From
-crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/* [ Crash Timeout Skip ]
+crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/* [ Crash Skip Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/compression-bad-chunks.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/compression-bad-chunks.tentative.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/compression-constructor-error.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
