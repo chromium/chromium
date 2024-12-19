@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ModificationsPanelElement} from './modifications_panel.js';
 
 export function getHtml(this: ModificationsPanelElement) {
-  // TODO(crbug.com/40928765): finish localization.
   return html`<!--_html_template_start_-->
   <div class="vertical-box">
     <h3 role="heading">$i18n{trust}</h3>
@@ -53,10 +52,10 @@ export function getHtml(this: ModificationsPanelElement) {
     </div>
     <div class="horizontal-row" id="addConstraintSection"
         ?hidden="${!(this.isEditable && this.trustStateValue === '2')}">
-      <div class="modifications-row-label">Add Constraint</div>
+      <div class="modifications-row-label">$i18n{addConstraints}</div>
       <cr-input
           id="addConstraintInput"
-          placeholder="DNS or CIDR constraint"
+          placeholder="$i18n{addConstraintsPlaceholder}"
           ?invalid="${this.addConstraintErrorMessage.length !== 0}"
           error-message="${this.addConstraintErrorMessage}"
           @keypress="${this.onConstraintKeyPress_}"
@@ -64,7 +63,7 @@ export function getHtml(this: ModificationsPanelElement) {
         <cr-button id="addConstraintButton" slot="suffix"
             ?disabled="${!this.editControlsEnabled}"
             @click="${this.onAddConstraintClick_}">
-          Add
+          $i18n{add}
         </cr-button>
       </cr-input>
     </div>

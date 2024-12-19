@@ -9,6 +9,7 @@ import '/strings.m.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -16,6 +17,8 @@ import {CertViewerBrowserProxyImpl} from './browser_proxy.js';
 import type {CertMetadataChangeResult, ConstraintChangeResult} from './browser_proxy.js';
 import {getCss} from './modifications_panel.css.js';
 import {getHtml} from './modifications_panel.html.js';
+
+const ModificationsPanelElementBase = I18nMixinLit(CrLitElement);
 
 export interface ModificationsPanelElement {
   $: {
@@ -31,7 +34,7 @@ export interface ModificationsPanelElement {
   };
 }
 
-export class ModificationsPanelElement extends CrLitElement {
+export class ModificationsPanelElement extends ModificationsPanelElementBase {
   static get is() {
     return 'modifications-panel';
   }
@@ -85,9 +88,8 @@ export class ModificationsPanelElement extends CrLitElement {
           .deleteConstraint(this.constraints[constraintToDeleteIndex])
           .then(this.onDeleteConstraintFinished_.bind(this));
     } else {
-      // TODO(crbug.com/40928765): localize.
       this.deleteConstraintErrorMessage =
-          'There was an error deleting the constraint';
+          this.i18n('deleteConstraintErrorMessage');
     }
   }
 
@@ -99,9 +101,8 @@ export class ModificationsPanelElement extends CrLitElement {
       if (result.status.errorMessage !== undefined) {
         this.deleteConstraintErrorMessage = result.status.errorMessage;
       } else {
-        // TODO(crbug.com/40928765): localize.
         this.deleteConstraintErrorMessage =
-            'There was an error deleting the constraint';
+            this.i18n('deleteConstraintErrorMessage');
       }
     }
     this.editControlsEnabled = true;
@@ -132,7 +133,7 @@ export class ModificationsPanelElement extends CrLitElement {
       if (result.status.errorMessage !== undefined) {
         this.addConstraintErrorMessage = result.status.errorMessage;
       } else {
-        this.addConstraintErrorMessage = 'Constraint could not be added';
+        this.addConstraintErrorMessage = this.i18n('addConstraintErrorMessage');
       }
     }
     this.editControlsEnabled = true;
@@ -158,9 +159,7 @@ export class ModificationsPanelElement extends CrLitElement {
       if (result.errorMessage !== undefined) {
         this.trustStateErrorMessage = result.errorMessage;
       } else {
-        // TODO(crbug.com/40928765): localize
-        this.trustStateErrorMessage =
-            'There was an error saving the trust state change';
+        this.trustStateErrorMessage = this.i18n('trustStateErrorMessage');
       }
     }
     this.editControlsEnabled = true;

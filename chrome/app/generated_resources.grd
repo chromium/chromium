@@ -4247,6 +4247,24 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CERT_INFO_CONSTRAINTS_LABEL" desc="Label of the section displaying constraints restricting the usage of the certificate.">
           Constraints
         </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_LABEL" desc="Label of the section allowing users to add constraints restricting the usage of the certificate.">
+          Add Constraints
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_BUTTON_LABEL" desc="Label of the button users click to add a constraint restricting the usage of the certificate.">
+          Add
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_PLACEHOLDER" desc="Placeholder text for the Add constraint input field informing users what they can enter as a constraint.">
+          DNS or CIDR constraint
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINT_ERROR_MESSAGE" desc="Error text when an error has prevented a constraint from being added to the certificate.">
+          There was an error adding the constraint
+        </message>
+        <message name="IDS_CERT_INFO_DELETE_CONSTRAINT_ERROR_MESSAGE" desc="Error text when an error has prevented a constraint from being deleted to the certificate.">
+          There was an error deleting the constraint
+        </message>
+        <message name="IDS_CERT_INFO_TRUST_STATE_ERROR_MESSAGE" desc="Error text when an error has prevented a change to the trust state for a certificate.">
+          There was an error saving the trust state change
+        </message>
         <message name="IDS_CERT_USAGE_SSL_CLIENT" desc="The description of a certificate that is verified for use as an SSL client">
           SSL Client Certificate
         </message>
