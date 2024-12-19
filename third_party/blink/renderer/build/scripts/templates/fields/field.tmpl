@@ -166,6 +166,14 @@ const {{field.type_name}}&
 {%- endif %}
 {% endmacro %}
 
+{% macro compare_expr(wrapper_pointer_name, expr, other_expr) %}
+{% if wrapper_pointer_name -%}
+  base::ValuesEquivalent({{expr}}, {{other_expr}})
+{%- else -%}
+  {{expr}} == {{other_expr}}
+{%- endif %}
+{% endmacro %}
+
 {# Given a group and a list of fields to compare, this generates a set of
    equality comparisons on those fields. The generated comparisons take
    advantage of group sharing. #}
@@ -196,13 +204,15 @@ const {{field.type_name}}&
 {% endfor %}
 // Group: {{group.name}}
 {% for field in group.fields|rejectattr("custom_compare")|select("in", fields_to_compare) -%}
-  if (!({{compare(field.wrapper_pointer_name, getter_expression(field), "o")}})) {
-    DebugDiff d;
-    d.field = DebugField::{{field.name}};
-    d.actual = DebugStringForField({{getter_expression(field)}});
-    d.correct = DebugStringForField(o.{{getter_expression(field)}});
-    diff.push_back(std::move(d));
-  }
+const auto& {{field.name}}_expr = {{getter_expression(field)}};
+const auto& o_{{field.name}}_expr = o.{{getter_expression(field)}};
+if (!({{compare_expr(field.wrapper_pointer_name, field.name + "_expr", "o_" + field.name + "_expr")}})) {
+  DebugDiff d;
+  d.field = DebugField::{{field.name}};
+  d.actual = DebugStringForField({{field.name}}_expr);
+  d.correct = DebugStringForField(o_{{field.name}}_expr);
+  diff.push_back(std::move(d));
+}
 {% endfor %}
 {% endmacro %}
 
