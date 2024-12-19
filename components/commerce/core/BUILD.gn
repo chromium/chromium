@@ -8,13 +8,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-source_set("public") {
-  sources = [
-    "discount_consent_handler.h",
-    "shopping_prompt.h",
-  ]
-}
-
 source_set("commerce_info_cache") {
   sources = [
     "commerce_info_cache.cc",

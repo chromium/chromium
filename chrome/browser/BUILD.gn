@@ -4298,7 +4298,6 @@ static_library("browser") {
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:discounts_db_content_proto",
       "//components/commerce/core:proto",
-      "//components/commerce/core:public",
       "//components/commerce/core/mojom:mojo_bindings",
       "//components/constrained_window",
       "//components/endpoint_fetcher:endpoint_fetcher",
