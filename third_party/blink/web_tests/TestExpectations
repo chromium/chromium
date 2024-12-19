@@ -3761,7 +3761,7 @@ crbug.com/343338108 external/wpt/webdriver/tests/bidi/input/perform_actions/inva
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/perform_actions/invalid.py [ Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/invalid.py [ Timeout ]
+crbug.com/385032709 external/wpt/webdriver/tests/bidi/network/continue_response/invalid.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_with_auth/action.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/invalid.py [ Failure Timeout ]
