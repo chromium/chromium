@@ -156,7 +156,6 @@ class AuctionDownloaderTest
     return error_.value_or("Not an error.");
   }
 
- protected:
   void DownloadCompleteCallback(std::unique_ptr<std::string> body,
                                 scoped_refptr<net::HttpResponseHeaders> headers,
                                 std::optional<std::string> error) {
@@ -169,7 +168,9 @@ class AuctionDownloaderTest
     run_loop_->Quit();
   }
 
-  base::test::TaskEnvironment task_environment_;
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   GURL url_ = GURL("https://url.test/script.js");
 
@@ -257,13 +258,30 @@ TEST_P(AuctionDownloaderTest, HttpError) {
 }
 
 TEST_P(AuctionDownloaderTest, Timeout) {
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, kAllowFledgeHeader,
-              net::HTTP_REQUEST_TIMEOUT);
-  EXPECT_FALSE(RunRequest());
+  // Set up and start the downloader inline, since can't use RunRequest() in
+  // this test.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  AuctionDownloader downloader(
+      &url_loader_factory_, url_, download_mode(), mime_type_,
+      /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
+      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
+                     base::Unretained(this)),
+      /*test_network_events_delegate=*/nullptr);
+
+  // Run until just before the timeout duration. The request should not time
+  // out.
+  constexpr base::TimeDelta kTinyTime = base::Milliseconds(1);
+  task_environment_.FastForwardBy(AuctionDownloader::kRequestTimeout -
+                                  kTinyTime);
+  EXPECT_FALSE(run_loop_->AnyQuitCalled());
+
+  // Wait until the timeout duration has passed. The request should have timed
+  // out.
+  task_environment_.FastForwardBy(kTinyTime);
+  EXPECT_TRUE(run_loop_->AnyQuitCalled());
   EXPECT_EQ(
-      "Failed to load https://url.test/script.js HTTP status = 408 Request "
-      "Timeout.",
+      "Failed to load https://url.test/script.js error = net::ERR_TIMED_OUT.",
       last_error_msg());
 }
 

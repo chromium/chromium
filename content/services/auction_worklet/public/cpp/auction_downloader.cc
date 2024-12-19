@@ -266,7 +266,7 @@ AuctionDownloader::AuctionDownloader(
   simple_url_loader_->SetOnResponseStartedCallback(base::BindRepeating(
       &AuctionDownloader::OnResponseStarted, base::Unretained(this)));
 
-  simple_url_loader_->SetTimeoutDuration(base::Seconds(30));
+  simple_url_loader_->SetTimeoutDuration(kRequestTimeout);
 
   // TODO(mmenke): Consider limiting the size of response bodies.
   if (download_mode == DownloadMode::kActualDownload) {

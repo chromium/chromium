@@ -430,6 +430,8 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
+  simple_url_loader_->SetTimeoutDuration(
+      auction_worklet::AuctionDownloader::kRequestTimeout);
   simple_url_loader_->AttachStringForUpload(
       maybe_ciphertext_request_body->EncapsulateAndSerialize(),
       kRequestMediaType);

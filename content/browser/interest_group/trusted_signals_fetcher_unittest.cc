@@ -34,6 +34,7 @@
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -266,7 +267,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
         url_loader_factory_.get(), kDefaultMainFrameOrigin,
-        network_partition_nonce, GetScriptOrigin(), url,
+        network_partition_nonce_, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -296,7 +297,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
         url_loader_factory_.get(), kDefaultMainFrameOrigin,
-        network_partition_nonce, GetScriptOrigin(), url,
+        network_partition_nonce_, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -565,7 +566,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
   std::string response_mime_type_{TrustedSignalsFetcher::kResponseMediaType};
   net::HttpStatusCode response_status_code_{net::HTTP_OK};
 
-  base::UnguessableToken network_partition_nonce =
+  base::UnguessableToken network_partition_nonce_ =
       base::UnguessableToken::Create();
 
   base::Lock lock_;
@@ -2357,7 +2358,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, kDefaultMainFrameOrigin, network_partition_nonce,
+      &url_loader_factory, kDefaultMainFrameOrigin, network_partition_nonce_,
       GetScriptOrigin(), TrustedBiddingSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -2379,7 +2380,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
   EXPECT_TRUE(isolation_info.IsEqualForTesting(net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, kDefaultMainFrameOrigin,
       kDefaultMainFrameOrigin, net::SiteForCookies(),
-      network_partition_nonce)));
+      network_partition_nonce_)));
 }
 
 // Tests that the correct IsolationInfo is used.
@@ -2393,7 +2394,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchScoringSignals(
-      &url_loader_factory, kDefaultMainFrameOrigin, network_partition_nonce,
+      &url_loader_factory, kDefaultMainFrameOrigin, network_partition_nonce_,
       GetScriptOrigin(), TrustedScoringSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -2415,7 +2416,72 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
   EXPECT_TRUE(isolation_info.IsEqualForTesting(net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, kDefaultMainFrameOrigin,
       kDefaultMainFrameOrigin, net::SiteForCookies(),
-      network_partition_nonce)));
+      network_partition_nonce_)));
+}
+
+// Test that the request timeout (which should use the value of
+// AuctionDownloader::kRequestTimeout) is respected. Unfortunately, can't use
+// MOCK_TIME with TrustedSignalsFetcherTest test fixture, since the embedded
+// test server uses its own independent thread, so the task environment may
+// think it's idle and automatically advance the time while spinning the message
+// loop. Even if it did use a task-environment thread, though, the platform
+// socket APIs may not guarantee that socket operations occur before the task
+// environment notices it has no pending events, and thus advances the time.
+TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // URLLoaderFactory that's never configured to return any results, so requests
+  // to it hang.
+  network::TestURLLoaderFactory url_loader_factory;
+
+  // None of the parameters for this test actually matter, apart from needing to
+  // be valid.
+  const GURL kSignalsUrl("https://a.test/");
+  const url::Origin kSignalsOrigin = url::Origin::Create(kSignalsUrl);
+  const std::set<std::string> kInterestGroupNames{"group1"};
+  const std::set<std::string> kKeys;
+  const base::Value::Dict kAdditionalParams;
+  std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions;
+  bidding_partitions.emplace_back(
+      /*partition_id=*/0, &kInterestGroupNames, &kKeys, &kAdditionalParams);
+  std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
+      bidding_signals_request;
+  bidding_signals_request.emplace(0, std::move(bidding_partitions));
+
+  // Start a request that should complete with a timeout error.
+  base::RunLoop run_loop;
+  TrustedSignalsFetcher::SignalsFetchResult out;
+  TrustedSignalsFetcher trusted_signals_fetcher;
+  trusted_signals_fetcher.FetchBiddingSignals(
+      &url_loader_factory, /*main_frame_origin=*/kSignalsOrigin,
+      /*network_partition_nonce=*/base::UnguessableToken::Create(),
+      kSignalsOrigin, kSignalsUrl,
+      BiddingAndAuctionServerKey{
+          std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                      sizeof(kTestPublicKey)),
+          kKeyId},
+      bidding_signals_request,
+      base::BindLambdaForTesting(
+          [&](TrustedSignalsFetcher::SignalsFetchResult result) {
+            ASSERT_FALSE(result.has_value());
+            EXPECT_EQ(result.error(),
+                      base::StringPrintf(
+                          "Failed to load %s error = net::ERR_TIMED_OUT.",
+                          kSignalsUrl.spec().c_str()));
+            run_loop.Quit();
+          }));
+  constexpr base::TimeDelta kTinyTime = base::Milliseconds(1);
+
+  // Run until just before the timeout duration. The request should not time
+  // out.
+  task_environment.FastForwardBy(
+      auction_worklet::AuctionDownloader::kRequestTimeout - kTinyTime);
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+
+  // Wait until the timeout duration has passed. The request should have timed
+  // out.
+  task_environment.FastForwardBy(kTinyTime);
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
 }
 
 }  // namespace

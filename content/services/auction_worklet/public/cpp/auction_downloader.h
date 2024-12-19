@@ -67,6 +67,9 @@ class CONTENT_EXPORT AuctionDownloader {
   // longed than this length.
   static constexpr size_t kMaxErrorUrlLength = 10 * 1024;
 
+  // Timeout for network requests it makes.
+  static constexpr base::TimeDelta kRequestTimeout = base::Seconds(30);
+
   // This handles how network requests get logged to devtools.
   class CONTENT_EXPORT NetworkEventsDelegate {
    public:
