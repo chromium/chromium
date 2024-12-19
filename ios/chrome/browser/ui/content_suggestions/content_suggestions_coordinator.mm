@@ -727,7 +727,7 @@ using segmentation_platform::TipIdentifier;
     case TipIdentifier::kSavePasswords:
     case TipIdentifier::kAutofillPasswords: {
       _tipsPasswordsCoordinator = [[TipsPasswordsCoordinator alloc]
-          initWithBaseViewController:self.viewController
+          initWithBaseViewController:self.magicStackCollectionView
                              browser:self.browser
                           identifier:_tipsMediator.state.identifier];
 
@@ -962,7 +962,7 @@ using segmentation_platform::TipIdentifier;
 
   _notificationsOptInAlertCoordinator =
       [[NotificationsOptInAlertCoordinator alloc]
-          initWithBaseViewController:self.viewController
+          initWithBaseViewController:self.magicStackCollectionView
                              browser:self.browser];
 
   _notificationsOptInAlertCoordinator.delegate = self;
@@ -1222,7 +1222,7 @@ using segmentation_platform::TipIdentifier;
 
   _defaultBrowserPromoCoordinator =
       [[SetUpListDefaultBrowserPromoCoordinator alloc]
-              initWithBaseViewController:self.viewController
+              initWithBaseViewController:self.magicStackCollectionView
                                  browser:self.browser
                              application:[UIApplication sharedApplication]
                      segmentationService:_segmentationService
@@ -1255,7 +1255,7 @@ using segmentation_platform::TipIdentifier;
              completion:completion];
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
               showSignin:command
-      baseViewController:self.viewController];
+      baseViewController:self.magicStackCollectionView];
 }
 
 // Shows the Credential Provider Promo using the SetUpList trigger.
@@ -1273,7 +1273,7 @@ using segmentation_platform::TipIdentifier;
   [_contentNotificationCoordinator stop];
   _contentNotificationCoordinator =
       [[SetUpListContentNotificationPromoCoordinator alloc]
-          initWithBaseViewController:[self viewController]
+          initWithBaseViewController:self.magicStackCollectionView
                              browser:self.browser
                          application:[UIApplication sharedApplication]];
   _contentNotificationCoordinator.delegate = self;
@@ -1283,7 +1283,7 @@ using segmentation_platform::TipIdentifier;
 - (void)showNotificationsOptInView {
   [_notificationsOptInCoordinator stop];
   _notificationsOptInCoordinator = [[NotificationsOptInCoordinator alloc]
-      initWithBaseViewController:[self viewController]
+      initWithBaseViewController:self.magicStackCollectionView
                          browser:self.browser];
   _notificationsOptInCoordinator.delegate = self;
   [_notificationsOptInCoordinator start];
@@ -1355,7 +1355,7 @@ using segmentation_platform::TipIdentifier;
 - (void)showPriceTrackingPromoAlertCoordinator {
   __weak ContentSuggestionsCoordinator* weakSelf = self;
   _priceTrackingPromoAlertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.viewController
+      initWithBaseViewController:self.magicStackCollectionView
                          browser:self.browser
                            title:
                                l10n_util::GetNSString(
@@ -1486,7 +1486,7 @@ using segmentation_platform::TipIdentifier;
 // Presents the parcel tracking alert modal.
 - (void)presentParcelTrackingAlertCoordinator {
   _parcelTrackingAlertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:self.viewController
+      initWithBaseViewController:self.magicStackCollectionView
                          browser:self.browser
                            title:
                                l10n_util::GetNSString(
