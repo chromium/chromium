@@ -85,11 +85,9 @@ static const char kTreeField[] = "tree";
 static const char kTypeField[] = "type";
 static const char kUrlField[] = "url";
 static const char kValueField[] = "value";
-static const char kWidgetsField[] = "widgets";
 static const char kApiTypeField[] = "apiType";
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-static const char kWidgetIdField[] = "widgetId";
 static const char kWidget[] = "widget";
 #endif
 
@@ -104,7 +102,6 @@ static const char kPDFPrinting[] = "pdfPrinting";
 static const char kScreenReader[] = "screenreader";
 static const char kShowOrRefreshTree[] = "showOrRefreshTree";
 static const char kText[] = "text";
-static const char kViewsAccessibility[] = "viewsAccessibility";
 static const char kWeb[] = "web";
 
 // Possible global flag values
@@ -179,19 +176,6 @@ base::Value::Dict BuildTargetDescriptor(Browser* browser) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-base::Value::Dict BuildTargetDescriptor(views::Widget* widget) {
-  base::Value::Dict widget_data;
-  widget_data.Set(kNameField, widget->widget_delegate()->GetWindowTitle());
-  widget_data.Set(kTypeField, kWidget);
-
-  // Use the Widget's root view ViewAccessibility's unique ID for lookup.
-  int id = widget->GetRootView()->GetViewAccessibility().GetUniqueId();
-  widget_data.Set(kWidgetIdField, id);
-  return widget_data;
-}
-#endif  // defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
 bool ShouldHandleAccessibilityRequestCallback(const std::string& path) {
   return path == kTargetsDataFile;
 }
@@ -230,10 +214,6 @@ void HandleAccessibilityRequestCallback(
 
   // The "pdfPrinting" flag is independent of the others.
   data.Set(kPDFPrinting, pdf_printing ? kOn : kOff);
-
-  // The "Top Level Widgets" section is only relevant if views accessibility is
-  // enabled.
-  data.Set(kViewsAccessibility, features::IsAccessibilityTreeForViewsEnabled());
 
   std::string pref_api_type =
       pref->GetString(prefs::kShownAccessibilityApiType);
@@ -309,19 +289,6 @@ void HandleAccessibilityRequestCallback(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   data.Set(kBrowsersField, std::move(browser_list));
-
-  base::Value::List widgets_list;
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (features::IsAccessibilityTreeForViewsEnabled()) {
-    views::WidgetAXTreeIDMap& manager_map =
-        views::WidgetAXTreeIDMap::GetInstance();
-    const std::vector<views::Widget*> widgets = manager_map.GetWidgets();
-    for (views::Widget* widget : widgets) {
-      widgets_list.Append(BuildTargetDescriptor(widget));
-    }
-  }
-#endif  // defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  data.Set(kWidgetsField, std::move(widgets_list));
 
   std::string json_string;
   base::JSONWriter::Write(data, &json_string);
@@ -753,31 +720,6 @@ void AccessibilityUIMessageHandler::RequestWidgetsTree(
   AddPropertyFilters(property_filters, allow_empty,
                      AXPropertyFilter::ALLOW_EMPTY);
   AddPropertyFilters(property_filters, deny, AXPropertyFilter::DENY);
-
-  if (features::IsAccessibilityTreeForViewsEnabled()) {
-    int widget_id = *data.FindInt(kWidgetIdField);
-    views::WidgetAXTreeIDMap& manager_map =
-        views::WidgetAXTreeIDMap::GetInstance();
-    const std::vector<views::Widget*> widgets = manager_map.GetWidgets();
-    for (views::Widget* widget : widgets) {
-      int current_id =
-          widget->GetRootView()->GetViewAccessibility().GetUniqueId();
-      if (current_id == widget_id) {
-        ui::AXTreeID tree_id = manager_map.GetWidgetTreeID(widget);
-        DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
-        std::unique_ptr<ui::AXTreeFormatter> formatter(
-            content::AXInspectFactory::CreateBlinkFormatter());
-        std::string tree_dump =
-            formatter->DumpInternalAccessibilityTree(tree_id, property_filters);
-
-        base::Value::Dict result(BuildTargetDescriptor(widget));
-        result.Set(kTreeField, tree_dump);
-        AllowJavascript();
-        FireWebUIListener(request_type, result);
-        return;
-      }
-    }
-  }
 
   base::Value::Dict result;
   result.Set(kTypeField, kWidget);

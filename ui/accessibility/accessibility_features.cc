@@ -98,14 +98,6 @@ bool IsAccessibilityRestrictiveIA2AXModesEnabled() {
       ::features::kEnableAccessibilityRestrictiveIA2AXModes);
 }
 
-BASE_FEATURE(kEnableAccessibilityTreeForViews,
-             "AccessibilityTreeForViews",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityTreeForViewsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableAccessibilityTreeForViews);
-}
-
 BASE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis,
              "ExtensionManifestV3NetworkSpeechSynthesis",
              base::FEATURE_DISABLED_BY_DEFAULT);
