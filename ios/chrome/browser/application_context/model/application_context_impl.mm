@@ -253,6 +253,8 @@ void ApplicationContextImpl::StartTearDown() {
   application_breadcrumbs_logger_.reset();
 
   ios_chrome_io_thread_->NetworkTearDown();
+
+  additional_features_controller_->ShutDown();
 }
 
 void ApplicationContextImpl::PostDestroyThreads() {
