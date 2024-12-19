@@ -1710,7 +1710,7 @@
 <translation id="219008588003277019">स्वदेशी ग्राहक मोड्युल: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(खालि)</translation>
 <translation id="2190967441465539539">क्यामेरा र माइक्रोफोन एक्सेस गर्न मिल्दैन</translation>
-<translation id="2191754378957563929">सक्रिय छ</translation>
+<translation id="2191754378957563929">अन छ</translation>
 <translation id="2192505247865591433">बाट:</translation>
 <translation id="219283042927675668">समूहमा भएका ट्याबहरू</translation>
 <translation id="2192881772486983655"><ph name="THIRD_PARTY_NTP_MANAGER" /> ले तपाईंको नयाँ ट्याब नामक पेज व्यवस्थापन गरिरहेको छ, नयाँ ट्याबमा खुल्छ</translation>
@@ -5612,7 +5612,7 @@
 <translation id="4995676741161760215">एक्स्टेन्सन अन छ</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> को कुनै पनि VM भेटिएन}=1{<ph name="VM_TYPE" /> को एउटा VM भेटियो: <ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> का {NUM_VMS} वटा VM भेटिए: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">कुनै पनि इन्टरनेट जडान छैन।</translation>
-<translation id="4998430619171209993">सक्रिय छ</translation>
+<translation id="4998430619171209993">अन छ</translation>
 <translation id="4999804342505941663">'बाधा नपुऱ्याउनुहोस्' मोड अन गर्नुहोस्</translation>
 <translation id="5001526427543320409">तेस्रो पक्षीय कुकीहरू</translation>
 <translation id="5003993274120026347">अर्को वाक्य</translation>
@@ -7984,7 +7984,7 @@
 <translation id="6761209758867628753">टुल: मलाई लेख्न मद्दत गर्नुहोस्</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">डिभाइसमा साइट डेटा सेभ गर्ने अनुमति दिइएको छैन</translation>
-<translation id="6762833852331690540">सक्रिय छ</translation>
+<translation id="6762833852331690540">अन छ</translation>
 <translation id="6762861159308991328">तपाईं एपसम्बन्धी सेटिङमा गई लिंकहरू कसरी खुल्छन् भन्ने कुरा परिवर्तन गर्न सक्नुहुन्छ</translation>
 <translation id="6764633064754857889">लिंकको प्रिभ्यू देखाउनुहोस्</translation>
 <translation id="676560328519657314">Google Pay मा रहेका तपाईंका भुक्तानी विधिहरू</translation>
