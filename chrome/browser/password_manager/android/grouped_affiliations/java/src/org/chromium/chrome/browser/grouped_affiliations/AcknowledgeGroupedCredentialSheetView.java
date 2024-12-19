@@ -136,8 +136,7 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
 
     @Override
     public @NonNull String getSheetContentDescription(Context context) {
-        // TODO(crbug.com/372635361): Append web site to the title.
-        return context.getString(R.string.ack_grouped_cred_sheet_title);
+        return context.getString(R.string.ack_grouped_cred_sheet_title, mCredentialHostname);
     }
 
     @Override
@@ -149,15 +148,12 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/372635361): Append web site to the title.
-        return R.string.ack_grouped_cred_sheet_title;
+        return R.string.ack_grouped_cred_sheet_opened;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/372635361): Return  ack_grouped_cred_sheet_accepted or
-        // ack_grouped_cred_sheet_rejected here depending on user choice.
-        return R.string.ack_grouped_cred_sheet_accepted;
+        return R.string.ack_grouped_cred_sheet_closed;
     }
 
     @Override
