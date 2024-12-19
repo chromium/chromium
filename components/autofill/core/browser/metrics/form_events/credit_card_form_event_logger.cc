@@ -377,6 +377,10 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     }
   }
 
+  FieldType field_type = field.Type().GetStorableType();
+  field_types_with_shown_suggestions_.erase(field_type);
+  field_types_with_accepted_suggestions_.insert(field_type);
+
   if (!has_logged_form_filling_suggestion_filled_) {
     has_logged_form_filling_suggestion_filled_ = true;
     logged_suggestion_filled_was_masked_server_card_ =

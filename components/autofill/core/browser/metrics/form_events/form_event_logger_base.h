@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -82,6 +83,11 @@ class FormEventLoggerBase {
 
   FormInteractionsUkmLogger::FormEventSet GetFormEvents(
       FormGlobalId form_global_id);
+
+  static int
+  GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
+      FieldType field_type,
+      bool suggestion_accepted);
 
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
@@ -233,6 +239,17 @@ class FormEventLoggerBase {
 
   // Form types of field-by-field filling operations.
   DenseSet<FormTypeNameForLogging> field_by_field_filled_form_types_;
+
+  // A list of field types for which suggestions were shown and not accepted so
+  // far. At any time, no field should be in both
+  // `field_types_with_shown_suggestions_` and
+  // `field_types_with_accepted_suggestions_`.
+  FieldTypeSet field_types_with_shown_suggestions_;
+
+  // A list of field types for which suggestions were accepted. At any time, no
+  // field should be in both `field_types_with_shown_suggestions_` and
+  // `field_types_with_accepted_suggestions_`.
+  FieldTypeSet field_types_with_accepted_suggestions_;
 
   // A map of the form's global id and its form events.
   std::map<FormGlobalId, FormInteractionsUkmLogger::FormEventSet>

@@ -4785,6 +4785,212 @@ Called by update_autofill_enums.py.-->
   <int value="8" label="LeftEmpty"/>
 </enum>
 
+<enum name="FillingAcceptanceByFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0" label="NO_SERVER_DATA: Ignored"/>
+  <int value="1" label="NO_SERVER_DATA: Accepted"/>
+  <int value="4" label="UNKNOWN_TYPE: Ignored"/>
+  <int value="5" label="UNKNOWN_TYPE: Accepted"/>
+  <int value="8" label="EMPTY_TYPE: Ignored"/>
+  <int value="9" label="EMPTY_TYPE: Accepted"/>
+  <int value="12" label="NAME_FIRST: Ignored"/>
+  <int value="13" label="NAME_FIRST: Accepted"/>
+  <int value="16" label="NAME_MIDDLE: Ignored"/>
+  <int value="17" label="NAME_MIDDLE: Accepted"/>
+  <int value="20" label="NAME_LAST: Ignored"/>
+  <int value="21" label="NAME_LAST: Accepted"/>
+  <int value="24" label="NAME_MIDDLE_INITIAL: Ignored"/>
+  <int value="25" label="NAME_MIDDLE_INITIAL: Accepted"/>
+  <int value="28" label="NAME_FULL: Ignored"/>
+  <int value="29" label="NAME_FULL: Accepted"/>
+  <int value="32" label="NAME_SUFFIX: Ignored"/>
+  <int value="33" label="NAME_SUFFIX: Accepted"/>
+  <int value="36" label="EMAIL_ADDRESS: Ignored"/>
+  <int value="37" label="EMAIL_ADDRESS: Accepted"/>
+  <int value="40" label="PHONE_HOME_NUMBER: Ignored"/>
+  <int value="41" label="PHONE_HOME_NUMBER: Accepted"/>
+  <int value="44" label="PHONE_HOME_CITY_CODE: Ignored"/>
+  <int value="45" label="PHONE_HOME_CITY_CODE: Accepted"/>
+  <int value="48" label="PHONE_HOME_COUNTRY_CODE: Ignored"/>
+  <int value="49" label="PHONE_HOME_COUNTRY_CODE: Accepted"/>
+  <int value="52" label="PHONE_HOME_CITY_AND_NUMBER: Ignored"/>
+  <int value="53" label="PHONE_HOME_CITY_AND_NUMBER: Accepted"/>
+  <int value="56" label="PHONE_HOME_WHOLE_NUMBER: Ignored"/>
+  <int value="57" label="PHONE_HOME_WHOLE_NUMBER: Accepted"/>
+  <int value="120" label="ADDRESS_HOME_LINE1: Ignored"/>
+  <int value="121" label="ADDRESS_HOME_LINE1: Accepted"/>
+  <int value="124" label="ADDRESS_HOME_LINE2: Ignored"/>
+  <int value="125" label="ADDRESS_HOME_LINE2: Accepted"/>
+  <int value="128" label="ADDRESS_HOME_APT_NUM: Ignored"/>
+  <int value="129" label="ADDRESS_HOME_APT_NUM: Accepted"/>
+  <int value="132" label="ADDRESS_HOME_CITY: Ignored"/>
+  <int value="133" label="ADDRESS_HOME_CITY: Accepted"/>
+  <int value="136" label="ADDRESS_HOME_STATE: Ignored"/>
+  <int value="137" label="ADDRESS_HOME_STATE: Accepted"/>
+  <int value="140" label="ADDRESS_HOME_ZIP: Ignored"/>
+  <int value="141" label="ADDRESS_HOME_ZIP: Accepted"/>
+  <int value="144" label="ADDRESS_HOME_COUNTRY: Ignored"/>
+  <int value="145" label="ADDRESS_HOME_COUNTRY: Accepted"/>
+  <int value="204" label="CREDIT_CARD_NAME_FULL: Ignored"/>
+  <int value="205" label="CREDIT_CARD_NAME_FULL: Accepted"/>
+  <int value="208" label="CREDIT_CARD_NUMBER: Ignored"/>
+  <int value="209" label="CREDIT_CARD_NUMBER: Accepted"/>
+  <int value="212" label="CREDIT_CARD_EXP_MONTH: Ignored"/>
+  <int value="213" label="CREDIT_CARD_EXP_MONTH: Accepted"/>
+  <int value="216" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Ignored"/>
+  <int value="217" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Accepted"/>
+  <int value="220" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Ignored"/>
+  <int value="221" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Accepted"/>
+  <int value="224" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Ignored"/>
+  <int value="225" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Accepted"/>
+  <int value="228" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Ignored"/>
+  <int value="229" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Accepted"/>
+  <int value="232" label="CREDIT_CARD_TYPE: Ignored"/>
+  <int value="233" label="CREDIT_CARD_TYPE: Accepted"/>
+  <int value="236" label="CREDIT_CARD_VERIFICATION_CODE: Ignored"/>
+  <int value="237" label="CREDIT_CARD_VERIFICATION_CODE: Accepted"/>
+  <int value="240" label="COMPANY_NAME: Ignored"/>
+  <int value="241" label="COMPANY_NAME: Accepted"/>
+  <int value="244" label="FIELD_WITH_DEFAULT_VALUE: Ignored"/>
+  <int value="245" label="FIELD_WITH_DEFAULT_VALUE: Accepted"/>
+  <int value="292" label="MERCHANT_EMAIL_SIGNUP: Ignored"/>
+  <int value="293" label="MERCHANT_EMAIL_SIGNUP: Accepted"/>
+  <int value="296" label="MERCHANT_PROMO_CODE: Ignored"/>
+  <int value="297" label="MERCHANT_PROMO_CODE: Accepted"/>
+  <int value="300" label="PASSWORD: Ignored"/>
+  <int value="301" label="PASSWORD: Accepted"/>
+  <int value="304" label="ACCOUNT_CREATION_PASSWORD: Ignored"/>
+  <int value="305" label="ACCOUNT_CREATION_PASSWORD: Accepted"/>
+  <int value="308" label="ADDRESS_HOME_STREET_ADDRESS: Ignored"/>
+  <int value="309" label="ADDRESS_HOME_STREET_ADDRESS: Accepted"/>
+  <int value="316" label="ADDRESS_HOME_SORTING_CODE: Ignored"/>
+  <int value="317" label="ADDRESS_HOME_SORTING_CODE: Accepted"/>
+  <int value="324" label="ADDRESS_HOME_DEPENDENT_LOCALITY: Ignored"/>
+  <int value="325" label="ADDRESS_HOME_DEPENDENT_LOCALITY: Accepted"/>
+  <int value="332" label="ADDRESS_HOME_LINE3: Ignored"/>
+  <int value="333" label="ADDRESS_HOME_LINE3: Accepted"/>
+  <int value="340" label="NOT_ACCOUNT_CREATION_PASSWORD: Ignored"/>
+  <int value="341" label="NOT_ACCOUNT_CREATION_PASSWORD: Accepted"/>
+  <int value="344" label="USERNAME: Ignored"/>
+  <int value="345" label="USERNAME: Accepted"/>
+  <int value="348" label="USERNAME_AND_EMAIL_ADDRESS: Ignored"/>
+  <int value="349" label="USERNAME_AND_EMAIL_ADDRESS: Accepted"/>
+  <int value="352" label="NEW_PASSWORD: Ignored"/>
+  <int value="353" label="NEW_PASSWORD: Accepted"/>
+  <int value="356" label="PROBABLY_NEW_PASSWORD: Ignored"/>
+  <int value="357" label="PROBABLY_NEW_PASSWORD: Accepted"/>
+  <int value="360" label="NOT_NEW_PASSWORD: Ignored"/>
+  <int value="361" label="NOT_NEW_PASSWORD: Accepted"/>
+  <int value="364" label="CREDIT_CARD_NAME_FIRST: Ignored"/>
+  <int value="365" label="CREDIT_CARD_NAME_FIRST: Accepted"/>
+  <int value="368" label="CREDIT_CARD_NAME_LAST: Ignored"/>
+  <int value="369" label="CREDIT_CARD_NAME_LAST: Accepted"/>
+  <int value="372" label="PHONE_HOME_EXTENSION: Ignored"/>
+  <int value="373" label="PHONE_HOME_EXTENSION: Accepted"/>
+  <int value="380" label="CONFIRMATION_PASSWORD: Ignored"/>
+  <int value="381" label="CONFIRMATION_PASSWORD: Accepted"/>
+  <int value="384" label="AMBIGUOUS_TYPE: Ignored"/>
+  <int value="385" label="AMBIGUOUS_TYPE: Accepted"/>
+  <int value="388" label="SEARCH_TERM: Ignored"/>
+  <int value="389" label="SEARCH_TERM: Accepted"/>
+  <int value="392" label="PRICE: Ignored"/>
+  <int value="393" label="PRICE: Accepted"/>
+  <int value="396" label="NOT_PASSWORD: Ignored"/>
+  <int value="397" label="NOT_PASSWORD: Accepted"/>
+  <int value="400" label="SINGLE_USERNAME: Ignored"/>
+  <int value="401" label="SINGLE_USERNAME: Accepted"/>
+  <int value="404" label="NOT_USERNAME: Ignored"/>
+  <int value="405" label="NOT_USERNAME: Accepted"/>
+  <int value="412" label="ADDRESS_HOME_STREET_NAME: Ignored"/>
+  <int value="413" label="ADDRESS_HOME_STREET_NAME: Accepted"/>
+  <int value="416" label="ADDRESS_HOME_HOUSE_NUMBER: Ignored"/>
+  <int value="417" label="ADDRESS_HOME_HOUSE_NUMBER: Accepted"/>
+  <int value="420" label="ADDRESS_HOME_SUBPREMISE: Ignored"/>
+  <int value="421" label="ADDRESS_HOME_SUBPREMISE: Accepted"/>
+  <int value="424" label="ADDRESS_HOME_OTHER_SUBUNIT: Ignored"/>
+  <int value="425" label="ADDRESS_HOME_OTHER_SUBUNIT: Accepted"/>
+  <int value="428" label="NAME_LAST_FIRST: Ignored"/>
+  <int value="429" label="NAME_LAST_FIRST: Accepted"/>
+  <int value="432" label="NAME_LAST_CONJUNCTION: Ignored"/>
+  <int value="433" label="NAME_LAST_CONJUNCTION: Accepted"/>
+  <int value="436" label="NAME_LAST_SECOND: Ignored"/>
+  <int value="437" label="NAME_LAST_SECOND: Accepted"/>
+  <int value="440" label="NAME_HONORIFIC_PREFIX: Ignored"/>
+  <int value="441" label="NAME_HONORIFIC_PREFIX: Accepted"/>
+  <int value="456" label="ADDRESS_HOME_ADDRESS: Ignored"/>
+  <int value="457" label="ADDRESS_HOME_ADDRESS: Accepted"/>
+  <int value="460" label="ADDRESS_HOME_ADDRESS_WITH_NAME: Ignored"/>
+  <int value="461" label="ADDRESS_HOME_ADDRESS_WITH_NAME: Accepted"/>
+  <int value="464" label="ADDRESS_HOME_FLOOR: Ignored"/>
+  <int value="465" label="ADDRESS_HOME_FLOOR: Accepted"/>
+  <int value="484" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Ignored"/>
+  <int value="485" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Accepted"/>
+  <int value="488"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Ignored"/>
+  <int value="489"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Accepted"/>
+  <int value="492" label="PHONE_HOME_NUMBER_PREFIX: Ignored"/>
+  <int value="493" label="PHONE_HOME_NUMBER_PREFIX: Accepted"/>
+  <int value="496" label="PHONE_HOME_NUMBER_SUFFIX: Ignored"/>
+  <int value="497" label="PHONE_HOME_NUMBER_SUFFIX: Accepted"/>
+  <int value="500" label="IBAN_VALUE: Ignored"/>
+  <int value="501" label="IBAN_VALUE: Accepted"/>
+  <int value="504" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Ignored"/>
+  <int value="505" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Accepted"/>
+  <int value="512" label="NUMERIC_QUANTITY: Ignored"/>
+  <int value="513" label="NUMERIC_QUANTITY: Accepted"/>
+  <int value="516" label="ONE_TIME_CODE: Ignored"/>
+  <int value="517" label="ONE_TIME_CODE: Accepted"/>
+  <int value="532" label="DELIVERY_INSTRUCTIONS: Ignored"/>
+  <int value="533" label="DELIVERY_INSTRUCTIONS: Accepted"/>
+  <int value="540" label="ADDRESS_HOME_OVERFLOW: Ignored"/>
+  <int value="541" label="ADDRESS_HOME_OVERFLOW: Accepted"/>
+  <int value="544" label="ADDRESS_HOME_LANDMARK: Ignored"/>
+  <int value="545" label="ADDRESS_HOME_LANDMARK: Accepted"/>
+  <int value="560" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Ignored"/>
+  <int value="561" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Accepted"/>
+  <int value="564" label="ADDRESS_HOME_ADMIN_LEVEL2: Ignored"/>
+  <int value="565" label="ADDRESS_HOME_ADMIN_LEVEL2: Accepted"/>
+  <int value="568" label="ADDRESS_HOME_STREET_LOCATION: Ignored"/>
+  <int value="569" label="ADDRESS_HOME_STREET_LOCATION: Accepted"/>
+  <int value="572" label="ADDRESS_HOME_BETWEEN_STREETS: Ignored"/>
+  <int value="573" label="ADDRESS_HOME_BETWEEN_STREETS: Accepted"/>
+  <int value="576" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Ignored"/>
+  <int value="577" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Accepted"/>
+  <int value="580" label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Ignored"/>
+  <int value="581" label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Accepted"/>
+  <int value="584" label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Ignored"/>
+  <int value="585" label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Accepted"/>
+  <int value="600"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Ignored"/>
+  <int value="601"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Accepted"/>
+  <int value="604" label="ADDRESS_HOME_BETWEEN_STREETS_1: Ignored"/>
+  <int value="605" label="ADDRESS_HOME_BETWEEN_STREETS_1: Accepted"/>
+  <int value="608" label="ADDRESS_HOME_BETWEEN_STREETS_2: Ignored"/>
+  <int value="609" label="ADDRESS_HOME_BETWEEN_STREETS_2: Accepted"/>
+  <int value="612" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Ignored"/>
+  <int value="613" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Accepted"/>
+  <int value="616" label="SINGLE_USERNAME_FORGOT_PASSWORD: Ignored"/>
+  <int value="617" label="SINGLE_USERNAME_FORGOT_PASSWORD: Accepted"/>
+  <int value="624" label="ADDRESS_HOME_APT: Ignored"/>
+  <int value="625" label="ADDRESS_HOME_APT: Accepted"/>
+  <int value="628" label="ADDRESS_HOME_APT_TYPE: Ignored"/>
+  <int value="629" label="ADDRESS_HOME_APT_TYPE: Accepted"/>
+  <int value="640" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Ignored"/>
+  <int value="641" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Accepted"/>
+  <int value="648" label="IMPROVED_PREDICTION: Ignored"/>
+  <int value="649" label="IMPROVED_PREDICTION: Accepted"/>
+  <int value="652" label="ALTERNATIVE_FULL_NAME: Ignored"/>
+  <int value="653" label="ALTERNATIVE_FULL_NAME: Accepted"/>
+  <int value="656" label="ALTERNATIVE_GIVEN_NAME: Ignored"/>
+  <int value="657" label="ALTERNATIVE_GIVEN_NAME: Accepted"/>
+  <int value="660" label="ALTERNATIVE_FAMILY_NAME: Ignored"/>
+  <int value="661" label="ALTERNATIVE_FAMILY_NAME: Accepted"/>
+</enum>
+
 <enum name="IbanCountry">
   <int value="0" label="Unsupport"/>
   <int value="1" label="AD (Andorra)"/>

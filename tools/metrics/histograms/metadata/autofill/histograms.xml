@@ -3415,6 +3415,23 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType"
+    enum="FillingAcceptanceByFieldType" expires_after="2025-12-12">
+  <owner>theocristea@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Emitted for submitted forms. For each field type, records whether the user
+    accepted a suggestion or not from a field with that type, provided that a
+    suggestion was shown for such a field.
+
+    &quot;Foo: Accepted&quot; means that regardless how many times the user
+    ignored suggestions of fields with type &quot;Foo&quot;, they accepted a
+    suggestion on such a field at least once before submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.KeyMetrics.FillingAcceptance.{FormType}"
     enum="BooleanAutofillFillingAcceptance" expires_after="2025-06-15">
   <owner>battre@chromium.org</owner>

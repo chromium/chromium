@@ -58,7 +58,7 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
        CreateTestFormField("Street", "street", "",
                            FormControlType::kInputText)});
   std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
-                                        ADDRESS_HOME_STREET_ADDRESS};
+                                        ADDRESS_HOME_LINE1};
 
   base::HistogramTester histogram_tester;
 
@@ -79,17 +79,17 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
   // Simulate interacting with the form.
   if (user_interacted_with_form) {
     autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
+                                                form.fields()[2].global_id());
   }
 
   // Simulate seeing a suggestion.
   if (user_saw_suggestion) {
-    DidShowAutofillSuggestions(form);
+    DidShowAutofillSuggestions(form, /*field_index=*/2);
   }
 
   // Simulate filling the form.
   if (user_accepted_suggestion) {
-    FillTestProfile(form);
+    FillTestProfile(form, /*field_index=*/2);
   }
 
   if (user_submitted_form) {
@@ -153,6 +153,13 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
         "Autofill.Autocomplete.NotOff.FillingAcceptance.Address", 1, 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.Autocomplete.Off.FillingAcceptance.Address", 0);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType",
+        FormEventLoggerBase::
+            GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
+                field_types[2], /*suggestion_accepted=*/true),
+        1);
+
     VerifyUkm(
         &test_ukm_recorder(), form, UkmAutofillKeyMetricsType::kEntryName,
         {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
@@ -179,6 +186,8 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
         "Autofill.Autocomplete.NotOff.FillingAcceptance.Address", 0);
     histogram_tester.ExpectTotalCount(
         "Autofill.Autocomplete.Off.FillingAcceptance.Address", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
   }
   if (user_accepted_suggestion) {
     histogram_tester.ExpectBucketCount(
@@ -258,6 +267,7 @@ class FormEventLoggerBaseKeyMetricsTest : public AutofillMetricsBaseTest,
 
   // Fillable form.
   FormData form_;
+  std::vector<FieldType> field_types_;
 };
 
 void FormEventLoggerBaseKeyMetricsTest::SetUp() {
@@ -272,10 +282,9 @@ void FormEventLoggerBaseKeyMetricsTest::SetUp() {
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
        CreateTestFormField("Street", "street", "",
                            FormControlType::kInputText)});
-  std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
-                                        ADDRESS_HOME_STREET_ADDRESS};
+  field_types_ = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_LINE1};
 
-  autofill_manager().AddSeenForm(form_, field_types, field_types);
+  autofill_manager().AddSeenForm(form_, field_types_, field_types_);
 }
 
 // Validate Autofill.KeyMetrics.* in case the user submits the empty form.
@@ -305,6 +314,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
   VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
@@ -347,6 +358,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
   VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
@@ -367,8 +380,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   // Simulate that suggestion is shown but user does not accept it.
   SeeForm(form_);
   autofill_manager().OnAskForValuesToFillTest(form_,
-                                              form_.fields()[0].global_id());
-  DidShowAutofillSuggestions(form_);
+                                              form_.fields()[2].global_id());
+  DidShowAutofillSuggestions(form_, /*field_index=*/2);
 
   SimulateUserChangedTextField(form_, form_.fields()[0]);
   SimulateUserChangedTextField(form_, form_.fields()[1]);
@@ -388,6 +401,12 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType",
+      FormEventLoggerBase::
+          GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
+              field_types_[2], /*suggestion_accepted=*/false),
+      1);
 
   VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
@@ -409,9 +428,9 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
   autofill_manager().OnAskForValuesToFillTest(form_,
-                                              form_.fields()[0].global_id());
-  DidShowAutofillSuggestions(form_);
-  FillTestProfile(form_);
+                                              form_.fields()[2].global_id());
+  DidShowAutofillSuggestions(form_, /*field_index=*/2);
+  FillTestProfile(form_, /*field_index=*/2);
 
   // Simulate user fixing the address.
   SimulateUserChangedTextField(form_, form_.fields()[1]);
@@ -431,6 +450,12 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.Address", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType",
+      FormEventLoggerBase::
+          GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
+              field_types_[2], /*suggestion_accepted=*/true),
+      1);
 
   VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
@@ -478,6 +503,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
       "Autofill.KeyMetrics.FillingAssistance.Address", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.Address", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
   VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
             {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
@@ -506,6 +533,75 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, EmailHeuristicOnlyAcceptance) {
 
   ResetDriverToCommitMetrics();
   histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 1);
+}
+
+// This test shows multiple suggestions on multiple fields and accepts only some
+// of them.
+TEST_F(FormEventLoggerBaseKeyMetricsTest, AcceptanceGroupedByFocusedFieldType) {
+  base::HistogramTester histogram_tester;
+  SeeForm(form_);
+
+  // Simulate that a suggestion is shown twice on field 0, but never accepted.
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
+  DidShowAutofillSuggestions(form_, /*field_index=*/0);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
+  DidShowAutofillSuggestions(form_, /*field_index=*/0);
+
+  // Simulate that a suggestion is shown on field 1 and the user accepts it.
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[1].global_id());
+  DidShowAutofillSuggestions(form_, /*field_index=*/1);
+  FillTestProfile(form_, /*field_index=*/1);
+
+  // Simulate that a suggestion is shown again on field 1, but this time the
+  // user does not accept it. For field 1, the metric should only record that
+  // the suggestion was accepted, even though the suggestion was shown again and
+  // not accepted.
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[1].global_id());
+  DidShowAutofillSuggestions(form_, /*field_index=*/1);
+
+  // Simulate that a suggestion is shown on field 2, but not accepted.
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[2].global_id());
+  DidShowAutofillSuggestions(form_, /*field_index=*/2);
+
+  SubmitForm(form_);
+  ResetDriverToCommitMetrics();
+
+  // Field 0 is recorded as not accepted.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType",
+      FormEventLoggerBase::
+          GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
+              field_types_[0], /*suggestion_accepted=*/false),
+      1);
+  // Field 1 is recorded only as accepted.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType",
+      FormEventLoggerBase::
+          GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
+              field_types_[1], /*suggestion_accepted=*/true),
+      1);
+  // Field 1 is not recorded as not accepted.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType",
+      FormEventLoggerBase::
+          GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
+              field_types_[1], /*suggestion_accepted=*/false),
+      0);
+  // Field 2 is recorded as not accepted.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType",
+      FormEventLoggerBase::
+          GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
+              field_types_[2], /*suggestion_accepted=*/false),
+      1);
+  // No other fields were recorded.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 3);
 }
 
 // Tests for Autofill.EmailHeuristicOnlyAcceptance. That metric is only written
