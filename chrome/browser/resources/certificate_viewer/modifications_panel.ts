@@ -165,6 +165,15 @@ export class ModificationsPanelElement extends CrLitElement {
     }
     this.editControlsEnabled = true;
   }
+
+  protected onConstraintKeyPress_(event: KeyboardEvent): void {
+    if (event.key !== 'Enter') {
+      return;
+    }
+    event.stopPropagation();
+
+    this.onAddConstraintClick_();
+  }
 }
 
 declare global {

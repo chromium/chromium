@@ -59,6 +59,7 @@ export function getHtml(this: ModificationsPanelElement) {
           placeholder="DNS or CIDR constraint"
           ?invalid="${this.addConstraintErrorMessage.length !== 0}"
           error-message="${this.addConstraintErrorMessage}"
+          @keypress="${this.onConstraintKeyPress_}"
           value="">
         <cr-button id="addConstraintButton" slot="suffix"
             ?disabled="${!this.editControlsEnabled}"
