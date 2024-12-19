@@ -6,7 +6,9 @@
 
 #include <stdint.h>
 #include <string.h>
+
 #include <type_traits>
+#include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -238,4 +240,25 @@ TEST(AtomicOpsTest, Store) {
 TEST(AtomicOpsTest, Load) {
   TestLoad<base::subtle::Atomic32>();
   TestLoad<base::subtle::AtomicWord>();
+}
+
+TEST(AtomicOpsTest, RelaxedAtomicWriteMemcpy) {
+  std::vector<uint8_t> src(17);
+  for (size_t i = 0; i < src.size(); i++) {
+    src[i] = i + 1;
+  }
+
+  for (size_t i = 0; i < src.size(); i++) {
+    std::vector<uint8_t> dst(src.size());
+    size_t bytes_to_copy = src.size() - i;
+    base::subtle::RelaxedAtomicWriteMemcpy(
+        base::span(dst).first(bytes_to_copy),
+        base::span(src).subspan(i, bytes_to_copy));
+    for (size_t j = 0; j < bytes_to_copy; j++) {
+      EXPECT_EQ(src[i + j], dst[j]);
+    }
+    for (size_t j = bytes_to_copy; j < dst.size(); j++) {
+      EXPECT_EQ(0, dst[j]);
+    }
+  }
 }

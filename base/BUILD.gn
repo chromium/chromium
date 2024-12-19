@@ -186,6 +186,7 @@ component("base") {
     "at_exit.h",
     "atomic_ref_count.h",
     "atomic_sequence_num.h",
+    "atomicops.cc",
     "atomicops.h",
     "atomicops_internals_atomicword_compat.h",
     "atomicops_internals_portable.h",
