@@ -10,6 +10,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event.h"
 
 namespace blink {
 
@@ -84,13 +86,16 @@ enum ClickInteractionEvents {
 
 void EmitSlowInteractionToNextPaintTraceEvent(
     const ResponsivenessMetrics::EventTimestamps& event) {
-  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kSlowInteractionToNextPaintTraceEventCategory,
-      kSlowInteractionToNextPaintTraceEventName, trace_id, event.creation_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kSlowInteractionToNextPaintTraceEventCategory,
-      kSlowInteractionToNextPaintTraceEventName, trace_id, event.end_time);
+  auto track =
+      perfetto::Track::Global(base::trace_event::GetNextGlobalTraceId());
+  auto flow = base::trace_event::TriggerFlow(
+      base::StrCat({kHistogramMaxEventDuration, kHistogramAllTypes}),
+      event.duration().InMilliseconds());
+  TRACE_EVENT_BEGIN(kSlowInteractionToNextPaintTraceEventCategory,
+                    kSlowInteractionToNextPaintTraceEventName, track,
+                    event.creation_time);
+  TRACE_EVENT_END(kSlowInteractionToNextPaintTraceEventCategory, track,
+                  event.end_time, flow);
 }
 
 // Returns the longest event in `timestamps`.
