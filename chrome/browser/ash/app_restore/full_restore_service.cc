@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -440,14 +439,9 @@ void FullRestoreService::Click(const std::optional<int>& button_index,
   if (notification_->id() == kRestoreNotificationId) {
     // Show the 'On Startup' OS setting page if the user clicks the settings
     // button of the restore notification.
-    ash::features::IsOsSettingsRevampWayfindingEnabled()
-        ? chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-              profile_,
-              chromeos::settings::mojom::kSystemPreferencesSectionPath,
-              chromeos::settings::mojom::Setting::kRestoreAppsAndPages)
-        : chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-              profile_, chromeos::settings::mojom::kAppsSectionPath);
-
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile_, chromeos::settings::mojom::kSystemPreferencesSectionPath,
+        chromeos::settings::mojom::Setting::kRestoreAppsAndPages);
     return;
   }
 
