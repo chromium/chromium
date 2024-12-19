@@ -7,6 +7,8 @@ package org.chromium.components.variations;
 import com.google.protobuf.CodedInputStream;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,6 +21,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /** VariationsCompressionUtils provides utility functions for variations classes. */
+@NullMarked
 public class VariationsCompressionUtils {
     private static final String TAG = "VariationsUtils";
 
@@ -93,7 +96,7 @@ public class VariationsCompressionUtils {
     }
 
     /** gzip-uncompresses a byte array of data. */
-    public static byte[] gzipUncompress(byte[] compressedData) throws IOException {
+    public static byte[] gzipUncompress(byte @Nullable [] compressedData) throws IOException {
         try (ByteArrayInputStream byteInputStream = new ByteArrayInputStream(compressedData);
                 ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
                 GZIPInputStream gzipInputStream = new GZIPInputStream(byteInputStream)) {
@@ -109,7 +112,7 @@ public class VariationsCompressionUtils {
     }
 
     /**  Applies the {@code deltaPatch} to {@code existingSeedData}. */
-    public static byte[] applyDeltaPatch(byte[] existingSeedData, byte[] deltaPatch)
+    public static byte[] applyDeltaPatch(byte @Nullable [] existingSeedData, byte[] deltaPatch)
             throws DeltaPatchException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             CodedInputStream deltaReader =

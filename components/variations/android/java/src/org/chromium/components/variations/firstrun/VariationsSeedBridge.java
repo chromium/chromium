@@ -4,11 +4,14 @@
 
 package org.chromium.components.variations.firstrun;
 
+import android.text.TextUtils;
 import android.util.Base64;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * VariationsSeedBridge is a class which is used to pass variations first run seed that was fetched
@@ -16,6 +19,7 @@ import org.chromium.base.ContextUtils;
  * in SharedPreferences and to get the seed from there. To store raw seed data class serializes
  * byte[] to Base64 encoded string and decodes this string before passing to C++ side.
  */
+@NullMarked
 public class VariationsSeedBridge {
     protected static final String VARIATIONS_FIRST_RUN_SEED_BASE64 = "variations_seed_base64";
     protected static final String VARIATIONS_FIRST_RUN_SEED_SIGNATURE = "variations_seed_signature";
@@ -29,7 +33,7 @@ public class VariationsSeedBridge {
     protected static final String VARIATIONS_FIRST_RUN_SEED_NATIVE_STORED =
             "variations_seed_native_stored";
 
-    protected static String getVariationsFirstRunSeedPref(String prefName) {
+    protected static @Nullable String getVariationsFirstRunSeedPref(String prefName) {
         return ContextUtils.getAppSharedPreferences().getString(prefName, "");
     }
 
@@ -39,7 +43,11 @@ public class VariationsSeedBridge {
      */
     @CalledByNative
     public static void setVariationsFirstRunSeed(
-            byte[] rawSeed, String signature, String country, long date, boolean isGzipCompressed) {
+            byte @Nullable [] rawSeed,
+            @Nullable String signature,
+            @Nullable String country,
+            long date,
+            boolean isGzipCompressed) {
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .putString(
@@ -66,9 +74,9 @@ public class VariationsSeedBridge {
 
     /** Returns the status of the variations first run fetch: was it successful or not. */
     public static boolean hasJavaPref() {
-        return !ContextUtils.getAppSharedPreferences()
-                .getString(VARIATIONS_FIRST_RUN_SEED_BASE64, "")
-                .isEmpty();
+        return !TextUtils.isEmpty(
+                ContextUtils.getAppSharedPreferences()
+                        .getString(VARIATIONS_FIRST_RUN_SEED_BASE64, null));
     }
 
     /** Returns the status of the variations seed storing on the C++ side: was it successful or not. */
@@ -93,12 +101,12 @@ public class VariationsSeedBridge {
     }
 
     @CalledByNative
-    private static String getVariationsFirstRunSeedSignature() {
+    private static @Nullable String getVariationsFirstRunSeedSignature() {
         return getVariationsFirstRunSeedPref(VARIATIONS_FIRST_RUN_SEED_SIGNATURE);
     }
 
     @CalledByNative
-    private static String getVariationsFirstRunSeedCountry() {
+    private static @Nullable String getVariationsFirstRunSeedCountry() {
         return getVariationsFirstRunSeedPref(VARIATIONS_FIRST_RUN_SEED_COUNTRY);
     }
 
