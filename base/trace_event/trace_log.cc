@@ -627,8 +627,6 @@ TraceLog::TraceLog(int generation)
       thread_shared_chunk_index_(0),
       generation_(generation),
       use_worker_thread_(false) {
-  CategoryRegistry::Initialize();
-
 #if BUILDFLAG(IS_NACL)  // NaCl shouldn't expose the process id.
   SetProcessID(0);
 #else
@@ -701,31 +699,6 @@ const unsigned char* TraceLog::GetCategoryGroupEnabled(
 const char* TraceLog::GetCategoryGroupName(
     const unsigned char* category_group_enabled) {
   return TRACE_EVENT_API_GET_CATEGORY_GROUP_NAME(category_group_enabled);
-}
-
-void TraceLog::UpdateCategoryState(TraceCategory* category) {
-  lock_.AssertAcquired();
-  DCHECK(category->is_valid());
-  unsigned char state_flags = 0;
-  if (enabled_ && trace_config_.IsCategoryGroupEnabled(category->name())) {
-    state_flags |= TraceCategory::ENABLED_FOR_RECORDING;
-  }
-
-  // TODO(primiano): this is a temporary workaround for catapult:#2341,
-  // to guarantee that metadata events are always added even if the category
-  // filter is "-*". See crbug.com/618054 for more details and long-term fix.
-  if (enabled_ && category == CategoryRegistry::kCategoryMetadata) {
-    state_flags |= TraceCategory::ENABLED_FOR_RECORDING;
-  }
-
-  category->set_state(state_flags);
-}
-
-void TraceLog::UpdateCategoryRegistry() {
-  lock_.AssertAcquired();
-  for (TraceCategory& category : CategoryRegistry::GetAllCategories()) {
-    UpdateCategoryState(&category);
-  }
 }
 
 void TraceLog::SetEnabled(const TraceConfig& trace_config) {
@@ -1542,7 +1515,7 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
 
   // If enabled for recording, the event should be added only if one of the
   // filters indicates or category is not enabled for filtering.
-  if ((*category_group_enabled & TraceCategory::ENABLED_FOR_RECORDING)) {
+  if (*category_group_enabled) {
     OptionalAutoLock lock(&lock_);
 
     TraceEvent* trace_event = nullptr;
@@ -1674,7 +1647,7 @@ void TraceLog::UpdateTraceEventDurationExplicit(
   }
   const AutoReset<bool> resetter(&thread_is_in_trace_event, true);
 
-  if (*category_group_enabled & TraceCategory::ENABLED_FOR_RECORDING) {
+  if (*category_group_enabled) {
     auto update_duration_override =
         update_duration_override_.load(std::memory_order_relaxed);
     if (update_duration_override) {
@@ -1685,7 +1658,7 @@ void TraceLog::UpdateTraceEventDurationExplicit(
   }
 
   std::string console_message;
-  if (*category_group_enabled & TraceCategory::ENABLED_FOR_RECORDING) {
+  if (*category_group_enabled) {
     OptionalAutoLock lock(&lock_);
 
     TraceEvent* trace_event = GetEventByHandleInternal(handle, &lock);

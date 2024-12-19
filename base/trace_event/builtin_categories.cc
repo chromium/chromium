@@ -7,8 +7,7 @@
 namespace base {
 namespace trace_event {
 
-constexpr const char* BuiltinCategories::kBuiltinCategories[];
-constexpr const char* BuiltinCategories::kCategoriesForTesting[];
+
 
 }  // namespace trace_event
 }  // namespace base

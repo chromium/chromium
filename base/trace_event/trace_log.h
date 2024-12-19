@@ -25,12 +25,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
-#include "base/trace_event/category_registry.h"
+#include "base/trace_event/builtin_categories.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
-
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 
 namespace perfetto {
@@ -44,7 +43,6 @@ class RefCountedString;
 
 namespace trace_event {
 
-struct TraceCategory;
 class TraceBuffer;
 class TraceBufferChunk;
 class TraceEvent;
@@ -243,14 +241,6 @@ class BASE_EXPORT TraceLog :
   static const unsigned char* GetCategoryGroupEnabled(const char* name);
   static const char* GetCategoryGroupName(
       const unsigned char* category_group_enabled);
-  static constexpr const unsigned char* GetBuiltinCategoryEnabled(
-      const char* name) {
-    TraceCategory* builtin_category =
-        CategoryRegistry::GetBuiltinCategoryByName(name);
-    if (builtin_category)
-      return builtin_category->state_ptr();
-    return nullptr;
-  }
 
   // Called by TRACE_EVENT* macros, don't call this directly.
   // If |copy| is set, |name|, |arg_name1| and |arg_name2| will be deep copied
@@ -434,13 +424,6 @@ class BASE_EXPORT TraceLog :
   // MemoryDumpProvider implementation.
   bool OnMemoryDump(const MemoryDumpArgs& args,
                     ProcessMemoryDump* pmd) override;
-
-  // Enable/disable each category group based on the current mode_,
-  // category_filter_ and event_filters_enabled_.
-  // Enable the category group in the recording mode if category_filter_ matches
-  // the category group, is not null.
-  void UpdateCategoryRegistry();
-  void UpdateCategoryState(TraceCategory* category);
 
   InternalTraceOptions GetInternalOptionsFromTraceConfig(
       const TraceConfig& config);
