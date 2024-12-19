@@ -24,6 +24,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -95,7 +96,7 @@ class CampaignsManagerSessionTest : public testing::Test {
   // Creates a test user with a testing profile and logs in.
   TestingProfile* LoginUser() {
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId("test@test.com", "test_user"));
+        AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("test_user")));
     fake_user_manager_->AddUser(account_id);
 
     auto prefs =
