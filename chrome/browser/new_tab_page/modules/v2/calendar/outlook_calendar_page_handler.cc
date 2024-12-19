@@ -13,6 +13,8 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
 #include "components/search/ntp_features.h"
 #include "net/base/mime_util.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace {
 
@@ -22,6 +24,67 @@ const char kBaseIconUrl[] =
 
 const char kBaseAttachmentResourceUrl[] =
     "https://outlook.live.com/mail/0/deeplink/attachment/";
+
+// TODO(357700028): Construct URL with modifiable date.
+const char kRequestUrl[] =
+    "https://graph.microsoft.com/v1.0/me/calendar/"
+    "calendarview?startdatetime=2024-12-02T00:10:06.424Z&enddatetime=2024-12-"
+    "06T00:10:06.424Z&select=id,hasAttachments,subject,start,attendees,"
+    "webLink,onlineMeeting,location,isOrganizer,responseStatus,end,isCancelled&"
+    "expand=attachments(select=id,name,contentType)";
+
+constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
+    net::DefineNetworkTrafficAnnotation("outlook_calendar_page_handler", R"(
+        semantics {
+          sender: "Outlook Calendar Page Handler"
+          description:
+            "The Outlook Calendar Page Handler requests user's "
+            "Outlook calendar events from the Microsoft Graph API. "
+            "The response will be used to display calendar events "
+            "on the desktop NTP."
+          trigger:
+            "Each time a signed-in user navigates to the NTP while "
+            "the Outlook Calendar module is enabled and the user's "
+            "Outlook account has been authenticated on the NTP."
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          data: "OAuth2 access token identifying the Outlook account."
+          destination: OTHER
+          destination_other: "Microsoft Graph API"
+          internal {
+            contacts {
+              email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          last_reviewed: "2024-12-17"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature by (1) selecting "
+            "a non-Google default search engine in Chrome "
+            "settings under 'Search Engine', (2) signing out, "
+            "or (3) disabling the Outlook Calendar module."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+            NTPCardsVisible {
+              NTPCardsVisible: false
+            }
+            NTPOutlookCardVisible {
+              NTPOutlookCardVisible: false
+            }
+          }
+        })");
+
+constexpr int kMaxResponseSize = 1024 * 1024;
 
 std::string GetFileExtension(std::string mime_type) {
   base::FilePath::StringType extension;
@@ -54,8 +117,10 @@ std::string GetFileName(std::string full_name, std::string extension) {
 
 OutlookCalendarPageHandler::OutlookCalendarPageHandler(
     mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
-        handler)
-    : handler_(this, std::move(handler)) {}
+        handler,
+    Profile* profile)
+    : handler_(this, std::move(handler)),
+      url_loader_factory_(profile->GetURLLoaderFactory()) {}
 
 OutlookCalendarPageHandler::~OutlookCalendarPageHandler() = default;
 
@@ -72,18 +137,37 @@ void OutlookCalendarPageHandler::GetEvents(GetEventsCallback callback) {
 }
 
 void OutlookCalendarPageHandler::MakeRequest(GetEventsCallback callback) {
-  // TODO(357700028): Replace fake JSON response with an actual HTTP
-  // request/response.
-  calendar::calendar_fake_data_helper::GetFakeJsonResponse(
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->method = "GET";
+  resource_request->url = GURL(kRequestUrl);
+
+  // TODO(357700028): Pass in actual access token.
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                      "Bearer <accesstoken>");
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kCacheControl,
+                                      "no-cache");
+
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+
+  url_loader_->DownloadToString(
+      url_loader_factory_.get(),
       base::BindOnce(&OutlookCalendarPageHandler::OnJsonReceived,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      kMaxResponseSize);
 }
 
-void OutlookCalendarPageHandler::OnJsonReceived(GetEventsCallback callback,
-                                                std::string response_body) {
-  if (!response_body.empty()) {
+void OutlookCalendarPageHandler::OnJsonReceived(
+    GetEventsCallback callback,
+    std::unique_ptr<std::string> response_body) {
+  // TODO(376516070): Attempt to retrieve "Retry-After" header for throttling
+  // errors.
+  const int net_error = url_loader_->NetError();
+  url_loader_.reset();
+
+  if (net_error == net::OK && response_body) {
     data_decoder::DataDecoder::ParseJsonIsolated(
-        response_body,
+        *response_body,
         base::BindOnce(&OutlookCalendarPageHandler::OnJsonParsed,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
@@ -181,7 +265,7 @@ void OutlookCalendarPageHandler::OnJsonParsed(
       const std::string* id = attachment_dict.FindString("id");
       const std::string* name = attachment_dict.FindString("name");
       const std::string* content_type =
-          attachment_dict.FindString("@odata.mediaContentType");
+          attachment_dict.FindString("contentType");
       if (!id || !name || !content_type) {
         std::move(callback).Run(
             std::vector<ntp::calendar::mojom::CalendarEventPtr>());
@@ -213,11 +297,3 @@ void OutlookCalendarPageHandler::OnJsonParsed(
   std::move(callback).Run(std::move(created_events));
 }
 
-// TODO(357700028): Delete once the end-to-end HTTP request implementation is
-// done.
-void OutlookCalendarPageHandler::GetEventsForTesting(
-    GetEventsCallback callback,
-    std::string response_body) {
-  // Bypass "making a request" and trigger response received.
-  OnJsonReceived(std::move(callback), response_body);
-}

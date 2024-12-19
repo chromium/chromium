@@ -500,4 +500,5 @@ Refer to README.md for content description and update process.
  <item id="shared_storage_worklet_host" added_in_milestone="133" content_hash_code="04cb9ff5" os_list="linux,windows,android,chromeos" file_path="content/browser/shared_storage/shared_storage_worklet_host.cc" />
  <item id="webauthn_challenge_fetch" added_in_milestone="133" content_hash_code="00d0cb34" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/challenge_url_fetcher.cc" />
  <item id="chromeos_capture_mode" added_in_milestone="133" content_hash_code="0056219a" os_list="chromeos" file_path="chrome/browser/ui/ash/capture_mode/lens_overlay_query_controller.cc" />
+ <item id="outlook_calendar_page_handler" added_in_milestone="133" content_hash_code="02d4c022" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc" />
 </annotations>

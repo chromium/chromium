@@ -9,11 +9,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
+#include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -25,24 +28,42 @@ const char kDocIconUrl[] =
 const char kBaseAttachmentResourceUrl[] =
     "https://outlook.live.com/mail/0/deeplink/attachment/";
 
+const char kRequestUrl[] =
+    "https://graph.microsoft.com/v1.0/me/calendar/"
+    "calendarview?startdatetime=2024-12-02T00:10:06.424Z&enddatetime=2024-12-"
+    "06T00:10:06.424Z&select=id,hasAttachments,subject,start,attendees,"
+    "webLink,onlineMeeting,location,isOrganizer,responseStatus,end,isCancelled&"
+    "expand=attachments(select=id,name,contentType)";
+
 }  // namespace
 
 class OutlookCalendarPageHandlerTest : public testing::Test {
  public:
-  OutlookCalendarPageHandlerTest() = default;
+  OutlookCalendarPageHandlerTest() {
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+    profile_ = profile_builder.Build();
+  }
 
   std::unique_ptr<OutlookCalendarPageHandler> CreateHandler() {
     return std::make_unique<OutlookCalendarPageHandler>(
         mojo::PendingReceiver<
-            ntp::calendar::mojom::OutlookCalendarPageHandler>());
+            ntp::calendar::mojom::OutlookCalendarPageHandler>(),
+        profile_.get());
   }
 
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
+ protected:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
  private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+      base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(OutlookCalendarPageHandlerTest, GetFakeEvents) {
@@ -82,8 +103,12 @@ TEST_F(OutlookCalendarPageHandlerTest, GetEvents) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
-  // For now, `GetEvents()` has fake calendar event data hardcoded.
+
   handler->GetEvents(future.GetCallback());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kRequestUrl, *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+
   EXPECT_EQ(future.Get().size(), 3u);
 }
 
@@ -92,7 +117,10 @@ TEST_F(OutlookCalendarPageHandlerTest, EmptyResponse) {
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
 
-  handler->GetEventsForTesting(future.GetCallback(), "");
+  handler->GetEvents(future.GetCallback());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl, "");
+
   EXPECT_EQ(future.Get().size(), 0u);
 }
 
@@ -101,7 +129,11 @@ TEST_F(OutlookCalendarPageHandlerTest, MalformedResponse) {
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
 
-  handler->GetEventsForTesting(future.GetCallback(), "} {");
+  handler->GetEvents(future.GetCallback());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             "} {");
+
   EXPECT_EQ(future.Get().size(), 0u);
 }
 
@@ -109,6 +141,8 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponseMissingData) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
+
+  handler->GetEvents(future.GetCallback());
 
   // Missing event title.
   std::string response = R"(
@@ -131,7 +165,10 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponseMissingData) {
         "attendees": [],
         "attachments": []
       }]})";
-  handler->GetEventsForTesting(future.GetCallback(), response);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             response);
+
   EXPECT_EQ(future.Get().size(), 0u);
 }
 
@@ -139,6 +176,8 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponsePropertyHasWrongDataType) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
+
+  handler->GetEvents(future.GetCallback());
 
   // `hasAttachments` should be a boolean, not a string value.
   std::string response = R"(
@@ -162,7 +201,10 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponsePropertyHasWrongDataType) {
         "attendees": [],
         "attachments": []
       }]})";
-  handler->GetEventsForTesting(future.GetCallback(), response);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             response);
+
   EXPECT_EQ(future.Get().size(), 0u);
 }
 
@@ -170,6 +212,9 @@ TEST_F(OutlookCalendarPageHandlerTest, OptionalDataMissing) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
+
+  handler->GetEvents(future.GetCallback());
+
   // Event conference URL does not exist.
   std::string response = R"(
     {"data-context": "some-context",
@@ -193,7 +238,9 @@ TEST_F(OutlookCalendarPageHandlerTest, OptionalDataMissing) {
         "attachments": []
       }]})";
 
-  handler->GetEventsForTesting(future.GetCallback(), response);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             response);
+
   EXPECT_EQ(future.Get().size(), 1u);
 }
 
@@ -201,6 +248,9 @@ TEST_F(OutlookCalendarPageHandlerTest, HasOtherAttendeeWhenNotOrganizer) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
+
+  handler->GetEvents(future.GetCallback());
+
   // When a user is not the organizer and the event is not canceled, by default
   // there is another attendee (organizer).
   std::string response = R"(
@@ -248,7 +298,9 @@ TEST_F(OutlookCalendarPageHandlerTest, HasOtherAttendeeWhenNotOrganizer) {
         "attachments": []
       }]})";
 
-  handler->GetEventsForTesting(future.GetCallback(), response);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             response);
+
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
       future.Get();
   EXPECT_EQ(events.size(), 1u);
@@ -261,6 +313,9 @@ TEST_F(OutlookCalendarPageHandlerTest, AttendeesAccepted) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
+
+  handler->GetEvents(future.GetCallback());
+
   // User is the organizer. Other attendees have accepted event.
   std::string response = R"(
     {"data-context": "some-context",
@@ -307,7 +362,9 @@ TEST_F(OutlookCalendarPageHandlerTest, AttendeesAccepted) {
         "attachments": []
       }]})";
 
-  handler->GetEventsForTesting(future.GetCallback(), response);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             response);
+
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
       future.Get();
   EXPECT_EQ(events.size(), 1u);
@@ -320,6 +377,9 @@ TEST_F(OutlookCalendarPageHandlerTest, AttendeesDeclined) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
+
+  handler->GetEvents(future.GetCallback());
+
   // User is the organizer. No attendees have accepted event.
   std::string response = R"(
     {"data-context": "some-context",
@@ -366,7 +426,9 @@ TEST_F(OutlookCalendarPageHandlerTest, AttendeesDeclined) {
         "attachments": []
       }]})";
 
-  handler->GetEventsForTesting(future.GetCallback(), response);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             response);
+
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
       future.Get();
   EXPECT_EQ(events.size(), 1u);
@@ -379,6 +441,8 @@ TEST_F(OutlookCalendarPageHandlerTest, EventCanceled) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
+
+  handler->GetEvents(future.GetCallback());
 
   // Event is canceled.
   std::string response = R"(
@@ -425,8 +489,9 @@ TEST_F(OutlookCalendarPageHandlerTest, EventCanceled) {
         ],
         "attachments": []
       }]})";
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             response);
 
-  handler->GetEventsForTesting(future.GetCallback(), response);
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
       future.Get();
   EXPECT_EQ(events.size(), 1u);
@@ -447,6 +512,8 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
   std::vector<std::string> id_paths = {event_id + "/" + attachment_id_1,
                                        event_id + "/" + attachment_id_2,
                                        event_id + "/" + attachment_id_3};
+
+  handler->GetEvents(future.GetCallback());
 
   // clang-format off
   std::string response = base::StringPrintf(R"(
@@ -496,12 +563,16 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
                     "@odata.type": "#microsoft.graph.fileAttachment",
                     "@odata.mediaContentType":
                       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "contentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     "id": "%s",
                     "name": "Attachment 0.docx"
               },
               {
                     "@odata.type": "#microsoft.graph.fileAttachment",
                     "@odata.mediaContentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "contentType":
                       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     "id": "%s",
                     "name": "Attachment 1.docx"
@@ -510,6 +581,8 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
                     "@odata.type": "#microsoft.graph.fileAttachment",
                     "@odata.mediaContentType":
                       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "contentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     "id": "%s",
                     "name": "Attachment 2.docx"
               }
@@ -517,7 +590,9 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
       }]})", event_id, attachment_id_1, attachment_id_2, attachment_id_3);
   // clang-format on
 
-  handler->GetEventsForTesting(future.GetCallback(), response);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+                                                             response);
+
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
       future.Get();
   EXPECT_EQ(events.size(), 1u);

@@ -22,9 +22,8 @@ using GetResponseCallback = base::OnceCallback<void(std::string)>;
 std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents(
     CalendarType calendar_type);
 
-// Should only be called for CalendarType::OUTLOOK_CALENDAR. Runs `callback`
-// with a mock MSFT Graph API calendar data response.
-void GetFakeJsonResponse(GetResponseCallback callback);
+// Should only be called for CalendarType::OUTLOOK_CALENDAR.
+std::unique_ptr<std::string> GetFakeJsonResponse();
 
 }  // namespace calendar::calendar_fake_data_helper
 

@@ -696,7 +696,7 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
         pending_page_handler) {
   outlook_calendar_handler_ = std::make_unique<OutlookCalendarPageHandler>(
-      std::move(pending_page_handler));
+      std::move(pending_page_handler), profile_);
 }
 
 void NewTabPageUI::BindInterface(
