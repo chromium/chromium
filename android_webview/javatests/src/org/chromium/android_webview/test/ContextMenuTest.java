@@ -47,11 +47,13 @@ import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactor
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
@@ -63,6 +65,7 @@ import java.util.List;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
 @Features.EnableFeatures({AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU})
+@DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/385151137
 public class ContextMenuTest extends AwParameterizedTest {
     private static final String FILE = "/main.html";
     private static final String DATA =
