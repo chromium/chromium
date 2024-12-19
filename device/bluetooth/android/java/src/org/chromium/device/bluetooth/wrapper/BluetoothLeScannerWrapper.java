@@ -4,8 +4,6 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -34,9 +32,7 @@ public class BluetoothLeScannerWrapper {
     }
 
     public void startScan(
-            @Nullable List<ScanFilter> filters,
-            int scanSettingsScanMode,
-            @Nullable ScanCallbackWrapper callback) {
+            List<ScanFilter> filters, int scanSettingsScanMode, ScanCallbackWrapper callback) {
         ScanSettings settings =
                 new ScanSettings.Builder().setScanMode(scanSettingsScanMode).build();
 
@@ -62,8 +58,8 @@ public class BluetoothLeScannerWrapper {
     private static class ForwardScanCallbackToWrapper extends ScanCallback {
         final ScanCallbackWrapper mWrapperCallback;
 
-        ForwardScanCallbackToWrapper(@Nullable ScanCallbackWrapper wrapperCallback) {
-            mWrapperCallback = assumeNonNull(wrapperCallback);
+        ForwardScanCallbackToWrapper(ScanCallbackWrapper wrapperCallback) {
+            mWrapperCallback = wrapperCallback;
         }
 
         @Override
@@ -71,14 +67,14 @@ public class BluetoothLeScannerWrapper {
             ArrayList<ScanResultWrapper> resultsWrapped =
                     new ArrayList<ScanResultWrapper>(results.size());
             for (ScanResult result : results) {
-                resultsWrapped.add(new ScanResultWrapper(result));
+                resultsWrapped.add(new ScanResultWrapperImpl(result));
             }
             mWrapperCallback.onBatchScanResult(resultsWrapped);
         }
 
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            mWrapperCallback.onScanResult(callbackType, new ScanResultWrapper(result));
+            mWrapperCallback.onScanResult(callbackType, new ScanResultWrapperImpl(result));
         }
 
         @Override

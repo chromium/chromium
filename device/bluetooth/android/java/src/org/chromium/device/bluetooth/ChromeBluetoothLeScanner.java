@@ -13,6 +13,7 @@ import androidx.core.util.Preconditions;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.device.bluetooth.wrapper.BluetoothLeScannerWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanCallbackWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanResultWrapper;
@@ -96,6 +97,8 @@ class ChromeBluetoothLeScanner {
     boolean resumeScan(long durationMillis) {
         Preconditions.checkState(
                 mScanState == SCAN_STATE_PAUSED, "Scan isn't paused. Scan state: " + mScanState);
+        assert mScanCallback != null;
+        assert mScanFilters != null;
 
         if (startScanWindow(durationMillis)) {
             return true;
@@ -153,6 +156,7 @@ class ChromeBluetoothLeScanner {
         mChromeScanCallback.onScanFinished();
     }
 
+    @RequiresNonNull({"mScanCallback", "mScanFilters"})
     private boolean startScanWindow(long durationMillis) {
         BluetoothLeScannerWrapper scanner = mScannerSupplier.get();
         if (scanner == null) {

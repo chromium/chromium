@@ -4,13 +4,14 @@
 
 package org.chromium.device.bluetooth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
 
 /**
@@ -100,10 +101,9 @@ final class ChromeBluetoothRemoteGattDescriptor {
     }
 
     // Implements BluetoothRemoteGattDescriptorAndroid::ReadRemoteDescriptor.
-    @NullUnmarked
     @CalledByNative
     private boolean readRemoteDescriptor() {
-        if (!mChromeDevice.mBluetoothGatt.readDescriptor(mDescriptor)) {
+        if (!assumeNonNull(mChromeDevice.mBluetoothGatt).readDescriptor(mDescriptor)) {
             Log.i(TAG, "readRemoteDescriptor readDescriptor failed.");
             return false;
         }
@@ -111,14 +111,13 @@ final class ChromeBluetoothRemoteGattDescriptor {
     }
 
     // Implements BluetoothRemoteGattDescriptorAndroid::WriteRemoteDescriptor.
-    @NullUnmarked
     @CalledByNative
     private boolean writeRemoteDescriptor(byte[] value) {
         if (!mDescriptor.setValue(value)) {
             Log.i(TAG, "writeRemoteDescriptor setValue failed.");
             return false;
         }
-        if (!mChromeDevice.mBluetoothGatt.writeDescriptor(mDescriptor)) {
+        if (!assumeNonNull(mChromeDevice.mBluetoothGatt).writeDescriptor(mDescriptor)) {
             Log.i(TAG, "writeRemoteDescriptor writeDescriptor failed.");
             return false;
         }
