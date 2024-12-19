@@ -162,6 +162,10 @@ const CGFloat kDotSize = 14;
     [_facePileParentViewController
         addChildViewController:_facePileViewController];
     UIView* facePileView = _facePileViewController.view;
+    NSLayoutConstraint* facePileMinWidthConstraint =
+        [facePileView.widthAnchor constraintEqualToConstant:0];
+    facePileMinWidthConstraint.priority = UILayoutPriorityDefaultLow;
+    facePileMinWidthConstraint.active = YES;
     [_stackView addArrangedSubview:facePileView];
     [_facePileViewController
         didMoveToParentViewController:_facePileParentViewController];
