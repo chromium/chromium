@@ -328,6 +328,17 @@ config("compiler") {
     cflags += [ "-fno-delete-null-pointer-checks" ]
   }
 
+  # Make signed overflow and pointer overflowdefined to wrap.
+  # This avoids risking miscompilations and security bugs on overflow.
+  # When UBSan is enabled, we want to continue flagging overflows as a bug.
+  if (!is_ubsan && (!is_win || is_clang)) {
+    if (is_win) {
+      cflags += [ "/clang:-fwrapv" ]
+    } else {
+      cflags += [ "-fwrapv" ]
+    }
+  }
+
   # Don't emit the GCC version ident directives, they just end up in the
   # .comment section or debug info taking up binary size, and makes comparing
   # .o files built with different compiler versions harder.
