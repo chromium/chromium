@@ -139,9 +139,6 @@ BASE_DECLARE_FEATURE(kSyncSharedTabGroupDataInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableWalletMetadataInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableWalletOfferInTransportMode);
 
-// Flag to enable setting `deleted_by_version` on a `EntityMetadata`.
-BASE_DECLARE_FEATURE(kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion);
-
 // Flag to enable clean up of password deletions that may be unintentional.
 BASE_DECLARE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions);
 // The minimum number of deletions that can be considered a batch deletion.

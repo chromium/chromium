@@ -12,7 +12,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/collaboration_metadata.h"
@@ -288,11 +287,8 @@ bool ProcessorEntity::RecordLocalDeletion(const DeletionOrigin& origin) {
         origin.ToProto(version_info::GetVersionNumber());
   }
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion)) {
-    metadata_.set_deleted_by_version(
-        std::string(version_info::GetVersionNumber()));
-  }
+  metadata_.set_deleted_by_version(
+      std::string(version_info::GetVersionNumber()));
 
   // Clear any cached pending commit data.
   commit_data_.reset();

@@ -903,23 +903,7 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
       entity->metadata().possibly_trimmed_base_specifics().SerializeAsString());
 }
 
-TEST_F(ProcessorEntityTest,
-       LocalDeletionDoesNotRecordVersionInfoIfFeatureIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {/* enabled_features */},
-      {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion});
-
-  std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalDeletion(DeletionOrigin::FromLocation(FROM_HERE));
-  EXPECT_FALSE(entity->metadata().has_deleted_by_version());
-}
-
-TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfoIfFeatureIsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion},
-      {/* disabled_features */});
+TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfo) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   entity->RecordLocalDeletion(DeletionOrigin::FromLocation(FROM_HERE));
   std::string expected_version = std::string(version_info::GetVersionNumber());
