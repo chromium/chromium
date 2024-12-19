@@ -686,11 +686,13 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
   DISABLED_RequestFullscreenOnSecondaryScreen
 #define MAYBE_ScreenRotationSecondaryScreen \
   DISABLED_ScreenRotationSecondaryScreen
+#define MAYBE_MoveWindowBetweenScreens DISABLED_MoveWindowBetweenScreens
 #else
 #define MAYBE_WindowOpenOnSecondaryScreen WindowOpenOnSecondaryScreen
 #define MAYBE_RequestFullscreenOnSecondaryScreen \
   RequestFullscreenOnSecondaryScreen
 #define MAYBE_ScreenRotationSecondaryScreen ScreenRotationSecondaryScreen
+#define MAYBE_MoveWindowBetweenScreens MoveWindowBetweenScreens
 #endif
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
@@ -707,5 +709,10 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MAYBE_ScreenRotationSecondaryScreen,
     "sanity/screen-rotation-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MAYBE_MoveWindowBetweenScreens,
+    "sanity/move-window-between-screens.js",
+    "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
 
 }  // namespace headless

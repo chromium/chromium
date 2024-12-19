@@ -51,7 +51,7 @@ display::Display HeadlessScreen::GetDisplayNearestWindow(
   // so this method currently only returns primary display on Macs.
 #if defined(USE_AURA)
   if (window) {
-    const gfx::Rect bounds = window->bounds();
+    const gfx::Rect bounds = window->GetBoundsInScreen();
     const display::Display* nearest_display =
         display::FindDisplayWithBiggestIntersection(display_list().displays(),
                                                     bounds);
