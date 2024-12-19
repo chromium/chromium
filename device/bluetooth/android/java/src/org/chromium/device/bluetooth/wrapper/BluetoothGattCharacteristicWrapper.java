@@ -6,13 +6,17 @@ package org.chromium.device.bluetooth.wrapper;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 /** Wraps android.bluetooth.BluetoothGattCharacteristic. */
+@NullMarked
 public class BluetoothGattCharacteristicWrapper {
     final BluetoothGattCharacteristic mCharacteristic;
     final BluetoothDeviceWrapper mDeviceWrapper;

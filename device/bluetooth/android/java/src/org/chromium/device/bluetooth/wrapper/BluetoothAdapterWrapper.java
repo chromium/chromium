@@ -19,15 +19,18 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Wraps android.bluetooth.BluetoothAdapter. */
 @JNINamespace("device")
+@NullMarked
 public class BluetoothAdapterWrapper {
     private static final String TAG = "Bluetooth";
 
     private final BluetoothAdapter mAdapter;
     protected final Context mContext;
-    protected BluetoothLeScannerWrapper mScannerWrapper;
+    protected @Nullable BluetoothLeScannerWrapper mScannerWrapper;
 
     /**
      * Creates a BluetoothAdapterWrapper using the default
@@ -36,7 +39,7 @@ public class BluetoothAdapterWrapper {
      * permissions.
      */
     @CalledByNative
-    public static BluetoothAdapterWrapper createWithDefaultAdapter() {
+    public static @Nullable BluetoothAdapterWrapper createWithDefaultAdapter() {
         // In Android Q and earlier the BLUETOOTH and BLUETOOTH_ADMIN permissions must
         // be granted in the manifest. In Android S and later the BLUETOOTH_SCAN and
         // BLUETOOTH_CONNECT permissions can be requested at runtime after fetching the
@@ -96,7 +99,7 @@ public class BluetoothAdapterWrapper {
         return mAdapter.getAddress();
     }
 
-    public BluetoothLeScannerWrapper getBluetoothLeScanner() {
+    public @Nullable BluetoothLeScannerWrapper getBluetoothLeScanner() {
         BluetoothLeScanner scanner = mAdapter.getBluetoothLeScanner();
         if (scanner == null) {
             return null;

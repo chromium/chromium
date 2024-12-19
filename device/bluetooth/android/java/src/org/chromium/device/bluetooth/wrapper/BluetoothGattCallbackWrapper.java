@@ -4,6 +4,9 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Wrapper alternative to android.bluetooth.BluetoothGattCallback allowing
  * clients and Fakes to
@@ -16,16 +19,19 @@ package org.chromium.device.bluetooth.wrapper;
  * necessary from the initial BluetoothDeviceWrapper.connectGatt
  * call.
  */
+@NullMarked
 public interface BluetoothGattCallbackWrapper {
-    void onCharacteristicChanged(BluetoothGattCharacteristicWrapper characteristic);
+    void onCharacteristicChanged(@Nullable BluetoothGattCharacteristicWrapper characteristic);
 
-    void onCharacteristicRead(BluetoothGattCharacteristicWrapper characteristic, int status);
+    void onCharacteristicRead(
+            @Nullable BluetoothGattCharacteristicWrapper characteristic, int status);
 
-    void onCharacteristicWrite(BluetoothGattCharacteristicWrapper characteristic, int status);
+    void onCharacteristicWrite(
+            @Nullable BluetoothGattCharacteristicWrapper characteristic, int status);
 
-    void onDescriptorRead(BluetoothGattDescriptorWrapper descriptor, int status);
+    void onDescriptorRead(@Nullable BluetoothGattDescriptorWrapper descriptor, int status);
 
-    void onDescriptorWrite(BluetoothGattDescriptorWrapper descriptor, int status);
+    void onDescriptorWrite(@Nullable BluetoothGattDescriptorWrapper descriptor, int status);
 
     void onConnectionStateChange(int status, int newState);
 

@@ -4,18 +4,25 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 /** Wraps android.bluetooth.BluetoothLeScanner. */
+@NullMarked
 public class BluetoothLeScannerWrapper {
     protected final BluetoothLeScanner mScanner;
     private final HashMap<ScanCallbackWrapper, ForwardScanCallbackToWrapper> mCallbacks;
@@ -27,7 +34,9 @@ public class BluetoothLeScannerWrapper {
     }
 
     public void startScan(
-            List<ScanFilter> filters, int scanSettingsScanMode, ScanCallbackWrapper callback) {
+            @Nullable List<ScanFilter> filters,
+            int scanSettingsScanMode,
+            @Nullable ScanCallbackWrapper callback) {
         ScanSettings settings =
                 new ScanSettings.Builder().setScanMode(scanSettingsScanMode).build();
 
@@ -37,7 +46,7 @@ public class BluetoothLeScannerWrapper {
         mScanner.startScan(filters, settings, callbackForwarder);
     }
 
-    public void stopScan(ScanCallbackWrapper callback) {
+    public void stopScan(@Nullable ScanCallbackWrapper callback) {
         ForwardScanCallbackToWrapper callbackForwarder = mCallbacks.remove(callback);
         mScanner.stopScan(callbackForwarder);
     }
@@ -53,8 +62,8 @@ public class BluetoothLeScannerWrapper {
     private static class ForwardScanCallbackToWrapper extends ScanCallback {
         final ScanCallbackWrapper mWrapperCallback;
 
-        ForwardScanCallbackToWrapper(ScanCallbackWrapper wrapperCallback) {
-            mWrapperCallback = wrapperCallback;
+        ForwardScanCallbackToWrapper(@Nullable ScanCallbackWrapper wrapperCallback) {
+            mWrapperCallback = assumeNonNull(wrapperCallback);
         }
 
         @Override

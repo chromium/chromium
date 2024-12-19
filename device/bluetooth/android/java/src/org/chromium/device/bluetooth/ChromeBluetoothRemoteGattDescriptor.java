@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
 
 /**
@@ -18,6 +20,7 @@ import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
  * Lifetime is controlled by device::BluetoothRemoteGattDescriptorAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothRemoteGattDescriptor {
     private static final String TAG = "Bluetooth";
 
@@ -97,6 +100,7 @@ final class ChromeBluetoothRemoteGattDescriptor {
     }
 
     // Implements BluetoothRemoteGattDescriptorAndroid::ReadRemoteDescriptor.
+    @NullUnmarked
     @CalledByNative
     private boolean readRemoteDescriptor() {
         if (!mChromeDevice.mBluetoothGatt.readDescriptor(mDescriptor)) {
@@ -107,6 +111,7 @@ final class ChromeBluetoothRemoteGattDescriptor {
     }
 
     // Implements BluetoothRemoteGattDescriptorAndroid::WriteRemoteDescriptor.
+    @NullUnmarked
     @CalledByNative
     private boolean writeRemoteDescriptor(byte[] value) {
         if (!mDescriptor.setValue(value)) {

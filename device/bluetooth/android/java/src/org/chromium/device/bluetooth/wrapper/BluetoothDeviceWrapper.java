@@ -4,20 +4,22 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashMap;
 
 /** Wraps android.bluetooth.BluetoothDevice. */
+@NullMarked
 public class BluetoothDeviceWrapper {
     private static final String TAG = "Bluetooth";
     public static final int DEVICE_CLASS_UNSPECIFIED = 0x1F00;

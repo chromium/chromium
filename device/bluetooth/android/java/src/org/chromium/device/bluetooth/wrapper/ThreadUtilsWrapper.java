@@ -5,6 +5,8 @@
 package org.chromium.device.bluetooth.wrapper;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Wraps base.ThreadUtils.
@@ -12,13 +14,13 @@ import org.chromium.base.ThreadUtils;
  * UI Thread. To be able to provide a set of test methods, ThreadUtilsWrapper
  * uses the factory pattern.
  */
+@NullMarked
 public class ThreadUtilsWrapper {
-    private static Factory sFactory;
+    private static @Nullable Factory sFactory;
 
-    private static ThreadUtilsWrapper sInstance;
+    private static @Nullable ThreadUtilsWrapper sInstance;
 
-    protected ThreadUtilsWrapper() {
-    }
+    protected ThreadUtilsWrapper() {}
 
     /**
      * Returns the singleton instance of ThreadUtilsWrapper, creating it if needed.

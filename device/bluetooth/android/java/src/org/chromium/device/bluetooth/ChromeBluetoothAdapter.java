@@ -4,6 +4,8 @@
 
 package org.chromium.device.bluetooth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanFilter;
@@ -22,6 +24,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.device.bluetooth.wrapper.BluetoothAdapterWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothDeviceWrapper;
@@ -38,13 +42,14 @@ import java.util.Map;
  * Lifetime is controlled by device::BluetoothAdapterAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothAdapter extends BroadcastReceiver {
     private static final String TAG = "Bluetooth";
 
     private long mNativeBluetoothAdapterAndroid;
     // mAdapter is final to ensure registerReceiver is followed by unregisterReceiver.
     private final BluetoothAdapterWrapper mAdapter;
-    private final ChromeBluetoothLeScanner mLeScanner;
+    private final @Nullable ChromeBluetoothLeScanner mLeScanner;
 
     // ---------------------------------------------------------------------------------------------
     // Construction and handler for C++ object destruction.
@@ -146,7 +151,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
     // Implements BluetoothAdapterAndroid::IsDiscovering.
     @CalledByNative
     private boolean isDiscovering() {
-        return isPresent() && (mAdapter.isDiscovering() || mLeScanner.isScanning());
+        return isPresent() && (mAdapter.isDiscovering() || assumeNonNull(mLeScanner).isScanning());
     }
 
     /**
@@ -161,7 +166,8 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
             return false;
         }
 
-        return mLeScanner.startScan(ChromeBluetoothLeScanner.INDEFINITE_SCAN_DURATION, filters);
+        return assumeNonNull(mLeScanner)
+                .startScan(ChromeBluetoothLeScanner.INDEFINITE_SCAN_DURATION, filters);
     }
 
     /**
@@ -175,7 +181,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
             return false;
         }
 
-        return mLeScanner.stopScan();
+        return assumeNonNull(mLeScanner).stopScan();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -379,7 +385,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                 ChromeBluetoothAdapter caller,
                 String address,
                 BluetoothDeviceWrapper deviceWrapper,
-                String localName,
+                @Nullable String localName,
                 int rssi,
                 String[] advertisedUuids,
                 int txPower,
