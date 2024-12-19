@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views.h"
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
