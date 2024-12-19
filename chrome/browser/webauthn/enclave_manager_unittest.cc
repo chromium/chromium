@@ -1800,7 +1800,8 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   ui_request->claimed_pin = nullptr;
   ui_request->save_passkey_callback = base::BindOnce(
       [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
-  ui_request->user_verified = true;
+  ui_request->up_and_uv_bits =
+      device::enclave::UserPresentAndVerifiedBits::kPresentAndVerified;
   ui_request->uv_key_creation_callback =
       manager_.UserVerifyingKeyCreationCallback();
   ui_request->unregister_callback =
@@ -1892,7 +1893,8 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
   ui_request->claimed_pin = nullptr;
   ui_request->save_passkey_callback = base::BindOnce(
       [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
-  ui_request->user_verified = true;
+  ui_request->up_and_uv_bits =
+      device::enclave::UserPresentAndVerifiedBits::kPresentAndVerified;
   ui_request->unregister_callback =
       base::BindOnce(&EnclaveManager::Unenroll, manager_.GetWeakPtr(),
                      base::BindLambdaForTesting(

@@ -318,7 +318,7 @@ absl::variant<std::pair<AuthenticatorMakeCredentialResponse,
 ParseMakeCredentialResponse(cbor::Value response_value,
                             const CtapMakeCredentialRequest& request,
                             int32_t wrapped_secret_version,
-                            bool user_verified) {
+                            UserPresentAndVerifiedBits up_and_uv) {
   if (!response_value.is_array() || response_value.GetArray().empty()) {
     return ErrorResponse("Command response was not a valid CBOR array.");
   }
@@ -419,13 +419,22 @@ ParseMakeCredentialResponse(cbor::Value response_value,
                                          std::move(public_key));
 
   uint8_t flags =
-      static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence) |
       static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation) |
       static_cast<uint8_t>(AuthenticatorData::Flag::kBackupEligible) |
       static_cast<uint8_t>(AuthenticatorData::Flag::kBackupState);
-  if (user_verified) {
-    flags |=
-        static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserVerification);
+  switch (up_and_uv) {
+    case UserPresentAndVerifiedBits::kNeither:
+      break;
+    case UserPresentAndVerifiedBits::kPresentOnly:
+      flags |=
+          static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence);
+      break;
+    case UserPresentAndVerifiedBits::kPresentAndVerified:
+      flags |=
+          static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence) |
+          static_cast<uint8_t>(
+              AuthenticatorData::Flag::kTestOfUserVerification);
+      break;
   }
   AuthenticatorData authenticator_data(
       fido_parsing_utils::CreateSHA256Hash(request.rp.id), flags,

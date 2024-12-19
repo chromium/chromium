@@ -80,7 +80,7 @@ absl::variant<std::pair<AuthenticatorMakeCredentialResponse,
         ParseMakeCredentialResponse(cbor::Value response,
                                     const CtapMakeCredentialRequest& request,
                                     int32_t wrapped_secret_version,
-                                    bool user_verified);
+                                    UserPresentAndVerifiedBits up_and_uv);
 
 // Returns a CBOR value with the provided GetAssertion request and associated
 // passkey. The return value can be serialized into a Command request according

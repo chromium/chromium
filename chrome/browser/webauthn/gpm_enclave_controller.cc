@@ -263,7 +263,7 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
   }
 
   if (!GpmWillDoUserVerification(uv, platform_has_biometrics)) {
-    return EnclaveUserVerificationMethod::kNone;
+    return EnclaveUserVerificationMethod::kUserPresenceOnly;
   }
 
   switch (uv_key_state) {
@@ -865,7 +865,7 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
   switch (*uv_method_) {
     case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
     case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-    case EnclaveUserVerificationMethod::kNone:
+    case EnclaveUserVerificationMethod::kUserPresenceOnly:
     case EnclaveUserVerificationMethod::kImplicit:
       model_->DisableUiOrShowLoadingDialog();
       StartTransaction();
@@ -884,6 +884,9 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
     case EnclaveUserVerificationMethod::kPIN:
       PromptForPin();
       break;
+
+    case EnclaveUserVerificationMethod::kNoUserVerificationAndNoUserPresence:
+      NOTREACHED();  // Only valid for passkey upgrade requests.
   }
 }
 
@@ -930,7 +933,7 @@ void GPMEnclaveController::OnGPMSelected() {
       switch (*uv_method_) {
         case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
         case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-        case EnclaveUserVerificationMethod::kNone:
+        case EnclaveUserVerificationMethod::kUserPresenceOnly:
         case EnclaveUserVerificationMethod::kImplicit:
         case EnclaveUserVerificationMethod::kPIN:
           model_->SetStep(Step::kGPMCreatePasskey);
@@ -943,6 +946,10 @@ void GPMEnclaveController::OnGPMSelected() {
         case EnclaveUserVerificationMethod::kUnsatisfiable:
           model_->SetStep(Step::kGPMError);
           break;
+
+        case EnclaveUserVerificationMethod::
+            kNoUserVerificationAndNoUserPresence:
+          NOTREACHED();  // Only valid for passkey upgrade requests.
       }
       break;
 
@@ -992,7 +999,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
       switch (*uv_method_) {
         case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
         case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-        case EnclaveUserVerificationMethod::kNone:
+        case EnclaveUserVerificationMethod::kUserPresenceOnly:
         case EnclaveUserVerificationMethod::kImplicit:
           if (model_->step() != Step::kPasskeyAutofill) {
             // The autofill UI shows its own loading indicator.
@@ -1012,6 +1019,10 @@ void GPMEnclaveController::OnGPMPasskeySelected(
         case EnclaveUserVerificationMethod::kUnsatisfiable:
           model_->SetStep(Step::kGPMError);
           break;
+
+        case EnclaveUserVerificationMethod::
+            kNoUserVerificationAndNoUserPresence:
+          NOTREACHED();  // Only valid for passkey upgrade requests.
       }
       break;
 
@@ -1123,7 +1134,7 @@ void GPMEnclaveController::OnGPMCreatePasskey() {
     switch (*uv_method_) {
       case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
       case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-      case EnclaveUserVerificationMethod::kNone:
+      case EnclaveUserVerificationMethod::kUserPresenceOnly:
       case EnclaveUserVerificationMethod::kImplicit:
         model_->DisableUiOrShowLoadingDialog();
         StartTransaction();
@@ -1137,6 +1148,7 @@ void GPMEnclaveController::OnGPMCreatePasskey() {
         model_->SetStep(Step::kGPMTouchID);
         break;
 
+      case EnclaveUserVerificationMethod::kNoUserVerificationAndNoUserPresence:
       case EnclaveUserVerificationMethod::kUnsatisfiable:
         NOTREACHED();
     }

@@ -114,7 +114,7 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(profile()),
       device::FidoRequestType::kMakeCredential, rp_id_,
-      EnclaveUserVerificationMethod::kNone,
+      EnclaveUserVerificationMethod::kNoUserVerificationAndNoUserPresence,
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile()),
       /*pin=*/std::nullopt, /*selected_credential_id=*/std::nullopt,
       enclave_request_callback_);

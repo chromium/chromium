@@ -437,7 +437,7 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
 
   auto parse_result = ParseMakeCredentialResponse(
       std::move(response_cbor), ctap_request, kWrappedSecretVersion,
-      /*user_verified=*/true);
+      UserPresentAndVerifiedBits::kPresentAndVerified);
   EXPECT_TRUE(
       (absl::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
                                          sync_pb::WebauthnCredentialSpecifics>>(
@@ -467,7 +467,39 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
       register_response.transports->contains(FidoTransportProtocol::kHybrid));
   EXPECT_TRUE(register_response.is_resident_key);
   EXPECT_TRUE(register_response.attestation_object.authenticator_data()
+                  .obtained_user_presence());
+  EXPECT_TRUE(register_response.attestation_object.authenticator_data()
                   .obtained_user_verification());
+}
+
+TEST_F(EnclaveProtocolUtilsTest,
+       ParseMakeCredentialResponse_WithoutUserPresence) {
+  std::vector<uint8_t> response_serialized;
+  CHECK(
+      base::HexStringToBytes(kMakeCredentialHexResponse, &response_serialized));
+  cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
+  CtapMakeCredentialRequest ctap_request(
+      kClientDataJson, PublicKeyCredentialRpEntity(kRpId),
+      PublicKeyCredentialUserEntity(user_id()),
+      PublicKeyCredentialParams(
+          std::vector<PublicKeyCredentialParams::CredentialInfo>()));
+
+  // Passkey upgrade requests yield up=0, uv=0 responses.
+  auto parse_result = ParseMakeCredentialResponse(
+      std::move(response_cbor), ctap_request, kWrappedSecretVersion,
+      UserPresentAndVerifiedBits::kNeither);
+  EXPECT_TRUE(
+      (absl::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
+                                         sync_pb::WebauthnCredentialSpecifics>>(
+          parse_result)));
+  const auto& register_response =
+      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
+                          sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+          .first;
+  EXPECT_FALSE(register_response.attestation_object.authenticator_data()
+                   .obtained_user_presence());
+  EXPECT_FALSE(register_response.attestation_object.authenticator_data()
+                   .obtained_user_verification());
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
@@ -483,7 +515,7 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
     cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
     auto parse_result = ParseMakeCredentialResponse(
         std::move(response_cbor), ctap_request, kWrappedSecretVersion,
-        /*user_verified=*/false);
+        UserPresentAndVerifiedBits::kPresentOnly);
     EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result) &&
                 absl::get<ErrorResponse>(parse_result).error_string.has_value())
         << "Failed MakeCredential response parsing for: " << test_case.name;
@@ -515,7 +547,7 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
   cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
   auto parse_result = ParseMakeCredentialResponse(
       std::move(response_cbor), ctap_request, kWrappedSecretVersion,
-      /*user_verified=*/false);
+      UserPresentAndVerifiedBits::kPresentOnly);
 
   EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result));
   EXPECT_TRUE(absl::get<ErrorResponse>(parse_result).error_code.has_value());
