@@ -4421,14 +4421,8 @@ class LensOverlayControllerBrowserPDFContextualizationTest
   static constexpr uint32_t kFileSizeLimitBytes = 10000;
 };
 
-// TODO(crbug.com/383554290): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PdfBytesIncludedInRequest DISABLED_PdfBytesIncludedInRequest
-#else
-#define MAYBE_PdfBytesIncludedInRequest PdfBytesIncludedInRequest
-#endif
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
-                       MAYBE_PdfBytesIncludedInRequest) {
+                       PdfBytesIncludedInRequest) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
