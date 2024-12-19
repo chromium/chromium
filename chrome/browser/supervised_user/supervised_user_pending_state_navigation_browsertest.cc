@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #include "chrome/browser/ui/browser.h"
@@ -42,6 +44,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -95,18 +98,39 @@ class ThrottleTestParam {
   }
 };
 
-bool IsReauthenticationInterstitialBeingShown(content::WebContents* content) {
-  CHECK(content);
-  std::string command =
-      "document.querySelector('.supervised-user-verify') != null";
-  return content::EvalJs(content, command).ExtractBool();
+bool ExecuteJsCommand(content::FrameTreeNodeId frame_id,
+                      const std::string_view command,
+                      content::WebContents* web_contents) {
+  content::RenderFrameHost* render_frame_host =
+      web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_id);
+
+  CHECK(render_frame_host);
+  content::ToRenderFrameHost target =
+      content::ToRenderFrameHost(render_frame_host);
+  return content::EvalJs(target, command,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+      .ExtractBool();
 }
 
-bool IsBlockedUrlInterstitialBeingShown(content::WebContents* content) {
-  CHECK(content);
+bool IsReauthenticationInterstitialBeingShown(
+    content::FrameTreeNodeId frame_id,
+    content::WebContents* web_contents,
+    bool is_subframe) {
+  std::string command;
+  if (is_subframe) {
+    command =
+        "document.querySelector('.supervised-user-verify-subframe') != null";
+  } else {
+    command = "document.querySelector('.supervised-user-verify') != null";
+  }
+  return ExecuteJsCommand(frame_id, command, web_contents);
+}
+
+bool IsBlockedUrlInterstitialBeingShown(content::FrameTreeNodeId frame_id,
+                                        content::WebContents* web_contents) {
   std::string command =
       "document.querySelector('.supervised-user-block') != null";
-  return content::EvalJs(content, command).ExtractBool();
+  return ExecuteJsCommand(frame_id, command, web_contents);
 }
 
 class SupervisedUserPendingStateNavigationTest
@@ -160,39 +184,62 @@ class SupervisedUserPendingStateNavigationTest
   }
 
   void SignInSupervisedUserAndWaitForInterstitialReload(
-      content::WebContents* content,
-      const GURL& url) {
+      content::WebContents* interstitial_content,
+      const GURL& url,
+      std::optional<std::string> blocked_frame_name = std::nullopt) {
     Profile* profile =
-        Profile::FromBrowserContext(contents()->GetBrowserContext());
+        Profile::FromBrowserContext(interstitial_content->GetBrowserContext());
     ASSERT_TRUE(ChildAccountServiceFactory::GetForProfile(profile)
                     ->GetGoogleAuthState() !=
                 supervised_user::ChildAccountService::AuthState::AUTHENTICATED);
 
+    bool is_subframe = blocked_frame_name.has_value();
+    content::RenderFrameHost* rfh =
+        is_subframe
+            ? FindFrameByName(interstitial_content, blocked_frame_name.value())
+            : interstitial_content->GetPrimaryMainFrame();
+    auto frame_id = rfh->GetFrameTreeNodeId();
+
     // Before sign-in the user still sees the re-authentication interstitial.
-    ASSERT_TRUE(IsReauthenticationInterstitialBeingShown(content));
-    ASSERT_FALSE(IsBlockedUrlInterstitialBeingShown(content));
+    ASSERT_TRUE(IsReauthenticationInterstitialBeingShown(
+        frame_id, interstitial_content, is_subframe));
+    ASSERT_FALSE(
+        IsBlockedUrlInterstitialBeingShown(frame_id, interstitial_content));
 
     content::TestNavigationObserver observer(url);
-    observer.WatchWebContents(content);
+    observer.WatchWebContents(interstitial_content);
     kids_management_api_mock().AllowSubsequentClassifyUrl();
 
+    // Sign-in the user.
     supervision_mixin_.SignIn(
         supervised_user::SupervisionMixin::SignInMode::kSupervised);
-
     ASSERT_FALSE(
         identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
             identity_manager()->GetPrimaryAccountId(
                 signin::ConsentLevel::kSignin)));
-
     ASSERT_TRUE(
         identity_manager()->GetAccountsInCookieJar().AreAccountsFresh());
-
     observer.WaitForNavigationFinished();
+
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      // The frame might not be found while the page is reloading so we
+      // search for it in a waiter loop.
+      rfh = is_subframe ? LookupFrameByName(interstitial_content,
+                                            blocked_frame_name.value())
+                        : interstitial_content->GetPrimaryMainFrame();
+      return rfh != nullptr;
+    }));
+    CHECK(rfh->IsRenderFrameLive());
+    frame_id = rfh->GetFrameTreeNodeId();
 
     // Wait for the re-auth page to be asynchronously reloaded and replaced by
     // the blocked url interstitial.
-    ASSERT_FALSE(IsReauthenticationInterstitialBeingShown(content));
-    ASSERT_TRUE(IsBlockedUrlInterstitialBeingShown(content));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      CHECK(frame_id);
+      return IsBlockedUrlInterstitialBeingShown(frame_id, interstitial_content);
+    }));
+    ASSERT_FALSE(IsReauthenticationInterstitialBeingShown(
+        frame_id, interstitial_content, is_subframe));
   }
 
   // Start sign-in flow by clicking on the primary button.
@@ -261,10 +308,18 @@ class SupervisedUserPendingStateNavigationTest
     url_filter->SetManualHosts(std::move(hosts));
   }
 
-  content::RenderFrameHost* FindFrameByName(const std::string& name) {
-    content::RenderFrameHost* rfh = content::FrameMatchingPredicate(
-        contents()->GetPrimaryPage(),
+  content::RenderFrameHost* LookupFrameByName(
+      content::WebContents* web_contents,
+      const std::string& name) {
+    CHECK(web_contents);
+    return content::FrameMatchingPredicate(
+        web_contents->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, name));
+  }
+
+  content::RenderFrameHost* FindFrameByName(content::WebContents* web_contents,
+                                            const std::string& name) {
+    content::RenderFrameHost* rfh = LookupFrameByName(web_contents, name);
     CHECK(rfh);
     CHECK(rfh->IsRenderFrameLive());
     return rfh;
@@ -484,13 +539,15 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
       ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
   ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
 
+  auto* main_frame_contents = contents();
   // Verify that the iframes are loaded.
   WaitForPageTitle(u"Supervised User test: page with iframes");
-  EXPECT_TRUE(content::EvalJs(contents(), "loaded1()").ExtractBool());
-  EXPECT_TRUE(content::EvalJs(contents(), "loaded2()").ExtractBool());
+  EXPECT_TRUE(content::EvalJs(main_frame_contents, "loaded1()").ExtractBool());
+  EXPECT_TRUE(content::EvalJs(main_frame_contents, "loaded2()").ExtractBool());
 
   SCOPED_TRACE("iframe2");
-  content::RenderFrameHost* iframe2 = FindFrameByName("iframe2");
+  content::RenderFrameHost* iframe2 =
+      FindFrameByName(main_frame_contents, "iframe2");
 
   // Check that the subframe interstitial contains the correct text.
   EXPECT_THAT(
@@ -504,12 +561,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
 
   // Sign in a supervised user, which completes re-authentication.
   // This should close the sign-in tab.
-  supervision_mixin_.SignIn(
-      supervised_user::SupervisionMixin::SignInMode::kSupervised);
+  SignInSupervisedUserAndWaitForInterstitialReload(
+      main_frame_contents, allowed_url_with_iframes,
+      std::make_optional<std::string>("iframe2"));
   ASSERT_TRUE(base::test::RunUntil([&]() { return GetTabCount() == 1; }));
-
-  // TODO(https://crbug.com/365531704): Wait until the blocked site interstitial
-  // is displayed.
 
   // UKM should not be recorded for the subframe interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
@@ -535,8 +590,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   EXPECT_TRUE(content::EvalJs(contents(), "loaded1()").ExtractBool());
   EXPECT_TRUE(content::EvalJs(contents(), "loaded2()").ExtractBool());
 
-  content::RenderFrameHost* iframe1 = FindFrameByName("iframe1");
-  content::RenderFrameHost* iframe2 = FindFrameByName("iframe2");
+  content::RenderFrameHost* iframe1 = FindFrameByName(contents(), "iframe1");
+  content::RenderFrameHost* iframe2 = FindFrameByName(contents(), "iframe2");
 
   // Check that the subframe interstitial contains the correct text.
   std::string subframe_description = l10n_util::GetStringUTF8(
