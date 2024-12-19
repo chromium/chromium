@@ -15,6 +15,7 @@
 
 #include "base/functional/bind.h"
 #include "base/macros/concat.h"
+#include "base/macros/remove_parens.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/class_property.h"
@@ -355,6 +356,18 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 #define PASS_PARAMS(...) \
   BASE_CONCAT(PASS_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
+// Ensures the supplied args are surrounded by angle brackets.
+#define CHECK_TEMPLATE_TYPES_SYNTAX(...) \
+  CHECK_TEMPLATE_TYPES_SYNTAX_EXPANDED(__VA_ARGS__)
+#define CHECK_TEMPLATE_TYPES_SYNTAX_EXPANDED(...)                              \
+  static_assert(                                                               \
+      [] {                                                                     \
+        constexpr auto a = std::string_view(#__VA_ARGS__);                     \
+        return a.length() >= 2 && a.front() == '<' && a.back() == '>';         \
+      }(),                                                                     \
+      "Template type arg is not surrounded by angle brackets; did you supply " \
+      "multiple types without wrapping the whole arg in parens?")
+
 // BEGIN_VIEW_BUILDER, END_VIEW_BUILDER and VIEW_BUILDER_XXXX macros should
 // be placed into the same namespace as the 'view_class' parameter.
 
@@ -410,6 +423,42 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 #define VIEW_BUILDER_PROPERTY(...)                                           \
   NUM_ARGS_IMPL(__VA_ARGS__, VIEW_BUILDER_PROPERTY3, VIEW_BUILDER_PROPERTY2) \
   (__VA_ARGS__)
+
+// For use with templated setters. Supply the template type list, in angle
+// brackets, in the first arg; if there are multiple template args, wrap in
+// parens so the preprocessor keeps everything in one arg. After the property
+// name, list the param types. For example:
+// ```
+//   template <typename T>
+//   void SetValue(T value);
+//
+//   template <typename T, typename U>
+//   void SetProperty(const ui::ClassProperty<T>* property, U&& value);
+//
+// =>
+//
+//   VIEW_BUILDER_TEMPLATED_PROPERTY(<typename T>, Value, T)
+//   VIEW_BUILDER_TEMPLATED_PROPERTY((<typename T, typename U>),
+//                                   Property,
+//                                   const ui::ClassProperty<T>*,
+//                                   U&&)
+#define VIEW_BUILDER_TEMPLATED_PROPERTY(template_types, property_name, ...)   \
+  CHECK_TEMPLATE_TYPES_SYNTAX(BASE_REMOVE_PARENS(template_types));            \
+  template BASE_REMOVE_PARENS(template_types)                                 \
+      BuilderT& Set##property_name(DECL_PARAMS(__VA_ARGS__))& {               \
+    auto caller = std::make_unique<::views::internal::ClassMethodCaller<      \
+        ViewClass_,                                                           \
+        decltype(static_cast<void (ViewClass_::*)(__VA_ARGS__)>(              \
+            &ViewClass_::Set##property_name)),                                \
+        &ViewClass_::Set##property_name, __VA_ARGS__>>(                       \
+        PASS_PARAMS(__VA_ARGS__));                                            \
+    ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(caller)); \
+    return *static_cast<BuilderT*>(this);                                     \
+  }                                                                           \
+  template BASE_REMOVE_PARENS(template_types)                                 \
+      BuilderT&& Set##property_name(DECL_PARAMS(__VA_ARGS__))&& {             \
+    return std::move(this->Set##property_name(PASS_PARAMS(__VA_ARGS__)));     \
+  }
 
 // Sometimes the method being called is on the ancestor to ViewClass_. This
 // macro will ensure the overload casts function correctly by specifying the
