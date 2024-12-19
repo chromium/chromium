@@ -1516,10 +1516,10 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_FACEGAZE_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables FaceGaze, to confirm they meant to disable the feature.">
         Are you sure you want to turn off face control?
       </message>
-      <message name="IDS_ASH_FACEGAZE_CURSOR_CONTROL_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables cursor control in FaceGaze, to confirm they meant to disable the feature." translateable="false">
+      <message name="IDS_ASH_FACEGAZE_CURSOR_CONTROL_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables cursor control in FaceGaze, to confirm they meant to disable the feature.">
         Are you sure you want to turn off mouse cursor control?
       </message>
-      <message name="IDS_ASH_FACEGAZE_ACTIONS_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables performing actions using facial gestures in FaceGaze, to confirm they meant to disable the feature." translateable="false">
+      <message name="IDS_ASH_FACEGAZE_ACTIONS_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables performing actions using facial gestures in FaceGaze, to confirm they meant to disable the feature.">
         Are you sure you want to turn off facial gestures?
       </message>
 
