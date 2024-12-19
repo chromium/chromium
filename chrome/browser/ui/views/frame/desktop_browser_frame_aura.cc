@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura.h"
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/aura/client/aura_constants.h"
@@ -64,6 +65,19 @@ void DesktopBrowserFrameAura::InitNativeWidget(
                                     visibility_controller_.get());
   wm::SetChildWindowVisibilityChangesAnimated(
       GetNativeView()->GetRootWindow());
+}
+
+void DesktopBrowserFrameAura::OnOcclusionStateChanged(
+    aura::WindowTreeHost* host,
+    aura::Window::OcclusionState new_state,
+    const SkRegion& occluded_region) {
+  if (browser_view_) {
+    if (base::FeatureList::IsEnabled(
+            features::kStopLoadingAnimationForHiddenWindow)) {
+      browser_view_->UpdateLoadingAnimations(
+          new_state == aura::Window::OcclusionState::VISIBLE);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
