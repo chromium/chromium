@@ -7,6 +7,7 @@
 #include "components/commerce/core/pref_names.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 
 namespace commerce {
 
@@ -20,6 +21,10 @@ MockAccountChecker::MockAccountChecker()
   SetCanUseModelExecutionFeatures(true);
   SetCountry("us");
   SetLocale("en-us");
+  // Default pref service can be overwritten by SetPrefs below.
+  default_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+  RegisterCommercePrefs(default_pref_service_->registry());
+  SetPrefs(default_pref_service_.get());
 }
 
 MockAccountChecker::~MockAccountChecker() = default;

@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 class PrefService;
+class TestingPrefServiceSimple;
 
 namespace commerce {
 
@@ -66,6 +67,9 @@ class MockAccountChecker : public AccountChecker {
   // registering some prefs that might be registered by other components in
   // prod, which would lead to multiple-registering error.
   static void RegisterCommercePrefs(PrefRegistrySimple* registry);
+
+ private:
+  std::unique_ptr<TestingPrefServiceSimple> default_pref_service_;
 };
 
 }  // namespace commerce
