@@ -838,8 +838,6 @@ static_library("ui") {
       "android/infobars/autofill_save_card_infobar.h",
       "android/infobars/autofill_virtual_card_enrollment_infobar.cc",
       "android/infobars/autofill_virtual_card_enrollment_infobar.h",
-      "android/infobars/duplicate_download_infobar.cc",
-      "android/infobars/duplicate_download_infobar.h",
       "android/infobars/infobar_container_android.cc",
       "android/infobars/infobar_container_android.h",
       "android/infobars/permission_infobar.cc",

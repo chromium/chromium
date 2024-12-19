@@ -104,7 +104,6 @@
 #include "base/android/path_utils.h"
 #include "base/process/process_handle.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/download/android/chrome_duplicate_download_infobar_delegate.h"
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_dialog_bridge.h"
 #include "chrome/browser/download/android/download_manager_service.h"

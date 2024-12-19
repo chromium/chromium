@@ -718,7 +718,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/incognito/IncognitoTabbedSnapshotController.java",
   "java/src/org/chromium/chrome/browser/infobar/AutofillSaveCardInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/AutofillVirtualCardEnrollmentInfoBar.java",
-  "java/src/org/chromium/chrome/browser/infobar/DuplicateDownloadInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/InfoBarContainer.java",
   "java/src/org/chromium/chrome/browser/infobar/InfoBarContainerView.java",
   "java/src/org/chromium/chrome/browser/infobar/KnownInterceptionDisclosureInfoBar.java",
