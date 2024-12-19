@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -48,9 +47,9 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/wm/test/wm_test_helper.h"
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // !BUILDFLAG(IS_CHROMEOS)
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/wm/core/wm_state.h"
@@ -70,7 +69,7 @@ struct ShellPlatformDelegate::ShellData {
 };
 
 struct ShellPlatformDelegate::PlatformData {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<wm::WMTestHelper> wm_test_helper;
 #else
   std::unique_ptr<wm::WMState> wm_state;
@@ -126,7 +125,7 @@ class ShellView : public views::BoxLayoutView,
 
     // Resizing a widget on chromeos doesn't automatically resize the root, need
     // to explicitly do that.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     GetWidget()->GetNativeWindow()->GetHost()->SetBoundsInPixels(bounds);
 #endif
   }
@@ -334,7 +333,7 @@ void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
 
   platform_ = std::make_unique<PlatformData>();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   platform_->wm_test_helper =
       std::make_unique<wm::WMTestHelper>(default_window_size);
 #else
@@ -363,7 +362,7 @@ void ShellPlatformDelegate::CreatePlatformWindow(
   delegate->SetHasWindowSizeControls(true);
   delegate->SetOwnedByWidget(true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   shell_data.window_widget = views::Widget::CreateWindowWithContext(
       std::move(delegate),
       platform_->wm_test_helper->GetDefaultParent(nullptr, gfx::Rect(),

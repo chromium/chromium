@@ -29,7 +29,6 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -71,11 +70,9 @@
 #include "third_party/blink/public/web/web_view.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
-#endif  // defined(X86_64)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/system/core_scheduling.h"
@@ -165,7 +162,7 @@ int RendererMain(MainFunctionParams parameters) {
   base::apple::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // As the Zygote process starts up earlier than the browser process, it gets
   // its own locale (at login time for Chrome OS). So we have to set the ICU
   // default locale for the renderer process here.
@@ -175,15 +172,11 @@ int RendererMain(MainFunctionParams parameters) {
         command_line.GetSwitchValueASCII(switches::kLang);
     base::i18n::SetICUDefaultLocale(locale);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // When we start the renderer on ChromeOS if the system has core scheduling
   // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(ARCH_CPU_X86_64)
   using UserspaceSwapInit =
       ash::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
@@ -195,7 +188,7 @@ int RendererMain(MainFunctionParams parameters) {
         << "Unable to complete presandbox userspace swap initialization";
   }
 #endif  // defined(ARCH_CPU_X86_64)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   InitializeSkia();
 
@@ -289,7 +282,7 @@ int RendererMain(MainFunctionParams parameters) {
     new RenderThreadImpl(run_loop.QuitClosure(),
                          std::move(main_thread_scheduler));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
     // Once the sandbox has been entered and initialization of render threads
     // complete we will transfer FDs to the browser, or close them on failure.
     // This should always be called because it will also transfer the errno that

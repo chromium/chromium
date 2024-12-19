@@ -17,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -510,17 +509,9 @@ IN_PROC_BROWSER_TEST_F(
   }));
 }
 
-// TODO(crbug.com/40681859): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SerializeHTMLDOMWithEntitiesInText \
-  DISABLED_SerializeHTMLDOMWithEntitiesInText
-#else
-#define MAYBE_SerializeHTMLDOMWithEntitiesInText \
-  SerializeHTMLDOMWithEntitiesInText
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test situation of html entities in text when serializing HTML DOM.
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       MAYBE_SerializeHTMLDOMWithEntitiesInText) {
+                       SerializeHTMLDOMWithEntitiesInText) {
   // Need to spin up the renderer and also navigate to a file url so that the
   // renderer code doesn't attempt a fork when it sees a load to file scheme
   // from non-file scheme.

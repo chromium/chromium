@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
@@ -46,6 +45,7 @@
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
 #include "gpu/config/gpu_info_collector.h"
+#include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
 #include "media/gpu/sandbox/hardware_video_encoding_sandbox_hook_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "services/audio/audio_sandbox_hook_linux.h"
@@ -66,15 +66,11 @@
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS) && BUILDFLAG(IS_LINUX)
 #include "services/video_effects/video_effects_sandbox_hook_linux.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS) && BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/ime/ime_sandbox_hook.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
@@ -82,7 +78,7 @@
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/ash/services/libassistant/libassistant_sandbox_hook.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "base/message_loop/message_pump_apple.h"
@@ -142,9 +138,7 @@ std::vector<std::string> GetNetworkContextsParentDirectories() {
 
 bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
   const bool obtain_gpu_info =
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding ||
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoEncoding;
 
   if (obtain_gpu_info) {
@@ -315,17 +309,17 @@ int UtilityMain(MainFunctionParams parameters) {
           base::BindOnce(&video_effects::VideoEffectsPreSandboxHook);
       break;
 #endif  // BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       pre_sandbox_hook =
           base::BindOnce(&media::HardwareVideoDecodingPreSandboxHook);
       break;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kHardwareVideoEncoding:
       pre_sandbox_hook =
           base::BindOnce(&media::HardwareVideoEncodingPreSandboxHook);
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kIme:
       pre_sandbox_hook = base::BindOnce(&ash::ime::ImePreSandboxHook);
       break;
@@ -338,7 +332,7 @@ int UtilityMain(MainFunctionParams parameters) {
           base::BindOnce(&ash::libassistant::LibassistantPreSandboxHook);
       break;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     default:
       break;
   }

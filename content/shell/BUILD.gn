@@ -311,7 +311,6 @@ static_library("content_shell_lib") {
     ":shell_controller_mojom",
     "//base",
     "//base:base_static",
-    "//build:chromeos_buildflags",
     "//cc/base",
     "//components/cdm/renderer",
     "//components/custom_handlers",
@@ -469,15 +468,8 @@ static_library("content_shell_lib") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/dbus" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/dbus/constants",
-      "//chromeos/lacros/dbus",
-    ]
   }
 
   if (is_linux || is_chromeos) {

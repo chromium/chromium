@@ -241,7 +241,6 @@ target(link_target_type, "renderer") {
     "//base",
     "//base:i18n",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc/animation",
     "//cc/mojo_embedder",
@@ -566,10 +565,10 @@ target(link_target_type, "renderer") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/system:system" ]
-  }
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos:chromeos_export" ]
+    deps += [
+      "//chromeos:chromeos_export",
+      "//chromeos/system",
+    ]
     if (target_cpu == "x64") {
       deps += [ "//chromeos/ash/components/memory/userspace_swap" ]
     }
