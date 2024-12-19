@@ -129,8 +129,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       std::string debug_label,
       size_t estimated_size,
       bool is_thread_safe,
-      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt);
+      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   virtual ~SharedImageBacking();
 
@@ -469,8 +468,7 @@ class GPU_GLES2_EXPORT ClearTrackingSharedImageBacking
       std::string debug_label,
       size_t estimated_size,
       bool is_thread_safe,
-      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt);
+      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;

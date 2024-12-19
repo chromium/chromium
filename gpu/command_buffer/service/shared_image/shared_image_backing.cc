@@ -81,8 +81,7 @@ SharedImageBacking::SharedImageBacking(
     std::string debug_label,
     size_t estimated_size,
     bool is_thread_safe,
-    std::optional<gfx::BufferUsage> buffer_usage,
-    std::optional<SharedImagePoolId> pool_id)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : mailbox_(mailbox),
       format_(format),
       size_(size),
@@ -92,8 +91,7 @@ SharedImageBacking::SharedImageBacking(
       usage_(usage),
       debug_label_(std::move(debug_label)),
       estimated_size_(estimated_size),
-      buffer_usage_(std::move(buffer_usage)),
-      pool_id_(std::move(pool_id)) {
+      buffer_usage_(std::move(buffer_usage)) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_thread_checker_);
 
   if (is_thread_safe)
@@ -454,8 +452,7 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
     std::string debug_label,
     size_t estimated_size,
     bool is_thread_safe,
-    std::optional<gfx::BufferUsage> buffer_usage,
-    std::optional<SharedImagePoolId> pool_id)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -466,8 +463,7 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
                          std::move(debug_label),
                          estimated_size,
                          is_thread_safe,
-                         std::move(buffer_usage),
-                         std::move(pool_id)) {}
+                         std::move(buffer_usage)) {}
 
 gfx::Rect ClearTrackingSharedImageBacking::ClearedRect() const {
   AutoLock auto_lock(this);
