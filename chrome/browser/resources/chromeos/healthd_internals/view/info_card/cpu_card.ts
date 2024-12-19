@@ -7,6 +7,7 @@ import './info_card.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CpuUsage} from '../../model/cpu_usage_helper.js';
+import {getAverageCpuUsage} from '../../utils/cpu_usage_utils.js';
 import {HealthdApiPhysicalCpuResult, HealthdApiTelemetryResult} from '../../utils/externs.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
 
@@ -88,23 +89,15 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
 
     const flattenCpuUsage: (CpuUsage)[] =
         physcialCpuUsage.flat().filter(usage => usage !== null);
-    const count = flattenCpuUsage.length
-    if (count === 0) {
-      return;
-    }
-    for (const usage of flattenCpuUsage) {
-      const totalTime = usage.systemTime + usage.userTime + usage.idleTime;
-      systemPercentage += usage.systemTime / totalTime * 100;
-      userPercentage += usage.userTime / totalTime * 100;
-      idlePercentage += usage.idleTime / totalTime * 100;
-    }
+    const averageUsage = getAverageCpuUsage(flattenCpuUsage);
 
+    const usagePercentage =
+        averageUsage.systemPercentage + averageUsage.userPercentage;
     this.$.infoCard.updateDisplayedInfo(1, {
-      'Overall':
-          `${toFixedFloat((systemPercentage + userPercentage) / count, 2)}%`,
-      'System': `${toFixedFloat(systemPercentage / count, 2)}%`,
-      'User': `${toFixedFloat(userPercentage / count, 2)}%`,
-      'Idle': `${toFixedFloat(idlePercentage / count, 2)}%`,
+      'Overall': `${toFixedFloat(usagePercentage, 2)}%`,
+      'System': `${toFixedFloat(averageUsage.systemPercentage, 2)}%`,
+      'User': `${toFixedFloat(averageUsage.userPercentage, 2)}%`,
+      'Idle': `${toFixedFloat(averageUsage.idlePercentage, 2)}%`,
     });
   }
 

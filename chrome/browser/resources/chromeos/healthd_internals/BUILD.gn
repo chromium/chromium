@@ -42,6 +42,7 @@ build_webui("build") {
     "model/cpu_usage_helper.ts",
     "model/data_manager.ts",
     "model/data_series.ts",
+    "utils/cpu_usage_utils.ts",
     "utils/externs.ts",
     "utils/line_chart_configs.ts",
     "utils/number_utils.ts",

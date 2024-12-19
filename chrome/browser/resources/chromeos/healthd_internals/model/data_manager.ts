@@ -230,9 +230,9 @@ export class DataManager {
     for (const logicalCpuUsage of physcialCpuUsage) {
       for (const cpuUsage of logicalCpuUsage) {
         if (cpuUsage !== null) {
-          this.cpuUsageDataSeries[count].addDataPoint(
-              cpuUsage.usagePercentage, timestamp);
-          sumCpuUsage += cpuUsage.usagePercentage;
+          const usage = cpuUsage.userPercentage + cpuUsage.systemPercentage;
+          this.cpuUsageDataSeries[count].addDataPoint(usage, timestamp);
+          sumCpuUsage += usage;
         }
         count += 1;
       }
