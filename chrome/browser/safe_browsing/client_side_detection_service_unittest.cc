@@ -392,17 +392,28 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
 
   // Invalid response body from the server, but we will still track it as a
   // ping count.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
   SetClientReportPhishingResponse("invalid proto response", net::OK);
   EXPECT_FALSE(SendClientReportPhishingRequest(url, score, access_token));
+  histogram_tester->ExpectUniqueSample(
+      /*name=*/"SBClientPhishing.NetworkResult2",
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
 
   // Normal behavior with no access token.
+  histogram_tester = std::make_unique<base::HistogramTester>();
   ClientPhishingResponse response;
   response.set_phishy(true);
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
   EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));
+  histogram_tester->ExpectUniqueSample(
+      /*name=*/"SBClientPhishing.NetworkResult2",
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
 
   // This request will fail, but not because of the cap, but because the network
   // failed, but we will still log the number of pings sent.
+  histogram_tester = std::make_unique<base::HistogramTester>();
   EXPECT_FALSE(AtPhishingReportLimit());
   GURL second_url("http://b.com/");
   response.set_phishy(false);
@@ -410,6 +421,10 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
                                   net::ERR_FAILED);
   EXPECT_FALSE(
       SendClientReportPhishingRequest(second_url, score, access_token));
+  histogram_tester->ExpectUniqueSample(
+      /*name=*/"SBClientPhishing.NetworkResult2",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 
   // We have sent 3 pings so far, which is the cap.
   EXPECT_TRUE(AtPhishingReportLimit());

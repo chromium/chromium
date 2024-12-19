@@ -759,7 +759,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.NetworkResult"
+<histogram name="SBClientPhishing.NetworkResult2"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-11">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
