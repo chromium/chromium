@@ -143,10 +143,19 @@ public class ActivityTestUtils {
         // Most of the time #waitForIdleSync will include the first layout pass. But once in a while
         // it does not. This is a problem for tests that are going to very quickly try to perform a
         // render of a view.
-        View view = ((Activity) activity).getWindow().getDecorView().getRootView();
-        CriteriaHelper.pollUiThread(() -> view.getMeasuredWidth() > 0);
+        waitForFirstLayout((Activity) activity);
 
         return activity;
+    }
+
+    /**
+     * Wait for layout to occur at least once.
+     *
+     * @param activity The activity on which we should wait.
+     */
+    public static void waitForFirstLayout(Activity activity) throws Exception {
+        View view = ((Activity) activity).getWindow().getDecorView().getRootView();
+        CriteriaHelper.pollUiThread(() -> view.getMeasuredWidth() > 0);
     }
 
     /**

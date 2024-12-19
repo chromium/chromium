@@ -6,7 +6,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/unguessable_token_android.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "cc/slim/surface_layer.h"
 #include "chrome/android/chrome_jni_headers/PictureInPictureActivity_jni.h"
 #include "chrome/browser/android/tab_android.h"
@@ -15,6 +17,16 @@
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android_compositor.h"
+
+using WindowMap = base::flat_map<base::UnguessableToken, OverlayWindowAndroid*>;
+
+namespace {
+WindowMap& GetWindowMap() {
+  static base::NoDestructor<WindowMap> instance;
+  return *instance;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<content::VideoOverlayWindow>
@@ -31,6 +43,7 @@ OverlayWindowAndroid::OverlayWindowAndroid(
       bounds_(gfx::Rect(0, 0)),
       update_action_timer_(std::make_unique<base::OneShotTimer>()),
       controller_(controller) {
+  GetWindowMap().emplace(token_, this);
   surface_layer_->SetIsDrawable(true);
   surface_layer_->SetStretchContentToFillBounds(true);
   surface_layer_->SetBackgroundColor(SkColors::kBlack);
@@ -84,20 +97,42 @@ OverlayWindowAndroid::OverlayWindowAndroid(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_token = base::android::UnguessableTokenAndroid::Create(env, token_);
   Java_PictureInPictureActivity_createActivity(
-      env, reinterpret_cast<intptr_t>(this),
-      TabAndroid::FromWebContents(web_contents)->GetJavaObject(),
+      env, j_token, TabAndroid::FromWebContents(web_contents)->GetJavaObject(),
       source_bounds.x(), source_bounds.y(), source_bounds.width(),
       source_bounds.height());
 }
 
 OverlayWindowAndroid::~OverlayWindowAndroid() {
+  // Any future use of our token will fail.
+  GetWindowMap().erase(token_);
+  if (java_ref_.is_uninitialized()) {
+    return;
+  }
+  // Notify the java side that the native side is gone.
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_onWindowDestroyed(
-      env, reinterpret_cast<intptr_t>(this));
+  Java_PictureInPictureActivity_onWindowDestroyed(env, java_ref_.get(env));
 }
 
-void OverlayWindowAndroid::OnActivityStart(
+static jlong JNI_PictureInPictureActivity_OnActivityStart(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& j_token,
+    const jni_zero::JavaParamRef<jobject>& self,
+    const jni_zero::JavaParamRef<jobject>& window) {
+  auto token = base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
+      env, j_token);
+  auto iter = GetWindowMap().find(token);
+  if (iter == GetWindowMap().end()) {
+    return 0;
+  }
+  OverlayWindowAndroid* thiz = iter->second;
+  thiz->Initialize(env, self, window);
+
+  return reinterpret_cast<jlong>(thiz);
+}
+
+void OverlayWindowAndroid::Initialize(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jwindow_android) {
@@ -137,6 +172,8 @@ void OverlayWindowAndroid::OnActivityStopped() {
 }
 
 void OverlayWindowAndroid::Destroy(JNIEnv* env) {
+  // Note that the java side also clears its native ptr when calling us, so it's
+  // okay that we don't notify it in the dtor.
   java_ref_.reset();
 
   // Stop the timer for completeness, though resetting `java_ref_` will make it

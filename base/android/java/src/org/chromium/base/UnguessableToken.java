@@ -29,7 +29,7 @@ public final class UnguessableToken extends TokenBase implements Parcelable {
     private static int sCounterForTesting;
 
     public static UnguessableToken createForTesting() {
-        return new UnguessableToken(sCounterForTesting++, sCounterForTesting++);
+        return new UnguessableToken(++sCounterForTesting, ++sCounterForTesting);
     }
 
     @CalledByNative

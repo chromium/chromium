@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.media;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
@@ -35,10 +34,10 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.UnguessableToken;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
@@ -76,9 +75,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private static final String CONTROL_STATE =
             "org.chromium.chrome.browser.media.PictureInPictureActivity.ControlState";
 
-    // Use for passing unique window id to each PictureInPictureActivity instance.
-    private static final String NATIVE_POINTER_KEY =
-            "org.chromium.chrome.browser.media.PictureInPictureActivity.NativePointer";
+    // Use for passing unique window id to each PictureInPictureActivity instance.  This is an
+    // UnguessableToken that the native side trades for the underlying raw ptr.
+    private static final String NATIVE_TOKEN_KEY =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.NativeToken";
     // Used for passing webcontents to PictureInPictureActivity.
     private static final String WEB_CONTENTS_KEY =
             "org.chromium.chrome.browser.media.PictureInPicture.WebContents";
@@ -93,8 +93,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private static final float MAX_ASPECT_RATIO = 2.39f;
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
 
-    private static long sPendingNativeOverlayWindowAndroid;
-
+    // The token and corresponding raw pointer to the native side.
+    private UnguessableToken mNativeToken;
     private long mNativeOverlayWindowAndroid;
 
     private Tab mInitiatorTab;
@@ -393,7 +393,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             intent.setPackage(getApplicationContext().getPackageName());
             IntentUtils.addTrustedIntentExtras(intent);
             intent.putExtra(CONTROL_TYPE, action);
-            intent.putExtra(NATIVE_POINTER_KEY, mNativeOverlayWindowAndroid);
+            intent.putExtra(NATIVE_TOKEN_KEY, mNativeToken);
             if (controlState != null) {
                 intent.putExtra(CONTROL_STATE, controlState);
             }
@@ -418,8 +418,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         public void onReceive(Context context, Intent intent) {
             if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
 
-            long nativeOverlayWindowAndroid = intent.getLongExtra(NATIVE_POINTER_KEY, 0);
-            if (nativeOverlayWindowAndroid != mNativeOverlayWindowAndroid
+            // Make sure that this intent is for our instance.
+            UnguessableToken nativeToken = intent.getParcelableExtra(NATIVE_TOKEN_KEY);
+            if (nativeToken == null
+                    || !nativeToken.equals(mNativeToken)
                     || mNativeOverlayWindowAndroid == 0) {
                 return;
             }
@@ -434,34 +436,34 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             switch (intent.getIntExtra(CONTROL_TYPE, -1)) {
                 case MediaSessionAction.PLAY:
                     PictureInPictureActivityJni.get()
-                            .togglePlayPause(nativeOverlayWindowAndroid, /* toggleOn= */ true);
+                            .togglePlayPause(mNativeOverlayWindowAndroid, /* toggleOn= */ true);
                     return;
                 case MediaSessionAction.PAUSE:
                     PictureInPictureActivityJni.get()
-                            .togglePlayPause(nativeOverlayWindowAndroid, /* toggleOn= */ false);
+                            .togglePlayPause(mNativeOverlayWindowAndroid, /* toggleOn= */ false);
                     return;
                 case MediaSessionAction.PREVIOUS_TRACK:
-                    PictureInPictureActivityJni.get().previousTrack(nativeOverlayWindowAndroid);
+                    PictureInPictureActivityJni.get().previousTrack(mNativeOverlayWindowAndroid);
                     return;
                 case MediaSessionAction.NEXT_TRACK:
-                    PictureInPictureActivityJni.get().nextTrack(nativeOverlayWindowAndroid);
+                    PictureInPictureActivityJni.get().nextTrack(mNativeOverlayWindowAndroid);
                     return;
                 case MediaSessionAction.PREVIOUS_SLIDE:
-                    PictureInPictureActivityJni.get().previousSlide(nativeOverlayWindowAndroid);
+                    PictureInPictureActivityJni.get().previousSlide(mNativeOverlayWindowAndroid);
                     return;
                 case MediaSessionAction.NEXT_SLIDE:
-                    PictureInPictureActivityJni.get().nextSlide(nativeOverlayWindowAndroid);
+                    PictureInPictureActivityJni.get().nextSlide(mNativeOverlayWindowAndroid);
                     return;
                 case MediaSessionAction.TOGGLE_MICROPHONE:
                     PictureInPictureActivityJni.get()
-                            .toggleMicrophone(nativeOverlayWindowAndroid, !controlState);
+                            .toggleMicrophone(mNativeOverlayWindowAndroid, !controlState);
                     return;
                 case MediaSessionAction.TOGGLE_CAMERA:
                     PictureInPictureActivityJni.get()
-                            .toggleCamera(nativeOverlayWindowAndroid, !controlState);
+                            .toggleCamera(mNativeOverlayWindowAndroid, !controlState);
                     return;
                 case MediaSessionAction.HANG_UP:
-                    PictureInPictureActivityJni.get().hangUp(nativeOverlayWindowAndroid);
+                    PictureInPictureActivityJni.get().hangUp(mNativeOverlayWindowAndroid);
                     return;
                 default:
                     return;
@@ -618,20 +620,14 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         super.onStart();
 
         final Intent intent = getIntent();
-        mNativeOverlayWindowAndroid = intent.getLongExtra(NATIVE_POINTER_KEY, 0);
-
         intent.setExtrasClassLoader(WebContents.class.getClassLoader());
 
-        // If the our native side is no longer pending, then stop.  Any time this happens, whatever
-        // replaced the pending native side also freed it.
-        if (mNativeOverlayWindowAndroid != sPendingNativeOverlayWindowAndroid) {
-            mNativeOverlayWindowAndroid = 0;
-            // Just finish up immediately, since nothing is set up anyway and there's no native side
-            // to free.
+        // Look up the native side from our token.
+        mNativeToken = intent.getParcelableExtra(NATIVE_TOKEN_KEY);
+        if (mNativeToken == null) {
             this.finish();
             return;
         }
-        sPendingNativeOverlayWindowAndroid = 0;
 
         // Finish the activity if OverlayWindowAndroid has already been destroyed
         // or InitiatorTab has been destroyed by user or crashed.
@@ -650,8 +646,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         mMediaActionsButtonsManager = new MediaActionButtonsManager();
 
-        PictureInPictureActivityJni.get()
-                .onActivityStart(mNativeOverlayWindowAndroid, this, getWindowAndroid());
+        mNativeOverlayWindowAndroid =
+                PictureInPictureActivityJni.get()
+                        .onActivityStart(mNativeToken, this, getWindowAndroid());
+        if (mNativeOverlayWindowAndroid == 0) {
+            onExitPictureInPicture(/* closeByNative= */ true);
+            return;
+        }
 
         // See if there are PiP hints in the extras.
         Size size =
@@ -699,6 +700,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             PictureInPictureActivityJni.get().destroy(mNativeOverlayWindowAndroid);
         }
 
+        // If called by `closeByNative`, it means that the native side will be freed at some point
+        // after this returns.  If `!closeByNative`, then we called destroyed on our native side (if
+        // we have one).  Either way, we shouldn't refer to the native side after this.
+        // See crbug.com/40063137 for details.
+        mNativeOverlayWindowAndroid = 0;
+
         if (mCompositorView != null) {
             mCompositorView.destroy();
             mCompositorView = null;
@@ -714,12 +721,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             mInitiatorTab = null;
         }
         mTabObserver = null;
-
-        // If called by `closeByNative`, it means that the native side will be freed at some point
-        // after this returns.  If `!closeByNative`, then we called destroyed on our native side (if
-        // we have one).  Either way, we shouldn't refer to the native side after this.
-        // See b/40063137 for details.
-        mNativeOverlayWindowAndroid = 0;
 
         this.finish();
     }
@@ -790,14 +791,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         updatePictureInPictureParams();
     }
 
-    private long getNativeOverlayWindowAndroid() {
-        return mNativeOverlayWindowAndroid;
-    }
-
-    private void resetNativeOverlayWindowAndroid() {
-        mNativeOverlayWindowAndroid = 0;
-    }
-
     @VisibleForTesting
     /* package */ Rational getAspectRatio() {
         return mAspectRatio;
@@ -805,19 +798,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @CalledByNative
     public static void createActivity(
-            long nativeOverlayWindowAndroid,
+            UnguessableToken nativeToken,
             Object initiatorTab,
             int sourceX,
             int sourceY,
             int sourceWidth,
             int sourceHeight) {
-        // Dissociate OverlayWindowAndroid if there is one already.  This destroys the native side.
-        if (sPendingNativeOverlayWindowAndroid != 0) {
-            PictureInPictureActivityJni.get().destroy(sPendingNativeOverlayWindowAndroid);
-        }
-
-        sPendingNativeOverlayWindowAndroid = nativeOverlayWindowAndroid;
-
         Context activityContext = null;
         final WindowAndroid window = ((Tab) initiatorTab).getWindowAndroid();
         if (window != null) {
@@ -826,9 +812,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         Context context =
                 (activityContext != null) ? activityContext : ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, PictureInPictureActivity.class);
-        intent.putExtra(WEB_CONTENTS_KEY, ((Tab) initiatorTab).getWebContents());
 
-        intent.putExtra(NATIVE_POINTER_KEY, nativeOverlayWindowAndroid);
+        intent.putExtra(NATIVE_TOKEN_KEY, nativeToken);
+        intent.putExtra(WEB_CONTENTS_KEY, ((Tab) initiatorTab).getWebContents());
 
         Bundle optionsBundle = null;
         // Clamp the aspect ratio, which is okay even if they're unspecified.  We do this first in
@@ -862,22 +848,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     // Called when the native side is destroyed.
     @CalledByNative
-    private static void onWindowDestroyed(long nativeOverlayWindowAndroid) {
-        // Since the native side is now gone, make sure it's not pending anymore.
-        if (nativeOverlayWindowAndroid == sPendingNativeOverlayWindowAndroid) {
-            sPendingNativeOverlayWindowAndroid = 0;
+    private void onWindowDestroyed() {
+        if (mNativeOverlayWindowAndroid == 0) {
+            // We've already cleaned up.
+            return;
         }
-
-        // If any activity relies on this native side, then notify it.
-        for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (!(activity instanceof PictureInPictureActivity)) continue;
-
-            PictureInPictureActivity pipActivity = (PictureInPictureActivity) activity;
-            if (nativeOverlayWindowAndroid == pipActivity.getNativeOverlayWindowAndroid()) {
-                pipActivity.resetNativeOverlayWindowAndroid();
-                pipActivity.onExitPictureInPicture(/* closeByNative= */ true);
-            }
-        }
+        mNativeOverlayWindowAndroid = 0;
+        onExitPictureInPicture(/* closeByNative= */ true);
     }
 
     // Allow tests to mock out our LaunchIntoPipHelper.  Returns the outgoing one.
@@ -892,16 +869,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         return mCompositorView.getView();
     }
 
-    /* package */ static void setPendingWindowForTesting(long pending) {
-        sPendingNativeOverlayWindowAndroid = pending;
-    }
-
     @NativeMethods
     public interface Natives {
-        void onActivityStart(
-                long nativeOverlayWindowAndroid,
-                PictureInPictureActivity self,
-                WindowAndroid window);
+        long onActivityStart(
+                UnguessableToken token, PictureInPictureActivity self, WindowAndroid window);
 
         void destroy(long nativeOverlayWindowAndroid);
 
