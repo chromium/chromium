@@ -16,10 +16,11 @@
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/metadata/metadata_utils.h"
 #include "ui/views/debug/debugger_utils.h"
-#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace views {
+
+class View;
 
 VIEWS_EXPORT extern const ui::ClassProperty<base::debug::StackTrace*>* const
     kViewStackTraceKey;

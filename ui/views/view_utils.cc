@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
+#include "ui/views/view.h"
 #include "ui/views/views_switches.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, base::debug::StackTrace*)
