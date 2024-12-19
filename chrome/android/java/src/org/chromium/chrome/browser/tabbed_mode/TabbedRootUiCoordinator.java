@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -1108,7 +1109,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // 0.
         // TODO(crbug.com/40943442): Remove the reference to toolbar_height_no_shadow.
         final int toolbarHeight =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+                browserControlsSizer.getControlsPosition() == ControlsPosition.TOP
+                        ? mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                        : 0;
         final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
         final int bookmarkBarHeight =
                 mBookmarkBarCoordinator != null
