@@ -1845,30 +1845,8 @@ public class StripLayoutHelper
         }
 
         if (mReorderDelegate.getInReorderMode()) {
-            // 3.a. Handle reordering.
-            // This isn't the accumulated delta since the beginning of the drag.  It accumulates
-            // the delta X until a threshold is crossed and then the event gets processed.
-            float accumulatedDeltaX = x - mReorderDelegate.getLastReorderX();
-
-            if (Math.abs(accumulatedDeltaX) >= 1.f) {
-                if (!LocalizationUtils.isLayoutRtl()) {
-                    if (deltaX >= 1.f) {
-                        mReorderDelegate.allowReorderScrollRight();
-                    } else if (deltaX <= -1.f) {
-                        mReorderDelegate.allowReorderScrollLeft();
-                    }
-                } else {
-                    if (deltaX >= 1.f) {
-                        mReorderDelegate.allowReorderScrollLeft();
-                    } else if (deltaX <= -1.f) {
-                        mReorderDelegate.allowReorderScrollRight();
-                    }
-                }
-
-                mReorderDelegate.setLastReorderX(x);
-                mReorderDelegate.updateReorderPosition(
-                        mStripViews, mStripGroupTitles, mStripTabs, x, accumulatedDeltaX);
-            }
+            mReorderDelegate.updateReorderPosition(
+                    mStripViews, mStripGroupTitles, mStripTabs, x, deltaX);
         } else if (!isViewContextMenuShowing()) {
             // 3.b. Handle scroll if the tab group context menu is not showing.
             if (!mIsStripScrollInProgress) {
