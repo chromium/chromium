@@ -400,25 +400,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth"
-    units="ms" expires_after="2024-04-28">
-  <owner>roagarwal@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    Records the time (ms) we blocked the draw of the Incognito tab (if any)
-    during the app restore phase to be sure the Incognito re-auth screen is
-    shown. This gets recorded only when both native and tab state have been
-    initialized as by then we would show the re-auth screen.
-
-    Blocking draw on Incognito re-auth screen prevents accidental leakage of the
-    Incognito tab contents. Note that, the Incognito re-auth screen is an opt-in
-    feature controlled behind the Chrome Setting &quot;Lock Incognito tabs when
-    you leave Chrome&quot; under &quot;Privacy and Security&quot; So, if the
-    feature is turned off, we wouldn't block draw for this use-case and won't
-    record this metric.
-  </summary>
-</histogram>
-
 <histogram
     name="Android.ApplicationState.TimeInBackgroundBeforeForegroundedAgain"
     units="ms" expires_after="2025-04-13">
