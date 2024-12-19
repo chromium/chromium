@@ -6484,6 +6484,7 @@ test("unit_tests") {
     "//components/media_router/common/providers/cast/channel",
     "//components/media_router/common/providers/cast/channel:test_support",
     "//components/memory_pressure:test_support",
+    "//components/metrics/dwa",
     "//components/metrics/structured",
     "//components/metrics/structured/lib",
     "//components/mirroring:mirroring_tests",

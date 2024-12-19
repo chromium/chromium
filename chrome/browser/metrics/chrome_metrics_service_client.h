@@ -99,6 +99,7 @@ class ChromeMetricsServiceClient
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  metrics::dwa::DwaService* GetDwaService() override;
   IdentifiabilityStudyState* GetIdentifiabilityStudyState() override;
   metrics::structured::StructuredMetricsService* GetStructuredMetricsService()
       override;
@@ -127,6 +128,7 @@ class ChromeMetricsServiceClient
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
   bool IsOnCellularConnection() override;
   bool IsUkmAllowedForAllProfiles() override;
+  bool IsDwaAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetAppPackageNameIfLoggable() override;
   std::string GetUploadSigningKey() override;
@@ -271,6 +273,9 @@ class ChromeMetricsServiceClient
 
   // The UkmService that |this| is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
+
+  // The DwaService that |this| is a client of.
+  std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
 
   // Listener for changes in incognito activity.
   std::unique_ptr<IncognitoObserver> incognito_observer_;

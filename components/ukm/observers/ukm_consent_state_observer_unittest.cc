@@ -169,11 +169,23 @@ class UkmConsentStateObserverTest : public testing::TestWithParam<bool> {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+void ExpectDwaAllowedForAllProfiles(TestUkmConsentStateObserver& observer,
+                                    bool expected_allowed) {
+  // App sync is turned off by default in CHROMEOS_ASH. This results in DWA not
+  // being allowed for that particular test setup, however can be enabled for
+  // other platforms.
+  // DWA and ChromeOS are tested further below.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(expected_allowed, observer.IsDwaAllowedForAllProfiles());
+#endif
+}
+
 }  // namespace
 
 TEST_F(UkmConsentStateObserverTest, NoProfiles) {
   TestUkmConsentStateObserver observer;
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, false);
   EXPECT_FALSE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
 }
@@ -186,6 +198,7 @@ TEST_F(UkmConsentStateObserverTest, NotActive) {
   TestUkmConsentStateObserver observer;
   observer.StartObserving(&sync, &prefs);
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, false);
   EXPECT_FALSE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
 }
@@ -198,6 +211,7 @@ TEST_F(UkmConsentStateObserverTest, OneEnabled) {
   TestUkmConsentStateObserver observer;
   observer.StartObserving(&sync, &prefs);
   EXPECT_TRUE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, true);
   EXPECT_TRUE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
 }
@@ -216,6 +230,7 @@ TEST_F(UkmConsentStateObserverTest, MixedProfiles) {
   SetUrlKeyedAnonymizedDataCollectionEnabled(&prefs2, true);
   observer.StartObserving(&sync2, &prefs2);
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, false);
   EXPECT_FALSE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
 }
@@ -225,7 +240,6 @@ TEST_F(UkmConsentStateObserverTest, TwoEnabled) {
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs1);
   sync_preferences::TestingPrefServiceSyncable prefs2;
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs2);
-
   TestUkmConsentStateObserver observer;
   MockSyncService sync1;
   SetUrlKeyedAnonymizedDataCollectionEnabled(&prefs1, true);
@@ -235,6 +249,7 @@ TEST_F(UkmConsentStateObserverTest, TwoEnabled) {
   SetUrlKeyedAnonymizedDataCollectionEnabled(&prefs2, true);
   observer.StartObserving(&sync2, &prefs2);
   EXPECT_TRUE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, true);
   EXPECT_FALSE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
 }
@@ -244,16 +259,20 @@ TEST_F(UkmConsentStateObserverTest, OneAddRemove) {
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);
   TestUkmConsentStateObserver observer;
   MockSyncService sync;
+
   observer.StartObserving(&sync, &prefs);
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, false);
   EXPECT_FALSE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
   SetUrlKeyedAnonymizedDataCollectionEnabled(&prefs, true);
   EXPECT_TRUE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, true);
   EXPECT_TRUE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
   sync.Shutdown();
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, false);
   EXPECT_TRUE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
 }
@@ -266,14 +285,17 @@ TEST_F(UkmConsentStateObserverTest, PurgeOnDisable) {
   SetUrlKeyedAnonymizedDataCollectionEnabled(&prefs, true);
   observer.StartObserving(&sync, &prefs);
   EXPECT_TRUE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, true);
   EXPECT_TRUE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
   SetUrlKeyedAnonymizedDataCollectionEnabled(&prefs, false);
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, false);
   EXPECT_TRUE(observer.ResetNotified());
   EXPECT_TRUE(observer.ResetPurged());
   sync.Shutdown();
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, false);
   EXPECT_FALSE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
 }
@@ -286,6 +308,7 @@ TEST_F(UkmConsentStateObserverTest, NoInitialUkmConsentState) {
   TestUkmConsentStateObserver observer(NoInitialUkmConsentState);
   observer.StartObserving(&sync, &prefs);
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  ExpectDwaAllowedForAllProfiles(observer, false);
   EXPECT_TRUE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
   sync.Shutdown();
@@ -307,6 +330,7 @@ TEST_F(UkmConsentStateObserverTest, VerifyConsentStates) {
   UkmConsentState state = observer.GetUkmConsentState();
 
   EXPECT_TRUE(observer.IsUkmAllowedForAllProfiles());
+  EXPECT_FALSE(observer.IsDwaAllowedForAllProfiles());
   // MSBB and Extensions are enabled while App Sync is disabled.
   EXPECT_TRUE(state.Has(MSBB));
   EXPECT_TRUE(state.Has(EXTENSIONS));
@@ -321,8 +345,10 @@ TEST_F(UkmConsentStateObserverTest, VerifyConsentStates) {
   sync.SetAppSync(true);
   state = observer.GetUkmConsentState();
 
-  // Verify that the these values remain unchanged with App-sync enablement.
+  // Verify that DWA is now enablead the rest of the these values remain
+  // unchanged with App-sync enablement.
   EXPECT_TRUE(observer.IsUkmAllowedForAllProfiles());
+  EXPECT_TRUE(observer.IsDwaAllowedForAllProfiles());
   EXPECT_TRUE(state.Has(MSBB));
   EXPECT_TRUE(state.Has(EXTENSIONS));
   EXPECT_TRUE(observer.ResetNotified());
@@ -338,6 +364,8 @@ TEST_F(UkmConsentStateObserverTest, VerifyConsentStates) {
 
   // UKM will remain allowed.
   EXPECT_TRUE(observer.IsUkmAllowedForAllProfiles());
+  // DWA should be off as it requires both MSBB and APPS to be on.
+  EXPECT_FALSE(observer.IsDwaAllowedForAllProfiles());
   // MSBB should be off.
   EXPECT_FALSE(state.Has(MSBB));
   // Extensions should be off, implicitly.
@@ -393,6 +421,7 @@ TEST_F(UkmConsentStateObserverTest, VerifyConflictingProfilesRevokesConsent) {
   // APP sync is off because Profile 2 consents but Profile 1 doesn't.
   UkmConsentState state = observer.GetUkmConsentState();
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  EXPECT_FALSE(observer.IsDwaAllowedForAllProfiles());
   EXPECT_FALSE(state.Has(MSBB));
   EXPECT_FALSE(state.Has(EXTENSIONS));
   EXPECT_FALSE(state.Has(APPS));
@@ -422,6 +451,11 @@ TEST_P(KioskUkmConsentStateObserverTest, VerifyDefaultConsent) {
   TestUkmConsentStateObserver observer;
   MockSyncService sync;
   // Disable app sync consent.
+  // In Kiosk mode, UKM consent is meant to ignore Apps Sync as it's not
+  // relevant - there's no user-facing app list. Instead it's based on MSBB
+  // consent.
+  // For further context, see:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4414724/22/components/ukm/observers/ukm_consent_state_observer.cc#35
   sync.SetAppSync(false);
 
   // Enable MSBB consent.
@@ -432,6 +466,9 @@ TEST_P(KioskUkmConsentStateObserverTest, VerifyDefaultConsent) {
   UkmConsentState state = observer.GetUkmConsentState();
 
   EXPECT_EQ(is_ukm_collection_enabled(), observer.IsUkmAllowedForAllProfiles());
+  // In Kiosk mode, APPS consent does not depend on App Sync, but on MSBB.
+  // Therefore, DWA is allowed when MSBB is on, regardless of App Sync state.
+  EXPECT_EQ(is_ukm_collection_enabled(), observer.IsDwaAllowedForAllProfiles());
   // MSBB and Extensions are enabled while App Sync is disabled.
   EXPECT_EQ(is_ukm_collection_enabled(), state.Has(MSBB));
   EXPECT_EQ(is_ukm_collection_enabled(), state.Has(APPS));

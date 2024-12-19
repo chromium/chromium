@@ -52,6 +52,11 @@ class UkmConsentStateObserver
   // URL-keyed anonymized data collection is enabled for all profiles.
   virtual bool IsUkmAllowedForAllProfiles();
 
+  // Returns true iff all DWA is allowed for all profile states. This means that
+  // URL-keyed anonymized data collection is enabled for all profiles.
+  // DWA is allowed if all applicable UKM consents for a platform are given.
+  virtual bool IsDwaAllowedForAllProfiles();
+
   // Returns the current state of all consent types.
   // See components/ukm/ukm_consent_state.h for details.
   virtual UkmConsentState GetUkmConsentState();

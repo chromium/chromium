@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -98,11 +99,17 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     metrics_state_manager_->InstantiateFieldTrialList();
     ASSERT_TRUE(profile_manager_.SetUp());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndEnableFeature(features::kUmaStorageDimensions);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kUmaStorageDimensions,
+         metrics::dwa::kDwaFeature},
+        {});
+
     // ChromeOs Metrics Provider require g_login_state and power manager client
     // initialized before they can be instantiated.
     chromeos::PowerManagerClient::InitializeFake();
     ash::LoginState::Initialize();
+#else
+    scoped_feature_list_.InitAndEnableFeature(metrics::dwa::kDwaFeature);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
@@ -195,6 +202,13 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   } else {
     EXPECT_EQ(0ul, observed_count);
   }
+}
+
+TEST_F(ChromeMetricsServiceClientTest, TestDwaServiceInitialized) {
+  std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
+      TestChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                             synthetic_trial_registry_.get());
+  EXPECT_NE(chrome_metrics_service_client->GetDwaService(), nullptr);
 }
 
 TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {

@@ -17,6 +17,7 @@ static_library("metrics_services_manager") {
     "//components/metrics",
     "//components/metrics/structured",
     "//components/ukm",
+    "//components/metrics/dwa",
     "//components/variations",
     "//components/variations/service",
     "//services/network/public/cpp:cpp",

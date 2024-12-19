@@ -245,6 +245,11 @@ bool UkmConsentStateObserver::IsUkmAllowedForAllProfiles() {
 #endif
 }
 
+bool UkmConsentStateObserver::IsDwaAllowedForAllProfiles() {
+  const UkmConsentState ukm_consent_state = GetUkmConsentState();
+  return ukm_consent_state.HasAll({ukm::MSBB, ukm::APPS, ukm::EXTENSIONS});
+}
+
 UkmConsentState UkmConsentStateObserver::GetUkmConsentState() {
   // Consider that the state is empty if it is std::nullopt (the not set
   // state is only relevant to detect when the first profile is loaded).

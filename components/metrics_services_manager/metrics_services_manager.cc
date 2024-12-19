@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/dwa/dwa_recorder.h"
+#include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_service_client.h"
@@ -72,6 +74,11 @@ MetricsServicesManager::GetStructuredMetricsService() {
   return GetMetricsServiceClient()->GetStructuredMetricsService();
 }
 
+metrics::dwa::DwaService* MetricsServicesManager::GetDwaService() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return GetMetricsServiceClient()->GetDwaService();
+}
+
 variations::VariationsService* MetricsServicesManager::GetVariationsService() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!variations_service_) {
@@ -126,13 +133,17 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
                                                bool current_consent_given,
                                                bool current_may_upload) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // If the user has opted out of metrics, delete local UKM state.
+  // If the user has opted out of metrics, delete local UKM and DWA states.
   // TODO(crbug.com/40267999): Investigate if UMA needs purging logic.
   if (consent_given_ && !current_consent_given) {
     ukm::UkmService* ukm = GetUkmService();
     if (ukm) {
       ukm->Purge();
       ukm->ResetClientState(ukm::ResetReason::kUpdatePermissions);
+    }
+    metrics::dwa::DwaService* dwa_service = GetDwaService();
+    if (dwa_service) {
+      dwa_service->Purge();
     }
   }
 
@@ -220,6 +231,7 @@ void MetricsServicesManager::UpdateRunningServices() {
 
   UpdateUkmService();
   UpdateStructuredMetricsService();
+  UpdateDwaService();
 }
 
 void MetricsServicesManager::UpdateUkmService() {
@@ -264,6 +276,36 @@ void MetricsServicesManager::UpdateStructuredMetricsService() {
   } else {
     service->DisableRecording();
     service->DisableReporting();
+  }
+}
+
+void MetricsServicesManager::UpdateDwaService() {
+  metrics::dwa::DwaService* dwa = GetDwaService();
+  if (!dwa) {
+    return;
+  }
+  // DWA is tied to all UKM consents, which is tied to sync.
+  bool listeners_active =
+      metrics_service_client_->AreNotificationListenersEnabledOnAllProfiles();
+  bool sync_enabled =
+      metrics_service_client_->IsMetricsReportingForceEnabled() ||
+      metrics_service_client_->IsDwaAllowedForAllProfiles();
+  bool is_incognito = client_->IsOffTheRecordSessionActive();
+
+  if (consent_given_ && listeners_active && sync_enabled && !is_incognito) {
+    metrics::dwa::DwaRecorder::Get()->EnableRecording();
+    if (may_upload_) {
+      dwa->EnableReporting();
+    } else {
+      dwa->DisableReporting();
+    }
+  } else {
+    metrics::dwa::DwaRecorder::Get()->DisableRecording();
+    dwa->DisableReporting();
+    // Purge the DWA recorder if the user is in incognito mode.
+    if (is_incognito) {
+      metrics::dwa::DwaRecorder::Get()->Purge();
+    }
   }
 }
 

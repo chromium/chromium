@@ -85,6 +85,7 @@
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
+#include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/install_date_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -520,6 +521,7 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   ChromeBrowserMainExtraPartsMetrics::RegisterPrefs(registry);
   metrics::MetricsService::RegisterPrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
+  metrics::dwa::DwaService::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
   prefs::RegisterPrivacyBudgetPrefs(registry);
 
@@ -575,6 +577,10 @@ ChromeMetricsServiceClient::GetIdentifiabilityStudyState() {
 metrics::structured::StructuredMetricsService*
 ChromeMetricsServiceClient::GetStructuredMetricsService() {
   return structured_metrics_service_.get();
+}
+
+metrics::dwa::DwaService* ChromeMetricsServiceClient::GetDwaService() {
+  return dwa_service_.get();
 }
 
 void ChromeMetricsServiceClient::SetMetricsClientId(
@@ -716,6 +722,11 @@ void ChromeMetricsServiceClient::Initialize() {
             identifiability_study_state_.get()));
 
     RegisterUKMProviders();
+  }
+
+  if (base::FeatureList::IsEnabled(metrics::dwa::kDwaFeature)) {
+    dwa_service_ =
+        std::make_unique<metrics::dwa::DwaService>(this, local_state);
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1213,55 +1224,66 @@ void ChromeMetricsServiceClient::OnHistoryDeleted() {
   if (ukm_service_) {
     ukm_service_->Purge();
   }
+  if (dwa_service_) {
+    dwa_service_->Purge();
+  }
 }
 
 void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     bool total_purge,
     ukm::UkmConsentState previous_consent_state) {
-  if (!ukm_service_) {
-    return;
-  }
-
   const ukm::UkmConsentState consent_state = GetUkmConsentState();
+  // Apply UKM consent changes to UKM service.
+  if (ukm_service_) {
+    // Manages purging of events and sources.
+    if (total_purge) {
+      ukm_service_->Purge();
+      ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+    } else {
+      // Purge recording if required consent has been revoked.
+      if (!consent_state.Has(ukm::MSBB)) {
+        ukm_service_->PurgeMsbbData();
+      }
+      if (!consent_state.Has(ukm::EXTENSIONS)) {
+        ukm_service_->PurgeExtensionsData();
+      }
+      if (!consent_state.Has(ukm::APPS)) {
+        ukm_service_->PurgeAppsData();
+      }
 
-  // Manages purging of events and sources.
-  if (total_purge) {
-    ukm_service_->Purge();
-    ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
-  } else {
-    // Purge recording if required consent has been revoked.
-    if (!consent_state.Has(ukm::MSBB)) {
-      ukm_service_->PurgeMsbbData();
-    }
-    if (!consent_state.Has(ukm::EXTENSIONS)) {
-      ukm_service_->PurgeExtensionsData();
-    }
-    if (!consent_state.Has(ukm::APPS)) {
-      ukm_service_->PurgeAppsData();
+      // If MSBB or App-sync consent changed from on to off then, the client id,
+      // or client state, must be reset. When not ChromeOS Ash, function
+      // will be a no-op.
+      //
+      // On non-ChromeOS platforms, client reset is handled above because
+      // |total_purge| will be true. MSBB is used to determine if UKM is enabled
+      // or disabled. When the consent is revoked UkmService will be disabled,
+      // triggering |total_purge| to be true. At which point the client state will
+      // be reset.
+      //
+      // On ChromeOS, disabling MSBB or App-Sync will not trigger a total purge.
+      // Resetting the client state has to be handled specifically for this case.
+      ResetClientStateWhenMsbbOrAppConsentIsRevoked(previous_consent_state);
     }
 
-    // If MSBB or App-sync consent changed from on to off then, the client id,
-    // or client state, must be reset. When not ChromeOS Ash, function
-    // will be a no-op.
-    //
-    // On non-ChromeOS platforms, client reset is handled above because
-    // |total_purge| will be true. MSBB is used to determine if UKM is enabled
-    // or disabled. When the consent is revoked UkmService will be disabled,
-    // triggering |total_purge| to be true. At which point the client state will
-    // be reset.
-    //
-    // On ChromeOS, disabling MSBB or App-Sync will not trigger a total purge.
-    // Resetting the client state has to be handled specifically for this case.
-    ResetClientStateWhenMsbbOrAppConsentIsRevoked(previous_consent_state);
+    // Notify the recording service of changed metrics consent.
+    ukm_service_->UpdateRecording(consent_state);
+
+    // Broadcast UKM consent state change.
+    ukm_service_->OnUkmAllowedStateChanged(consent_state);
   }
 
-  // Notify the recording service of changed metrics consent.
-  ukm_service_->UpdateRecording(consent_state);
+  // Purges DWA data if any of the UKM consents is missing. For consent changes
+  // to metrics collection, this is handled in a separate callback
+  // (see MetricsServicesManager::UpdatePermissions()). Other scenarios,
+  // such as incognito, are handled further downstream.
+  if (dwa_service_ &&
+      (total_purge ||
+       !consent_state.HasAll({ukm::MSBB, ukm::APPS, ukm::EXTENSIONS}))) {
+      dwa_service_->Purge();
+  }
 
-  // Broadcast UKM consent state change.
-  ukm_service_->OnUkmAllowedStateChanged(consent_state);
-
-  // Signal service manager to enable/disable UKM based on new states.
+  // Signal service manager to enable/disable UKM/DWA based on new states.
   UpdateRunningServices();
 }
 
@@ -1357,6 +1379,10 @@ void ChromeMetricsServiceClient::SetIsProcessRunningForTesting(
 
 bool ChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
+}
+
+bool ChromeMetricsServiceClient::IsDwaAllowedForAllProfiles() {
+  return UkmConsentStateObserver::IsDwaAllowedForAllProfiles();
 }
 
 bool g_observer_registration_failed = false;

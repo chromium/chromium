@@ -25,6 +25,10 @@ namespace ukm {
 class UkmService;
 }
 
+namespace metrics::dwa {
+class DwaService;
+}
+
 namespace network_time {
 class NetworkTimeTracker;
 }
@@ -67,6 +71,9 @@ class MetricsServiceClient {
 
   // Returns the UkmService instance that this client is associated with.
   virtual ukm::UkmService* GetUkmService();
+
+  // Returns the DwaService instance that this client is associated with.
+  virtual metrics::dwa::DwaService* GetDwaService();
 
   // Returns the IdentifiabilityStudyState instance that this client is
   // associated with. Might be nullptr.
@@ -175,6 +182,10 @@ class MetricsServiceClient {
   // Returns true iff UKM is allowed for all profiles.
   // See //components/ukm/observers/ukm_consent_state_observer.h for details.
   virtual bool IsUkmAllowedForAllProfiles();
+
+  // Returns true iff DWA is allowed for all profiles.
+  // DWA is allowed if all applicable UKM consents for a platform are given.
+  virtual bool IsDwaAllowedForAllProfiles();
 
   // Returns whether UKM notification listeners were attached to all profiles.
   virtual bool AreNotificationListenersEnabledOnAllProfiles();

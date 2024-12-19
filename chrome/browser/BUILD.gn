@@ -2363,6 +2363,7 @@ static_library("browser") {
     "//components/ui_devtools",
     "//components/ukm",
     "//components/ukm:observers",
+    "//components/metrics/dwa",
     "//components/undo",
     "//components/update_client",
     "//components/update_client:common_impl",
