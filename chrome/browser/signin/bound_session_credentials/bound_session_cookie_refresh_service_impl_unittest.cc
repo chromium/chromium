@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -67,7 +68,8 @@ using testing::UnorderedPointwise;
 
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
-const char kSessionTerminationHeader[] = "Sec-Session-Google-Termination";
+constexpr char kSessionTerminationHeaderName[] =
+    "Sec-Session-Google-Termination";
 constexpr char kWrappedKey[] = "wrapped_key";
 constexpr char kTestSessionId[] = "test_session_id";
 constexpr char kDefaultRegistrationPath[] = "/RegisterSession";
@@ -306,6 +308,11 @@ class MockObserver : public BoundSessionCookieRefreshService::Observer {
                const base::flat_set<std::string>& bound_cookie_names),
               (override));
 };
+
+std::string GetSessionTerminationHeaderValue(std::string_view session_id) {
+  static constexpr char kSessionTerminationHeaderFormat[] = "session_id=%s";
+  return base::StringPrintf(kSessionTerminationHeaderFormat, session_id);
+}
 
 bound_session_credentials::Credential CreateCookieCredential(
     const std::string& cookie_name,
@@ -807,7 +814,32 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     GetSessionTerminationHeaderValue(kTestSessionId));
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {k1PSIDTSCookieName, k3PSIDTSCookieName})))
+      .Times(1);
+  service->MaybeTerminateSession(GURL("https://google.com/SignOut"),
+                                 headers.get());
+  VerifyNoBoundSession();
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionTerminationHeader);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       TerminateSessionOnSessionTerminationHeaderExtraAttributesIgnored) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(
+      kSessionTerminationHeaderName,
+      base::StringPrintf(
+          "first_attribute=abc;session_id=%s;third_attribute=edf",
+          kTestSessionId));
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_CALL(
       *mock_observer(),
@@ -827,7 +859,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     GetSessionTerminationHeaderValue(kTestSessionId));
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_CALL(
       *mock_observer(),
@@ -847,7 +880,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, "different_session_id");
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     GetSessionTerminationHeaderValue("different_session_id"));
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->MaybeTerminateSession(kTestGoogleURL, headers.get());
@@ -861,7 +895,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     GetSessionTerminationHeaderValue(kTestSessionId));
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   // `kTestOtherURL` and the bound session URL are from different sites.
@@ -876,6 +911,37 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->MaybeTerminateSession(kTestGoogleURL, headers.get());
+  VerifyBoundSession(CreateTestBoundSessionParams());
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       DontTerminateSessionWrongHeaderFormatNoKey) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     kTestSessionId);  // no "session_id=" key
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+
+  service->MaybeTerminateSession(kTestGoogleURL, headers.get());
+
+  VerifyBoundSession(CreateTestBoundSessionParams());
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       DontTerminateSessionWrongHeaderFormatWrongKey) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     base::StringPrintf("other_attribute=%s", kTestSessionId));
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->MaybeTerminateSession(kTestGoogleURL, headers.get());
@@ -1518,8 +1584,9 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
   }
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader,
-                     kGoogleSessionKeyOne.session_id);
+  headers->AddHeader(
+      kSessionTerminationHeaderName,
+      GetSessionTerminationHeaderValue(kGoogleSessionKeyOne.session_id));
 
   EXPECT_CALL(
       *mock_observer(),
