@@ -40,7 +40,7 @@ group("all") {
     ]
 
     if (is_linux || is_win) {
-      deps += [ "//remoting/host/crash:remoting_crash_uploader" ]
+      deps += [ "//remoting/host/crash:crash_tools" ]
     }
 
     if (enable_me2me_host && (is_linux || is_win)) {

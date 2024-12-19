@@ -2,16 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//remoting/build/config/remoting_build.gni")
+
 source_set("crash") {
+  public_deps = [ ":breakpad_utils" ]
+  if (is_linux && enable_chromoting_crashpad) {
+    public_deps += [ ":crashpad" ]
+  } else {
+    public_deps += [ ":breakpad" ]
+  }
+}
+
+source_set("breakpad_utils") {
   sources = [
-    "breakpad.h",
     "breakpad_utils.cc",
     "breakpad_utils.h",
   ]
+  deps = [
+    "//base",
+    "//remoting/base:remoting_base_version",
+  ]
+}
+
+source_set("breakpad") {
+  sources = [ "breakpad.h" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":breakpad_utils",
     "//base",
     "//remoting/base:remoting_base_version",
   ]
@@ -29,6 +48,22 @@ source_set("crash") {
     deps += [
       "//remoting/base:logging",
       "//third_party/breakpad:breakpad_handler",
+    ]
+  }
+}
+
+if (is_linux && enable_chromoting_crashpad) {
+  source_set("crashpad") {
+    sources = [
+      "crashpad.h",
+      "crashpad_linux.cc",
+    ]
+    deps = [
+      "//base",
+      "//remoting/base:logging",
+      "//remoting/base:remoting_base_version",
+      "//third_party/crashpad/crashpad/client",
+      "//third_party/crashpad/crashpad/util",
     ]
   }
 }

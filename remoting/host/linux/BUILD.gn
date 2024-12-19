@@ -87,7 +87,6 @@ if (enable_me2me_host) {
 
   group("remoting_dev_me2me_host") {
     deps = [
-      ":remoting_me2me_host_copy_crash_uploader",
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_libremoting_core",
       ":remoting_me2me_host_copy_pipewire_templates",
@@ -98,10 +97,16 @@ if (enable_me2me_host) {
       ":remoting_native_messaging_host",
       ":url_forwarder_desktop_entry",
       "//remoting/host:remoting_me2me_host",
-      "//remoting/host/crash:remoting_crash_uploader",
       "//remoting/host/remote_open_url",
       "//remoting/host/webauthn:remote_webauthn",
     ]
+
+    if (!enable_chromoting_crashpad) {
+      deps += [
+        ":remoting_me2me_host_copy_crash_uploader",
+        "//remoting/host/crash:remoting_crash_uploader",
+      ]
+    }
   }
 }
 

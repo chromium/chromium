@@ -855,6 +855,9 @@ class Desktop(abc.ABC):
     if not self.crash_reporting_enabled:
       return
 
+    if not os.path.exists(CRASH_UPLOADER_PATH):
+      return
+
     logging.info("Launching crash uploader")
 
     args = [CRASH_UPLOADER_PATH]

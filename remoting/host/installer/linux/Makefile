@@ -25,6 +25,7 @@ CORE_LIBNAME = $(BUILD_DIR)/libremoting_core.so
 CORE_DEBUGFILE = $(CORE_LIBNAME).debug
 CRASH_UPLOADER_PROGNAME = $(BUILD_DIR)/remoting_crash_uploader
 CRASH_UPLOADER_DEBUGFILE = $(CRASH_UPLOADER_PROGNAME).debug
+CRASHPAD_HANDLER_PROGNAME = $(BUILD_DIR)/remoting_crashpad_handler
 ME2ME_PROGNAME = $(BUILD_DIR)/remoting_me2me_host
 ME2ME_DEBUGFILE = $(ME2ME_PROGNAME).debug
 START_PROGNAME = $(BUILD_DIR)/remoting_start_host
@@ -98,8 +99,14 @@ install:
 	install "$(CORE_LIBNAME)" "$(INSTALL_DIR)/libremoting_core.so"
 	eu-strip -f "$(CORE_DEBUGFILE)" "$(INSTALL_DIR)/libremoting_core.so"
 
+ifneq ("$(wildcard $(CRASH_UPLOADER_PROGNAME))", "")
 	install "$(CRASH_UPLOADER_PROGNAME)" "$(INSTALL_DIR)/crash-uploader"
 	eu-strip -f "$(CRASH_UPLOADER_DEBUGFILE)" "$(INSTALL_DIR)/crash-uploader"
+endif
+
+ifneq ("$(wildcard $(CRASHPAD_HANDLER_PROGNAME))", "")
+	install "$(CRASHPAD_HANDLER_PROGNAME)" "$(INSTALL_DIR)/crashpad-handler"
+endif
 
 	install "$(ME2ME_PROGNAME)" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop-host"
