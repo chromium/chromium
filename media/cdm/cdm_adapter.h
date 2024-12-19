@@ -160,6 +160,8 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   void ReportMetrics(cdm::MetricName metric_name, uint64_t value) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CdmAdapterTestWithMockCdm, RecordUMA);
+
   CdmAdapter(const CdmConfig& cdm_config,
              CreateCdmFunc create_cdm_func,
              std::unique_ptr<CdmAuxiliaryHelper> helper,
@@ -210,6 +212,9 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   // cdm::FileIO.
   void OnFileRead(int file_size_bytes);
 
+  // Set `frames_processed_` for testing
+  void SetFrameCountForTesting(uint64_t count) { frames_processed_ = count; }
+
   const CdmConfig cdm_config_;
 
   CreateCdmFunc create_cdm_func_;
@@ -253,6 +258,10 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   // unprotected external link) have been reported to UMA.
   bool uma_for_output_protection_query_reported_ = false;
   bool uma_for_output_protection_positive_result_reported_ = false;
+
+  // Track number of frames processed since last call to
+  // InitializeVideoDecoder().
+  uint64_t frames_processed_ = 0;
 
   // Tracks CDM file IO related states.
   int last_read_file_size_kb_ = 0;

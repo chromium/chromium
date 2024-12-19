@@ -2671,6 +2671,16 @@ chromium-metrics-reviews@google.com.
   <summary>System code in promise rejection for ChromeOS platform CDM.</summary>
 </histogram>
 
+<histogram name="Media.EME.DecoderBypassBlockCount" units="perFrame*100"
+    expires_after="2025-05-04">
+  <owner>jrummell@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Ratio of the number of decorder bypass blocks seen / total frames displayed
+    * 100. Recorded for each video that could contain decoder bypass blocks.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.EncryptedEvent" enum="BooleanEncryptedEvent"
     expires_after="2025-02-27">
   <owner>xhwang@chromium.org</owner>
