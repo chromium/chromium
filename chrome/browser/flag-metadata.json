@@ -2157,11 +2157,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "drag-drop-tab-tearing-enable-oem",
-    "owners": ["skavuluru@chromium.org", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "draw-cutout-edge-to-edge",
     "owners": ["wenyufu@chromium.org", "clhager@google.com", "edge-to-edge@chromium.org"],
     "expiry_milestone": 135

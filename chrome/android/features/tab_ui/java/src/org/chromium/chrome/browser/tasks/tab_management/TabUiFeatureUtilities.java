@@ -72,7 +72,6 @@ public class TabUiFeatureUtilities {
 
     /** Returns whether device OEM is allow-listed for tab tearing */
     public static boolean doesOEMSupportDragToCreateInstance() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
-                && TAB_TEARING_OEM_ALLOWLIST.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
+        return TAB_TEARING_OEM_ALLOWLIST.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
     }
 }

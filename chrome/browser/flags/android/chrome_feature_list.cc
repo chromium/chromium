@@ -255,7 +255,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDelayTempStripRemoval,
     &kDeviceAuthenticatorAndroidx,
     &kDragDropTabTearing,
-    &kDragDropTabTearingEnableOEM,
     &kDrawKeyNativeEdgeToEdge,
     &kDrawNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
@@ -748,10 +747,6 @@ BASE_FEATURE(kDeviceAuthenticatorAndroidx,
 
 BASE_FEATURE(kDragDropTabTearing,
              "DragDropTabTearing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDragDropTabTearingEnableOEM,
-             "DragDropTabTearingEnableOEM",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDrawKeyNativeEdgeToEdge,

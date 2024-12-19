@@ -98,7 +98,6 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link TabDragSource}. */
 @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-@EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S, shadows = ShadowToast.class)
 public class TabDragSourceTest {

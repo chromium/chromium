@@ -4502,12 +4502,6 @@ const char kDragDropTabTearingDescription[] =
     "Allow drag tab from tab strip to create new instances if the drag is not "
     "handled.";
 
-const char kDragDropTabTearingEnableOEMName[] =
-    "Drag and drop tab tearing enabled based on OEM allowlist";
-const char kDragDropTabTearingEnableOEMDescription[] =
-    "Allow drag tab from tab strip on specific OEMs to create new instances if "
-    "the drag is not handled.";
-
 const char kDrawCutoutEdgeToEdgeName[] = "DrawCutoutEdgeToEdge";
 const char kDrawCutoutEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge Feature to coordinate with the "
