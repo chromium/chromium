@@ -47,3 +47,7 @@ BASE_FEATURE(kLensClearcutBackgroundUploadEnabled,
 BASE_FEATURE(kLensClearcutLoggerFastQosEnabled,
              "LensClearcutLoggerFastQosEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensSingleTapTextSelectionDisabled,
+             "LensSingleTapTextSelectionDisabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);

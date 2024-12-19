@@ -40,4 +40,7 @@ BASE_DECLARE_FEATURE(kLensClearcutBackgroundUploadEnabled);
 // Whether to use fast QOS for clearcut logging.
 BASE_DECLARE_FEATURE(kLensClearcutLoggerFastQosEnabled);
 
+// Whether to disable single tap text selection.
+BASE_DECLARE_FEATURE(kLensSingleTapTextSelectionDisabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

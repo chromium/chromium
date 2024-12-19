@@ -608,6 +608,10 @@ extern const char kLensOverlayEnableLocationBarEntrypointDescription[];
 extern const char kLensOverlayEnableSameTabNavigationName[];
 extern const char kLensOverlayEnableSameTabNavigationDescription[];
 
+// Title and description for the flag to disable single tap text selections.
+extern const char kLensSingleTapTextSelectionDisabledName[];
+extern const char kLensSingleTapTextSelectionDisabledDescription[];
+
 // Title and description for the flag to enable the Lens translate toggle mode.
 extern const char kLensTranslateToggleModeEnabledName[];
 extern const char kLensTranslateToggleModeEnabledDescription[];
