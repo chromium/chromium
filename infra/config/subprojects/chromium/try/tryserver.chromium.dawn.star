@@ -589,6 +589,9 @@ try_.builder(
     builderless = True,
     os = os.WINDOWS_ANY,
     execution_timeout = 6 * time.hour,
+    # Increased scheduling timeout due to resource contention with the mega CQ,
+    # see crbug.com/384962295.
+    expiration_timeout = 4 * time.hour,
     max_concurrent_builds = 1,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
