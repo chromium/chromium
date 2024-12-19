@@ -209,20 +209,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
   // Prevent the NTP from spilling behind the toolbar and tab strip.
   self.view.clipsToBounds = YES;
 
-  // TODO(crbug.com/40251609): The contentCollectionView width might be narrower
-  // than the ContentSuggestions view. This causes elements to be hidden. A
-  // gesture recognizer is added to allow these elements to be interactable.
-  UITapGestureRecognizer* singleTapRecognizer = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(handleSingleTapInView:)];
-  singleTapRecognizer.delegate = self;
-  [self.view addGestureRecognizer:singleTapRecognizer];
-    _backgroundGradientView = [[GradientView alloc]
-        initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
-             bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
-    _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_backgroundGradientView];
-    AddSameConstraints(_backgroundGradientView, self.view);
+  _backgroundGradientView = [[GradientView alloc]
+      initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
+           bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+  _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_backgroundGradientView];
+  AddSameConstraints(_backgroundGradientView, self.view);
   [self updateModularHomeBackgroundColorForUserInterfaceStyle:
             self.traitCollection.userInterfaceStyle];
   self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
@@ -1338,34 +1330,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
       signinPromoHasChangedVisibility:isFeedSigninPromoVisible];
 }
 
-// TODO(crbug.com/40251609): Remove once the Feed header properly supports
-// ContentSuggestions.
-- (void)handleSingleTapInView:(UITapGestureRecognizer*)recognizer {
-  CGPoint location = [recognizer locationInView:[recognizer.view superview]];
-  CGRect discBoundsInView =
-      [self.identityDiscButton convertRect:self.identityDiscButton.bounds
-                                    toView:self.view];
-  if (CGRectContainsPoint(discBoundsInView, location)) {
-    [self.identityDiscButton
-        sendActionsForControlEvents:UIControlEventTouchUpInside];
-  } else {
-    [self unfocusOmnibox];
-  }
-
-  if (IsHomeCustomizationEnabled()) {
-    CGRect customizationMenuBounds =
-        [[self.headerViewController customizationMenuButton]
-            convertRect:[self.headerViewController customizationMenuButton]
-                            .bounds
-                 toView:self.view];
-
-    if (CGRectContainsPoint(customizationMenuBounds, location)) {
-      [[self.headerViewController customizationMenuButton]
-          sendActionsForControlEvents:UIControlEventTouchUpInside];
-    }
-  }
-}
-
 // Handles the pinning of the sticky elements to the top of the NTP. This
 // includes the fake omnibox and if Web Channels is enabled, the feed header. If
 // `force` is YES, the sticky elements will always be set based on the scroll
@@ -1431,16 +1395,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
 
-    // When the feed is turned off, do not constrain the width of the empty
-    // collection view, in order to allow vertical scrolling gestures to
-    // happen on the side margins. The width of the feed header is controlled
-    // by the collectionView's contentLayoutGuide.
-    if (self.feedWrapperViewController.feedViewController) {
-      [self.collectionView.widthAnchor
-          constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor]
-          .active = YES;
-    }
-
     [NSLayoutConstraint activateConstraints:@[
       // Apply parent collection view constraints.
       [self.collectionView.centerXAnchor
@@ -1475,7 +1429,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
         [self.feedTopSectionViewController.view.centerXAnchor
             constraintEqualToAnchor:self.collectionView.centerXAnchor],
         [self.feedTopSectionViewController.view.widthAnchor
-            constraintEqualToAnchor:self.collectionView.widthAnchor],
+            constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
         [self.feedTopSectionViewController.view.topAnchor
             constraintEqualToAnchor:self.feedHeaderViewController.view
                                         .bottomAnchor],
