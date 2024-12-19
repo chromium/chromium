@@ -36,13 +36,18 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/wm/core/window_util.h"
 
-// Implement custom hash for TabPtr because GURL doesn't support hash.
+// Implement custom hash for EntityPtr because GURL doesn't support hash.
 // We can dedup by possibly_invalid_spec() as it's how we transform GURL
 // back to strings.
 namespace std {
 template <>
-struct hash<coral::mojom::TabPtr> {
-  inline size_t operator()(const coral::mojom::TabPtr& tab) const {
+struct hash<coral::mojom::EntityPtr> {
+  inline size_t operator()(const coral::mojom::EntityPtr& entity) const {
+    if (entity->is_app()) {
+      return std::hash<coral::mojom::AppPtr>{}(entity->get_app());
+    }
+
+    const coral::mojom::TabPtr& tab = entity->get_tab();
     std::size_t h1 = std::hash<std::string>{}(tab->title);
     std::size_t h2 = std::hash<std::string>{}(tab->url.possibly_invalid_spec());
     return h1 ^ (h2 << 1);
@@ -74,6 +79,16 @@ bool HasValidClusterCount(size_t num_clusters) {
 bool IsBrowserWindow(aura::Window* window) {
   return window->GetProperty(chromeos::kAppTypeKey) ==
          chromeos::AppType::BROWSER;
+}
+
+bool IsWebAppWindow(aura::Window* window) {
+  const chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
+  return app_type == chromeos::AppType::CHROME_APP ||
+         app_type == chromeos::AppType::SYSTEM_APP;
+}
+
+bool IsNonWebAppWindow(aura::Window* window) {
+  return !IsBrowserWindow(window) && !IsWebAppWindow(window);
 }
 
 // Filters out tabs that should not be embedded/clustered.
@@ -135,51 +150,67 @@ bool ShouldCreateEmbedding(TabClusterUIItem* tab) {
          tab->current_info().source != tab->old_info().source;
 }
 
-// Gets the data of the tabs opening on the active desk. Unordered set is used
-// because we need to dedup identical tabs, but we don't need to sort them.
-std::unordered_set<coral::mojom::TabPtr> GetInSessionTabData() {
+// Creates an AppPtr from given `window` with app title and app ID.
+coral::mojom::AppPtr GetBasicAppInfoFromWindow(aura::Window* window) {
+  CHECK(IsValidApp(window));
+
+  const std::string* app_id_key = window->GetProperty(kAppIDKey);
+  auto app_mojom = coral::mojom::App::New();
+  app_mojom->title =
+      IsArcWindow(window)
+          ? base::UTF16ToUTF8(window->GetTitle())
+          : Shell::Get()->saved_desk_delegate()->GetAppShortName(*app_id_key);
+  app_mojom->id = std::move(*app_id_key);
+  return app_mojom;
+}
+
+// Gets the data of the tabs, PWAs, and SWAs opened on the active desk.
+// Unordered set is used because we need to dedup identical entities, but we
+// don't need to sort them.
+std::unordered_set<coral::mojom::EntityPtr> GetInSessionTabAndWebAppData() {
   // TODO(zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
-  std::unordered_set<coral::mojom::TabPtr> tab_data;
-  if (!Shell::Get()->tab_cluster_ui_controller()) {
-    return tab_data;
+  std::unordered_set<coral::mojom::EntityPtr> entities;
+  const TabClusterUIController* tab_cluster_ui_controller =
+      Shell::Get()->tab_cluster_ui_controller();
+  if (!tab_cluster_ui_controller) {
+    return entities;
   }
+
   for (const std::unique_ptr<TabClusterUIItem>& tab :
-       Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
+       tab_cluster_ui_controller->tab_items()) {
+    const TabClusterUIItem::Info& item_info = tab->current_info();
     if (IsValidTab(tab.get())) {
-      auto tab_mojom = coral::mojom::Tab::New();
-      tab_mojom->title = tab->current_info().title;
-      tab_mojom->url = GURL(tab->current_info().source);
-      tab_data.insert(std::move(tab_mojom));
+      auto tab_entity = coral::mojom::Entity::NewTab(coral::mojom::Tab::New(
+          /*title=*/item_info.title, /*url=*/GURL(item_info.source)));
+      entities.emplace(std::move(tab_entity));
+    } else if (IsValidApp(item_info.browser_window) &&
+               IsWebAppWindow(item_info.browser_window)) {
+      coral::mojom::AppPtr app_mojom =
+          GetBasicAppInfoFromWindow(item_info.browser_window);
+      // TODO(zxdan|hcyang): write tab title as the filename to the app info.
+      entities.emplace(coral::mojom::Entity::NewApp(std::move(app_mojom)));
     }
   }
 
-  return tab_data;
+  return entities;
 }
 
-// Gets the data of the apps opening on the active desk. Unordered set is used
-// because we need to dedup identical apps, but we don't need to sort them.
-std::unordered_set<coral::mojom::AppPtr> GetInSessionAppData() {
-  std::unordered_set<coral::mojom::AppPtr> app_data;
+// Gets the data of the non-web apps opened on the active desk. Unordered set is
+// used because we need to dedup identical apps, but we don't need to sort them.
+std::unordered_set<coral::mojom::EntityPtr> GetInSessionNonWebAppData() {
+  std::unordered_set<coral::mojom::EntityPtr> entities;
 
-  auto* const shell = Shell::Get();
-  auto mru_windows =
-      shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  for (aura::Window* window : mru_windows) {
-    if (!IsValidApp(window)) {
+  for (aura::Window* window :
+       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+    if (!IsValidApp(window) || !IsNonWebAppWindow(window)) {
       continue;
     }
 
-    const std::string* app_id_key = window->GetProperty(kAppIDKey);
-    auto app_mojom = coral::mojom::App::New();
-    app_mojom->title =
-        IsArcWindow(window)
-            ? base::UTF16ToUTF8(window->GetTitle())
-            : shell->saved_desk_delegate()->GetAppShortName(*app_id_key);
-    app_mojom->id = std::move(*app_id_key);
-    app_data.insert(std::move(app_mojom));
+    entities.emplace(
+        coral::mojom::Entity::NewApp(GetBasicAppInfoFromWindow(window)));
   }
-  return app_data;
+  return entities;
 }
 
 // Checks if we should show the response on Glanceables bar.
@@ -564,16 +595,18 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
   // TODO(zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
   std::vector<CoralRequest::ContentItem> active_tab_app_data;
-  std::unordered_set<coral::mojom::TabPtr> tabs = GetInSessionTabData();
-  while (!tabs.empty()) {
-    auto tab = std::move(tabs.extract(tabs.begin()).value());
-    active_tab_app_data.push_back(coral::mojom::Entity::NewTab(std::move(tab)));
+  std::unordered_set<coral::mojom::EntityPtr> tab_web_apps =
+      GetInSessionTabAndWebAppData();
+  while (!tab_web_apps.empty()) {
+    active_tab_app_data.push_back(
+        std::move(tab_web_apps.extract(tab_web_apps.begin()).value()));
   }
 
-  std::unordered_set<coral::mojom::AppPtr> apps = GetInSessionAppData();
-  while (!apps.empty()) {
-    auto app = std::move(apps.extract(apps.begin()).value());
-    active_tab_app_data.push_back(coral::mojom::Entity::NewApp(std::move(app)));
+  std::unordered_set<coral::mojom::EntityPtr> non_web_apps =
+      GetInSessionNonWebAppData();
+  while (!non_web_apps.empty()) {
+    active_tab_app_data.push_back(
+        std::move(non_web_apps.extract(non_web_apps.begin()).value()));
   }
   FilterCoralContentItems(&active_tab_app_data);
   request_.set_source(CoralSource::kInSession);
