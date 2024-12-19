@@ -13840,6 +13840,21 @@
             ]
         }
     ],
+    "MerchantTrustAndroidKillSwitch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_EmergencyKillSwitch",
+                    "disable_features": [
+                        "CommerceMerchantViewerRegionLaunched"
+                    ]
+                }
+            ]
+        }
+    ],
     "MessagesPreinstall": [
         {
             "platforms": [
