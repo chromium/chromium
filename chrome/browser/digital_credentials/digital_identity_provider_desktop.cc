@@ -14,7 +14,6 @@
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h"
@@ -43,12 +42,6 @@ namespace {
 
 // Smaller than DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH.
 constexpr int kQrCodeSize = 240;
-
-constexpr int kImageMarginTop = 22;
-constexpr int kImageMarginBottom = 2;
-constexpr int kImageHeight = 112;
-constexpr int kHeaderHeight =
-    kImageHeight + kImageMarginTop + kImageMarginBottom;
 
 using DigitalIdentityInterstitialAbortCallback =
     content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
@@ -101,14 +94,6 @@ CrossDeviceRequestTypeToCredentialRequestType(
     case RequestInfo::RequestType::kCreate:
       return device::cablev2::CredentialRequestType::kIssuance;
   }
-}
-
-template <typename T>
-void ConfigureHeaderIllustration(T* illustration, gfx::Size header_size) {
-  illustration->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginBottom, 0)));
-  illustration->SetSize(header_size);
-  illustration->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 }
 
 }  // anonymous namespace
@@ -316,63 +301,42 @@ void DigitalIdentityProviderDesktop::OnUserRequestedBluetoothPowerOn() {
 void DigitalIdentityProviderDesktop::ShowConnectingToPhoneDialog() {
   // Ensure the dialog is created to have access to GetBackgroundColor().
   EnsureDialogCreated();
-  ShowStepWithIllustration(
-      /*body_text=*/l10n_util::GetStringUTF16(
-          IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTING_TITLE),
-      std::make_unique<views::ThemeTrackingAnimatedImageView>(
-          IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT,
-          IDR_WEBAUTHN_HYBRID_CONNECTING_DARK,
-          base::BindRepeating(
-              &DigitalIdentityMultiStepDialog::GetBackgroundColor,
-              base::Unretained(dialog_.get()))));
-}
-
-void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
-  // Ensure the dialog is created to have access to GetBackgroundColor().
-  EnsureDialogCreated();
-  ShowStepWithIllustration(
-      /*body_text=*/l10n_util::GetStringUTF16(
-          IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTED_TITLE),
-      std::make_unique<ThemeTrackingNonAccessibleImageView>(
-          ui::ImageModel::FromVectorIcon(kPasskeyPhoneIcon),
-          ui::ImageModel::FromVectorIcon(kPasskeyPhoneDarkIcon),
-          base::BindRepeating(
-              &DigitalIdentityMultiStepDialog::GetBackgroundColor,
-              base::Unretained(dialog_.get()))));
-}
-
-template <typename T>
-void DigitalIdentityProviderDesktop::ShowStepWithIllustration(
-    const std::u16string& title_text,
-    std::unique_ptr<T> illustration) {
-  const gfx::Insets& insets =
-      ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::DialogContentType::kText, views::DialogContentType::kText);
-  const int available_width =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-      insets.right() - insets.left();
-  const gfx::Size header_size(available_width, kHeaderHeight);
-  // `illustration` will horizontally center if the width is
-  // larger than the size from the Lottie file, but the height is just used to
-  // truncate the image, so that is disabled with a very large value.
-  illustration->SetPreferredSize(gfx::Size(available_width, 9999));
-  ConfigureHeaderIllustration(illustration.get(), header_size);
-
-  auto container_view =
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetInsideBorderInsets(gfx::Insets())
-          .SetPreferredSize(header_size)
-          .Build();
-  container_view->AddChildView(std::move(illustration));
+  std::u16string title_text = l10n_util::GetStringUTF16(
+      IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTING_TITLE);
+  auto illustration = std::make_unique<views::ThemeTrackingAnimatedImageView>(
+      IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT, IDR_WEBAUTHN_HYBRID_CONNECTING_DARK,
+      base::BindRepeating(&DigitalIdentityMultiStepDialog::GetBackgroundColor,
+                          base::Unretained(dialog_.get())));
 
   EnsureDialogCreated()->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
       ui::DialogModel::Button::Params(),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
-      title_text, /*dialog_body=*/u"", std::move(container_view));
+      std::move(title_text), /*dialog_body=*/u"",
+      DigitalIdentityMultiStepDialog::ConfigureHeaderIllustration(
+          std::move(illustration)));
+}
+
+void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
+  // Ensure the dialog is created to have access to GetBackgroundColor().
+  EnsureDialogCreated();
+  std::u16string title_text = l10n_util::GetStringUTF16(
+      IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTED_TITLE);
+  auto illustration = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      ui::ImageModel::FromVectorIcon(kPasskeyPhoneIcon),
+      ui::ImageModel::FromVectorIcon(kPasskeyPhoneDarkIcon),
+      base::BindRepeating(&DigitalIdentityMultiStepDialog::GetBackgroundColor,
+                          base::Unretained(dialog_.get())));
+
+  EnsureDialogCreated()->TryShow(
+      /*accept_button=*/std::nullopt, base::OnceClosure(),
+      ui::DialogModel::Button::Params(),
+      base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(title_text), /*dialog_body=*/u"",
+      DigitalIdentityMultiStepDialog::ConfigureHeaderIllustration(
+          std::move(illustration)));
 }
 
 void DigitalIdentityProviderDesktop::OnCableConnectingTimerComplete() {
