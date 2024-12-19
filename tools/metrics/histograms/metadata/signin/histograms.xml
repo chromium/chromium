@@ -2742,6 +2742,28 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Timestamps.Android.Fullscreen.{Event}" units="ms"
+    expires_after="2025-12-11">
+  <owner>samarchehade@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Analogous to MobileFre.FromLaunch.{Event}. The amount of time between when
+    the fullscreen signin and history sync promo activity was started and when
+    {Event}. Android only.
+  </summary>
+  <token key="Event">
+    <variant name="ActivityInflated"
+        summary="the activity is ready to be drawn, although likely empty"/>
+    <variant name="LoadCompleted"
+        summary="the native code, policies and child account status are
+                 loaded"/>
+    <variant name="NativeInitialized" summary="the native code is initialized"/>
+    <variant name="PoliciesLoaded" summary="policies are loaded"/>
+    <variant name="TriggerLayoutInflation"
+        summary="layout inflation is triggered"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.TokenBinding.BoundTokenPrevalence"
     enum="TokenBindingBoundTokenPrevalence" expires_after="2025-02-10">
   <owner>alexilin@chromium.org</owner>

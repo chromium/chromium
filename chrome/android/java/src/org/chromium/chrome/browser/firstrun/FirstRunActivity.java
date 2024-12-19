@@ -784,7 +784,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public void recordSlowestLoadPointHistogram(
+    public void recordLoadCompletedHistograms(
             @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.FromLaunch.NativePolicyAndChildStatusLoaded",

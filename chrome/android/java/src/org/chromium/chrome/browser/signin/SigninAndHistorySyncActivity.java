@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.Window;
 
@@ -19,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
@@ -77,6 +79,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     // TODO(crbug.com/349787455): Move this to FirstRunActivityBase.
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
+
+    private boolean mIsFullscreenPromo;
     private SigninAndHistorySyncCoordinator mCoordinator;
 
     // Set to true when the add account activity is started, and is not persisted in saved instance
@@ -106,6 +110,11 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             updateSystemUiForFullscreenSignin();
             FullscreenSigninAndHistorySyncConfig config =
                     intent.getParcelableExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG);
+            mIsFullscreenPromo = true;
+
+            RecordHistogram.recordTimesHistogram(
+                    "Signin.Timestamps.Android.Fullscreen.TriggerLayoutInflation",
+                    SystemClock.elapsedRealtime() - getStartTime());
 
             mCoordinator =
                     new FullscreenSigninAndHistorySyncCoordinator(
@@ -115,10 +124,15 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                             PrivacyPreferencesManagerImpl.getInstance(),
                             config,
                             signinAccessPoint,
-                            this);
+                            this,
+                            getStartTime());
 
             setInitialContentView(mCoordinator.getView());
             onInitialLayoutInflationComplete();
+
+            RecordHistogram.recordTimesHistogram(
+                    "Signin.Timestamps.Android.Fullscreen.ActivityInflated",
+                    SystemClock.elapsedRealtime() - getStartTime());
             return;
         }
 
@@ -138,6 +152,16 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
 
         setInitialContentView(mCoordinator.getView());
         onInitialLayoutInflationComplete();
+    }
+
+    @Override
+    protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {
+        super.onPolicyLoadListenerAvailable(onDevicePolicyFound);
+        if (mIsFullscreenPromo) {
+            RecordHistogram.recordTimesHistogram(
+                    "Signin.Timestamps.Android.Fullscreen.PoliciesLoaded",
+                    SystemClock.elapsedRealtime() - getStartTime());
+        }
     }
 
     @Override

@@ -209,9 +209,9 @@ public class SigninFirstRunFragment extends Fragment
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
-    public void recordNativePolicyAndChildStatusLoadedHistogram(
+    public void recordLoadCompletedHistograms(
             @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
-        getPageDelegate().recordSlowestLoadPointHistogram(slowestLoadPoint);
+        getPageDelegate().recordLoadCompletedHistograms(slowestLoadPoint);
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */

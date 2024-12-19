@@ -77,7 +77,7 @@ public interface FirstRunPageDelegate {
     void recordFreProgressHistogram(@MobileFreProgress int state);
 
     /** Records MobileFre.FromLaunch.NativeAndPoliciesLoaded histogram. */
-    void recordSlowestLoadPointHistogram(@FullscreenSigninMediator.LoadPoint int slowestLoadPoint);
+    void recordLoadCompletedHistograms(@FullscreenSigninMediator.LoadPoint int slowestLoadPoint);
 
     /** Records MobileFre.FromLaunch.NativeInitialized histogram. */
     void recordNativeInitializedHistogram();

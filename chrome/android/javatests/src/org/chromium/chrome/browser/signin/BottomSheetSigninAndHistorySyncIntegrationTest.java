@@ -608,6 +608,14 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistorySyncConfig.OptInMode int historyOptInMode) {
+        // These histograms are recorded in the SigninAndHistorySync activity but they should
+        // only be recorded in the fullscreen case.
+        HistogramWatcher fullscreenActivityHistograms =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Signin.Timestamps.Android.Fullscreen.TriggerLayoutInflation")
+                        .expectNoRecords("Signin.Timestamps.Android.Fullscreen.ActivityInflated")
+                        .build();
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)
@@ -624,6 +632,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                         ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
+        fullscreenActivityHistograms.assertExpected();
     }
 
     private void verifyCollapsedBottomSheetAndSignin(CoreAccountInfo accountInfo) {

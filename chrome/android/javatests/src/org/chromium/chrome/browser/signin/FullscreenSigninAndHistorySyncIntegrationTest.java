@@ -266,6 +266,11 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_noHistorySync() {
+        HistogramWatcher nativeLoadedHistograms =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Signin.Timestamps.Android.Fullscreen.NativeInitialized")
+                        .expectAnyRecord("Signin.Timestamps.Android.Fullscreen.LoadCompleted")
+                        .build();
         mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
 
         launchActivity();
@@ -278,6 +283,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         mSigninTestRule.waitForSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         Assert.assertFalse(SyncTestUtil.isHistorySyncEnabled());
         verify(mHistorySyncHelperMock).recordHistorySyncNotShown(mSigninAccessPoint);
+        nativeLoadedHistograms.assertExpected();
     }
 
     @Test
@@ -477,8 +483,9 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testUserAlreadySignedIn_backpress_historySyncOptional() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mBlankUiActivityTestRule.launchActivity(null);
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
 
         launchActivity(/* shouldReplaceProgressBars= */ false);
@@ -498,12 +505,16 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @LargeTest
     @Policies.Add({@Policies.Item(key = "RandomPolicy", string = "true")})
     public void testFragmentWhenSigninIsDisabledByPolicy() {
+        HistogramWatcher policyLoadedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.Timestamps.Android.Fullscreen.PoliciesLoaded");
         launchActivity();
 
         // Verify that the fullscreen sign-in promo is shown.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         // Management notice shouldn't be shown in the upgrade promo.
         onView(withId(R.id.fre_browser_managed_by)).check(matches(not(isDisplayed())));
+        policyLoadedHistogram.assertExpected();
     }
 
     @Test
@@ -557,12 +568,22 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     private void launchActivity(
             boolean shouldReplaceProgressBars, FullscreenSigninAndHistorySyncConfig config) {
+        HistogramWatcher triggerLayoutInflationHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.Timestamps.Android.Fullscreen.TriggerLayoutInflation");
+        HistogramWatcher activityInflatedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.Timestamps.Android.Fullscreen.ActivityInflated");
+
         Intent intent =
                 SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
                         ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
+        triggerLayoutInflationHistogram.assertExpected();
+
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.RESUMED);
+        activityInflatedHistogram.assertExpected();
 
         if (shouldReplaceProgressBars) {
             ThreadUtils.runOnUiThreadBlocking(

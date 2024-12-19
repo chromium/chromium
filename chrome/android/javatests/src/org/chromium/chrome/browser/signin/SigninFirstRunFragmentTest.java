@@ -1202,7 +1202,7 @@ public class SigninFirstRunFragmentTest {
     public void testNativePolicyAndChildStatusLoadMetricRecordedOnlyOnce() {
         launchActivityWithFragment();
         verify(mFirstRunPageDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
-                .recordSlowestLoadPointHistogram(LoadPoint.NATIVE_INITIALIZATION);
+                .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
         verify(mFirstRunPageDelegateMock).recordNativeInitializedHistogram();
 
         // Changing the activity orientation will create FullscreenSigninCoordinator again and call
@@ -1213,7 +1213,7 @@ public class SigninFirstRunFragmentTest {
         // These histograms should not be recorded again. The call count should be the same as
         // before as mockito does not reset invocation counts between consecutive verify calls.
         verify(mFirstRunPageDelegateMock)
-                .recordSlowestLoadPointHistogram(LoadPoint.NATIVE_INITIALIZATION);
+                .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
         verify(mFirstRunPageDelegateMock).recordNativeInitializedHistogram();
     }
 
@@ -1336,7 +1336,7 @@ public class SigninFirstRunFragmentTest {
             @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
-        verify(mFirstRunPageDelegateMock).recordSlowestLoadPointHistogram(slowestLoadPoint);
+        verify(mFirstRunPageDelegateMock).recordLoadCompletedHistograms(slowestLoadPoint);
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(
                         accountInfo.getEmail(),
@@ -1394,7 +1394,7 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
         verify(mFirstRunPageDelegateMock)
-                .recordSlowestLoadPointHistogram(LoadPoint.NATIVE_INITIALIZATION);
+                .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
         onView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
@@ -1497,7 +1497,7 @@ public class SigninFirstRunFragmentTest {
                             .isShown();
                 });
         verify(mFirstRunPageDelegateMock)
-                .recordSlowestLoadPointHistogram(LoadPoint.NATIVE_INITIALIZATION);
+                .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
         ViewUtils.waitForVisibleView(withId(R.id.fre_browser_managed_by));
         ViewUtils.waitForVisibleView(withText(R.string.continue_button));
         ViewUtils.waitForVisibleView(withId(R.id.signin_fre_footer));

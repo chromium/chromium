@@ -210,7 +210,7 @@ public class FullscreenSigninMediator
             mInitialLoadCompleted = true;
             onInitialLoadCompleted(mDelegate.getPolicyLoadListener().get());
             // TODO(crbug.com/40235150): Rename this method and the corresponding histogram.
-            mDelegate.recordNativePolicyAndChildStatusLoadedHistogram(slowestLoadPoint);
+            mDelegate.recordLoadCompletedHistograms(slowestLoadPoint);
         }
     }
 

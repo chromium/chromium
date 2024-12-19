@@ -56,22 +56,18 @@ public class FullscreenSigninCoordinator {
         void recordSigninDismissedHistograms();
 
         /**
-         * Records MobileFre.FromLaunch.NativeAndPoliciesLoaded and MobileFre.SlowestLoadPoint
-         * histograms. Only implemented for the FRE.
+         * Records the relevant histograms once the initial load is completed.
          *
          * @param slowestLoadPoint The slowest load point to be recorded.
          */
-        default void recordNativePolicyAndChildStatusLoadedHistogram(
-                @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {}
+        void recordLoadCompletedHistograms(
+                @FullscreenSigninMediator.LoadPoint int slowestLoadPoint);
+
+        /** Records *.FromLaunch.NativeInitialized histogram. */
+        void recordNativeInitializedHistogram();
 
         /**
-         * Records MobileFre.FromLaunch.NativeInitialized histogram. Only implemented for the FRE.
-         */
-        // TODO(crbug.com/351277737): Consider recording something similar for the re-FRE as well.
-        default void recordNativeInitializedHistogram() {}
-
-        /**
-         * Show an informational web page. The page doesn't show navigation control. Only
+         * Shows an informational web page. The page doesn't show navigation control. Only
          * implemented for the FRE.
          *
          * @param url Resource id for the URL of the web page.
