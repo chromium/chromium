@@ -2365,12 +2365,12 @@ See your search engine’s instructions for deleting your search history, if app
         Go to Settings
       </message>
       <message name="IDS_IOS_INACTIVE_TABS_USER_EDU_SUBTITLE" desc="Subtitle of the user education panel explaining Inactive Tabs.">
-        {COUNT, plural,
-          =1 {Open tabs not used for one day or more get moved to Inactive tabs so you can easily focus on the tabs you use the most. You can change this anytime in settings.}
-          other {Open tabs not used for {COUNT} days or more get moved to Inactive tabs so you can easily focus on the tabs you use the most. You can change this anytime in settings.}}
+        This helps you stay organized. You can change this in settings anytime.
       </message>
       <message name="IDS_IOS_INACTIVE_TABS_USER_EDU_TITLE" desc="Title of the user education panel explaining inactive tabs.">
-        Inactive tabs help you stay focused
+        {COUNT, plural,
+          =1 {Tabs you don't use get moved here after {COUNT} day}
+          other {Tabs you don't use get moved here after {COUNT} days}}
       </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
         Learn more about Incognito mode
