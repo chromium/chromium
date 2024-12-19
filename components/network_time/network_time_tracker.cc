@@ -106,7 +106,8 @@ constexpr base::FeatureParam<NetworkTimeTracker::FetchBehavior>::Option
 };
 constexpr base::FeatureParam<NetworkTimeTracker::FetchBehavior> kFetchBehavior{
     &kNetworkTimeServiceQuerying, "FetchBehavior",
-    NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY, &kFetchBehaviorOptions};
+    NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+    &kFetchBehaviorOptions};
 
 // Number of time measurements performed in a given network time calculation.
 const uint32_t kNumTimeMeasurements = 7;
