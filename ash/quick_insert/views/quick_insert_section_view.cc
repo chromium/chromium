@@ -612,8 +612,10 @@ QuickInsertSectionView::GetOrCreateListItemContainer() {
 QuickInsertImageItemGridView*
 QuickInsertSectionView::GetOrCreateImageItemGrid() {
   if (image_item_grid_ == nullptr) {
-    image_item_grid_ = AddChildView(
-        std::make_unique<QuickInsertImageItemGridView>(section_width_));
+    image_item_grid_ =
+        AddChildView(std::make_unique<QuickInsertImageItemGridView>(
+            section_width_,
+            /*has_top_margin=*/title_container_->children().empty()));
     item_containers_.push_back(image_item_grid_);
   }
   return image_item_grid_;

@@ -26,7 +26,8 @@ class ASH_EXPORT QuickInsertImageItemGridView
   METADATA_HEADER(QuickInsertImageItemGridView, views::View)
 
  public:
-  explicit QuickInsertImageItemGridView(int grid_width);
+  explicit QuickInsertImageItemGridView(int grid_width,
+                                        bool has_top_margin = true);
   QuickInsertImageItemGridView(const QuickInsertImageItemGridView&) = delete;
   QuickInsertImageItemGridView& operator=(const QuickInsertImageItemGridView&) =
       delete;
