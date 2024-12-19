@@ -968,10 +968,6 @@ BASE_DECLARE_FEATURE(kNewFeedPositioning);
 extern const char kNewFeedPositioningCombinedMVTForHighEngaged[];
 extern const char kNewFeedPositioningCombinedMVTForMidEngaged[];
 extern const char kNewFeedPositioningCombinedMVTForLowEngaged[];
-extern const char kNewFeedPositioningHomestackOnForAll[];
-
-// Returns whether homestack should be enabled based on `feed_activity_bucket`.
-bool ShouldEnableHomestack(FeedActivityBucket feed_activity_bucket);
 
 // Feature flag to control whether the Default Browser banner promo is enabled.
 BASE_DECLARE_FEATURE(kDefaultBrowserBannerPromo);

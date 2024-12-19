@@ -26,40 +26,6 @@ bool IsFeedBackgroundRefreshEnabledOnly() {
   return base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh);
 }
 
-// Helper function that returns a vector of two booleans, with vector[0] being
-// the desired state for the combined MVT, and vector[1] being whether homestack
-// should be enabled.
-std::vector<bool> ShouldEnableCombinedMVTAndHomestack(
-    FeedActivityBucket feed_activity_bucket) {
-  if (!base::FeatureList::IsEnabled(kNewFeedPositioning)) {
-    return {false, false};
-  }
-  std::string mvt_state_param_name;
-  switch (feed_activity_bucket) {
-    case FeedActivityBucket::kNoActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
-      break;
-    case FeedActivityBucket::kLowActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
-      break;
-    case FeedActivityBucket::kMediumActivity:
-    case FeedActivityBucket::kHighActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
-      break;
-    default:
-      NOTREACHED() << "Should not reach engagement level: "
-                   << static_cast<int>(feed_activity_bucket);
-  }
-  bool should_combine_mvt = base::GetFieldTrialParamByFeatureAsBool(
-      kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
-  bool should_enable_homestack =
-      should_combine_mvt ||
-      base::GetFieldTrialParamByFeatureAsBool(
-          kNewFeedPositioning, kNewFeedPositioningHomestackOnForAll,
-          /*default_value=*/true);
-  return {should_combine_mvt, should_enable_homestack};
-}
-
 }  // namespace
 
 BASE_FEATURE(kSegmentedDefaultBrowserPromo,
@@ -967,9 +933,31 @@ bool IsTabResumptionImagesThumbnailsEnabled() {
 
 bool ShouldPutMostVisitedSitesInMagicStack(
     FeedActivityBucket feed_activity_bucket) {
-  return base::GetFieldTrialParamByFeatureAsBool(
-             kMagicStack, kMagicStackMostVisitedModuleParam, false) ||
-         ShouldEnableCombinedMVTAndHomestack(feed_activity_bucket)[0];
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          kMagicStack, kMagicStackMostVisitedModuleParam, false)) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(kNewFeedPositioning)) {
+    std::string mvt_state_param_name;
+    switch (feed_activity_bucket) {
+      case FeedActivityBucket::kNoActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
+        break;
+      case FeedActivityBucket::kLowActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
+        break;
+      case FeedActivityBucket::kMediumActivity:
+      case FeedActivityBucket::kHighActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
+        break;
+      default:
+        NOTREACHED() << "Should not reach engagement level: "
+                     << static_cast<int>(feed_activity_bucket);
+    }
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
+  }
+  return false;
 }
 
 double ReducedNTPTopMarginSpaceForMagicStack() {
@@ -1191,12 +1179,6 @@ const char kNewFeedPositioningCombinedMVTForMidEngaged[] =
     "medium_engagement_combined_mvt";
 const char kNewFeedPositioningCombinedMVTForLowEngaged[] =
     "low_engagement_combined_mvt";
-const char kNewFeedPositioningHomestackOnForAll[] = "homestack_on_for_all";
-
-// Returns whether homestack should be enabled.
-bool ShouldEnableHomestack(FeedActivityBucket feed_activity_bucket) {
-  return ShouldEnableCombinedMVTAndHomestack(feed_activity_bucket)[1];
-}
 
 BASE_FEATURE(kDefaultBrowserBannerPromo,
              "DefaultBrowserBannerPromo",

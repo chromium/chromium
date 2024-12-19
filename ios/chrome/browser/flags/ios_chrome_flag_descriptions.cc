@@ -612,7 +612,7 @@ const char kIOSQuickDeleteDescription[] =
 const char kNewFeedPositioningExperimentName[] =
     "New Personalized Feed Positioning for iOS";
 const char kNewFeedPositioningExperimentDescription[] =
-    "Positions the most visited tiles and the feed based on user frequency.";
+    "Positions the most visited tiles based on user frequency.";
 
 const char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";

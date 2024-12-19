@@ -1134,39 +1134,19 @@ const FeatureEntry::FeatureParam kNewFeedPositioningArm2[] = {
     {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
     {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
     {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-    {kNewFeedPositioningHomestackOnForAll, "true"},
 };
 
 const FeatureEntry::FeatureParam kNewFeedPositioningArm3[] = {
     {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
     {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
     {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-    {kNewFeedPositioningHomestackOnForAll, "true"},
-};
-
-const FeatureEntry::FeatureParam kNewFeedPositioningArm4[] = {
-    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
-    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-    {kNewFeedPositioningHomestackOnForAll, "false"},
-};
-
-const FeatureEntry::FeatureParam kNewFeedPositioningArm5[] = {
-    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-    {kNewFeedPositioningHomestackOnForAll, "false"},
 };
 
 const FeatureEntry::FeatureVariation kNewFeedPositioningVariations[] = {
-    {"- Treatment 2", kNewFeedPositioningArm2,
+    {"- update for high feed engagement", kNewFeedPositioningArm2,
      std::size(kNewFeedPositioningArm2), nullptr},
-    {"- Treatment 3", kNewFeedPositioningArm3,
+    {"- update for high and mid feed engagement", kNewFeedPositioningArm3,
      std::size(kNewFeedPositioningArm3), nullptr},
-    {"- Treatment 4", kNewFeedPositioningArm4,
-     std::size(kNewFeedPositioningArm4), nullptr},
-    {"- Treatment 5", kNewFeedPositioningArm5,
-     std::size(kNewFeedPositioningArm5), nullptr},
 };
 
 const FeatureEntry::FeatureParam
