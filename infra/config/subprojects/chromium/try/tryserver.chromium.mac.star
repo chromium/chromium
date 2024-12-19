@@ -565,13 +565,6 @@ ios_builder(
     cpu = cpu.ARM64,
 )
 
-ios_builder(
-    name = "ios-m1-simulator",
-    mirrors = ["ci/ios-m1-simulator"],
-    gn_args = "ci/ios-m1-simulator",
-    cpu = cpu.ARM64,
-)
-
 try_.orchestrator_builder(
     name = "ios-simulator",
     branch_selector = branches.selector.IOS_BRANCHES,

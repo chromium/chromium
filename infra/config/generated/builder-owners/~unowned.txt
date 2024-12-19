@@ -223,7 +223,6 @@ try/ios-blink-dbg-fyi
 try/ios-catalyst
 try/ios-device
 try/ios-fieldtrial-rel
-try/ios-m1-simulator
 try/ios-simulator
 try/ios-simulator-code-coverage
 try/ios-simulator-compilator

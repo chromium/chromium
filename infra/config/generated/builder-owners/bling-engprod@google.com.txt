@@ -2,7 +2,6 @@ ci/Mac Builder
 ci/Mac Builder (dbg)
 ci/Mac11 Tests
 ci/Mac12 Tests
-ci/ios-m1-simulator
 ci/ios-vm
 ci/mac-archive-rel
 ci/mac-arm64-archive-rel

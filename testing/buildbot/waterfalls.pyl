@@ -709,7 +709,6 @@
     #   android-perfetto-rel
     #   ios-blink-dbg-fyi
     #   ios-fieldtrial-rel
-    #   ios-m1-simulator
     #   ios-vm
     #   ios-webkit-tot
     #   ios-wpt-fyi-rel
