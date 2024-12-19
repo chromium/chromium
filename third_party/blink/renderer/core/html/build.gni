@@ -13,6 +13,8 @@ blink_core_sources_html = [
   "anchor_element_observer.h",
   "blocking_attribute.cc",
   "blocking_attribute.h",
+  "canvas/canvas_2d_color_params.cc",
+  "canvas/canvas_2d_color_params.h",
   "canvas/canvas_async_blob_creator.cc",
   "canvas/canvas_async_blob_creator.h",
   "canvas/canvas_context_creation_attributes_core.cc",

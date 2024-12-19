@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
 

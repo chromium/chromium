@@ -31,6 +31,10 @@
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 
+namespace gfx {
+class ColorSpace;
+}
+
 namespace WTF {
 class String;
 }
@@ -373,6 +377,12 @@ PLATFORM_EXPORT WTF::String TextBaselineName(TextBaseline);
 PLATFORM_EXPORT bool ParseTextBaseline(const WTF::String&, TextBaseline&);
 
 PLATFORM_EXPORT WTF::String ImageDataStorageFormatName(ImageDataStorageFormat);
+
+// Return the gfx::ColorSpace or SkColorSpace for a PredefinedColorSpace.
+PLATFORM_EXPORT gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
+    PredefinedColorSpace color_space);
+PLATFORM_EXPORT sk_sp<SkColorSpace> PredefinedColorSpaceToSkColorSpace(
+    PredefinedColorSpace color_space);
 
 }  // namespace blink
 

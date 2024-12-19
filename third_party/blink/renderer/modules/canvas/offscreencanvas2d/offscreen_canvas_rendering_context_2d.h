@@ -7,6 +7,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
@@ -182,7 +183,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   bool is_valid_size_ = false;
 
-  CanvasColorParams color_params_;
+  Canvas2DColorParams color_params_;
 };
 
 }  // namespace blink
