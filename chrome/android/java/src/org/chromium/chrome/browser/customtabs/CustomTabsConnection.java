@@ -948,8 +948,6 @@ public class CustomTabsConnection {
                                 ? postMessageSourceOrigin.toString()
                                 : ""),
                 success);
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.PostMessage.RequestPostMessageChannel", success);
         return success;
     }
 

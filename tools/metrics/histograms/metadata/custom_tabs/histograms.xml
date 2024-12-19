@@ -625,31 +625,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.PostMessage.PostMessageFromClientApp"
-    enum="Boolean" expires_after="2024-08-23">
-  <owner>sinansahin@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Android only. Recorded when the CCT client sends a postMessage request to
-    the tab. Always emits true.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.PostMessage.RequestPostMessageChannel"
-    enum="Boolean" expires_after="2024-08-23">
-  <owner>sinansahin@google.com</owner>
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Android only. Recorded when the CCT client calls requestPostMessageChannel
-    to establish a two way postMessage channel. Emits true if the request is
-    successful and false otherwise. A true value emitted here doesn't mean the
-    request cannot fail later; and a false value may be the result of multiple
-    things, e.g. the warmup hasn't been called.
-  </summary>
-</histogram>
-
 <histogram
     name="CustomTabs.PostMessage.RequestPostMessageChannelWithTargetOrigin"
     enum="Boolean" expires_after="2025-05-04">
