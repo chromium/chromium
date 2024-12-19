@@ -82,7 +82,7 @@ class BulkFaviconUtil {
                                             .getDefaultFaviconBitmap(
                                                     context,
                                                     webPageUrlList.get(i),
-                                                    /* useDarkIcon= */ isNightMode);
+                                                    /* useDarkIcon= */ !isNightMode);
                         }
                         results.add(favicon);
                     }
