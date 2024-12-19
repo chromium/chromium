@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/frame_sink/test/frame_sink_host_test_base.h"
 #include "ash/frame_sink/test/test_begin_frame_source.h"
 #include "ash/frame_sink/test/test_layer_tree_frame_sink.h"
 #include "ash/frame_sink/ui_resource.h"
@@ -38,7 +39,7 @@ namespace ash {
 namespace {
 
 class FastInkHostTest
-    : public AshTestBase,
+    : public FrameSinkHostTestBase<FastInkHost>,
       public ::testing::WithParamInterface<
           std::tuple<std::string, bool, gfx::Rect, gfx::Rect, gfx::Rect>> {
  public:
@@ -56,39 +57,8 @@ class FastInkHostTest
 
   // AshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
-    UpdateDisplay(first_display_specs_);
-
-    auto* root_window = ash_test_helper()->GetHost()->window();
-    gfx::Rect screen_bounds = root_window->GetBoundsInScreen();
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                         nullptr, kShellWindowId_OverlayContainer);
-    widget_->SetBounds(screen_bounds);
-    host_window_ = widget_->GetNativeWindow();
-
-    auto layer_tree_frame_sink = std::make_unique<TestLayerTreeFrameSink>();
-    layer_tree_frame_sink_ = layer_tree_frame_sink.get();
-
-    fast_ink_host_ = std::make_unique<FastInkHost>();
-    fast_ink_host_->InitForTesting(host_window_,
-                                   std::move(layer_tree_frame_sink));
-
-    begin_frame_source_ = std::make_unique<TestBeginFrameSource>();
-    layer_tree_frame_sink_->client()->SetBeginFrameSource(
-        begin_frame_source_.get());
-  }
-
-  // AshTestBase:
-  void TearDown() override {
-    widget_.reset();
-    AshTestBase::TearDown();
-  }
-
-  void OnBeginFrame() {
-    // Request a frame from FrameSinkHost.
-    begin_frame_source_->GetBeginFrameObserver()->OnBeginFrame(
-        CreateValidBeginFrameArgsForTesting());
+    SetDisplaySpecs(first_display_specs_);
+    FrameSinkHostTestBase<FastInkHost>::SetUp();
   }
 
  protected:
@@ -97,12 +67,6 @@ class FastInkHostTest
   gfx::Rect content_rect_;
   gfx::Rect expected_quad_rect_;
   gfx::Rect expected_quad_layer_rect_;
-
-  std::unique_ptr<views::Widget> widget_;
-  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
-  std::unique_ptr<FastInkHost> fast_ink_host_;
-  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> layer_tree_frame_sink_;
-  std::unique_ptr<TestBeginFrameSource> begin_frame_source_;
 };
 
 TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
@@ -119,19 +83,19 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
   constexpr gfx::Rect kTestTotalDamageRectInDIP = gfx::Rect(0, 0, 50, 25);
 
   if (auto_update_) {
-    fast_ink_host_->AutoUpdateSurface(content_rect_, kTestTotalDamageRectInDIP);
+    frame_sink_host()->AutoUpdateSurface(content_rect_,
+                                         kTestTotalDamageRectInDIP);
 
     // When host auto updates, it only submits a frame when requested by
     // LayerTreeFrameSink via a BeginFrameSource.
-    begin_frame_source_->GetBeginFrameObserver()->OnBeginFrame(
-        CreateValidBeginFrameArgsForTesting());
+    OnBeginFrame();
   } else {
-    fast_ink_host_->UpdateSurface(content_rect_, kTestTotalDamageRectInDIP,
-                                  /*synchronous_draw=*/true);
+    frame_sink_host()->UpdateSurface(content_rect_, kTestTotalDamageRectInDIP,
+                                     /*synchronous_draw=*/true);
   }
 
   const viz::CompositorFrame& frame =
-      layer_tree_frame_sink_->GetLatestReceivedFrame();
+      layer_tree_frame_sink()->GetLatestReceivedFrame();
 
   const viz::CompositorRenderPassList& render_pass_list =
       frame.render_pass_list;
@@ -160,21 +124,21 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
 
 TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   // Buffer is not initialized when there is no begin frame received.
-  ASSERT_FALSE(fast_ink_host_->client_si_for_test());
-  EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
+  ASSERT_FALSE(frame_sink_host()->client_si_for_test());
+  EXPECT_EQ(frame_sink_host()->get_pending_bitmaps_size_for_test(), 0);
 
   int pending_bitmaps_size = 0;
   for (SkColor color : {SK_ColorRED, SK_ColorYELLOW, SK_ColorGREEN}) {
     {
       const gfx::Rect damage_rect_in_window =
-          gfx::Rect(host_window_->bounds().size());
-      auto paint = fast_ink_host_->CreateScopedPaint(damage_rect_in_window);
+          gfx::Rect(host_window()->bounds().size());
+      auto paint = frame_sink_host()->CreateScopedPaint(damage_rect_in_window);
       paint->canvas().DrawRect(gfx::RectF(damage_rect_in_window), color);
     }
     // The bitmap is waiting to be drawn because no gpu memory buffer is
     // initialized.
     ++pending_bitmaps_size;
-    EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(),
+    EXPECT_EQ(frame_sink_host()->get_pending_bitmaps_size_for_test(),
               pending_bitmaps_size);
   }
 
@@ -182,11 +146,11 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   OnBeginFrame();
 
   // MappableSI should be initialized after receiving the first begin frame.
-  ASSERT_TRUE(fast_ink_host_->client_si_for_test());
+  ASSERT_TRUE(frame_sink_host()->client_si_for_test());
   // Pending bitmaps should be drawn and cleared.
-  EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
+  EXPECT_EQ(frame_sink_host()->get_pending_bitmaps_size_for_test(), 0);
 
-  auto mapping = fast_ink_host_->client_si_for_test()->Map();
+  auto mapping = frame_sink_host()->client_si_for_test()->Map();
   ASSERT_TRUE(mapping);
   // Pending bitmaps should be correctly copied to the MappableSI's buffer.
   EXPECT_EQ(*reinterpret_cast<SkColor*>(mapping->GetMemoryForPlane(0).data()),

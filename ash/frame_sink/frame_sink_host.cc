@@ -4,6 +4,8 @@
 
 #include "ash/frame_sink/frame_sink_host.h"
 
+#include <utility>
+
 #include "ash/frame_sink/frame_sink_holder.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -32,25 +34,29 @@ void FrameSinkHost::SetPresentationCallback(PresentationCallback callback) {
 }
 
 void FrameSinkHost::Init(aura::Window* host_window) {
-  InitInternal(host_window, host_window->CreateLayerTreeFrameSink());
-}
-
-void FrameSinkHost::InitForTesting(
-    aura::Window* host_window,
-    std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
-  InitInternal(host_window, std::move(layer_tree_frame_sink));
-}
-
-void FrameSinkHost::InitInternal(
-    aura::Window* host_window,
-    std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
   SetHostWindow(host_window);
-  InitFrameSinkHolder(host_window, std::move(layer_tree_frame_sink));
+  frame_sink_factory_ = base::BindRepeating(
+      &FrameSinkHost::CreateLayerTreeFrameSink, base::Unretained(this));
+  InitFrameSinkHolder(host_window, frame_sink_factory_.Run());
+}
+
+void FrameSinkHost::InitForTesting(aura::Window* host_window,
+                                   FrameSinkFactory frame_sink_factory) {
+  frame_sink_factory_ = std::move(frame_sink_factory);
+  SetHostWindow(host_window);
+  InitFrameSinkHolder(host_window, frame_sink_factory_.Run());
+}
+
+std::unique_ptr<cc::LayerTreeFrameSink>
+FrameSinkHost::CreateLayerTreeFrameSink() {
+  DCHECK(host_window_);
+  return host_window_->CreateLayerTreeFrameSink();
 }
 
 void FrameSinkHost::InitFrameSinkHolder(
     aura::Window* host_window,
     std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
+  DCHECK(layer_tree_frame_sink);
   DCHECK(!frame_sink_holder_) << "FrameSinkHost is already initialized.";
 
   frame_sink_holder_ = std::make_unique<FrameSinkHolder>(

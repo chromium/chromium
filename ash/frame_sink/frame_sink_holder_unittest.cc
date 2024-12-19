@@ -11,6 +11,7 @@
 #include "ash/frame_sink/frame_sink_holder_test_api.h"
 #include "ash/frame_sink/frame_sink_host.h"
 #include "ash/frame_sink/test/test_begin_frame_source.h"
+#include "ash/frame_sink/test/test_frame_factory.h"
 #include "ash/frame_sink/test/test_layer_tree_frame_sink.h"
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "ash/shell.h"
@@ -42,56 +43,6 @@ class StubBeginFrameSource : public viz::BeginFrameSource {
   void AddObserver(viz::BeginFrameObserver* obs) override {}
   void RemoveObserver(viz::BeginFrameObserver* obs) override {}
   void OnGpuNoLongerBusy() override {}
-};
-
-class TestFrameFactory {
- public:
-  TestFrameFactory() = default;
-
-  TestFrameFactory(const TestFrameFactory&) = delete;
-  TestFrameFactory& operator=(const TestFrameFactory&) = delete;
-
-  ~TestFrameFactory() = default;
-
-  std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
-      const viz::BeginFrameAck& begin_frame_ack,
-      UiResourceManager& resource_manager,
-      bool auto_refresh,
-      const gfx::Size& last_submitted_frame_size,
-      float last_submitted_frame_dsf) {
-    auto frame = std::make_unique<viz::CompositorFrame>();
-
-    frame->metadata.begin_frame_ack = begin_frame_ack;
-    frame->metadata.device_scale_factor = latest_frame_dsf_;
-
-    const viz::CompositorRenderPassId kRenderPassId{1};
-    auto render_pass = viz::CompositorRenderPass::Create();
-    render_pass->SetNew(kRenderPassId, gfx::Rect(latest_frame_size_),
-                        gfx::Rect(), gfx::Transform());
-
-    frame->render_pass_list.push_back(std::move(render_pass));
-
-    for (viz::ResourceId id : latest_frame_resources_) {
-      frame->resource_list.push_back(
-          resource_manager.PrepareResourceForExport(id));
-    }
-
-    return frame;
-  }
-
-  void SetFrameResources(std::vector<viz::ResourceId> frame_resource) {
-    latest_frame_resources_ = std::move(frame_resource);
-  }
-
-  void SetFrameMetaData(const gfx::Size frame_size, float dsf) {
-    latest_frame_size_ = frame_size;
-    latest_frame_dsf_ = dsf;
-  }
-
- private:
-  std::vector<viz::ResourceId> latest_frame_resources_;
-  gfx::Size latest_frame_size_;
-  float latest_frame_dsf_ = 1.0;
 };
 
 MATCHER_P(IsBeginFrameAckEqual, value, "") {

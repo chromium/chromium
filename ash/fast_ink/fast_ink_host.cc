@@ -72,11 +72,10 @@ void FastInkHost::Init(aura::Window* host_window) {
   FrameSinkHost::Init(host_window);
 }
 
-void FastInkHost::InitForTesting(
-    aura::Window* host_window,
-    std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
+void FastInkHost::InitForTesting(aura::Window* host_window,
+                                 FrameSinkFactory frame_sink_factory) {
   InitBufferMetadata(host_window);
-  FrameSinkHost::InitForTesting(host_window, std::move(layer_tree_frame_sink));
+  FrameSinkHost::InitForTesting(host_window, std::move(frame_sink_factory));
 }
 
 std::unique_ptr<FastInkHost::ScopedPaint> FastInkHost::CreateScopedPaint(
