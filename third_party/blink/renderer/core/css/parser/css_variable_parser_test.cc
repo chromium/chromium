@@ -53,7 +53,6 @@ const char* valid_attr_values[] = {
     "attr(p)",
     "attr(p,)",
     "attr(p type(<string>))",
-    "attr(p type(<url>))",
     "attr(p type(<color>))",
     "attr(p, type(color))",
     "attr(p type(<color>),)",
@@ -82,6 +81,7 @@ const char* invalid_attr_values[] = {
     "attr(p <px>)",
     "attr(p <string>)",
     "attr(p type(<color>) red)",
+    "attr(p type(<url>))",
     // clang-format on
 };
 

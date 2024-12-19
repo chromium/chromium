@@ -57,7 +57,9 @@ std::optional<CSSAttrType> CSSAttrType::Consume(CSSParserTokenStream& stream) {
     stream.ConsumeWhitespace();
     std::optional<CSSSyntaxDefinition> syntax =
         CSSSyntaxDefinition::Consume(stream);
-    if (syntax.has_value() && guard.Release()) {
+    // TODO(crbug.com/384959111): Consider adding support for <url>.
+    if (syntax.has_value() && !syntax->ContainsUrlComponent() &&
+        guard.Release()) {
       stream.ConsumeWhitespace();
       return CSSAttrType(*syntax);
     }
