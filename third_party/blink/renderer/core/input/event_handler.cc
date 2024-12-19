@@ -1540,17 +1540,15 @@ LocalFrame* EventHandler::DetermineActivePointerTrackerFrame(
   return nullptr;
 }
 
-void EventHandler::SetPointerCapture(PointerId pointer_id,
-                                     Element* target,
-                                     bool explicit_capture) {
+void EventHandler::SetPointerCapture(PointerId pointer_id, Element* target) {
   // TODO(crbug.com/591387): This functionality should be per page not per
   // frame.
   LocalFrame* tracking_frame = DetermineActivePointerTrackerFrame(pointer_id);
 
   bool captured =
-      tracking_frame && tracking_frame->GetEventHandler()
-                            .pointer_event_manager_->SetPointerCapture(
-                                pointer_id, target, explicit_capture);
+      tracking_frame &&
+      tracking_frame->GetEventHandler()
+          .pointer_event_manager_->SetPointerCapture(pointer_id, target);
 
   if (captured && pointer_id == PointerEventFactory::kMouseId) {
     CaptureMouseEventsToWidget(true);

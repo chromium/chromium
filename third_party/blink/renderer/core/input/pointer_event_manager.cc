@@ -113,7 +113,6 @@ void PointerEventManager::Clear() {
   original_element_under_pointer_removed_.clear();
   pointer_capture_target_.clear();
   pending_pointer_capture_target_.clear();
-  dispatching_pointer_id_ = 0;
   resize_scrollable_area_.Clear();
   offset_from_resize_corner_ = {};
   skip_touch_filter_discrete_ = false;
@@ -163,7 +162,6 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   if (!target)
     return WebInputEventResult::kNotHandled;
 
-  const PointerId pointer_id = pointer_event->pointerId();
   const AtomicString& event_type = pointer_event->type();
   bool should_filter = ShouldFilterEvent(pointer_event);
   // We are about to dispatch this event. It has to be trusted at this point.
@@ -209,18 +207,8 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
 
   bool listeners_exist =
       !check_for_listener || target->HasEventListeners(event_type);
-  if (listeners_exist) {
-    UseCounter::Count(frame_->GetDocument(), WebFeature::kPointerEventDispatch);
-    if (event_type == event_type_names::kPointerdown) {
-      UseCounter::Count(frame_->GetDocument(),
-                        WebFeature::kPointerEventDispatchPointerDown);
-    }
-  }
 
   if (!should_filter || listeners_exist) {
-    DCHECK(!dispatching_pointer_id_);
-    base::AutoReset<PointerId> dispatch_holder(&dispatching_pointer_id_,
-                                               pointer_id);
     DispatchEventResult dispatch_result = target->DispatchEvent(*pointer_event);
     return event_handling_util::ToWebInputEventResult(dispatch_result);
   }
@@ -589,8 +577,7 @@ WebInputEventResult PointerEventManager::SendTouchPointerEvent(
 
   // Setting the implicit capture for touch
   if (pointer_event->type() == event_type_names::kPointerdown) {
-    SetPointerCapture(pointer_event->pointerId(), target,
-                      /* explicit_capture */ false);
+    SetPointerCapture(pointer_event->pointerId(), target);
   }
 
   WebInputEventResult result = DispatchPointerEvent(
@@ -1305,17 +1292,8 @@ void PointerEventManager::ElementRemoved(Element* target) {
 }
 
 bool PointerEventManager::SetPointerCapture(PointerId pointer_id,
-                                            Element* target,
-                                            bool explicit_capture) {
-  if (explicit_capture) {
-    UseCounter::Count(frame_->GetDocument(),
-                      WebFeature::kPointerEventSetCapture);
-  }
+                                            Element* target) {
   if (pointer_event_factory_.IsActiveButtonsState(pointer_id)) {
-    if (pointer_id != dispatching_pointer_id_) {
-      UseCounter::Count(frame_->GetDocument(),
-                        WebFeature::kPointerEventSetCaptureOutsideDispatch);
-    }
     pending_pointer_capture_target_.Set(pointer_id, target);
     return true;
   }

@@ -77,9 +77,8 @@ class CORE_EXPORT PointerEventManager final
   void NodeWillBeRemoved(Node& node_to_be_removed);
 
   // Starts capturing of all events with the given |PointerId| to the given
-  // |Element|.  The paramenter |explicit_capture| identifies if this call was
-  // triggered by an explicit |elem.setPointerCapture()| call from JS.
-  bool SetPointerCapture(PointerId, Element*, bool explicit_capture);
+  // |Element|.
+  bool SetPointerCapture(PointerId, Element*);
   bool ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
 
@@ -279,10 +278,6 @@ class CORE_EXPORT PointerEventManager final
   PointerEventFactory pointer_event_factory_;
   Member<TouchEventManager> touch_event_manager_;
   Member<MouseEventManager> mouse_event_manager_;
-
-  // The pointerId of the PointerEvent currently being dispatched within this
-  // frame or 0 if none.
-  PointerId dispatching_pointer_id_ = 0;
 
   // These flags are set for the SkipTouchEventFilter experiment. The
   // experiment either skips filtering discrete (touch start/end) events to the

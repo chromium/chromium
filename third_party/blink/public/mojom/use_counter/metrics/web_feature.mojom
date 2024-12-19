@@ -972,8 +972,8 @@ enum WebFeature {
   kAudioContextCrossOriginIframe = 1430,
   // The above items are available in M53 branch
 
-  kPointerEventSetCapture = 1431,
-  kPointerEventDispatch = 1432,
+  kOBSOLETE_PointerEventSetCapture = 1431,
+  kOBSOLETE_PointerEventDispatch = 1432,
   kMIDIMessageEventReceivedTime = 1433,
   kV8MediaStream_Active_AttributeGetter = 1435,
   kBeforeInstallPromptEvent = 1436,
@@ -994,7 +994,7 @@ enum WebFeature {
   kMouseDownFired = 1451,
   kPointerDownFired = 1452,
   kPointerDownFiredForTouch = 1453,
-  kPointerEventDispatchPointerDown = 1454,
+  kOBSOLETE_PointerEventDispatchPointerDown = 1454,
   kSVGSMILBeginOrEndEventValue = 1455,
   kSVGSMILBeginOrEndSyncbaseValue = 1456,
   kSVGSMILElementInsertedAfterLoad = 1457,
@@ -1276,7 +1276,7 @@ enum WebFeature {
   kServiceWorkerNavigationPreload = 1803,
   kFullscreenRequestWithPendingElement = 1804,
   kHTMLIFrameElementAllowfullscreenAttributeSetAfterContentLoad = 1805,
-  kPointerEventSetCaptureOutsideDispatch = 1806,
+  kOBSOLETE_PointerEventSetCaptureOutsideDispatch = 1806,
   kNotificationPermissionRequestedInsecureOrigin = 1807,
   kV8DeprecatedStorageInfo_QueryUsageAndQuota_Method = 1808,
   kV8DeprecatedStorageInfo_RequestQuota_Method = 1809,

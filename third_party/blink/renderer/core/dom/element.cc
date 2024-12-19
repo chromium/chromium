@@ -7641,8 +7641,8 @@ void Element::setPointerCapture(PointerId pointer_id,
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "InvalidStateError");
     } else {
-      GetDocument().GetFrame()->GetEventHandler().SetPointerCapture(
-          pointer_id, this, /* explicit_capture */ true);
+      GetDocument().GetFrame()->GetEventHandler().SetPointerCapture(pointer_id,
+                                                                    this);
     }
   }
 }

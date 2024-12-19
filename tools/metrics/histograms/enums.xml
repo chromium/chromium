@@ -6877,8 +6877,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1428" label="MediaSourceAbortRemove"/>
   <int value="1429" label="MediaSourceDurationTruncatingBuffered"/>
   <int value="1430" label="AudioContextCrossOriginIframe"/>
-  <int value="1431" label="PointerEventSetCapture"/>
-  <int value="1432" label="PointerEventDispatch"/>
+  <int value="1431" label="OBSOLETE_PointerEventSetCapture"/>
+  <int value="1432" label="OBSOLETE_PointerEventDispatch"/>
   <int value="1433" label="MIDIMessageEventReceivedTime"/>
   <int value="1434" label="OBSOLETE_SummaryElementWithDisplayBlockAuthorRule"/>
   <int value="1435" label="V8MediaStream_Active_AttributeGetter"/>
@@ -6900,7 +6900,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1451" label="MouseDownFired"/>
   <int value="1452" label="PointerDownFired"/>
   <int value="1453" label="PointerDownFiredForTouch"/>
-  <int value="1454" label="PointerEventDispatchPointerDown"/>
+  <int value="1454" label="OBSOLETE_PointerEventDispatchPointerDown"/>
   <int value="1455" label="SVGSMILBeginOrEndEventValue"/>
   <int value="1456" label="SVGSMILBeginOrEndSyncbaseValue"/>
   <int value="1457" label="SVGSMILElementInsertedAfterLoad"/>
@@ -7264,7 +7264,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1804" label="FullscreenRequestWithPendingElement"/>
   <int value="1805"
       label="HTMLIFrameElementAllowfullscreenAttributeSetAfterContentLoad"/>
-  <int value="1806" label="PointerEventSetCaptureOutsideDispatch"/>
+  <int value="1806" label="OBSOLETE_PointerEventSetCaptureOutsideDispatch"/>
   <int value="1807" label="NotificationPermissionRequestedInsecureOrigin"/>
   <int value="1808" label="V8DeprecatedStorageInfo_QueryUsageAndQuota_Method"/>
   <int value="1809" label="V8DeprecatedStorageInfo_RequestQuota_Method"/>
