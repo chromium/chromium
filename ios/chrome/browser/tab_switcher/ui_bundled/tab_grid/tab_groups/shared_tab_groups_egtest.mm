@@ -139,6 +139,7 @@ void ShareGroupAtIndex(int index) {
 
   ShareGroupAtIndex(0);
 
+  // Open a tab group to trigger the user education screen.
   OpenTabGroupAtIndex(0);
 
   id<GREYMatcher> educationScreen =

@@ -345,15 +345,15 @@ NSCollectionLayoutSection* TabGroupHeaderSection(
   NSCollectionLayoutGroup* inner_group =
       [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
                                                     subitems:@[ item ]];
-  NSCollectionLayoutGroup* group =
-      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
-                                                    subitems:@[ inner_group ]];
   const CGFloat spacing = Spacing(layout_environment);
   inner_group.edgeSpacing = [NSCollectionLayoutEdgeSpacing
       spacingForLeading:nil
                     top:[NSCollectionLayoutSpacing fixedSpacing:spacing]
                trailing:nil
                  bottom:nil];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
+                                                    subitems:@[ inner_group ]];
 
   // Configure the layout section.
   NSCollectionLayoutSection* section =
