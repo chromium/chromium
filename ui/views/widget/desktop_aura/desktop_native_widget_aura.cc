@@ -36,6 +36,7 @@
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -823,6 +824,13 @@ void DesktopNativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
   // DesktopNativeWidgetAura that is modal. We only support window modal
   // dialogs on the same lines as non AURA.
   desktop_window_tree_host_->InitModalType(modal_type);
+}
+
+void DesktopNativeWidgetAura::SetColorMode(
+    ui::ColorProviderKey::ColorMode color_mode) {
+  // Intentional no-op.
+  // The window frame is drawn by views. The OS does not need to know about
+  // which color mode the window is using.
 }
 
 gfx::Rect DesktopNativeWidgetAura::GetWindowBoundsInScreen() const {

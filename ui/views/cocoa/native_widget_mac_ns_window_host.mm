@@ -31,6 +31,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/display/screen.h"
@@ -943,6 +944,11 @@ bool NativeWidgetMacNSWindowHost::AllowScreenshots() const {
   // Using `allow_screenshots_` is a workaround to be able to know the actual
   // value `SetAllowScreenshots()` was called with.
   return allow_screenshots_;
+}
+
+void NativeWidgetMacNSWindowHost::SetColorMode(
+    ui::ColorProviderKey::ColorMode color_mode) {
+  GetNSWindowMojo()->SetColorMode(color_mode);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

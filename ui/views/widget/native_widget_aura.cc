@@ -39,6 +39,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -541,6 +542,13 @@ void NativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
     wm::TransientWindowManager::GetOrCreate(window_)
         ->set_parent_controls_visibility(true);
   }
+}
+
+void NativeWidgetAura::SetColorMode(
+    ui::ColorProviderKey::ColorMode color_mode) {
+  // Intentional no-op.
+  // The window frame is drawn by views. The OS does not need to know about
+  // which color mode the window is using.
 }
 
 gfx::Rect NativeWidgetAura::GetWindowBoundsInScreen() const {

@@ -563,6 +563,8 @@ void Widget::Init(InitParams params) {
     parent_->OnChildAdded(this);
   }
 
+  native_widget_->SetColorMode(GetColorMode());
+
   UpdateAccessibleNameForRootView();
   native_theme_observation_.Observe(GetNativeTheme());
   native_widget_initialized_ = true;
@@ -1317,6 +1319,10 @@ void Widget::ThemeChanged() {
   observers_.Notify(&WidgetObserver::OnWidgetThemeChanged, this);
 
   NotifyColorProviderChanged();
+
+  if (native_widget_) {
+    native_widget_->SetColorMode(GetColorMode());
+  }
 }
 
 void Widget::DeviceScaleFactorChanged(float old_device_scale_factor,

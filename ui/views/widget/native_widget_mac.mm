@@ -27,6 +27,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -503,6 +504,14 @@ void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
          modal_type == ui::mojom::ModalType::kWindow);
 
   // Everything happens upon show.
+}
+
+void NativeWidgetMac::SetColorMode(ui::ColorProviderKey::ColorMode color_mode) {
+  if (ns_window_host_ &&
+      base::FeatureList::IsEnabled(
+          features::kMacWindowFollowsColorProviderColorMode)) {
+    ns_window_host_->SetColorMode(color_mode);
+  }
 }
 
 gfx::Rect NativeWidgetMac::GetWindowBoundsInScreen() const {
