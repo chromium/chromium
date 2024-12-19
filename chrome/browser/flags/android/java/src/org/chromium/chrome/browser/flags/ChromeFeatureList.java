@@ -153,8 +153,6 @@ public abstract class ChromeFeatureList {
 
     // Feature names.
     /* Alphabetical: */
-    public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
-            "AccountReauthenticationRecentTimeWindow";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY =
             "AdaptiveButtonInTopToolbarPageSummary";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 =
@@ -585,8 +583,6 @@ public abstract class ChromeFeatureList {
             BaseFeatures.POST_GET_MY_MEMORY_STATE_TO_BACKGROUND;
 
     /* Alphabetical: */
-    public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
-            newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
@@ -800,7 +796,6 @@ public abstract class ChromeFeatureList {
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
             List.of(
-                    sAccountReauthenticationRecentTimeWindow,
                     sAndroidAppIntegration,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationV2,

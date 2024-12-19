@@ -34,11 +34,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "account-reauthentication-recent-time-window",
-    "owners": [ "clhager@chromium.org", "twellington@chromium.org", "geoffhuang@chromium.org"],
-    "expiry_milestone":-1
-  },
-  {
     "name": "ack-on-surface-activation-when-interactive",
     "owners": [ "vollick@chromium.org", "jonross@chromium.org" ],
     "expiry_milestone": 135

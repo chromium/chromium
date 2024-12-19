@@ -4453,17 +4453,6 @@ const char kCCTSignInPromptDescription[] =
     "Displays a sign-in prompt message in CCT opened by 1P apps when the user "
     "is signed out of Chrome but signed in to the 1P app.";
 
-const char kAccountReauthenticationRecentTimeWindowName[] =
-    "Account Reauthentication Recent Time Window";
-const char kAccountReauthenticationRecentTimeWindowDescription[] =
-    "Changes the time window after a successful account authentication during "
-    "which reauthentication challenges are not needed.";
-const char kAccountReauthenticationRecentTimeWindowDefault[] =
-    "10 mins (default)";
-const char kAccountReauthenticationRecentTimeWindow0mins[] = "0 mins";
-const char kAccountReauthenticationRecentTimeWindow1mins[] = "1 mins";
-const char kAccountReauthenticationRecentTimeWindow5mins[] = "5 mins";
-
 const char kBottomBrowserControlsRefactorName[] =
     "BottomBrowserControlsRefactor";
 const char kBottomBrowserControlsRefactorDescription[] =

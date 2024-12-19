@@ -341,7 +341,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTestDefaultEnabled,
     &kTraceBinderIpc,
     &kStartSurfaceReturnTime,
-    &kAccountReauthenticationRecentTimeWindow,
     &kUmaBackgroundSessions,
     &kUpdateCompositorForSurfaceControl,
     &kUseLibunwindstackNativeUnwinderAndroid,
@@ -1076,10 +1075,6 @@ BASE_FEATURE(kSearchResumptionModuleAndroid,
 
 BASE_FEATURE(kStartSurfaceReturnTime,
              "StartSurfaceReturnTime",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAccountReauthenticationRecentTimeWindow,
-             "AccountReauthenticationRecentTimeWindow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabResumptionModuleAndroid,

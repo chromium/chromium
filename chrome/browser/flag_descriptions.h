@@ -2582,13 +2582,6 @@ extern const char kCCTRevampedBrandingDescription[];
 extern const char kCCTSignInPromptName[];
 extern const char kCCTSignInPromptDescription[];
 
-extern const char kAccountReauthenticationRecentTimeWindowName[];
-extern const char kAccountReauthenticationRecentTimeWindowDescription[];
-extern const char kAccountReauthenticationRecentTimeWindowDefault[];
-extern const char kAccountReauthenticationRecentTimeWindow0mins[];
-extern const char kAccountReauthenticationRecentTimeWindow1mins[];
-extern const char kAccountReauthenticationRecentTimeWindow5mins[];
-
 extern const char kBottomBrowserControlsRefactorName[];
 extern const char kBottomBrowserControlsRefactorDescription[];
 
