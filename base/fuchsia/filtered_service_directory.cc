@@ -37,10 +37,10 @@ zx_status_t FilteredServiceDirectory::AddService(
 
 zx_status_t FilteredServiceDirectory::ConnectClient(
     fidl::InterfaceRequest<fuchsia::io::Directory> dir_request) {
-  // sys::OutgoingDirectory puts public services under ./svc . Connect to that
-  // directory and return client handle for the connection,
+  // sys::OutgoingDirectory puts public services under /svc. Open that
+  // directory and return client handle for the connection.
   return outgoing_directory_.GetOrCreateDirectory("svc")->Serve(
-      fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+      fuchsia_io::wire::kPermReadable,
       fidl::ServerEnd<fuchsia_io::Directory>(dir_request.TakeChannel()));
 }
 

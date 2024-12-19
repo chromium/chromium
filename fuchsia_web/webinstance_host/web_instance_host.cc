@@ -305,10 +305,9 @@ void InstanceBuilder::AppendOffersForServices(
 void InstanceBuilder::ServeServiceDirectory(
     fidl::InterfaceHandle<fuchsia::io::Directory> service_directory) {
   DCHECK(instance_dir_);
-  ServeDirectory(
-      "svc", std::make_unique<vfs::RemoteDir>(std::move(service_directory)),
-      fuchsia::io::Operations::CONNECT | fuchsia::io::Operations::ENUMERATE |
-          fuchsia::io::Operations::TRAVERSE);
+  ServeDirectory("svc",
+                 std::make_unique<vfs::RemoteDir>(std::move(service_directory)),
+                 fuchsia::io::R_STAR_DIR);
 }
 
 void InstanceBuilder::ServeDataDirectory(
