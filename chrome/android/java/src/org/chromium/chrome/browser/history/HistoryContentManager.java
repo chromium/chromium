@@ -128,6 +128,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final Supplier<BottomSheetController> mBottomSheetController;
     private final Supplier<Tab> mTabSupplier;
     private final AppInfoCache mAppInfoCache;
+    private final @Nullable Runnable mOpenHistoryItemCallback;
     private HistoryAdapter mHistoryAdapter;
     private RecyclerView mRecyclerView;
     private LargeIconBridge mLargeIconBridge;
@@ -162,6 +163,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param appId The ID of the application from which the history activity is launched, passed as
      *     the client package name.
      * @param launchedForApp Whether history UI is launched for app-specific history.
+     * @param openHistoryItemCallback Optional callback to be invoked when a history item is opened
+     *     in the same activity (not called when opened from a separate activity).
      */
     public HistoryContentManager(
             @NonNull Activity activity,
@@ -179,7 +182,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             HistoryProvider historyProvider,
             String appId,
             boolean launchedForApp,
-            boolean showAppFilter) {
+            boolean showAppFilter,
+            @Nullable Runnable openHistoryItemCallback) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
@@ -197,6 +201,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         || UiUtils.isHardwareKeyboardAttached();
         mAppId = appId;
         mLaunchedForApp = launchedForApp;
+        mOpenHistoryItemCallback = openHistoryItemCallback;
         mSelectionDelegate =
                 selectionDelegate != null
                         ? selectionDelegate
@@ -452,7 +457,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /** Called after a user clicks the privacy disclaimer link. */
     void onPrivacyDisclaimerLinkClicked() {
-        openUrl(new GURL(UrlConstants.MY_ACTIVITY_URL_IN_HISTORY), null, true);
+        openUrl(new GURL(UrlConstants.MY_ACTIVITY_URL_IN_HISTORY), null, true, true);
     }
 
     /**
@@ -476,7 +481,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             IntentHandler.startActivityForTrustedIntent(intent);
         } else {
             for (HistoryItem item : items) {
-                openUrl(item.getUrl(), isIncognito, true);
+                openUrl(item.getUrl(), isIncognito, true, false);
+            }
+            if (mOpenHistoryItemCallback != null) {
+                mOpenHistoryItemCallback.run();
             }
         }
     }
@@ -489,8 +497,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *     the current tab model.
      * @param createNewTab Whether a new tab should be created. If false, the item will clobber the
      *     the current tab.
+     * @param runCallback Whether to run the callback (if non-null).
      */
-    public void openUrl(GURL url, Boolean isIncognito, boolean createNewTab) {
+    public void openUrl(GURL url, Boolean isIncognito, boolean createNewTab, boolean runCallback) {
         if (mIsSeparateActivity) {
             // Only history entries are loaded into the existing tab.
             if (launchedForApp() && !createNewTab) {
@@ -518,6 +527,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                             tab);
         } else {
             tab.loadUrl(new LoadUrlParams(url, PAGE_TRANSITION_TYPE));
+        }
+        if (runCallback && mOpenHistoryItemCallback != null) {
+            mOpenHistoryItemCallback.run();
         }
     }
 
@@ -595,14 +607,17 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /**
      * Called after a user clicks this HistoryItem.
+     *
      * @param item The item that has been clicked.
      */
     public void onItemClicked(HistoryItem item) {
         mObserver.onItemClicked(item);
-        openUrl(item.getUrl(), null, false);
+        openUrl(item.getUrl(), null, false, true);
     }
 
-    /** @return The {@link LargeIconBridge} used to fetch large favicons. */
+    /**
+     * @return The {@link LargeIconBridge} used to fetch large favicons.
+     */
     public LargeIconBridge getLargeIconBridge() {
         return mLargeIconBridge;
     }

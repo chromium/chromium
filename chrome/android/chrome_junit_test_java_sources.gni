@@ -250,6 +250,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/history/HistoryAdapterAccessibilityTest.java",
   "junit/src/org/chromium/chrome/browser/history/HistoryAdapterTest.java",
   "junit/src/org/chromium/chrome/browser/history/HistoryDeletionBridgeTest.java",
+  "junit/src/org/chromium/chrome/browser/history/HistoryPaneUnitTest.java",
   "junit/src/org/chromium/chrome/browser/history/HistoryUiTest.java",
   "junit/src/org/chromium/chrome/browser/homepage/HomepageManagerTest.java",
   "junit/src/org/chromium/chrome/browser/homepage/HomepagePolicyManagerTest.java",

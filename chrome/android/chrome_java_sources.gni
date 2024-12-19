@@ -697,6 +697,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/history/HistoryManagerToolbar.java",
   "java/src/org/chromium/chrome/browser/history/HistoryManagerUtils.java",
   "java/src/org/chromium/chrome/browser/history/HistoryPage.java",
+  "java/src/org/chromium/chrome/browser/history/HistoryPane.java",
   "java/src/org/chromium/chrome/browser/history/HistoryProvider.java",
   "java/src/org/chromium/chrome/browser/history/HistoryUmaRecorder.java",
   "java/src/org/chromium/chrome/browser/homepage/HomepageManager.java",

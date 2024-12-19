@@ -119,6 +119,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
+import org.chromium.chrome.browser.history.HistoryPane;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
@@ -914,6 +915,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     PaneId.CROSS_DEVICE,
                     LazyOneshotSupplier.fromSupplier(this::createCrossDevicePane));
         }
+        if (ChromeFeatureList.sHistoryPaneAndroid.isEnabled()) {
+            builder.registerPane(
+                    PaneId.HISTORY, LazyOneshotSupplier.fromSupplier(this::createHistoryPane));
+        }
         mHubProvider
                 .getHubManagerSupplier()
                 .onAvailable(manager -> mHubManagerSupplier.set(manager));
@@ -989,6 +994,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                         .getTabGroupSyncController(),
                         getModalDialogManagerSupplier(),
                         mEdgeToEdgeControllerSupplier);
+    }
+
+    private Pane createHistoryPane() {
+        return new HistoryPane(
+                adaptOnToolbarAlphaChange(),
+                this,
+                getSnackbarManager(),
+                getProfileProviderSupplier(),
+                mRootUiCoordinator::getBottomSheetController,
+                getCurrentTabModel().getCurrentTabSupplier());
     }
 
     private Pane createCrossDevicePane() {

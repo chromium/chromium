@@ -4891,6 +4891,10 @@ const char kCrossDeviceTabPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays the pre-existing "
     "cross device tabs feature originally located in Recent Tabs.";
 
+const char kHistoryPaneAndroidName[] = "History Pane Android";
+const char kHistoryPaneAndroidDescription[] =
+    "Enables showing a new pane in the hub that displays History.";
+
 const char kTabGroupCreationDialogAndroidName[] =
     "Tab Group Creation Dialog Android";
 const char kTabGroupCreationDialogAndroidDescription[] =

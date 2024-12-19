@@ -365,6 +365,7 @@ public abstract class ChromeFeatureList {
     public static final String HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON =
             "HideTabletToolbarDownloadButton";
     public static final String HISTORY_JOURNEYS = "Journeys";
+    public static final String HISTORY_PANE_ANDROID = "HistoryPaneAndroid";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INSTALL_MESSAGE_THROTTLE = "InstallMessageThrottle";
@@ -702,6 +703,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
     public static final CachedFlag sHideTabletToolbarDownloadButton =
             newCachedFlag(HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON, false);
+    public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, true);
@@ -849,6 +851,7 @@ public abstract class ChromeFeatureList {
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
                     sHideTabletToolbarDownloadButton,
+                    sHistoryPaneAndroid,
                     sLockBackPressHandlerAtStart,
                     sLogoPolish,
                     sLogoPolishAnimationKillSwitch,

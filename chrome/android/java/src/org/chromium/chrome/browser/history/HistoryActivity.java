@@ -58,7 +58,8 @@ public class HistoryActivity extends SnackbarActivity {
                         clientPackageName,
                         shouldShowClearData,
                         appSpecificHistory,
-                        showAppFilter);
+                        showAppFilter,
+                        /* openHistoryItemCallback= */ null);
         ViewGroup contentView = mHistoryManager.getView();
         setContentView(contentView);
         if (showAppFilter) createBottomSheetController(contentView);

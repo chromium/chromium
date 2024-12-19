@@ -1079,6 +1079,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Bookmarks"/>
   <int value="3" label="Tab groups"/>
   <int value="4" label="Cross device"/>
+  <int value="5" label="History"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/hub/android/java/src/org/chromium/chrome/browser/hub/PaneId.java:PaneId) -->
