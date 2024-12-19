@@ -33,7 +33,6 @@ void SigninBridge::OpenAccountPickerBottomSheet(
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SigninBridge_openAccountPickerBottomSheet(
-      env, tab->GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, continue_url));
+  Java_SigninBridge_openAccountPickerBottomSheet(env, tab->GetJavaObject(),
+                                                 continue_url);
 }

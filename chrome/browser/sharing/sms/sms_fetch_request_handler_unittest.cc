@@ -122,8 +122,6 @@ TEST(SmsFetchRequestHandlerTest, Basic) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(origin)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_origin =
-      base::android::ConvertUTF16ToJavaString(env, formatted_origin);
 
   base::RunLoop loop;
 
@@ -141,7 +139,7 @@ TEST(SmsFetchRequestHandlerTest, Basic) {
 
   subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
                         "123", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_origin.obj(), nullptr);
+  handler.OnConfirm(env, formatted_origin, nullptr);
   loop.Run();
 }
 
@@ -155,8 +153,6 @@ TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(origin1)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_origin1 =
-      base::android::ConvertUTF16ToJavaString(env, formatted_origin1);
 
   const std::string origin2 = "https://b.com";
   SharingMessage message2 = CreateRequest(origin2);
@@ -164,8 +160,6 @@ TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(origin2)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_origin2 =
-      base::android::ConvertUTF16ToJavaString(env, formatted_origin2);
 
   base::RunLoop loop1;
 
@@ -196,12 +190,12 @@ TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
 
   request2->OnReceive(content::OriginList{url::Origin::Create(GURL(origin2))},
                       "2", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_origin2.obj(), nullptr);
+  handler.OnConfirm(env, formatted_origin2, nullptr);
   loop2.Run();
 
   request1->OnReceive(content::OriginList{url::Origin::Create(GURL(origin1))},
                       "1", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_origin1.obj(), nullptr);
+  handler.OnConfirm(env, formatted_origin1, nullptr);
   loop1.Run();
 }
 
@@ -255,8 +249,6 @@ TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(origin)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_origin =
-      base::android::ConvertUTF16ToJavaString(env, formatted_origin);
 
   base::RunLoop loop;
 
@@ -274,7 +266,7 @@ TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {
 
   subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
                         "123", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_origin.obj(), nullptr);
+  handler.OnConfirm(env, formatted_origin, nullptr);
   loop.Run();
 }
 
@@ -288,8 +280,6 @@ TEST(SmsFetchRequestHandlerTest, SendFailureMessageOnDismiss) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(origin)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_origin =
-      base::android::ConvertUTF16ToJavaString(env, formatted_origin);
 
   base::RunLoop loop;
 
@@ -309,7 +299,7 @@ TEST(SmsFetchRequestHandlerTest, SendFailureMessageOnDismiss) {
 
   subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
                         "123", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnDismiss(env, j_origin.obj(), nullptr);
+  handler.OnDismiss(env, formatted_origin, nullptr);
   loop.Run();
 }
 
@@ -325,8 +315,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameConfirm) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(top_origin)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_top_origin =
-      base::android::ConvertUTF16ToJavaString(env, formatted_top_origin);
 
   const std::u16string formatted_embedded_origin =
       url_formatter::FormatOriginForSecurityDisplay(
@@ -357,7 +345,7 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameConfirm) {
   origin_list.push_back(url::Origin::Create(GURL(top_origin)));
   subscriber->OnReceive(origin_list, "123",
                         SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_top_origin.obj(), j_embedded_origin.obj());
+  handler.OnConfirm(env, formatted_top_origin, j_embedded_origin.obj());
   loop.Run();
 }
 
@@ -373,8 +361,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameDismiss) {
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL(top_origin)),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::android::ScopedJavaLocalRef<jstring> j_top_origin =
-      base::android::ConvertUTF16ToJavaString(env, formatted_top_origin);
 
   const std::u16string formatted_embedded_origin =
       url_formatter::FormatOriginForSecurityDisplay(
@@ -404,6 +390,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameDismiss) {
   origin_list.push_back(url::Origin::Create(GURL(top_origin)));
   subscriber->OnReceive(origin_list, "123",
                         SmsFetcher::UserConsent::kNotObtained);
-  handler.OnDismiss(env, j_top_origin.obj(), j_embedded_origin.obj());
+  handler.OnDismiss(env, formatted_top_origin, j_embedded_origin.obj());
   loop.Run();
 }

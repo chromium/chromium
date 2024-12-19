@@ -47,7 +47,7 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   void FetchKeysCompleted(
       JNIEnv* env,
       jint request_id,
-      const base::android::JavaParamRef<jstring>& gaia_id,
+      std::string& gaia_id,
       const base::android::JavaParamRef<jobjectArray>& keys);
 
   // Called from Java to notify the completion of a MarkLocalKeysAsStale()

@@ -988,7 +988,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 int[] updateReasons,
                 Callback<Boolean> callback);
 
-        public void updateWebApkFromFile(String updateRequestPath, WebApkUpdateCallback callback);
+        public void updateWebApkFromFile(
+                @JniType("std::string") String updateRequestPath, WebApkUpdateCallback callback);
 
         public int getWebApkTargetShellVersion();
     }

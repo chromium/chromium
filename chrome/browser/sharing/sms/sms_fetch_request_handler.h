@@ -43,8 +43,12 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   virtual void AskUserPermission(const content::OriginList&,
                                  const std::string& one_time_code,
                                  const std::string& client_name);
-  virtual void OnConfirm(JNIEnv*, jstring top_origin, jstring embedded_origin);
-  virtual void OnDismiss(JNIEnv*, jstring top_origin, jstring embedded_origin);
+  virtual void OnConfirm(JNIEnv*,
+                         std::u16string top_origin,
+                         jstring embedded_origin);
+  virtual void OnDismiss(JNIEnv*,
+                         std::u16string top_origin,
+                         jstring embedded_origin);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, Basic);

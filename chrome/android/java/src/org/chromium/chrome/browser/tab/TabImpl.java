@@ -508,7 +508,7 @@ class TabImpl implements Tab {
 
     @CalledByNative
     @Override
-    public String getTitle() {
+    public @JniType("std::u16string") String getTitle() {
         if (TextUtils.isEmpty(mTitle)) updateTitle();
         return mTitle;
     }
@@ -2593,7 +2593,10 @@ class TabImpl implements Tab {
         void onPhysicalBackingSizeChanged(
                 long nativeTabAndroid, WebContents webContents, int width, int height);
 
-        void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
+        void setActiveNavigationEntryTitleForUrl(
+                long nativeTabAndroid,
+                @JniType("std::string") String url,
+                @JniType("std::u16string") String title);
 
         void loadOriginalImage(long nativeTabAndroid);
 

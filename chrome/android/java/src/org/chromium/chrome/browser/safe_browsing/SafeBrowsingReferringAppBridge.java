@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
@@ -57,12 +58,12 @@ public class SafeBrowsingReferringAppBridge {
         }
 
         @CalledByNative("ReferringAppInfo")
-        public String getName() {
+        public @JniType("std::string") String getName() {
             return mReferringAppName;
         }
 
         @CalledByNative("ReferringAppInfo")
-        public String getTargetUrl() {
+        public @JniType("std::string") String getTargetUrl() {
             return mTargetUrl;
         }
     }

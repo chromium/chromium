@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
@@ -45,10 +46,10 @@ public class WebApkInstallService {
     @CalledByNative
     @VisibleForTesting
     static void showInstalledNotification(
-            String webApkPackage,
-            String notificationId,
-            String shortName,
-            String url,
+            @JniType("std::string") String webApkPackage,
+            @JniType("std::string") String notificationId,
+            @JniType("std::u16string") String shortName,
+            @JniType("std::string") String url,
             Bitmap icon,
             boolean isIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
@@ -78,9 +79,9 @@ public class WebApkInstallService {
     @CalledByNative
     @VisibleForTesting
     static void showInstallInProgressNotification(
-            String notificationId,
-            String shortName,
-            String url,
+            @JniType("std::string") String notificationId,
+            @JniType("std::u16string") String shortName,
+            @JniType("std::string") String url,
             Bitmap icon,
             boolean isIconMaskable) {
         String message =
@@ -104,9 +105,9 @@ public class WebApkInstallService {
     @CalledByNative
     @VisibleForTesting
     static void showInstallFailedNotification(
-            String notificationId,
-            String shortName,
-            String url,
+            @JniType("std::string") String notificationId,
+            @JniType("std::u16string") String shortName,
+            @JniType("std::string") String url,
             Bitmap icon,
             boolean isIconMaskable,
             @WebApkInstallResult int resultCode) {
@@ -190,7 +191,7 @@ public class WebApkInstallService {
 
     /** Cancels any ongoing notification for the WebAPK. */
     @CalledByNative
-    static void cancelNotification(String notificationId) {
+    static void cancelNotification(@JniType("std::string") String notificationId) {
         BaseNotificationManagerProxyFactory.create()
                 .cancel(getInstallNotificationTag(notificationId), PLATFORM_ID);
     }

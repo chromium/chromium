@@ -256,7 +256,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
 // static JNI method.
 static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
     JNIEnv* env,
-    const JavaParamRef<jstring>& java_update_request_path,
+    std::string& update_request_path,
     const JavaParamRef<jobject>& java_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -272,8 +272,6 @@ static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
     return;
   }
 
-  std::string update_request_path =
-      ConvertJavaStringToUTF8(env, java_update_request_path);
   WebApkInstallServiceFactory::GetForBrowserContext(profile)->UpdateAsync(
       base::FilePath(update_request_path),
       base::BindOnce(&OnUpdated, callback_ref));

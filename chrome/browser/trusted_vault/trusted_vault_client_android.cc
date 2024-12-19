@@ -76,7 +76,7 @@ TrustedVaultClientAndroid::~TrustedVaultClientAndroid() {
 void TrustedVaultClientAndroid::FetchKeysCompleted(
     JNIEnv* env,
     jint request_id,
-    const base::android::JavaParamRef<jstring>& gaia_id,
+    std::string& gaia_id,
     const base::android::JavaParamRef<jobjectArray>& keys) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -84,8 +84,7 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
   OngoingFetchKeys& ongoing_fetch_keys =
       absl::get<OngoingFetchKeys>(ongoing_request);
 
-  DCHECK_EQ(ongoing_fetch_keys.account_info.gaia,
-            GaiaId(base::android::ConvertJavaStringToUTF8(env, gaia_id)))
+  DCHECK_EQ(ongoing_fetch_keys.account_info.gaia, GaiaId(gaia_id))
       << "User mismatch in FetchKeys() response";
 
   std::vector<std::vector<uint8_t>> converted_keys;
