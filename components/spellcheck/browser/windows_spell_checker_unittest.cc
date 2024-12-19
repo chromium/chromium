@@ -105,11 +105,6 @@ class WindowsSpellCheckerTest : public testing::Test {
   }
 
  protected:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        spellcheck::kWinRetrieveSuggestionsOnlyOnDemand);
-  }
-
   void RunRequestTextCheckTest(const RequestTextCheckTestCase& test_case);
 
   std::unique_ptr<WindowsSpellChecker> win_spell_checker_;
@@ -145,19 +140,9 @@ void WindowsSpellCheckerTest::RunRequestTextCheckTest(
 
   const std::vector<std::u16string>& suggestions =
       spell_check_results_.front().replacements;
-  if (base::FeatureList::IsEnabled(
-          spellcheck::kWinRetrieveSuggestionsOnlyOnDemand)) {
-    // RequestTextCheck should return no suggestions.
-    ASSERT_TRUE(suggestions.empty())
-        << "RequestTextCheck: No suggestions are expected";
-  } else {
-    const std::u16string suggested_word(
-        base::ASCIIToUTF16(test_case.expected_suggestion));
-    ASSERT_TRUE(base::ranges::any_of(suggestions, [&](const std::u16string&
-                                                          suggestion) {
-      return suggestion.compare(suggested_word) == 0;
-    })) << "RequestTextCheck: Expected suggestion not found";
-  }
+  // RequestTextCheck should return no suggestions.
+  ASSERT_TRUE(suggestions.empty())
+      << "RequestTextCheck: No suggestions are expected";
 }
 
 static const RequestTextCheckTestCase kRequestTextCheckTestCases[] = {
@@ -180,36 +165,6 @@ INSTANTIATE_TEST_SUITE_P(TestCases,
                          testing::ValuesIn(kRequestTextCheckTestCases));
 
 TEST_P(WindowsSpellCheckerRequestTextCheckTest, RequestTextCheck) {
-  RunRequestTextCheckTest(GetParam());
-}
-
-class WindowsSpellCheckerRequestTextCheckWithSuggestionsTest
-    : public WindowsSpellCheckerRequestTextCheckTest {
- protected:
-  void SetUp() override {
-    // Want to maintain test coverage for requesting suggestions on call to
-    // RequestTextCheck.
-    feature_list_.InitAndDisableFeature(
-        spellcheck::kWinRetrieveSuggestionsOnlyOnDemand);
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(TestCases,
-                         WindowsSpellCheckerRequestTextCheckWithSuggestionsTest,
-                         testing::ValuesIn(kRequestTextCheckTestCases));
-
-TEST_P(WindowsSpellCheckerRequestTextCheckWithSuggestionsTest,
-       RequestTextCheck) {
-  // TODO(crbug.com/41485814): Remove once Windows fixes spellcheck.
-#if defined(ARCH_CPU_ARM64)
-  const char* text_to_check = GetParam().text_to_check;
-  if (text_to_check == kRequestTextCheckTestCases[1].text_to_check ||
-      text_to_check == kRequestTextCheckTestCases[6].text_to_check ||
-      text_to_check == kRequestTextCheckTestCases[10].text_to_check) {
-    GTEST_SKIP() << "Newest spell checker drop on Arm64 is broken for several "
-                    "test cases";
-  }
-#endif  // defined(ARCH_CPU_ARM64)
   RunRequestTextCheckTest(GetParam());
 }
 

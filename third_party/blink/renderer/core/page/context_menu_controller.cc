@@ -711,9 +711,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data.misspelled_word = to_u16string(misspelled_word);
       const String& description = misspelled_word_and_description.second;
       if (description.length()) {
-        // Suggestions were cached for the misspelled word (won't be true for
-        // Hunspell, or Windows platform spellcheck if the
-        // kWinRetrieveSuggestionsOnlyOnDemand feature flag is set).
+        // Suggestions were cached for the misspelled word (not true for
+        // Hunspell or Windows platform spellcheck).
         Vector<String> suggestions;
         description.Split('\n', suggestions);
         WebVector<std::u16string> web_suggestions(suggestions.size());
