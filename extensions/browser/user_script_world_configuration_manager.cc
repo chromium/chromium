@@ -123,11 +123,8 @@ void UserScriptWorldConfigurationManager::SetUserScriptWorldInfo(
   update_dict->SetKey(GetUserScriptWorldKeyForWorldId(world_info->world_id),
                       base::Value(std::move(world_info_dict)));
 
-  // TODO(devlin): Have RendererStartupHelper::SetUserScriptWorldProperties()
-  // take a mojom::UserScriptWorldInfoPtr.
-  renderer_helper_->SetUserScriptWorldProperties(
-      extension, world_info->world_id, world_info->csp,
-      world_info->enable_messaging);
+  renderer_helper_->SetUserScriptWorldProperties(extension,
+                                                 std::move(world_info));
 }
 
 void UserScriptWorldConfigurationManager::ClearUserScriptWorldInfo(
