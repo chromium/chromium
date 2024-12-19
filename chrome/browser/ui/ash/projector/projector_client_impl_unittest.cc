@@ -285,7 +285,7 @@ bool IsEqualAvailability(const SpeechRecognitionAvailability& first,
 
 TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
   const bool force_enable_server_based =
-      features::ShouldForceEnableServerSideSpeechRecognitionForDev();
+      features::ShouldForceEnableServerSideSpeechRecognition();
   const bool server_based_available =
       features::IsInternalServerSideSpeechRecognitionEnabled();
 
@@ -353,7 +353,7 @@ TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
 
 TEST_P(ProjectorClientImplUnitTest, FallbackReasonMetric) {
   const bool force_enable_server_based =
-      features::ShouldForceEnableServerSideSpeechRecognitionForDev();
+      features::ShouldForceEnableServerSideSpeechRecognition();
   const bool server_based_available =
       features::IsInternalServerSideSpeechRecognitionEnabled();
 
@@ -418,11 +418,11 @@ INSTANTIATE_TEST_SUITE_P(
         ProjectorClientTestScenario({features::kOnDeviceSpeechRecognition}, {}),
         ProjectorClientTestScenario(
             {features::kOnDeviceSpeechRecognition,
-             features::kForceEnableServerSideSpeechRecognitionForDev},
+             features::kForceEnableServerSideSpeechRecognition},
             {}),
         ProjectorClientTestScenario(
             {features::kInternalServerSideSpeechRecognition,
              features::kOnDeviceSpeechRecognition},
-            {features::kForceEnableServerSideSpeechRecognitionForDev})));
+            {features::kForceEnableServerSideSpeechRecognition})));
 
 }  // namespace ash

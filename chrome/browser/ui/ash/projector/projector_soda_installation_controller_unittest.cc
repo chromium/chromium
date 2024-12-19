@@ -75,7 +75,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition},
         {features::kInternalServerSideSpeechRecognition,
-         features::kForceEnableServerSideSpeechRecognitionForDev});
+         features::kForceEnableServerSideSpeechRecognition});
   }
   ProjectorSodaInstallationControllerTest(
       const ProjectorSodaInstallationControllerTest&) = delete;

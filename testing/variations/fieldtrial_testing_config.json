@@ -20788,9 +20788,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
+                    "name": "Enabled",
                     "enable_features": [
-                        "ForceEnableServerSideSpeechRecognitionForDev"
+                        "ForceEnableServerSideSpeechRecognition"
                     ]
                 }
             ]
