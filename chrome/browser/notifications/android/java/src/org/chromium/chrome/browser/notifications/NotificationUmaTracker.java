@@ -161,7 +161,8 @@ public class NotificationUmaTracker {
         ActionType.PRE_UNSUBSCRIBE,
         ActionType.UNDO_UNSUBSCRIBE,
         ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT,
-        ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT
+        ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT,
+        ActionType.SHOW_ORIGINAL_NOTIFICATION
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
@@ -238,8 +239,12 @@ public class NotificationUmaTracker {
         // to implicitly committing `PRE_UNSUBSCRIBE`.
         int COMMIT_UNSUBSCRIBE_IMPLICIT = 33;
 
-        // Number of real entries, excluding `UNKNWON`.
-        int NUM_ENTRIES = 34;
+        // The "Show notification" button, used only for persistent web notifications that are
+        // suspicious.
+        int SHOW_ORIGINAL_NOTIFICATION = 34;
+
+        // Number of real entries, excluding `UNKNOWN`.
+        int NUM_ENTRIES = 35;
     }
 
     /**

@@ -3305,6 +3305,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_NOTIFICATION_MANAGE_BUTTON" desc="Text of a button shown on notifications, that opens the Chrome notifications settings page. This allows users to edit notification settings when a site asks them to allow notifications. [CHAR_LIMIT=9]">
         Manage
       </message>
+      <message name="IDS_NOTIFICATION_WARNING_TITLE" desc="Title of a warning notification informing the user that the notification may be suspicious.">
+        Possible spam
+      </message>
+      <message name="IDS_NOTIFICATION_WARNING_BODY" desc="Body text of a warning notification informing the user that the notification from the domain may be suspicious.">
+        Chrome detected possible spam from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>.
+      </message>
+      <message name="IDS_NOTIFICATION_SHOW_ORIGINAL_BUTTON" desc="Text of a button shown on suspicious notifications, allowing the user to see the contents of the original notification instead of the warning.">
+        Show notification
+      </message>
 
       <!-- Download UI -->
       <message name="IDS_DOWNLOAD_NOTIFICATION_PENDING" desc="Download notification to be displayed when a download has been scheduled but has not started being fetched from the network.">

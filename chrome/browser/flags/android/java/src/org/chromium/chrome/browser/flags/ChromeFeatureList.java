@@ -504,6 +504,8 @@ public abstract class ChromeFeatureList {
     public static final String SENSITIVE_CONTENT = "SensitiveContent";
     public static final String SENSITIVE_CONTENT_WHILE_SWITCHING_TABS =
             "SensitiveContentWhileSwitchingTabs";
+    public static final String SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS =
+            "ShowWarningsForSuspiciousNotifications";
     public static final String SMALLER_TAB_STRIP_TITLE_LIMIT = "SmallerTabStripTitleLimit";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";

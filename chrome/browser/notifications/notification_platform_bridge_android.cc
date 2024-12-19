@@ -264,6 +264,14 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
                      std::nullopt /* by_user */, base::DoNothing()));
 }
 
+void NotificationPlatformBridgeAndroid::SetIsSuspiciousParameterForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_object,
+    bool is_suspicious) {
+  should_use_test_is_suspicious_value_ = true;
+  test_is_suspicious_value_ = is_suspicious;
+}
+
 void NotificationPlatformBridgeAndroid::Display(
     NotificationHandler::Type notification_type,
     Profile* profile,
@@ -309,7 +317,12 @@ void NotificationPlatformBridgeAndroid::Display(
       image_bitmap, *notification_icon_bitmap, badge_bitmap,
       notification.vibration_pattern(),
       notification.timestamp().InMillisecondsSinceUnixEpoch(),
-      notification.renotify(), notification.silent(), actions);
+      notification.renotify(), notification.silent(), actions,
+      should_use_test_is_suspicious_value_
+          ? test_is_suspicious_value_
+          : (persistent_notification_metadata
+                 ? persistent_notification_metadata->is_suspicious
+                 : false));
 
   regenerated_notification_infos_[notification.id()] =
       RegeneratedNotificationInfo(scope_url, std::nullopt);
