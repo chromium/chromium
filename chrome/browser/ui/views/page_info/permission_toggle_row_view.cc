@@ -40,6 +40,19 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+
+const ui::ImageModel GetManagedPermissionIcon(
+    const PageInfo::PermissionInfo& info) {
+  const gfx::VectorIcon& managed_vector_icon =
+      info.source == content_settings::SettingSource::kExtension
+          ? vector_icons::kExtensionIcon
+          : vector_icons::kBusinessIcon;
+  return PageInfoViewFactory::GetImageModel(managed_vector_icon);
+}
+
+}  // namespace
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
                                       kRowSubTitleCameraElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
@@ -259,8 +272,7 @@ void PermissionToggleRowView::InitForManagedSource(
   row_view_->AddControl(std::move(state_label));
 
   auto managed_icon = std::make_unique<NonAccessibleImageView>();
-  managed_icon->SetImage(
-      PageInfoViewFactory::GetManagedPermissionIcon(permission_));
+  managed_icon->SetImage(GetManagedPermissionIcon(permission_));
   std::u16string managed_tooltip =
       PageInfoUI::PermissionManagedTooltipToUIString(delegate, permission_);
   managed_icon->SetTooltipText(managed_tooltip);

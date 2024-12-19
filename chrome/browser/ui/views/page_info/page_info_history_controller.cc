@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/page_info/core/page_info_history_data_source.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -61,7 +62,7 @@ std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
   auto button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoHistoryController::OpenHistoryPage,
                           weak_factory_.GetWeakPtr()),
-      PageInfoViewFactory::GetHistoryIcon(),
+      PageInfoViewFactory::GetImageModel(vector_icons::kHistoryIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_HISTORY), last_visit,
       PageInfoViewFactory::GetLaunchIcon());
   button->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON);

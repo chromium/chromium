@@ -17,6 +17,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -24,6 +25,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -31,6 +33,13 @@ namespace {
 using ::content_settings::CookieControlsUtil;
 using ::content_settings::TrackingProtectionFeature;
 using ::content_settings::TrackingProtectionFeatureType;
+
+const ui::ImageModel GetThirdPartyCookiesIcon(
+    bool third_party_cookies_enabled) {
+  return PageInfoViewFactory::GetImageModel(
+      third_party_cookies_enabled ? views::kEyeRefreshIcon
+                                  : views::kEyeCrossedRefreshIcon);
+}
 
 class ThirdPartyCookieLabelWrapper : public views::BoxLayoutView {
   METADATA_HEADER(ThirdPartyCookieLabelWrapper, views::BoxLayoutView)
@@ -310,8 +319,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
                                           feature.status, blocking_status,
                                           expiration);
   SetThirdPartyCookiesToggle(protections_on, feature.status);
-  third_party_cookies_row_->SetIcon(
-      PageInfoViewFactory::GetThirdPartyCookiesIcon(!protections_on));
+  third_party_cookies_row_->SetIcon(GetThirdPartyCookiesIcon(!protections_on));
   third_party_cookies_row_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
 
@@ -387,11 +395,12 @@ void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
           base::BindRepeating(
               &PageInfoCookiesContentView::RwsSettingsButtonClicked,
               base::Unretained(this)),
-          PageInfoViewFactory::GetRwsIcon(),
+          PageInfoViewFactory::GetImageModel(vector_icons::kTenancyIcon),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
           /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
           is_managed ? std::optional<ui::ImageModel>(
-                           PageInfoViewFactory::GetEnforcedByPolicyIcon())
+                           PageInfoViewFactory::GetImageModel(
+                               vector_icons::kBusinessIcon))
                      : std::nullopt));
   rws_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
@@ -443,7 +452,7 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
   third_party_cookies_row_->SetTitle(l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL));
   third_party_cookies_row_->SetIcon(
-      PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon());
+      PageInfoViewFactory::GetImageModel(views::kEyeCrossedRefreshIcon));
   third_party_cookies_row_->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
 

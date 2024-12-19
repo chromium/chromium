@@ -38,6 +38,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -193,7 +194,8 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
       site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
-          PageInfoViewFactory::GetCookiesAndSiteDataIcon(),
+          PageInfoViewFactory::GetImageModel(
+              vector_icons::kCookieChromeRefreshIcon),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
           /*subtitle_text=*/std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
@@ -434,7 +436,8 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
       content_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   auto icon = std::make_unique<NonAccessibleImageView>();
-  icon->SetImage(PageInfoViewFactory::GetVrSettingsIcon());
+  icon->SetImage(
+      PageInfoViewFactory::GetImageModel(vector_icons::kVrHeadsetIcon));
   content_view->AddChildView(std::move(icon));
 
   auto label = std::make_unique<views::Label>(
@@ -644,8 +647,9 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteButton(
                 view->GetWidget()->Close();
               },
               this, GURL(info.more_about().url()), info.has_description()),
-          PageInfoViewFactory::GetAboutThisSiteIcon(), title, description,
-          PageInfoViewFactory::GetLaunchIcon());
+          PageInfoViewFactory::GetImageModel(
+              PageInfoViewFactory::GetAboutThisSiteVectorIcon()),
+          title, description, PageInfoViewFactory::GetLaunchIcon());
   about_this_site_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
   about_this_site_button->SetSubtitleMultiline(false);
@@ -663,7 +667,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
   auto ads_personalization_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                           base::Unretained(navigation_handler_)),
-      PageInfoViewFactory::GetAdPersonalizationIcon(),
+      PageInfoViewFactory::GetImageModel(vector_icons::kAdsClickIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   ads_personalization_button->SetID(
@@ -685,7 +689,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(
   auto merchant_trust_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
                           base::Unretained(navigation_handler_)),
-      PageInfoViewFactory::GetMerchantTrustIcon(),
+      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   merchant_trust_button->SetTitleTextStyleAndColor(
