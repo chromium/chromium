@@ -362,6 +362,9 @@ const CGFloat kTopBarLargeInset = 20;
 
   _facePileContainerView = [[UIView alloc] init];
   _facePileContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_facePileContainerView
+      setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
+                        forAxis:UILayoutConstraintAxisHorizontal];
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
