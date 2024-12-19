@@ -53,6 +53,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -232,7 +233,7 @@ class FullRestoreServiceTest : public testing::Test {
     CHECK(profile_manager_->SetUp());
     RegisterUserProfilePrefs(testing_pref_service_->registry());
     test_helper_ = std::make_unique<FullRestoreTestHelper>(
-        "usertest@gmail.com", "1234567890", fake_user_manager_.Get(),
+        "usertest@gmail.com", GaiaId("1234567890"), fake_user_manager_.Get(),
         profile_manager_.get(), testing_pref_service_.get());
     scoped_feature_list_.InitAndDisableFeature(features::kForestFeature);
   }
@@ -802,7 +803,7 @@ class FullRestoreServiceMultipleUsersTest
  protected:
   FullRestoreServiceMultipleUsersTest() {
     test_helper2_ = std::make_unique<FullRestoreTestHelper>(
-        "user2@gmail.com", "111111", fake_user_manager(),
+        "user2@gmail.com", GaiaId("111111"), fake_user_manager(),
         profile_manager_.get(), testing_pref_service_.get());
     CreateRestoreData(profile2());
   }
