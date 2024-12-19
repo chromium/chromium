@@ -61,6 +61,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -205,7 +206,8 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     ASSERT_TRUE(
         policy_data_.SerializeToString(policy_response->mutable_policy_data()));
 
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kTestGaiaId);
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kTestGaiaId));
     TestingProfile* profile =
         profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(account_id, false,
@@ -847,7 +849,8 @@ TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerCreation) {
       enterprise_reporting::kCloudReportingEnabled, true);
 
   // Log in an user account, and set it as primary.
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kTestGaiaId);
+  AccountId account_id =
+      AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kTestGaiaId));
   user_manager_->LoginUser(account_id);
   ASSERT_TRUE(user_manager_->GetPrimaryUser());
 
@@ -879,7 +882,8 @@ TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerDelayedCreation) {
 
   // To simulate an intermediate status in user session, log in an user account
   // as primiary but set |profile_is_created_| as false.
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kTestGaiaId);
+  AccountId account_id =
+      AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kTestGaiaId));
   user_manager_->LoginUser(account_id, false /* set_profile_created_flag */);
   ASSERT_TRUE(user_manager_->GetPrimaryUser());
   ASSERT_FALSE(user_manager_->GetPrimaryUser()->is_profile_created());
@@ -900,7 +904,8 @@ TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerDelayedCreation) {
   EXPECT_FALSE(manager_->GetReportSchedulerForTesting());
 
   // The notification has no effect if the account id is another one.
-  AccountId account_id2 = AccountId::FromUserEmailGaiaId(kEmail2, kTestGaiaId2);
+  AccountId account_id2 =
+      AccountId::FromUserEmailGaiaId(kEmail2, GaiaId(kTestGaiaId2));
   session_manager.NotifyUserProfileLoaded(account_id2);
   EXPECT_FALSE(manager_->GetReportSchedulerForTesting());
 

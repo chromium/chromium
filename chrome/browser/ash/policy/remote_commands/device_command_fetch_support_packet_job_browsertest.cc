@@ -48,6 +48,7 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -276,10 +277,12 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
   }
 
   const ash::LoginManagerMixin::TestUserInfo unaffiliated_user_{
-      AccountId::FromUserEmailGaiaId(kUnaffiliatedUser, kUnaffiliatedGaiaID)};
+      AccountId::FromUserEmailGaiaId(kUnaffiliatedUser,
+                                     GaiaId(kUnaffiliatedGaiaID))};
 
   const ash::LoginManagerMixin::TestUserInfo affiliated_user_{
-      AccountId::FromUserEmailGaiaId(kAffiliatedUser, kAffiliatedGaiaID)};
+      AccountId::FromUserEmailGaiaId(kAffiliatedUser,
+                                     GaiaId(kAffiliatedGaiaID))};
 
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                           affiliated_user_.account_id};

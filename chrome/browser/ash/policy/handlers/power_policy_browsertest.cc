@@ -50,6 +50,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/power/power_api.h"
 #include "extensions/common/api/power.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -192,7 +193,7 @@ void PowerPolicyBrowserTestBase::SetUpOnMainThread() {
   user_policy_.policy_data().set_username(
       user_manager::StubAccountId().GetUserEmail());
   user_policy_.policy_data().set_gaia_id(
-      user_manager::StubAccountId().GetGaiaId());
+      user_manager::StubAccountId().GetGaiaId().ToString());
 }
 
 void PowerPolicyBrowserTestBase::InstallUserKey() {

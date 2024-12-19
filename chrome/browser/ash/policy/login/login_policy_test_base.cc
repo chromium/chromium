@@ -22,6 +22,7 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "google_apis/gaia/fake_gaia.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -44,7 +45,8 @@ constexpr char kAccountGaiaId[] = "user-example-com-test-gaia-id";
 }  // namespace
 
 LoginPolicyTestBase::LoginPolicyTestBase()
-    : account_id_(AccountId::FromUserEmailGaiaId(kAccountId, kAccountGaiaId)) {
+    : account_id_(
+          AccountId::FromUserEmailGaiaId(kAccountId, GaiaId(kAccountGaiaId))) {
   set_open_about_blank_on_browser_launch(false);
   login_manager_.SetShouldLaunchBrowser(true);
 }

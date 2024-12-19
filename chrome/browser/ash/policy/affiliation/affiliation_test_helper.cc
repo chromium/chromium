@@ -41,6 +41,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "crypto/rsa_private_key.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -121,7 +122,8 @@ void AffiliationTestHelper::SetUserAffiliationIDs(
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
 
   user_policy->policy_data().set_username(user_account_id.GetUserEmail());
-  user_policy->policy_data().set_gaia_id(user_account_id.GetGaiaId());
+  user_policy->policy_data().set_gaia_id(
+      user_account_id.GetGaiaId().ToString());
   ASSERT_NO_FATAL_FAILURE(SetUserKeys(*user_policy));
   for (const auto& user_affiliation_id : user_affiliation_ids) {
     user_policy->policy_data().add_user_affiliation_ids(

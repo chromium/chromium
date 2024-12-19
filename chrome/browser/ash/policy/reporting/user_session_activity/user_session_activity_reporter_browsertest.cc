@@ -36,6 +36,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -90,7 +91,7 @@ class UserSessionActivityReporterBrowserTest
 
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeUserGaiaId)};
+                                     GaiaId(FakeGaiaMixin::kFakeUserGaiaId))};
 
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
 

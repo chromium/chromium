@@ -37,6 +37,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "profile.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,7 +72,8 @@ class LocalFilesMigrationManagerTest : public testing::Test {
     profile_ = scoped_profile_.get();
     profile_->SetIsNewProfile(true);
 
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, "123456");
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kEmail, GaiaId("123456"));
     ash::AnnotatedAccountId::Set(profile_, account_id);
 
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
