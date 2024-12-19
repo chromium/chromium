@@ -454,7 +454,10 @@ public final class PrivacySandboxDialogTest {
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
         // Click on the site suggested ads expanding section and verify it worked correctly.
         tryClickOn(withId(R.id.site_suggested_ads_dropdown_element));
-        // TODO(crbug.com/379337243): Add Site Suggested Ads more info opened metrics
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_OPENED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
         onView(withId(R.id.privacy_sandbox_notice_eea_site_suggested_ads_dropdown))
                 .inRoot(isDialog())
@@ -463,7 +466,10 @@ public final class PrivacySandboxDialogTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         tryClickOn(withId(R.id.site_suggested_ads_dropdown_element));
-        // TODO(crbug.com/379337243): Add Site Suggested Ads more info closed metrics
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_CLOSED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_eea_site_suggested_ads_dropdown))
                 .check(doesNotExist());
     }
@@ -478,7 +484,10 @@ public final class PrivacySandboxDialogTest {
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
         // Click on the Ad Measurement expanding section and verify it worked correctly.
         tryClickOn(withId(R.id.ad_measurement_dropdown_element));
-        // TODO(crbug.com/379337243): Add Ad Measurement more info opened metrics
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_ADS_MEASUREMENT_MORE_INFO_OPENED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
         onView(withId(R.id.privacy_sandbox_notice_eea_ad_measurement_dropdown))
                 .inRoot(isDialog())
@@ -487,7 +496,10 @@ public final class PrivacySandboxDialogTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         tryClickOn(withId(R.id.ad_measurement_dropdown_element));
-        // TODO(crbug.com/379337243): Add Ad Measurement more info closed metrics
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_ADS_MEASUREMENT_MORE_INFO_CLOSED,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_eea_ad_measurement_dropdown))
                 .check(doesNotExist());
     }

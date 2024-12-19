@@ -167,11 +167,14 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
     }
 
     private void handleSiteSuggestedAdsDropdownClick(View view) {
-        // TODO(crbug.com/379337243): Add metrics
         if (isSiteSuggestedAdsDropdownExpanded()) {
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_CLOSED, mSurfaceType);
             mSiteSuggestedAdsDropdownContainer.setVisibility(View.GONE);
             mSiteSuggestedAdsDropdownContainer.removeAllViews();
         } else {
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_OPENED, mSurfaceType);
             mSiteSuggestedAdsDropdownContainer.setVisibility(View.VISIBLE);
             LayoutInflater.from(getContext())
                     .inflate(
@@ -209,11 +212,14 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
     }
 
     private void handleAdMeasurementDropdownClick(View view) {
-        // TODO(crbug.com/379337243): Add metrics
         if (isMeasurementDropdownExpanded()) {
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.NOTICE_ADS_MEASUREMENT_MORE_INFO_CLOSED, mSurfaceType);
             mAdMeasurementDropdownContainer.setVisibility(View.GONE);
             mAdMeasurementDropdownContainer.removeAllViews();
         } else {
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.NOTICE_ADS_MEASUREMENT_MORE_INFO_OPENED, mSurfaceType);
             mAdMeasurementDropdownContainer.setVisibility(View.VISIBLE);
             LayoutInflater.from(getContext())
                     .inflate(
