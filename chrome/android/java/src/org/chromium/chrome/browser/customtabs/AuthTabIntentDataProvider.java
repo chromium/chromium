@@ -183,7 +183,6 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
      * apps.
      */
     private void logFeatureUsage(Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
-        if (!CustomTabsFeatureUsage.isEnabled()) return;
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
         // Ordering: Log all the features ordered by enum, when they apply.

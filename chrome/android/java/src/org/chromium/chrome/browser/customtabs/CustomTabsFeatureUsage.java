@@ -8,7 +8,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -157,26 +156,11 @@ public class CustomTabsFeatureUsage {
         int COUNT = 63;
     }
 
-    // Whether flag-enabled or not.
-    private boolean mIsEnabled;
-
     /** Tracks whether we have written each enum or not. */
     private BitSet mUsed = new BitSet(CustomTabsFeature.COUNT);
 
-    /** Tracks the usage of Chrome Custom Tabs in a single large histogram. */
-    public CustomTabsFeatureUsage() {
-        mIsEnabled = isEnabled();
-    }
-
-    /** @return whether this feature is enabled or not. */
-    static boolean isEnabled() {
-        return ChromeFeatureList.sCctFeatureUsage.isEnabled();
-    }
-
     /** Logs the usage of the given feature, if enabled. */
     void log(@CustomTabsFeature int feature) {
-        if (!mIsEnabled) return;
-
         logInternal(feature);
         // Make sure we've logged a Session.
         // This ensures no feature can have a higher usage that SESSIONS.

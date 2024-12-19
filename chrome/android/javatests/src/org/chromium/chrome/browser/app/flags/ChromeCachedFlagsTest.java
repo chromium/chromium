@@ -52,7 +52,6 @@ public class ChromeCachedFlagsTest {
     // DO NOT ADD FLAGS TO THIS LIST.
     private static final Set<CachedFlag> BASELINE =
             Set.of(
-                    ChromeFeatureList.sCctFeatureUsage,
                     ChromeFeatureList.sDownloadsMigrateToJobsAPI,
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,

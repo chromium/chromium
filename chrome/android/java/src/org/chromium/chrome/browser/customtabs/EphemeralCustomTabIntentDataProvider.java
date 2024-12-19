@@ -41,7 +41,6 @@ public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataPro
      * apps.
      */
     private void logFeatureUsage() {
-        if (!CustomTabsFeatureUsage.isEnabled()) return;
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
         // Ordering: Log all the features ordered by enum, when they apply.

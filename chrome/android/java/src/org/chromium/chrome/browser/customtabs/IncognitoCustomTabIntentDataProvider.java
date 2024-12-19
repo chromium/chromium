@@ -152,7 +152,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
      * @param intent The intent used to launch the CCT.
      */
     private void logFeatureUsage(Intent intent) {
-        if (!CustomTabsFeatureUsage.isEnabled()) return;
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
         // Ordering: Log all the features ordered by enum, when they apply.

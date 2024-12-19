@@ -998,14 +998,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /**
      * Logs the usage of intents of all CCT features to a large enum histogram in order to track
      * usage by apps.
+     *
      * @param intent The intent used to launch the CCT.
      * @param colorScheme The requested color scheme to use with the CCT.
      * @param isUsingDynamicFeatures Whether the intent specified Features to dynamically enable or
-     *                               disable.
+     *     disable.
      */
     private void logCustomTabFeatures(
             Intent intent, int colorScheme, boolean isUsingDynamicFeatures) {
-        if (!CustomTabsFeatureUsage.isEnabled()) return;
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
         // Ordering: Log all the features ordered by CustomTabsFeature enum, when they apply.
@@ -1418,9 +1418,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     private boolean isAllowedToAutoTranslate() {
-        if (!ChromeFeatureList.sCctAutoTranslate.isEnabled()) return false;
-        if (mIsTrustedIntent && ChromeFeatureList.sCctAutoTranslateAllowAllFirstParties.getValue())
+        if (!ChromeFeatureList.sCctAutoTranslate.isEnabled()) {
+            return false;
+        }
+        if (mIsTrustedIntent
+                && ChromeFeatureList.sCctAutoTranslateAllowAllFirstParties.getValue()) {
             return true;
+        }
         return isPackageNameInList(
                 getClientPackageName(),
                 ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.getValue());

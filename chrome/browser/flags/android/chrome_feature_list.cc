@@ -220,7 +220,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTClientDataHeader,
     &kCCTEarlyNav,
     &kCCTExtendTrustedCdnPublisher,
-    &kCCTFeatureUsage,
     &kCCTEphemeralMode,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
@@ -599,10 +598,6 @@ BASE_FEATURE(kCCTEphemeralMode,
 
 BASE_FEATURE(kCCTExtendTrustedCdnPublisher,
              "CCTExtendTrustedCdnPublisher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTFeatureUsage,
-             "CCTFeatureUsage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTIncognitoAvailableToThirdParty,
