@@ -25,7 +25,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -184,7 +184,7 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @DisableIf.Build(supported_abis_includes = "x86")
+    @DisabledTest(message = "crbug.com/385114151")
     @Features.EnableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
     public void testNegativeButtonOutOfScreen() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
