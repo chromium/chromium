@@ -137,6 +137,13 @@ NOINLINE Location Location::Current(const char* function_name,
                   RETURN_ADDRESS());
 }
 
+// static
+NOINLINE Location Location::CurrentWithoutFunctionName(const char* file_name,
+                                                       int line_number) {
+  return Location(nullptr, file_name + kStrippedPrefixLength, line_number,
+                  RETURN_ADDRESS());
+}
+
 //------------------------------------------------------------------------------
 NOINLINE const void* GetProgramCounter() {
   return RETURN_ADDRESS();
