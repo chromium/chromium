@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -29,7 +28,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kPeopleSectionPath;
 using ::chromeos::settings::mojom::kPrivacyAndSecuritySectionPath;
 using ::chromeos::settings::mojom::kSyncDeprecatedAdvancedSubpagePath;
 using ::chromeos::settings::mojom::kSyncSetupSubpagePath;
@@ -151,14 +149,9 @@ int SyncSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section SyncSection::GetSection() const {
-  // Note: This is a subsection that exists under People or Privacy and
-  // Security. This section will no longer exist under the People section once
-  // the OsSettingsRevampWayfinding feature is fully launched. This is not a
-  // top-level section and does not have a respective declaration in
-  // chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kPrivacyAndSecurity
-             : mojom::Section::kPeople;
+  // Note: This is not a top-level section and does not have a respective
+  // declaration in chromeos::settings::mojom::Section.
+  return mojom::Section::kPrivacyAndSecurity;
 }
 
 mojom::SearchResultIcon SyncSection::GetSectionIcon() const {
@@ -166,9 +159,7 @@ mojom::SearchResultIcon SyncSection::GetSectionIcon() const {
 }
 
 const char* SyncSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kPrivacyAndSecuritySectionPath
-             : mojom::kPeopleSectionPath;
+  return mojom::kPrivacyAndSecuritySectionPath;
 }
 
 bool SyncSection::LogMetric(mojom::Setting setting, base::Value& value) const {
