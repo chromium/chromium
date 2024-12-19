@@ -255,7 +255,7 @@ class ViewTransitionStyleTracker
       const AtomicString& name,
       const StyleViewTransitionGroup& group) const;
 
-  AtomicString GenerateAutoName(Element&, const TreeScope*);
+  AtomicString GenerateAutoName(Element&, const TreeScope*, bool allow_from_id);
 
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;

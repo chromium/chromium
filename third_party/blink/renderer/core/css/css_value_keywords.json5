@@ -1806,6 +1806,9 @@
     "layered",
     // flat
 
+    // view-transition-name
+    "match-element",
+
     // container-type
     // inline-size,
     // normal,

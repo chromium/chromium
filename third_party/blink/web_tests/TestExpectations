@@ -336,6 +336,7 @@ crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt
 # This should always fail when serializing. It's a same-doc feature only.
 crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name.html [ Failure ]
 crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name-from-id-shadow.html [ Failure ]
+crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/match-element-name.html [ Failure ]
 
 # Flaky on Mac
 crbug.com/40946176 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]

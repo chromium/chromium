@@ -17,13 +17,22 @@ namespace blink {
 class StyleViewTransitionName
     : public GarbageCollected<StyleViewTransitionName> {
  public:
-  enum class Type { kAuto, kCustom };
+  enum class Type { kAuto, kCustom, kMatchElement };
 
   bool IsAuto() const { return type_ == Type::kAuto; }
+  bool IsMatchElement() const { return type_ == Type::kMatchElement; }
   bool IsCustom() const { return type_ == Type::kCustom; }
 
+  Type GetType() const { return type_; }
+
   static StyleViewTransitionName* Auto(const TreeScope* tree_scope) {
-    return MakeGarbageCollected<StyleViewTransitionName>(tree_scope);
+    return MakeGarbageCollected<StyleViewTransitionName>(Type::kAuto,
+                                                         tree_scope);
+  }
+
+  static StyleViewTransitionName* MatchElement(const TreeScope* tree_scope) {
+    return MakeGarbageCollected<StyleViewTransitionName>(Type::kMatchElement,
+                                                         tree_scope);
   }
 
   static StyleViewTransitionName* Create(const AtomicString& name,
@@ -54,8 +63,8 @@ class StyleViewTransitionName
         custom_name_(custom_name),
         tree_scope_(tree_scope) {}
 
-  explicit StyleViewTransitionName(const TreeScope* tree_scope)
-      : type_(Type::kAuto), tree_scope_(tree_scope) {}
+  explicit StyleViewTransitionName(Type type, const TreeScope* tree_scope)
+      : type_(type), tree_scope_(tree_scope) {}
 
  private:
   Type type_;

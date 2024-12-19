@@ -7152,6 +7152,11 @@ const CSSValue* ViewTransitionName::ParseSingleValue(
                ? css_parsing_utils::ConsumeIdent(stream)
                : nullptr;
   }
+  if (stream.Peek().Id() == CSSValueID::kMatchElement) {
+    return RuntimeEnabledFeatures::CSSViewTransitionMatchElementEnabled()
+               ? css_parsing_utils::ConsumeIdent(stream)
+               : nullptr;
+  }
   return css_parsing_utils::ConsumeCustomIdent(stream, context);
 }
 
@@ -7165,6 +7170,10 @@ const CSSValue* ViewTransitionName::CSSValueFromComputedStyleInternal(
   }
   if (style.ViewTransitionName()->IsAuto()) {
     CHECK(RuntimeEnabledFeatures::CSSViewTransitionAutoNameEnabled());
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+  if (style.ViewTransitionName()->IsMatchElement()) {
+    CHECK(RuntimeEnabledFeatures::CSSViewTransitionMatchElementEnabled());
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
 

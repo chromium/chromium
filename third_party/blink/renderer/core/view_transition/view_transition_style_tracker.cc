@@ -716,10 +716,12 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
 
 AtomicString ViewTransitionStyleTracker::GenerateAutoName(
     Element& element,
-    const TreeScope* scope) {
+    const TreeScope* scope,
+    bool allow_from_id) {
   // The flag should be checked much earlier than this, in the CSS parser.
-  CHECK(RuntimeEnabledFeatures::CSSViewTransitionAutoNameEnabled());
-  if (element.HasID() && scope && *scope == element.GetTreeScope()) {
+  CHECK(RuntimeEnabledFeatures::CSSViewTransitionMatchElementEnabled());
+  if (allow_from_id && element.HasID() && scope &&
+      *scope == element.GetTreeScope()) {
     return element.GetIdAttribute();
   }
   StringBuilder builder;
@@ -765,9 +767,20 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     auto* relevant_tree_scope = view_transition_name->GetTreeScope();
 
     if (relevant_tree_scope == tree_scope || !relevant_tree_scope) {
-      current_name = view_transition_name->IsAuto()
-                         ? GenerateAutoName(*To<Element>(node), tree_scope)
-                         : view_transition_name->CustomName();
+      switch (view_transition_name->GetType()) {
+        case StyleViewTransitionName::Type::kAuto:
+          current_name = GenerateAutoName(*To<Element>(node), tree_scope,
+                                          /*allow_from_id=*/true);
+          break;
+        case StyleViewTransitionName::Type::kMatchElement:
+          current_name = GenerateAutoName(*To<Element>(node), tree_scope,
+                                          /*allow_from_id=*/false);
+          break;
+        case StyleViewTransitionName::Type::kCustom:
+          current_name = view_transition_name->CustomName();
+          break;
+      }
+
       AddTransitionElement(DynamicTo<Element>(node), current_name,
                            containing_group_stack.empty()
                                ? g_null_atom

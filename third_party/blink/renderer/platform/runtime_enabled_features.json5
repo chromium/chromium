@@ -1323,6 +1323,12 @@
     {
       // https://chromestatus.com/feature/5064894363992064
       name: "CSSViewTransitionAutoName",
+      status: "experimental",
+      depends_on: ["CSSViewTransitionMatchElement"],
+    },
+    {
+      // https://chromestatus.com/feature/5064894363992064
+      name: "CSSViewTransitionMatchElement",
       status: "experimental"
     },
     {

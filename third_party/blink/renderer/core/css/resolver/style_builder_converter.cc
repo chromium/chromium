@@ -2522,6 +2522,9 @@ StyleViewTransitionName* StyleBuilderConverter::ConvertViewTransitionName(
       case CSSValueID::kAuto:
         // TODO: tree scope for auto
         return StyleViewTransitionName::Auto(&state.GetDocument());
+      case CSSValueID::kMatchElement:
+        // TODO: tree scope for match-element
+        return StyleViewTransitionName::MatchElement(&state.GetDocument());
       default:
         NOTREACHED();
     }
