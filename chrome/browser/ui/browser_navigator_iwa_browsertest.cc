@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_browsertest.h"
-
 #include <memory>
 #include <string>
 
@@ -22,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_browsertest.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
@@ -103,78 +101,38 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
 
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(profile()));
-    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   }
 
   Profile* profile() { return browser()->profile(); }
 
  protected:
   void InstallBundles() {
-    web_app::TestSignedWebBundle bundle1 =
-        web_app::TestSignedWebBundleBuilder::BuildDefault(
-            web_app::TestSignedWebBundleBuilder::BuildOptions()
-                .AddKeyPair(web_package::test::Ed25519KeyPair::CreateRandom())
-                .SetIndexHTMLContent("Hello BrowserNavigator 1!"));
-    web_app::TestSignedWebBundle bundle2 =
-        web_app::TestSignedWebBundleBuilder::BuildDefault(
-            web_app::TestSignedWebBundleBuilder::BuildOptions()
-                .AddKeyPair(web_package::test::Ed25519KeyPair::CreateRandom())
-                .SetIndexHTMLContent("Hello BrowserNavigator 2!"));
-
-    base::FilePath bundle1_path =
-        scoped_temp_dir_.GetPath().AppendASCII("bundle1.swbn");
-    base::FilePath bundle2_path =
-        scoped_temp_dir_.GetPath().AppendASCII("bundle2.swbn");
-
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::WriteFile(bundle1_path, bundle1.data));
-      ASSERT_TRUE(base::WriteFile(bundle2_path, bundle2.data));
-    }
-
-    web_app::SetTrustedWebBundleIdsForTesting({bundle1.id, bundle2.id});
-
-    ASSERT_THAT(InstallBundle(bundle1_path, bundle1), base::test::HasValue());
-    ASSERT_THAT(InstallBundle(bundle2_path, bundle2), base::test::HasValue());
+    app1_ =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().SetName("app-1.0.0").SetVersion("1.0.0"))
+            .BuildBundle();
 
     url_info1_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
-        web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-            bundle1.id));
-    url_info2_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
-        web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-            bundle2.id));
-  }
+        *app1_->TrustBundleAndInstall(profile()));
 
-  base::expected<web_app::InstallIsolatedWebAppCommandSuccess,
-                 web_app::InstallIsolatedWebAppCommandError>
-  InstallBundle(const base::FilePath& bundle_path,
-                const web_app::TestSignedWebBundle& bundle) {
-    base::test::TestFuture<
-        base::expected<web_app::InstallIsolatedWebAppCommandSuccess,
-                       web_app::InstallIsolatedWebAppCommandError>>
-        future;
-    web_app::WebAppProvider::GetForTest(profile())
-        ->scheduler()
-        .InstallIsolatedWebApp(
-            web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                bundle.id),
-            web_app::IsolatedWebAppInstallSource::FromGraphicalInstaller(
-                web_app::IwaSourceBundleProdModeWithFileOp(
-                    bundle_path, web_app::IwaSourceBundleProdFileOp::kCopy)),
-            /*expected_version=*/std::nullopt,
-            /*optional_keep_alive=*/nullptr,
-            /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
-    return future.Take();
+    app2_ =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().SetName("app-1.0.0").SetVersion("1.0.0"))
+            .BuildBundle();
+
+    url_info2_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
+        *app2_->TrustBundleAndInstall(profile()));
   }
 
  protected:
   std::unique_ptr<web_app::IsolatedWebAppUrlInfo> url_info1_;
   std::unique_ptr<web_app::IsolatedWebAppUrlInfo> url_info2_;
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app1_;
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app2_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-  base::ScopedTempDir scoped_temp_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
@@ -226,7 +184,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   // 3. When navigating a tab to an isolated-app: origin, and that tab is
   //    already part of an app browser for a different isolated-app: origin,
   //    then a new window and tab should be created.
-
   NavigateParams params3 = MakeNavigateParams(iwa_browser);
   params3.url =
       url_info2_->origin().GetURL().Resolve("/page-in-another-iwa.html");

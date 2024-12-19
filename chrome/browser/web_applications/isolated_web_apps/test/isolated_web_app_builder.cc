@@ -208,6 +208,13 @@ BundledIsolatedWebApp::Install(Profile* profile) {
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::InstallWithSource(
+    Profile* profile,
+    IsolatedWebAppInstallSource src_source) {
+  return ::web_app::Install(profile, web_bundle_id_, src_source);
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
 BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
   TrustSigningKey();
   return Install(profile);

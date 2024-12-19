@@ -12,6 +12,7 @@
 #include "base/functional/overloaded.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -73,27 +75,19 @@ class IsolatedWebAppUninstallBrowserTest
     IsolatedWebAppBrowserTestHarness::SetUp();
   }
 
-  void CreateBundle() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault(
-        TestSignedWebBundleBuilder::BuildOptions()
-            .AddKeyPair(key_pair_)
-            .SetAppName("Test App"));
-    ASSERT_TRUE(base::WriteFile(src_bundle_path_, bundle.data));
-  }
+  void CreateAndInstallBundle() {
+    std::unique_ptr<BundledIsolatedWebApp> bundle =
+        IsolatedWebAppBuilder(
+            ManifestBuilder().SetName("app-1.0.0").SetVersion("1.0.0"))
+            .BuildBundle(src_bundle_path_, key_pair_);
 
-  void Install() {
-    base::test::TestFuture<InstallResult> future;
-    SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
-    provider()->scheduler().InstallIsolatedWebApp(
-        url_info_, *src_source_,
-        /*expected_version=*/std::nullopt,
-        /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    bundle->TrustSigningKey();
+    ASSERT_THAT(bundle->InstallWithSource(profile(), *src_source_),
+                base::test::HasValue());
 
     const WebApp* web_app =
         provider()->registrar_unsafe().GetAppById(url_info_.app_id());
+
     ASSERT_TRUE(web_app);
   }
 
@@ -138,11 +132,11 @@ class IsolatedWebAppUninstallBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
-  ASSERT_NO_FATAL_FAILURE(CreateBundle());
+  // Create buldle and install an IWA and check that it is in the desired
+  // stated.
+  ASSERT_NO_FATAL_FAILURE(CreateAndInstallBundle());
   std::optional<base::FilePath> path_to_iwa_in_profile;
 
-  // Install an IWA and check that it is in the desired stated.
-  ASSERT_NO_FATAL_FAILURE(Install());
   const WebApp* web_app_before =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   ASSERT_TRUE(web_app_before);
@@ -184,6 +178,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
       EXPECT_FALSE(base::PathExists(src_bundle_path_));
       break;
   }
+
   switch (mode_and_file_op_) {
     case IwaSourceBundleModeAndFileOp::kDevModeMove:
     case IwaSourceBundleModeAndFileOp::kProdModeMove:
