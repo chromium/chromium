@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "media/base/cdm_callback_promise.h"
 #include "media/base/cdm_factory.h"
@@ -38,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::NotNull;
@@ -60,12 +62,15 @@ MATCHER(IsNullPlatformChallengeResponse, "") {
 }
 
 MATCHER_P(HasLicenseSdkVersion, expected_version, "") {
-  return arg.license_sdk_version.has_value() &&
-         arg.license_sdk_version.value() == expected_version;
+  return arg.license_sdk_version == expected_version;
 }
 
 MATCHER(HasNoLicenseSdkVersion, "") {
   return !arg.license_sdk_version.has_value();
+}
+
+MATCHER_P(HasBypassBlocksTotalCount, expected_value, "") {
+  return arg.decoder_bypass_block_count == expected_value;
 }
 
 // TODO(jrummell): These tests are a subset of those in aes_decryptor_unittest.
@@ -158,6 +163,8 @@ class CdmAdapterTestBase : public testing::Test,
 
   int GetCdmInterfaceVersion() { return GetParam(); }
 
+  CdmAdapter* GetCdmAdapter() { return static_cast<CdmAdapter*>(cdm_.get()); }
+
   // Initializes the adapter. |expected_result| tests that the call succeeds
   // or generates an error.
   void InitializeWithCdmConfigAndExpect(const CdmConfig& cdm_config,
@@ -193,9 +200,9 @@ class CdmAdapterTestBase : public testing::Test,
     if (cdm) {
       ASSERT_EQ(expected_result, SUCCESS)
           << "CDM creation succeeded unexpectedly.";
-      CdmAdapter* cdm_adapter = static_cast<CdmAdapter*>(cdm.get());
-      ASSERT_EQ(GetCdmInterfaceVersion(), cdm_adapter->GetInterfaceVersion());
       cdm_ = cdm;
+      ASSERT_EQ(GetCdmInterfaceVersion(),
+                GetCdmAdapter()->GetInterfaceVersion());
     } else {
       ASSERT_EQ(expected_result, FAILURE)
           << "status = " << static_cast<int>(status);
@@ -363,19 +370,6 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
 class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
  public:
   ~CdmAdapterTestWithMockCdm() override {
-    // If the test is not a ukm test, no cdm values will be set, and
-    // RecordUkm should not be called at all. If it is a ukm test, and the
-    // interface version is greater than 10, verify that the license sdk
-    // reported is what we expect.
-    if (!is_ukm_test_) {
-      EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
-    } else if (GetCdmInterfaceVersion() > 10) {
-      EXPECT_CALL(*cdm_helper_,
-                  RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)));
-    } else {
-      EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
-    }
-
     // Makes sure Destroy() is called on CdmAdapter destruction.
     EXPECT_CALL(*mock_library_cdm_, DestroyCalled());
   }
@@ -401,8 +395,6 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
   // These are both owned by `cdm_`.
   raw_ptr<MockLibraryCdm> mock_library_cdm_ = nullptr;
   raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
-
-  bool is_ukm_test_ = false;
 };
 
 // Instantiate test cases
@@ -607,11 +599,70 @@ TEST_P(CdmAdapterTestWithMockCdm, GetDecryptor) {
 }
 
 TEST_P(CdmAdapterTestWithMockCdm, RecordUkmCalled) {
-  is_ukm_test_ = true;
   CdmConfig cdm_config = GetCdmConfig();
   InitializeWithCdmConfig(cdm_config);
 
-  cdm_host_proxy_->ReportMetrics(cdm::kSdkVersion, 12345);
+  // UKM should be recorded when CdmAdapter destructed, only if supported by the
+  // CDM interface.
+  if (GetCdmInterfaceVersion() > 10) {
+    EXPECT_CALL(*cdm_helper_,
+                RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)));
+  } else {
+    EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+  }
+
+  cdm_host_proxy_->ReportMetrics(cdm::kSdkVersion, kExpectedLicenseSdkVersion);
+}
+
+TEST_P(CdmAdapterTestWithMockCdm, RecordUMA) {
+  CdmConfig cdm_config = GetCdmConfig();
+  InitializeWithCdmConfig(cdm_config);
+
+  if (GetCdmInterfaceVersion() < 11) {
+    GTEST_SKIP() << "ReportMetrics not supported";
+  }
+
+  // bypass_count = 0, should record 0
+  {
+    base::HistogramTester histogram_tester;
+    GetCdmAdapter()->SetFrameCountForTesting(100);
+    cdm_host_proxy_->ReportMetrics(cdm::kDecoderBypassBlockCount, 0);
+    histogram_tester.ExpectUniqueSample("Media.EME.DecoderBypassBlockCount", 0,
+                                        /* expected_bucket_count= */ 1);
+  }
+
+  // bypass_count set but total_frames = 0, should record 0
+  {
+    base::HistogramTester histogram_tester;
+    GetCdmAdapter()->SetFrameCountForTesting(0);
+    cdm_host_proxy_->ReportMetrics(cdm::kDecoderBypassBlockCount, 100);
+    histogram_tester.ExpectUniqueSample("Media.EME.DecoderBypassBlockCount", 0,
+                                        /* expected_bucket_count= */ 1);
+  }
+
+  // bypass_count = 1 in 1000000 frames, should record 1
+  {
+    base::HistogramTester histogram_tester;
+    GetCdmAdapter()->SetFrameCountForTesting(1000000);
+    cdm_host_proxy_->ReportMetrics(cdm::kDecoderBypassBlockCount, 1);
+    histogram_tester.ExpectUniqueSample("Media.EME.DecoderBypassBlockCount", 1,
+                                        /* expected_bucket_count= */ 1);
+  }
+
+  // bypass_count = 10 in 20 frames, should record 50
+  {
+    base::HistogramTester histogram_tester;
+    GetCdmAdapter()->SetFrameCountForTesting(20);
+    cdm_host_proxy_->ReportMetrics(cdm::kDecoderBypassBlockCount, 10);
+    histogram_tester.ExpectUniqueSample("Media.EME.DecoderBypassBlockCount", 50,
+                                        /* expected_bucket_count= */ 1);
+  }
+
+  // On destruction UKM should be logged containing the sum of all the reported
+  // kDecoderBypassBlockCount values (and no license SDK version as one is not
+  // set).
+  EXPECT_CALL(*cdm_helper_, RecordUkm(AllOf(HasBypassBlocksTotalCount(111),
+                                            HasNoLicenseSdkVersion())));
 }
 
 }  // namespace media

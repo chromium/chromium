@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -171,6 +172,28 @@ enum OutputProtectionStatus {
 void ReportOutputProtectionUMA(OutputProtectionStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Media.EME.OutputProtection", status,
                             OutputProtectionStatus::kStatusCount);
+}
+
+void ReportDecoderBypassBlockCountUMA(uint64_t bypass_count,
+                                      uint64_t total_frames) {
+  // Keep track of the average number of decoder bypass blocks per frame. As
+  // `bypass_count` is typically expected to be low, multiply by 100. So if
+  // `bypass_count` == `total_frames`, then the reported value would be 100.
+  // Need to round-up so that if `bypass_count` is small then the value reported
+  // is at least 1. UMA has a maximum value of 10000.
+  constexpr std::string_view kDecoderBypassBlockCountUMAName =
+      "Media.EME.DecoderBypassBlockCount";
+  int report_result = 0;
+
+  if (bypass_count > 0u && total_frames > 0u) {
+    double ratio = (bypass_count * 100.0) / total_frames;
+    report_result = base::ClampRound<int>(ratio);
+    if (report_result == 0) {
+      // As at least 1 bypass was recorded, make sure we don't record 0.
+      report_result = 1;
+    }
+  }
+  base::UmaHistogramCounts10000(kDecoderBypassBlockCountUMAName, report_result);
 }
 
 crash_reporter::CrashKeyString<256> g_origin_crash_key("cdm-origin");
@@ -554,6 +577,7 @@ void CdmAdapter::InitializeVideoDecoder(const VideoDecoderConfig& config,
 
   aspect_ratio_ = config.aspect_ratio();
   is_video_encrypted_ = config.is_encrypted();
+  frames_processed_ = 0;
 
   if (status == cdm::kDeferredInitialization) {
     DVLOG(1) << "Deferred initialization in " << __func__;
@@ -640,6 +664,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
   }
 
   decoded_frame->metadata().protected_video = is_video_encrypted_;
+  ++frames_processed_;
 
   std::move(video_decode_cb).Run(Decryptor::kSuccess, decoded_frame);
 }
@@ -1062,6 +1087,7 @@ void CdmAdapter::ReportMetrics(cdm::MetricName metric_name, uint64_t value) {
     case cdm::kDecoderBypassBlockCount:
       cdm_metrics_data_.decoder_bypass_block_count =
           cdm_metrics_data_.decoder_bypass_block_count.value_or(0) + value;
+      ReportDecoderBypassBlockCountUMA(value, frames_processed_);
       return;
   }
 }
