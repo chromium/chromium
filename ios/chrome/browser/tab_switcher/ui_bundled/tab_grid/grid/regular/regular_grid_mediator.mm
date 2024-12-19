@@ -424,8 +424,9 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     return nil;
   }
 
-  const auto group = _tabGroupSyncService->GetGroup(
-      itemID.tabGroupItem.tabGroup->tab_group_id());
+  std::optional<tab_groups::SavedTabGroup> group =
+      _tabGroupSyncService->GetGroup(
+          itemID.tabGroupItem.tabGroup->tab_group_id());
   if (!group.has_value() || !group->collaboration_id().has_value()) {
     return nil;
   }

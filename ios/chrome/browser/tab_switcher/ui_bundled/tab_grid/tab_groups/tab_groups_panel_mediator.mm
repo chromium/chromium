@@ -150,7 +150,8 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)deleteSyncedTabGroup:(const base::Uuid&)syncID {
-  const auto group = _tabGroupSyncService->GetGroup(syncID);
+  std::optional<tab_groups::SavedTabGroup> group =
+      _tabGroupSyncService->GetGroup(syncID);
   if (!group) {
     return;
   }
@@ -238,7 +239,8 @@ NSString* CreationText(base::Time creation_date) {
 #pragma mark TabGroupsPanelItemDataSource
 
 - (TabGroupsPanelItemData*)dataForItem:(TabGroupsPanelItem*)item {
-  const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
+  std::optional<tab_groups::SavedTabGroup> group =
+  _tabGroupSyncService->GetGroup(item.savedTabGroupID);
   if (!group) {
     return nil;
   }
@@ -272,7 +274,8 @@ NSString* CreationText(base::Time creation_date) {
     return nil;
   }
 
-  const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
+  std::optional<tab_groups::SavedTabGroup> group =
+_tabGroupSyncService->GetGroup(item.savedTabGroupID);
   if (!group.has_value() || !group->collaboration_id().has_value()) {
     return nil;
   }
