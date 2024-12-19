@@ -10,6 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
+#import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
@@ -28,6 +29,15 @@
 
 @implementation AIPrototypingMediator {
   raw_ptr<WebStateList> _webStateList;
+
+  // Remote used to make calls to functions related to `AIPrototypingService`.
+  mojo::Remote<ai::mojom::AIPrototypingService> _ai_prototyping_service;
+  // Instantiated to pipe virtual remote calls to overridden functions in the
+  // `AIPrototypingServiceImpl`. Kept alive to have an existing implementation
+  // instance during the lifecycle of the mediator.
+  std::unique_ptr<ai::AIPrototypingServiceImpl> _ai_prototyping_service_impl;
+
+// TODO(crbug.com/379908732): Move to a mojo interface.
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   // Service used to execute LLM queries.
   raw_ptr<OptimizationGuideService> _service;
@@ -45,13 +55,22 @@
   self = [super init];
   if (self) {
     _webStateList = webStateList;
+
+// TODO(crbug.com/379908732): Remove when service is fully ported to a mojo
+// interface.
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
     _service = OptimizationGuideServiceFactory::GetForProfile(
         ProfileIOS::FromBrowserState(
             _webStateList->GetActiveWebState()->GetBrowserState()));
-
-    [self startOnDeviceSession];
 #endif
+
+    mojo::PendingReceiver<ai::mojom::AIPrototypingService> receiver =
+        _ai_prototyping_service.BindNewPipeAndPassReceiver();
+    web::BrowserState* browserState =
+        _webStateList->GetActiveWebState()->GetBrowserState();
+    _ai_prototyping_service_impl =
+        std::make_unique<ai::AIPrototypingServiceImpl>(
+            std::move(receiver), browserState, /*start_on_device=*/false);
   }
   return self;
 }
@@ -61,32 +80,28 @@
 
 - (void)executeServerQuery:
     (optimization_guide::proto::BlingPrototypingRequest)request {
+  ::mojo_base::ProtoWrapper proto_wrapper = mojo_base::ProtoWrapper(request);
   __weak __typeof(self) weakSelf = self;
-  _service->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kBlingPrototyping, request,
-      /*execution_timeout*/ std::nullopt,
-      base::BindOnce(
-          ^(optimization_guide::OptimizationGuideModelExecutionResult result,
-            std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
-            [weakSelf onServerModelExecuteResponse:std::move(result)];
-          }));
+
+  _ai_prototyping_service->ExecuteServerQuery(
+      std::move(proto_wrapper),
+      base::BindOnce(^void(const std::string& response_string) {
+        [weakSelf.consumer
+            updateQueryResult:base::SysUTF8ToNSString(response_string)
+                   forFeature:AIPrototypingFeature::kFreeform];
+      }));
 }
 
 - (void)executeOnDeviceQuery:(optimization_guide::proto::StringValue)request {
-  if (!_on_device_session) {
-    [self.consumer updateQueryResult:@"Session is not ready for querying yet."
-                          forFeature:AIPrototypingFeature::kFreeform];
-    [self startOnDeviceSession];
-    return;
-  }
+  ::mojo_base::ProtoWrapper proto_wrapper = mojo_base::ProtoWrapper(request);
   __weak __typeof(self) weakSelf = self;
-  _on_device_session->ExecuteModel(
-      request,
-      base::RepeatingCallback(base::BindRepeating(
-          ^(optimization_guide::OptimizationGuideModelStreamingExecutionResult
-                result) {
-            [weakSelf onDeviceModelExecuteResponse:std::move(result)];
-          })));
+  _ai_prototyping_service->ExecuteOnDeviceQuery(
+      std::move(proto_wrapper),
+      base::BindOnce(^void(const std::string& response_string) {
+        [weakSelf.consumer
+            updateQueryResult:base::SysUTF8ToNSString(response_string)
+                   forFeature:AIPrototypingFeature::kFreeform];
+      }));
 }
 
 - (void)executeGroupTabsWithStrategy:
@@ -114,56 +129,6 @@
 }
 
 #pragma mark - Private
-
-// Handles the response from a server-hosted query execution.
-- (void)onServerModelExecuteResponse:
-    (optimization_guide::OptimizationGuideModelExecutionResult)result {
-  std::string response = "";
-
-  if (result.response.has_value()) {
-    auto parsed = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::BlingPrototypingResponse>(
-        result.response.value());
-    if (!parsed->output().empty()) {
-      response = parsed->output();
-    } else {
-      response = "Empty server response.";
-    }
-  } else {
-    response =
-        base::StringPrintf("Server model execution error: %d",
-                           static_cast<int>(result.response.error().error()));
-  }
-
-  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)
-                        forFeature:AIPrototypingFeature::kFreeform];
-}
-
-// Handles the response from an on-device query execution.
-- (void)onDeviceModelExecuteResponse:
-    (optimization_guide::OptimizationGuideModelStreamingExecutionResult)result {
-  std::string response = "";
-
-  if (result.response.has_value()) {
-    auto parsed = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::StringValue>(result.response->response);
-    if (parsed->has_value()) {
-      response = parsed->value();
-    } else {
-      response = "Failed to parse device response as a string";
-    }
-    if (result.response->is_complete) {
-      _on_device_session.reset();
-    }
-  } else {
-    response =
-        base::StringPrintf("On-device model execution error: %d",
-                           static_cast<int>(result.response.error().error()));
-  }
-
-  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)
-                        forFeature:AIPrototypingFeature::kFreeform];
-}
 
 // Handles the populated tab organization request by passing it to the model
 // execution service.
@@ -231,21 +196,6 @@
                         forFeature:AIPrototypingFeature::kTabOrganization];
 }
 
-// Attempts to create an on-device session. If the feature's configuration
-// hasn't been downloaded yet, this will trigger that download and fail to start
-// the session. Once the configuration download is complete, the session will be
-// able to be started successfully.
-- (void)startOnDeviceSession {
-  optimization_guide::SessionConfigParams configParams =
-      optimization_guide::SessionConfigParams{
-          .execution_mode = optimization_guide::SessionConfigParams::
-              ExecutionMode::kOnDeviceOnly,
-          .logging_mode = optimization_guide::SessionConfigParams::LoggingMode::
-              kAlwaysDisable,
-      };
-  _on_device_session = _service->StartSession(
-      optimization_guide::ModelBasedCapabilityKey::kPromptApi, configParams);
-}
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @end
