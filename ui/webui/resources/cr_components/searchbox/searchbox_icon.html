@@ -96,6 +96,14 @@
     width: var(--cr-searchbox-icon-size-in-searchbox);
   }
 
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    :host([in-searchbox][is-lens-searchbox_]) #icon {
+      /* Set the icon color to hcm (high contrast mode) value. */
+      background-color: ButtonText;
+    }
+  }
+
   :host-context(cr-searchbox-match[has-image]) #icon {
     display: none;
   }

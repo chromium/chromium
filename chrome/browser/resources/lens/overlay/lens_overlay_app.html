@@ -20,6 +20,7 @@
   #backgroundScrim {
     background-color: rgba(0, 0 ,0, 0.3);
     cursor: default;
+    forced-color-adjust: none;
     inset: 0;
     position: absolute;
   }
@@ -96,7 +97,14 @@
   }
 
   :host([is-searchbox-focused]) #translateButtonContainer {
-    visibility: hidden; /* Allows for opacity transition. */
+    /*
+      Instead of using visibility: hidden, hide the translate button behind
+      the searchbox. This allows for the corerct tab order, instead of the
+      translate button being skipped over when the searchbox is blurred because
+      it is hidden. Additionally, don't use opacity: 0 because that will cause
+      the button opacity transitions to break.
+    */
+    z-index: -1;
   }
 
   #translateButtonContainer.searchbox-unfocused {
@@ -291,6 +299,14 @@
    */
   :host([show-ghost-loader]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
     display: block;
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    .menu-item-icon {
+      /* Set the icon color to hcm (high contrast mode) value. */
+      background-color: ButtonText;
+    }
   }
 </style>
 <div class="app-container"

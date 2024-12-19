@@ -103,6 +103,18 @@
   mask-size: 20px;
   background-color: var(--color-searchbox-results-icon);
 }
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  .spinner {
+    --cr-spinner-color: ButtonText;
+  }
+
+  #errorIcon {
+    /* Set the icon color to hcm (high contrast mode) value. */
+    background-color: ButtonText;
+  }
+}
 </style>
 <div id="content">
   <template is="dom-if" if="[[showContextualSearchboxLoadingState]]">
