@@ -13,6 +13,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
 
 namespace glic {
@@ -21,7 +22,8 @@ class GlicButton;
 
 class TabGlicContainer : public views::View,
                          public TabDeclutterObserver,
-                         public views::AnimationDelegateViews {
+                         public views::AnimationDelegateViews,
+                         public views::MouseWatcherListener {
   METADATA_HEADER(TabGlicContainer, views::View)
 
  public:
@@ -68,6 +70,7 @@ class TabGlicContainer : public views::View,
   };
   explicit TabGlicContainer(
       TabStripController* tab_strip_controller,
+      View* locked_expansion_view,
       tabs::TabDeclutterController* tab_declutter_controller);
   TabGlicContainer(const TabGlicContainer&) = delete;
   TabGlicContainer& operator=(const TabGlicContainer&) = delete;
@@ -80,6 +83,10 @@ class TabGlicContainer : public views::View,
   }
   // TabDeclutterObserver
   void OnTriggerDeclutterUIVisibility() override;
+
+  // views::MouseWatcherListener:
+  void MouseMovedOutOfHost() override;
+
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicButton* GetGlicButton() { return glic_button_; }
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -94,9 +101,20 @@ class TabGlicContainer : public views::View,
                            LogsWhenDeclutterButtonDismissed);
   FRIEND_TEST_ALL_PREFIXES(TabGlicContainerBrowserTest,
                            LogsWhenDeclutterButtonTimeout);
+  FRIEND_TEST_ALL_PREFIXES(TabGlicContainerBrowserTest, DelaysShow);
+  FRIEND_TEST_ALL_PREFIXES(TabGlicContainerBrowserTest, DelaysHide);
+  FRIEND_TEST_ALL_PREFIXES(TabGlicContainerBrowserTest,
+                           ImmediatelyHidesWhenOrganizeButtonDismissed);
+  FRIEND_TEST_ALL_PREFIXES(TabGlicContainerBrowserTest,
+                           ImmediatelyHidesWhenOrganizeButtonClicked);
 
   void ShowTabStripNudge(TabStripNudgeButton* button);
   void HideTabStripNudge(TabStripNudgeButton* button);
+
+  // Update the expansion mode to be executed once the mouse is no longer over
+  // the nudge.
+  void SetLockedExpansionMode(LockedExpansionMode mode,
+                              TabStripNudgeButton* button);
 
   void OnTabDeclutterButtonClicked();
   void OnTabDeclutterButtonDismissed();
@@ -105,6 +123,15 @@ class TabGlicContainer : public views::View,
 
   DeclutterTriggerCTRBucket GetDeclutterTriggerBucket(bool clicked);
   void LogDeclutterTriggerBucket(bool clicked);
+
+  // View where, if the mouse is currently over its bounds, the expansion state
+  // will not change. Changes will be staged until after the mouse exits the
+  // bounds of this View.
+  raw_ptr<View, DanglingUntriaged> locked_expansion_view_ = nullptr;
+
+  // MouseWatcher is used to lock and unlock the expansion state of this
+  // container.
+  std::unique_ptr<views::MouseWatcher> mouse_watcher_;
 
   // views::AnimationDelegateViews
   void AnimationCanceled(const gfx::Animation* animation) override;
@@ -120,6 +147,8 @@ class TabGlicContainer : public views::View,
       TabStripController* tab_strip_controller);
   void SetupButtonProperties(TabStripNudgeButton* button);
 
+  // The button currently holding the lock to be shown/hidden.
+  raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
   raw_ptr<TabStripNudgeButton> tab_declutter_button_ = nullptr;
   raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
 #if BUILDFLAG(ENABLE_GLIC)
@@ -130,6 +159,10 @@ class TabGlicContainer : public views::View,
 
   // Timer for hiding tab_strip_nudge_button_ after show.
   base::OneShotTimer hide_tab_strip_nudge_timer_;
+
+  // When locked, the container is unable to change its expanded state. Changes
+  // will be staged until after this is unlocked.
+  LockedExpansionMode locked_expansion_mode_ = LockedExpansionMode::kNone;
 
   base::ScopedObservation<tabs::TabDeclutterController, TabDeclutterObserver>
       tab_declutter_observation_{this};

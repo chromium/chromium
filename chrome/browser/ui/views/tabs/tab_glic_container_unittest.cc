@@ -67,18 +67,23 @@ class TabGlicContainerTest : public ChromeViewsTestBase {
 
     tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
         browser_window_interface_.get());
+
+    locked_expansion_view_ = std::make_unique<views::View>();
+
     tab_glic_container_ = std::make_unique<TabGlicContainer>(
-        tab_strip_->controller(), tab_declutter_controller_.get());
+        tab_strip_->controller(), locked_expansion_view_.get(),
+        tab_declutter_controller_.get());
   }
 
  protected:
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
-  std::unique_ptr<TabGlicContainer> tab_glic_container_ = nullptr;
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<views::View> locked_expansion_view_;
+  std::unique_ptr<TabGlicContainer> tab_glic_container_;
 
  private:
   // Owned by TabStrip.

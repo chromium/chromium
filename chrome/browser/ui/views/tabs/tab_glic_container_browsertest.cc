@@ -139,3 +139,94 @@ IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Tab.Organization.Declutter.Trigger.Outcome", 2, 1);
 }
+
+IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest, DelaysShow) {
+  ASSERT_FALSE(tab_glic_container()->animation_session_for_testing());
+
+  tab_glic_container()->SetLockedExpansionMode(
+      LockedExpansionMode::kWillShow,
+      tab_glic_container()->tab_declutter_button());
+  tab_glic_container()->ShowTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+
+  ASSERT_FALSE(tab_glic_container()->animation_session_for_testing());
+
+  tab_glic_container()->SetLockedExpansionMode(LockedExpansionMode::kNone,
+                                               nullptr);
+
+  ASSERT_TRUE(tab_glic_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest, DelaysHide) {
+  ASSERT_FALSE(tab_glic_container()->animation_session_for_testing());
+
+  tab_glic_container()->ShowTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+  tab_glic_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_glic_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  ASSERT_FALSE(tab_glic_container()->animation_session_for_testing());
+
+  tab_glic_container()->SetLockedExpansionMode(
+      LockedExpansionMode::kWillHide,
+      tab_glic_container()->tab_declutter_button());
+  tab_glic_container()->HideTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+
+  ASSERT_FALSE(tab_glic_container()->animation_session_for_testing());
+
+  tab_glic_container()->SetLockedExpansionMode(LockedExpansionMode::kNone,
+                                               nullptr);
+
+  ASSERT_TRUE(tab_glic_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest,
+                       ImmediatelyHidesWhenOrganizeButtonClicked) {
+  tab_glic_container()->ShowTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+  tab_glic_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_glic_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  tab_glic_container()->SetLockedExpansionMode(
+      LockedExpansionMode::kWillHide,
+      tab_glic_container()->tab_declutter_button());
+
+  tab_glic_container()->OnTabDeclutterButtonClicked();
+
+  EXPECT_TRUE(tab_glic_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGlicContainerBrowserTest,
+                       ImmediatelyHidesWhenOrganizeButtonDismissed) {
+  tab_glic_container()->ShowTabStripNudge(
+      tab_glic_container()->tab_declutter_button());
+  tab_glic_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_glic_container()->GetWidget()->LayoutRootViewIfNecessary();
+
+  tab_glic_container()->SetLockedExpansionMode(
+      LockedExpansionMode::kWillHide,
+      tab_glic_container()->tab_declutter_button());
+
+  tab_glic_container()->OnTabDeclutterButtonDismissed();
+
+  EXPECT_TRUE(tab_glic_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsClosing());
+}

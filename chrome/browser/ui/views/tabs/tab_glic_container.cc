@@ -24,6 +24,8 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/mouse_watcher.h"
+#include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -171,9 +173,15 @@ void TabGlicContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
 
 TabGlicContainer::TabGlicContainer(
     TabStripController* tab_strip_controller,
+    View* locked_expansion_view,
     tabs::TabDeclutterController* tab_declutter_controller)
     : AnimationDelegateViews(this),
+      locked_expansion_view_(locked_expansion_view),
       tab_declutter_controller_(tab_declutter_controller) {
+  mouse_watcher_ = std::make_unique<views::MouseWatcher>(
+      std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
+                                                    gfx::Insets()),
+      this);
   // `tab_declutter_controller_` will be null for some profile types and if
   // feature is not enabled.
   if (tab_declutter_controller_) {
@@ -305,13 +313,21 @@ void TabGlicContainer::LogDeclutterTriggerBucket(bool clicked) {
 }
 
 void TabGlicContainer::ShowTabStripNudge(TabStripNudgeButton* button) {
-  // TODO(crbug.com/384099721) add mouse support
-  ExecuteShowTabStripNudge(button);
+  if (locked_expansion_view_->IsMouseHovered()) {
+    SetLockedExpansionMode(LockedExpansionMode::kWillShow, button);
+  }
+  if (locked_expansion_mode_ == LockedExpansionMode::kNone) {
+    ExecuteShowTabStripNudge(button);
+  }
 }
 
 void TabGlicContainer::HideTabStripNudge(TabStripNudgeButton* button) {
-  // TODO(crbug.com/384099721) add mouse support
-  ExecuteHideTabStripNudge(button);
+  if (locked_expansion_view_->IsMouseHovered()) {
+    SetLockedExpansionMode(LockedExpansionMode::kWillHide, button);
+  }
+  if (locked_expansion_mode_ == LockedExpansionMode::kNone) {
+    ExecuteHideTabStripNudge(button);
+  }
 }
 
 void TabGlicContainer::ExecuteShowTabStripNudge(TabStripNudgeButton* button) {
@@ -358,6 +374,22 @@ void TabGlicContainer::ExecuteHideTabStripNudge(TabStripNudgeButton* button) {
   animation_session_->Start();
 }
 
+void TabGlicContainer::SetLockedExpansionMode(LockedExpansionMode mode,
+                                              TabStripNudgeButton* button) {
+  if (mode == LockedExpansionMode::kNone) {
+    if (locked_expansion_mode_ == LockedExpansionMode::kWillShow) {
+      ExecuteShowTabStripNudge(locked_expansion_button_);
+    } else if (locked_expansion_mode_ == LockedExpansionMode::kWillHide) {
+      ExecuteHideTabStripNudge(locked_expansion_button_);
+    }
+    locked_expansion_button_ = nullptr;
+  } else {
+    locked_expansion_button_ = button;
+    mouse_watcher_->Start(GetWidget()->GetNativeWindow());
+  }
+  locked_expansion_mode_ = mode;
+}
+
 void TabGlicContainer::OnTabStripNudgeButtonTimeout(
     TabStripNudgeButton* button) {
   if (button == tab_declutter_button_) {
@@ -379,6 +411,10 @@ void TabGlicContainer::SetupButtonProperties(TabStripNudgeButton* button) {
 
   // Set opacity for the button
   button->SetOpacity(0);
+}
+
+void TabGlicContainer::MouseMovedOutOfHost() {
+  SetLockedExpansionMode(LockedExpansionMode::kNone, nullptr);
 }
 
 void TabGlicContainer::AnimationCanceled(const gfx::Animation* animation) {
