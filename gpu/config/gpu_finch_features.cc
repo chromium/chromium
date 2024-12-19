@@ -578,6 +578,12 @@ bool IsDrDcEnabled() {
                       kDrDcBlockListByAndroidBuildFP.Get()))
     return false;
 
+  // Chrome on Android desktop aims to be Vulkan-only, which can result
+  // in crashes when enabled together with DrDc. Re-enable DrDc after
+  // crbug.com/380295059 is fixed if it is shown beneficial on desktop.
+  if (build_info->is_desktop())
+    return false;
+
   if (!base::FeatureList::IsEnabled(kEnableDrDc))
     return false;
 
