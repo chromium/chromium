@@ -6823,8 +6823,7 @@ FocusableState Element::SupportsFocus(UpdateBehavior update_behavior) const {
   }
   if (HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
       IsRootEditableElementWithCounting(*this) ||
-      IsScrollMarkerGroupPseudoElement() || IsScrollControlPseudoElement() ||
-      SupportsSpatialNavigationFocus()) {
+      IsScrollControlPseudoElement() || SupportsSpatialNavigationFocus()) {
     return FocusableState::kFocusable;
   }
   if (CanBeKeyboardFocusableScroller(update_behavior)) {

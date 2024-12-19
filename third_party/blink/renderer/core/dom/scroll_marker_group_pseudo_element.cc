@@ -75,9 +75,6 @@ ScrollMarkerGroupPseudoElement::ScrollMarkerGroupPseudoElement(
     PseudoId pseudo_id)
     : PseudoElement(originating_element, pseudo_id),
       ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
-  // Setting tab index explicitly here, as this pseudo element should be
-  // focusable.
-  SetTabIndexExplicitly();
 }
 
 void ScrollMarkerGroupPseudoElement::Trace(Visitor* v) const {

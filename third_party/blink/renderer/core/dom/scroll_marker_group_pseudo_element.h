@@ -132,8 +132,6 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
 
   bool IsScrollMarkerGroupPseudoElement() const final { return true; }
 
-  int DefaultTabIndex() const override { return 0; }
-
   void AddToFocusGroup(ScrollMarkerPseudoElement& scroll_marker);
   void RemoveFromFocusGroup(const ScrollMarkerPseudoElement& scroll_marker);
   void ClearFocusGroup();

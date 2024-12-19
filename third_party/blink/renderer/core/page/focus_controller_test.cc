@@ -472,13 +472,10 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
 
-  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
   Element* after_first_scroll_marker =
       after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  std::array<Element*, 20> order = {pre_input,
-                                    before_scroll_marker_group,
+  std::array<Element*, 18> order = {pre_input,
                                     before_first_scroll_marker,
                                     before_block_start_button,
                                     before_inline_start_button,
@@ -494,7 +491,6 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
-                                    after_scroll_marker_group,
                                     after_first_scroll_marker,
                                     post_input};
 
@@ -515,9 +511,6 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   const auto* style = before_second_scroll_marker->GetComputedStyle();
   EXPECT_TRUE(before_second_scroll_marker->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
-  EXPECT_EQ(before_second_scroll_marker,
-            FindFocusableElementAfter(*before_scroll_marker_group,
-                                      mojom::blink::FocusType::kForward));
   EXPECT_EQ(before_block_start_button,
             FindFocusableElementAfter(*before_second_scroll_marker,
                                       mojom::blink::FocusType::kForward));
@@ -654,31 +647,20 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
   Element* before_second_child =
       before_scroller->firstElementChild()->nextElementSibling();
 
-  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
   Element* before_first_scroll_marker =
       before_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
 
-  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
   Element* after_first_scroll_marker =
       after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  std::array<Element*, 12> order = {pre_input,
-                                    before_scroll_marker_group,
-                                    before_first_scroll_marker,
-                                    before_scroller,
-                                    before_first_child,
-                                    before_second_child,
-                                    after_scroller,
-                                    after_first_child,
-                                    after_last_child,
-                                    after_scroll_marker_group,
-                                    after_first_scroll_marker,
-                                    post_input};
+  std::array<Element*, 10> order = {
+      pre_input,          before_first_scroll_marker, before_scroller,
+      before_first_child, before_second_child,        after_scroller,
+      after_first_child,  after_last_child,           after_first_scroll_marker,
+      post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
     EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
@@ -725,20 +707,14 @@ TEST_F(FocusControllerTest,
   Element* before_second_child =
       before_scroller->firstElementChild()->nextElementSibling();
 
-  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
 
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
 
-  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
-
-  std::array<Element*, 10> order = {
-      pre_input,          before_scroll_marker_group, before_scroller,
-      before_first_child, before_second_child,        after_scroller,
-      after_first_child,  after_last_child,           after_scroll_marker_group,
-      post_input};
+  std::array<Element*, 8> order = {pre_input,          before_scroller,
+                                   before_first_child, before_second_child,
+                                   after_scroller,     after_first_child,
+                                   after_last_child,   post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
     EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
@@ -771,15 +747,8 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkerGroupFocusOrder) {
   Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
 
-  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
-
-  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
-
-  std::array<Element*, 6> order = {
-      pre_input,      before_scroll_marker_group, before_scroller,
-      after_scroller, after_scroll_marker_group,  post_input};
+  std::array<Element*, 4> order = {pre_input, before_scroller, after_scroller,
+                                   post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
     EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
@@ -847,8 +816,6 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
   Element* before_second_child =
       before_scroller->firstElementChild()->nextElementSibling();
 
-  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
   Element* before_first_scroll_marker =
       before_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
@@ -864,13 +831,10 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
 
-  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
   Element* after_first_scroll_marker =
       after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  std::array<Element*, 20> order = {pre_input,
-                                    before_scroll_marker_group,
+  std::array<Element*, 18> order = {pre_input,
                                     before_first_scroll_marker,
                                     before_block_start_button,
                                     before_inline_start_button,
@@ -886,7 +850,6 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
-                                    after_scroll_marker_group,
                                     after_first_scroll_marker,
                                     post_input};
 
