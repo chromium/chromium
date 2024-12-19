@@ -30,6 +30,10 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
 
 GlicKeyedService::~GlicKeyedService() = default;
 
+void GlicKeyedService::Shutdown() {
+  window_controller_.Shutdown();
+}
+
 void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
   profile_manager_->OnUILaunching(this);
   window_controller_.Show(glic_button_view);

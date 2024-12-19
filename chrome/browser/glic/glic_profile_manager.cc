@@ -13,20 +13,6 @@
 
 namespace glic {
 
-namespace {
-
-// Ensures that the window is closed early enough (if we don't do this, we
-// won't have cleaned up by the time that keyed services are destroyed).
-void OnAppTerminating() {
-  GlicProfileManager* mgr = GlicProfileManager::GetInstance();
-  if (!mgr) {
-    return;
-  }
-  mgr->CloseGlicWindow();
-}
-
-}  // namespace
-
 GlicProfileManager* GlicProfileManager::GetInstance() {
   return g_browser_process->GetFeatures()->glic_profile_manager();
 }
@@ -50,9 +36,7 @@ void GlicProfileManager::OnUILaunching(GlicKeyedService* glic) {
   active_glic_ = glic->GetWeakPtr();
 }
 
-GlicProfileManager::GlicProfileManager()
-    : termination_subscription_(browser_shutdown::AddAppTerminatingCallback(
-          base::BindOnce(&OnAppTerminating))) {}
+GlicProfileManager::GlicProfileManager() {}
 
 GlicProfileManager::~GlicProfileManager() = default;
 

@@ -32,6 +32,9 @@ class GlicKeyedService : public KeyedService {
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
 
+  // KeyedService
+  void Shutdown() override;
+
   // Launches the Glic UI anchored at the given View object. When started from
   // the launcher, no anchor view is provided.
   void LaunchUI(views::View* glic_button_view);

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/glic/glic_view.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -23,13 +22,9 @@
 namespace glic {
 
 GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile, ProfileKeepAliveOrigin::kGlicView);
   auto web_view = std::make_unique<GlicWebView>(profile);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
-  web_view->LoadInitialURL(GURL("chrome://glic"));
-  web_view->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   AddChildView(std::move(web_view));
 }
 

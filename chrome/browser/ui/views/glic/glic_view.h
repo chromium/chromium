@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
 
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/views/glic/glic_web_view.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -49,10 +48,6 @@ class GlicView : public views::View {
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
   std::vector<gfx::Rect> draggable_areas_;
-
-  // Ensures that the profile associated with this view isn't destroyed while
-  // it is visible.
-  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
 }  // namespace glic

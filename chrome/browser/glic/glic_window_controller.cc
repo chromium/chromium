@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/glic_window_controller.h"
 
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/views/glic/glic_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
@@ -26,6 +29,32 @@ constexpr static int kSnapDistanceThreshold = 50;
 constexpr static int kWidgetWidth = 400;
 constexpr static int kWidgetHeight = 800;
 constexpr static int kWidgetTopBarHeight = 80;
+
+class ContentsAndProfileKeepAlive {
+ public:
+  explicit ContentsAndProfileKeepAlive(Profile* profile)
+      : profile_keep_alive_(profile, ProfileKeepAliveOrigin::kGlicView),
+        web_contents_(content::WebContents::Create(
+            content::WebContents::CreateParams(profile))) {
+    DCHECK(web_contents_);
+    web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+    web_contents_->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(
+            GURL{chrome::kChromeUIGlicURL}));
+  }
+
+  ~ContentsAndProfileKeepAlive() { web_contents_->ClosePage(); }
+
+  ContentsAndProfileKeepAlive(const ContentsAndProfileKeepAlive&) = delete;
+  ContentsAndProfileKeepAlive& operator=(const ContentsAndProfileKeepAlive&) =
+      delete;
+
+  content::WebContents* web_contents() { return web_contents_.get(); }
+
+ private:
+  ScopedProfileKeepAlive profile_keep_alive_;
+  std::unique_ptr<content::WebContents> web_contents_;
+};
 
 // Helper class for observing mouse and key events from native window.
 class WindowEventObserver : public ui::EventObserver {
@@ -114,9 +143,15 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     should_attach_to_browser = true;
   }
 
-  widget_ = glic::GlicView::CreateWidget(
+  if (!contents_) {
+    contents_ = std::make_unique<ContentsAndProfileKeepAlive>(profile_);
+  }
+
+  widget_ = GlicView::CreateWidget(
       profile_, {top_right_point.x() - kWidgetWidth - padding,
                  top_right_point.y() + padding, kWidgetWidth, kWidgetHeight});
+  GlicView::FromWidget(*widget_)->web_view()->SetWebContents(
+      contents_->web_contents());
   widget_->AddObserver(this);
   glic_widget_observer_ =
       std::make_unique<GlicWidgetObserver>(this, widget_.get());
@@ -427,6 +462,12 @@ GlicWindowController::GlicWidgetObserver::GlicWidgetObserver(
   if (widget) {
     widget->AddObserver(this);
   }
+}
+
+void GlicWindowController::Shutdown() {
+  // Hide first, then clean up.
+  Close();
+  contents_.reset();
 }
 
 GlicWindowController::GlicWidgetObserver::~GlicWidgetObserver() {
