@@ -58,6 +58,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_group_sync.TriggerSource;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogUtils;
@@ -795,11 +796,10 @@ public class DataSharingTabManager {
                                 context, url);
                     }
                 };
-        // TODO (b/384978418) : Fix it appropriately for tablet.
         DataSharingUiConfig.Builder commonConfig =
                 new DataSharingUiConfig.Builder()
                         .setActivity(activity)
-                        .setIsTablet(false)
+                        .setIsTablet(DeviceFormFactor.isWindowOnTablet(mWindowAndroid))
                         .setLearnMoreHyperLink(getTabGroupHelpUrl())
                         .setDataSharingStringConfig(stringConfig)
                         .setDataSharingCallback(dataSharingCallback);
