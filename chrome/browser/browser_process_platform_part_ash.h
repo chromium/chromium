@@ -164,7 +164,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   // Overridden from BrowserProcessPlatformPartBase:
   void StartTearDown() override;
-  void AttemptExit(bool try_to_quit_application) override;
 
   ash::system::SystemClock* GetSystemClock();
   void DestroySystemClock();

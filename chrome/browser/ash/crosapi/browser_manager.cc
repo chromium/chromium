@@ -54,7 +54,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -120,15 +119,7 @@ BrowserManager* BrowserManager::Get() {
   return g_instance;
 }
 
-BrowserManager::BrowserManager(
-    scoped_refptr<component_updater::ComponentManagerAsh> manager)
-    : BrowserManager(std::make_unique<BrowserLoader>(manager),
-                     g_browser_process->component_updater()) {}
-
-BrowserManager::BrowserManager(
-    std::unique_ptr<BrowserLoader> browser_loader,
-    component_updater::ComponentUpdateService* update_service)
-    : browser_loader_(std::move(browser_loader)) {
+BrowserManager::BrowserManager() {
   DCHECK(!g_instance);
   g_instance = this;
 
@@ -163,12 +154,7 @@ void BrowserManager::InitializeAndStartIfNeeded() {
 
   crosapi::lacros_startup_state::SetLacrosStartupState(false);
   SetState(State::UNAVAILABLE);
-  browser_loader_->Unload();
   ClearLacrosData();
-}
-
-void BrowserManager::Shutdown() {
-  shutdown_requested_ = true;
 }
 
 void BrowserManager::SetState(State state) {

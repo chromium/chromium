@@ -1036,8 +1036,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // it can do cleanup work if needed. Initialized in PreProfileInit because the
   // profile-keyed service AppService can call into it.
   crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
-  browser_manager_ = std::make_unique<crosapi::BrowserManager>(
-      g_browser_process->platform_part()->component_manager_ash());
+  browser_manager_ = std::make_unique<crosapi::BrowserManager>();
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 

@@ -60,9 +60,7 @@ class MockComponentManagerAsh : public component_updater::ComponentManagerAsh {
 
 namespace crosapi {
 
-FakeBrowserManager::FakeBrowserManager()
-    : BrowserManager(base::MakeRefCounted<MockComponentManagerAsh>()) {}
-
+FakeBrowserManager::FakeBrowserManager() = default;
 FakeBrowserManager::~FakeBrowserManager() = default;
 
 void FakeBrowserManager::OnSessionStateChanged() {}
