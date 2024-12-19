@@ -21,8 +21,6 @@ constexpr std::string_view kUserNameKey = "user_name";
 constexpr std::string_view kNewProfile = "new_profile";
 constexpr std::string_view kIsFullyInitializedKey = "fully_initialized";
 constexpr std::string_view kDiscardedSessions = "discarded_sessions";
-constexpr std::string_view kNotificationPermissions =
-    "notification_permissions";
 
 // Retrieves a bool value from the dictionary.
 bool GetBool(const Dict& dict, std::string_view key) {
@@ -92,20 +90,6 @@ void SetStringSet(Dict& dict, std::string_view key, const StringSet& set) {
       list.Append(string);
     }
     dict.Set(key, std::move(list));
-  }
-}
-
-// Retrieves a dictionary value from the storage dictionary.
-const Dict* GetDict(const Dict& dict, std::string_view key) {
-  return dict.FindDict(key);
-}
-
-// Sets a dictionary value in the storage dictionary.
-void SetDict(Dict& dict, std::string_view key, Dict value) {
-  if (value.empty()) {
-    dict.Remove(key);
-  } else {
-    dict.Set(key, std::move(value));
   }
 }
 
@@ -179,10 +163,6 @@ ProfileAttributesIOS::SessionIds ProfileAttributesIOS::GetDiscardedSessions()
   return GetStringSet<SessionIds>(storage_, kDiscardedSessions);
 }
 
-const Dict* ProfileAttributesIOS::GetNotificationPermissions() const {
-  return GetDict(storage_, kNotificationPermissions);
-}
-
 void ProfileAttributesIOS::ClearIsNewProfile() {
   SetBool(storage_, kNewProfile, false);
 }
@@ -211,10 +191,6 @@ void ProfileAttributesIOS::SetLastActiveTime(base::Time time) {
 
 void ProfileAttributesIOS::SetDiscardedSessions(const SessionIds& session_ids) {
   SetStringSet(storage_, kDiscardedSessions, session_ids);
-}
-
-void ProfileAttributesIOS::SetNotificationPermissions(Dict permissions) {
-  SetDict(storage_, kNotificationPermissions, std::move(permissions));
 }
 
 base::Value::Dict ProfileAttributesIOS::GetStorage() && {
