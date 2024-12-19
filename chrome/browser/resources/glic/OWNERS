@@ -1,1 +1,3 @@
-file://chrome/browser/ui/webui/glic/OWNERS
+file://chrome/browser/glic/API_OWNERS
+
+dewittj@chromium.org #{LAST_RESORT_SUGGESTION} # Only if others are unavailable
