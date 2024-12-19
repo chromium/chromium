@@ -14,14 +14,6 @@ mojom("mojom") {
     "sandbox.mojom",
   ]
 
-  # WebUI bindings are only needed on ChromeOS Ash, and are used by
-  # ash/webui/help_app_ui which is still using Closure Compiler. Generate the
-  # bindings in JavaScript rather than TypeScript to support this legacy code.
-  if (is_chromeos_ash) {
-    webui_module_path = "/"
-    generate_webui_js_bindings = true
-  }
-
   enabled_features = []
   if (enable_ppapi && !is_win) {
     enabled_features += [ "enable_ppapi_sandbox" ]

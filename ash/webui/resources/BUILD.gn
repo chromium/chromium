@@ -93,7 +93,6 @@ grit("help_app_resources") {
   deps = [
     "//ash/webui/help_app_ui/resources:browser_proxy_rollup",
     "//ash/webui/help_app_ui/resources:receiver_rollup",
-    "//chromeos/ash/components/local_search_service/public/mojom:mojom_js",
   ]
 }
 
