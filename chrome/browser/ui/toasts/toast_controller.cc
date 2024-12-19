@@ -45,6 +45,14 @@
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #endif
 
+namespace {
+bool ShouldAddDismissMenuOptions(const ToastSpecification* spec) {
+  return base::FeatureList::IsEnabled(toast_features::kToastRefinements) &&
+         !spec->has_close_button() && !spec->has_menu();
+}
+
+}  // namespace
+
 ToastParams::ToastParams(ToastId id) : toast_id(id) {}
 ToastParams::ToastParams(ToastParams&& other) noexcept = default;
 ToastParams& ToastParams::operator=(ToastParams&& other) noexcept = default;
@@ -228,10 +236,13 @@ void ToastController::ShowToast(ToastParams params) {
   CHECK_EQ(current_toast_spec->has_menu(), !!params.menu_model);
 
   currently_showing_toast_id_ = params.toast_id;
+  const bool is_actionable =
+      current_toast_spec->action_button_string_id().has_value() ||
+      current_toast_spec->has_menu() ||
+      ShouldAddDismissMenuOptions(current_toast_spec);
   base::TimeDelta timeout =
-      current_toast_spec->action_button_string_id().has_value()
-          ? toast_features::kToastTimeout.Get()
-          : toast_features::kToastWithoutActionTimeout.Get();
+      is_actionable ? toast_features::kToastTimeout.Get()
+                    : toast_features::kToastWithoutActionTimeout.Get();
 
   toast_close_timer_.Start(
       FROM_HERE, timeout,
@@ -284,8 +295,9 @@ void ToastController::CreateToast(ToastParams params,
 
   if (params.menu_model) {
     toast_view->AddMenu(std::move(params.menu_model));
-  } else if (base::FeatureList::IsEnabled(toast_features::kToastRefinements) &&
-             !spec->has_close_button()) {
+  }
+
+  if (ShouldAddDismissMenuOptions(spec)) {
     toast_view->AddMenu(
         std::make_unique<ToastDismissMenuModel>(params.toast_id));
   }
