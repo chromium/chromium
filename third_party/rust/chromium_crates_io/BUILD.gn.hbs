@@ -119,17 +119,12 @@ cargo_crate("{{this.name}}") {
   ]
   {{/with}}
   {{/if}}
-  {{#with extra_kv.allow_unstable_features}}
-  {{#if this}}
-    library_configs -= [ "//build/config/compiler:disallow_unstable_features" ]
-    executable_configs -= [
-      "//build/config/compiler:disallow_unstable_features"
-    ]
-    proc_macro_configs -= [
-      "//build/config/compiler:disallow_unstable_features"
-    ]
-    rustflags = [ "-Zallow-features={{this}}" ]
-  {{/if}}
+  {{#with extra_kv.configs_to_remove}}
+  {{#each this}}
+    library_configs -= [ "{{this}}" ]
+    executable_configs -= [ "{{this}}" ]
+    proc_macro_configs -= [ "{{this}}" ]
+  {{/each}}
   {{/with}}
   {{#if output_dir}}
   output_dir = "{{output_dir}}"

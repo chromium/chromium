@@ -1027,17 +1027,6 @@ config("compiler") {
   # Rust compiler flags setup.
   # ---------------------------
   rustflags += [
-    # Overflow checks are optional in Rust, but even if switched
-    # off they do not cause undefined behavior (the overflowing
-    # behavior is defined). Because containers are bounds-checked
-    # in safe Rust, they also can't provoke buffer overflows.
-    # As such these checks may be less important in Rust than C++.
-    # But in (simplistic) testing they have negligible performance
-    # overhead, and this helps to provide consistent behavior
-    # between different configurations, so we'll keep them on until
-    # we discover a reason to turn them off.
-    "-Coverflow-checks=on",
-
     # By default Rust passes `-nodefaultlibs` to the linker, however this
     # conflicts with our `--unwind=none` flag for Android dylibs, as the latter
     # is then unused and produces a warning/error. So this removes the
@@ -2067,6 +2056,25 @@ config("prevent_unsafe_narrowing") {
       ]
     }
   }
+}
+
+config("rust_integer_overflow_checks") {
+  rustflags = [
+    # Overflow checks are optional in Rust, but even if switched off they do
+    # not cause undefined behavior (the overflowing behavior is defined).
+    # Because containers are bounds-checked in safe Rust, they also can't
+    # provoke buffer overflows.  As such these checks may be less important in
+    # Rust than C++ and by default the Rust compiler checks for unexpected
+    # integer overflows only in debug mode (where such overflows panic) and
+    # skips the checks in release mode (where the overflows wrap around).
+    #
+    # But in (simplistic) testing the checks have negligible performance
+    # overhead, and this helps to provide consistent behavior between different
+    # configurations, so in Chromium we diverge from the default Rust compiler
+    # behavior and keep the integer overflow checks even in release mode.  We
+    # may revisit if we discover a reason to turn them off.
+    "-Coverflow-checks=on",
+  ]
 }
 
 # chromium_code ---------------------------------------------------------------
