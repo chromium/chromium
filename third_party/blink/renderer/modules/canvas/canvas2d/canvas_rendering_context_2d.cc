@@ -322,10 +322,11 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
 bool CanvasRenderingContext2D::Restore() {
   CanvasRenderingContextHost* host = Host();
   CHECK(host);
-  CHECK(host->context_lost());
   if (host->GetRasterMode() == RasterMode::kCPU) {
     return false;
   }
+
+  CHECK(host->context_lost());
   DCHECK(!host->ResourceProvider());
 
   host->ClearLayerTexture();
