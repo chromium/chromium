@@ -15,7 +15,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
-#include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
@@ -607,85 +606,6 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppBadCrx) {
   ASSERT_TRUE(crx_info.has_value());
   auto& [_, cached_version] = crx_info.value();
   EXPECT_EQ("1.0.0", cached_version);
-}
-
-// Tests the primary app install with required platform version. The test
-// has three runs:
-//   1. Install an app.
-//   2. App update is delayed because the required platform version is not
-//      compliant.
-//   3. Platform version changed and the new app is installed because it is
-//      compliant now.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       PRE_PRE_IncompliantPlatformDelayInstall) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_IncompliantPlatformDelayInstall) {
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_RELEASE_VERSION=1233.0.0", base::Time::Now());
-
-  SetTestApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-             std::string(kTestOfflineEnabledKioskAppId) +
-                 "_v2_required_platform_version_added.crx");
-
-  // Fake auto launch.
-  ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-      kTestOfflineEnabledKioskAppId);
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_TRUE(PrimaryAppUpdateIsPending());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformDelayInstall) {
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
-
-  SetTestApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-             std::string(kTestOfflineEnabledKioskAppId) +
-                 "_v2_required_platform_version_added.crx");
-
-  // Fake auto launch.
-  ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-      kTestOfflineEnabledKioskAppId);
-
-  SimulateNetworkOnline();
-
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_FALSE(PrimaryAppUpdateIsPending());
-}
-
-// Tests that app is installed for the first time even on an incompliant
-// platform.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformFirstInstall) {
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
-
-  SetTestApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-             std::string(kTestOfflineEnabledKioskAppId) +
-                 "_v2_required_platform_version_added.crx");
-
-  // Fake auto launch.
-  ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-      kTestOfflineEnabledKioskAppId);
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_FALSE(PrimaryAppUpdateIsPending());
 }
 
 /* ***** Test Kiosk multi-app feature ***** */

@@ -19,6 +19,7 @@ source_set("browser_tests") {
     "kiosk_settings_browsertest.cc",
     "kiosk_web_app_offline_enabled_browsertest.cc",
     "new_windows_in_kiosk_allowed_browsertest.cc",
+    "required_platform_version_browsertest.cc",
     "splash_screen_browsertest.cc",
     "virtual_keyboard_features_browsertest.cc",
   ]

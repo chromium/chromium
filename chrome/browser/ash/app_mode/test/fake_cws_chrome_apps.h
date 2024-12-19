@@ -33,6 +33,14 @@ OfflineEnabledChromeAppV2WithPermissionChange();
 
 // Corresponds to the Chrome app under:
 // //chrome/test/data/chromeos/app_mode/apps_and_extensions/
+//     offline_enabled_kiosk_app/v2_required_platform_version_added
+//
+// This version sets `required_platform_version` to 1234.0.0 in the manifest.
+[[nodiscard]] KioskMixin::CwsChromeAppOption
+OfflineEnabledChromeAppV2RequiresVersion1234();
+
+// Corresponds to the Chrome app under:
+// //chrome/test/data/chromeos/app_mode/apps_and_extensions/
 //     local_fs/v1_write_data
 //
 // Version 1 of this app writes some data to the file system, while version 2

@@ -43,6 +43,14 @@ KioskMixin::CwsChromeAppOption OfflineEnabledChromeAppV2WithPermissionChange() {
   return app_v2;
 }
 
+KioskMixin::CwsChromeAppOption OfflineEnabledChromeAppV2RequiresVersion1234() {
+  auto app_v2 = OfflineEnabledChromeAppV1();
+  app_v2.crx_filename = base::StrCat(
+      {kOfflineEnabledKioskAppId, "_v2_required_platform_version_added.crx"});
+  app_v2.crx_version = "2.0.0";
+  return app_v2;
+}
+
 KioskMixin::CwsChromeAppOption LocalFsChromeAppV1() {
   return KioskMixin::CwsChromeAppOption{
       /*account_id=*/"local-fs-chrome-app@localhost",
