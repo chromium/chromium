@@ -8979,7 +8979,6 @@ grit("resources") {
   }
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom_js__generator",
       "//chrome/browser/resources/chromeos/account_manager:css_wrapper_files",
       "//chrome/browser/resources/chromeos/account_manager:html_wrapper_files",
       "//chrome/browser/resources/chromeos/account_manager/components:html_wrapper_files",
@@ -8989,11 +8988,9 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/emulator:web_components",
       "//chrome/browser/resources/chromeos/password_change:html_wrapper_files",
       "//chrome/browser/resources/chromeos/smb_shares:web_components",
-      "//chrome/browser/resources/chromeos/vm:web_components",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/login/mojom:mojom_ts__generator",
-      "//chrome/browser/ui/webui/ash/vm:mojo_bindings_js__generator",
       "//url/mojom:url_mojom_gurl_js",
     ]
   }

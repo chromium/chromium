@@ -7,7 +7,9 @@ import '/strings.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app.html.js';
 import {DiagnosticEntry_Status as Status} from './guest_os_diagnostics.mojom-webui.js';
+import type {Diagnostics} from './guest_os_diagnostics.mojom-webui.js';
 import {VmDiagnosticsProvider} from './vm.mojom-webui.js';
 
 class VmApp extends PolymerElement {
@@ -22,10 +24,14 @@ class VmApp extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
-  ready() {
+  private title_: string;
+  private showContentsPage_: boolean;
+  private diagnostics_: Diagnostics;
+
+  override ready() {
     super.ready();
 
     this.init();
@@ -49,13 +55,12 @@ class VmApp extends PolymerElement {
     }
   }
 
-  /** @private */
-  setTitle_(title) {
+  private setTitle_(title: string) {
     this.title_ = title;
     document.title = this.title_;
   }
 
-  statusToString(statusValue) {
+  statusToString(statusValue: Status): string {
     let stringId = '';
     switch (statusValue) {
       case Status.kPass:
@@ -71,7 +76,7 @@ class VmApp extends PolymerElement {
     return loadTimeData.getString(stringId);
   }
 
-  statusToClass(statusValue) {
+  statusToClass(statusValue: Status): string {
     switch (statusValue) {
       case Status.kPass:
         return 'pass';
@@ -82,12 +87,12 @@ class VmApp extends PolymerElement {
     }
   }
 
-  getTitle(appNameId) {
+  getTitle(appNameId: string): string {
     return loadTimeData.getStringF(
         'pageTitle', loadTimeData.getString(appNameId));
   }
 
-  formatTopErrorMessage(topErrorMessage) {
+  formatTopErrorMessage(topErrorMessage: string): string {
     return loadTimeData.getStringF('notEnabledMessage', topErrorMessage);
   }
 }

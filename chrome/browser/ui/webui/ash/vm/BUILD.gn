@@ -17,9 +17,9 @@ static_library("vm") {
     ":mojo_bindings",
     "//base",
     "//chrome/app:generated_resources",
-    "//chrome/browser:resources",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/vm:resources",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/strings:components_strings",
@@ -35,7 +35,4 @@ mojom("mojo_bindings") {
 
   public_deps = [ "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom" ]
   webui_module_path = "/"
-
-  # For Closure Compiler targets in chrome/browser/resources/ash/vm
-  generate_webui_js_bindings = true
 }

@@ -322,6 +322,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/skyvault_resources.pak",
         "$root_gen_dir/chrome/supervision_resources.pak",
         "$root_gen_dir/chrome/vc_tray_tester_resources.pak",
+        "$root_gen_dir/chrome/vm_resources.pak",
         "$root_gen_dir/chromeos/ash/ash_resources.pak",
         "$root_gen_dir/chromeos/ash/components/emoji/emoji.pak",
         "$root_gen_dir/chromeos/ash/components/kiosk_vision_internals_resources.pak",

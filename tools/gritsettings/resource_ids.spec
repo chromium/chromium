@@ -340,6 +340,10 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [3680],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/vm/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [3690],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commerce/product_specifications/resources.grd": {
     "META": {"sizes": {"includes": [60]}},
     "includes": [3700],
