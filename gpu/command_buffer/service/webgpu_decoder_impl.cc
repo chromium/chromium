@@ -94,6 +94,7 @@ constexpr wgpu::TextureUsage kAllowedReadableMailboxTextureUsages =
 constexpr wgpu::TextureUsage kAllowedMailboxTextureUsages =
     kAllowedWritableMailboxTextureUsages | kAllowedReadableMailboxTextureUsages;
 
+#ifndef WGPU_BREAKING_CHANGE_FUTURE_CALLBACK_TYPES
 template <typename T1, typename T2>
 struct AssignIfSameElseCrashFnImpl;
 
@@ -120,6 +121,7 @@ template <typename T1, typename T2>
 void AssignIfSameElseCrashFn(T1* out, T2 in) {
   AssignIfSameElseCrashFnImpl<T1, T2>{}(out, in);
 }
+#endif
 
 template <typename T1, typename T2>
 void ChainStruct(T1& head, T2* struct_to_chain) {
@@ -1167,6 +1169,13 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =
       [](const WGPUInstanceDescriptor*) -> WGPUInstance { NOTREACHED(); };
+#ifdef WGPU_BREAKING_CHANGE_FUTURE_CALLBACK_TYPES
+  wire_procs.instanceRequestAdapter = [](auto... args) {
+    DCHECK(parent_decoder);
+    return parent_decoder->RequestAdapterImpl(
+        std::forward<decltype(args)>(args)...);
+  };
+#else
   wire_procs.instanceRequestAdapter2 = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->RequestAdapterImpl(
@@ -1176,6 +1185,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
                           wire_procs.instanceRequestAdapter2);
   AssignIfSameElseCrashFn(&wire_procs.instanceRequestAdapterF,
                           wire_procs.instanceRequestAdapter2);
+#endif
   wire_procs.adapterHasFeature = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->AdapterHasFeatureImpl(
@@ -1192,6 +1202,13 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
     // immediately.
     delete[] supported_features.features;
   };
+#ifdef WGPU_BREAKING_CHANGE_FUTURE_CALLBACK_TYPES
+  wire_procs.adapterRequestDevice = [](auto... args) {
+    DCHECK(parent_decoder);
+    return parent_decoder->RequestDeviceImpl(
+        std::forward<decltype(args)>(args)...);
+  };
+#else
   wire_procs.adapterRequestDevice2 = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->RequestDeviceImpl(
@@ -1201,6 +1218,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
                           wire_procs.adapterRequestDevice2);
   AssignIfSameElseCrashFn(&wire_procs.adapterRequestDeviceF,
                           wire_procs.adapterRequestDevice2);
+#endif
 
   wire_server_ = DawnWireServer::Create(
       this, wire_serializer_.get(), memory_transfer_service_.get(), wire_procs);
