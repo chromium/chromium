@@ -553,6 +553,7 @@ crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSp
 
 # CSS clip-path: shape() not implemented
 crbug.com/40829059 [ Win11 ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
+crbug.com/384990511 [ Win11-arm64 ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
 crbug.com/40829059 [ Win ] external/wpt/css/css-masking/parsing/clip-path-shape-parsing.html [ Failure ]
 crbug.com/40829059 external/wpt/css/css-masking/clip-path/clip-path-shape-001.html [ Failure ]
 crbug.com/40829059 external/wpt/css/css-masking/clip-path/clip-path-shape-002-units.html [ Failure ]
