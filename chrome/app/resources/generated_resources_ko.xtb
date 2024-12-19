@@ -11154,7 +11154,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8897537894864195436"><ph name="APP_NAME" />용 패스키가 있는 기기의 카메라로 이 QR 코드를 스캔하세요</translation>
 <translation id="8898786835233784856">다음 탭 선택</translation>
 <translation id="8898790559170352647">Microsoft 계정 추가</translation>
-<translation id="8898822736010347272">모든 웹 사용자에게 영향을 주는 새로운 위협을 발견하고 사용자를 보호하는 데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
+<translation id="8898822736010347272">새로운 위협을 발견하고 모든 웹 사용자를 보호하는데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
 <translation id="8899851313684471736">새 창에서 링크 열기(&amp;W)</translation>
 <translation id="8900413463156971200">셀룰러 사용</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 데이터를 백업하고 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 데이터를 백업하고 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다.}}</translation>

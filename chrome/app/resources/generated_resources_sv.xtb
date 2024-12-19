@@ -4621,7 +4621,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4206585797409671301">Får visa begäranden</translation>
 <translation id="4207932031282227921">Behörighet har begärts, tryck på F6 för att svara</translation>
-<translation id="4208390505124702064">Sök på <ph name="SITE_NAME" /></translation>
+<translation id="4208390505124702064">Sök i <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4209251085232852247">Inaktiverade</translation>
 <translation id="4210048056321123003">Den virtuella maskinen laddas ned</translation>

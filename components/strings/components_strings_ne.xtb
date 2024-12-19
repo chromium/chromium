@@ -2713,7 +2713,7 @@
 <translation id="5918847752193018339">तपाईंको CVC सेभ भएपछि तपाईं द्रुत रूपमा चेक आउट गर्न सक्नुहुन्छ। <ph name="LINK_BEGIN" />सेभ गरिएका सेक्युरिटी कोडहरू मेटाउनुहोस्<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{१ प्रयोगमा छ}other{# प्रयोगमा छन्}}</translation>
-<translation id="5921185718311485855">सक्रिय छ</translation>
+<translation id="5921185718311485855">अन छ</translation>
 <translation id="5921639886840618607">कार्डलाई Google खातामा सुरक्षित गर्ने हो?</translation>
 <translation id="5921952831792678223">पिकअप ट्रकहरू</translation>
 <translation id="5922853866070715753">लगभग सकियो</translation>

@@ -407,7 +407,7 @@
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2772667768515195373">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="USER_EMAIL" />) मा सेभ गरिन्छ।</translation>
 <translation id="2773344962924806829">इमेल नोटिफिकेसनहरू</translation>
-<translation id="2781331604911854368">सक्रिय छ</translation>
+<translation id="2781331604911854368">अन छ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">डेस्कटप साइट देखाउन अनुरोध गर्नुहोस्</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{यो पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएको छ}other{यी पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएका छन्}}</translation>
