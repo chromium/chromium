@@ -2071,9 +2071,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     hr = PerformD3DScaling(input_texture.Get(), frame->visible_rect());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
-  } else if (frame->HasSharedImage()) {
-    // The texture is already a copied version so we can directly use it.
-    sample_texture = input_texture;
   } else {
     // Even though no scaling is needed we still need to copy the texture to
     // avoid concurrent usage causing glitches (https://crbug.com/1462315). This
