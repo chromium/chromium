@@ -99,9 +99,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // referred to by `prefs` and `identity_manager` should not be destroyed
   // before this class is destroyed.
   FeatureAccessChecker(FeatureAccessConfig config,
-                       const PrefService& prefs,
-                       const signin::IdentityManager& identity_manager,
-                       const variations::VariationsService& variations_service);
+                       PrefService* prefs,
+                       signin::IdentityManager* identity_manager,
+                       variations::VariationsService* variations_service);
 
   FeatureAccessChecker(const FeatureAccessChecker&) = delete;
   FeatureAccessChecker& operator=(const FeatureAccessChecker&) = delete;
@@ -112,9 +112,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
 
  private:
   FeatureAccessConfig config_;
-  raw_ref<const PrefService> prefs_;
-  raw_ref<const signin::IdentityManager> identity_manager_;
-  raw_ref<const variations::VariationsService> variations_service_;
+  // The following raw_ptrs are not owned by this class.
+  raw_ptr<const PrefService> prefs_;
+  raw_ptr<const signin::IdentityManager> identity_manager_;
+  raw_ptr<const variations::VariationsService> variations_service_;
 };
 
 }  // namespace specialized_features

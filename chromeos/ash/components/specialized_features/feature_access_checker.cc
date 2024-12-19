@@ -21,9 +21,9 @@ FeatureAccessConfig::~FeatureAccessConfig() = default;
 
 FeatureAccessChecker::FeatureAccessChecker(
     FeatureAccessConfig config,
-    const PrefService& prefs,
-    const signin::IdentityManager& identity_manager,
-    const variations::VariationsService& variations_service)
+    PrefService* prefs,
+    signin::IdentityManager* identity_manager,
+    variations::VariationsService* variations_service)
     : config_(config),
       prefs_(prefs),
       identity_manager_(identity_manager),
@@ -32,15 +32,23 @@ FeatureAccessChecker::FeatureAccessChecker(
 FeatureAccessFailureSet FeatureAccessChecker::Check() {
   FeatureAccessFailureSet failures;
 
-  if (config_.settings_toggle_pref.has_value() &&
-      !prefs_->GetBoolean(*config_.settings_toggle_pref)) {
-    failures.Put(kDisabledInSettings);
+  if (config_.settings_toggle_pref.has_value()) {
+    // if prefs service is not set, we should assume that the feature is not
+    // enabled to be safe.
+    if (prefs_ == nullptr ||
+        !prefs_->GetBoolean(*config_.settings_toggle_pref)) {
+      failures.Put(kDisabledInSettings);
+    }
   }
 
-  if (config_.consent_accepted_pref.has_value() &&
-      !prefs_->GetBoolean(*config_.consent_accepted_pref)) {
-    failures.Put(kConsentNotAccepted);
-  };
+  if (config_.consent_accepted_pref.has_value()) {
+    if (prefs_ == nullptr ||
+        !prefs_->GetBoolean(*config_.consent_accepted_pref)) {
+      // if prefs service is not set, we should assume that the feature is not
+      // enabled to be safe.
+      failures.Put(kConsentNotAccepted);
+    }
+  }
 
   if (config_.feature_flag != nullptr &&
       !base::FeatureList::IsEnabled(*config_.feature_flag)) {
@@ -57,7 +65,10 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() {
           base::SHA1HashString(
               base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                   config_.secret_key->flag))) {
-    if (!config_.allow_google_accounts_skip_secret_key ||
+    // if identity_manager_ is not set, we should assume that the feature is not
+    // enabled to be safe.
+    if (identity_manager_ == nullptr ||
+        !config_.allow_google_accounts_skip_secret_key ||
         !gaia::IsGoogleInternalAccountEmail(
             identity_manager_
                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -67,16 +78,20 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() {
   }
 
   if (config_.requires_manta_account_capabilities) {
-    const auto account_id =
-        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-    if (identity_manager_->FindExtendedAccountInfoByAccountId(account_id)
-            .capabilities.can_use_manta_service() != signin::Tribool::kTrue) {
+    if (identity_manager_ == nullptr ||
+        identity_manager_
+                ->FindExtendedAccountInfoByAccountId(
+                    identity_manager_->GetPrimaryAccountId(
+                        signin::ConsentLevel::kSignin))
+                .capabilities.can_use_manta_service() !=
+            signin::Tribool::kTrue) {
       failures.Put(kMantaAccountCapabilitiesCheckFailed);
     }
   }
 
   if (!config_.country_codes.empty()) {
-    if (!base::Contains(config_.country_codes,
+    if (variations_service_ == nullptr ||
+        !base::Contains(config_.country_codes,
                         variations_service_->GetLatestCountry())) {
       failures.Put(kCountryCheckFailed);
     }
