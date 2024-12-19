@@ -159,6 +159,16 @@ android_library("feature_list_java") {
   ]
 }
 
+android_library("spc_java") {
+  sources = [ "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java" ]
+  deps = [
+    ":java_resources",
+    "//base:callback_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  resources_package = "org.chromium.components.payments"
+}
+
 android_library("full_java") {
   sources = [
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
@@ -200,16 +210,21 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredController.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java",
   ]
   resources_package = "org.chromium.components.payments"
   deps = [
     ":browser_binding_java",
     ":feature_list_java",
+
+    # TODO(crbug.com/382867337): Non-UI code should not depend on UI code.
     ":java_resources",
     ":minimal_java",
     ":pre_purchase_query_enum_java",
     ":service_java",
+
+    # TODO(crbug.com/383334934): Core PaymentRequest code should not depend on
+    # Secure Payment Confirmation (SPC) code.
+    ":spc_java",
     "//base:base_java",
     "//build/android:build_java",
     "//components/autofill/android:autofill_java",
