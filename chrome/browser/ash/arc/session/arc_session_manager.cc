@@ -1292,48 +1292,46 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
   activation_necessity_checker_.reset();
 
   is_activation_delayed_ = !result;
-  if (result) {
-    bool should_defer =
-        !activation_is_allowed_ && !session_manager::SessionManager::Get()
-                                        ->IsUserSessionStartUpTaskCompleted();
-    if (base::FeatureList::IsEnabled(
-            kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
+  if (!result) {
+    VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
+    observer_list_.Notify(&ArcSessionManagerObserver::OnArcStartDelayed);
+    return;
+  }
+
+  // Check whether ARC is expected to be used soon.
+  if (base::FeatureList::IsEnabled(
+          kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
+    if (activation_is_allowed_ || session_manager::SessionManager::Get()
+                                      ->IsUserSessionStartUpTaskCompleted()) {
+      // If the activation is already allowed, it is out of the targets to
+      // defer. Or, if session start up task is already completed, it does not
+      // need to wait activating ARC.
+      base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
+                                    DeferArcActivationCategory::kNotTarget);
+    } else {
+      const bool should_defer =
+          ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+              profile_->GetPrefs());
+      user_session_start_up_task_timer_.emplace(
+          UserSessionStartUpTaskTimer{base::ElapsedTimer(), should_defer});
+      base::UmaHistogramEnumeration(
+          "Arc.DeferActivation.Category",
+          should_defer ? DeferArcActivationCategory::kDeferred
+                       : DeferArcActivationCategory::kNotDeferred);
       if (should_defer) {
-        should_defer =
-            ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
-                profile_->GetPrefs());
-        if (should_defer) {
-          base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
-                                        DeferArcActivationCategory::kDeferred);
-        } else {
-          base::UmaHistogramEnumeration(
-              "Arc.DeferActivation.Category",
-              DeferArcActivationCategory::kNotDeferred);
-        }
-        user_session_start_up_task_timer_.emplace(
-            UserSessionStartUpTaskTimer{base::ElapsedTimer(), should_defer});
-      } else {
-        base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
-                                      DeferArcActivationCategory::kNotTarget);
+        // Wait for the user session start up task completion to prioritize
+        // resources for them.
+        VLOG(1) << "ARC activation is deferred until user sesssion start up "
+                << "tasks are completed";
+        return;
       }
     }
-    if (should_defer) {
-      // Wait for the user session start up task completion to prioritize
-      // resources for them.
-      VLOG(1) << "ARC activation is deferred until user sesssion start up "
-              << "tasks are completed";
-    } else {
-      // In AllowActivation, actual ARC instance is going to be launched,
-      // so call it here even if `activation_is_allowed_` checked above is
-      // true, intentionally.
-      AllowActivation(AllowActivationReason::kImmediateActivation);
-    }
-  } else {
-    VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
-    for (auto& observer : observer_list_) {
-      observer.OnArcStartDelayed();
-    }
   }
+
+  // In AllowActivation, actual ARC instance is going to be launched,
+  // so call it here even if `activation_is_allowed_` checked above is
+  // true, intentionally.
+  AllowActivation(AllowActivationReason::kImmediateActivation);
 }
 
 void ArcSessionManager::RequestDisable(bool remove_arc_data) {
