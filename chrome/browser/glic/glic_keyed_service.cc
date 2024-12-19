@@ -28,15 +28,13 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
                            window_controller_),
       profile_manager_(profile_manager) {}
 
-// TODO(wry): Setup focused tab changed forwarding to external subscribers.
-
 GlicKeyedService::~GlicKeyedService() = default;
 
 void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
   profile_manager_->OnUILaunching(this);
   window_controller_.Show(glic_button_view);
 
-  auto* web_contents = focused_tab_manager_.GetWebContentsForFocusedTab();
+  auto* web_contents = GetFocusedTab();
   if (web_contents) {
     if (BorderView* border =
             BorderView::FindBorderForWebContents(web_contents)) {
@@ -46,6 +44,11 @@ void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
     // TODO(crbug.com/384740189): Find out if/how to start the border animation
     // when web_contents is not available yet.
   }
+}
+
+base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
+    FocusedTabChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabChangedCallback(callback);
 }
 
 void GlicKeyedService::CreateTab(

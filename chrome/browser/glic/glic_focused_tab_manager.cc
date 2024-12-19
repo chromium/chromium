@@ -29,6 +29,12 @@ GlicFocusedTabManager::~GlicFocusedTabManager() {
   BrowserList::GetInstance()->RemoveObserver(this);
 }
 
+base::CallbackListSubscription
+GlicFocusedTabManager::AddFocusedTabChangedCallback(
+    FocusedTabChangedCallback callback) {
+  return focused_callback_list_.Add(std::move(callback));
+}
+
 void GlicFocusedTabManager::OnBrowserSetLastActive(Browser* browser) {
   // Clear any existing browser callback subscription.
   browser_subscription_ = {};
