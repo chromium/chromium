@@ -64,12 +64,12 @@ void ExecuteUIDebugCommand(int id, const Browser* browser) {
       break;
     }
     case IDC_DEBUG_PRINT_VIEW_TREE:
-      if (views::View* view = GetActiveWindowRootView(browser))
-        PrintViewHierarchy(view);
-      break;
     case IDC_DEBUG_PRINT_VIEW_TREE_DETAILS:
-      if (views::View* view = GetActiveWindowRootView(browser))
-        PrintViewHierarchy(view, /* verbose= */ true);
+      if (views::View* view = GetActiveWindowRootView(browser)) {
+        LOG(ERROR) << '\n'
+                   << PrintViewHierarchy(
+                          view, id == IDC_DEBUG_PRINT_VIEW_TREE_DETAILS);
+      }
       break;
     default:
       NOTREACHED() << "Unimplemented UI Debug command: " << id;

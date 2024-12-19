@@ -20,24 +20,6 @@
 
 namespace views {
 namespace {
-void PrintViewHierarchyImp(const View* view,
-                           size_t indent,
-                           std::ostringstream* out) {
-  *out << std::string(indent, ' ');
-  *out << view->GetClassName();
-  *out << ' ';
-  *out << view->GetID();
-  *out << ' ';
-  *out << view->x() << "," << view->y() << ",";
-  *out << view->bounds().right() << "," << view->bounds().bottom();
-  *out << ' ';
-  *out << view;
-  *out << '\n';
-
-  for (const View* child : view->children())
-    PrintViewHierarchyImp(child, indent + 2, out);
-}
-
 void PrintFocusHierarchyImp(const View* view,
                             size_t indent,
                             std::ostringstream* out) {
@@ -151,18 +133,6 @@ void PrintWidgetInformation(const Widget& widget,
     *out << " " << widget.GetWindowBoundsInScreen().ToString();
 
   *out << '\n';
-}
-
-void PrintViewHierarchy(const View* view) {
-  std::ostringstream out;
-  PrintViewHierarchy(view, &out);
-  // Error so users in the field can generate and upload logs.
-  LOG(ERROR) << out.str();
-}
-
-void PrintViewHierarchy(const View* view, std::ostringstream* out) {
-  *out << "View hierarchy:\n";
-  PrintViewHierarchyImp(view, 0, out);
 }
 
 void PrintFocusHierarchy(const View* view) {

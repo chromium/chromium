@@ -81,11 +81,9 @@ void ViewDebugWrapperImpl::ForAllProperties(PropCallback callback) {
   }
 }
 
-void PrintViewHierarchy(View* view, bool verbose, int depth) {
+std::string PrintViewHierarchy(View* view, bool verbose) {
   ViewDebugWrapperImpl debug_view(view);
-  std::ostringstream out;
-  debug::PrintViewHierarchy(&out, &debug_view, verbose, depth);
-  LOG(ERROR) << '\n' << out.str();
+  return debug::PrintViewHierarchy(&debug_view, verbose);
 }
 
 std::string GetViewDebugInfo(View* view) {

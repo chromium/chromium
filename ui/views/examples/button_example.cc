@@ -289,7 +289,7 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
     label_button->SetIsDefault(!label_button->GetIsDefault());
   }
   example_view()->GetLayoutManager()->Layout(example_view());
-  PrintViewHierarchy(example_view());
+  LOG(ERROR) << '\n' << PrintViewHierarchy(example_view());
 }
 
 void ButtonExample::ImageButtonPressed() {

@@ -61,9 +61,7 @@ const V* AsViewClass(const View* view) {
   return IsViewClass<V>(view) ? static_cast<const V*>(view) : nullptr;
 }
 
-VIEWS_EXPORT void PrintViewHierarchy(View* view,
-                                     bool verbose = false,
-                                     int depth = -1);
+VIEWS_EXPORT std::string PrintViewHierarchy(View* view, bool verbose = false);
 
 VIEWS_EXPORT std::string GetViewDebugInfo(View* view);
 
