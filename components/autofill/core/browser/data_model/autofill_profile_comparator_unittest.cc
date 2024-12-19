@@ -8,8 +8,8 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/task_environment.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -1020,6 +1020,53 @@ TEST_F(AutofillProfileComparatorTest, MergeCJKNames) {
                                      u"はるか", u"すずき", u"すずき　はるか"));
 }
 
+TEST_F(AutofillProfileComparatorTest,
+       MergeCJKNamesWhereAlternativeNameNormalizationIsNeeded) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+
+  // Phonetic name using Hiragana.
+  AutofillProfile p1 = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと", u""));
+  // The same phonetic name, but saved as alternative_full_name with separator.
+  AutofillProfile p2 = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"やまもと・あおい"));
+  // The same phonetic name, but saved as alternative_full_name with white space
+  // separator.
+  AutofillProfile p3 = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"やまもと あおい"));
+
+  // Semantically the same profiles as `p2`, `p3`, `p4`, but using Katakana for
+  // alternative name.
+  AutofillProfile p1_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"アオイ", u"ヤマモト", u""));
+  AutofillProfile p2_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト・アオイ"));
+  AutofillProfile p3_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト アオイ"));
+
+  MergeNamesAndExpect(
+      p1, p1_katakana,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと あおい"));
+  MergeNamesAndExpect(
+      p2, p2_katakana,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと・あおい"));
+  MergeNamesAndExpect(
+      p3, p3_katakana,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと あおい"));
+
+  // This scenario is not possible in real life(since everything is converted to
+  // Hiragana for storage), but it's worth testing to ensure that the merge
+  // result is correct.
+  MergeNamesAndExpect(
+      p1_katakana, p3_katakana,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"アオイ", u"ヤマモト",
+                     u"ヤマモト アオイ"));
+}
+
 TEST_F(AutofillProfileComparatorTest, MergeEmailAddresses) {
   static const char kEmailA[] = "testaccount@domain.net";
   static const char16_t kEmailA16[] = u"testaccount@domain.net";
@@ -1466,47 +1513,6 @@ TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
             expected_difference);
 }
 
-TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
-  AutofillProfile existing_profile(AddressCountryCode("US"));
-  test::SetProfileInfo(&existing_profile, "firstName", "middleName", "lastName",
-                       "mail@mail.com", "company", "line1", "line2", "the city",
-                       "state", "zip", "US", "phone");
-
-  AutofillProfileComparator comparator("en_US");
-
-  // A profile is not a merge candidate to itself.
-  EXPECT_FALSE(
-      comparator.IsMergeCandidate(existing_profile, existing_profile, "en_US"));
-
-  // A profile that is mergeable but only by changing a value is a merge
-  // candidate.
-  AutofillProfile mergeable_profile = existing_profile;
-  // This is a superset of the existing city name and should result in a merge
-  // and change of the stored value.
-  mergeable_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"the real City", VerificationStatus::kObserved);
-  EXPECT_TRUE(comparator.IsMergeCandidate(existing_profile, mergeable_profile,
-                                          "en_US"));
-
-  // A profile that is mergeable but without changing a value is not a merge
-  // candidate.
-  AutofillProfile updatable_profile = existing_profile;
-  // This is a subset of the existing city name and should result in a merge but
-  // without changing the stored value.
-  mergeable_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"City", VerificationStatus::kObserved);
-  EXPECT_FALSE(comparator.IsMergeCandidate(existing_profile, updatable_profile,
-                                           "en_US"));
-
-  // A profile that is not mergeable is not a merge candidate.
-  AutofillProfile unmergeable_profile = existing_profile;
-  // This is a different city name and therefore should not result in a merge.
-  mergeable_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"Village", VerificationStatus::kObserved);
-  EXPECT_FALSE(comparator.IsMergeCandidate(existing_profile,
-                                           unmergeable_profile, "en_US"));
-}
-
 // Tests that the profiles are merged when they have common states.
 TEST_F(AutofillProfileComparatorTest, MergeProfilesBasedOnState) {
   test::ClearAlternativeStateNameMapForTesting();
@@ -1566,7 +1572,8 @@ TEST_P(NonMergeableSettingVisibleTypesTest, DifferingTypesLegacy) {
   // `differing_types`, the test is not applicable. This can happen for types
   // that are not setting-visible in a certain country.
   if (std::ranges::any_of(type_differences.differing_types, [&](FieldType t) {
-        return !a.GetUserVisibleTypes().contains(t); })) {
+        return !a.GetUserVisibleTypes().contains(t);
+      })) {
     return;
   }
   for (FieldType t : type_differences.differing_types) {

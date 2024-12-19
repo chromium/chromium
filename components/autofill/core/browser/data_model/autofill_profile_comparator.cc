@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/i18n/char_iterator.h"
-#include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
@@ -29,8 +28,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
-#include "third_party/icu/source/common/unicode/ustring.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
 using i18n::phonenumbers::PhoneNumberUtil;
@@ -191,38 +188,6 @@ int32_t NormalizingIterator::GetNextChar() {
   return iter_.get();
 }
 
-// This function transliterates the `alternative_full_name` using the ICU
-// library. It is currently used with Katakana->Hiragana transliteration.
-// Characters other than Katakana will remain unchanged.
-std::u16string TransliterateAlternativeName(
-    const std::u16string& alternative_full_name) {
-  if (alternative_full_name.empty()) {
-    return alternative_full_name;
-  }
-
-  UErrorCode err = U_ZERO_ERROR;
-  std::unique_ptr<icu::Transliterator> transliterator(
-      icu::Transliterator::createInstance("Katakana-Hiragana", UTRANS_FORWARD,
-                                          err));
-  if (U_FAILURE(err)) {
-    // TODO(crbug.com/359768803): Remove the metric recording once we confirm
-    // that transliteration initialization never fails.
-    // This metric records the status of the transliterator initialization. It
-    // is set to false if the initialization fails.
-    base::UmaHistogramBoolean(
-      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", false);
-    return alternative_full_name;
-  }
-  icu::UnicodeString normalized_alternative_full_name(
-      alternative_full_name.c_str());
-  transliterator->transliterate(normalized_alternative_full_name);
-  // The metric is set to true if the transliterator initialization was
-  // successful.
-    base::UmaHistogramBoolean(
-      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", true);
-  return base::i18n::UnicodeStringToString16(normalized_alternative_full_name);
-}
-
 }  // namespace
 
 AutofillProfileComparator::AutofillProfileComparator(
@@ -259,8 +224,7 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
     const std::string& app_locale) {
   FieldTypeSet types = first_profile.GetUserVisibleTypes();
   types.insert_all(second_profile.GetUserVisibleTypes());
-  return GetProfileDifference(first_profile, second_profile,
-                              types, app_locale);
+  return GetProfileDifference(first_profile, second_profile, types, app_locale);
 }
 
 bool AutofillProfileComparator::Compare(std::u16string_view text1,
@@ -668,7 +632,7 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   // types ever become non-settings visible, the check in `maybe_add_type` will
   // fail in the unittest.
   maybe_add_type(NAME_FULL, HaveMergeableNames(a, b));
-  if(setting_visible_types.contains(ALTERNATIVE_FULL_NAME)){
+  if (setting_visible_types.contains(ALTERNATIVE_FULL_NAME)) {
     maybe_add_type(ALTERNATIVE_FULL_NAME, HaveMergeableAlternativeNames(a, b));
   }
   maybe_add_type(COMPANY_NAME, HaveMergeableCompanyNames(a, b));
@@ -704,29 +668,6 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
   return std::ranges::any_of(p1.GetUserVisibleTypes(), [&](FieldType type) {
     return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
   });
-}
-
-bool AutofillProfileComparator::IsMergeCandidate(
-    const AutofillProfile& existing_profile,
-    const AutofillProfile& new_profile,
-    const std::string& app_locale) {
-  // If the existing profile is not mergeable with the new profile, it is
-  // certainly not a merge candidate.
-  if (!AreMergeable(existing_profile, new_profile)) {
-    return false;
-  }
-
-  // Merge the two profiles. The return value from |MergeDataFrom()| indicates
-  // if the existing profile was modified during the merge.
-  AutofillProfile merged_profile = existing_profile;
-  if (!merged_profile.MergeDataFrom(new_profile, app_locale)) {
-    return false;
-  }
-
-  // If the two profiles have at least one settings-visible value that is
-  // different, |existing_profile| is a merge candidate.
-  return ProfilesHaveDifferentSettingsVisibleValues(
-      merged_profile, existing_profile, app_locale);
 }
 
 // static
@@ -823,6 +764,8 @@ std::set<std::u16string> AutofillProfileComparator::GetNamePartVariants(
 bool AutofillProfileComparator::HaveMergeableNames(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
+  // TODO(crbug.com/328968064): Use GetValueForComparison() instead of
+  // GetInfo().
   return AreNamesMergeable(p1.GetInfo(NAME_FULL, app_locale_),
                            p2.GetInfo(NAME_FULL, app_locale_));
 }
@@ -835,10 +778,17 @@ bool AutofillProfileComparator::HaveMergeableAlternativeNames(
     return true;
   }
 
-  return AreNamesMergeable(TransliterateAlternativeName(
-                               p1.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_)),
-                           TransliterateAlternativeName(
-                               p2.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_)));
+  return AreNamesMergeable(
+      p1.GetNameInfo()
+          .GetStructuredAlternativeName()
+          .GetValueForComparisonForType(
+              ALTERNATIVE_FULL_NAME,
+              p2.GetNameInfo().GetStructuredAlternativeName()),
+      p2.GetNameInfo()
+          .GetStructuredAlternativeName()
+          .GetValueForComparisonForType(
+              ALTERNATIVE_FULL_NAME,
+              p1.GetNameInfo().GetStructuredAlternativeName()));
 }
 
 bool AutofillProfileComparator::HaveMergeableEmailAddresses(
@@ -928,15 +878,29 @@ bool AutofillProfileComparator::AreNamesMergeable(
   return result;
 }
 
-bool AutofillProfileComparator::MergeNamesImpl(
+void AutofillProfileComparator::MergeNamesImpl(
     const AutofillProfile& p1,
     const AutofillProfile& p2,
     FieldType name_type,
     AddressComponent& name_component) const {
   DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
 
-  const std::u16string full_name_1 = p1.GetInfo(name_type, app_locale_);
-  const std::u16string full_name_2 = p2.GetInfo(name_type, app_locale_);
+  // TODO(crbug.com/328968064): Use GetValueForComparisonForType() instead of
+  // GetInfo() for NAME_FULL too.
+  const std::u16string full_name_1 =
+      name_type == ALTERNATIVE_FULL_NAME
+          ? p1.GetNameInfo()
+                .GetStructuredAlternativeName()
+                .GetValueForComparisonForType(
+                    name_type, p2.GetNameInfo().GetStructuredAlternativeName())
+          : p1.GetInfo(name_type, app_locale_);
+  const std::u16string full_name_2 =
+      name_type == ALTERNATIVE_FULL_NAME
+          ? p2.GetNameInfo()
+                .GetStructuredAlternativeName()
+                .GetValueForComparisonForType(
+                    name_type, p1.GetNameInfo().GetStructuredAlternativeName())
+          : p2.GetInfo(name_type, app_locale_);
 
   // At this state it is already determined that the two names are mergeable.
   // This can mean of of the following things:
@@ -949,28 +913,27 @@ bool AutofillProfileComparator::MergeNamesImpl(
   name_component.CopyFrom(*p2.GetNameInfo().GetNodeForType(name_type));
   // If the name of the |p1| is empty, just keep the state of p2.
   if (HasOnlySkippableCharacters(full_name_1)) {
-    return true;
+    return;
   }
   // Vice versa set name to the one of |p1| if |p2| has an empty name
   if (HasOnlySkippableCharacters(full_name_2)) {
     name_component.CopyFrom(*p1.GetNameInfo().GetNodeForType(name_type));
-    return true;
+    return;
   }
   // Try to apply a direct merging.
   if (name_component.MergeWithComponent(
           *p1.GetNameInfo().GetNodeForType(name_type))) {
-    return true;
+    return;
   }
   // If the name in |p2| is a variant of |p1| use the one in |p1|.
   if (IsNameVariantOf(NormalizeForComparison(full_name_1),
                       NormalizeForComparison(full_name_2))) {
     name_component.CopyFrom(*p1.GetNameInfo().GetNodeForType(name_type));
-    return true;
+    return;
   }
   // The only left case is that |p1| is a variant of |p2|.
   DCHECK(IsNameVariantOf(NormalizeForComparison(full_name_2),
                          NormalizeForComparison(full_name_1)));
-  return true;
 }
 
 }  // namespace autofill

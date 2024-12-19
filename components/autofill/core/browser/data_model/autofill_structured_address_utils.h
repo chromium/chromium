@@ -58,6 +58,14 @@ enum class SortedTokenComparisonStatus {
   kSuperset
 };
 
+// The id of the transliteration rule to be applied.
+enum class TransliterationId {
+  // ICU Katakana-Hiragana transliteration.
+  kKatakanaToHiragana,
+  // ICU Hiragana-Katakana transliteration.
+  kHiraganaToKatakana,
+};
+
 // The result from comparing two sets of sorted tokens containing the status and
 // the additional tokens in the super/sub sets.
 struct SortedTokenComparisonResult {
@@ -280,6 +288,12 @@ SortedTokenComparisonResult CompareSortedTokens(
 // Convenience wrapper to supply untokenized strings.
 SortedTokenComparisonResult CompareSortedTokens(const std::u16string& first,
                                                 const std::u16string& second);
+
+// This function transliterates (i.e. converts a string to a semantically the
+// same string, but with a different character set) the `value` using the ICU
+// library.
+std::u16string TransliterateAlternativeName(const std::u16string& value,
+                                            TransliterationId id);
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_UTILS_H_

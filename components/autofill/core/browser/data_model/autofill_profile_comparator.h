@@ -61,13 +61,6 @@ class AutofillProfileComparator {
                std::u16string_view text2,
                WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE) const;
 
-  // Returns true if |existing_profile| is a merge candidate for |new_profile|.
-  // A profile is a merge candidate if it is mergeable with |new_profile| and if
-  // at least one settings-visible value is changed.
-  bool IsMergeCandidate(const AutofillProfile& existing_profile,
-                        const AutofillProfile& new_profile,
-                        const std::string& app_locale);
-
   // Returns true if two AutofillProfiles |p1| and |p2| have at least one
   // settings-visible value that is different.
   static bool ProfilesHaveDifferentSettingsVisibleValues(
@@ -317,7 +310,7 @@ class AutofillProfileComparator {
   // attempt to parse the names in each profile and determine if one
   // name can be derived from the other. For example, J Smith can be derived
   // from John Smith, so prefer the latter.
-  bool MergeNamesImpl(const AutofillProfile& p1,
+  void MergeNamesImpl(const AutofillProfile& p1,
                       const AutofillProfile& p2,
                       FieldType name_type,
                       AddressComponent& name_component) const;
