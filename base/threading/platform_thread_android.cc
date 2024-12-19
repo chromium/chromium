@@ -27,9 +27,9 @@ namespace internal {
 
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
 // - kDisplay corresponds to Android's PRIORITY_DISPLAY = -4 value.
-// - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10 value and can
-// result in heavy throttling and force the thread onto a little core on
-// big.LITTLE devices.
+// - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10
+//   value. Contrary to the matching Java APi in Android <13, this does not
+//   restrict the thread to (subset of) little cores.
 const ThreadPriorityToNiceValuePairForTest
     kThreadPriorityToNiceValueMapForTest[7] = {
         {ThreadPriorityForTest::kRealtimeAudio, -16},
