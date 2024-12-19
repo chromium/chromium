@@ -71,6 +71,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -803,6 +804,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/385200981")
     public void testClickDisabledForNonAcceptableAutofillSuggestions() throws InterruptedException {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>(false);
         ThreadUtils.runOnUiThreadBlocking(
