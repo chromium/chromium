@@ -127,6 +127,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method throwIfAborted
 [Worker]     setter onabort
+[Worker] interface AsyncDisposableStack
+[Worker]     attribute @@toStringTag
+[Worker]     getter disposed
+[Worker]     method Symbol(Symbol.asyncDispose)
+[Worker]     method adopt
+[Worker]     method defer
+[Worker]     method disposeAsync
+[Worker]     method move
+[Worker]     method use
 [Worker] interface AudioData
 [Worker]     attribute @@toStringTag
 [Worker]     getter duration
@@ -508,6 +517,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute PERSISTENT
 [Worker]     attribute TEMPORARY
 [Worker]     method constructor
+[Worker] interface DisposableStack
+[Worker]     attribute @@toStringTag
+[Worker]     getter disposed
+[Worker]     method Symbol(Symbol.dispose)
+[Worker]     method adopt
+[Worker]     method defer
+[Worker]     method dispose
+[Worker]     method move
+[Worker]     method use
 [Worker] interface EncodedAudioChunk
 [Worker]     attribute @@toStringTag
 [Worker]     getter byteLength
@@ -2168,6 +2186,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unwrapKey
 [Worker]     method verify
 [Worker]     method wrapKey
+[Worker] interface SuppressedError : Error
+[Worker]     attribute message
+[Worker]     attribute name
+[Worker]     method constructor
 [Worker] interface SyncManager
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
