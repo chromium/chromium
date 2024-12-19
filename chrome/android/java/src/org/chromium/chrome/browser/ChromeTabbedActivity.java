@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.base.ColdStartTracker;
+import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -919,6 +920,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             builder.registerPane(
                     PaneId.HISTORY, LazyOneshotSupplier.fromSupplier(this::createHistoryPane));
         }
+
+        if (ChromeFeatureList.sBookmarkPaneAndroid.isEnabled()) {
+            builder.registerPane(
+                    PaneId.BOOKMARKS, LazyOneshotSupplier.fromSupplier(this::createBookmarkPane));
+        }
+
         mHubProvider
                 .getHubManagerSupplier()
                 .onAvailable(manager -> mHubManagerSupplier.set(manager));
@@ -1004,6 +1011,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 getProfileProviderSupplier(),
                 mRootUiCoordinator::getBottomSheetController,
                 getCurrentTabModel().getCurrentTabSupplier());
+    }
+
+    private Pane createBookmarkPane() {
+        return new BookmarkPane(
+                adaptOnToolbarAlphaChange(),
+                this,
+                getSnackbarManager(),
+                getProfileProviderSupplier());
     }
 
     private Pane createCrossDevicePane() {

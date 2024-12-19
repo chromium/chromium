@@ -1012,6 +1012,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "bookmark-pane-android",
+    "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "bookmarks-and-reading-list-behind-opt-in",
     "owners": [ "wylieb@chromium.org", "bsazonov@chromium.org" ],
     "expiry_milestone": 126

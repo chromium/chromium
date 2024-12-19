@@ -126,7 +126,8 @@ public class BookmarkManagerCoordinatorTest {
                                                     .isNonMultiDisplayContextOnTablet(mActivity),
                                             mSnackbarManager,
                                             mProfile,
-                                            mBookmarkUiPrefs);
+                                            mBookmarkUiPrefs,
+                                            /* bookmarkOpenedCallback= */ null);
                             mActivity.setContentView(mCoordinator.getView());
                         });
     }

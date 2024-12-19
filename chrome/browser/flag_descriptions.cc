@@ -4376,6 +4376,9 @@ const char kAppSpecificHistoryDescription[] =
 const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
 
+const char kBookmarkPaneAndroidName[] = "Bookmark hub pane";
+const char kBookmarkPaneAndroidDescription[] = "Enables a bookmark hub pane.";
+
 const char kCCTAuthTabName[] = "CCT Auth Tab";
 const char kCCTAuthTabDescription[] = "Enable AuthTab used for authentication";
 

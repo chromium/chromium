@@ -195,6 +195,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkMoveSnackbarManager.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkOpener.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkPage.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/BookmarkPane.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkPromoHeader.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkQueryHandler.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowCoordinator.java",

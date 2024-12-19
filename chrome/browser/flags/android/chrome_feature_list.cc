@@ -208,6 +208,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackgroundThreadPool,
     &kBlockIntentsWhileLocked,
+    &kBookmarkPaneAndroid,
     &kBottomBrowserControlsRefactor,
     &kBrowserControlsEarlyResize,
     &kCacheActivityTaskID,
@@ -553,6 +554,10 @@ BASE_FEATURE(kBackgroundThreadPool,
 
 BASE_FEATURE(kBlockIntentsWhileLocked,
              "BlockIntentsWhileLocked",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBookmarkPaneAndroid,
+             "BookmarkPaneAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBottomBrowserControlsRefactor,
