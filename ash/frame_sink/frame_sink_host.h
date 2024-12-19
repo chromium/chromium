@@ -78,6 +78,10 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   // Overridden from aura::WindowObserver
   void OnWindowDestroying(aura::Window* window) override;
 
+  FrameSinkHolder* frame_sink_holder_for_testing() {
+    return frame_sink_holder_.get();
+  }
+
  protected:
   // Creates a compositor frame that can be sent to the display compositor.
   // `begin_frame_ack` is a token that needs to be attached to the compositor

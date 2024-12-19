@@ -132,7 +132,7 @@ void FrameSinkHost::OnFirstFrameRequested() {}
 
 void FrameSinkHost::OnFrameSinkLost() {
   frame_sink_holder_.reset();
-  InitFrameSinkHolder(host_window(), host_window()->CreateLayerTreeFrameSink());
+  InitFrameSinkHolder(host_window(), frame_sink_factory_.Run());
 
   // Since some implementations of FrameSinkHost rarely update the surface,
   // submit a compositor frame in order to update the surface. Otherwise,
