@@ -11,12 +11,12 @@
 
 namespace autofill {
 
-class TestPersonalDataManager;
+class PaymentsDataManager;
 
 class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
  public:
   TestVirtualCardEnrollmentManager(
-      TestPersonalDataManager* personal_data_manager,
+      PaymentsDataManager* payments_data_manager,
       payments::TestPaymentsNetworkInterface* payments_network_interface,
       TestAutofillClient* autofill_client);
   TestVirtualCardEnrollmentManager(const TestVirtualCardEnrollmentManager&) =

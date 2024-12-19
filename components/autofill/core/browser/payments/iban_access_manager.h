@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
@@ -90,6 +91,9 @@ class IbanAccessManager {
       NonInteractivePaymentMethodType non_interactive_payment_method_type,
       payments::MandatoryReauthAuthenticationMethod authentication_method,
       bool successful_auth);
+
+  payments::PaymentsAutofillClient& GetPaymentsAutofillClient();
+  PaymentsDataManager& GetPaymentsDataManager();
 
   // The associated autofill client.
   const raw_ptr<AutofillClient> client_;

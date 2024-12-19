@@ -60,7 +60,8 @@ AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
           &personal_data_manager_->payments_data_manager());
   virtual_card_enrollment_manager_ =
       std::make_unique<VirtualCardEnrollmentManager>(
-          personal_data_manager_, payments_network_interface_.get());
+          &personal_data_manager_->payments_data_manager(),
+          payments_network_interface_.get());
 }
 
 AutofillPaymentMethodsDelegate::~AutofillPaymentMethodsDelegate() = default;

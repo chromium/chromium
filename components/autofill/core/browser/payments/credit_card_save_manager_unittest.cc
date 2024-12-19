@@ -291,8 +291,8 @@ class CreditCardSaveManagerTest : public testing::Test {
                 autofill_client_.GetIdentityManager(), &personal_data()));
     payments_client().set_virtual_card_enrollment_manager(
         std::make_unique<MockVirtualCardEnrollmentManager>(
-            &autofill_client_.GetPersonalDataManager(),
-            &payments_network_interface(), &autofill_client_));
+            &payments_data_manager(), &payments_network_interface(),
+            &autofill_client_));
     payments_client().SetLocalSaveCallbackOfferDecision(
         SaveCardOfferUserDecision::kAccepted);
     payments_client().SetCloudSaveCallbackOfferDecision(

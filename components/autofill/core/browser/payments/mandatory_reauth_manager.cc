@@ -136,8 +136,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // If the user prefs denote that we should not display the re-auth opt-in
   // bubble, return that we should not offer mandatory re-auth opt-in.
   // Pref-related decision logging also occurs within this function call.
-  if (!client_->GetPersonalDataManager()
-           .payments_data_manager()
+  if (!GetPaymentsDataManager()
            .ShouldShowPaymentMethodsMandatoryReauthPromo()) {
     return false;
   }
@@ -254,29 +253,23 @@ void MandatoryReauthManager::OnOptInAuthenticationStepCompleted(bool success) {
               : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
                     kFlowFailed);
   if (success) {
-    client_->GetPersonalDataManager()
-        .payments_data_manager()
-        .SetPaymentMethodsMandatoryReauthEnabled(
-            /*enabled=*/true);
+    GetPaymentsDataManager().SetPaymentMethodsMandatoryReauthEnabled(
+        /*enabled=*/true);
     client_->GetPaymentsAutofillClient()
         ->ShowMandatoryReauthOptInConfirmation();
   } else {
-    client_->GetPersonalDataManager()
-        .payments_data_manager()
+    GetPaymentsDataManager()
         .IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
   }
 }
 
 void MandatoryReauthManager::OnUserCancelledOptInPrompt() {
-  client_->GetPersonalDataManager()
-      .payments_data_manager()
-      .SetPaymentMethodsMandatoryReauthEnabled(
-          /*enabled=*/false);
+  GetPaymentsDataManager().SetPaymentMethodsMandatoryReauthEnabled(
+      /*enabled=*/false);
 }
 
 void MandatoryReauthManager::OnUserClosedOptInPrompt() {
-  client_->GetPersonalDataManager()
-      .payments_data_manager()
+  GetPaymentsDataManager()
       .IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
 }
 
@@ -305,6 +298,10 @@ MandatoryReauthManager::GetAuthenticationMethod() {
   }
   return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+PaymentsDataManager& MandatoryReauthManager::GetPaymentsDataManager() {
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 }  // namespace autofill::payments

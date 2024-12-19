@@ -480,10 +480,10 @@ class MockVirtualCardEnrollmentManager
     : public TestVirtualCardEnrollmentManager {
  public:
   MockVirtualCardEnrollmentManager(
-      TestPersonalDataManager* personal_data_manager,
+      PaymentsDataManager* payments_data_manager,
       payments::TestPaymentsNetworkInterface* payments_network_interface,
       TestAutofillClient* autofill_client)
-      : TestVirtualCardEnrollmentManager(personal_data_manager,
+      : TestVirtualCardEnrollmentManager(payments_data_manager,
                                          payments_network_interface,
                                          autofill_client) {}
   MOCK_METHOD(
@@ -557,7 +557,8 @@ class FormDataImporterTest : public testing::Test {
 
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(
-            nullptr, nullptr, autofill_client_.get());
+            &personal_data_manager_->payments_data_manager(), nullptr,
+            autofill_client_.get());
     autofill_client_->GetPaymentsAutofillClient()
         ->set_virtual_card_enrollment_manager(
             std::move(virtual_card_enrollment_manager));

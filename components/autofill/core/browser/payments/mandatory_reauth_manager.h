@@ -131,6 +131,8 @@ class MandatoryReauthManager {
   // logging.
   virtual MandatoryReauthAuthenticationMethod GetAuthenticationMethod();
 
+  PaymentsDataManager& GetPaymentsDataManager();
+
   void SetDeviceAuthenticatorPtrForTesting(
       std::unique_ptr<device_reauth::DeviceAuthenticator>
           device_authenticator) {

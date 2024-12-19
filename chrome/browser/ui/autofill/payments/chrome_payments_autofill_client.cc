@@ -728,8 +728,8 @@ ChromePaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   if (!virtual_card_enrollment_manager_) {
     virtual_card_enrollment_manager_ =
         std::make_unique<VirtualCardEnrollmentManager>(
-            &client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
-            &client_.get());
+            &client_->GetPersonalDataManager().payments_data_manager(),
+            GetPaymentsNetworkInterface(), &client_.get());
   }
 
   return virtual_card_enrollment_manager_.get();
