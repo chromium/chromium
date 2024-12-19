@@ -52,6 +52,7 @@ constexpr char16_t kGeminiKeyword[] = u"@gemini";
 constexpr char16_t kFeaturedKeyword1[] = u"@featured1";
 constexpr char16_t kFeaturedKeyword2[] = u"@featured2";
 constexpr char16_t kFeaturedKeyword3[] = u"@featured3";
+constexpr char16_t kFeaturedKeyword4[] = u"@featured4";
 
 const char* const kBookmarksUrl =
     TemplateURLStarterPackData::bookmarks.destination_url;
@@ -64,6 +65,7 @@ const char* const kGeminiUrl =
 constexpr char kFeaturedUrl1[] = "https://featured1.com/q={searchTerms}";
 constexpr char kFeaturedUrl2[] = "https://featured2.com/q={searchTerms}";
 constexpr char kFeaturedUrl3[] = "https://featured3.com/q={searchTerms}";
+constexpr char kFeaturedUrl4[] = "https://featured4.com/q={searchTerms}";
 
 struct TestData {
   const std::u16string input;
@@ -158,14 +160,15 @@ class FeaturedSearchProviderTest : public testing::Test {
   }
 
   // Add a new featured search engine to the TemplateURLService.
-  void AddFeaturedEnterpriseSearchEngine(const std::u16string& keyword,
-                                         const std::string& url) {
+  void AddFeaturedEnterpriseSearchEngine(
+      const std::u16string& keyword,
+      const std::string& url,
+      const TemplateURLData::PolicyOrigin& policy_origin) {
     TemplateURLData template_url_data;
     template_url_data.SetKeyword(keyword);
     template_url_data.SetShortName(keyword + u" Name");
     template_url_data.SetURL(url);
-    template_url_data.policy_origin =
-        TemplateURLData::PolicyOrigin::kSiteSearch;
+    template_url_data.policy_origin = policy_origin;
     template_url_data.enforced_by_policy = false;
     template_url_data.featured_by_policy = true;
     template_url_data.safe_for_autoreplace = false;
@@ -329,9 +332,15 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(
+      kFeaturedKeyword4, kFeaturedUrl4,
+      TemplateURLData::PolicyOrigin::kSearchAggregator);
 
   TestData typing_scheme_cases[] = {
       // Typing the keyword without '@' or past the keyword shouldn't produce
@@ -348,13 +357,13 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
       // alphabetical order). Re-ordering by relevance will be made
       // later on.
       {u"@",
-       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3, kGeminiUrl,
-        kHistoryUrl, kTabsUrl}},
+       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3,
+        kFeaturedUrl4, kGeminiUrl, kHistoryUrl, kTabsUrl}},
 
       // Typing a portion of "@featured" should give the featured engine
       // suggestions.
       {std::u16string(kFeaturedKeyword1, 0, 3),
-       {kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3}},
+       {kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3, kFeaturedUrl4}},
       {kFeaturedKeyword1, {kFeaturedUrl1}},
   };
 
@@ -439,9 +448,15 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(
+      kFeaturedKeyword4, kFeaturedUrl4,
+      TemplateURLData::PolicyOrigin::kSearchAggregator);
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.
   AutocompleteInput input;
@@ -465,8 +480,8 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
   TestData typing_scheme_cases[] = {
       // Typing '@' should give all the starter pack suggestions, and no IPH.
       {u"@",
-       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3, kGeminiUrl,
-        kHistoryUrl, kTabsUrl}}};
+       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3,
+        kFeaturedUrl4, kGeminiUrl, kHistoryUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
 }
 
@@ -484,9 +499,15 @@ TEST_F(FeaturedSearchProviderTest,
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(
+      kFeaturedKeyword4, kFeaturedUrl4,
+      TemplateURLData::PolicyOrigin::kSearchAggregator);
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.
   AutocompleteInput input;
@@ -532,9 +553,15 @@ TEST_F(FeaturedSearchProviderTest,
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3,
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(
+      kFeaturedKeyword4, kFeaturedUrl4,
+      TemplateURLData::PolicyOrigin::kSearchAggregator);
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.
   AutocompleteInput input;

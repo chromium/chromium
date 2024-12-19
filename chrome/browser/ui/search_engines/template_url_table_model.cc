@@ -64,8 +64,8 @@ bool OrderByManagedAndAlphabetically::operator()(const TemplateURL* lhs,
                                                  const TemplateURL* rhs) const {
   auto get_sort_key = [this](const TemplateURL* engine) {
     return std::make_tuple(
-        // Enterprise site search engines are shown before other engines.
-        engine->policy_origin() != TemplateURLData::PolicyOrigin::kSiteSearch,
+        // Enterprise search engines are shown before other engines.
+        !engine->CreatedByNonDefaultSearchProviderPolicy(),
         // Try to compare short names ignoring case and diacriticals.
         collator_ ? GetShortNameSortKey(engine->short_name()) : std::string(),
         // If a collator is not available, fallback to regular string

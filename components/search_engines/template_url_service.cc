@@ -837,7 +837,7 @@ TemplateURLService::TemplateURLVector
 TemplateURLService::GetFeaturedEnterpriseSearchEngines() const {
   TemplateURLVector result;
   for (const auto& turl : template_urls_) {
-    if (turl->policy_origin() == TemplateURLData::PolicyOrigin::kSiteSearch &&
+    if (turl->CreatedByNonDefaultSearchProviderPolicy() &&
         turl->featured_by_policy()) {
       result.push_back(turl.get());
     }

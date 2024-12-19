@@ -790,10 +790,67 @@ TEST_F(KeywordEditorControllerTest,
   }
 
   const auto kExpectedShortNamesOrder = std::vector<std::u16string>(
-      {u"Auto-created engine", u"Auto-created engine with @", u"Featured 1",
+      {u"Featured 1", u"Auto-created engine", u"Auto-created engine with @",
        u"User-defined engine"});
   const auto kExpectedKeywordsToDisplay =
-      std::vector<std::u16string>({u"kw2", u"@kw2", u"@kw1", u"kw1"});
+      std::vector<std::u16string>({u"@kw1", u"kw2", u"@kw2", u"kw1"});
+
+  size_t numExpectedKeywords = kExpectedShortNamesOrder.size();
+  CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,
+                         numExpectedKeywords, table_model());
+}
+
+TEST_F(KeywordEditorControllerTest, EnterpriseSiteSearchAndSearchAggregator) {
+  const SearchEngineOrderingTestCase kTestCases[] = {
+      {
+          .keyword = u"@kw1",
+          .short_name = u"Featured 1",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = true,
+      },
+      {
+          .keyword = u"kw1",
+          .short_name = u"Featured 1",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = false,
+      },
+      {
+          .keyword = u"kw2",
+          .short_name = u"Non-featured",
+          .is_active = true,
+          .created_by_site_search_policy = false,
+          .featured_by_policy = false,
+      },
+      {
+          .keyword = u"@kw3",
+          .short_name = u"Featured 3",
+          .is_active = true,
+          .created_by_search_aggregator_policy = true,
+          .featured_by_policy = true,
+      },
+      {
+          .keyword = u"kw3",
+          .short_name = u"Featured 3",
+          .is_active = true,
+          .created_by_search_aggregator_policy = true,
+          .featured_by_policy = false,
+      },
+  };
+
+  std::vector<TemplateURL*> engines;
+  for (SearchEngineOrderingTestCase test_case : kTestCases) {
+    engines.push_back(
+        util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
+    // Table model should have updated.
+    VerifyChanged();
+  }
+
+  const auto kExpectedShortNamesOrder = std::vector<std::u16string>(
+      {u"Featured 1", u"Featured 3", u"Non-featured"});
+  const auto kExpectedKeywordsToDisplay =
+      std::vector<std::u16string>({u"@kw1, kw1", u"@kw3, kw3", u"kw2"});
 
   size_t numExpectedKeywords = kExpectedShortNamesOrder.size();
   CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,

@@ -132,6 +132,86 @@ TEST_F(TemplateURLServiceUnitTest, InvalidDefaultSearchProviderOrigin) {
   EXPECT_TRUE(template_url_service().GetDefaultSearchProviderOrigin().opaque());
 }
 
+TEST_F(
+    TemplateURLServiceUnitTest,
+    GetFeaturedEnterpriseSearchEngines_IgnoresUnfeaturedEnterpriseSearchEngine) {
+  TemplateURLData sitesearch_turl_data;
+  sitesearch_turl_data.SetKeyword(u"sitesearch");
+  sitesearch_turl_data.SetShortName(u"sitesearch");
+  sitesearch_turl_data.SetURL("https://www.sitesearch.com?q={searchTerms}");
+  sitesearch_turl_data.policy_origin =
+      TemplateURLData::PolicyOrigin::kSiteSearch;
+  sitesearch_turl_data.enforced_by_policy = false;
+  sitesearch_turl_data.featured_by_policy = false;
+  sitesearch_turl_data.safe_for_autoreplace = false;
+  template_url_service().Add(
+      std::make_unique<TemplateURL>(sitesearch_turl_data));
+
+  TemplateURLData searchaggregator_turl_data;
+  searchaggregator_turl_data.SetKeyword(u"searchaggregator");
+  searchaggregator_turl_data.SetShortName(u"searchaggregator");
+  searchaggregator_turl_data.SetURL(
+      "https://www.searchaggregator.com?q={searchTerms}");
+  searchaggregator_turl_data.policy_origin =
+      TemplateURLData::PolicyOrigin::kSearchAggregator;
+  searchaggregator_turl_data.enforced_by_policy = false;
+  searchaggregator_turl_data.featured_by_policy = false;
+  searchaggregator_turl_data.safe_for_autoreplace = false;
+  template_url_service().Add(
+      std::make_unique<TemplateURL>(searchaggregator_turl_data));
+
+  EXPECT_TRUE(
+      template_url_service().GetFeaturedEnterpriseSearchEngines().empty());
+}
+
+TEST_F(
+    TemplateURLServiceUnitTest,
+    GetFeaturedEnterpriseSearchEngines_IncludesFeaturedEnterpriseSearchEngines) {
+  TemplateURLData sitesearch_turl_data;
+  sitesearch_turl_data.SetKeyword(u"@sitesearch");
+  sitesearch_turl_data.SetShortName(u"sitesearch");
+  sitesearch_turl_data.SetURL("https://www.sitesearch.com?q={searchTerms}");
+  sitesearch_turl_data.policy_origin =
+      TemplateURLData::PolicyOrigin::kSiteSearch;
+  sitesearch_turl_data.enforced_by_policy = false;
+  sitesearch_turl_data.featured_by_policy = true;
+  sitesearch_turl_data.safe_for_autoreplace = false;
+  template_url_service().Add(
+      std::make_unique<TemplateURL>(sitesearch_turl_data));
+
+  TemplateURLData searchaggregator_turl_data;
+  searchaggregator_turl_data.SetKeyword(u"@searchaggregator");
+  searchaggregator_turl_data.SetShortName(u"searchaggregator");
+  searchaggregator_turl_data.SetURL(
+      "https://www.searchaggregator.com?q={searchTerms}");
+  searchaggregator_turl_data.policy_origin =
+      TemplateURLData::PolicyOrigin::kSearchAggregator;
+  searchaggregator_turl_data.enforced_by_policy = false;
+  searchaggregator_turl_data.featured_by_policy = true;
+  searchaggregator_turl_data.safe_for_autoreplace = false;
+  template_url_service().Add(
+      std::make_unique<TemplateURL>(searchaggregator_turl_data));
+
+  EXPECT_EQ(
+      static_cast<int>(
+          template_url_service().GetFeaturedEnterpriseSearchEngines().size()),
+      2);
+  EXPECT_EQ(template_url_service()
+                .GetFeaturedEnterpriseSearchEngines()[0]
+                ->short_name(),
+            u"sitesearch");
+  EXPECT_EQ(
+      template_url_service().GetFeaturedEnterpriseSearchEngines()[0]->url(),
+      "https://www.sitesearch.com?q={searchTerms}");
+  EXPECT_EQ(template_url_service()
+                .GetFeaturedEnterpriseSearchEngines()[1]
+                ->short_name(),
+            u"searchaggregator");
+  EXPECT_EQ(
+      template_url_service().GetFeaturedEnterpriseSearchEngines()[1]->url(),
+      "https://www.searchaggregator.com?q={searchTerms}");
+}
+
 #if BUILDFLAG(IS_ANDROID)
 
 class TemplateURLServiceWithDatabaseUnitTest
