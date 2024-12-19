@@ -154,9 +154,6 @@ public class StripLayoutHelper
 
     // Visibility Constants
     private static final float TAB_WIDTH_MEDIUM = 156.f;
-    private static final float REORDER_EDGE_SCROLL_MAX_SPEED_DP = 1000.f;
-    private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
-    private static final float REORDER_EDGE_SCROLL_START_MAX_DP = 18.4f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
     private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 8.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP = 32.f;
@@ -1879,7 +1876,7 @@ public class StripLayoutHelper
                 RecordUserAction.record("MobileToolbarSlideTabs");
                 onStripScrollStart();
             }
-            updateScrollOffsetPosition(mScrollDelegate.getScrollOffset() + deltaX);
+            mScrollDelegate.setScrollOffset(mScrollDelegate.getScrollOffset() + deltaX);
         }
 
         mUpdateHost.requestUpdate();
@@ -2732,19 +2729,6 @@ public class StripLayoutHelper
             mStripTabEventHandler.removeMessages(MESSAGE_UPDATE_SPINNER);
             mStripTabEventHandler.sendEmptyMessageDelayed(
                     MESSAGE_UPDATE_SPINNER, SPINNER_UPDATE_DELAY_MS);
-        }
-    }
-
-    private void updateScrollOffsetPosition(float pos) {
-        float delta = mScrollDelegate.setScrollOffset(pos);
-
-        if (mReorderDelegate.getInReorderMode() && mScrollDelegate.isFinished()) {
-            mReorderDelegate.updateReorderPosition(
-                    mStripViews,
-                    mStripGroupTitles,
-                    mStripTabs,
-                    mReorderDelegate.getLastReorderX(),
-                    delta);
         }
     }
 
@@ -3911,60 +3895,15 @@ public class StripLayoutHelper
 
     private void handleReorderAutoScrolling(long time) {
         if (!mReorderDelegate.getInReorderMode()) return;
-
-        // 1. Track the delta time since the last auto scroll.
-        final float deltaSec =
-                mReorderDelegate.getLastReorderScrollTime() == INVALID_TIME
-                        ? 0.f
-                        : (time - mReorderDelegate.getLastReorderScrollTime()) / 1000.f;
-        mReorderDelegate.setLastReorderScrollTime(time);
-
-        // When we are reordering for tab drop, we are not offsetting the interacting tab. Instead,
-        // we are adding a visual indicator (a gap between tabs) to indicate where the tab will be
-        // added. As such, we need to base this on the most recent x-position of the drag, rather
-        // than the interacting tab's drawX.
-        final float x =
-                mReorderDelegate.getReorderingForTabDrop()
-                        ? mReorderDelegate.adjustXForTabDrop(mReorderDelegate.getLastReorderX())
-                        : mReorderDelegate.getInteractingView().getDrawX();
-
-        // 2. Calculate the gutters for accelerating the scroll speed.
-        // Speed: MAX    MIN                  MIN    MAX
-        // |-------|======|--------------------|======|-------|
-        final float dragRange = REORDER_EDGE_SCROLL_START_MAX_DP - REORDER_EDGE_SCROLL_START_MIN_DP;
-        final float leftMinX = REORDER_EDGE_SCROLL_START_MIN_DP + mLeftMargin;
-        final float leftMaxX = REORDER_EDGE_SCROLL_START_MAX_DP + mLeftMargin;
-        final float rightMinX =
-                mWidth - mLeftMargin - mRightMargin - REORDER_EDGE_SCROLL_START_MIN_DP;
-        final float rightMaxX =
-                mWidth - mLeftMargin - mRightMargin - REORDER_EDGE_SCROLL_START_MAX_DP;
-
-        // 3. See if the current draw position is in one of the gutters and figure out how far in.
-        // Note that we only allow scrolling in each direction if the user has already manually
-        // moved that way.
-        final float width =
-                mReorderDelegate.getReorderingForTabDrop()
-                        ? mCachedTabWidthSupplier.get()
-                        : mReorderDelegate.getInteractingView().getWidth();
-        float dragSpeedRatio = 0.f;
-        if (mReorderDelegate.canReorderScrollLeft() && x < leftMinX) {
-            dragSpeedRatio = -(leftMinX - Math.max(x, leftMaxX)) / dragRange;
-        } else if (mReorderDelegate.canReorderScrollRight() && x + width > rightMinX) {
-            dragSpeedRatio = (Math.min(x + width, rightMaxX) - rightMinX) / dragRange;
-        }
-
-        dragSpeedRatio = MathUtils.flipSignIf(dragSpeedRatio, LocalizationUtils.isLayoutRtl());
-
-        if (dragSpeedRatio != 0.f) {
-            // 4.a. We're in a gutter.  Update the scroll offset.
-            float dragSpeed = REORDER_EDGE_SCROLL_MAX_SPEED_DP * dragSpeedRatio;
-            updateScrollOffsetPosition(mScrollDelegate.getScrollOffset() + (dragSpeed * deltaSec));
-
-            mUpdateHost.requestUpdate();
-        } else {
-            // 4.b. We're not in a gutter.  Reset the scroll delta time tracker.
-            mReorderDelegate.setLastReorderScrollTime(INVALID_TIME);
-        }
+        mReorderDelegate.updateReorderPositionAutoScroll(
+                mStripViews,
+                mStripGroupTitles,
+                mStripTabs,
+                time,
+                mWidth,
+                mLeftMargin,
+                mRightMargin,
+                () -> mUpdateHost.requestUpdate());
     }
 
     private Tab getTabById(int tabId) {

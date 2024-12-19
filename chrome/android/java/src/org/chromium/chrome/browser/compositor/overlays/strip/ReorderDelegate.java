@@ -49,6 +49,9 @@ public class ReorderDelegate {
     private static final int REORDER_SCROLL_LEFT = 1;
     private static final int REORDER_SCROLL_RIGHT = 2;
     private static final int ANIM_FOLIO_DETACH_MS = 75;
+    private static final float REORDER_EDGE_SCROLL_MAX_SPEED_DP = 1000.f;
+    private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
+    private static final float REORDER_EDGE_SCROLL_START_MAX_DP = 18.4f;
 
     static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
     private static final float FOLIO_ANIM_INTERMEDIATE_MARGIN_DP = -12.f;
@@ -132,11 +135,6 @@ public class ReorderDelegate {
 
     void setLastReorderX(float x) {
         mLastReorderX = x;
-    }
-
-    StripLayoutView getInteractingView() {
-        assert mActiveStrategy != null : "Requested interacting view when not reordering.";
-        return mActiveStrategy.getInteractingView();
     }
 
     StripLayoutTab getInteractingTab() {
@@ -264,12 +262,105 @@ public class ReorderDelegate {
         mActiveStrategy.updateReorderPosition(stripViews, groupTitles, stripTabs, endX, deltaX);
     }
 
+    /**
+     * Enables tab strip auto-scroll when view is dragged into gutters (strip ends) during reorder.
+     * Handles reorder updates once auto-scroll ends.
+     *
+     * @param stripViews The list of {@link StripLayoutView}.
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param time The time when the update is invoked.
+     * @param stripWidth The width of tab-strip. Used to compute auto-scroll speed.
+     * @param leftMargin The start margin in tab-strip. Used to compute auto-scroll speed.
+     * @param rightMargin The end margin in tab-strip. Used to compute auto-scroll speed.
+     * @param onUpdate Callback to update strip during auto-scroll.
+     */
+    void updateReorderPositionAutoScroll(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            long time,
+            float stripWidth,
+            float leftMargin,
+            float rightMargin,
+            Runnable onUpdate) {
+        assert mActiveStrategy != null && getInReorderMode()
+                : "Attempted to update reorder without an active Strategy.";
+        float scrollOffsetDelta =
+                computeScrollOffsetDeltaForAutoScroll(time, stripWidth, leftMargin, rightMargin);
+        if (scrollOffsetDelta != 0f) {
+            float deltaX =
+                    mScrollDelegate.setScrollOffset(
+                            mScrollDelegate.getScrollOffset() + scrollOffsetDelta);
+            if (mScrollDelegate.isFinished()) {
+                mActiveStrategy.updateReorderPosition(
+                        stripViews, groupTitles, stripTabs, getLastReorderX(), deltaX);
+            }
+            onUpdate.run();
+        }
+    }
+
     /** See {@link ReorderStrategy#stopReorderMode} */
     void stopReorderMode(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
         assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to stop reorder without an active Strategy.";
         mActiveStrategy.stopReorderMode(groupTitles, stripTabs);
         mActiveStrategy = null;
+    }
+
+    private float computeScrollOffsetDeltaForAutoScroll(
+            long time, float stripWidth, float leftMargin, float rightMargin) {
+        // 1. Track the delta time since the last auto scroll.
+        final float deltaSec =
+                getLastReorderScrollTime() == INVALID_TIME
+                        ? 0.f
+                        : (time - getLastReorderScrollTime()) / 1000.f;
+        setLastReorderScrollTime(time);
+
+        // When we are reordering for tab drop, we are not offsetting the interacting tab. Instead,
+        // we are adding a visual indicator (a gap between tabs) to indicate where the tab will be
+        // added. As such, we need to base this on the most recent x-position of the drag, rather
+        // than the interacting view's drawX.
+        final float x =
+                getReorderingForTabDrop()
+                        ? adjustXForTabDrop(getLastReorderX())
+                        : mActiveStrategy.getInteractingView().getDrawX();
+
+        // 2. Calculate the gutters for accelerating the scroll speed.
+        // Speed: MAX    MIN                  MIN    MAX
+        // |-------|======|--------------------|======|-------|
+        final float dragRange = REORDER_EDGE_SCROLL_START_MAX_DP - REORDER_EDGE_SCROLL_START_MIN_DP;
+        final float leftMinX = REORDER_EDGE_SCROLL_START_MIN_DP + leftMargin;
+        final float leftMaxX = REORDER_EDGE_SCROLL_START_MAX_DP + leftMargin;
+        final float rightMinX =
+                stripWidth - leftMargin - rightMargin - REORDER_EDGE_SCROLL_START_MIN_DP;
+        final float rightMaxX =
+                stripWidth - leftMargin - rightMargin - REORDER_EDGE_SCROLL_START_MAX_DP;
+
+        // 3. See if the current draw position is in one of the gutters and figure out how far in.
+        // Note that we only allow scrolling in each direction if the user has already manually
+        // moved that way.
+        final float width =
+                getReorderingForTabDrop()
+                        ? mTabWidthSupplier.get()
+                        : mActiveStrategy.getInteractingView().getWidth();
+        float dragSpeedRatio = 0.f;
+        if ((mReorderScrollState & REORDER_SCROLL_LEFT) != 0 && x < leftMinX) {
+            dragSpeedRatio = -(leftMinX - Math.max(x, leftMaxX)) / dragRange;
+        } else if ((mReorderScrollState & REORDER_SCROLL_RIGHT) != 0 && x + width > rightMinX) {
+            dragSpeedRatio = (Math.min(x + width, rightMaxX) - rightMinX) / dragRange;
+        }
+
+        dragSpeedRatio = MathUtils.flipSignIf(dragSpeedRatio, LocalizationUtils.isLayoutRtl());
+        if (dragSpeedRatio != 0.f) {
+            // 4.a. We're in a gutter. Return scroll offset delta to update the scroll offset.
+            float dragSpeed = REORDER_EDGE_SCROLL_MAX_SPEED_DP * dragSpeedRatio;
+            return (dragSpeed * deltaSec);
+        } else {
+            // 4.b. We're not in a gutter.  Reset the scroll delta time tracker.
+            setLastReorderScrollTime(INVALID_TIME);
+            return 0f;
+        }
     }
 
     void addInReorderModeObserver(Callback<Boolean> observer) {
@@ -290,14 +381,6 @@ public class ReorderDelegate {
 
     void setLastReorderScrollTime(long time) {
         mLastReorderScrollTime = time;
-    }
-
-    boolean canReorderScrollLeft() {
-        return (mReorderScrollState & REORDER_SCROLL_LEFT) != 0;
-    }
-
-    boolean canReorderScrollRight() {
-        return (mReorderScrollState & REORDER_SCROLL_RIGHT) != 0;
     }
 
     void allowReorderScrollLeft() {
