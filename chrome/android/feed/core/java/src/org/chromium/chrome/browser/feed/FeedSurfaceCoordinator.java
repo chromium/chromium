@@ -1239,6 +1239,11 @@ public class FeedSurfaceCoordinator
         return mMediator.isLoadingFeed();
     }
 
+    @Override
+    public ObservableSupplier<Integer> getRestoringStateSupplier() {
+        return mMediator.getRestoringStateSupplier();
+    }
+
     private int getLateralPaddingsPx() {
         return mActivity
                 .getResources()

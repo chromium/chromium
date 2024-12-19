@@ -191,7 +191,7 @@ public class NavigationHandlerTest {
                 "Smooth transition should be enabled");
         CriteriaHelper.pollInstrumentationThread(
                 () ->
-                        !((BasicSmoothTransitionDelegate)
+                        !((NewTabPage.NtpSmoothTransitionDelegate)
                                         ((NewTabPage) tab.getNativePage())
                                                 .getSmoothTransitionDelegateForTesting())
                                 .getAnimatorForTesting()

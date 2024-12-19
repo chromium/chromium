@@ -24,8 +24,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.memory.MemoryPressureCallback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity;
+import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.feed.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feed.sections.OnSectionHeaderSelectedListener;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -285,6 +288,8 @@ public class FeedSurfaceMediator
     // It is non-null for NTP on tablets.
     private @Nullable final UiConfig mUiConfig;
     private final DisplayStyleObserver mDisplayStyleObserver = this::onDisplayStyleChanged;
+    private final ObservableSupplierImpl<Integer> mGetRestoringStateSupplier =
+            new ObservableSupplierImpl<>(RestoringState.WAITING_TO_RESTORE);
 
     private @Nullable RecyclerView.OnScrollListener mStreamScrollListener;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
@@ -312,6 +317,7 @@ public class FeedSurfaceMediator
     private boolean mIsLoadingFeed;
 
     private FeedScrollState mRestoreScrollState;
+    private int mPositionToRestore = RecyclerView.NO_POSITION;
 
     private final HashMap<Integer, Stream> mTabToStreamMap = new HashMap<>();
     private Stream mCurrentStream;
@@ -557,11 +563,16 @@ public class FeedSurfaceMediator
     /** Restores a previously saved state. */
     void restoreSavedInstanceState(String json) {
         FeedScrollState state = FeedScrollState.fromJson(json);
-        if (state == null) return;
+        if (state == null) {
+            mPositionToRestore = RecyclerView.NO_POSITION;
+            mGetRestoringStateSupplier.set(RestoringState.NO_STATE_TO_RESTORE);
+            return;
+        }
         mRestoreTabId = state.tabId;
         if (mSectionHeaderModel != null) {
             mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, state.tabId);
         }
+        mPositionToRestore = state.position;
         if (mCurrentStream == null) {
             mRestoreScrollState = state;
         } else {
@@ -655,6 +666,20 @@ public class FeedSurfaceMediator
                                             }
                                             for (ScrollListener listener : mScrollListeners) {
                                                 listener.onScrolled(dx, dy);
+                                            }
+                                            final boolean restored =
+                                                    mCoordinator
+                                                                    .getHybridListRenderer()
+                                                                    .getListLayoutHelper()
+                                                                    .findFirstVisibleItemPosition()
+                                                            >= mPositionToRestore;
+                                            if (mPositionToRestore != RecyclerView.NO_POSITION
+                                                    && mGetRestoringStateSupplier.get()
+                                                            == RestoringState.WAITING_TO_RESTORE
+                                                    && restored) {
+                                                mGetRestoringStateSupplier.set(
+                                                        RestoringState.RESTORED);
+                                                mPositionToRestore = RecyclerView.NO_POSITION;
                                             }
                                         });
                     }
@@ -777,6 +802,7 @@ public class FeedSurfaceMediator
         updateLayout(false);
         mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
 
+        mGetRestoringStateSupplier.set(RestoringState.WAITING_TO_RESTORE);
         FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
         mCurrentStream.bind(
                 mCoordinator.getRecyclerView(),
@@ -1363,6 +1389,15 @@ public class FeedSurfaceMediator
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         updateSectionHeader();
+    }
+
+    /**
+     * The state of whether the feed stream is being restored.
+     *
+     * @return The restoring state {@link RestoringState}.
+     */
+    public ObservableSupplier<Integer> getRestoringStateSupplier() {
+        return mGetRestoringStateSupplier;
     }
 
     public SignInPromo getSignInPromoForTesting() {

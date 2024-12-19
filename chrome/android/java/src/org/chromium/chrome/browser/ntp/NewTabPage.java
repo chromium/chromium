@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +25,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -46,6 +52,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.FeedSurfaceProvider;
+import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
@@ -91,7 +98,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -184,9 +190,91 @@ public class NewTabPage
     @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
 
     @Nullable private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
-    private SmoothTransitionDelegate mSmoothTransitionDelegate;
+    private NtpSmoothTransitionDelegate mSmoothTransitionDelegate;
 
     private CallbackController mCallbackController = new CallbackController();
+
+    @VisibleForTesting
+    public static class NtpSmoothTransitionDelegate implements SmoothTransitionDelegate {
+        private static final int SMOOTH_TRANSITION_DURATION_MS = 100;
+        private static final int MAX_FEED_RESTORATION_DURATION = 1000;
+
+        private View mView;
+        private Animator mAnimator;
+        private ObservableSupplier<Integer> mRestoringState;
+        private boolean mAnimatorStarted;
+        private final Handler mHandler = new Handler();
+        final Callback<Integer> mOnScrollStateChanged =
+                new Callback<>() {
+                    @Override
+                    public void onResult(Integer restoreState) {
+                        if (restoreState == RestoringState.NO_STATE_TO_RESTORE
+                                || restoreState == RestoringState.RESTORED) {
+                            mAnimator.start();
+                            mRestoringState.removeObserver(this);
+                            mAnimatorStarted = true;
+                            mHandler.removeCallbacks(mFallback);
+                        }
+                    }
+                };
+        private final Runnable mFallback =
+                () -> {
+                    if (!mAnimatorStarted) {
+                        mAnimator.start();
+                        mAnimatorStarted = true;
+                        mRestoringState.removeObserver(mOnScrollStateChanged);
+                    }
+                };
+
+        public NtpSmoothTransitionDelegate(View view, ObservableSupplier<Integer> restoringState) {
+            mView = view;
+            mAnimator = buildSmoothTransition(view);
+            mRestoringState = restoringState;
+        }
+
+        @Override
+        public void prepare() {
+            assert !mAnimator.isRunning() : "Previous animation should not be running";
+            assert !mAnimatorStarted : "Previous animation should not be finished or cancelled.";
+            cancel();
+            mView.setAlpha(0f);
+        }
+
+        @Override
+        public void start(Runnable onEnd) {
+            assert !mAnimator.isRunning() : "Previous animation have been done or cancelled";
+            mAnimatorStarted = false;
+
+            mAnimator.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            onEnd.run();
+                        }
+                    });
+            mRestoringState.addObserver(mOnScrollStateChanged);
+            mHandler.postDelayed(mFallback, MAX_FEED_RESTORATION_DURATION);
+        }
+
+        @Override
+        public void cancel() {
+            mRestoringState.removeObserver(mOnScrollStateChanged);
+            mHandler.removeCallbacks(mFallback);
+            mAnimator.cancel();
+            mView.setAlpha(1f);
+        }
+
+        private static Animator buildSmoothTransition(View view) {
+            var animator = ObjectAnimator.ofFloat(view, View.ALPHA, 0f, 1f);
+            animator.setInterpolator(new FastOutSlowInInterpolator());
+            animator.setDuration(SMOOTH_TRANSITION_DURATION_MS);
+            return animator;
+        }
+
+        public Animator getAnimatorForTesting() {
+            return mAnimator;
+        }
+    }
 
     @Override
     public void onControlsOffsetChanged(
@@ -1294,7 +1382,9 @@ public class NewTabPage
     @Override
     public SmoothTransitionDelegate enableSmoothTransition() {
         if (mSmoothTransitionDelegate == null) {
-            mSmoothTransitionDelegate = new BasicSmoothTransitionDelegate(getView());
+            mSmoothTransitionDelegate =
+                    new NtpSmoothTransitionDelegate(
+                            getView(), mFeedSurfaceProvider.getRestoringStateSupplier());
         }
         return mSmoothTransitionDelegate;
     }
