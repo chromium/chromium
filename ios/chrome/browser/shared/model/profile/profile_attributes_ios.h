@@ -59,6 +59,7 @@ class ProfileAttributesIOS {
   base::Time GetLastActiveTime() const;
   bool IsAuthenticated() const;
   SessionIds GetDiscardedSessions() const;
+  const base::Value::Dict* GetNotificationPermissions() const;
 
   // Sets information related to the profile.
   void ClearIsNewProfile();
@@ -69,6 +70,7 @@ class ProfileAttributesIOS {
   void SetAttachedGaiaIds(const GaiaIdSet& gaia_ids);
   void SetLastActiveTime(base::Time time);
   void SetDiscardedSessions(const SessionIds& session_ids);
+  void SetNotificationPermissions(base::Value::Dict permissions);
 
   // Returns the storage.
   base::Value::Dict GetStorage() &&;

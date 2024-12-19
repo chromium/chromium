@@ -28,6 +28,7 @@ struct PermissionsPref {
   raw_ptr<PrefService> service;
   const std::string key;
   const std::string client_key;
+  const std::string profile_name;
 };
 
 }  // namespace
@@ -95,6 +96,7 @@ struct PermissionsPref {
   }
   ScopedDictPrefUpdate update(pref.service, pref.key);
   update->Set(pref.client_key, true);
+  [self setAttributesForProfile:pref.profile_name fromPrefs:pref.service];
   base::UmaHistogramEnumeration("IOS.PushNotification.Client.Enabled",
                                 clientID);
 }
@@ -109,6 +111,7 @@ struct PermissionsPref {
   }
   ScopedDictPrefUpdate update(pref.service, pref.key);
   update->Set(pref.client_key, false);
+  [self setAttributesForProfile:pref.profile_name fromPrefs:pref.service];
   base::UmaHistogramEnumeration("IOS.PushNotification.Client.Disabled",
                                 clientID);
 }
@@ -197,16 +200,40 @@ struct PermissionsPref {
         // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome
         // via ConsistencySigninPromo UI updates the
         // ProfileAttributesStorageIOS.
-        return {nullptr, prefs::kFeaturePushNotificationPermissions, clientKey};
+        return {nullptr, prefs::kFeaturePushNotificationPermissions, clientKey,
+                ""};
       }
       return {profile->GetPrefs(), prefs::kFeaturePushNotificationPermissions,
-              clientKey};
+              clientKey, profile->GetProfileName()};
     }
     case PushNotificationClientId::kTips:
     case PushNotificationClientId::kSafetyCheck:
       return {GetApplicationContext()->GetLocalState(),
-              prefs::kAppLevelPushNotificationPermissions, clientKey};
+              prefs::kAppLevelPushNotificationPermissions, clientKey, ""};
   }
+}
+
+// Copies the permissions dictionary from profile prefs to ProfileAttributesIOS
+// in order to make them accessible when the profile isn't loaded.
+- (void)setAttributesForProfile:(std::string_view)profileName
+                      fromPrefs:(PrefService*)prefs {
+  if (profileName.empty()) {
+    return;
+  }
+
+  const base::Value::Dict& permissions =
+      prefs->GetDict(prefs::kFeaturePushNotificationPermissions);
+  GetApplicationContext()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->UpdateAttributesForProfileWithName(
+          profileName,
+          base::BindOnce(
+              [](base::Value::Dict permissions, ProfileAttributesIOS attr) {
+                attr.SetNotificationPermissions(std::move(permissions));
+                return attr;
+              },
+              permissions.Clone()));
 }
 
 @end
