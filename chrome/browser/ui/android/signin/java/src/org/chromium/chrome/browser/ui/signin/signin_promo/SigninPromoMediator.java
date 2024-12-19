@@ -5,7 +5,11 @@
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -18,11 +22,28 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 final class SigninPromoMediator
         implements IdentityManager.Observer,
                 SyncService.SyncStateChangedListener,
                 AccountsChangeObserver,
                 ProfileDataCache.Observer {
+    private static final int MAX_TOTAL_PROMO_SHOW_COUNT = 100;
+
+    /** Strings used for promo event count histograms. */
+    // LINT.IfChange(Event)
+    @StringDef({Event.CONTINUED, Event.DISMISSED, Event.SHOWN})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Event {
+        String CONTINUED = "Continued";
+        String DISMISSED = "Dismissed";
+        String SHOWN = "Shown";
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/histograms.xml:SigninPromoAction)
+
     private final IdentityManager mIdentityManager;
     private final SyncService mSyncService;
     private final AccountManagerFacade mAccountManagerFacade;
@@ -55,8 +76,8 @@ final class SigninPromoMediator
         mModel =
                 SigninPromoProperties.createModel(
                         profileData,
-                        mDelegate::onPrimaryButtonClicked,
-                        mDelegate::onSecondaryButtonClicked,
+                        this::onPrimaryButtonClicked,
+                        this::onSecondaryButtonClicked,
                         this::onDismissButtonClicked,
                         delegate.getTitle(),
                         delegate.getDescription(),
@@ -85,6 +106,7 @@ final class SigninPromoMediator
             // Impressions are recorded only once per coordinator lifecycle.
             return;
         }
+        recordEventHistogram(Event.SHOWN);
         mDelegate.recordImpression();
         mWasImpressionRecorded = true;
     }
@@ -129,7 +151,18 @@ final class SigninPromoMediator
         return mModel;
     }
 
+    private void onPrimaryButtonClicked() {
+        recordEventHistogram(Event.CONTINUED);
+        mDelegate.onPrimaryButtonClicked();
+    }
+
+    private void onSecondaryButtonClicked() {
+        recordEventHistogram(Event.CONTINUED);
+        mDelegate.onSecondaryButtonClicked();
+    }
+
     private void onDismissButtonClicked() {
+        recordEventHistogram(Event.DISMISSED);
         mDelegate.onDismissButtonClicked();
         updateState();
     }
@@ -165,5 +198,13 @@ final class SigninPromoMediator
                             mAccountManagerFacade.getCoreAccountInfos());
         }
         return visibleAccount;
+    }
+
+    private void recordEventHistogram(@Event String actionType) {
+        RecordHistogram.recordExactLinearHistogram(
+                "Signin.SyncPromo." + actionType + ".Count." + mDelegate.getAccessPointName(),
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT),
+                MAX_TOTAL_PROMO_SHOW_COUNT);
     }
 }

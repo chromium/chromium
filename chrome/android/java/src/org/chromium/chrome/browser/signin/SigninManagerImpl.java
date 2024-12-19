@@ -627,7 +627,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.NTP),
+                                SigninPreferencesManager.SigninPromoAccessPointId.NTP),
                         0);
         SignOutCallback signOutCallback = mSignOutState.mSignOutCallback;
         if (mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {

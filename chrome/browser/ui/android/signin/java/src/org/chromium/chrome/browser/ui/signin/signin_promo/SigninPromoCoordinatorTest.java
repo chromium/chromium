@@ -50,6 +50,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -164,11 +165,11 @@ public class SigninPromoCoordinatorTest {
         ChromeSharedPreferences.getInstance()
                 .removeKey(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS));
+                                SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS));
         ChromeSharedPreferences.getInstance()
                 .removeKey(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.NTP));
+                                SigninPreferencesManager.SigninPromoAccessPointId.NTP));
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
         ChromeSharedPreferences.getInstance()
@@ -179,6 +180,15 @@ public class SigninPromoCoordinatorTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testPrimaryButtonClick(@SigninAccessPoint int accessPoint) {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Signin.SyncPromo.Shown.Count."
+                                        + getAccessPointToHistogramName(accessPoint))
+                        .expectAnyRecord(
+                                "Signin.SyncPromo.Continued.Count."
+                                        + getAccessPointToHistogramName(accessPoint))
+                        .build();
         setUpSignInPromo(accessPoint);
 
         onView(withId(R.id.sync_promo_signin_button)).perform(click());
@@ -202,12 +212,22 @@ public class SigninPromoCoordinatorTest {
                 config.withAccountSigninMode, WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
         assertEquals(config.historyOptInMode, historyOptInMode);
         assertNull(config.selectedCoreAccountId);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testSecondaryButtonClick(@SigninAccessPoint int accessPoint) {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Signin.SyncPromo.Shown.Count."
+                                        + getAccessPointToHistogramName(accessPoint))
+                        .expectAnyRecord(
+                                "Signin.SyncPromo.Continued.Count."
+                                        + getAccessPointToHistogramName(accessPoint))
+                        .build();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
 
@@ -232,12 +252,22 @@ public class SigninPromoCoordinatorTest {
                 config.withAccountSigninMode, WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET);
         assertEquals(config.historyOptInMode, HistorySyncConfig.OptInMode.NONE);
         assertNull(config.selectedCoreAccountId);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testDismissButtonClick(@SigninAccessPoint int accessPoint) {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Signin.SyncPromo.Shown.Count."
+                                        + getAccessPointToHistogramName(accessPoint))
+                        .expectAnyRecord(
+                                "Signin.SyncPromo.Dismissed.Count."
+                                        + getAccessPointToHistogramName(accessPoint))
+                        .build();
         setUpSignInPromo(accessPoint);
 
         if (accessPoint == SigninAccessPoint.RECENT_TABS) {
@@ -259,6 +289,7 @@ public class SigninPromoCoordinatorTest {
                                     .readBoolean(preferenceName, false));
                     assertFalse(mPromoCoordinator.canShowPromo());
                 });
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -274,9 +305,9 @@ public class SigninPromoCoordinatorTest {
         String preferenceName =
                 accessPoint == SigninAccessPoint.BOOKMARK_MANAGER
                         ? ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS)
+                                SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS)
                         : ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.NTP);
+                                SigninPreferencesManager.SigninPromoAccessPointId.NTP);
         // Impression is recorded asynchronously by ImpressionTracker.
         CriteriaHelper.pollUiThread(
                 () -> ChromeSharedPreferences.getInstance().readInt(preferenceName, 0) == 1);
@@ -293,14 +324,14 @@ public class SigninPromoCoordinatorTest {
         if (accessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
             String preferenceName =
                     ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                            SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS);
+                            SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
             ChromeSharedPreferences.getInstance()
                     .writeInt(
                             preferenceName, BookmarkSigninPromoDelegate.MAX_IMPRESSIONS_BOOKMARKS);
         } else if (accessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO) {
             String preferenceName =
                     ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                            SigninPreferencesManager.SyncPromoAccessPointId.NTP);
+                            SigninPreferencesManager.SigninPromoAccessPointId.NTP);
             ChromeSharedPreferences.getInstance()
                     .writeInt(preferenceName, NtpSigninPromoDelegate.MAX_IMPRESSIONS_NTP);
         }
@@ -393,6 +424,18 @@ public class SigninPromoCoordinatorTest {
             case SigninAccessPoint.BOOKMARK_MANAGER -> "BookmarkManager";
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> "NtpFeedTopPromo";
             case SigninAccessPoint.RECENT_TABS -> "RecentTabs";
+            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+        };
+    }
+
+    private static String getAccessPointToHistogramName(@SigninAccessPoint int accessPoint) {
+        return switch (accessPoint) {
+            case SigninAccessPoint.BOOKMARK_MANAGER -> SigninPreferencesManager
+                    .SigninPromoAccessPointId.BOOKMARKS;
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO -> SigninPreferencesManager
+                    .SigninPromoAccessPointId.NTP;
+            case SigninAccessPoint.RECENT_TABS -> SigninPreferencesManager.SigninPromoAccessPointId
+                    .RECENT_TABS;
             default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
         };
     }

@@ -398,7 +398,7 @@ public class SigninManagerImplTest {
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.NTP),
+                                SigninPreferencesManager.SigninPromoAccessPointId.NTP),
                         1);
 
         // Simulate sign-out with non-managed account.
@@ -419,7 +419,7 @@ public class SigninManagerImplTest {
                 ChromeSharedPreferences.getInstance()
                         .readInt(
                                 ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                        SigninPreferencesManager.SyncPromoAccessPointId.NTP)));
+                                        SigninPreferencesManager.SigninPromoAccessPointId.NTP)));
     }
 
     @Test

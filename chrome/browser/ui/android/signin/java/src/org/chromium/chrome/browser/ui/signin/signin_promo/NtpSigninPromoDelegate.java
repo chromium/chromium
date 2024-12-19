@@ -74,6 +74,12 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    @SigninPreferencesManager.SigninPromoAccessPointId
+    String getAccessPointName() {
+        return SigninPreferencesManager.SigninPromoAccessPointId.NTP;
+    }
+
+    @Override
     @SigninAccessPoint
     int getAccessPoint() {
         return SigninAccessPoint.NTP_FEED_TOP_PROMO;
@@ -154,6 +160,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
 
     private static String getPromoShowCountPreferenceName() {
         return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                SigninPreferencesManager.SyncPromoAccessPointId.NTP);
+                SigninPreferencesManager.SigninPromoAccessPointId.NTP);
     }
 }

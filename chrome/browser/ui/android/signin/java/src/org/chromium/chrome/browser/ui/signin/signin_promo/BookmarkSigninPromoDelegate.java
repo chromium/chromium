@@ -42,7 +42,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
         mPromoShowCountPreferenceName =
                 ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS);
+                        SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
     }
 
     @Override
@@ -53,6 +53,12 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     @Override
     String getDescription() {
         return mContext.getString(R.string.signin_promo_description_bookmarks);
+    }
+
+    @Override
+    @SigninPreferencesManager.SigninPromoAccessPointId
+    String getAccessPointName() {
+        return SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS;
     }
 
     @Override

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -49,6 +50,9 @@ public abstract class SigninPromoDelegate {
 
     /** Returns the description string for the promo. */
     abstract String getDescription();
+
+    /** Returns the access point name to be recorded in promo histograms. */
+    abstract @SigninPreferencesManager.SigninPromoAccessPointId String getAccessPointName();
 
     /**
      * Returns the {@link SigninAndHistorySyncActivityLauncher.AccessPoint} that will be used for

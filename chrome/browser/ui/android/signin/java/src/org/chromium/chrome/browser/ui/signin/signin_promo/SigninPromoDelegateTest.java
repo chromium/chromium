@@ -78,11 +78,11 @@ public class SigninPromoDelegateTest {
         ChromeSharedPreferences.getInstance()
                 .removeKey(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS));
+                                SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS));
         ChromeSharedPreferences.getInstance()
                 .removeKey(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.NTP));
+                                SigninPreferencesManager.SigninPromoAccessPointId.NTP));
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED);
         ChromeSharedPreferences.getInstance()

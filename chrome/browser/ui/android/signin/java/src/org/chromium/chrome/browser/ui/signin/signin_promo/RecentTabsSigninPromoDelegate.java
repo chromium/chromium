@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -39,6 +40,12 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     @Override
     String getDescription() {
         return mContext.getString(R.string.signin_promo_description_recent_tabs);
+    }
+
+    @Override
+    @SigninPreferencesManager.SigninPromoAccessPointId
+    String getAccessPointName() {
+        return SigninPreferencesManager.SigninPromoAccessPointId.RECENT_TABS;
     }
 
     @Override

@@ -216,15 +216,15 @@ public class SyncPromoController {
         switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS);
+                        SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
             case SigninAccessPoint.NTP_FEED_TOP_PROMO:
                 // This preference may get reset while the other ones are never reset unless device
                 // data is wiped.
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        SigninPreferencesManager.SyncPromoAccessPointId.NTP);
+                        SigninPreferencesManager.SigninPromoAccessPointId.NTP);
             case SigninAccessPoint.SETTINGS:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        SigninPreferencesManager.SyncPromoAccessPointId.SETTINGS);
+                        SigninPreferencesManager.SigninPromoAccessPointId.SETTINGS);
             default:
                 throw new IllegalArgumentException(
                         "Unexpected value for access point: " + accessPoint);
@@ -735,16 +735,16 @@ public class SyncPromoController {
         final String accessPoint;
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
-                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS;
+                accessPoint = SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS;
                 break;
             case SigninAccessPoint.NTP_FEED_TOP_PROMO:
-                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.NTP;
+                accessPoint = SigninPreferencesManager.SigninPromoAccessPointId.NTP;
                 break;
             case SigninAccessPoint.RECENT_TABS:
-                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.RECENT_TABS;
+                accessPoint = SigninPreferencesManager.SigninPromoAccessPointId.RECENT_TABS;
                 break;
             case SigninAccessPoint.SETTINGS:
-                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.SETTINGS;
+                accessPoint = SigninPreferencesManager.SigninPromoAccessPointId.SETTINGS;
                 break;
             default:
                 throw new IllegalArgumentException(
