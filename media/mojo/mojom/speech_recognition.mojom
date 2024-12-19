@@ -234,6 +234,7 @@ interface SpeechRecognitionSurfaceClient {
 // The remote lives in the renderer process and the receiver lives in the
 // browser process. Not necessary for browser-side features (e.g. CrOS system
 // Live Caption), which can access browser functionality directly.
+[Stable]
 interface SpeechRecognitionClientBrowserInterface {
   // Bind the speech recognition availability observer.
   BindSpeechRecognitionBrowserObserver@0(
