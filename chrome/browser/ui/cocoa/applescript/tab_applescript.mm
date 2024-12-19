@@ -326,6 +326,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
       savePageType = content::SAVE_PAGE_TYPE_AS_ONLY_HTML;
     } else if ([saveType isEqualToString:@"complete html"]) {
       savePageType = content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML;
+    } else if ([saveType isEqualToString:@"single file"]) {
+      savePageType = content::SAVE_PAGE_TYPE_AS_MHTML;
     } else {
       AppleScript::SetError(AppleScript::Error::kInvalidSaveType);
       return;
