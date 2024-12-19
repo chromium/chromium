@@ -174,6 +174,8 @@ void GlicWindowController::AttachToBrowser(Browser* browser,
     views::Widget::ReparentNativeView(widget_->GetNativeView(),
                                       widget->GetNativeView());
     NotifyIfPanelStateChanged();
+
+    widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
   }
 }
 
@@ -317,6 +319,10 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   views::Widget::ReparentNativeView(widget_->GetNativeView(),
                                     holder_widget_->GetNativeView());
   NotifyIfPanelStateChanged();
+
+  // When the glic window is in a detached state, elevate it's z-order to be
+  // always on top.
+  widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 }
 
 void GlicWindowController::AddStateObserver(StateObserver* observer) {
