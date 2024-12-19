@@ -256,7 +256,7 @@ if [ "$BRANDING" = "google_chrome" ]; then
 else
   source "${OUTPUTDIR}/installer/common/chromium-browser.info"
 fi
-eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/\1='\2'/" \
+eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/export \1='\2'/" \
   "${OUTPUTDIR}/installer/theme/BRANDING")
 
 verify_channel
@@ -265,7 +265,6 @@ verify_channel
 export DEBFULLNAME="${MAINTNAME}"
 export DEBEMAIL="${MAINTMAIL}"
 export ARCHITECTURE="${ARCHITECTURE}"
-TEMPLATE_ARCH="${ARCHITECTURE}"
 
 DEB_COMMON_DEPS="${OUTPUTDIR}/deb_common.deps"
 COMMON_DEPS=$(sed ':a;N;$!ba;s/\n/, /g' "${DEB_COMMON_DEPS}")

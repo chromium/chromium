@@ -215,7 +215,6 @@ OUTPUTDIR="${PWD}"
 trap cleanup 0
 process_opts "$@"
 export ARCHITECTURE="${ARCHITECTURE}"
-TEMPLATE_ARCH="${ARCHITECTURE}"
 IS_OFFICIAL_BUILD=${IS_OFFICIAL_BUILD:=0}
 
 STAGEDIR="${OUTPUTDIR}/rpm-staging-${CHANNEL}"
@@ -235,13 +234,13 @@ if [ "$BRANDING" = "google_chrome" ]; then
 else
   source "${OUTPUTDIR}/installer/common/chromium-browser.info"
 fi
-eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/\1='\2'/" \
+eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/export \1='\2'/" \
   "${OUTPUTDIR}/installer/theme/BRANDING")
 
 REPOCONFIG="https://dl.google.com/linux/${PACKAGE#google-}/rpm/stable"
 REPOCONFIGREGEX=
 verify_channel
-USR_BIN_SYMLINK_NAME="${PACKAGE}-${CHANNEL}"
+export USR_BIN_SYMLINK_NAME="${PACKAGE}-${CHANNEL}"
 
 stage_install_rpm
 do_package

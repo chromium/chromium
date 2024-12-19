@@ -375,7 +375,7 @@ determine_rpm_package_manager() {
   fi
 }
 
-DEFAULT_ARCH="@@TEMPLATE_ARCH@@"
+DEFAULT_ARCH="@@ARCHITECTURE@@"
 YUM_REPO_FILE="/etc/yum.repos.d/@@PACKAGE@@.repo"
 ZYPPER_REPO_FILE="/etc/zypp/repos.d/@@PACKAGE@@.repo"
 
@@ -507,7 +507,7 @@ update_repo_file() {
 #  rm -f /etc/zypp/repos.d/@@PACKAGE@@.repo
 #}
 
-DEFAULT_ARCH="@@TEMPLATE_ARCH@@"
+DEFAULT_ARCH="@@ARCHITECTURE@@"
 
 get_lib_dir() {
   if [ "$DEFAULT_ARCH" = "i386" ] || [ "$DEFAULT_ARCH" = "armhf" ] || \
