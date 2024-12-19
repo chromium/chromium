@@ -81,12 +81,16 @@ void BorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {}
 
 void BorderView::StartAnimation() {
   if (animation_ongoing_) {
-    LOG(ERROR) << "BorderView::StartAnimation was called while "
-                  "animation_ongoing_ is true.";
+    // The user can click on the glic icon after the window is shown. The
+    // animation is already playing at that time.
+    return;
+  }
+  if (!parent()) {
+    base::debug::DumpWithoutCrashing();
     return;
   }
   animation_ongoing_ = true;
-  SetBoundsRect(GetVisibleBounds());
+  SetBoundsRect(parent()->GetVisibleBounds());
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 }
