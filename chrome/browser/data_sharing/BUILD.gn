@@ -69,7 +69,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingMetrics.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupUtils.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManager.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabSwitcherDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupsDelegate.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/RecentActivityActionHandlerImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/TabGridDialogShareBottomSheetContent.java",
     ]

@@ -80,7 +80,7 @@ public class DataSharingTabManager {
             "https://support.google.com/chrome/?p=chrome_collaboration";
 
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
+    private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
@@ -130,7 +130,7 @@ public class DataSharingTabManager {
     /**
      * Constructor for a new {@link DataSharingTabManager} object.
      *
-     * @param tabSwitcherDelegate The delegate used to communicate with the tab switcher.
+     * @param tabGroupsDelegate The delegate used to communicate with the tab switcher.
      * @param bottomSheetControllerSupplier The supplier of bottom sheet state controller.
      * @param shareDelegateSupplier The supplier of share delegate.
      * @param windowAndroid The window base class that has the minimum functionality.
@@ -140,14 +140,14 @@ public class DataSharingTabManager {
      */
     public DataSharingTabManager(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            DataSharingTabSwitcherDelegate tabSwitcherDelegate,
+            DataSharingTabGroupsDelegate tabGroupsDelegate,
             Supplier<BottomSheetController> bottomSheetControllerSupplier,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Resources resources,
             OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mDataSharingTabSwitcherDelegate = tabSwitcherDelegate;
+        mDataSharingTabGroupsDelegate = tabGroupsDelegate;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mWindowAndroid = windowAndroid;
@@ -499,7 +499,7 @@ public class DataSharingTabManager {
         Integer tabId = group.savedTabs.get(0).localId;
         assert tabId != null;
         // TODO(b/354003616): Verify that the loading dialog is gone.
-        mDataSharingTabSwitcherDelegate.openTabGroupWithTabId(tabId);
+        mDataSharingTabGroupsDelegate.openTabGroupWithTabId(tabId);
     }
 
     /**
@@ -792,7 +792,7 @@ public class DataSharingTabManager {
                     @Override
                     public void onLearnMoreAboutSharedTabGroupsClicked(
                             Context context, String url) {
-                        mDataSharingTabSwitcherDelegate.openLearnMoreSharedTabGroupsPage(
+                        mDataSharingTabGroupsDelegate.openLearnMoreSharedTabGroupsPage(
                                 context, url);
                     }
                 };
@@ -835,7 +835,7 @@ public class DataSharingTabManager {
                 new RecentActivityActionHandlerImpl(
                         tabGroupSyncService,
                         mTabModelSelectorSupplier.get(),
-                        mDataSharingTabSwitcherDelegate,
+                        mDataSharingTabGroupsDelegate,
                         collaborationId,
                         existingGroup.syncId,
                         manageSharingCallback);

@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.data_sharing;
 import android.content.Context;
 
 /** An interface to handle actions related to tab groups. */
-public interface DataSharingTabSwitcherDelegate {
+public interface DataSharingTabGroupsDelegate {
     /**
      * Open the tab group dialog of the given tab group id.
      *

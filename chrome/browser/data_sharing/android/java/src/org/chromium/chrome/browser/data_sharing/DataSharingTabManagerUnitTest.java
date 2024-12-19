@@ -144,7 +144,7 @@ public class DataSharingTabManagerUnitTest {
     @Mock private DataSharingService mDataSharingService;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
-    @Mock private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
+    @Mock private DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private BottomSheetController mBottomSheetController;
@@ -183,7 +183,7 @@ public class DataSharingTabManagerUnitTest {
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mTabModelSelectorSupplier,
-                        mDataSharingTabSwitcherDelegate,
+                        mDataSharingTabGroupsDelegate,
                         mBottomSheetControllerSupplier,
                         mShareDelegateSupplier,
                         mWindowAndroid,
@@ -256,7 +256,7 @@ public class DataSharingTabManagerUnitTest {
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mTabModelSelectorSupplier,
-                        mDataSharingTabSwitcherDelegate,
+                        mDataSharingTabGroupsDelegate,
                         mBottomSheetControllerSupplier,
                         mShareDelegateSupplier,
                         mWindowAndroid,
@@ -289,7 +289,7 @@ public class DataSharingTabManagerUnitTest {
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(tab);
 
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
-        verify(mDataSharingTabSwitcherDelegate).openTabGroupWithTabId(TAB_ID);
+        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_ID);
     }
 
     @Test
@@ -302,7 +302,7 @@ public class DataSharingTabManagerUnitTest {
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
 
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
-        verify(mDataSharingTabSwitcherDelegate).openTabGroupWithTabId(TAB_ID);
+        verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_ID);
     }
 
     @Test

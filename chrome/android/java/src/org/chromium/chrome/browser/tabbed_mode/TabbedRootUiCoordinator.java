@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupsDelegate;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateFactory;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateImpl;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIphController;
@@ -437,13 +437,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSystemBarColorHelperSupplier = systemBarColorHelperSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
 
-        DataSharingTabSwitcherDelegate dataSharingTabSwitcherDelegate =
-                createDataSharingTabSwitcherDelegate();
+        DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate =
+                createDataSharingTabGroupsDelegate();
 
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mTabModelSelectorSupplier,
-                        dataSharingTabSwitcherDelegate,
+                        dataSharingTabGroupsDelegate,
                         this::getBottomSheetController,
                         mShareDelegateSupplier,
                         mWindowAndroid,
@@ -1301,8 +1301,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         });
     }
 
-    private DataSharingTabSwitcherDelegate createDataSharingTabSwitcherDelegate() {
-        return new DataSharingTabSwitcherDelegate() {
+    private DataSharingTabGroupsDelegate createDataSharingTabGroupsDelegate() {
+        return new DataSharingTabGroupsDelegate() {
 
             @Override
             public void openTabGroupWithTabId(int tabId) {
