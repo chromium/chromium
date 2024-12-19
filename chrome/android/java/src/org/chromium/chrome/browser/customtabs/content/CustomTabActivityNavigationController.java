@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -359,9 +360,20 @@ public class CustomTabActivityNavigationController
         } else {
             if (mIntentDataProvider.isInfoPage()) {
                 IntentHandler.startChromeLauncherActivityForTrustedIntent(intent);
-            } else {
+            } else if (PackageManagerUtils.canResolveActivity(intent)) {
                 mActivity.startActivity(intent, startActivityOptions);
                 finish(FinishReason.OPEN_IN_BROWSER);
+            } else {
+                // Silently crash to investigate https://crbug.com/384992232
+                boolean isPdf = tab.isNativePage() && tab.getNativePage().isPdf();
+                String logMessage =
+                        "This is not a crash. The intent to open the URL currently being"
+                                + " displayed in the Custom Tab in the regular browser can not be"
+                                + " resolved by any Activity on the system. intent.getPackage() = "
+                                + intent.getPackage()
+                                + " isPdf = "
+                                + isPdf;
+                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
             }
         }
         return true;
