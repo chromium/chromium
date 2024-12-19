@@ -891,9 +891,7 @@ void AutocorrectManager::OnFocus(int context_id) {
   }
 
   if (base::FeatureList::IsEnabled(ash::features::kImeRuleConfig)) {
-    GetTextFieldContextualInfo(
-        base::BindOnce(&AutocorrectManager::OnTextFieldContextualInfoChanged,
-                       base::Unretained(this)));
+    OnTextFieldContextualInfoChanged(GetTextFieldContextualInfo());
   }
 
   num_handled_autocorrect_in_text_field_ = 0;

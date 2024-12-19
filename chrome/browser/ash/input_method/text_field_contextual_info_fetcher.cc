@@ -34,7 +34,7 @@ void GetTextFieldAppTypeAndKey(TextFieldContextualInfo& info) {
   }
 }
 
-void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
+TextFieldContextualInfo GetTextFieldContextualInfo() {
   TextFieldContextualInfo info;
   GetTextFieldAppTypeAndKey(info);
 
@@ -45,7 +45,7 @@ void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
     }
   }
 
-  std::move(cb).Run(std::move(info));
+  return info;
 }
 
 std::optional<GURL> GetUrlForTextFieldOnAshChrome() {

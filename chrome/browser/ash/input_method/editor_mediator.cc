@@ -283,9 +283,7 @@ void EditorMediator::ShowNotice(
 }
 
 void EditorMediator::CacheContext() {
-  GetTextFieldContextualInfo(
-      base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+  OnTextFieldContextualInfoChanged(GetTextFieldContextualInfo());
 
   mako_bubble_coordinator_.CacheContextCaretBounds();
 
@@ -301,9 +299,7 @@ void EditorMediator::CacheContext() {
 }
 
 void EditorMediator::FetchAndUpdateInputContextForTesting() {
-  GetTextFieldContextualInfo(
-      base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+  OnTextFieldContextualInfoChanged(GetTextFieldContextualInfo());
 }
 
 EditorMediator::ServiceConnection::ServiceConnection(

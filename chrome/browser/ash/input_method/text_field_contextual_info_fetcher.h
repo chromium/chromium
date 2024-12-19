@@ -32,11 +32,8 @@ struct TextFieldContextualInfo {
 // hosted. This is a lightweight and synced call.
 void GetTextFieldAppTypeAndKey(TextFieldContextualInfo& info);
 
-using TextFieldContextualInfoCallback =
-    base::OnceCallback<void(const TextFieldContextualInfo& info)>;
-// Get the contextual info of the current text filed.
-// Its sub queries may go over IPCs.
-void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb);
+// Gets the contextual info of the currently focused text field.
+TextFieldContextualInfo GetTextFieldContextualInfo();
 
 // Get the current tab url if the text field is hosted by a tab.
 std::optional<GURL> GetUrlForTextFieldOnAshChrome();
