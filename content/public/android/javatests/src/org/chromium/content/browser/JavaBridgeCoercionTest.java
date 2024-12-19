@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import android.os.Build;
+
 import androidx.test.filters.SmallTest;
 
 import dalvik.system.DexClassLoader;
@@ -16,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
@@ -713,6 +716,9 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/385137265")
     public void testPassJavaObjectFromCustomClassLoader() throws Throwable {
         // Compiled bytecode (dex) for the following class:
         //
