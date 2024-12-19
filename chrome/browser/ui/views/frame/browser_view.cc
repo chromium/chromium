@@ -350,18 +350,6 @@ using web_modal::WebContentsModalDialogHost;
 
 namespace {
 
-// When enabled, changes the frame rate of the loading tab spinner to
-// 1 / kLoadingTabAnimationFrameDelay. In practice the goal is to reduce the
-// frame rate (increase kLoadingTabAnimationFrameDelay) to improve performance,
-// while still keeping a reasonable experience. Details in crbug.com/355000380.
-// The default rate is 1/0.03 ~= 33fps.
-BASE_FEATURE(kChangeFrameRateOfLoadingTabAnimation,
-             "ChangeFrameRateOfLoadingTabAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<base::TimeDelta> kLoadingTabAnimationFrameDelay = {
-    &kChangeFrameRateOfLoadingTabAnimation, "loading_tab_animation_frame_delay",
-    base::Milliseconds(30)};
-
 // The name of a key to store on the window handle so that other code can
 // locate this object using just the handle.
 const char* const kBrowserViewKey = "__BROWSER_VIEW__";
@@ -1676,8 +1664,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
 #endif
     // Loads are happening, and the timer isn't running, so start it.
     loading_animation_start_ = base::TimeTicks::Now();
-    loading_animation_timer_.Start(FROM_HERE,
-                                   kLoadingTabAnimationFrameDelay.Get(), this,
+    loading_animation_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
                                    &BrowserView::LoadingAnimationCallback);
   } else {
     loading_animation_timer_.Stop();
