@@ -16,6 +16,7 @@
 #import "components/sessions/core/tab_restore_service.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -419,24 +420,25 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 - (UIViewController*)facePileViewControllerForItem:(GridItemIdentifier*)itemID {
   CHECK(itemID.type == GridItemType::kGroup);
 
+  const TabGroup* tabGroup = itemID.tabGroupItem.tabGroup;
+
   if (!_shareKitService || !_shareKitService->IsSupported() ||
-      !_collaborationService || !_tabGroupSyncService) {
+      !_collaborationService || !_tabGroupSyncService || !tabGroup) {
     return nil;
   }
 
-  std::optional<tab_groups::SavedTabGroup> group =
-      _tabGroupSyncService->GetGroup(
-          itemID.tabGroupItem.tabGroup->tab_group_id());
-  if (!group.has_value() || !group->collaboration_id().has_value()) {
+  tab_groups::CollaborationId collaborationID =
+      tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
+  if (collaborationID->empty()) {
     return nil;
   }
-  NSString* savedCollabID =
-      base::SysUTF8ToNSString(group->collaboration_id()->value());
+  NSString* savedCollabID = base::SysUTF8ToNSString(collaborationID.value());
 
   // Configure the face pile.
   ShareKitFacePileConfiguration* config =
       [[ShareKitFacePileConfiguration alloc] init];
   config.collabID = savedCollabID;
+  config.backgroundColor = tabGroup->GetColor();
   config.showsEmptyState = NO;
   config.avatarSize = kFacePileAvatarSize;
 
