@@ -711,14 +711,30 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
             activity_log[1].collaboration_event);
 }
 
-TEST_F(MessagingBackendServiceImplTest, TestStoringTabEvents) {
+TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEvents) {
   CreateAndInitializeService();
+  AddPersistentMessageObserver();
 
   data_sharing::GroupId collaboration_group_id =
       data_sharing::GroupId("my group id");
   base::Time now = base::Time::Now();
   GaiaId gaia1("abc");
   GaiaId gaia2("def");
+  PersistentMessage expected_message_chip;
+  expected_message_chip.type = PersistentNotificationType::CHIP;
+  PersistentMessage expected_message_dot;
+  expected_message_dot.type = PersistentNotificationType::DIRTY_TAB;
+  PersistentMessage expected_message_dot_tab_group;
+  expected_message_dot_tab_group.type =
+      PersistentNotificationType::DIRTY_TAB_GROUP;
+  expected_message_dot_tab_group.collaboration_event =
+      CollaborationEvent::UNDEFINED;
+
+  // Enables support for dirty and non-dirty tab groups.
+  std::vector<collaboration_pb::Message> db_messages_dirty;
+  collaboration_pb::Message db_message;
+  db_messages_dirty.emplace_back(db_message);
+  std::vector<collaboration_pb::Message> db_messages_empty;
 
   // Always refers to the latest message that has been added to storage.
   collaboration_pb::Message message;
@@ -744,14 +760,44 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabEvents) {
   tab2->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
 
   // Create a third tab to check for removal.
+  base::Uuid tab3_sync_id = base::Uuid::GenerateRandomV4();
   tab_groups::SavedTabGroupTab tab3(GURL("https://www.example3.com/"), u"Tab 3",
-                                    tab_group.saved_guid(), std::nullopt);
+                                    tab_group.saved_guid(), std::nullopt,
+                                    tab3_sync_id);
   tab3.SetCreatedByAttribution(gaia1);
   tab3.SetUpdatedByAttribution(gaia2);
 
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
 
+  // Temporary storage of observer invocations.
+  PersistentMessage last_persistent_message_chip;
+  PersistentMessage last_persistent_message_dot;
+  PersistentMessage last_persistent_message_dot_tab_group;
+
+  // SCENARIO 1: Add a new tab.
+  // Should receive stored messages about tab added, and also there should be a
+  // dirty dot and chip for the tab, and a dirty dot for the group.
+  expected_message_chip.collaboration_event = CollaborationEvent::TAB_ADDED;
+  expected_message_dot.collaboration_event = CollaborationEvent::TAB_ADDED;
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_chip)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_chip));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_dot)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot));
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(db_messages_dirty));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(PersistentMessageTypeAndEventEq(
+                  expected_message_dot_tab_group)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
   tg_notifier_observer_->OnTabAdded(*tab1);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_ADDED, DirtyType::kDotAndChip,
@@ -765,7 +811,41 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabEvents) {
             message.tab_data().sync_tab_group_id());
   EXPECT_EQ(tab1->creation_time_windows_epoch_micros().ToTimeT(),
             message.event_timestamp());
+  EXPECT_EQ(tab1_sync_id,
+            last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
+                                        .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(tab1_sync_id,
+            last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
+                                        .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(tab_group.saved_guid(),
+            last_persistent_message_dot_tab_group.attribution
+                .tab_group_metadata->sync_tab_group_id);
 
+  // SCENARIO 2: Update a tab.
+  // Should receive stored messages about tab updated, and also there should be
+  // a dirty dot and chip for the tab, and a dirty dot for the group.
+  expected_message_chip.collaboration_event = CollaborationEvent::TAB_UPDATED;
+  expected_message_dot.collaboration_event = CollaborationEvent::TAB_UPDATED;
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_chip)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_chip));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_dot)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot));
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(db_messages_dirty));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(PersistentMessageTypeAndEventEq(
+                  expected_message_dot_tab_group)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
   tg_notifier_observer_->OnTabUpdated(*tab2);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_UPDATED,
@@ -779,7 +859,44 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabEvents) {
             message.tab_data().sync_tab_group_id());
   EXPECT_EQ(tab2->update_time_windows_epoch_micros().ToTimeT(),
             message.event_timestamp());
+  EXPECT_EQ(tab2_sync_id,
+            last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
+                                        .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(tab2_sync_id,
+            last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
+                                        .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(tab_group.saved_guid(),
+            last_persistent_message_dot_tab_group.attribution
+                .tab_group_metadata->sync_tab_group_id);
 
+  // SCENARIO 3: Remove a tab.
+  // Should receive stored messages about tab removed, and we should also remove
+  // the dirty dot and chip for the tab, as well as the group. In this
+  // particular scenario we are faking that there are no more dirty dots on tabs
+  // in the group, so the dot for the group should also go away.
+  expected_message_chip.collaboration_event = CollaborationEvent::TAB_REMOVED;
+  expected_message_dot.collaboration_event = CollaborationEvent::TAB_REMOVED;
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_chip)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_chip));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_dot)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot));
+  // No more dirty dots for the tab group.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(db_messages_empty));
+  EXPECT_CALL(mock_persistent_message_observer_,
+              HidePersistentMessage(PersistentMessageTypeAndEventEq(
+                  expected_message_dot_tab_group)))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
   tg_notifier_observer_->OnTabRemoved(tab3);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_REMOVED, DirtyType::kNone,
@@ -794,6 +911,17 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabEvents) {
   EXPECT_EQ(tab3.update_time_windows_epoch_micros().ToTimeT(),
             message.event_timestamp());
   EXPECT_EQ(tab3.url().spec(), message.tab_data().last_url());
+  EXPECT_EQ(tab3_sync_id,
+            last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
+                                        .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(tab3_sync_id,
+            last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
+  EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_dot.attribution
+                                        .tab_group_metadata->sync_tab_group_id);
+  EXPECT_EQ(tab_group.saved_guid(),
+            last_persistent_message_dot_tab_group.attribution
+                .tab_group_metadata->sync_tab_group_id);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
