@@ -37,32 +37,45 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
   ScriptPromise<AILanguageDetectorCapabilities> capabilities(
       ScriptState* script_state);
 
+  HeapMojoRemote<
+      language_detection::mojom::blink::ContentLanguageDetectionDriver>&
+  GetLangaugeDetectionDriverRemote();
+
  private:
   class AILanguageDetectorCreateTask
-      : public GarbageCollected<AILanguageDetectorCreateTask>,
-        public ExecutionContextClient {
+      : public GarbageCollected<AILanguageDetectorCreateTask> {
    public:
     AILanguageDetectorCreateTask(
-        ScriptPromiseResolver<AILanguageDetector>* resolver,
         ExecutionContext* execution_context,
         scoped_refptr<base::SequencedTaskRunner> task_runner,
+        ScriptPromiseResolver<AILanguageDetector>* resolver,
+        LanguageDetectionModel* model,
         const AILanguageDetectorCreateOptions* options);
 
-    void CreateDetector(base::OnceClosure on_created_callback);
+    void CreateDetector(base::File model_file);
 
-    void Trace(Visitor* visitor) const override;
+    void Trace(Visitor* visitor) const;
 
    private:
-    void OnModelLoaded(base::OnceClosure on_created_callback,
-                       base::expected<LanguageDetectionModel*,
+    void OnModelLoaded(base::expected<LanguageDetectionModel*,
                                       DetectLanguageError> maybe_model);
 
     Member<AICreateMonitor> monitor_;
     Member<ScriptPromiseResolver<AILanguageDetector>> resolver_;
+    Member<LanguageDetectionModel> language_detection_model_;
   };
 
-  HeapHashSet<Member<AILanguageDetectorCreateTask>> pending_tasks_;
+  static void OnModelFileReceived(LanguageDetectionModel* model,
+                                  AICreateMonitor* monitor,
+                                  base::OnceClosure on_created_callback,
+                                  base::File model_file);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  Member<LanguageDetectionModel> language_detection_model_;
+
+  HeapMojoRemote<
+      language_detection::mojom::blink::ContentLanguageDetectionDriver>
+      language_detection_driver_;
 };
 
 }  // namespace blink

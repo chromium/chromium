@@ -19,7 +19,7 @@ class AILanguageDetectorCapabilities final : public ScriptWrappable {
 
  public:
   using LanguageDetectionModelStatus =
-      LanguageDetectionModel::LanguageDetectionModelStatus;
+      language_detection::mojom::blink::LanguageDetectionModelStatus;
   explicit AILanguageDetectorCapabilities(
       LanguageDetectionModelStatus model_status);
   ~AILanguageDetectorCapabilities() override = default;

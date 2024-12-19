@@ -18,8 +18,6 @@
 
 namespace blink {
 
-class BrowserInterfaceBrokerProxy;
-
 enum class DetectLanguageError {
   // 0 intentionally skipped.
   // The model was not available for use.
@@ -37,25 +35,14 @@ class PLATFORM_EXPORT LanguageDetectionModel
       base::expected<LanguageDetectionModel*, DetectLanguageError>;
   using CreateLanguageDetectionModelCallback =
       base::OnceCallback<void(MaybeModel)>;
-  using LanguageDetectionModelStatus =
-      language_detection::mojom::blink::LanguageDetectionModelStatus;
-  using LanguageDetectionModelStatusCallback =
-      language_detection::mojom::blink::ContentLanguageDetectionDriver::
-          GetLanguageDetectionModelStatusCallback;
 
-  // Creates an instance and passes it to `callback` when the model has been
+  LanguageDetectionModel() = default;
+
+  // Loads the model file and passes this to `callback` when the model has been
   // loaded (or we know that it will fail to load). `interface_broker` can be
   // used to communicate with the browser to find the model.
-  static void Create(const blink::BrowserInterfaceBrokerProxy& interface_broker,
+  void LoadModelFile(base::File model_file,
                      CreateLanguageDetectionModelCallback callback);
-  static void GetStatus(
-      const blink::BrowserInterfaceBrokerProxy& interface_broker,
-      LanguageDetectionModelStatusCallback callback);
-
-  // Public for `MakeGarbageCollected`, use `Create` instead.
-  explicit LanguageDetectionModel(
-      const language_detection::LanguageDetectionModel&
-          language_detection_model);
 
   void Trace(Visitor* visitor) const;
 
@@ -74,15 +61,8 @@ class PLATFORM_EXPORT LanguageDetectionModel
   int64_t GetModelSize() const;
 
  private:
-  // `Create` passes this to be called with the result of requesting a model.
-  // It will call `callback` with the appropriate value based on the response.
-  static void OnModelResponseReceived(
-      CreateLanguageDetectionModelCallback callback,
-      language_detection::LanguageDetectionModel* model);
-
   // This model is shared across all execution contexts in the process.
-  const raw_ref<const language_detection::LanguageDetectionModel>
-      language_detection_model_;
+  language_detection::LanguageDetectionModel language_detection_model_;
 };
 
 }  // namespace blink

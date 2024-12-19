@@ -13,10 +13,10 @@ namespace blink {
 
 namespace {
 
+template <typename T>
 class RejectOnDestructionHelper {
  public:
-  explicit RejectOnDestructionHelper(
-      ScriptPromiseResolver<AILanguageDetectorCapabilities>* resolver)
+  explicit RejectOnDestructionHelper(ScriptPromiseResolver<T>* resolver)
       : resolver_(resolver) {
     CHECK(resolver);
   }
@@ -29,9 +29,7 @@ class RejectOnDestructionHelper {
   RejectOnDestructionHelper& operator=(RejectOnDestructionHelper&& other) =
       default;
 
-  Persistent<ScriptPromiseResolver<AILanguageDetectorCapabilities>> Take() {
-    return std::move(resolver_);
-  }
+  Persistent<ScriptPromiseResolver<T>> Take() { return std::move(resolver_); }
 
   ~RejectOnDestructionHelper() {
     if (resolver_) {
@@ -40,18 +38,24 @@ class RejectOnDestructionHelper {
   }
 
  private:
-  Persistent<ScriptPromiseResolver<AILanguageDetectorCapabilities>> resolver_;
+  Persistent<ScriptPromiseResolver<T>> resolver_;
 };
+
+void RejectModelNotAvailable(
+    ScriptPromiseResolver<AILanguageDetector>* resolver) {
+  resolver->Reject("Model not available");
+}
 
 }  // namespace
 
 AILanguageDetectorFactory::AILanguageDetectorCreateTask::
     AILanguageDetectorCreateTask(
-        ScriptPromiseResolver<AILanguageDetector>* resolver,
         ExecutionContext* execution_context,
         scoped_refptr<base::SequencedTaskRunner> task_runner,
+        ScriptPromiseResolver<AILanguageDetector>* resolver,
+        LanguageDetectionModel* model,
         const AILanguageDetectorCreateOptions* options)
-    : ExecutionContextClient(execution_context), resolver_(resolver) {
+    : resolver_(resolver), language_detection_model_(model) {
   if (options->hasMonitor()) {
     monitor_ =
         MakeGarbageCollected<AICreateMonitor>(execution_context, task_runner);
@@ -61,33 +65,21 @@ AILanguageDetectorFactory::AILanguageDetectorCreateTask::
 
 void AILanguageDetectorFactory::AILanguageDetectorCreateTask::Trace(
     Visitor* visitor) const {
-  ExecutionContextClient::Trace(visitor);
   visitor->Trace(resolver_);
   visitor->Trace(monitor_);
+  visitor->Trace(language_detection_model_);
 }
 
 void AILanguageDetectorFactory::AILanguageDetectorCreateTask::CreateDetector(
-    base::OnceClosure on_created_callback) {
-  LanguageDetectionModel::Create(
-      GetExecutionContext()->GetBrowserInterfaceBroker(),
+    base::File model_file) {
+  language_detection_model_->LoadModelFile(
+      std::move(model_file),
       WTF::BindOnce(&AILanguageDetectorFactory::AILanguageDetectorCreateTask::
                         OnModelLoaded,
-                    WrapPersistent(this), std::move(on_created_callback)));
-}
-
-AILanguageDetectorFactory::AILanguageDetectorFactory(
-    ExecutionContext* context,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : ExecutionContextClient(context), task_runner_(task_runner) {}
-
-void AILanguageDetectorFactory::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
-  visitor->Trace(pending_tasks_);
+                    WrapPersistent(this)));
 }
 
 void AILanguageDetectorFactory::AILanguageDetectorCreateTask::OnModelLoaded(
-    base::OnceClosure on_created_callback,
     base::expected<LanguageDetectionModel*, DetectLanguageError> maybe_model) {
   if (maybe_model.has_value()) {
     LanguageDetectionModel* model = maybe_model.value();
@@ -102,11 +94,24 @@ void AILanguageDetectorFactory::AILanguageDetectorCreateTask::OnModelLoaded(
   } else {
     switch (maybe_model.error()) {
       case DetectLanguageError::kUnavailable:
-        resolver_->Reject("Model not available");
+        RejectModelNotAvailable(resolver_);
     }
   }
+}
 
-  std::move(on_created_callback).Run();
+AILanguageDetectorFactory::AILanguageDetectorFactory(
+    ExecutionContext* context,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : ExecutionContextClient(context),
+      task_runner_(task_runner),
+      language_detection_model_(MakeGarbageCollected<LanguageDetectionModel>()),
+      language_detection_driver_(context) {}
+
+void AILanguageDetectorFactory::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
+  visitor->Trace(language_detection_model_);
+  visitor->Trace(language_detection_driver_);
 }
 
 ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
@@ -125,14 +130,19 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
           script_state);
   AILanguageDetectorCreateTask* create_task =
       MakeGarbageCollected<AILanguageDetectorCreateTask>(
-          resolver, GetExecutionContext(), task_runner_, options);
-  pending_tasks_.insert(create_task);
-  create_task->CreateDetector(WTF::BindOnce(
-      [](AILanguageDetectorFactory* factory,
-         AILanguageDetectorCreateTask* task) {
-        factory->pending_tasks_.erase(task);
+          GetExecutionContext(), task_runner_, resolver,
+          language_detection_model_, options);
+  GetLangaugeDetectionDriverRemote()->GetLanguageDetectionModel(WTF::BindOnce(
+      [](RejectOnDestructionHelper<AILanguageDetector> resolver_holder,
+         AILanguageDetectorCreateTask* create_task, base::File model_file) {
+        auto resolver(resolver_holder.Take());
+        if (!model_file.IsValid()) {
+          RejectModelNotAvailable(resolver);
+        }
+        create_task->CreateDetector(std::move(model_file));
       },
-      WrapWeakPersistent(this), WrapPersistent(create_task)));
+      RejectOnDestructionHelper(resolver), WrapPersistent(create_task)));
+
   return resolver->Promise();
 }
 
@@ -143,17 +153,29 @@ AILanguageDetectorFactory::capabilities(ScriptState* script_state) {
   // The call may silently fail on mojo connection errors. The
   // RejectOnDestructionHelper class is created to reject the promise if
   // such error happens.
-  LanguageDetectionModel::GetStatus(
-      GetExecutionContext()->GetBrowserInterfaceBroker(),
+  GetLangaugeDetectionDriverRemote()->GetLanguageDetectionModelStatus(
       WTF::BindOnce(
-          [](RejectOnDestructionHelper resolver,
-             LanguageDetectionModel::LanguageDetectionModelStatus status) {
+          [](RejectOnDestructionHelper<AILanguageDetectorCapabilities> resolver,
+             AILanguageDetectorCapabilities::LanguageDetectionModelStatus
+                 status) {
             resolver.Take()->Resolve(
                 MakeGarbageCollected<AILanguageDetectorCapabilities>(status));
           },
           RejectOnDestructionHelper(resolver)));
 
   return resolver->Promise();
+}
+
+HeapMojoRemote<
+    language_detection::mojom::blink::ContentLanguageDetectionDriver>&
+AILanguageDetectorFactory::GetLangaugeDetectionDriverRemote() {
+  if (!language_detection_driver_.is_bound()) {
+    if (GetExecutionContext()) {
+      GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+          language_detection_driver_.BindNewPipeAndPassReceiver(task_runner_));
+    }
+  }
+  return language_detection_driver_;
 }
 
 }  // namespace blink

@@ -7,7 +7,7 @@
 namespace blink {
 namespace {
 using LanguageDetectionModelStatus =
-    LanguageDetectionModel::LanguageDetectionModelStatus;
+    AILanguageDetectorCapabilities::LanguageDetectionModelStatus;
 V8AICapabilityAvailability MapToV8Capability(
     LanguageDetectionModelStatus model_status) {
   switch (model_status) {
