@@ -48,6 +48,13 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag controlling the display of surveys when a user does not
+// accept an Autofill suggestion. The goal is to understand the reason and work
+// towards improving acceptance.
+BASE_FEATURE(kAutofillAddressUserDeclinedSuggestionSurvey,
+             "AutofillAddressUserDeclinedSuggestionSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",
