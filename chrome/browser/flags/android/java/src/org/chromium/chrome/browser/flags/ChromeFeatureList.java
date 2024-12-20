@@ -658,10 +658,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDelayTempStripRemoval =
             newCachedFlag(DELAY_TEMP_STRIP_REMOVAL, false);
     public static final CachedFlag sDisableInstanceLimit =
-            newCachedFlag(
-                    DISABLE_INSTANCE_LIMIT,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(DISABLE_INSTANCE_LIMIT, false);
     public static final CachedFlag sDownloadsMigrateToJobsAPI =
             newCachedFlag(DOWNLOADS_MIGRATE_TO_JOBS_API, false);
     public static final CachedFlag sDrawKeyNativeEdgeToEdge =
