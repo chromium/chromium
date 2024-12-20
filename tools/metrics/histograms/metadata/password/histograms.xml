@@ -4627,6 +4627,17 @@ chromium-metrics-reviews@google.com.
   <token key="Store" variants="Store"/>
 </histogram>
 
+<histogram name="PasswordManager.{Store}ReencryptedWithAsyncOSCrypt"
+    enum="BooleanOccurred" expires_after="2025-03-26">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Password store was fully reencrypted with the app-bound OSCrypt API.
+    Recorded at most once per day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
 <histogram name="PasswordManager.{Store}RemoveLoginDBError"
     enum="SqliteLoggedResultCode" expires_after="2025-05-26">
   <owner>sygiet@google.com</owner>
