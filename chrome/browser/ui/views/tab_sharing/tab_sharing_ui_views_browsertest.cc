@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -72,13 +73,18 @@ infobars::ContentInfoBarManager* GetInfoBarManager(Browser* browser, int tab) {
       GetWebContents(browser, tab));
 }
 
+TabSharingInfoBar* GetInfoBar(Browser* browser, int tab) {
+  return static_cast<TabSharingInfoBar*>(
+      GetInfoBarManager(browser, tab)->infobars()[0]);
+}
+
 TabSharingInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
   return static_cast<TabSharingInfoBarDelegate*>(
-      GetInfoBarManager(browser, tab)->infobars()[0]->delegate());
+      GetInfoBar(browser, tab)->delegate());
 }
 
 std::u16string GetInfobarMessageText(Browser* browser, int tab) {
-  return GetDelegate(browser, tab)->GetMessageText();
+  return GetInfoBar(browser, tab)->label_for_testing()->GetText();
 }
 
 bool HasShareThisTabInsteadButton(Browser* browser, int tab) {
