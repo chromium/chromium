@@ -85,6 +85,8 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
         .WillByDefault(testing::Return(TestPromptType()));
     ON_CALL(*mock_privacy_sandbox_service, IsPromptOpenForBrowser(testing::_))
         .WillByDefault(testing::Return(false));
+    ON_CALL(*mock_privacy_sandbox_service, IsHoldingHandle())
+        .WillByDefault(testing::Return(true));
   }
 
   virtual PrivacySandboxService::PromptType TestPromptType() {

@@ -381,19 +381,13 @@ class FirstRunParameterizedInteractiveUiTest
     FirstRunInteractiveUiTestBase::SetUp();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    FirstRunInteractiveUiTestBase::SetUpInProcessBrowserTestFixture();
-    if (WithPrivacySandboxEnabled()) {
-      PrivacySandboxService::SetPromptDisabledForTests(false);
-    }
-  }
-
   void SetUpOnMainThread() override {
     FirstRunInteractiveUiTestBase::SetUpOnMainThread();
 
     if (WithPrivacySandboxEnabled()) {
       host_resolver()->AddRule("*", "127.0.0.1");
       embedded_test_server()->StartAcceptingConnections();
+      PrivacySandboxService::SetPromptDisabledForTests(false);
     }
 
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
@@ -695,7 +689,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   if (WithPrivacySandboxEnabled()) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(chrome::kChromeUINewTabPageURL),
-        WindowOpenDisposition::CURRENT_TAB,
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     // Test that the Privacy Sandbox prompt gets displayed in the browser after
     // the user makes a Search Engine Choice in the FRE.

@@ -966,10 +966,11 @@ void UpdateNoticeStorage(
 user_education::ProductMessagingController*
 PrivacySandboxServiceImpl::GetProductMessagingController() {
   if (!product_messaging_controller_) {
-    auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
-    // Ensure this service is created for queueing purposes.
-    CHECK(service);
-    product_messaging_controller_ = &service->product_messaging_controller();
+    // If there is a valid service, set it.
+    if (auto* service =
+            UserEducationServiceFactory::GetForBrowserContext(profile_)) {
+      product_messaging_controller_ = &service->product_messaging_controller();
+    }
   }
   return product_messaging_controller_;
 }
@@ -1011,14 +1012,22 @@ void PrivacySandboxServiceImpl::MaybeUnqueueNotice(
 
   // Release the handle if we are holding it (checked by controller).
   notice_handle_.Release();
-  // Unqueue if we are in the queue (checked by controller).
-  GetProductMessagingController()->UnqueueRequiredNotice(kPrivacySandboxNotice);
-  base::RecordAction(
-      base::UserMetricsAction(QueueSourceToUserActionString(unqueue_source)));
+
+  // Ensure we don't attempt to access the product messaging controller if it
+  // doesn't exist.
+  if (auto* product_messaging_controller = GetProductMessagingController()) {
+    // Unqueue if we are in the queue (handled by controller).
+    product_messaging_controller->UnqueueRequiredNotice(kPrivacySandboxNotice);
+    base::RecordAction(
+        base::UserMetricsAction(QueueSourceToUserActionString(unqueue_source)));
+  }
 }
 
 bool PrivacySandboxServiceImpl::IsNoticeQueued() {
-  return GetProductMessagingController()->IsNoticeQueued(kPrivacySandboxNotice);
+  if (auto* product_messaging_controller = GetProductMessagingController()) {
+    return product_messaging_controller->IsNoticeQueued(kPrivacySandboxNotice);
+  }
+  return false;
 }
 
 void PrivacySandboxServiceImpl::MaybeQueueNotice(
@@ -1038,11 +1047,13 @@ void PrivacySandboxServiceImpl::MaybeQueueNotice(
     return;
   }
 
-  GetProductMessagingController()->QueueRequiredNotice(
+  if (auto* product_messaging_controller = GetProductMessagingController()) {
+    product_messaging_controller->QueueRequiredNotice(
       kPrivacySandboxNotice,
       base::BindOnce(&PrivacySandboxServiceImpl::HoldQueueHandle, weak_factory_.GetWeakPtr()), {/* TODO(crbug.com/370804492): When we add the DMA notice, add it to this show_after_ list*/});
-  base::RecordAction(
-      base::UserMetricsAction(QueueSourceToUserActionString(queue_source)));
+    base::RecordAction(
+        base::UserMetricsAction(QueueSourceToUserActionString(queue_source)));
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
