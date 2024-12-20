@@ -85,6 +85,8 @@ inline constexpr auto kLensEphemeralModuleVariationLabels =
 // Labels for emphemeral android modules.
 const char kDefaultBrowserPromo[] = "DefaultBrowserPromo";
 const char kTabGroupPromo[] = "TabGroupPromo";
+const char kTabGroupSyncPromo[] = "TabGroupSyncPromo";
+const char kQuickDeletePromo[] = "QuickDeletePromo";
 
 // Commandline ASCII Switch key to indicate that the test module backend ranker
 // should be used.

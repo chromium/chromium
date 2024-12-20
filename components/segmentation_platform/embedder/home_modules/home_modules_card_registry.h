@@ -75,6 +75,12 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
 
   base::WeakPtr<HomeModulesCardRegistry> GetWeakPtr();
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns true if this is the first time the card is displayed to the user in
+  // the current session and the event should be recorded.
+  bool ShouldNotifyCardShownPerSession(const std::string& card_name);
+#endif
+
  private:
   // Populats `all_cards_by_priority_`.
   void CreateAllCards();
@@ -104,6 +110,13 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
 
   // The total count of the inputs of all cards.
   size_t all_cards_input_size_{0};
+
+#if BUILDFLAG(IS_ANDROID)
+  // A list includes all educational tip card types (excluding the default
+  // browser promo card) that have been displayed to the user during the current
+  // session.
+  std::unordered_set<std::string> shown_in_current_session_;
+#endif
 
   base::WeakPtrFactory<HomeModulesCardRegistry> weak_ptr_factory_{this};
 };

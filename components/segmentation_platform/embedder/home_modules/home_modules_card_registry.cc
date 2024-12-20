@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
@@ -245,14 +246,32 @@ void HomeModulesCardRegistry::NotifyCardShown(const char* card_name) {
         profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
     profile_prefs_->SetInteger(kDefaultBrowserPromoImpressionCounterPref,
                                freshness_impression_count + 1);
-  } else if (strcmp(card_name, kTabGroupPromo) == 0) {
-    int freshness_impression_count =
-        profile_prefs_->GetInteger(kTabGroupPromoImpressionCounterPref);
-    profile_prefs_->SetInteger(kTabGroupPromoImpressionCounterPref,
-                               freshness_impression_count + 1);
+  } else if (ShouldNotifyCardShownPerSession(card_name)) {
+    // Educational tip cards, except for the default browser promo card, will
+    // send a notification when the card is shown once per session, rather than
+    // every time it is displayed.
+    if (strcmp(card_name, kTabGroupPromo) == 0) {
+      int freshness_impression_count =
+          profile_prefs_->GetInteger(kTabGroupPromoImpressionCounterPref);
+      profile_prefs_->SetInteger(kTabGroupPromoImpressionCounterPref,
+                                 freshness_impression_count + 1);
+    }
   }
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool HomeModulesCardRegistry::ShouldNotifyCardShownPerSession(
+    const std::string& card_name) {
+  if (shown_in_current_session_.find(card_name) !=
+      shown_in_current_session_.end()) {
+    return false;
+  }
+
+  shown_in_current_session_.insert(card_name);
+  return true;
+}
+#endif
 
 void HomeModulesCardRegistry::NotifyCardInteracted(const char* card_name) {
 #if BUILDFLAG(IS_IOS)

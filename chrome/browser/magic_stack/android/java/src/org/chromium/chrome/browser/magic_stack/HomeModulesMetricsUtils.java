@@ -129,11 +129,11 @@ public class HomeModulesMetricsUtils {
             case DEFAULT_BROWSER_PROMO:
                 return "DefaultBrowserPromo";
             case TAB_GROUPS:
-                return "TabGroups";
+                return "TabGroupPromo";
             case TAB_GROUP_SYNC:
-                return "TabGroupSync";
+                return "TabGroupSyncPromo";
             case QUICK_DELETE:
-                return "QuickDelete";
+                return "QuickDeletePromo";
             default:
                 assert false : "Module type not supported!";
                 return null;
@@ -177,11 +177,11 @@ public class HomeModulesMetricsUtils {
                 return AUXILIARY_SEARCH;
             case "DefaultBrowserPromo":
                 return DEFAULT_BROWSER_PROMO;
-            case "TabGroups":
+            case "TabGroupPromo":
                 return TAB_GROUPS;
-            case "TabGroupSync":
+            case "TabGroupSyncPromo":
                 return TAB_GROUP_SYNC;
-            case "QuickDelete":
+            case "QuickDeletePromo":
                 return QUICK_DELETE;
             default:
                 assert false : "Module type not supported!";

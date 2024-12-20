@@ -69,8 +69,6 @@ static void JNI_HomeModulesRankingHelper_NotifyCardShown(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jstring>& card_label) {
-  // TODO(https://crbug.com/382803396): this should only update once per
-  // sessions.
   DCHECK(profile);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::

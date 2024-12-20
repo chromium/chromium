@@ -225,4 +225,20 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
 #endif
 }
 
+// Tests that for educational tip cards, except for the default browser promo
+// card, could send a notification when the card is shown once per session,
+// rather than every time it is displayed.
+TEST_F(HomeModulesCardRegistryTest, TestShouldNotifyCardShownPerSession) {
+#if BUILDFLAG(IS_ANDROID)
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+  const char* card_name_1 = "TabGroupPromo";
+  const char* card_name_2 = "TabGroupSyncPromo";
+  EXPECT_TRUE(registry_->ShouldNotifyCardShownPerSession(card_name_1));
+  EXPECT_FALSE(registry_->ShouldNotifyCardShownPerSession(card_name_1));
+  EXPECT_TRUE(registry_->ShouldNotifyCardShownPerSession(card_name_2));
+  EXPECT_FALSE(registry_->ShouldNotifyCardShownPerSession(card_name_2));
+#endif
+}
+
 }  // namespace segmentation_platform::home_modules

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the educational tip module. */
@@ -20,10 +21,12 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
     public EducationalTipModuleCoordinator(
             @ModuleType int moduleType,
             @NonNull ModuleDelegate moduleDelegate,
-            @NonNull EducationTipModuleActionDelegate actionDelegate) {
+            @NonNull EducationTipModuleActionDelegate actionDelegate,
+            @NonNull Profile profile) {
         PropertyModel model = new PropertyModel(EducationalTipModuleProperties.ALL_KEYS);
         mMediator =
-                new EducationalTipModuleMediator(moduleType, model, moduleDelegate, actionDelegate);
+                new EducationalTipModuleMediator(
+                        moduleType, model, moduleDelegate, actionDelegate, profile);
     }
 
     // ModuleProvider implementation.

@@ -93,11 +93,6 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
         }
     }
 
-    @Override
-    public @EducationalTipCardType int getCardType() {
-        return EducationalTipCardType.DEFAULT_BROWSER_PROMO;
-    }
-
     private Intent createBottomSheetOnClickIntent() {
         Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

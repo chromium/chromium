@@ -5,12 +5,17 @@
 package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -30,9 +35,17 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 /** Test relating to {@link EducationalTipModuleBuilder} */
@@ -49,16 +62,40 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private ObservableSupplier<Profile> mProfileSupplier;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
+    @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabGroupModelFilterProvider mProvider;
+    @Mock private TabGroupModelFilter mNormalFilter;
+    @Mock private TabGroupModelFilter mIncognitoFilter;
+    @Mock private TabModel mNormalModel;
+    @Mock private TabModel mIncognitoModel;
 
     private EducationalTipModuleBuilder mModuleBuilder;
+    private Context mContext;
 
     @Before
     public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         when(mProfileSupplier.hasValue()).thenReturn(true);
         when(mProfileSupplier.get()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
         TrackerFactory.setTrackerForTests(mTracker);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
+                .thenReturn(true);
+        when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.getTabGroupModelFilterProvider()).thenReturn(mProvider);
+        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ false)).thenReturn(mNormalFilter);
+        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ true))
+                .thenReturn(mIncognitoFilter);
+        when(mNormalFilter.getTabGroupCount()).thenReturn(0);
+        when(mIncognitoFilter.getTabGroupCount()).thenReturn(0);
+        when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalModel);
+        when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);
+        when(mNormalModel.getCount()).thenReturn(0);
+        when(mIncognitoModel.getCount()).thenReturn(0);
+
         mModuleBuilder =
                 new EducationalTipModuleBuilder(
                         ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);
@@ -76,11 +113,44 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
+    })
     public void testBuildEducationalTipModule_Eligible() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
+    })
+    public void testCreateInputContext() {
+        InputContext inputContextForTest = mModuleBuilder.createInputContext();
+        assertNotNull(
+                inputContextForTest.getEntryForTesting(
+                        "should_show_non_role_manager_default_browser_promo"));
+        assertNotNull(
+                inputContextForTest.getEntryForTesting(
+                        "has_default_browser_promo_shown_in_other_surface"));
+        assertNull(inputContextForTest.getEntryForTesting("tab_group_exists"));
+        assertNull(inputContextForTest.getEntryForTesting("number_of_tabs"));
+
+        EducationalTipModuleBuilder moduleBuilderForTabGroupPromo =
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUPS, mActionDelegate);
+        inputContextForTest = moduleBuilderForTabGroupPromo.createInputContext();
+        assertNull(
+                inputContextForTest.getEntryForTesting(
+                        "should_show_non_role_manager_default_browser_promo"));
+        assertNull(
+                inputContextForTest.getEntryForTesting(
+                        "has_default_browser_promo_shown_in_other_surface"));
+        assertNotNull(inputContextForTest.getEntryForTesting("tab_group_exists"));
+        assertNotNull(inputContextForTest.getEntryForTesting("number_of_tabs"));
     }
 }

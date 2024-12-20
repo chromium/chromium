@@ -2249,6 +2249,30 @@ const FeatureEntry::FeatureParam kDefaultBrowserPromoHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
      segmentation_platform::kDefaultBrowserPromo},
 };
+const FeatureEntry::FeatureParam kTabGroupPromoShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kTabGroupPromo},
+};
+const FeatureEntry::FeatureParam kTabGroupPromoHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kTabGroupPromo},
+};
+const FeatureEntry::FeatureParam kTabGroupSyncPromoShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kTabGroupSyncPromo},
+};
+const FeatureEntry::FeatureParam kTabGroupSyncPromoHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kTabGroupSyncPromo},
+};
+const FeatureEntry::FeatureParam kQuickDeletePromoShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kQuickDeletePromo},
+};
+const FeatureEntry::FeatureParam kQuickDeletePromoHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kQuickDeletePromo},
+};
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
@@ -2256,26 +2280,18 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          std::size(kDefaultBrowserPromoShowArm), nullptr},
         {"- Force hide default browser promo", kDefaultBrowserPromoHideArm,
          std::size(kDefaultBrowserPromoHideArm), nullptr},
-};
-
-const FeatureEntry::FeatureParam kEducationalTipModule_force_default_browser[] =
-    {{"force_default_browser", "true"}};
-const FeatureEntry::FeatureParam kEducationalTipModule_force_tab_group[] = {
-    {"force_tab_group", "true"}};
-const FeatureEntry::FeatureParam kEducationalTipModule_force_tab_group_sync[] =
-    {{"force_tab_group_sync", "true"}};
-const FeatureEntry::FeatureParam kEducationalTipModule_force_quick_delete[] = {
-    {"force_quick_delete", "true"}};
-
-const FeatureEntry::FeatureVariation kEducationalTipModuleVariations[] = {
-    {"Show default browser promo", kEducationalTipModule_force_default_browser,
-     std::size(kEducationalTipModule_force_default_browser), nullptr},
-    {"Show tab group promo", kEducationalTipModule_force_tab_group,
-     std::size(kEducationalTipModule_force_tab_group), nullptr},
-    {"Show tab group sync promo", kEducationalTipModule_force_tab_group_sync,
-     std::size(kEducationalTipModule_force_tab_group_sync), nullptr},
-    {"Show quick delete promo", kEducationalTipModule_force_quick_delete,
-     std::size(kEducationalTipModule_force_quick_delete), nullptr},
+        {"- Force show tab group promo", kTabGroupPromoShowArm,
+         std::size(kTabGroupPromoShowArm), nullptr},
+        {"- Force hide tab group promo", kTabGroupPromoHideArm,
+         std::size(kTabGroupPromoHideArm), nullptr},
+        {"- Force show tab group sync promo", kTabGroupSyncPromoShowArm,
+         std::size(kTabGroupSyncPromoShowArm), nullptr},
+        {"- Force hide tab group sync promo", kTabGroupSyncPromoHideArm,
+         std::size(kTabGroupSyncPromoHideArm), nullptr},
+        {"- Force show quick delete promo", kQuickDeletePromoShowArm,
+         std::size(kQuickDeletePromoShowArm), nullptr},
+        {"- Force hide quick delete promo", kQuickDeletePromoHideArm,
+         std::size(kQuickDeletePromoHideArm), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
@@ -7206,10 +7222,8 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-educational-tip-module",
      flag_descriptions::kEducationalTipModuleName,
      flag_descriptions::kEducationalTipModuleDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kEducationalTipModule,
-         kEducationalTipModuleVariations,
-         "EducationalTipModule")},
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kEducationalTipModule)},
 
     {"enable-segmentation-platform-ephemeral_card_ranker",
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
