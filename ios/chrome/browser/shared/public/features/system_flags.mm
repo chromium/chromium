@@ -66,6 +66,7 @@ NSString* const kTipsMagicStackLensShopWithImage =
 NSString* const kTipsMagicStackStateOverride = @"TipsMagicStackStateOverride";
 NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
 NSString* const kInactiveTabsTestMode = @"InactiveTabsTestMode";
+NSString* const kAsyncStartupOverrideResponse = @"AsyncStartupOverrideResponse";
 }  // namespace
 
 namespace experimental_flags {
@@ -331,6 +332,20 @@ NSString* GetTabResumptionDecorationOverride() {
     return override_value;
   }
   return nil;
+}
+
+bool ShouldOpenInIncognitoOverride() {
+  NSString* value = [[NSUserDefaults standardUserDefaults]
+      stringForKey:kAsyncStartupOverrideResponse];
+  return ([value isEqualToString:@"FirstPartyIncognitoNoDelay"] ||
+          [value isEqualToString:@"FirstPartyIncognito500Delay"]);
+}
+
+bool ShouldDelayAsyncStartup() {
+  NSString* value = [[NSUserDefaults standardUserDefaults]
+      stringForKey:kAsyncStartupOverrideResponse];
+  return ([value isEqualToString:@"FirstPartyIncognito500Delay"] ||
+          [value isEqualToString:@"500ms"]);
 }
 
 }  // namespace experimental_flags
