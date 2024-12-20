@@ -25,10 +25,6 @@
 #include <sys/sysmacros.h>
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
 namespace gpu {
 
 namespace {
@@ -207,13 +203,7 @@ bool VulkanInstance::CreateInstance(
   VkResult result =
       vkCreateInstance(&instance_create_info, nullptr, &owned_vk_instance_);
   if (VK_SUCCESS != result) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/381535049): Remove deqp level printing after figuring out
-    // device initialization discrepancies.
-    const auto* build_info = base::android::BuildInfo::GetInstance();
-    LOG(ERROR) << "deqp_level=" << build_info->vulkan_deqp_level();
-#endif
-    LOG(ERROR) << "vkCreateInstance() failed: " << static_cast<int>(result);
+    LOG(ERROR) << "vkCreateInstance() failed: " << result;
     return false;
   }
   vk_instance_ = owned_vk_instance_;
