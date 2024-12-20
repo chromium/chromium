@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -231,7 +232,7 @@ public final class UrlFormatter {
      * @deprecated Please use {@link #formatUrlForSecurityDisplay(GURL, int)} instead.
      */
     @Deprecated
-    public static String formatUrlForSecurityDisplay(String uri, @SchemeDisplay int schemeDisplay) {
+    public static String formatUrlForSecurityDisplay(@Nullable String uri, @SchemeDisplay int schemeDisplay) {
         return UrlFormatterJni.get().formatStringUrlForSecurityDisplay(uri, schemeDisplay);
     }
 
@@ -256,6 +257,6 @@ public final class UrlFormatter {
 
         String formatOriginForSecurityDisplay(Origin origin, @SchemeDisplay int schemeDisplay);
 
-        String formatStringUrlForSecurityDisplay(String url, @SchemeDisplay int schemeDisplay);
+        String formatStringUrlForSecurityDisplay(@Nullable String url, @SchemeDisplay int schemeDisplay);
     }
 }
