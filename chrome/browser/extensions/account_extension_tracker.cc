@@ -168,7 +168,7 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
   }
 }
 
-void AccountExtensionTracker::OnExtensionSyncDataApplied(
+void AccountExtensionTracker::OnExtensionSyncDataReceived(
     const ExtensionId& extension_id) {
   // Only change from `kLocal` to `kAccountInstalledLocally` since the existence
   // of sync data for this extension implies it's associated with a signed in

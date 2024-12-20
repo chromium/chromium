@@ -494,9 +494,6 @@ TEST_F(ExtensionSyncServiceTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
       params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
   InitializeExtensionService(std::move(params));
 
-  // Make sure ExtensionSyncService is created, so it'll be notified of changes.
-  extension_sync_service();
-
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
   ASSERT_EQ(3u, loaded_extensions().size());
@@ -549,9 +546,6 @@ TEST_F(ExtensionSyncServiceTest, DontSelfNotify) {
   ASSERT_TRUE(
       params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
   InitializeExtensionService(std::move(params));
-
-  // Make sure ExtensionSyncService is created, so it'll be notified of changes.
-  extension_sync_service();
 
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
@@ -1740,9 +1734,6 @@ TEST_F(ExtensionSyncServiceCustomGalleryTest,
 TEST_F(ExtensionSyncServiceTest, DontSyncThemes) {
   InitializeEmptyExtensionService();
 
-  // Make sure ExtensionSyncService is created, so it'll be notified of changes.
-  extension_sync_service();
-
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
 
@@ -2006,6 +1997,8 @@ class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
     service()->Init();
 
     AccountExtensionTracker::Get(profile());
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
   }
 
  protected:
@@ -2017,8 +2010,20 @@ class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
         data_dir().AppendASCII(extension_path));
   }
 
+  // Simulates an explicit sign in. This involves both the sign in itself and
+  // flipping the pref to record an explicit sign in.
+  void SimulateExplicitSignIn() {
+    identity_test_env_profile_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                      signin::ConsentLevel::kSignin);
+    profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
 };
 
 // Test that only extensions associated with the signed in user will be synced
@@ -2043,14 +2048,9 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
   const std::string first_extension_id = first_extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
 
-  // Use a test identity environment to mimic signing a user into transport mode
-  // with syncing for extension enabled via an explicit sign in.
-  auto identity_test_env_profile_adaptor =
-      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-  identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                    signin::ConsentLevel::kSignin);
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  // Mimic signing a user into transport mode with syncing for extensions
+  // enabled via an explicit sign in.
+  SimulateExplicitSignIn();
 
   scoped_refptr<const Extension> second_extension =
       LoadExtension("simple_with_icon");
@@ -2096,4 +2096,126 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
               data->disable_reasons());
     EXPECT_FALSE(data->enabled());
   }
+}
+
+// Test that local changes made to an extension before initial sync data is
+// received is counted as more recent, but the account extension state should
+// still be updated.
+TEST_F(ExtensionSyncServiceTransportModeTest,
+       OnlyUpdateAccountExtensionTypeWhenLocalStateIsMoreRecent) {
+  scoped_refptr<const Extension> first_extension =
+      LoadExtension("simple_with_file");
+  ASSERT_TRUE(first_extension);
+  const std::string first_extension_id = first_extension->id();
+  ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
+
+  // Mimic signing a user into transport mode with syncing for extensions
+  // enabled via an explicit sign in.
+  SimulateExplicitSignIn();
+
+  // Disable and re-enable `first_extension` before first sync data arrives.
+  service()->DisableExtension(first_extension_id,
+                              extensions::disable_reason::DISABLE_USER_ACTION);
+  ASSERT_FALSE(service()->IsExtensionEnabled(first_extension_id));
+  service()->EnableExtension(first_extension_id);
+  ASSERT_TRUE(service()->IsExtensionEnabled(first_extension_id));
+
+  // After the user has signed in but before any sync data is received,
+  // `first_extension` is treated as a local extension.
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(first_extension_id));
+
+  // Sync starts up. Initial data arrives telling us to disable
+  // `first_extension_id`. However, local changes (disabling and re-enabling) is
+  // considered more recent so the extension should ignore this change.
+  ExtensionSyncData disable_first_extension(
+      *first_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
+      false, false, extension_urls::GetWebstoreUpdateUrl());
+
+  syncer::SyncDataList list;
+  list.push_back(disable_first_extension.GetSyncData());
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  ASSERT_TRUE(service()->IsExtensionEnabled(first_extension_id));
+
+  // `first_extension` has the AccountExtensionType `kAccountInstalledLocally`
+  // since it's part of the signed in user's account data, despite having its
+  // local state take precedence over the incoming sync state.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(first_extension_id));
+}
+
+// Same test as ExtensionSyncServiceTest version, to test that local extensions
+// get promoted to account extensions from incoming sync data.
+TEST_F(ExtensionSyncServiceTransportModeTest,
+       AccountExtensionTypeChangesWithSync) {
+  // Install two extensions: `first_extension` before a user signs in, and
+  // `second_extension` after a user signs in.
+  scoped_refptr<const Extension> first_extension =
+      LoadExtension("simple_with_file");
+  ASSERT_TRUE(first_extension);
+  const std::string first_extension_id = first_extension->id();
+  ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
+
+  // Mimic signing a user into transport mode with syncing for extensions
+  // enabled via an explicit sign in.
+  SimulateExplicitSignIn();
+
+  scoped_refptr<const Extension> second_extension =
+      LoadExtension("simple_with_icon");
+  ASSERT_TRUE(second_extension);
+  const std::string second_extension_id = second_extension->id();
+
+  // After the user has signed in but before any sync data is received,
+  // `first_extension` is treated as a local extension and `second_extension` is
+  // treated as an account extension since it was installed after sign in.
+  // Note that both extensions are syncable.
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(first_extension_id));
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(second_extension_id));
+
+  // Sync starts up.
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  // Then sync data arrives telling us to disable both `first_extension_id` and
+  // `second_extension_id`. In practice, any incoming sync will do. Note if
+  // incoming sync data contains an extension ID, then that extension is part of
+  // a user's account data.
+  ExtensionSyncData disable_first_extension(
+      *first_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
+      false, false, extension_urls::GetWebstoreUpdateUrl());
+  ExtensionSyncData disable_second_extension(
+      *second_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
+      false, false, extension_urls::GetWebstoreUpdateUrl());
+  SyncChangeList list;
+  list.push_back(
+      disable_first_extension.GetSyncChange(SyncChange::ACTION_UPDATE));
+  list.push_back(
+      disable_second_extension.GetSyncChange(SyncChange::ACTION_UPDATE));
+
+  extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
+
+  ASSERT_FALSE(service()->IsExtensionEnabled(first_extension_id));
+  ASSERT_FALSE(service()->IsExtensionEnabled(second_extension_id));
+
+  // `first_extension` has the AccountExtensionType `kAccountInstalledLocally`
+  // since it's part of the signed in user's account data but was first
+  // installed on this device before the user has signed in. Note that the
+  // incoming sync above links it to the user's account data.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(first_extension_id));
+
+  // `second_extension`'s AccountExtensionType should remain unchanged since we
+  // already know it's part of the signed in user's account data.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(second_extension_id));
 }
