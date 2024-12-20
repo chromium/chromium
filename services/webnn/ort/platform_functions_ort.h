@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
     return ort_get_api_base_proc_;
   }
   const OrtApi* ort_api() const { return ort_api_.get(); }
+  const OrtGraphApi* ort_graph_api() const { return ort_graph_api_.get(); }
 
  private:
   friend class base::NoDestructor<PlatformFunctions>;
@@ -37,6 +38,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
   base::ScopedNativeLibrary ort_library_;
   OrtGetApiBaseProc ort_get_api_base_proc_;
   raw_ptr<const OrtApi> ort_api_;
+  raw_ptr<const OrtGraphApi> ort_graph_api_;
 };
 
 }  // namespace webnn::ort

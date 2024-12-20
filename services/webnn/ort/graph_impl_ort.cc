@@ -75,13 +75,8 @@ GraphImplOrt::CreateAndBuild(
   OrtSession* session;
   const OrtEnv* env = context->env();
   CHECK(env);
-  // ORT_ABORT_ON_ERROR(ort_api->CreateSession(
-  //     env, model_file_dir.GetPath().Append(kOnnxModelFileName).value().c_str(),
-  //     session_options, &session));
-
-  ORT_ABORT_ON_ERROR(ort_api->CreateSessionFromArray(
-      env, reinterpret_cast<const void*>(result->GetModelData().data()),
-      result->GetModelData().size(), session_options, &session));
+  CHECK_STATUS(GetOrtGraphApi()->CreateSessionFromModel(
+      env, result->model.get_ptr(), session_options, &session));
 
   LOG(ERROR) << "success to create session.";
 

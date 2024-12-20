@@ -91,6 +91,8 @@ component("webnn_service") {
       "ort/graph_impl_ort.h",
       "ort/platform_functions_ort.cc",
       "ort/platform_functions_ort.h",
+      "ort/scoped_ort_types.cc",
+      "ort/scoped_ort_types.h",
       "ort/tensor_impl_ort.cc",
       "ort/tensor_impl_ort.h",
       "ort/utils_ort.cc",
@@ -99,7 +101,6 @@ component("webnn_service") {
     deps += [
       "//third_party/fp16",
       "//third_party/microsoft_dxheaders:dxguids",
-      "//third_party/onnx:onnx_proto",
       "//ui/gl",
       "//ui/gl/init",
     ]

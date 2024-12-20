@@ -11,20 +11,23 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/files/file_path.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
+#include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "third_party/onnx/proto/onnx.pb.h"
+#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
 
 namespace webnn {
 
+class WebNNContextImpl;
 class WebNNConstantOperand;
 
 namespace ort {
@@ -40,15 +43,15 @@ class GraphBuilderOrt {
   struct OperandInfo {
     OperandInfo();
     OperandInfo(std::string name,
-                base::span<const uint32_t> shape,
-                onnx::TensorProto::DataType onnx_data_type);
+                OperandDataType data_type,
+                base::span<const uint32_t> uint32_shape);
     OperandInfo(OperandInfo&);
     OperandInfo(OperandInfo&&);
     ~OperandInfo();
 
     std::string name;
-    std::vector<uint32_t> shape;
-    onnx::TensorProto::DataType onnx_data_type;
+    ONNXTensorElementDataType onnx_data_type;
+    std::vector<int64_t> int64_shape;
   };
 
   struct Result {
@@ -57,15 +60,20 @@ class GraphBuilderOrt {
     Result& operator=(const Result&) = delete;
     ~Result();
 
-    const std::string& GetModelData();
+    const ScopedOrtModel& GetModel();
 
-    [[nodiscard]] const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
+    const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
 
-    [[nodiscard]] const std::map<uint64_t, OperandInfo>&
-    id_to_operand_info_map() const;
+    const std::map<uint64_t, OperandInfo>& id_to_operand_info_map() const;
 
-    std::string model_data_;
+    ScopedOrtModel model;
     std::map<uint64_t, OperandInfo> operand_infos;
+
+    // TODO: Consider reusing constant operands instead of copying them to
+    // `weights`.
+    //
+    // Store the weights which should be alive for inference session.
+    std::vector<base::HeapArray<uint8_t>> weights;
   };
 
   // Factory method that creates a GraphBuilderOrt, builds and serializes the
@@ -94,10 +102,6 @@ class GraphBuilderOrt {
   const mojom::Operand& GetOperand(uint64_t operand_id);
   std::string GetOperandName(uint64_t operand_id);
 
-  uint64_t NewInitializer(base::span<const uint32_t> shape,
-                          base::span<const uint8_t> data,
-                          onnx::TensorProto::DataType data_type);
-
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);
   void AddInitializer(uint64_t constant_id);
@@ -106,7 +110,7 @@ class GraphBuilderOrt {
   void AddBinaryOperation(const T& operation, std::string op_type);
 
   template <typename T>
-  void AddUnaryOperation(const T& operation, std::string op_type);
+  void AddUnaryOperation(const T& operation, std::string_view op_type);
 
   void AddElementWiseBinaryOperation(
       const mojom::ElementWiseBinary& element_wise_binary);
@@ -119,8 +123,6 @@ class GraphBuilderOrt {
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
-
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> SerializeModel();
 
   // Used for inserting new operands into graph.
   uint64_t next_operand_id_ = 0;
@@ -135,7 +137,7 @@ class GraphBuilderOrt {
 
   const ContextProperties context_properties_;
 
-  onnx::ModelProto model_;
+  ScopedOrtGraph graph_;
 
   std::unique_ptr<Result> result_;
 };

@@ -173,4 +173,6 @@ const char kEnableGpuMainTimeKeeperMetrics[] =
 // log expectation comparisons.
 const char kSuppressPerformanceLogs[] = "suppress-performance-logs";
 
+const char kUseRedistributableONNXRuntime[] = "use-redist-ort";
+
 }  // namespace switches

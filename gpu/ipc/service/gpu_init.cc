@@ -678,6 +678,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         GPU_STARTUP_TRACE_EVENT("Load directml.dll");
         base::LoadNativeLibrary(module_path.Append(L"directml.dll"), nullptr);
       }
+
+      if (command_line->HasSwitch(switches::kUseRedistributableONNXRuntime)) {
+        base::LoadNativeLibrary(module_path.Append(L"onnxruntime.dll"), nullptr);
+      }
     }
 
     ResumeGpuWatchdog(watchdog_thread_.get());

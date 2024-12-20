@@ -38,9 +38,15 @@ PlatformFunctions::PlatformFunctions() {
   }
 
   const OrtApi* ort_api =
-      ort_get_api_base_proc()->GetApi(onnx::Version::IR_VERSION_2019_9_19);
+      ort_get_api_base_proc()->GetApi(onnx::Version::IR_VERSION);
   if (!ort_api) {
     LOG(ERROR) << "[WebNN] Failed to get OrtApi.";
+    return;
+  }
+
+  const OrtGraphApi* ort_graph_api = ort_api->GetGraphApi();
+  if (!ort_graph_api) {
+    LOG(ERROR) << "[WebNN] Failed to get OrtGraphApi.";
     return;
   }
 
@@ -48,6 +54,7 @@ PlatformFunctions::PlatformFunctions() {
   ort_library_ = std::move(ort_library);
   ort_get_api_base_proc_ = std::move(ort_get_api_base_proc);
   ort_api_ = ort_api;
+  ort_graph_api_ = ort_graph_api;
 }
 
 PlatformFunctions::~PlatformFunctions() = default;

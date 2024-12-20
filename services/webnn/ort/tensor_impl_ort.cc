@@ -11,37 +11,6 @@
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 namespace webnn::ort {
 
-namespace {
-
-ONNXTensorElementDataType GetOrtDataType(OperandDataType data_type) {
-  switch (data_type) {
-    case OperandDataType::kFloat32:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT;
-    case OperandDataType::kFloat16:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16;
-    case OperandDataType::kInt32:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32;
-    case OperandDataType::kUint32:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32;
-    case OperandDataType::kInt64:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64;
-    case OperandDataType::kUint64:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64;
-    case OperandDataType::kInt8:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8;
-    case OperandDataType::kUint8:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
-    case OperandDataType::kInt4:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_INT4;
-    case OperandDataType::kUint4:
-      return ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT4;
-    default:
-      NOTREACHED();
-  }
-}
-
-}  // namespace
-
 TensorImplOrt::TensorImplOrt(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     ContextImplOrt* context,
@@ -55,7 +24,7 @@ TensorImplOrt::TensorImplOrt(
   OrtValue* tensor = nullptr;
   ORT_ABORT_ON_ERROR(ort_api->CreateTensorAsOrtValue(
       context->allocator(), shape_.data(), shape_.size(),
-      GetOrtDataType(data_type()), &tensor));
+      OperandTypeToONNXTensorElementDataType(data_type()), &tensor));
   tensor_ = tensor;
   CHECK(tensor_);
 }

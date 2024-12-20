@@ -9,7 +9,6 @@ include_rules = [
   "+third_party/fp16/src/include/fp16.h",
   "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
   "+third_party/microsoft_dxheaders",
-  "+third_party/onnx/proto",
   "+third_party/tflite",
   "+third_party/xnnpack",
   "+ui/gl/gl_switches.h",
