@@ -3895,16 +3895,6 @@ const char kUserNotesSidePanelDescription[] =
     "Enables the user notes feature in the side panel. "
     "Only works if Power bookmark backend is also enabled.";
 
-const char kUsernameFirstFlowFallbackCrowdsourcingName[] =
-    "Username first flow fallback crowdsourcing";
-const char kUsernameFirstFlowFallbackCrowdsourcingDescription[] =
-    "Support of sending additional votes on username first flow i.e. login "
-    "flows where a user has to type username first on one page and then "
-    "password on another page. These votes are sent on single password forms "
-    "and contain information whether a 1-password form follows a 1-text form "
-    "and the value's type(or pattern) in the latter (e.g. email-like, "
-    "phone-like, arbitrary string).";
-
 const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[] =
     "Predictions on Username first flow with intermediate values";
 const char kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[] =

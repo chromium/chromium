@@ -1339,42 +1339,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
       uploads.front().field_data(0).is_most_recent_single_username_candidate());
 }
 
-TEST_F(AutofillCrowdsourcingEncoding,
-       EncodeUploadRequest_WithSingleUsernameData) {
-  FormData form;
-  form.set_url(GURL("http://www.foo.com/"));
-  FormFieldData field_data;
-  field_data.set_name(u"text field");
-  field_data.set_renderer_id(test::MakeFieldRendererId());
-  form.set_fields({field_data});
-
-  FormStructure form_structure(form);
-  for (auto& field : form_structure) {
-    field->set_host_form_signature(form_structure.form_signature());
-  }
-
-  AutofillUploadContents::SingleUsernameData single_username_data;
-  single_username_data.set_username_form_signature(12345);
-  single_username_data.set_username_field_signature(678910);
-  single_username_data.set_value_type(AutofillUploadContents::EMAIL);
-  single_username_data.set_prompt_edit(AutofillUploadContents::EDITED_POSITIVE);
-  form_structure.AddSingleUsernameData(single_username_data);
-
-  std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
-      form_structure, {{}} /* available_field_types */,
-      std::string() /* login_form_signature */, true /* observed_submission */);
-  ASSERT_EQ(1u, uploads.size());
-  ASSERT_EQ(1, uploads.front().single_username_data().size());
-  const AutofillUploadContents::SingleUsernameData& uploaded_data =
-      uploads.front().single_username_data()[0];
-  EXPECT_EQ(single_username_data.username_form_signature(),
-            uploaded_data.username_form_signature());
-  EXPECT_EQ(single_username_data.username_field_signature(),
-            uploaded_data.username_field_signature());
-  EXPECT_EQ(single_username_data.value_type(), uploaded_data.value_type());
-  EXPECT_EQ(single_username_data.prompt_edit(), uploaded_data.prompt_edit());
-}
-
 // Checks that CreateForPasswordManagerUpload builds FormStructure
 // which is encodable (i.e. ready for uploading).
 TEST_F(AutofillCrowdsourcingEncoding, CreateForPasswordManagerUpload) {

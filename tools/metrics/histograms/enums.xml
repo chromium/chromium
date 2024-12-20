@@ -21592,8 +21592,6 @@ from previous Chrome versions.
   <int value="460475728" label="wake-on-wifi-packet"/>
   <int value="460478987" label="Cr2023ActionChips:enabled"/>
   <int value="461330165" label="ContainerAppPreinstallDebug:disabled"/>
-  <int value="461523297"
-      label="UsernameFirstFlowFallbackCrowdsourcing:enabled"/>
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>
   <int value="462453078" label="cast-streaming-force-enable-hardware-h264"/>
   <int value="463521162"
@@ -22585,8 +22583,6 @@ from previous Chrome versions.
   <int value="859031214"
       label="ExperimentalAccessibilityGoogleTtsLanguagePacks:enabled"/>
   <int value="859449217" label="MagnifierPanningImprovements:enabled"/>
-  <int value="859495772"
-      label="UsernameFirstFlowFallbackCrowdsourcing:disabled"/>
   <int value="859869507" label="DesktopCaptureLacrosV2:disabled"/>
   <int value="859872800" label="FullscreenAlwaysShowTrafficLights:enabled"/>
   <int value="859913799" label="EnableDesksTrackpadSwipeImprovements:disabled"/>

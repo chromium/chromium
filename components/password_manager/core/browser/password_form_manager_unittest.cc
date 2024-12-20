@@ -124,7 +124,6 @@ using upload_contents_matchers::FieldSingleUsernameVoteTypeIs;
 using upload_contents_matchers::FieldVoteTypeIs;
 using upload_contents_matchers::IsPasswordUpload;
 using upload_contents_matchers::PasswordsRevealedIs;
-using upload_contents_matchers::SingleUsernameDataIs;
 using Field = ::autofill::AutofillUploadContents::Field;
 
 // Indices of username and password fields in the observed form.
@@ -3128,11 +3127,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSignupForm) {
 // Tests that no UFF vote can be sent on the username field when it is in the
 // submitted password form.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
-      /*disabled_features=*/{});
-
   CreateFormManager(observed_form_);
   fetcher_->NotifyFetchCompleted();
 
@@ -3179,11 +3173,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
 // Tests that username is taken and votes are uploaded during username first
 // flow both on password saving and updating.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
-      /*disabled_features=*/{});
-
   for (bool is_password_update : {false, true}) {
     CreateFormManager(observed_form_only_password_fields_);
     if (!is_password_update) {
@@ -3229,30 +3218,16 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
                   StartUploadRequest(IsSingleUsernameUpload(), _, _));
     }
 
-    // Upload username first flow votes on the password form.
-    AutofillUploadContents::SingleUsernameData expected_single_username_data;
-    expected_single_username_data.set_username_form_signature(
-        kSingleUsernameFormSignature.value());
-    expected_single_username_data.set_username_field_signature(
-        kSingleUsernameFieldSignature.value());
-    expected_single_username_data.set_value_type(
-        is_password_update ? AutofillUploadContents::STORED_FOR_CURRENT_DOMAIN
-                           : AutofillUploadContents::USERNAME_LIKE);
-    expected_single_username_data.set_prompt_edit(
-        AutofillUploadContents::EDITED_POSITIVE);
-    auto upload_contents_matcher = IsPasswordUpload(
-        FormSignatureIs(CalculateFormSignature(submitted_form)),
-        SingleUsernameDataIs(
-            EqualsSingleUsernameDataVector({expected_single_username_data})));
+    // Upload for the password form.
+    auto password_upload_matcher = IsPasswordUpload(
+        FormSignatureIs(CalculateFormSignature(submitted_form)));
     EXPECT_CALL(crowdsourcing_manager(),
-                StartUploadRequest(upload_contents_matcher, _, _));
+                StartUploadRequest(password_upload_matcher, _, _));
 
     if (is_password_update) {
       EXPECT_CALL(crowdsourcing_manager(),
-                  StartUploadRequest(
-                      IsPasswordUpload(SingleUsernameDataIs(IsEmpty())), _, _));
+                  StartUploadRequest(IsPasswordUpload(), _, _));
     }
-
     base::HistogramTester histogram_tester;
 
     form_manager_->Save();
@@ -3271,11 +3246,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
 // Tests that if the username matches the single username from the previous
 // form, a vote is set.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
-      /*disabled_features=*/{});
-
   CreateFormManager(submitted_form_);
   fetcher_->NotifyFetchCompleted();
 
@@ -3303,22 +3273,11 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
                 StartUploadRequest(IsSingleUsernameUpload(), _, _));
   }
 
-  // Upload username first flow vote on the sign-up form.
-  AutofillUploadContents::SingleUsernameData expected_single_username_data;
-  expected_single_username_data.set_username_form_signature(
-      kSingleUsernameFormSignature.value());
-  expected_single_username_data.set_username_field_signature(
-      kSingleUsernameFieldSignature.value());
-  expected_single_username_data.set_value_type(
-      AutofillUploadContents::VALUE_WITH_NO_WHITESPACE);
-  expected_single_username_data.set_prompt_edit(
-      AutofillUploadContents::NOT_EDITED_POSITIVE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
+  // Upload for the password form.
+  auto password_upload_matcher = IsPasswordUpload(
+      FormSignatureIs(CalculateFormSignature(submitted_form_)));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _));
+              StartUploadRequest(password_upload_matcher, _, _));
 
   // Simulate showing the prompt and saving the suggested value.
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
@@ -3339,12 +3298,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
 // user edits username prompt to the value of one of the text fields found in
 // the password form negative in form overrule vote is sent.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list(
+      features::kUsernameFirstFlowWithIntermediateValuesVoting);
   CreateFormManager(submitted_form_);
   fetcher_->NotifyFetchCompleted();
 
@@ -3396,12 +3351,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
 // text fields found outside of the password form. Positive in form overrule
 // single username vote must be sent.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowPositiveInFormOverruleVote) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list(
+      features::kUsernameFirstFlowWithIntermediateValuesVoting);
 
   CreateFormManager(submitted_form_);
   fetcher_->NotifyFetchCompleted();
@@ -3457,12 +3408,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowPositiveInFormOverruleVote) {
 // signal that this is a Username First Flow.
 TEST_P(PasswordFormManagerTest,
        UsernameFirstFlowDoNotSendVotesOnNotUsernameFirstFlow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list(
+      features::kUsernameFirstFlowWithIntermediateValuesVoting);
 
   CreateFormManager(submitted_form_);
   fetcher_->NotifyFetchCompleted();
@@ -3511,11 +3458,6 @@ TEST_P(PasswordFormManagerTest,
 // correctly. In this test case, there is an intermediary field between them.
 TEST_P(PasswordFormManagerTest,
        UsernameFirstFlowWithIntermediaryFieldsAndPrefilledUsername) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
-      /*disabled_features=*/{});
-
   CreateFormManager(submitted_form_);
   fetcher_->NotifyFetchCompleted();
 
@@ -3559,22 +3501,11 @@ TEST_P(PasswordFormManagerTest,
                 StartUploadRequest(IsSingleUsernameUpload(), _, _));
   }
 
-  // Upload username first flow vote on the sign-up form.
-  AutofillUploadContents::SingleUsernameData expected_single_username_data;
-  expected_single_username_data.set_username_form_signature(
-      kSingleUsernameFormSignature.value());
-  expected_single_username_data.set_username_field_signature(
-      kSingleUsernameFieldSignature.value());
-  expected_single_username_data.set_value_type(
-      AutofillUploadContents::VALUE_WITH_NO_WHITESPACE);
-  expected_single_username_data.set_prompt_edit(
-      AutofillUploadContents::NOT_EDITED_POSITIVE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form_)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
+  // Upload for the password form.
+  auto password_upload_matcher = IsPasswordUpload(
+      FormSignatureIs(CalculateFormSignature(submitted_form_)));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _));
+              StartUploadRequest(password_upload_matcher, _, _));
 
   // Simulate showing the prompt and saving the suggested value.
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
@@ -3598,12 +3529,8 @@ TEST_P(PasswordFormManagerTest,
 // saved value into, and a strong negative vote is sent for the form, into which
 // the user has typed a different value.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowSendVotesOnRecentFields) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list(
+      features::kUsernameFirstFlowWithIntermediateValuesVoting);
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
 
@@ -3710,11 +3637,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowFillSingleUsernameForm) {
 // Tests that a negative vote is sent when a single username candidate is
 // populated in a prompt, but then is removed by the user in the prompt.
 TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
-      /*disabled_features=*/{});
-
   constexpr char16_t kPossibleUsername[] = u"possible_username";
 
   constexpr autofill::FieldRendererId kUsernameFieldRendererId(100);
@@ -3771,21 +3693,11 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   }
 
   // Upload for the password form.
-  AutofillUploadContents::SingleUsernameData expected_single_username_data;
-  expected_single_username_data.set_username_form_signature(
-      kUsernameFormSignature.value());
-  expected_single_username_data.set_username_field_signature(
-      kUsernameFieldSignature.value());
-  expected_single_username_data.set_value_type(
-      AutofillUploadContents::USERNAME_LIKE);
-  expected_single_username_data.set_prompt_edit(
-      AutofillUploadContents::EDITED_NEGATIVE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
+  auto password_upload_matcher =
+      IsPasswordUpload(FormSignatureIs(CalculateFormSignature(submitted_form)));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _));
+              StartUploadRequest(password_upload_matcher, _, _));
+
   base::HistogramTester histogram_tester;
   form_manager_->Save();
 
@@ -3800,11 +3712,6 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
 
 // Tests that no votes are sent for an OTP field.
 TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
-      /*disabled_features=*/{});
-
   // A single password form is loaded on the page.
   FormData submitted_form = observed_form_only_password_fields_;
   CreateFormManager(submitted_form);
@@ -3837,27 +3744,19 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
           _))
       .Times(0);
 
-  // Upload single username data for the password form.
-  AutofillUploadContents::SingleUsernameData expected_single_username_data;
-  expected_single_username_data.set_value_type(
-      AutofillUploadContents::NO_VALUE_TYPE);
-  auto upload_contents_matcher = IsPasswordUpload(
-      FormSignatureIs(CalculateFormSignature(submitted_form)),
-      SingleUsernameDataIs(
-          EqualsSingleUsernameDataVector({expected_single_username_data})));
+  // Upload for the password form.
+  auto password_upload_matcher =
+      IsPasswordUpload(FormSignatureIs(CalculateFormSignature(submitted_form)));
   EXPECT_CALL(crowdsourcing_manager(),
-              StartUploadRequest(upload_contents_matcher, _, _));
+              StartUploadRequest(password_upload_matcher, _, _));
+
   form_manager_->Save();
 }
 
 // Tests that no single username votes are sent on an unrelated website.
 TEST_P(PasswordFormManagerTest, NoSingleUsernameVotingOnUnrelatedWebsite) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list(
+      features::kUsernameFirstFlowWithIntermediateValuesVoting);
   // Simulate user input in a single username form.
   constexpr char16_t kPossibleUsername[] = u"possible_username";
   PossibleUsernameData single_username_data(

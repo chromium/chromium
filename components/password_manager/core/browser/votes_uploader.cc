@@ -205,50 +205,6 @@ size_t GetLowEntropyHashValue(const std::u16string& value) {
          kNumberOfLowEntropyHashValues;
 }
 
-FieldSignature GetUsernameFieldSignature(
-    const SingleUsernameVoteData& single_username_data) {
-  for (const auto& field : single_username_data.form_predictions.fields) {
-    if (field.renderer_id == single_username_data.renderer_id) {
-      return field.signature;
-    }
-  }
-  return FieldSignature();
-}
-
-AutofillUploadContents::ValueType GetValueType(
-    const std::u16string& username_value,
-    const base::span<const PasswordForm>& stored_credentials) {
-  if (username_value.empty()) {
-    return AutofillUploadContents::NO_VALUE_TYPE;
-  }
-
-  // Check if |username_value| is an already stored username.
-  // TODO(crbug.com/40626063) Implement checking against usenames stored for all
-  // domains and return STORED_FOR_ANOTHER_DOMAIN in that case.
-  if (base::Contains(stored_credentials, username_value,
-                     &PasswordForm::username_value)) {
-    return AutofillUploadContents::STORED_FOR_CURRENT_DOMAIN;
-  }
-
-  if (autofill::MatchesRegex<constants::kEmailValueRe>(username_value)) {
-    return AutofillUploadContents::EMAIL;
-  }
-
-  if (autofill::MatchesRegex<constants::kPhoneValueRe>(username_value)) {
-    return AutofillUploadContents::PHONE;
-  }
-
-  if (autofill::MatchesRegex<constants::kUsernameLikeValueRe>(username_value)) {
-    return AutofillUploadContents::USERNAME_LIKE;
-  }
-
-  if (username_value.find(' ') != std::u16string::npos) {
-    return AutofillUploadContents::VALUE_WITH_WHITESPACE;
-  }
-
-  return AutofillUploadContents::VALUE_WITH_NO_WHITESPACE;
-}
-
 // Fills fake renderer id for to the significant field with `field_name` iff
 // it isn't set.
 void FillRendererIdIfNotSet(
@@ -372,7 +328,6 @@ SingleUsernameVoteData::SingleUsernameVoteData(
       password_form_had_matching_username(password_form_had_matching_username) {
   base::TrimWhitespace(username_value, base::TrimPositions::TRIM_ALL,
                        &username_candidate_value);
-  value_type = GetValueType(username_candidate_value, stored_credentials);
   prompt_edit = AutofillUploadContents::EDIT_UNSPECIFIED;
   is_form_overrule = false;
 }
@@ -534,20 +489,6 @@ bool VotesUploader::UploadPasswordVote(
                      autofill::CONFIRMATION_PASSWORD, field_types,
                      field_name_collision);
         should_set_passwords_were_revealed = true;
-      }
-      // If a user accepts a save or update prompt, send a single username vote.
-      if (autofill_type == autofill::PASSWORD ||
-          autofill_type == autofill::NEW_PASSWORD) {
-        if (!single_username_votes_data_.empty() &&
-            base::FeatureList::IsEnabled(
-                features::kUsernameFirstFlowFallbackCrowdsourcing)) {
-          // Send single username vote only on the most recent user modified
-          // field outside of the password form.
-          // TODO(crbug.com/40925827): Send votes for fallback crowdsourcing on
-          // all single username field candidates.
-          SetSingleUsernameVoteOnPasswordForm(single_username_votes_data_[0],
-                                              form_structure);
-        }
       }
     }
     if (autofill_type != autofill::ACCOUNT_CREATION_PASSWORD) {
@@ -1050,20 +991,6 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
   field->set_is_most_recent_single_username_candidate(
       is_most_recent_single_username_candidate);
   return true;
-}
-
-void VotesUploader::SetSingleUsernameVoteOnPasswordForm(
-    const SingleUsernameVoteData& vote_data,
-    FormStructure& form_structure) {
-  AutofillUploadContents::SingleUsernameData single_username_data;
-  single_username_data.set_username_form_signature(
-      vote_data.form_predictions.form_signature.value());
-  single_username_data.set_username_field_signature(
-      GetUsernameFieldSignature(vote_data).value());
-  single_username_data.set_value_type(vote_data.value_type);
-  single_username_data.set_prompt_edit(vote_data.prompt_edit);
-
-  form_structure.AddSingleUsernameData(single_username_data);
 }
 
 bool VotesUploader::CalculateInFormOverrule(

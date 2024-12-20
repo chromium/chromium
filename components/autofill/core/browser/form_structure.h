@@ -258,11 +258,6 @@ class FormStructure {
   const AutofillField* GetFieldById(FieldGlobalId field_id) const;
   AutofillField* GetFieldById(FieldGlobalId field_id);
 
-  void AddSingleUsernameData(
-      AutofillUploadContents::SingleUsernameData single_username_data) {
-    single_username_data_.push_back(single_username_data);
-  }
-
   // Returns the number of fields that are part of the form signature and that
   // are included in queries to the Autofill server.
   size_t active_field_count() const;
@@ -378,11 +373,6 @@ class FormStructure {
   FormVersion version() const { return version_; }
 
   const GeoIpCountryCode& client_country() const { return client_country_; }
-
-  std::vector<AutofillUploadContents::SingleUsernameData> single_username_data()
-      const {
-    return single_username_data_;
-  }
 
   // The signatures of forms recently submitted on the same origin within a
   // small period of time.
@@ -563,9 +553,6 @@ class FormStructure {
 
   // A vector of all iframes in the form.
   std::vector<FrameTokenWithPredecessor> child_frames_;
-
-  // Single username details, if applicable.
-  std::vector<AutofillUploadContents::SingleUsernameData> single_username_data_;
 
   // The signatures of forms recently submitted on the same origin within a
   // small period of time.

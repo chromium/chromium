@@ -160,10 +160,6 @@ BASE_FEATURE(kLoginDbDeprecationAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,
-             "UsernameFirstFlowFallbackCrowdsourcing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions,
              "UsernameFirstFlowWithIntermediateValuesPredictions",
              base::FEATURE_ENABLED_BY_DEFAULT);

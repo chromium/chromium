@@ -1447,9 +1447,6 @@ extern const char kMostVisitedTilesNewScoringDescription[];
 extern const char kMostVisitedTilesReselectName[];
 extern const char kMostVisitedTilesReselectDescription[];
 
-extern const char kUsernameFirstFlowFallbackCrowdsourcingName[];
-extern const char kUsernameFirstFlowFallbackCrowdsourcingDescription[];
-
 extern const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[];
 extern const char
     kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[];

@@ -171,13 +171,6 @@ BASE_DECLARE_FEATURE(kLoginDbDeprecationAndroid);
 // websites like slack.com.
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
-// Enables support of sending additional votes on username first flow. The votes
-// are sent on single password forms and contain information about preceding
-// single username forms.
-// TODO(crbug.com/40626063): Clean up if the main crowdsourcing is good enough
-// and we don't need additional signals.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
-
 // Enables new prediction that is based on votes from Username First Flow with
 // Intermediate Values.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
