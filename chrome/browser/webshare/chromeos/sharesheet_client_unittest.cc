@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
@@ -25,10 +26,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/path_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace webshare {
 
