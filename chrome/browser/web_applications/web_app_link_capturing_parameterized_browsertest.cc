@@ -108,14 +108,17 @@ constexpr char kValueTargetNoFrame[] = "NO_FRAME";
 enum class LinkCapturing {
   kEnabled,
   kDisabled,
+  kEnabledViaClientMode,
 };
 
-std::string_view ToParamString(LinkCapturing capturing) {
+constexpr std::string_view ToParamString(LinkCapturing capturing) {
   switch (capturing) {
     case LinkCapturing::kEnabled:
       return "CaptureOn";
     case LinkCapturing::kDisabled:
       return "CaptureOff";
+    case LinkCapturing::kEnabledViaClientMode:
+      return "CaptureForNonAuto";
   }
 }
 
@@ -131,7 +134,7 @@ enum class AppUserDisplayMode {
   kMaxValue = kAppAStandaloneAppBBrowser,
 };
 
-std::string_view ToParamString(AppUserDisplayMode mode) {
+constexpr std::string_view ToParamString(AppUserDisplayMode mode) {
   switch (mode) {
     case AppUserDisplayMode::kBothBrowser:
       return "BothBrowser";
@@ -148,7 +151,7 @@ enum class StartingPoint {
   kTab,
 };
 
-std::string_view ToParamString(StartingPoint start) {
+constexpr std::string_view ToParamString(StartingPoint start) {
   switch (start) {
     case StartingPoint::kAppWindow:
       return "AppWnd";
@@ -167,7 +170,7 @@ enum class Destination {
   kScopeA2X,
 };
 
-std::string ToIdString(Destination scope) {
+constexpr std::string ToIdString(Destination scope) {
   switch (scope) {
     case Destination::kScopeA2A:
       return kValueScopeA2A;
@@ -178,7 +181,7 @@ std::string ToIdString(Destination scope) {
   }
 }
 
-std::string_view ToParamString(Destination scope) {
+constexpr std::string_view ToParamString(Destination scope) {
   switch (scope) {
     case Destination::kScopeA2A:
       return "ScopeA2A";
@@ -209,7 +212,7 @@ std::string ToIdString(RedirectType redirect, Destination final_destination) {
   }
 }
 
-std::string_view ToParamString(RedirectType redirect) {
+constexpr std::string_view ToParamString(RedirectType redirect) {
   switch (redirect) {
     case RedirectType::kNone:
       return "Direct";
@@ -248,7 +251,7 @@ std::string ToIdString(NavigationElement element) {
   }
 }
 
-std::string_view ToParamString(NavigationElement element) {
+constexpr std::string_view ToParamString(NavigationElement element) {
   switch (element) {
     case NavigationElement::kElementLink:
       return "ViaLink";
@@ -263,7 +266,7 @@ std::string_view ToParamString(NavigationElement element) {
   }
 }
 
-std::string_view ToParamString(test::ClickMethod click) {
+constexpr std::string_view ToParamString(test::ClickMethod click) {
   switch (click) {
     case test::ClickMethod::kLeftClick:
       return "LeftClick";
@@ -282,7 +285,7 @@ enum class OpenerMode {
   kNoOpener,
 };
 
-std::string ToIdString(OpenerMode opener) {
+constexpr std::string_view ToIdString(OpenerMode opener) {
   switch (opener) {
     case OpenerMode::kOpener:
       return kValueOpener;
@@ -317,7 +320,7 @@ std::string ToParamString(ClientModeCombination client_mode_combo) {
   }
 }
 
-std::string_view ToParamString(OpenerMode opener) {
+constexpr std::string_view ToParamString(OpenerMode opener) {
   switch (opener) {
     case OpenerMode::kOpener:
       return "WithOpener";
@@ -342,7 +345,7 @@ enum class NavigationTarget {
   kNoFrame,
 };
 
-std::string ToIdString(NavigationTarget target) {
+constexpr std::string_view ToIdString(NavigationTarget target) {
   switch (target) {
     case NavigationTarget::kSelf:
       return kValueTargetSelf;
@@ -355,7 +358,7 @@ std::string ToIdString(NavigationTarget target) {
   }
 }
 
-std::string_view ToParamString(NavigationTarget target) {
+constexpr std::string_view ToParamString(NavigationTarget target) {
   switch (target) {
     case NavigationTarget::kSelf:
       return "TargetSelf";
@@ -843,10 +846,20 @@ class WebAppLinkCapturingParameterizedBrowserTest
   WebAppLinkCapturingParameterizedBrowserTest() {
     // kDropInputEventsBeforeFirstPaint is disabled to de-flake our simulated
     // clicks.
+    std::string mode = "reimpl_default_on";
+    const char* param_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->value_param();
+    if (param_name != nullptr && std::string_view(param_name).length() > 0) {
+      // GetParam() crashes unless this test is run as a parameterized test. The
+      // 'Cleanup' tests are not.
+      if (GetLinkCapturing() == LinkCapturing::kEnabledViaClientMode) {
+        mode = "reimpl_on_via_client_mode";
+      }
+    }
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{base::test::FeatureRefAndParams(
             features::kPwaNavigationCapturing,
-            {{"link_capturing_state", "reimpl_default_on"}})},
+            {{"link_capturing_state", mode}})},
         /*disabled_features=*/{
             blink::features::kDropInputEventsBeforeFirstPaint});
   }
@@ -1530,6 +1543,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     switch (GetLinkCapturing()) {
       case LinkCapturing::kEnabled:
+      case LinkCapturing::kEnabledViaClientMode:
 #if BUILDFLAG(IS_CHROMEOS)
         ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_a),
                   base::ok());
@@ -2198,6 +2212,38 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(test::ClickMethod::kLeftClick),
                      testing::Values(OpenerMode::kOpener,
                                      OpenerMode::kNoOpener),
+                     testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// kEnabledViaClientMode should not capture when 'auto' is specified.
+INSTANTIATE_TEST_SUITE_P(
+    ClientModeEnabledNoCapture,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(testing::Values(ClientModeCombination::kAuto),
+                     testing::Values(mojom::UserDisplayMode::kStandalone),
+                     testing::Values(LinkCapturing::kEnabledViaClientMode),
+                     testing::Values(StartingPoint::kTab),
+                     testing::Values(Destination::kScopeA2B),
+                     testing::Values(RedirectType::kNone),
+                     testing::Values(NavigationElement::kElementLink),
+                     testing::Values(test::ClickMethod::kLeftClick),
+                     testing::Values(OpenerMode::kNoOpener),
+                     testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// kEnabledViaClientMode should capture when auto isn't specified.
+INSTANTIATE_TEST_SUITE_P(
+    ClientModeEnabledCaptured,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(testing::Values(ClientModeCombination::kBothNavigateNew),
+                     testing::Values(mojom::UserDisplayMode::kStandalone),
+                     testing::Values(LinkCapturing::kEnabledViaClientMode),
+                     testing::Values(StartingPoint::kTab),
+                     testing::Values(Destination::kScopeA2B),
+                     testing::Values(RedirectType::kNone),
+                     testing::Values(NavigationElement::kElementLink),
+                     testing::Values(test::ClickMethod::kLeftClick),
+                     testing::Values(OpenerMode::kNoOpener),
                      testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
