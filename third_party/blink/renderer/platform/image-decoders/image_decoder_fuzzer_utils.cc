@@ -60,31 +60,31 @@ std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
     case DecoderType::kBmpDecoder:
       return std::make_unique<BMPImageDecoder>(
           GetAlphaOption(fdp), GetColorBehavior(fdp),
-          /*max_decoded_byptes=*/fdp.ConsumeIntegral<uint32_t>());
+          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>());
     case DecoderType::kJpegDecoder: {
       return std::make_unique<JPEGImageDecoder>(
           GetAlphaOption(fdp), GetColorBehavior(fdp), GetAuxImageType(fdp),
-          /*max_decoded_byptes=*/fdp.ConsumeIntegral<uint32_t>(),
+          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
           /*offset=*/fdp.ConsumeIntegral<uint32_t>());
     }
     case DecoderType::kPngDecoder: {
       return std::make_unique<PNGImageDecoder>(
           GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
-          /*max_decoded_byptes=*/fdp.ConsumeIntegral<uint32_t>(),
+          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
           /*offset=*/fdp.ConsumeIntegral<uint32_t>());
     }
     case DecoderType::kAvifDecoder: {
       return std::make_unique<AVIFImageDecoder>(
           GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
           GetAuxImageType(fdp),
-          /*max_decoded_byptes=*/fdp.ConsumeIntegral<uint32_t>(),
+          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
           GetAnimationOption(fdp));
     }
     case DecoderType::kCrabbyAvifDecoder: {
       return std::make_unique<CrabbyAVIFImageDecoder>(
           GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
           GetAuxImageType(fdp),
-          /*max_decoded_byptes=*/fdp.ConsumeIntegral<uint32_t>(),
+          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
           GetAnimationOption(fdp));
     }
   }
