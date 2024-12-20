@@ -136,4 +136,17 @@ public class AuxiliarySearchControllerFactoryUnitTest {
         when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(false);
         assertFalse(mFactory.isSettingDefaultEnabledByOs());
     }
+
+    @Test
+    @SmallTest
+    public void testSetIsTablet() {
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        mFactory.setHooksForTesting(hooksMock);
+
+        mFactory.setIsTablet(true);
+        verify(hooksMock).setIsTablet(eq(true));
+
+        mFactory.setIsTablet(false);
+        verify(hooksMock).setIsTablet(eq(false));
+    }
 }

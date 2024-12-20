@@ -84,6 +84,17 @@ public class AuxiliarySearchControllerFactory {
         mHooks.setSchemaTypeVisibilityForPackage(callback);
     }
 
+    /**
+     * Sets whether the device is a tablet. Note: this must be called before checking isEnabled().
+     */
+    public void setIsTablet(boolean isTablet) {
+        if (mHooksForTesting != null) {
+            mHooksForTesting.setIsTablet(isTablet);
+        } else if (mHooks != null) {
+            mHooks.setIsTablet(isTablet);
+        }
+    }
+
     private @Nullable AuxiliarySearchController createAuxiliarySearchControllerImp(
             @NonNull Context context,
             @NonNull Profile profile,

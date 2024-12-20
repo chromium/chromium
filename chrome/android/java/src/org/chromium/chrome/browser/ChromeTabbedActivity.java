@@ -2416,6 +2416,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         }
 
         if (ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled()) {
+            // The AuxiliarySearchControllerFactory#setIsTablet() must be called before using the
+            // builder which checks AuxiliarySearchControllerFactory#isEnabled().
+            AuxiliarySearchControllerFactory.getInstance()
+                    .setIsTablet(DeviceFormFactor.isWindowOnTablet(getWindowAndroid()));
             AuxiliarySearchModuleBuilder auxiliarySearchModuleBuilder =
                     new AuxiliarySearchModuleBuilder(
                             this,
