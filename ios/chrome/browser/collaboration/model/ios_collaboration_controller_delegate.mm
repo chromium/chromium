@@ -183,6 +183,13 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
   config.collabID = base::SysUTF8ToNSString(collaboration_id.value());
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  auto completion_block = base::CallbackToBlock(std::move(result));
+  config.completionBlock = ^(BOOL completion_result) {
+    CollaborationControllerDelegate::Outcome outcome =
+        completion_result ? CollaborationControllerDelegate::Outcome::kSuccess
+                          : CollaborationControllerDelegate::Outcome::kFailure;
+    completion_block(outcome);
+  };
   share_kit_service_->ManageTabGroup(config);
 }
 
