@@ -78,18 +78,31 @@ void VideoEffectsServiceImpl::CreateEffectsProcessor(
 void VideoEffectsServiceImpl::CreateWebGpuDeviceAndEffectsProcessors() {
   CHECK(!webgpu_device_);
   CHECK(gpu_channel_host_provider_);
-  WebGpuDevice::DeviceLostCallback device_lost_cb = base::BindOnce(
-      &VideoEffectsServiceImpl::OnDeviceLost, weak_ptr_factory_.GetWeakPtr());
+
+  auto device_lost_cb = base::BindOnce(&VideoEffectsServiceImpl::OnDeviceLost,
+                                       weak_ptr_factory_.GetWeakPtr());
+  // `WebGpuDevice` will call this callback to signal that the device was lost.
+  // To avoid re-entrancy into `WebGpuDevice` from the callback, let's call it
+  // in a separate task. This is needed since `OnDeviceLost()` destroys the
+  // `WebGpuDevice`.
+  auto device_lost_cb_on_current_sequence =
+      base::BindPostTaskToCurrentDefault(std::move(device_lost_cb));
   webgpu_device_ = std::make_unique<WebGpuDevice>(
       gpu_channel_host_provider_->GetWebGpuContextProvider(),
-      std::move(device_lost_cb));
+      std::move(device_lost_cb_on_current_sequence));
 
   WebGpuDevice::DeviceCallback device_cb =
       base::BindOnce(&VideoEffectsServiceImpl::OnDeviceCreated,
                      weak_ptr_factory_.GetWeakPtr());
-  WebGpuDevice::ErrorCallback error_cb = base::BindOnce(
-      &VideoEffectsServiceImpl::OnDeviceError, weak_ptr_factory_.GetWeakPtr());
-  webgpu_device_->Initialize(std::move(device_cb), std::move(error_cb));
+
+  auto error_cb = base::BindOnce(&VideoEffectsServiceImpl::OnDeviceError,
+                                 weak_ptr_factory_.GetWeakPtr());
+  // Ditto, we don't want to call `~WebGpuDevice()` reentrantly when executing
+  // some other `WebGpuDevice` method.
+  auto error_cb_on_current_sequence =
+      base::BindPostTaskToCurrentDefault(std::move(error_cb));
+  webgpu_device_->Initialize(std::move(device_cb),
+                             std::move(error_cb_on_current_sequence));
 }
 
 void VideoEffectsServiceImpl::OnDeviceCreated(wgpu::Device device) {
