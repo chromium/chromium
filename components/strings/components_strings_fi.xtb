@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">automaattinen pikkuruutu</translation>
 <translation id="1100782917270858593">Jatka toimintoa ‑painike, paina Enter, niin voit jatkaa toimintoa ja nähdä oleelliset tapahtumat Chrome-historiassasi</translation>
 <translation id="1101672080107056897">Virhetapahtuma</translation>
+<translation id="1101902632743388185">Vertailutaulukot</translation>
 <translation id="1104409666019087579">Jotkin pakolliset kentät ovat tyhjiä. Täytä ne ennen tallentamista.</translation>
 <translation id="1104860668737945357">Ylläpidä salasanoja ‑painike, aktivoi katsoaksesi ja ylläpitääksesi salasanoja Chromen asetuksista</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
@@ -583,6 +584,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2025186561304664664">Välityspalvelimen asetus: automaattisesti määritetty.</translation>
 <translation id="2025891858974379949">Suojaamaton sisältö</translation>
 <translation id="2027465737841872819">Muovi</translation>
+<translation id="2027707238798802149">Kortti ei käytettävissä</translation>
 <translation id="2029735183873159415">Sukujuuret ja sukututkimus</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Tarkista välityspalvelimen ja palomuurin määritykset.<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Pikakuvake ei voi olla sama kuin oletushakupalvelun avainsana, jonka <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> on määrittänyt: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2514548229949738417">Koti ja puutarha</translation>
 <translation id="2515629240566999685">Tarkista alueesi mobiilisignaali.</translation>
 <translation id="2515761554693942801">Valitsit vahvistuksen Touch ID:llä verkkosivustoilla, joilla on käytössä <ph name="PROVIDER_ORIGIN" />. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joille voit <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Kortti ei ole käytettävissä. Ota yhteyttä kortin myöntäjään.</translation>
 <translation id="2521385132275182522">Niitti oikeassa alareunassa</translation>
 <translation id="2521736961081452453">Luo lomake</translation>
 <translation id="2523886232349826891">Tallennetaan vain tälle laitteelle</translation>
@@ -3249,7 +3252,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="683108308100148227">Piilota kohta</translation>
 <translation id="6832753933931306326">Lomake on täytetty</translation>
-<translation id="6837361937093656245">Sisäänkirjautuminen on pakollista</translation>
 <translation id="6841864657731852591">Gravure-sylinteri</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Käsien liikkeen seuranta sallittu tällä kerralla</translation>
@@ -3344,6 +3346,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7003322000677139268">Ajoneuvojen varaosat ja lisälaitteet</translation>
 <translation id="7004499039102548441">Hiljattain suljetut välilehdet</translation>
 <translation id="7006930604109697472">Lähetä silti</translation>
+<translation id="7009364359744329733">Virtuaalinen kortti ei ole juuri nyt käytettävissä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7010658264061801199">Ruoka ja juoma</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Voit pyytää lupaa lukitukseen ja hiiren käyttöön</translation>

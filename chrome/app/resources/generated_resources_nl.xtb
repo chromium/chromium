@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">E-simkaartprofiel <ph name="PROFILE_NAME" /> verwijderen</translation>
 <translation id="1069778954840159202">Account automatisch overzetten vanaf Android-telefoon</translation>
 <translation id="1069814191880976658">Ander scherm kiezen</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}other{{PASSWORD_COUNT} wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account}}</translation>
 <translation id="107022587824771715">Suggesties voor tabbladgroepen zijn op dit moment niet beschikbaar. Je kunt <ph name="BEGIN_LINK" />nu vernieuwen<ph name="END_LINK" /> of het later opnieuw proberen.</translation>
 <translation id="1070377999570795893">Een ander programma op je computer heeft een extensie toegevoegd die de manier kan wijzigen waarop Chrome werkt.
 
@@ -2306,7 +2305,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2584109212074498965">Kan Kerberos-ticket niet ophalen. Probeer het opnieuw of neem contact op met de apparaatbeheerder van je organisatie. (Foutcode <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Microfoonrechten voor websites beheren in Chrome</translation>
 <translation id="2586561813241011046">Kan <ph name="APP_NAME" /> niet installeren. Probeer het opnieuw of neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Klembord</translation>
 <translation id="2586672484245266891">Geef een kortere URL op</translation>
 <translation id="2587922766792651800">Time-out</translation>
 <translation id="2588636910004461974">Apparaten van <ph name="VENDOR_NAME" /></translation>
@@ -3116,7 +3114,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3166443275568926403">Prestaties en batterijstatus</translation>
 <translation id="3167446923957429259">Beweeg je mond naar links</translation>
 <translation id="3167562202484086668">Alle gegevens uit <ph name="BRAND" /> verwijderen</translation>
-<translation id="3169901410527787002">Toetsenbordinvoer in de adresbalk altijd voorlezen</translation>
 <translation id="3169930038976362151">Kies het thema dat bij je past. Als je je thema, achtergrond, screensaver en meer wilt wijzigen, tik je op het bureaublad en houd je dit vast.</translation>
 <translation id="3170072451822350649">Je kunt het inloggen ook overslaan en <ph name="LINK_START" />browsen als gast<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Body</translation>
@@ -8614,7 +8611,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="713122686776214250">Pa&amp;gina toevoegen...</translation>
 <translation id="7131431455372521159">De verbinding met alle TrackPoints is verbroken</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, wachten</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.}other{{PASSWORD_COUNT} wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account}}</translation>
 <translation id="7134098520442464001">De tekst kleiner maken</translation>
 <translation id="7134951043985383439">Gevaarlijk bestand gedownload</translation>
 <translation id="7135729336746831607">Bluetooth aanzetten?</translation>
@@ -11084,7 +11080,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8876307312329369159">Deze instelling kan niet worden gewijzigd tijdens een demosessie.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> gebruikt bluetooth-scans om apparaten in de buurt te vinden.</translation>
 <translation id="8877448029301136595">[hoofddirectory]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 item wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.}other{{ITEM_COUNT} items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account}}</translation>
 <translation id="8879284080359814990">Tonen al&amp;s tabblad</translation>
 <translation id="8879921471468674457">Inloggegevens onthouden</translation>
 <translation id="8880009256105053174">Zoe&amp;ken op deze pagina met Google...</translation>

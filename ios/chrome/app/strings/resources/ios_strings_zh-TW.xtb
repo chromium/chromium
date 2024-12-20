@@ -501,7 +501,6 @@
 <translation id="3224641773458703735">你必須先在裝置上設定螢幕解鎖密碼才能匯出密碼。</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3235063766008841141">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
-<translation id="3235083185359739322">將分頁設為閒置狀態，助你保持專注</translation>
 <translation id="3235242129752692527">編輯活動詳細資料，然後輕觸「儲存」。</translation>
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3244271242291266297">月</translation>
@@ -819,7 +818,6 @@
 <translation id="4766112107778026136">探索和追蹤</translation>
 <translation id="4769198578611055647">協助你在所有裝置上存取已儲存的密碼金鑰</translation>
 <translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{如果開啟的分頁已 1 天以上未使用，就會轉成閒置狀態，方便你將注意力放在常用的分頁上。你隨時可以前往設定進行變更。}other{如果開啟的分頁已 {COUNT} 天以上未使用，就會轉成閒置狀態，方便你將注意力放在常用的分頁上。你隨時可以前往設定進行變更。}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
 <translation id="4792385443586519711">公司名稱</translation>

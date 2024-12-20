@@ -501,7 +501,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3235063766008841141">Introducida en un sitio web engañoso y objeto de una brecha de seguridad de datos</translation>
-<translation id="3235083185359739322">Las pestañas inactivas te ayudan a mantener la concentración</translation>
 <translation id="3235242129752692527">Edita los detalles del evento y toca Guardar.</translation>
 <translation id="3240426699337459095">Enlace copiado</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4766112107778026136">Discover y Siguiendo</translation>
 <translation id="4769198578611055647">Te ayuda a acceder a las llaves de acceso guardadas en cualquier dispositivo</translation>
 <translation id="4777866634702576038">¿Eliminar grupo de pestañas?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Las pestañas abiertas que no se utilicen durante un día o más se moverán a las pestañas inactivas para que puedas centrarte fácilmente en las pestañas que más utilizas. Puedes cambiar esta opción en cualquier momento en la configuración.}other{Las pestañas abiertas que no se utilicen durante {COUNT} días o más se moverán a las pestañas inactivas para que puedas centrarte fácilmente en las pestañas que más utilizas. Puedes cambiar esta opción en cualquier momento en la configuración.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">¿Abrir en modo Incógnito?</translation>
 <translation id="4792385443586519711">Nombre de la empresa</translation>

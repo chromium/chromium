@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">Retirer le profil eSIM nommé <ph name="PROFILE_NAME" /></translation>
 <translation id="1069778954840159202">Obtenir un compte automatiquement à partir d'un téléphone Android</translation>
 <translation id="1069814191880976658">Choisissez un autre écran</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google}one{{PASSWORD_COUNT} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google}other{{PASSWORD_COUNT} mots de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google}}</translation>
 <translation id="107022587824771715">Les suggestions de groupes d'onglets sont inaccessibles pour le moment. Vous pouvez <ph name="BEGIN_LINK" />actualiser maintenant<ph name="END_LINK" /> ou réessayer plus tard</translation>
 <translation id="1070377999570795893">Un autre programme sur votre ordinateur a ajouté une extension qui risque de modifier le fonctionnement de Chrome.
 
@@ -2304,7 +2303,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2584109212074498965">Impossible de récupérer le ticket Kerberos. Réessayez ou communiquez avec l'administrateur des appareils de votre organisation. (Code d'erreur : <ph name="ERROR_CODE" />.)</translation>
 <translation id="2584974473573720127">Gérer les autorisations d'accès au microphone du site Web dans Chrome</translation>
 <translation id="2586561813241011046">Impossible d'installer <ph name="APP_NAME" />. Veuillez essayer de nouveau ou bien communiquez avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Presse-papiers</translation>
 <translation id="2586672484245266891">Veuillez entrer une URL plus courte</translation>
 <translation id="2587922766792651800">Délai dépassé</translation>
 <translation id="2588636910004461974">Appareils appartenant à <ph name="VENDOR_NAME" /></translation>
@@ -3114,7 +3112,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3166443275568926403">Performance et état de la pile</translation>
 <translation id="3167446923957429259">Bougez votre bouche vers la gauche</translation>
 <translation id="3167562202484086668">Supprimer toutes les données du <ph name="BRAND" /></translation>
-<translation id="3169901410527787002">Toujours lire les entrées clavier dans la barre d'adresse</translation>
 <translation id="3169930038976362151">Choisissez le thème qui correspond à vos besoins. Pour changer votre thème, votre fond d'écran, votre écran de veille et plus, il suffit de maintenir le doigt sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également sauter l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Corps</translation>
@@ -8605,7 +8602,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="713122686776214250">Ajouter une pa&amp;ge...</translation>
 <translation id="7131431455372521159">Toutes les touches directionnelles ont été déconnectées</translation>
 <translation id="7131896909366247105">En attente de l'installation de <ph name="APP_NAME" />…</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google}one{{PASSWORD_COUNT} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google}other{{PASSWORD_COUNT} mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google}}</translation>
 <translation id="7134098520442464001">Réduire la taille du texte</translation>
 <translation id="7134951043985383439">Fichier dangereux téléchargé</translation>
 <translation id="7135729336746831607">Activer le Bluetooth?</translation>
@@ -11069,7 +11065,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8876307312329369159">Impossible de modifier ce paramètre dans une session de démonstration.</translation>
 <translation id="8876965259056847565">Le <ph name="FEATURE_NAME" /> utilise la recherche d'appareils Bluetooth pour détecter les appareils à proximité.</translation>
 <translation id="8877448029301136595">[répertoire parent]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google}one{{ITEM_COUNT} élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google}other{{ITEM_COUNT} éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google}}</translation>
 <translation id="8879284080359814990">&amp;Afficher en tant qu'onglet</translation>
 <translation id="8879921471468674457">Mémoriser les données de connexion</translation>
 <translation id="8880009256105053174">Rechercher cette page avec Google…</translation>

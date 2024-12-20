@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">Alih keluar profil eSIM yang bernama <ph name="PROFILE_NAME" /></translation>
 <translation id="1069778954840159202">Dapatkan akaun secara automatik daripada telefon Android</translation>
 <translation id="1069814191880976658">Pilih skrin lain</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam Google Account anda}other{{PASSWORD_COUNT} kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item pada peranti anda yang lain, simpan item tersebut dalam Google Account anda}}</translation>
 <translation id="107022587824771715">Cadangan kumpulan tab tidak tersedia pada masa ini. Anda boleh <ph name="BEGIN_LINK" />menyegarkan semula sekarang<ph name="END_LINK" /> atau cuba sebentar lagi</translation>
 <translation id="1070377999570795893">Program lain pada komputer anda telah menambahkan sambungan yang boleh mengubah cara Chrome berfungsi.
 
@@ -2319,7 +2318,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2584109212074498965">Gagal mendapatkan tiket Kerberos. Cuba lagi atau hubungi pentadbir peranti organisasi anda. (Kod ralat <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Urus kebenaran mikrofon laman web dalam Chrome</translation>
 <translation id="2586561813241011046">Tidak dapat memasang <ph name="APP_NAME" />. Sila cuba lagi atau hubungi pentadbir anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Papan Keratan</translation>
 <translation id="2586672484245266891">Sila masukkan URL yang lebih pendek</translation>
 <translation id="2587922766792651800">Tamat masa</translation>
 <translation id="2588636910004461974">Peranti daripada <ph name="VENDOR_NAME" /></translation>
@@ -3129,7 +3127,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3166443275568926403">Keadaan Bateri dan Prestasi</translation>
 <translation id="3167446923957429259">Gerakkan mulut anda ke kiri</translation>
 <translation id="3167562202484086668">Padamkan semua data <ph name="BRAND" /></translation>
-<translation id="3169901410527787002">Sentiasa baca input papan kekunci dalam bar alamat</translation>
 <translation id="3169930038976362151">Pilih tema yang sesuai dengan keperluan anda. Untuk menukar tema, kertas dinding, penyelamat skrin dan pelbagai lagi, cuma sentuh &amp; tahan pada desktop.</translation>
 <translation id="3170072451822350649">Anda juga boleh melangkau log masuk dan <ph name="LINK_START" />menyemak imbas sebagai tetamu<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Kandungan</translation>
@@ -8635,7 +8632,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="713122686776214250">Tambah ha&amp;laman...</translation>
 <translation id="7131431455372521159">Semua TrackPoints telah diputuskan sambungan</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, menunggu</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam Google Account anda}other{{PASSWORD_COUNT} kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan item pada peranti anda yang lain, simpan item tersebut dalam Google Account anda}}</translation>
 <translation id="7134098520442464001">Jadikan Teks Lebih Kecil</translation>
 <translation id="7134951043985383439">Fail berbahaya dimuat turun</translation>
 <translation id="7135729336746831607">Hidupkan Bluetooth?</translation>
@@ -11107,7 +11103,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8876307312329369159">Tetapan ini tidak boleh ditukar dalam sesi tunjuk cara.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> menggunakan pengimbasan Bluetooth untuk mencari peranti yang berdekatan.</translation>
 <translation id="8877448029301136595">[direktori induk]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 item disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam Google Account anda}other{{ITEM_COUNT} item disimpan pada peranti ini sahaja. Untuk menggunakan item pada peranti anda yang lain, simpan item tersebut dalam Google Account anda}}</translation>
 <translation id="8879284080359814990">&amp;Paparkan Sebagai Tab</translation>
 <translation id="8879921471468674457">Ingat maklumat log masuk</translation>
 <translation id="8880009256105053174">Cari halaman ini dengan Google...</translation>

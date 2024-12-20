@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">automatska slika u slici</translation>
 <translation id="1100782917270858593">Dugme Nastavite put, pritisnite Enter da biste nastavili put i videli relevantne aktivnosti u istoriji Chrome-a</translation>
 <translation id="1101672080107056897">Radnja zbog greške</translation>
+<translation id="1101902632743388185">Tabele za poređenje</translation>
 <translation id="1104409666019087579">Neka obavezna polja su prazna. Popunite ih pre čuvanja.</translation>
 <translation id="1104860668737945357">Dugme Upravljaj lozinkama, aktivirajte ga da biste pregledali lozinke i upravljali njima u podešavanjima Chrome-a</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2025186561304664664">Proksi je podešen da bude automatski konfigurisan.</translation>
 <translation id="2025891858974379949">Nebezbedan sadržaj</translation>
 <translation id="2027465737841872819">Plastika</translation>
+<translation id="2027707238798802149">Kartica nije dostupna</translation>
 <translation id="2029735183873159415">Poreklo i genealogija</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />da proverite proksi i zaštitni zid<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Prečica ne može da bude ista kao ključna reč podrazumevanog dobavljača pretrage koju definiše <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2514548229949738417">Dom i bašta</translation>
 <translation id="2515629240566999685">da proverite signal u svojoj oblasti</translation>
 <translation id="2515761554693942801">Odabrali ste da se verifikujete pomoću Touch ID-a na veb-sajtovima koji koriste <ph name="PROVIDER_ORIGIN" />. Ovaj dobavljač je možda sačuvao informacije o načinu plaćanja, za koji možete da <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Ova kartica nije dostupna. Obratite se dobavljaču kartice.</translation>
 <translation id="2521385132275182522">Spajanje u donjem desnom uglu</translation>
 <translation id="2521736961081452453">Napravite upitnik</translation>
 <translation id="2523886232349826891">Sačuvano je samo na ovom uređaju</translation>
@@ -3247,7 +3250,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="683108308100148227">Sakrij stavku</translation>
 <translation id="6832753933931306326">Obrazac je popunjen</translation>
-<translation id="6837361937093656245">Prijavljivanje je obavezno</translation>
 <translation id="6841864657731852591">Cilindar za graviranje</translation>
 <translation id="6842196666980060516">184×260 mm</translation>
 <translation id="6844998850832008753">Praćenje ruku je dozvoljeno ovaj put</translation>
@@ -3342,6 +3344,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7003322000677139268">Delovi i oprema za vozila</translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
 <translation id="7006930604109697472">Ipak pošalji</translation>
+<translation id="7009364359744329733">Ova kartica trenutno nije dostupna. Probajte ponovo kasnije.</translation>
 <translation id="7010658264061801199">Hrana i piće</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Može da traži da zaključa i koristi miš</translation>

@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">Xóa hồ sơ eSIM có tên <ph name="PROFILE_NAME" /></translation>
 <translation id="1069778954840159202">Tự động lấy thông tin tài khoản từ điện thoại Android</translation>
 <translation id="1069814191880976658">Chọn một màn hình khác</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 mật khẩu và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng thông tin này trên các thiết bị khác, hãy lưu thông tin vào Tài khoản Google của bạn}other{{PASSWORD_COUNT} mật khẩu và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng những thông tin này trên các thiết bị khác, hãy lưu thông tin vào Tài khoản Google của bạn}}</translation>
 <translation id="107022587824771715">Hiện không thể xem các đề xuất về nhóm thẻ. Bạn có thể <ph name="BEGIN_LINK" />làm mới ngay<ph name="END_LINK" /> hoặc thử lại sau</translation>
 <translation id="1070377999570795893">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.
 
@@ -2319,7 +2318,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2584109212074498965">Không tìm thấy vé Kerberos. Hãy thử lại hoặc liên hệ với quản trị viên thiết bị của tổ chức bạn. (Mã lỗi <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Quản lý quyền truy cập vào micrô của các trang web trong Chrome</translation>
 <translation id="2586561813241011046">Không cài đặt được <ph name="APP_NAME" />. Hãy thử lại hoặc liên hệ với quản trị viên. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2586672484245266891">Vui lòng nhập URL ngắn hơn</translation>
 <translation id="2587922766792651800">Đã hết thời gian chờ</translation>
 <translation id="2588636910004461974">Thiết bị của <ph name="VENDOR_NAME" /></translation>
@@ -3129,7 +3127,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3166443275568926403">Hiệu suất và trạng thái pin</translation>
 <translation id="3167446923957429259">Đưa miệng sang trái</translation>
 <translation id="3167562202484086668">Xoá tất cả dữ liệu <ph name="BRAND" /></translation>
-<translation id="3169901410527787002">Luôn đọc nội dung nhập bằng bàn phím trên thanh địa chỉ</translation>
 <translation id="3169930038976362151">Chọn giao diện phù hợp với nhu cầu của bạn. Để thay đổi giao diện, hình nền, trình bảo vệ màn hình, v.v., bạn chỉ cần chạm và giữ trên màn hình.</translation>
 <translation id="3170072451822350649">Bạn cũng có thể bỏ qua việc đăng nhập và <ph name="LINK_START" />duyệt với tư cách khách<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Nội dung</translation>
@@ -4628,6 +4625,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4220648711404560261">Đã xảy ra lỗi trong quá trình kích hoạt.</translation>
 <translation id="4222917615373664617">Tính năng theo dõi giá đang bật. Giá là <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Không cho phép truy cập micrô</translation>
+<translation id="4224541845943007092">Đọc và lưu nội dung nhập bằng bàn phím trên thanh địa chỉ</translation>
 <translation id="4225397296022057997">Trên tất cả các trang web</translation>
 <translation id="4228071595943929139">Sử dụng địa chỉ email của tổ chức bạn</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Không được phép dùng tiện ích này}other{Không được phép dùng một số tiện ích}}</translation>
@@ -8637,7 +8635,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="713122686776214250">Thêm tran&amp;g...</translation>
 <translation id="7131431455372521159">Tất cả TrackPoint đã bị ngắt kết nối</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, đang chờ</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn}other{{PASSWORD_COUNT} mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng những mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn}}</translation>
 <translation id="7134098520442464001">Thu nhỏ Văn bản</translation>
 <translation id="7134951043985383439">Đã tải xuống một tệp nguy hiểm</translation>
 <translation id="7135729336746831607">Bạn muốn bật Bluetooth?</translation>
@@ -11108,7 +11105,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8876307312329369159">Không thể thay đổi tùy chọn cài đặt này trong phiên minh họa.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> dùng tính năng quét tìm thiết bị Bluetooth để tìm các thiết bị ở gần.</translation>
 <translation id="8877448029301136595">[thư mục cha]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 mục chỉ được lưu trên thiết bị này. Để sử dụng mục này trên các thiết bị khác, hãy lưu mục vào Tài khoản Google của bạn}other{{ITEM_COUNT} mục chỉ được lưu trên thiết bị này. Để sử dụng những mục này trên các thiết bị khác, hãy lưu mục vào Tài khoản Google của bạn}}</translation>
 <translation id="8879284080359814990">&amp;Hiển thị dưới dạng thẻ</translation>
 <translation id="8879921471468674457">Ghi nhớ thông tin đăng nhập</translation>
 <translation id="8880009256105053174">Tìm kiếm trang này bằng Google...</translation>

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">ecrã no ecrã automático</translation>
 <translation id="1100782917270858593">Botão Retomar percurso, prima Enter para retomar o percurso e ver atividade relevante no seu Histórico do Chrome</translation>
 <translation id="1101672080107056897">Ação com erro.</translation>
+<translation id="1101902632743388185">As suas tabelas de comparação</translation>
 <translation id="1104409666019087579">Alguns campos obrigatórios estão vazios. Preencha-os antes de guardar.</translation>
 <translation id="1104860668737945357">Botão Gerir palavras-passe; ative para ver e gerir as suas palavras-passe nas definições do Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2025186561304664664">O proxy está definido para configuração automática.</translation>
 <translation id="2025891858974379949">Conteúdo inseguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
+<translation id="2027707238798802149">Cartão não disponível</translation>
 <translation id="2029735183873159415">Ascendência e genealogia</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Rever o proxy e a firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do fornecedor de pesquisa predefinido definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2514548229949738417">Casa e jardim</translation>
 <translation id="2515629240566999685">Rever o sinal na área</translation>
 <translation id="2515761554693942801">Optou por validar com o Touch ID em Websites que usam o fornecedor <ph name="PROVIDER_ORIGIN" />. Este fornecedor pode ter armazenado informações sobre o seu método de pagamento, que pode <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Este cartão não está disponível. Contacte o seu fornecedor de cartões.</translation>
 <translation id="2521385132275182522">Agrafar parte inferior direita</translation>
 <translation id="2521736961081452453">Criar formulário</translation>
 <translation id="2523886232349826891">Guardado apenas neste dispositivo.</translation>
@@ -3248,7 +3251,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="683108308100148227">Ocultar item</translation>
 <translation id="6832753933931306326">O formulário foi preenchido</translation>
-<translation id="6837361937093656245">Precisa de iniciar sessão</translation>
 <translation id="6841864657731852591">Rotogravura</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Monitorização das mãos permitida desta vez</translation>
@@ -3292,6 +3294,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6925267999184670015">B+ norte-americano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
+<translation id="6933282894115597956">A sua organização requer que inicie sessão</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O seu motor de pesquisa predefinido permite-lhe pesquisar na Web e ativar as funcionalidades do Chrome<ph name="END_BOLD" />, como pesquisar a partir da barra de endereço e de imagens em páginas Web. É possível que uma funcionalidade não esteja disponível se o seu motor de busca não a suportar.</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>
 <translation id="6935082727755903526">Empregos na área de contabilidade e finanças</translation>
@@ -3343,6 +3346,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7003322000677139268">Peças e acessórios para veículos</translation>
 <translation id="7004499039102548441">Separadores recentes</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
+<translation id="7009364359744329733">O cartão não está disponível neste momento. Tente mais tarde.</translation>
 <translation id="7010658264061801199">Alimentos e bebidas</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Pode pedir para bloquear e usar o rato</translation>

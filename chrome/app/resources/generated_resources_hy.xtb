@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">Հեռացնել eSIM պրոֆիլը (<ph name="PROFILE_NAME" />)</translation>
 <translation id="1069778954840159202">Ավտոմատ ստանալ հաշիվ Android հեռախոսից</translation>
 <translation id="1069814191880976658">Ընտրել այլ էկրան</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում}one{{PASSWORD_COUNT} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում}other{{PASSWORD_COUNT} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Գաղտնաբառերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում}}</translation>
 <translation id="107022587824771715">Ներդիրների խմբավորման առաջարկներն այս պահին անհասանելի են։ <ph name="BEGIN_LINK" />Թարմացրեք հիմա<ph name="END_LINK" /> կամ փորձեք ավելի ուշ։</translation>
 <translation id="1070377999570795893">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է ընդլայնում, որը կարող է միջամտել Chrome-ի աշխատանքին:
 
@@ -1910,6 +1909,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Հետևյալ ստեղները չեն աջակցվում՝ Tab, Shift, Ctrl, Esc, Caps Lock և ձայնի ուժգնության կառավարման ստեղները</translation>
 <translation id="2309620859903500144">Այս կայքին արգելված է օգտագործել շարժման և լույսի ձեր տվիչները:</translation>
+<translation id="2310414604104802967">Ստուգվում է՝ արդյոք մտած եք հաշիվ…</translation>
 <translation id="2310923358723722542">Էկրան և խոշորացում</translation>
 <translation id="2312219318583366810">Էջի URL</translation>
 <translation id="2314165183524574721">Տեսանելիության ընթացիկ կարգավորումը՝ «Թաքցված»</translation>
@@ -2305,7 +2305,6 @@
 <translation id="2584109212074498965">Չհաջողվեց բեռնել Kerberos տոմսը: Փորձեք նորից կամ կապվեք կազմակերպության սարքի ադմինիստրատորի հետ (սխալի կոդը՝ <ph name="ERROR_CODE" />):</translation>
 <translation id="2584974473573720127">Կառավարել կայքերի համար խոսափողի թույլտվությունները Chrome-ում</translation>
 <translation id="2586561813241011046">Չհաջողվեց տեղադրել <ph name="APP_NAME" /> հավելվածը։ Փորձեք նորից կամ դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
-<translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2586672484245266891">Մուտքագրեք ավելի կարճ URL</translation>
 <translation id="2587922766792651800">Ժամանակը սպառվել է</translation>
 <translation id="2588636910004461974">Սարքեր <ph name="VENDOR_NAME" /> մատակարարից</translation>
@@ -3115,7 +3114,6 @@
 <translation id="3166443275568926403">Արտադրողականությունը և մարտկոցի վիճակը</translation>
 <translation id="3167446923957429259">Բերանը շարժեք դեպի ձախ</translation>
 <translation id="3167562202484086668">Ջնջել բոլոր տվյալները «<ph name="BRAND" />» ծառայությունից</translation>
-<translation id="3169901410527787002">Միշտ կարդալ հասցեագոտում ստեղնաշարով կատարված մուտքագրումը</translation>
 <translation id="3169930038976362151">Ընտրեք ձեզ հարմար թեմա։ Թեման, պաստառը, էկրանապահը և այլ տարրեր փոխելու համար պարզապես հպեք աշխատասեղանին և պահեք։</translation>
 <translation id="3170072451822350649">Դուք կարող եք նաև մուտք չգործել և <ph name="LINK_START" />սկսել հյուրի աշխատաշրջան<ph name="LINK_END" />:</translation>
 <translation id="3175067642577044620">Հիմնական տեքստ</translation>
@@ -8616,7 +8614,6 @@
 <translation id="713122686776214250">Հավելել է&amp;ջ...</translation>
 <translation id="7131431455372521159">Բոլոր TrackPoint-ներն անջատվել են</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, սպասեք</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 գաղտնաբառ պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում}one{{PASSWORD_COUNT} գաղտնաբառ պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում}other{{PASSWORD_COUNT} գաղտնաբառ պահվում է միայն այս սարքում։ Գաղտնաբառերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում}}</translation>
 <translation id="7134098520442464001">Փոքրացնել տեքստը</translation>
 <translation id="7134951043985383439">Ներբեռնվել է վտանգավոր ֆայլ</translation>
 <translation id="7135729336746831607">Միացնե՞լ Bluetooth-ը</translation>
@@ -11086,7 +11083,6 @@
 <translation id="8876307312329369159">Այս կարգավորումը հնարավոր չէ փոխել ցուցադրական աշխատաշրջանում:</translation>
 <translation id="8876965259056847565">«<ph name="FEATURE_NAME" />» գործառույթը մոտակա սարքեր է փնտրում Bluetooth-ի միջոցով։</translation>
 <translation id="8877448029301136595">[վերադաս գրացուցակ]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 տարր պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում}one{{ITEM_COUNT} տարր պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում}other{{ITEM_COUNT} տարր պահվում է միայն այս սարքում։ Գաղտնաբառերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում}}</translation>
 <translation id="8879284080359814990">&amp;Ցույց տալ որպես ներդիր</translation>
 <translation id="8879921471468674457">Հիշել մուտքային տվյալները</translation>
 <translation id="8880009256105053174">Որոնել այս էջում Google-ի միջոցով...</translation>
@@ -11273,6 +11269,7 @@
 <translation id="9007688236643268728">&amp;Նորից մուտք գործեք</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9008201858626224558">«<ph name="SUBPAGE_TITLE" />» մանրամասների էջ տանող «Հետ» կոճակ</translation>
+<translation id="9008425116680857079">Chrome-ը կարող է փոխել ձեր գաղտնաբառը, երբ հաշիվ եք մտած։</translation>
 <translation id="9008828754342192581">Դուք նախկինում թույլատրել եք բոլոր ընդլայնումները <ph name="ORIGIN" /> էջում</translation>
 <translation id="9009369504041480176">Վերբեռնում (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009707268312089299">Windows-ից ներմուծված</translation>

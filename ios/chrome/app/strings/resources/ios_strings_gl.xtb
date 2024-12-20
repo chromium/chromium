@@ -501,7 +501,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3224641773458703735">Para exportar os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3235063766008841141">A credencial escribiuse nun sitio enganoso e viuse afectada por unha violación da seguranza dos datos</translation>
-<translation id="3235083185359739322">As pestanas inactivas axúdanche a concentrarte</translation>
 <translation id="3235242129752692527">Edita os detalles do evento e toca Gardar.</translation>
 <translation id="3240426699337459095">Copiouse a ligazón</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4766112107778026136">Discover e Seguindo</translation>
 <translation id="4769198578611055647">Axúdache a acceder ás claves de acceso gardadas en calquera dispositivo</translation>
 <translation id="4777866634702576038">Queres eliminar o grupo de pestanas?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{As pestanas abertas que leven un día ou máis sen uso moveranse a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento na configuración.}other{As pestanas abertas que leven {COUNT} días ou máis sen uso moveranse a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento na configuración.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Queres abrir a ligazón no modo de incógnito?</translation>
 <translation id="4792385443586519711">Nome da empresa</translation>

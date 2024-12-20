@@ -501,7 +501,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3224641773458703735">Parolları eksport etmək üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3235063766008841141">Aldadıcı saytda daxil edilib və data pozulmasında tapılıb</translation>
-<translation id="3235083185359739322">Deaktiv tablar fokuslanmağınıza kömək edir</translation>
 <translation id="3235242129752692527">Tədbir detallarını redaktə edin və "Yadda saxlayın" üzərinə toxunun.</translation>
 <translation id="3240426699337459095">Link kopyalandı</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4766112107778026136">Təkliflər və İzləmə</translation>
 <translation id="4769198578611055647">İstənilən cihazda yadda saxlanmış giriş açarlarına daxil olmağa kömək edir</translation>
 <translation id="4777866634702576038">Tab qrupu silinsin?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Ən çox istifadə etdiyiniz tablara asanlıqla fokuslanmaq üçün ən azı bir gün istifadə edilməyən açıq tablar Deaktiv tablara köçürülür. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.}other{Ən çox istifadə etdiyiniz tablara asanlıqla fokuslanmaq üçün ən azı {COUNT} gün istifadə edilməyən açıq tablar Deaktiv tablara köçürülür. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Anonim rejimində açılsın?</translation>
 <translation id="4792385443586519711">Şirkət adı</translation>

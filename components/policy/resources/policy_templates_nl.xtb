@@ -3283,6 +3283,7 @@ Als je dit beleid instelt, kan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAM
       verbinding met de Quirks Server om configuratiebestanden te downloaden.
 
       Als dit beleid is ingesteld op 'true' of niet is geconfigureerd, maakt <ph name="PRODUCT_OS_NAME" /> automatisch verbinding met de Quirks Server en worden configuratiebestanden (indien beschikbaar) gedownload en opslagen op het apparaat.  Dergelijke bestanden kunnen bijvoorbeeld worden gebruikt om de weergavekwaliteit van aangesloten beeldschermen te verbeteren.</translation>
+<translation id="3513864752694608929">Aangezette invoermethoden niet afdwingen</translation>
 <translation id="3515196503924273265">Hiermee kun je de functie NewBaseUrlInheritanceBehavior aanzetten</translation>
 <translation id="351654132746710200">Nadat <ph name="LACROS_NAME" /> is uitgezet, wordt er geen gegevensmigratie uitgevoerd. De map <ph name="LACROS_NAME" /> wordt verwijderd en gebruikers blijven de resterende gegevens gebruiken.</translation>
 <translation id="3518293344797498431">Laad de batterij op tot ongeveer 80% om de levensduur van de batterij te maximaliseren.</translation>
@@ -6631,6 +6632,7 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="6092073071805297119">Toestaan dat filters voor toegankelijkheidsprestaties worden gebruikt.</translation>
 <translation id="60925735895026302">Niet toestaan dat sites toegang vragen tot lokale printers via de WebPrinting API</translation>
 <translation id="6093156968240188330">Externe gebruikers toestaan om een vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
+<translation id="6093551397728373988">Afdwingen dat alle toegestane invoermethoden worden aangezet in een gebruikerssessie</translation>
 <translation id="6094314311474620462">Afdrukken uitzetten</translation>
 <translation id="6097601282776163274">Aan URL's gekoppelde, geanonimiseerde gegevens verzamelen</translation>
 <translation id="6099853574908182288">Standaard kleurenmodus voor afdrukken</translation>
@@ -6825,6 +6827,11 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Als je dit beleid niet toepast, kunnen gebruikers Chrome for Testing niet uitvoeren. Gebruikers kunnen Chrome for Testing nog steeds installeren, maar de functie wordt niet uitgevoerd met de profielen waarvoor dit beleid niet wordt toegepast.</translation>
 <translation id="6258658183356534534">De GREASE-updatefunctie voor User-Agent Client Hints beheren.</translation>
 <translation id="6261643884958898336">ID-gegevens van machine rapporteren</translation>
+<translation id="6262668203803408414">Als je het beleid instelt op True, worden alle invoermethoden uit het beleid <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> aangezet in <ph name="PRODUCT_OS_NAME" />-sessies.
+Er kunnen geen andere invoermethoden worden aangezet in de gebruikerssessies.
+Als je het beleid instelt op False of niet instelt, worden geen aangezette invoermethoden afgedwongen. Het beleid <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> stelt alleen in welke invoermethoden beschikbaar zijn voor de gebruiker.
+
+Als je het beleid <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> niet instelt of instelt op een lege lijst, wordt dit beleid genegeerd en kunnen gebruikers alle invoermethoden aanzetten.</translation>
 <translation id="6264247808139384018">Als je het beleid toepast of niet instelt, kunnen gebruikers die een wachtwoord gebruiken voor verificatie het scherm vergrendelen.
 
 Als je het beleid niet toepast, kunnen gebruikers het scherm niet vergrendelen. (Ze kunnen alleen uitloggen van de gebruikerssessie.)</translation>
@@ -8848,6 +8855,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 
       Dit beleid was bedoeld als tijdelijk en is verwijderd nadat de nieuwe ballon-UI voor downloaden volledig is gelanceerd.</translation>
 <translation id="7736521021425189418">Terminal (ondersteund sinds versie 117)</translation>
+<translation id="7736846524371077454">Afdwingen dat alle toegestane invoermethoden worden aangezet</translation>
 <translation id="7740644123648617252">Import van formuliergegevens voor automatisch invullen bij eerste uitvoering aanzetten</translation>
 <translation id="7744253761377202223">Percentage voor schermhelderheid als er op netvoeding wordt gewerkt</translation>
 <translation id="7747447585227954402">Toestaan dat apparaten een <ph name="PLUGIN_VM_NAME" /> gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>

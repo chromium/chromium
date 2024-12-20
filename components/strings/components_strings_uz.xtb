@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">avtomatik tasvir ustida tasvir</translation>
 <translation id="1100782917270858593">Tarixni qaytarish tugmasi, Chrome tarixidagi tegishli faollikni koʻrish uchun tarixni qaytarish uchun Enter tugmasini bosing</translation>
 <translation id="1101672080107056897">Xato amali</translation>
+<translation id="1101902632743388185">Taqqoslash jadvallaringiz</translation>
 <translation id="1104409666019087579">Ayrim majburiy maydonchalar boʻsh. Saqlashdan oldin ularni toʻldiring.</translation>
 <translation id="1104860668737945357">Parollarni boshqarish tugmasi, Chrome sozlamalari orqali parollarni koʻrish va boshqarish uchun faollashtiring</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -582,6 +583,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2025186561304664664">Proksi-server avtomatik sozlanadi.</translation>
 <translation id="2025891858974379949">Zararli kontent</translation>
 <translation id="2027465737841872819">Plastik</translation>
+<translation id="2027707238798802149">Karta ishlamayapti</translation>
 <translation id="2029735183873159415">Ajdodlar va genealogiya</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proksi-server va himoya devori sozlamalarini tekshiring<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Buyruq <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> belgilagan standart qidiruv provayderi kalit soʻzi bilan bir xil boʻlishi mumkin emas: <ph name="SHORTCUT_NAME" /></translation>
@@ -865,6 +867,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2514548229949738417">Uy va bogʻ</translation>
 <translation id="2515629240566999685">Mobil aloqa signalini tekshirish</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> saytlarida shaxsni Touch ID yordamida tasdiqlash mumkin. Bu provayder toʻlov usulingiz axborotini saqlashi mumkin, lekin uning <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Bu karta ishlamayapti. Provayderingizga murojaat qiling.</translation>
 <translation id="2521385132275182522">Quyi oʻngdan steplerlash</translation>
 <translation id="2521736961081452453">Shakl yaratish</translation>
 <translation id="2523886232349826891">Faqat shu qurilmada saqlanadi</translation>
@@ -3242,7 +3245,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="683108308100148227">Bandni berkitish</translation>
 <translation id="6832753933931306326">Shakl axboroti kiritildi</translation>
-<translation id="6837361937093656245">Hisobga kirish zarur</translation>
 <translation id="6841864657731852591">Chuqur pechat uchun silindr</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Qoʻllar holatini kuzatishga faqat shu safar ruxsat berildi</translation>
@@ -3286,6 +3288,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6925267999184670015">Shimoliy Amerika B+</translation>
 <translation id="6926216138694948720">Bodi-art</translation>
 <translation id="692638818576287323">Tijoriy avtomobillar</translation>
+<translation id="6933282894115597956">Tashkilotingiz hisobga kirishni talab qiladi</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Asosiy qidiruv vositangiz internetda qidirish imkonini beradi<ph name="END_BOLD" /> hamda manzil qatoridan va veb-sahifalardagi rasmlardan qidirish kabi Chrome funksiyalarini yoqadi. Qidiruv vositangiz dastaklamaydigan funksiyalar ishlamasligi mumkin.</translation>
 <translation id="6934672428414710184">Bu nom Google hisobingizga biriktirilgan</translation>
 <translation id="6935082727755903526">Buxgalteriya va moliya sohasidagi vakansiyalar</translation>
@@ -3337,6 +3340,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7003322000677139268">Avtomobil qismlari va aksessuarlari</translation>
 <translation id="7004499039102548441">Oxirgi varaqlar</translation>
 <translation id="7006930604109697472">Baribir yuborilsin</translation>
+<translation id="7009364359744329733">Hozirda karta ishlamayapti. Keyinroq qayta urining.</translation>
 <translation id="7010658264061801199">Taom va ichimliklar</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Sichqonchadan foydalanish yoki uni qulflashga ruxsat soʻrashi mumkin</translation>

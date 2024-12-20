@@ -941,7 +941,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5304593522240415983">Không được để trống trường này</translation>
 <translation id="5306014156308790439">Nút Thêm vào bộ sưu tập đã bị vô hiệu hoá</translation>
 <translation id="5308380583665731573">Kết nối</translation>
-<translation id="5310963254742922113">Đã dùng mật khẩu.</translation>
 <translation id="5316947901395241499">Quản trị viên đã tắt tính năng lưu mật khẩu</translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5319359161174645648">Google đề xuất Chrome</translation>
@@ -973,6 +972,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5444999712122199445">Quay lại trang web</translation>
 <translation id="544776284582297024">Để mở các thẻ và truy cập cùng lúc vào nhiều trang, hãy nhấn vào nút mở thẻ</translation>
 <translation id="5454166040603940656">với <ph name="PROVIDER" /></translation>
+<translation id="5454215368971121976">Khi thiết bị gập lại, bạn có thể lựa chọn một phương án hoặc chạm và giữ thanh địa chỉ để thay đổi vị trí.</translation>
 <translation id="5458366071038729214">Bạn sẽ thấy các trang web mình theo dõi tại đây</translation>
 <translation id="5468068603361015296">Bạn vẫn muốn tải <ph name="FILE_NAME" /> xuống?</translation>
 <translation id="548278423535722844">Mở trong ứng dụng bản đồ</translation>
@@ -1172,6 +1172,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6342069812937806050">Vừa xong</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tùy chọn khác}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tùy chọn khác}}</translation>
 <translation id="6345878117466430440">Đánh dấu là đã đọc</translation>
+<translation id="6347010704471250799">Hiện thông báo</translation>
 <translation id="6356893102071098867">Kiểm tra để đảm bảo bạn đã chọn đúng tài khoản</translation>
 <translation id="6363990818884053551">Để bắt đầu đồng bộ hóa, hãy xác minh danh tính của bạn</translation>
 <translation id="6364438453358674297">Xóa đề xuất khỏi lịch sử?</translation>

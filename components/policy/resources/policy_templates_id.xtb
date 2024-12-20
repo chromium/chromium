@@ -3402,6 +3402,7 @@ Jika kebijakan ini disetel, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" 
       Jika kebijakan ini ditetapkan ke False, perangkat tidak akan mencoba menghubungi Quirks Server untuk mendownload file konfigurasi.
 
       Jika kebijakan ini ditetapkan ke True atau tidak dikonfigurasi, maka <ph name="PRODUCT_OS_NAME" /> akan otomatis menghubungi Quirks Server dan mendownload file konfigurasi, jika tersedia, dan menyimpannya di perangkat. File tersebut dapat digunakan, misalnya, untuk meningkatkan kualitas tampilan monitor yang ditambahkan.</translation>
+<translation id="3513864752694608929">Jangan terapkan metode input yang diaktifkan</translation>
 <translation id="3515196503924273265">Memungkinkan pengaktifan fitur NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, migrasi data tidak akan dilakukan. Folder <ph name="LACROS_NAME" /> akan dihapus dan pengguna akan terus menggunakan data yang tersisa.</translation>
 <translation id="3518293344797498431">Isi daya baterai hingga sekitar 80% untuk memaksimalkan masa pakai baterai.</translation>
@@ -6938,6 +6939,7 @@ kebijakan ini saat browser berjalan.</translation>
 <translation id="6092073071805297119">Izinkan penggunaan Filter Performa Aksesibilitas.</translation>
 <translation id="60925735895026302">Jangan izinkan situs apa pun meminta akses ke printer lokal melalui WebPrinting API</translation>
 <translation id="6093156968240188330">Memungkinkan pengguna jarak jauh untuk berinteraksi dengan jendela yang berada jauh di sesi bantuan jarak jauh</translation>
+<translation id="6093551397728373988">Menerapkan semua metode input yang diizinkan untuk diaktifkan dalam sesi pengguna</translation>
 <translation id="6094314311474620462">Nonaktifkan pencetakan</translation>
 <translation id="6097601282776163274">Mengaktifkan pengumpulan data anonim yang menyertakan URL</translation>
 <translation id="6099853574908182288">Mode warna pencetakan default</translation>
@@ -7137,6 +7139,11 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
       Jika kebijakan ini disetel ke Nonaktif, pengguna tidak akan diizinkan menjalankan Chrome for Testing. Pengguna tetap dapat menginstal Chrome for Testing, tetapi tidak akan dijalankan dengan profil yang menyetel kebijakan ini ke Nonaktif.</translation>
 <translation id="6258658183356534534">Mengontrol fitur Pembaruan GREASE Petunjuk Klien Agen Pengguna.</translation>
 <translation id="6261643884958898336">Laporkan informasi Identifikasi Mesin</translation>
+<translation id="6262668203803408414">Jika kebijakan disetel ke benar (true), semua metode input dari kebijakan <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> akan diaktifkan dalam sesi <ph name="PRODUCT_OS_NAME" />.
+Tidak ada metode input lain yang dapat diaktifkan dalam sesi pengguna.
+Jika kebijakan disetel ke salah (false) atau tidak disetel, metode input yang diaktifkan tidak akan diterapkan dan kebijakan <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> hanya mengonfigurasi metode input yang tersedia bagi pengguna.
+
+Jika kebijakan <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> tidak disetel atau disetel ke daftar kosong, kebijakan ini akan diabaikan dan pengguna dapat mengaktifkan metode input apa pun.</translation>
 <translation id="6264247808139384018">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna yang melakukan autentikasi dengan sandi akan dapat mengunci layar.
 
 Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengunci layar. (Pengguna hanya dapat logout dari sesi pengguna).</translation>
@@ -9273,6 +9280,7 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 
       Kebijakan ini bersifat sementara dan telah dihapus setelah UI balon download yang baru diluncurkan sepenuhnya.</translation>
 <translation id="7736521021425189418">Terminal (didukung sejak versi 117)</translation>
+<translation id="7736846524371077454">Menerapkan semua metode input yang diizinkan untuk diaktifkan</translation>
 <translation id="7740644123648617252">Aktifkan impor data formulir isi otomatis saat browser pertama kali dijalankan</translation>
 <translation id="7744253761377202223">Persentase kecerahan layar saat menggunakan daya AC.</translation>
 <translation id="7747447585227954402">Izinkan perangkat menggunakan <ph name="PLUGIN_VM_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>

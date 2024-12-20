@@ -3289,6 +3289,7 @@ Wenn diese Richtlinie konfiguriert ist, kann <ph name="DEVELOPER_TOOLS_AVAILABIL
       den Quirks-Server zu kontaktieren, um Konfigurationsdateien herunterzuladen.
 
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, kontaktiert <ph name="PRODUCT_OS_NAME" /> automatisch den Quirks-Server und lädt Konfigurationsdateien herunter, sofern welche vorhanden sind. Diese werden dann auf dem Gerät gespeichert.  Solche Dateien können beispielsweise verwendet werden, um die Anzeigequalität angeschlossener Monitore zu verbessern.</translation>
+<translation id="3513864752694608929">Aktivierung von Eingabemethoden nicht erzwingen</translation>
 <translation id="3515196503924273265">Ermöglicht das Aktivieren der Funktion „NewBaseUrlInheritanceBehavior“</translation>
 <translation id="351654132746710200">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, wird die Datenmigration nicht durchgeführt. Der Ordner „<ph name="LACROS_NAME" />“ wird entfernt und die Nutzer verwenden die verbleibenden Daten weiter.</translation>
 <translation id="3518293344797498431">Lädt den Akku auf etwa 80 % auf, um seine Lebensdauer zu maximieren.</translation>
@@ -6665,6 +6666,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="6092073071805297119">Verwendung des Barrierefreiheitsfilters zur Leistungsverbesserung zulassen.</translation>
 <translation id="60925735895026302">Keine Website darf um Zugriff auf lokale Drucker über die WebPrinting API bitten</translation>
 <translation id="6093156968240188330">Zulassen, dass Remote-Nutzer in Remote-Sitzungen mit geöffneten Fenstern arbeiten können</translation>
+<translation id="6093551397728373988">In Nutzersitzungen die Aktivierung aller zulässigen Eingabemethoden erzwingen</translation>
 <translation id="6094314311474620462">Drucken deaktivieren</translation>
 <translation id="6097601282776163274">Anonymisierte URL-Datenerfassung aktivieren</translation>
 <translation id="6099853574908182288">Standardmäßiger Farbdruckmodus</translation>
@@ -6863,6 +6865,11 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
       Ist die Richtlinie deaktiviert, dürfen Nutzer Chrome for Testing nicht ausführen. Nutzer können Chrome for Testing dennoch installieren, aber diese Chrome-Version wird nicht mit den Profilen ausgeführt, für die diese Richtlinie deaktiviert ist.</translation>
 <translation id="6258658183356534534">Steuert die Funktion zur Aktualisierung des GREASE-Algorithmus für Client-Hinweise in „User-Agent“-Headern.</translation>
 <translation id="6261643884958898336">Gerätebezogene Daten erfassen</translation>
+<translation id="6262668203803408414">Wenn die Richtlinie auf „True“ gesetzt ist, wird in <ph name="PRODUCT_OS_NAME" />-Sitzungen die Aktivierung aller in der Richtlinie „<ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" />“ festgelegten Eingabemethoden erzwungen.
+In den Nutzersitzungen können keine anderen Eingabemethoden aktiviert werden.
+Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, wird die Aktivierung von Eingabemethoden nicht erzwungen. Die Richtlinie „<ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" />“ legt dann nur fest, welche Eingabemethoden dem Nutzer zur Verfügung stehen.
+
+Wenn die Richtlinie „<ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" />“ nicht konfiguriert oder eine leere Liste festgelegt ist, wird diese Richtlinie ignoriert und Nutzer können alle Eingabemethoden aktivieren.</translation>
 <translation id="6264247808139384018">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die sich mit einem Passwort authentifizieren, den Bildschirm sperren.
 
 Ist die Richtlinie deaktiviert, können Nutzer den Bildschirm nicht sperren. Sie können sich lediglich von der Nutzersitzung abmelden.</translation>
@@ -8884,6 +8891,7 @@ werden abgelehnt.</translation>
 
       Diese Richtlinie war für die vorübergehende Nutzung vorgesehen und wurde entfernt, nachdem die neue Benutzeroberfläche für das Download-Infofeld vollständig eingeführt wurde.</translation>
 <translation id="7736521021425189418">Terminal (wird seit Version 117 unterstützt)</translation>
+<translation id="7736846524371077454">Aktivierung aller zulässigen Eingabemethoden erzwingen</translation>
 <translation id="7740644123648617252">Import von Autofill-Daten für Formulare bei der ersten Ausführung aktivieren</translation>
 <translation id="7744253761377202223">Bildschirmhelligkeit im Netzbetrieb in Prozent</translation>
 <translation id="7747447585227954402">Geräten erlauben, <ph name="PLUGIN_VM_NAME" /> auf <ph name="PRODUCT_OS_NAME" /> zu verwenden</translation>

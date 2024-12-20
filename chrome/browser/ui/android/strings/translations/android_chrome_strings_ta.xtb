@@ -941,7 +941,6 @@
 <translation id="5304593522240415983">இந்தப் புலம் காலியாக இருக்கக் கூடாது</translation>
 <translation id="5306014156308790439">'சேகரிப்பில் சேர்' பட்டன் முடக்கப்பட்டுள்ளது</translation>
 <translation id="5308380583665731573">இணை</translation>
-<translation id="5310963254742922113">கடவுச்சொல் பயன்படுத்தப்பட்டது.</translation>
 <translation id="5316947901395241499">கடவுச்சொற்களைச் சேமிப்பதை உங்கள் நிர்வாகி முடக்கியுள்ளார்</translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5319359161174645648">Google ஆனது Chromeஐப் பரிந்துரைக்கிறது</translation>
@@ -1172,6 +1171,7 @@
 <translation id="6342069812937806050">இப்போது</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரி}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரிகள்}}</translation>
 <translation id="6345878117466430440">படித்ததாகக் குறி</translation>
+<translation id="6347010704471250799">அறிவிப்பைக் காட்டு</translation>
 <translation id="6356893102071098867">நீங்கள் சரியான கணக்கைத் தேர்வுசெய்துள்ளீர்களா என்பதைச் சரிபாருங்கள்</translation>
 <translation id="6363990818884053551">ஒத்திசைவைத் தொடங்க, இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="6364438453358674297">வரலாற்றிலிருந்து பரிந்துரையை அகற்றவா?</translation>

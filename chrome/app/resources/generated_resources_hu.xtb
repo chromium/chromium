@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">A következő eSIM-profil eltávolítása: <ph name="PROFILE_NAME" /></translation>
 <translation id="1069778954840159202">Fiók automatikus lekérése androidos telefonról</translation>
 <translation id="1069814191880976658">Válasszon másik képernyőt</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 jelszót és egyéb elemeket csak erre az eszközre ment a rendszer. Ha szeretné más eszközökön is használni, mentse a Google-fiókjába.}other{{PASSWORD_COUNT} jelszót és egyéb elemeket csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket a Google-fiókjába}}</translation>
 <translation id="107022587824771715">A lapcsoportra vonatkozó javaslatok jelenleg nem állnak rendelkezésre. <ph name="BEGIN_LINK" />Frissíthet most<ph name="END_LINK" />, vagy újrapróbálkozhat később.</translation>
 <translation id="1070377999570795893">A számítógépén lévő egyik program olyan bővítményt adott hozzá, amely megváltoztathatja a Chrome működését.
 
@@ -2318,7 +2317,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2584109212074498965">Nem sikerült a Kerberos-jegy lekérése. Próbálja újra, vagy forduljon a szervezet eszközadminisztrátorához. (Hibakód: <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">A webhelyek mikrofonhasználatra vonatkozó engedélyeinek kezelése a Chrome-ban</translation>
 <translation id="2586561813241011046">A(z) <ph name="APP_NAME" /> telepítése nem sikerült. Próbálja újra, vagy forduljon rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Vágólap</translation>
 <translation id="2586672484245266891">Rövidebb URL-t adjon meg</translation>
 <translation id="2587922766792651800">Időtúllépés</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> gyártótól származó eszközök</translation>
@@ -3128,7 +3126,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3166443275568926403">Teljesítmény- és akkumulátorállapot</translation>
 <translation id="3167446923957429259">Száj elhúzása balra</translation>
 <translation id="3167562202484086668"><ph name="BRAND" /> minden adatának törlése</translation>
-<translation id="3169901410527787002">A címsávban mindig olvassa a billentyűzettel való bevitelt</translation>
 <translation id="3169930038976362151">Válassza ki az igényeinek megfelelő témát. A téma, háttérkép, képernyővédő és egyebek módosításához tartsa lenyomva az asztal bármely pontját.</translation>
 <translation id="3170072451822350649">Ki is hagyhatja a bejelentkezést, és <ph name="LINK_START" />böngészhet vendégként<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Szöveg</translation>
@@ -8634,7 +8631,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="713122686776214250">Ol&amp;dal hozzáadása...</translation>
 <translation id="7131431455372521159">Az összes TrackPoint le lett választva</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, várakozás…</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 jelszót csak erre az eszközre ment a rendszer. Ha szeretné más eszközökön is használni, mentse a Google-fiókjába.}other{{PASSWORD_COUNT} jelszó csak ezen az eszközön kerül mentésre. Ha a többi eszközén is használni szeretné őket, mentse őket a Google-fiókjába}}</translation>
 <translation id="7134098520442464001">Szöveg kicsinyítése</translation>
 <translation id="7134951043985383439">Veszélyes fájl letöltve</translation>
 <translation id="7135729336746831607">Bekapcsolja a Bluetooth-t?</translation>
@@ -11104,7 +11100,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8876307312329369159">Ezt a beállítást nem lehet módosítani demó munkamenetben.</translation>
 <translation id="8876965259056847565">A(z) <ph name="FEATURE_NAME" /> funkció a Bluetooth használatával keres közelben lévő eszközöket.</translation>
 <translation id="8877448029301136595">[szülőkönyvtár]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 elemet csak erre az eszközre ment a rendszer. Ha szeretné más eszközökön is használni, mentse a Google-fiókjába.}other{{ITEM_COUNT} elemet csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket a Google-fiókjába}}</translation>
 <translation id="8879284080359814990">Megjeleníté&amp;s lapként</translation>
 <translation id="8879921471468674457">Bejelentkezési adatok megjegyzése</translation>
 <translation id="8880009256105053174">Keresés az oldalon a Google-lal…</translation>

@@ -294,7 +294,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4567424176335768812">Ste prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Teraz môžete na všetkých zariadeniach, kde ste prihlásený/-á, pristupovať k svojim záložkám, histórii a ďalším nastaveniam.</translation>
 <translation id="4571503333518166079">Prejsť do nastavení upozornení Chromu</translation>
 <translation id="4575717501879784448">Chrome môže tieto karty deaktivovať, aby zlepšil prehliadanie a uvoľnil zdroje.</translation>
-<translation id="4595162648538023956">Môžete sa prihlásiť a získať prístup k svojmu obsahu alebo používať Chrome bez účtu</translation>
 <translation id="459622048091363950">Keď Chrome získa prístup, weby vás budú môcť žiadať o prístup.</translation>
 <translation id="4600710005438004015">Chrome sa nepodarilo aktualizovať na najnovšiu verziu. K dispozícii tak nie sú niektoré nové funkcie a bezpečnostné opravy.</translation>
 <translation id="4601439950572737842">Údaje sú šifrované pomocou vašej prístupovej frázy. Ak chcete používať a ukladať údaje Chromu do svojho účtu Google, zadajte ju.</translation>
@@ -302,7 +301,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4627412468266359539">Nepovinné: Pomôžte zlepšovať funkcie a výkonnosť systému Chrome OS Flex automatickým odosielaním diagnostík a údajov o používaní do Googlu.</translation>
 <translation id="4633000520311261472">Z dôvodu vyššej bezpečnosti prehliadača Chrome sme zakázali niektoré rozšírenia, ktoré nedodáva <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohli byť pridané bez vášho vedomia.</translation>
 <translation id="4680828127924988555">Zrušiť inštaláciu</translation>
-<translation id="469553575393225953">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chrome odporúča ich inštaláciu iba z Internetového obchodu Chrome.</translation>
 <translation id="4710245680469034439">Prispôsobte si prehliadač motívmi inšpirovanými prírodou, zbierkami umelcov či inak</translation>
 <translation id="4720851490453439956">Interná služba Google Updater</translation>
 <translation id="4724676981607797757">Nepodarilo sa nainštalovať pre chybu nepodporovaného protokolu.</translation>

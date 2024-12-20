@@ -501,7 +501,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3224641773458703735">Paroolide eksportimiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3235063766008841141">Sisestati petlikul saidil ja ilmnes andmetega seotud rikkumises</translation>
-<translation id="3235083185359739322">Inaktiivsete vahelehede funktsioon aitab keskenduda</translation>
 <translation id="3235242129752692527">Muutke sündmuse üksikasju ja puudutage nuppu „Salvesta“.</translation>
 <translation id="3240426699337459095">Link on kopeeritud</translation>
 <translation id="3244271242291266297">kk</translation>
@@ -819,7 +818,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4766112107778026136">Discover ja jälgimine</translation>
 <translation id="4769198578611055647">Selle abil pääsete juurde oma salvestatud pääsuvõtmetele igas seadmes</translation>
 <translation id="4777866634702576038">Kas kustutada vahelehegrupp?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Avatud vahelehed, mida pole päeva jooksul kasutatud, teisaldatakse inaktiivsete vahelehtede hulka, et saaksite keskenduda vahelehtedele, mida kõige enam kasutate. Saate seda alati seadetes muuta.}other{Avatud vahelehed, mida pole {COUNT} päeva kasutatud, teisaldatakse inaktiivsete vahelehtede hulka, et saaksite hõlpsalt keskenduda vahelehtedele, mida kõige enam kasutate. Saate seda alati seadetes muuta.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Kas avada inkognito režiimis?</translation>
 <translation id="4792385443586519711">Ettevõtte nimi</translation>

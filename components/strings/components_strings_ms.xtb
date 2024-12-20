@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">gambar dalam gambar automatik</translation>
 <translation id="1100782917270858593">Butang sambung semula perjalanan anda, tekan Enter untuk menyambung semula perjalanan dan melihat aktiviti yang berkaitan dalam sejarah Chrome anda</translation>
 <translation id="1101672080107056897">Tindakan ralat</translation>
+<translation id="1101902632743388185">Jadual perbandingan anda</translation>
 <translation id="1104409666019087579">Beberapa medan yang diperlukan kosong. Isi sebelum menyimpan.</translation>
 <translation id="1104860668737945357">Butang urus kata laluan, aktifkan untuk melihat dan mengurus kata laluan anda dalam tetapan Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2025186561304664664">Proksi ditetapkan kepada auto konfigurasi.</translation>
 <translation id="2025891858974379949">Kandungan tidak selamat</translation>
 <translation id="2027465737841872819">Plastik</translation>
+<translation id="2027707238798802149">Kad tidak tersedia</translation>
 <translation id="2029735183873159415">Keturunan &amp; Salasilah</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Menyemak proksi dan tembok api<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Pintasan tidak boleh sama dengan kata kunci penyedia carian lalai yang ditakrifkan oleh <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2514548229949738417">Kediaman &amp; Taman</translation>
 <translation id="2515629240566999685">Semak isyarat di kawasan anda</translation>
 <translation id="2515761554693942801">Anda memilih untuk mengesahkan dengan Touch ID pada laman web yang menggunakan <ph name="PROVIDER_ORIGIN" />. Pembekal ini mungkin telah menyimpan maklumat tentang kaedah pembayaran anda, yang boleh anda <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Kad ini tidak tersedia. Sila hubungi penyedia kad anda.</translation>
 <translation id="2521385132275182522">Kokot bawah sebelah kanan</translation>
 <translation id="2521736961081452453">Buat borang</translation>
 <translation id="2523886232349826891">Disimpan pada peranti ini sahaja</translation>
@@ -3249,7 +3252,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6831043979455480757">Terjemah</translation>
 <translation id="683108308100148227">Sembunyikan item</translation>
 <translation id="6832753933931306326">Borang telah diisi</translation>
-<translation id="6837361937093656245">Log masuk diperlukan</translation>
 <translation id="6841864657731852591">Silinder Gravur</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">Penjejakan tangan dibenarkan pada masa ini</translation>
@@ -3344,6 +3346,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7003322000677139268">Alat Ganti &amp; Aksesori Kenderaan</translation>
 <translation id="7004499039102548441">Tab Terbaharu</translation>
 <translation id="7006930604109697472">Hantar sahaja</translation>
+<translation id="7009364359744329733">Kad maya tidak tersedia pada masa ini. Sila cuba sebentar lagi.</translation>
 <translation id="7010658264061801199">Makanan &amp; Minuman</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Boleh meminta untuk mengunci dan menggunakan tetikus anda</translation>

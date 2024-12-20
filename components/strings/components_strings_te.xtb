@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">ఆటోమేటిక్ పిక్చర్-ఇన్-పిక్చర్</translation>
 <translation id="1100782917270858593">'మీ సెర్చ్‌ను కొనసాగించండి' బటన్, మీ సెర్చ్‌ను కొనసాగించడానికి Enterను నొక్కండి, మీ Chrome హిస్టరీలో సందర్భోచితమైన యాక్టివిటీని చూడండి</translation>
 <translation id="1101672080107056897">అమలులో ఎర్రర్</translation>
+<translation id="1101902632743388185">మీ పోలిక టేబుల్స్</translation>
 <translation id="1104409666019087579">కొన్ని అవసరమైన ఫీల్డ్‌లు ఖాళీగా ఉన్నాయి. సేవ్ చేయడానికి ముందు వాటిని పూరించండి.</translation>
 <translation id="1104860668737945357">'పాస్‌వర్డ్‌లను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూడటానికి, మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -578,6 +579,7 @@
 <translation id="2025186561304664664">ప్రాక్సీ ఆటోమేటిక్‌గా కాన్ఫిగర్ చేయబడేలా సెట్ చేయబడింది.</translation>
 <translation id="2025891858974379949">అసురక్షితమైన కంటెంట్</translation>
 <translation id="2027465737841872819">ప్లాస్టిక్</translation>
+<translation id="2027707238798802149">కార్డ్ అందుబాటులో లేదు</translation>
 <translation id="2029735183873159415">సంతతి &amp; వంశ పరిణామ క్రమం</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ప్రాక్సీ మరియు ఫైర్‌వాల్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">షార్ట్‌కట్ అనేది <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ద్వారా నిర్వచించబడిన ఆటోమేటిక్ సెర్చ్ ప్రొవైడర్ కీవర్డ్ లాగా ఉండకూడదు: <ph name="SHORTCUT_NAME" /></translation>
@@ -861,6 +863,7 @@
 <translation id="2514548229949738417">ఇల్లు &amp; తోట</translation>
 <translation id="2515629240566999685">మీ ప్రాంతంలో సిగ్నల్‌ను చెక్ చేయడం</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో Touch IDతో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, దీనిని మీరు <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">ఈ కార్డ్ అందుబాటులో లేదు. దయచేసి మీకు కార్డ్‌ను అందించిన వారిని సంప్రదించండి.</translation>
 <translation id="2521385132275182522">కుడివైపు దిగువ భాగంలో స్టేపుల్</translation>
 <translation id="2521736961081452453">ఫారమ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2523886232349826891">ఈ పరికరంలో మాత్రమే సేవ్ చేయబడి ఉంటుంది</translation>
@@ -3243,7 +3246,6 @@
 <translation id="6831043979455480757">అనువదించు</translation>
 <translation id="683108308100148227">ఐటెమ్‌ను దాచండి</translation>
 <translation id="6832753933931306326">ఫారమ్ ఫిల్ చేయబడింది</translation>
-<translation id="6837361937093656245">సైన్ ఇన్ చేయడం అవసరం</translation>
 <translation id="6841864657731852591">గ్రావ్యూర్ సిలిండర్</translation>
 <translation id="6842196666980060516">184 x 260 మి.మీ.</translation>
 <translation id="6844998850832008753">ఈ సారి హ్యాండ్ ట్రాకింగ్ అనుమతించబడింది</translation>
@@ -3338,6 +3340,7 @@
 <translation id="7003322000677139268">వాహన భాగాలు &amp; యాక్సెసరీలు</translation>
 <translation id="7004499039102548441">ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="7006930604109697472">ఏదేమైనా పంపు</translation>
+<translation id="7009364359744329733">ప్రస్తుతానికి ఈ కార్డ్ అందుబాటులో లేదు. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7010658264061801199">ఫుడ్ &amp; డ్రింక్</translation>
 <translation id="7012363358306927923">చైనా యూనియన్ పే</translation>
 <translation id="7013835112918108252">లాక్ చేసి, మీ మౌస్‌ను ఉపయోగించమని అడగవచ్చు</translation>

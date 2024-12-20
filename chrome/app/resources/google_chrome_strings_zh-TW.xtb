@@ -293,7 +293,6 @@
 <translation id="4567424176335768812">你已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用你的書籤、記錄和其他設定。</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="4575717501879784448">Chrome 可以讓這些分頁處於閒置狀態，改善瀏覽體驗並釋出資源。</translation>
-<translation id="4595162648538023956">登入即可存取自己的資料，你也可以在使用 Chrome 時不登入帳戶</translation>
 <translation id="459622048091363950">Chrome 取得存取權後，網站將可要求你授予存取權。</translation>
 <translation id="4600710005438004015">Chrome 無法更新至最新版本，因此你並未取得最新功能和安全性問題修正。</translation>
 <translation id="4601439950572737842">系統已使用通關密語加密資料。如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請輸入通關密語。</translation>
@@ -301,7 +300,6 @@
 <translation id="4627412468266359539">選用：自動將診斷與使用資料傳送給 Google，協助改善 ChromeOS Flex 的功能與效能。</translation>
 <translation id="4633000520311261472">為了讓 Chrome 的安全性更有保障，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="4680828127924988555">取消安裝</translation>
-<translation id="469553575393225953">來源不明的擴充功能、應用程式和主題可能會損害你的裝置。Chrome 建議你只透過 Chrome 線上應用程式商店安裝這些項目</translation>
 <translation id="4710245680469034439">使用大自然、藝術作品等內容為靈感的主題，打造個人化的瀏覽器</translation>
 <translation id="4720851490453439956">Google 更新工具內部服務</translation>
 <translation id="4724676981607797757">發生不支援的通訊協定錯誤，因此安裝失敗。</translation>

@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">Remover perfil do eSIM com o nome <ph name="PROFILE_NAME" /></translation>
 <translation id="1069778954840159202">Aceder automaticamente à conta a partir do telemóvel Android</translation>
 <translation id="1069814191880976658">Escolher um ecrã diferente</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 palavra-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google}other{{PASSWORD_COUNT} palavras-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google}}</translation>
 <translation id="107022587824771715">As sugestões de grupos de separadores estão indisponíveis de momento. Pode <ph name="BEGIN_LINK" />atualizar agora<ph name="END_LINK" /> ou tentar mais tarde</translation>
 <translation id="1070377999570795893">Outro programa no computador adicionou uma extensão que pode alterar o funcionamento do Chrome.
 
@@ -2306,7 +2305,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2584109212074498965">Não foi possível obter a permissão Kerberos. Tente novamente ou contacte o administrador do dispositivo da entidade. (Código de erro <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Gerir as autorizações de acesso ao microfone dos Websites no Chrome</translation>
 <translation id="2586561813241011046">Não foi possível instalar a app <ph name="APP_NAME" />. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2586672484245266891">Introduza um URL mais curto.</translation>
 <translation id="2587922766792651800">Tempo limite excedido</translation>
 <translation id="2588636910004461974">Dispositivos de <ph name="VENDOR_NAME" /></translation>
@@ -3117,7 +3115,6 @@ Quer pará-lo?</translation>
 <translation id="3166443275568926403">Desempenho e estado da bateria</translation>
 <translation id="3167446923957429259">Mova a boca para a esquerda</translation>
 <translation id="3167562202484086668">Eliminar todos os dados do <ph name="BRAND" /></translation>
-<translation id="3169901410527787002">Ler sempre a entrada do teclado na barra de endereço</translation>
 <translation id="3169930038976362151">Escolha o tema que se adequa às suas necessidades. Para alterar o tema, a imagem de fundo, a proteção de ecrã e muito mais, basta tocar sem soltar no ambiente de trabalho.</translation>
 <translation id="3170072451822350649">Também pode ignorar o início de sessão e <ph name="LINK_START" />navegar como Convidado<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Corpo</translation>
@@ -4616,6 +4613,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4220648711404560261">Ocorreu um erro durante a ativação.</translation>
 <translation id="4222917615373664617">O acompanhamento de preços está ativado. O preço é <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Acesso ao microfone não permitido</translation>
+<translation id="4224541845943007092">Ler e guardar a entrada do teclado da barra de endereço</translation>
 <translation id="4225397296022057997">Em todos os sites</translation>
 <translation id="4228071595943929139">Use o endereço de email da sua organização</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensão não é permitida}other{Estas extensões não são permitidas}}</translation>
@@ -8624,7 +8622,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="713122686776214250">Adicionar pá&amp;gina...</translation>
 <translation id="7131431455372521159">Todos os TrackPoints foram desligados</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, a aguardar</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google}other{{PASSWORD_COUNT} palavras-passe estão guardadas apenas neste dispositivo. Para usá-las nos seus outros dispositivos, guarde-as na sua Conta Google}}</translation>
 <translation id="7134098520442464001">Diminuir o tamanho do texto</translation>
 <translation id="7134951043985383439">Ficheiro perigoso transferido</translation>
 <translation id="7135729336746831607">Ativar o Bluetooth?</translation>
@@ -11095,7 +11092,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8876307312329369159">Não é possível alterar esta definição numa sessão de demonstração.</translation>
 <translation id="8876965259056847565">A funcionalidade <ph name="FEATURE_NAME" /> usa a procura de Bluetooth para encontrar dispositivos próximos.</translation>
 <translation id="8877448029301136595">[directório principal]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 item está guardado apenas neste dispositivo. Para usá-lo nos seus outros dispositivos, guarde-o na sua Conta Google}other{{ITEM_COUNT} itens estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google}}</translation>
 <translation id="8879284080359814990">Mo&amp;strar Como Separador</translation>
 <translation id="8879921471468674457">Memorizar informações de início de sessão</translation>
 <translation id="8880009256105053174">Pesq&amp;uisar esta página com o Google…</translation>

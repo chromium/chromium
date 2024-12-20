@@ -941,7 +941,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5304593522240415983">Бұл өріс бос болмауы керек</translation>
 <translation id="5306014156308790439">Өшірілген "Жинаққа қосу" түймесі</translation>
 <translation id="5308380583665731573">Қосылу</translation>
-<translation id="5310963254742922113">Құпия сөз қолданылды.</translation>
 <translation id="5316947901395241499">Құпия сөздерді сақтау функциясын әкімші өшірген.</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5319359161174645648">Google қызметі Chrome браузерін ұсынады</translation>
@@ -1172,6 +1171,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6342069812937806050">Қазір ғана</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Оқылды деп белгілеу</translation>
+<translation id="6347010704471250799">Хабарландыруды көрсету</translation>
 <translation id="6356893102071098867">Дұрыс аккаунт таңдалғанын тексеріңіз.</translation>
 <translation id="6363990818884053551">Синхрондауды бастау үшін жеке басыңызды растаңыз.</translation>
 <translation id="6364438453358674297">Журналдың ұсынысын жою қажет пе?</translation>

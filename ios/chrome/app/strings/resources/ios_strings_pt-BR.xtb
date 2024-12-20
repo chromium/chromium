@@ -501,7 +501,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3224641773458703735">Para exportar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3235063766008841141">Utilizada em um fraudulento e encontrada em uma violação de dados</translation>
-<translation id="3235083185359739322">As guias inativas ajudam você a manter o foco</translation>
 <translation id="3235242129752692527">Edite os detalhes do evento e toque em "Salvar".</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4766112107778026136">Discover e seguindo</translation>
 <translation id="4769198578611055647">Ajuda você a acessar as chaves de acesso salvas em qualquer dispositivo</translation>
 <translation id="4777866634702576038">Excluir grupo de guias?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{As guias abertas que não forem usadas por um dia ou mais serão movidas para a sessão de guias inativas. Assim, você pode se concentrar nas que mais usa. Você pode mudar isso quando quiser nas configurações.}one{As guias abertas que não forem usadas por {COUNT} dia ou mais serão movidas para a sessão de guias inativas. Assim, você pode se concentrar nas que mais usa. Você pode mudar isso quando quiser nas configurações.}other{As guias abertas que não forem usadas por {COUNT} dias ou mais serão movidas para a sessão de guias inativas. Assim, você pode se concentrar nas que mais usa. Você pode mudar isso quando quiser nas configurações.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Abrir na navegação anônima?</translation>
 <translation id="4792385443586519711">Nome da empresa</translation>

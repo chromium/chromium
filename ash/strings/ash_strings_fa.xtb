@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">میکروفون روشن است، با تغییر وضعیت صامت می‌شود.</translation>
 <translation id="2302092602801625023">‏این حساب با Family Link مدیریت می‌شود</translation>
 <translation id="2303600792989757991">مروری کلی بر پنجره تغییر حالت</translation>
+<translation id="2304702218354340897">مطمئنید می‌خواهید «کنترل چهره» را خاموش کنید؟</translation>
 <translation id="2305738328104302723">‏فهرست Google Tasks: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: موارد اخیر ضبط صفحه‌نمایش، بارگیری‌ها، و فایل‌های پین‌شده</translation>
 <translation id="2318576281648121272">امروز <ph name="TODAY_DATE" /></translation>
@@ -908,7 +909,7 @@
 <translation id="4146671046252289537">انتقال به انتهای کلمه بعدی</translation>
 <translation id="4146833061457621061">‏Play music (موسیقی پخش کن)</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
-<translation id="4151054805501931758">رتوش پرتره</translation>
+<translation id="4151054805501931758">رتوش چهره</translation>
 <translation id="4156293514828496577">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است (حدود <ph name="TIME_LEFT" />).
 برخی‌از ویژگی‌ها برای افزایش عمر باتری محدود شده‌اند.</translation>
 <translation id="4160919062868802509">چند منبع صوتی شناسایی شد</translation>

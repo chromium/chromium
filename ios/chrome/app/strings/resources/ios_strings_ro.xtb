@@ -501,7 +501,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3224641773458703735">Pentru a exporta parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3235063766008841141">A fost introdusă pe un site înșelător și folosită pentru încălcarea securității datelor</translation>
-<translation id="3235083185359739322">Filele inactive te ajută să te concentrezi</translation>
 <translation id="3235242129752692527">Editează detaliile evenimentului și atinge Salvează.</translation>
 <translation id="3240426699337459095">Linkul a fost copiat</translation>
 <translation id="3244271242291266297">LL</translation>
@@ -819,7 +818,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4766112107778026136">Descoperă și urmărește</translation>
 <translation id="4769198578611055647">Te ajută să accesezi cheile de acces salvate pe orice dispozitiv</translation>
 <translation id="4777866634702576038">Ștergi grupul de file?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Filele deschise care nu sunt folosite timp de o zi sau mai mult sunt mutate în File inactive, astfel încât să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}few{Filele deschise care nu sunt folosite timp de {COUNT} zile sau mai mult sunt mutate în File inactive, ca să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}other{Filele deschise care nu sunt folosite timp de {COUNT} de zile sau mai mult sunt mutate în File inactive, ca să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Deschizi în modul incognito?</translation>
 <translation id="4792385443586519711">Numele firmei</translation>

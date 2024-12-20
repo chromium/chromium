@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">Премахване на потребителския профил (<ph name="PROFILE_NAME" />) на електронната SIM карта</translation>
 <translation id="1069778954840159202">Автоматично получаване на профил от телефон с Android</translation>
 <translation id="1069814191880976658">Избиране на друг екран</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 парола и други елементи са запазени само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google}other{{PASSWORD_COUNT} пароли и други елементи са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google}}</translation>
 <translation id="107022587824771715">Предложенията за групи раздели не са налице в момента. Можете <ph name="BEGIN_LINK" />да опресните сега<ph name="END_LINK" /> или да опитате отново по-късно</translation>
 <translation id="1070377999570795893">Друга програма на компютъра ви добави разширение, което може да промени начина на работа на Chrome.
 
@@ -2315,7 +2314,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2584109212074498965">Пропускът за Kerberos не можа да бъде получен. Опитайте отново или се обърнете към администратора на устройства за организацията си. (Код на грешката: <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Управление на разрешенията за достъп до микрофона за уебсайтовете в Chrome</translation>
 <translation id="2586561813241011046">Инсталирането на <ph name="APP_NAME" /> не бе успешно. Моля, опитайте отново или се обърнете към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Буферна памет</translation>
 <translation id="2586672484245266891">Моля, въведете по-кратък URL адрес</translation>
 <translation id="2587922766792651800">Времето за изчакване изтече</translation>
 <translation id="2588636910004461974">Устройства от <ph name="VENDOR_NAME" /></translation>
@@ -3125,7 +3123,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3166443275568926403">Състояние на ефективността и батерията</translation>
 <translation id="3167446923957429259">Преместване на устните наляво</translation>
 <translation id="3167562202484086668">Изтриване на всички данни от <ph name="BRAND" /></translation>
-<translation id="3169901410527787002">Винаги да се чете текстът, въведен с клавиатурата в адресната лента</translation>
 <translation id="3169930038976362151">Изберете темата, която отговаря на нуждите ви. За да промените темата, тапета, скрийнсейвъра и др., трябва само да докоснете и да задържите работния плот.</translation>
 <translation id="3170072451822350649">Може също да пропуснете влизането и <ph name="LINK_START" />да сърфирате като гост<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Основен текст</translation>
@@ -8633,7 +8630,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="713122686776214250">Добавяне на &amp;страница...</translation>
 <translation id="7131431455372521159">Връзката с всички посочващи стикове е прекратена</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" /> се изчаква</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 парола е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google}other{{PASSWORD_COUNT} пароли са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google}}</translation>
 <translation id="7134098520442464001">Шрифтът на текста се смалява</translation>
 <translation id="7134951043985383439">Изтеглен бе опасен файл</translation>
 <translation id="7135729336746831607">Да се включи ли Bluetooth?</translation>
@@ -11104,7 +11100,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8876307312329369159">Тази настройка не може да бъде променена по време на демонстрационна сесия.</translation>
 <translation id="8876965259056847565">Функцията „<ph name="FEATURE_NAME" />“ използва сканирането през Bluetooth, за да намира устройства в близост.</translation>
 <translation id="8877448029301136595">[главна директория]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 елемент е запазен само на това устройство. За да го използвате на другите си устройства, запазете го в профила си в Google}other{{ITEM_COUNT} елемента са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google}}</translation>
 <translation id="8879284080359814990">&amp;Показване като раздел</translation>
 <translation id="8879921471468674457">Запомняне на данните за вход</translation>
 <translation id="8880009256105053174">&amp;Търсене на тази страница с Google...</translation>

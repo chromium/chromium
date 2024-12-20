@@ -297,7 +297,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
 <translation id="4575717501879784448">Chrome can make these tabs inactive to improve your browsing experience and free up resources.</translation>
-<translation id="4595162648538023956">You can sign in to get your stuff, or use Chrome without an account</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
 <translation id="4601439950572737842">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
@@ -305,7 +304,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4627412468266359539">Optional: Help improve Chrome OS Flex features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="4633000520311261472">To make Chrome safer, we disabled some extensions that aren't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="4680828127924988555">Cancel installation</translation>
-<translation id="469553575393225953">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the Chrome Web Store</translation>
 <translation id="4710245680469034439">Personalise your browser with themes inspired by nature, artists collections and more</translation>
 <translation id="4720851490453439956">Google updater internal service</translation>
 <translation id="4724676981607797757">Installation failed because of an unsupported protocol error.</translation>

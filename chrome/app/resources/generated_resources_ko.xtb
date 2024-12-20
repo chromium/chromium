@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">이름이 <ph name="PROFILE_NAME" />인 eSIM 프로필 삭제</translation>
 <translation id="1069778954840159202">Android 휴대전화에서 자동으로 계정 가져오기</translation>
 <translation id="1069814191880976658">다른 화면 선택</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{비밀번호 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}other{비밀번호 {PASSWORD_COUNT}개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}}</translation>
 <translation id="107022587824771715">현재 탭 그룹 추천을 사용할 수 없습니다. <ph name="BEGIN_LINK" />지금 새로고침<ph name="END_LINK" />하거나 나중에 다시 시도해 주세요.</translation>
 <translation id="1070377999570795893">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다. 
 
@@ -2321,7 +2320,6 @@
 <translation id="2584109212074498965">Kerberos 티켓을 가져올 수 없습니다. 다시 시도해 보거나 조직의 기기 관리자에게 문의하세요. (오류 코드 <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Chrome에서 웹사이트 마이크 권한 관리하기</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> 앱을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
-<translation id="2586657967955657006">클립보드</translation>
 <translation id="2586672484245266891">더 짧은 URL을 입력하세요.</translation>
 <translation id="2587922766792651800">타임아웃</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />의 기기</translation>
@@ -3131,7 +3129,6 @@
 <translation id="3166443275568926403">성능 및 배터리 상태</translation>
 <translation id="3167446923957429259">입을 왼쪽으로 움직이기</translation>
 <translation id="3167562202484086668">모든 <ph name="BRAND" /> 데이터 삭제</translation>
-<translation id="3169901410527787002">주소 표시줄의 키보드 입력 항상 읽기</translation>
 <translation id="3169930038976362151">나에게 적합한 테마를 선택하세요. 바탕화면에서 길게 터치하면 테마, 배경화면, 화면 보호기 등을 변경할 수 있습니다.</translation>
 <translation id="3170072451822350649">로그인을 건너뛰고 <ph name="LINK_START" />게스트로 로그인<ph name="LINK_END" />할 수도 있습니다.</translation>
 <translation id="3175067642577044620">본문</translation>
@@ -8636,7 +8633,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="713122686776214250">페이지 추가(&amp;G)...</translation>
 <translation id="7131431455372521159">모든 트랙 포인트의 연결이 해제되었습니다</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, 대기 중</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}other{비밀번호 {PASSWORD_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}}</translation>
 <translation id="7134098520442464001">텍스트 축소</translation>
 <translation id="7134951043985383439">위험한 파일이 다운로드됨</translation>
 <translation id="7135729336746831607">블루투스를 사용 설정하시겠습니까?</translation>
@@ -11107,7 +11103,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8876307312329369159">데모 세션에서는 이 설정을 변경할 수 없습니다.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" />에서 블루투스 검색을 사용하여 근처 기기를 찾습니다.</translation>
 <translation id="8877448029301136595">[상위 디렉터리]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{항목 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}other{항목 {ITEM_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}}</translation>
 <translation id="8879284080359814990">탭으로 표시(&amp;S)</translation>
 <translation id="8879921471468674457">로그인 정보 저장</translation>
 <translation id="8880009256105053174">Google에서 이 페이지 검색...</translation>

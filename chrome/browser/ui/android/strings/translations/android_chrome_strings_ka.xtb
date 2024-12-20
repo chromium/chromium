@@ -941,7 +941,6 @@
 <translation id="5304593522240415983">ეს ველი არ შეიძლება იყოს ცარიელი</translation>
 <translation id="5306014156308790439">გათიშულია კოლექციაში დამატება</translation>
 <translation id="5308380583665731573">დაკავშირება</translation>
-<translation id="5310963254742922113">პაროლი გამოყენებულია.</translation>
 <translation id="5316947901395241499">პაროლის შენახვა გამორთულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5319359161174645648">Google გირჩევთ Chrome-ს</translation>
@@ -973,6 +972,7 @@
 <translation id="5444999712122199445">საიტზე დაბრუნება</translation>
 <translation id="544776284582297024">ჩანართების გასახსნელად და ერთდროულად სხვადასხვა გვერდის მოსანახულებლად შეეხეთ ჩანართების გახსნის ღილაკს</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ით</translation>
+<translation id="5454215368971121976">როცა თქვენი მოწყობილობა დაკეცილია, პოზიციის შესაცვლელად აირჩიეთ რომელიმე ვარიანტი ან ხანგრძლივად შეეხეთ მისამართთა ზოლს.</translation>
 <translation id="5458366071038729214">აქ იპოვით საიტებს, რომლებსაც თვალს ადევნებთ</translation>
 <translation id="5468068603361015296">მაინც გსურთ, ჩამოტვირთოთ <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">რუკების აპში გახსნა</translation>
@@ -1172,6 +1172,7 @@
 <translation id="6342069812937806050">ახლახან</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
 <translation id="6345878117466430440">წაკითხულად მონიშვნა</translation>
+<translation id="6347010704471250799">შეტყობინების ჩვენება</translation>
 <translation id="6356893102071098867">შეამოწმეთ, სწორი ანგარიში აირჩიეთ თუ არა</translation>
 <translation id="6363990818884053551">სინქრონიზაციის დასაწყებად დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="6364438453358674297">ამოიშალოს შემოთავაზება ისტორიიდან?</translation>

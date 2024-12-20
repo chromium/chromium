@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">រូបក្នុងរូប​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="1100782917270858593">ប៊ូតុង "បន្តការស្វែងរកអ្នក" ចុច Enter ដើម្បីបន្តការស្វែងរក​របស់អ្នក និងមើល​សកម្មភាព​ដែលពាក់ព័ន្ធ​នៅក្នុងប្រវត្តិ Chrome របស់អ្នក</translation>
 <translation id="1101672080107056897">សកម្មភាព​មានបញ្ហា</translation>
+<translation id="1101902632743388185">តារាង​ប្រៀបធៀប​របស់អ្នក</translation>
 <translation id="1104409666019087579">កន្លែងត្រូវបំពេញមួយចំនួនគឺទទេ។ សូមបំពេញកន្លែងទាំងនេះ មុនពេលរក្សាទុក។</translation>
 <translation id="1104860668737945357">ប៊ូតុង "គ្រប់គ្រងពាក្យសម្ងាត់", បើកដំណើរការ ដើម្បីមើល និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -585,6 +586,7 @@
 <translation id="2025186561304664664">ប្រូកស៊ីត្រូវបានកំណត់ទៅកំណត់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="2025891858974379949">ខ្លឹមសារ​ដែលគ្មាន​សុវត្ថិភាព</translation>
 <translation id="2027465737841872819">ប្លាស្ទិក</translation>
+<translation id="2027707238798802149">មិនអាចប្រើ​កាត​បានទេ</translation>
 <translation id="2029735183873159415">ពូជពង្ស និងសន្តតិវង្ស​វិទ្យា</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />សូមពិនិត្យប្រូកស៊ី និង firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">ផ្លូវកាត់មិនអាចដូចគ្នានឹងពាក្យគន្លឹះ​ក្រុមហ៊ុនផ្ដល់សេវា​ស្វែងរក​លំនាំដើមដែលកំណត់ដោយ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />៖ <ph name="SHORTCUT_NAME" /></translation>
@@ -869,6 +871,7 @@
 <translation id="2514548229949738417">ផ្ទះ និងសួនច្បារ</translation>
 <translation id="2515629240566999685">ពិនិត្យសេវានៅក្នុងតំបន់របស់អ្នក</translation>
 <translation id="2515761554693942801">អ្នក​បាន​ជ្រើសរើស​ផ្ទៀងផ្ទាត់​ដោយប្រើ Touch ID នៅលើ​គេហទំព័រ​ដែល​ប្រើប្រាស់ <ph name="PROVIDER_ORIGIN" />។ ក្រុមហ៊ុន​ផ្ដល់​សេវា​នេះ​ប្រហែលជា​បានរក្សាទុក​ព័ត៌មាន​អំពី​វិធីបង់ប្រាក់​របស់អ្នក ដែល​អ្នក​អាច​<ph name="LINK_TEXT" />។</translation>
+<translation id="2518584823165598232">មិនអាច​ប្រើ​កាតនេះ​បានទេ។ សូម​ទាក់ទង​ទៅក្រុមហ៊ុនផ្ដល់​សេវាកាត​របស់អ្នក។</translation>
 <translation id="2521385132275182522">កិប​ខាងក្រោម​ផ្នែកខាង​ស្ដាំ</translation>
 <translation id="2521736961081452453">បង្កើត​ទម្រង់បែបបទ</translation>
 <translation id="2523886232349826891">បានរក្សាទុក​នៅលើតែឧបករណ៍នេះ​ប៉ុណ្ណោះ</translation>
@@ -3252,7 +3255,6 @@
 <translation id="6831043979455480757">បកប្រែ</translation>
 <translation id="683108308100148227">លាក់ធាតុ</translation>
 <translation id="6832753933931306326">ទម្រង់បែបបទ​ត្រូវ​បាន​បំពេញ</translation>
-<translation id="6837361937093656245">តម្រូវឱ្យ​ចូលគណនី</translation>
 <translation id="6841864657731852591">ស៊ីឡាំងបោះពុម្ពដែលមានក្រឡាផតចូល</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6844998850832008753">អនុញ្ញាតឱ្យ​តាមដាន​ដៃ​នៅពេលនេះ</translation>
@@ -3347,6 +3349,7 @@
 <translation id="7003322000677139268">គ្រឿងបន្លាស់ និងគ្រឿងតុបតែងយានជំនិះ</translation>
 <translation id="7004499039102548441">ផ្ទាំងថ្មីៗ</translation>
 <translation id="7006930604109697472">មិនអីទេ ផ្ញើចុះ</translation>
+<translation id="7009364359744329733">មិនអាចប្រើ​កាតនេះ​នៅពេលនេះ​បានទេ។ សូមព្យាយាម​ម្ដងទៀត​នៅពេល​ក្រោយ។</translation>
 <translation id="7010658264061801199">អាហារ និង​ភេសជ្ជៈ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">អាចស្នើឱ្យ​ចាក់សោ និង​ប្រើម៉ៅស៍​របស់អ្នក</translation>

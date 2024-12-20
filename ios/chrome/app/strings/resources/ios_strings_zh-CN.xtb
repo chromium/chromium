@@ -501,7 +501,6 @@
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3235063766008841141">曾在诈骗网站上输入过，并且遭遇了数据泄露</translation>
-<translation id="3235083185359739322">“闲置标签页”功能可帮助您保持专注</translation>
 <translation id="3235242129752692527">修改活动详细信息，然后点按“保存”。</translation>
 <translation id="3240426699337459095">已复制链接</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@
 <translation id="4766112107778026136">探索与关注</translation>
 <translation id="4769198578611055647">有助于您在任意设备上访问已保存的通行密钥</translation>
 <translation id="4777866634702576038">要删除标签页分组吗？</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{如果打开的标签页未使用的时间达到或超过 1 天，则会移至“闲置标签页”部分，以便您能轻松地专注于最常使用的标签页。您随时可以在设置中更改此设置。}other{如果打开的标签页未使用的时间达到或超过 {COUNT} 天，则会移至“闲置标签页”部分，以便您能轻松地专注于最常使用的标签页。您随时可以在设置中更改此设置。}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">在无痕模式下打开？</translation>
 <translation id="4792385443586519711">公司名称</translation>

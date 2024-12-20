@@ -17,7 +17,6 @@
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1188705220418984327">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Preferências do sistema.</translation>
 <translation id="1203500561924088507">Agradecemos a instalação. Tem de reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1235768345431527125">Pode iniciar sessão ou usar o Chromium sem uma conta para aceder ao seu conteúdo</translation>
 <translation id="1262876892872089030">Enquanto este separador estava inativo, foi libertada memória para manter o Chromium rápido. Pode optar por evitar sempre que este site fique inativo.</translation>
 <translation id="1265577313130862557">O Chromium bloqueou esta transferência porque o ficheiro é perigoso</translation>
 <translation id="126567311906253476">Ao iniciar sessão em serviços Google, como o Gmail ou o YouTube, com <ph name="USER_EMAIL" />, pode iniciar sessão automaticamente no Chromium com a mesma conta</translation>
@@ -113,6 +112,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="2483889755041906834">No Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2513154137948333830">Reinício necessário: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Para continuar, tem de iniciar sessão no Chromium com <ph name="EMAIL" />. Isto garante a conformidade com as políticas da sua organização.</translation>
 <translation id="2542968102051442371">Selecione texto com a pesquisa de imagens</translation>
 <translation id="2554739539410784893">O Chromium está a tentar substituir as palavras-passe existentes. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="2560420686485554789">O Chromium necessita de acesso ao armazenamento para transferir ficheiros.</translation>

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">аутоматска слика у слици</translation>
 <translation id="1100782917270858593">Дугме Наставите пут, притисните Enter да бисте наставили пут и видели релевантне активности у историји Chrome-а</translation>
 <translation id="1101672080107056897">Радња због грешке</translation>
+<translation id="1101902632743388185">Табеле за поређење</translation>
 <translation id="1104409666019087579">Нека обавезна поља су празна. Попуните их пре чувања.</translation>
 <translation id="1104860668737945357">Дугме Управљај лозинкама, активирајте га да бисте прегледали лозинке и управљали њима у подешавањима Chrome-а</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">Прокси је подешен да буде аутоматски конфигурисан.</translation>
 <translation id="2025891858974379949">Небезбедан садржај</translation>
 <translation id="2027465737841872819">Пластика</translation>
+<translation id="2027707238798802149">Картица није доступна</translation>
 <translation id="2029735183873159415">Порекло и генеалогија</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />да проверите прокси и заштитни зид<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Пречица не може да буде иста као кључна реч подразумеваног добављача претраге коју дефинише <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">Дом и башта</translation>
 <translation id="2515629240566999685">да проверите сигнал у својој области</translation>
 <translation id="2515761554693942801">Одабрали сте да се верификујете помоћу Touch ID-а на веб-сајтовима који користе <ph name="PROVIDER_ORIGIN" />. Овај добављач је можда сачувао информације о начину плаћања, за који можете да <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Ова картица није доступна. Обратите се добављачу картице.</translation>
 <translation id="2521385132275182522">Спајање у доњем десном углу</translation>
 <translation id="2521736961081452453">Направите упитник</translation>
 <translation id="2523886232349826891">Сачувано је само на овом уређају</translation>
@@ -3247,7 +3250,6 @@
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="683108308100148227">Сакриј ставку</translation>
 <translation id="6832753933931306326">Образац је попуњен</translation>
-<translation id="6837361937093656245">Пријављивање је обавезно</translation>
 <translation id="6841864657731852591">Цилиндар за гравирање</translation>
 <translation id="6842196666980060516">184×260 mm</translation>
 <translation id="6844998850832008753">Праћење руку је дозвољено овај пут</translation>
@@ -3342,6 +3344,7 @@
 <translation id="7003322000677139268">Делови и опрема за возила</translation>
 <translation id="7004499039102548441">Недавне картице</translation>
 <translation id="7006930604109697472">Ипак пошаљи</translation>
+<translation id="7009364359744329733">Ова картица тренутно није доступна. Пробајте поново касније.</translation>
 <translation id="7010658264061801199">Храна и пиће</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Може да тражи да закључа и користи миш</translation>

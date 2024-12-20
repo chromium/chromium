@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">Remove eSIM profile named <ph name="PROFILE_NAME" /></translation>
 <translation id="1069778954840159202">Get account from Android phone automatically</translation>
 <translation id="1069814191880976658">Choose a different screen</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 password and other items are saved only to this device. To use it on your other devices, save it in your Google Account}other{{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account}}</translation>
 <translation id="107022587824771715">Tab group suggestions are currently unavailable. You can <ph name="BEGIN_LINK" />refresh now<ph name="END_LINK" /> or try again later</translation>
 <translation id="1070377999570795893">Another program on your computer added an extension that may change the way Chrome works.
 
@@ -2319,7 +2318,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2584109212074498965">Couldn't get Kerberos ticket. Try again, or contact your organisation's device admin. (Error code <ph name="ERROR_CODE" />).</translation>
 <translation id="2584974473573720127">Manage website microphone permissions in Chrome</translation>
 <translation id="2586561813241011046">Couldn't install <ph name="APP_NAME" />. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Clipboard</translation>
 <translation id="2586672484245266891">Please enter a shorter URL</translation>
 <translation id="2587922766792651800">Timed out</translation>
 <translation id="2588636910004461974">Devices from <ph name="VENDOR_NAME" /></translation>
@@ -3129,7 +3127,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3166443275568926403">Performance and Battery State</translation>
 <translation id="3167446923957429259">Move your mouth left</translation>
 <translation id="3167562202484086668">Delete all <ph name="BRAND" /> data</translation>
-<translation id="3169901410527787002">Always read keyboard input in the address bar</translation>
 <translation id="3169930038976362151">Choose the theme that fits your needs. To change your theme, wallpaper, screen saver and more, just touch and hold on the desktop.</translation>
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Body</translation>
@@ -8635,7 +8632,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="713122686776214250">Add pa&amp;ge...</translation>
 <translation id="7131431455372521159">All TrackPoints have been disconnected</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, waiting</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 password is saved only to this device. To use it on your other devices, save it in your Google Account}other{{PASSWORD_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account}}</translation>
 <translation id="7134098520442464001">Make Text Smaller</translation>
 <translation id="7134951043985383439">Downloaded dangerous file</translation>
 <translation id="7135729336746831607">Turn on Bluetooth?</translation>
@@ -11106,7 +11102,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8876307312329369159">This setting can't be changed in a demo session.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> uses Bluetooth scanning to find nearby devices.</translation>
 <translation id="8877448029301136595">[parent directory]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 item is saved only to this device. To use it on your other devices, save it in your Google Account}other{{ITEM_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account}}</translation>
 <translation id="8879284080359814990">&amp;Show As Tab</translation>
 <translation id="8879921471468674457">Remember sign-in info</translation>
 <translation id="8880009256105053174">Search this page with Google...</translation>

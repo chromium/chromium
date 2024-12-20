@@ -941,7 +941,6 @@
 <translation id="5304593522240415983">Това поле трябва да се попълни</translation>
 <translation id="5306014156308790439">Бутонът „Добавяне към колекция“ не е активен</translation>
 <translation id="5308380583665731573">Свързване</translation>
-<translation id="5310963254742922113">Паролата е използвана.</translation>
 <translation id="5316947901395241499">Запазването на паролите е изключено от администратора ви</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5319359161174645648">Google препоръчва Chrome</translation>
@@ -1172,6 +1171,7 @@
 <translation id="6342069812937806050">Току-що</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Означаване като прочетено</translation>
+<translation id="6347010704471250799">Показване на известие</translation>
 <translation id="6356893102071098867">Проверете дали сте избрали правилния профил</translation>
 <translation id="6363990818884053551">За да стартирате синхронизирането, потвърдете, че сте вие</translation>
 <translation id="6364438453358674297">Предложението да се премахне ли от историята?</translation>

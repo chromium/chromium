@@ -501,7 +501,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3224641773458703735">Para exportar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3235063766008841141">Introduzida num site fraudulento e encontrada numa violação de dados.</translation>
-<translation id="3235083185359739322">Os separadores inativos ajudam a manter a concentração</translation>
 <translation id="3235242129752692527">Edite os detalhes do evento e toque em "Guardar".</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4766112107778026136">Discover e A seguir</translation>
 <translation id="4769198578611055647">Ajuda a aceder às chaves de acesso guardadas em qualquer dispositivo</translation>
 <translation id="4777866634702576038">Eliminar o grupo de separadores?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Os separadores abertos não usados há um ou mais dias são movidos para os separadores inativos, para que se possa concentrar facilmente nos separadores que mais usa. Pode alterar esta definição em qualquer altura nas definições.}other{Os separadores abertos não usados há {COUNT} dias ou mais são movidos para os separadores inativos, para que se possa concentrar facilmente nos separadores que mais usa. Pode alterar esta definição em qualquer altura nas definições.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Abrir na Navegação anónima?</translation>
 <translation id="4792385443586519711">Nome da empresa</translation>

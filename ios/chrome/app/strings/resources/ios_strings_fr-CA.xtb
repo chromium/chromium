@@ -501,7 +501,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3224641773458703735">Pour exporter vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3235063766008841141">Entré sur un site trompeur et trouvé dans une violation de données</translation>
-<translation id="3235083185359739322">Les onglets inactifs vous aident à rester concentré</translation>
 <translation id="3235242129752692527">Modifiez les détails de l'événement et touchez « Enregistrer ».</translation>
 <translation id="3240426699337459095">Lien copié</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4766112107778026136">Découvrir et suivre</translation>
 <translation id="4769198578611055647">Vous aide à accéder aux clés d'accès enregistrées sur n'importe quel appareil</translation>
 <translation id="4777866634702576038">Supprimer le groupe d'onglets?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Les onglets ouverts non utilisés pendant un jour ou plus sont déplacés vers les onglets inactifs afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez modifier cette option à tout moment dans les paramètres.}one{Les onglets ouverts non utilisés pendant {COUNT} jour ou plus sont déplacés vers les onglets inactifs afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez modifier cette option à tout moment dans les paramètres.}other{Les onglets ouverts non utilisés pendant {COUNT} jours ou plus sont déplacés vers les onglets inactifs afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez modifier cette option à tout moment dans les paramètres.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Ouvrir en mode de navigation privée?</translation>
 <translation id="4792385443586519711">Nom de l'entreprise</translation>

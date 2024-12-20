@@ -501,7 +501,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3224641773458703735">To export passwords, you must first set a passcode on your device.</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3235063766008841141">Entered on a deceptive site and found in a data breach</translation>
-<translation id="3235083185359739322">Inactive tabs help you stay focused</translation>
 <translation id="3235242129752692527">Edit the event details and press “Save.“</translation>
 <translation id="3240426699337459095">Link copied</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4766112107778026136">Discover and following</translation>
 <translation id="4769198578611055647">Helps you access saved passkeys on any device</translation>
 <translation id="4777866634702576038">Delete tab group?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Open tabs not used for one day or more get moved to inactive tabs so that you can easily focus on the tabs that you use the most. You can change this at any time in settings.}other{Open tabs not used for {COUNT} days or more get moved to inactive tabs so that you can easily focus on the tabs you use the most. You can change this at any time in settings.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Open in Incognito?</translation>
 <translation id="4792385443586519711">Company name</translation>

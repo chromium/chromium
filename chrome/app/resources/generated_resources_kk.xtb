@@ -109,7 +109,6 @@
 <translation id="1069355737714877171">"<ph name="PROFILE_NAME" />" атты eSIM профилін жою</translation>
 <translation id="1069778954840159202">Аккаунтты Android телефонынан автоматты түрде алу</translation>
 <translation id="1069814191880976658">Басқа экран таңдау</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 құпия сөз және басқа элементтер тек осы құрылғыға сақталды. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}other{{PASSWORD_COUNT} құпия сөз және басқа элементтер тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}}</translation>
 <translation id="107022587824771715">Қойындылар тобы ұсыныстары әзірше қолжетімсіз. <ph name="BEGIN_LINK" />Қазір жаңартуға<ph name="END_LINK" /> немесе кейінірек қайталап көруге болады.</translation>
 <translation id="1070377999570795893">Компьютеріңіздегі басқа бір бағдарлама жаңа кеңейтім қосты, ол Chrome жұмысын өзгертуі мүмкін.
 
@@ -1905,6 +1904,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Келесі пернелер қолжетімсіз: Tab, Shift, Control, Escape, Caps lock, дыбысты реттеу пернелері</translation>
 <translation id="2309620859903500144">Бұл сайттың қозғалыс не жарық датчиктеріңізге кіруіне тыйым салынды.</translation>
+<translation id="2310414604104802967">Аккаунтқа кіргеніңіз тексеріліп жатыр...</translation>
 <translation id="2310923358723722542">Дисплей және ұлғайту</translation>
 <translation id="2312219318583366810">Беттің URL сілтемесі</translation>
 <translation id="2314165183524574721">Ағымдағы көрсетілу параметрі жасырылған.</translation>
@@ -2302,7 +2302,6 @@
 <translation id="2584109212074498965">Kerberos билетін алу мүмкін болмады. Қайталап көріңіз немесе ұйымыңыздың құрылғы әкімшісіне хабарласыңыз. (Қате коды: <ph name="ERROR_CODE" />)</translation>
 <translation id="2584974473573720127">Chrome-дағы веб-сайттың микрофон пайдалану рұқсаттарын басқару</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> орнатылмады. Әрекетті қайталаңыз немесе әкімшіге хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
-<translation id="2586657967955657006">Буфер</translation>
 <translation id="2586672484245266891">Қысқа URL мекенжайын енгізіңіз</translation>
 <translation id="2587922766792651800">Уақыты өтіп кетті</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> құрылғылары</translation>
@@ -3112,7 +3111,6 @@
 <translation id="3166443275568926403">Өнімділік және батарея күйі</translation>
 <translation id="3167446923957429259">Аузыңызды солға қозғалтыңыз</translation>
 <translation id="3167562202484086668">Барлық <ph name="BRAND" /> дерегін жою</translation>
-<translation id="3169901410527787002">Мекенжай жолағындағы пернетақта кірісін үнемі оқу</translation>
 <translation id="3169930038976362151">Қажеттіліктеріңізге сай режимді таңдаңыз. Режимді, тұсқағазды, скринсейверді өзгерту және т. б. әрекеттерді орындау үшін жұмыс үстелінде белгілі бір жерді басып тұрыңыз.</translation>
 <translation id="3170072451822350649">Сонымен қатар жүйеге кіруді өткізіп жіберіп, <ph name="LINK_START" />Қонақ ретінде шолуыңызға<ph name="LINK_END" /> болады.</translation>
 <translation id="3175067642577044620">Негізгі мәтін</translation>
@@ -8610,7 +8608,6 @@
 <translation id="713122686776214250">Б&amp;ет қосу…</translation>
 <translation id="7131431455372521159">Барлық TrackPoint құрылғысы ажыратылды.</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" /> орнатылмақшы.</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 құпия сөз тек осы құрылғыға сақталды. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}other{{PASSWORD_COUNT} құпия сөз тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}}</translation>
 <translation id="7134098520442464001">Мәтінді кішірейту</translation>
 <translation id="7134951043985383439">Қауіпті файл жүктеп алынды.</translation>
 <translation id="7135729336746831607">Bluetooth функциясы қосылсын ба?</translation>
@@ -11079,7 +11076,6 @@
 <translation id="8876307312329369159">Бұл параметр демо сеанста өзгертілмейді.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> маңайдағы құрылғыларды табу үшін Bluetooth іздеу процесін пайдаланады.</translation>
 <translation id="8877448029301136595">[түпкі каталог]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 элемент тек осы құрылғыға сақталды. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}other{{ITEM_COUNT} элемент тек осы құрылғыға сақталды. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына сақтаңыз.}}</translation>
 <translation id="8879284080359814990">&amp;Қойынды ретінде көрсету</translation>
 <translation id="8879921471468674457">Аккаунтқа кіру ақпаратын есте сақтау</translation>
 <translation id="8880009256105053174">Бұл бетті Google арқылы із&amp;деу...</translation>
@@ -11266,6 +11262,7 @@
 <translation id="9007688236643268728">&amp;Қайта кіру</translation>
 <translation id="9008201768610948239">Елемеу</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> мәліметтер бетіндегі артқа түймесі</translation>
+<translation id="9008425116680857079">Аккаунтқа кіргеннен кейін, Chrome құпия сөзіңізді өзгерте алады.</translation>
 <translation id="9008828754342192581">Бұған дейін <ph name="ORIGIN" /> сайтында барлық кеңейтімге рұқсат беруді таңдағансыз.</translation>
 <translation id="9009369504041480176">Жүктелуде (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009707268312089299">Windows-дан импортталған</translation>

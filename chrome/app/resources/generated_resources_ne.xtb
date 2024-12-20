@@ -109,7 +109,6 @@
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> नामक eSIM प्रोफाइल हटाउनुहोस्</translation>
 <translation id="1069778954840159202">Android फोनमा खाता स्वतः प्राप्त गर्नुहोस्</translation>
 <translation id="1069814191880976658">अर्को स्क्रिन छनौट गर्नुहोस्</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{एउटा पासवर्ड र अन्य सामग्री यो डिभाइसमा मात्र सेभ गरिएका छन्। यो पासवर्ड आफ्ना अन्य डिभाइसमा प्रयोग गर्न यसलाई आफ्नो Google खातामा सेभ गर्नुहोस्}other{{PASSWORD_COUNT} वटा पासवर्ड र अन्य सामग्री यो डिभाइसमा मात्र सेभ गरिएका छन्। यी पासवर्ड आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्}}</translation>
 <translation id="107022587824771715">ट्याब समूहसम्बन्धी सुझावहरू हाल उपलब्ध छैनन्। तपाईं <ph name="BEGIN_LINK" />अहिले नै रिफ्रेस गर्न<ph name="END_LINK" /> वा पछि फेरि प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="1070377999570795893">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विस्तार थप्यो जसले Chrome को कार्य गर्ने तरिकालाई बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> सेकेन्डमा वैकल्पिक ब्राउजरमा खोल्दै</translation>
@@ -1905,6 +1904,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">निम्न कीहरूले काम गर्दैन: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">यो साइटलाई तपाईंको चाल वा प्रकाशसम्बन्धी सेन्सरहरूको पहुँच राख्नबाट रोक लागाइएको छ।</translation>
+<translation id="2310414604104802967">तपाईं साइन इन हुनुहुन्छ कि हुनुहुन्न भन्ने कुरा जाँच गरिँदै छ...</translation>
 <translation id="2310923358723722542">डिस्प्ले तथा जुम इन</translation>
 <translation id="2312219318583366810">पेजको URL</translation>
 <translation id="2314165183524574721">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: लुकाइएको</translation>
@@ -2302,7 +2302,6 @@
 <translation id="2584109212074498965">Kerberos को टिकट प्राप्त गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो सङ्गठनका यन्त्र व्यवस्थापकलाई सम्पर्क गर्नुहोस्। (त्रुटि कोड <ph name="ERROR_CODE" />)।</translation>
 <translation id="2584974473573720127">Chrome मा वेबसाइटलाई दिइएका माइक्रोफोन प्रयोग गर्ने अनुमति व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> इन्स्टल गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
-<translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2586672484245266891">कृपया कुनै अझ छोटो URL प्रविष्टि गर्नुहोस्</translation>
 <translation id="2587922766792651800">समय सकियो</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> का यन्त्रहरू</translation>
@@ -3113,7 +3112,6 @@
 <translation id="3166443275568926403">पर्फर्मेन्स र ब्याट्रीको स्थिति</translation>
 <translation id="3167446923957429259">आफ्नो मुख बायाँतिर लैजानुहोस्</translation>
 <translation id="3167562202484086668"><ph name="BRAND" /> मा भएका सबै डेटा मेटाउनुहोस्</translation>
-<translation id="3169901410527787002">एड्रेस बारमा किबोर्डमार्फत इन्पुट गरिएको टेक्स्ट सधैँ रिड गर्ने</translation>
 <translation id="3169930038976362151">आफूलाई उपयुक्त हुने थिम छनौट गर्नुहोस्। आफ्ना थिम, वालपेपर, स्क्रिन सेभर र थप कुराहरू बदल्न डेस्कटपमा टच एण्ड होल्ड गरे पुग्छ।</translation>
 <translation id="3170072451822350649">तपाइँले साइन इन गर्न पनि छाड्न सक्नुहुन्छ र <ph name="LINK_START" />पाहनुाको रूपाम ब्राउज गर्न सक्नुहुन्छ<ph name="LINK_END" />।</translation>
 <translation id="3175067642577044620">मुख्य भाग</translation>
@@ -8614,7 +8612,6 @@
 <translation id="713122686776214250">पृ&amp;ष्ठ थप्नुहोस् ...</translation>
 <translation id="7131431455372521159">सबै TrackPoint डिस्कनेक्ट गरिएका छन्</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, प्रतीक्षा गरिँदै छ</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{एउटा पासवर्ड यो डिभाइसमा मात्र सेभ गरिएको छ। यो पासवर्ड आफ्ना अन्य डिभाइसमा प्रयोग गर्न यसलाई आफ्नो Google खातामा सेभ गर्नुहोस्}other{{PASSWORD_COUNT} वटा पासवर्ड यो डिभाइसमा मात्र सेभ गरिएका छन्। यी पासवर्ड आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्}}</translation>
 <translation id="7134098520442464001">पाठलाई अझ सानो बनाउनुहोस्</translation>
 <translation id="7134951043985383439">जोखिमपूर्ण फाइल डाउनलोड गर्नुहोस्</translation>
 <translation id="7135729336746831607">ब्लुटुथ सक्रिय पार्ने हो?</translation>
@@ -11084,7 +11081,6 @@
 <translation id="8876307312329369159">डेमो सत्रमा यो सेटिङ परिवर्तन गर्न सकिँदैन।</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> ले नजिकैका डिभाइसहरू भेट्टाउन ब्लुटुथ स्क्यानिङ प्रयोग गर्छ।</translation>
 <translation id="8877448029301136595">[आमाबाबु डाइरेक्टरी]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{एउटा सामग्री यो डिभाइसमा मात्र सेभ गरिएको छ। यो पासवर्ड आफ्ना अन्य डिभाइसमा प्रयोग गर्न यसलाई आफ्नो Google खातामा सेभ गर्नुहोस्}other{{ITEM_COUNT} वटा सामग्री यो डिभाइसमा मात्र सेभ गरिएका छन्। यी पासवर्ड आफ्ना अन्य डिभाइसमा प्रयोग गर्न यिनलाई आफ्नो Google खातामा सेभ गर्नुहोस्}}</translation>
 <translation id="8879284080359814990">ट्याबको रूपमा &amp;देखाउनुहोस्</translation>
 <translation id="8879921471468674457">साइन इनसम्बन्धी जानकारी याद गर्नुहोस्</translation>
 <translation id="8880009256105053174">Google मा यो पेज खोज्नुहोस्...</translation>
@@ -11271,6 +11267,7 @@
 <translation id="9007688236643268728">फेरि साइन इन गर्नुहोस्</translation>
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> को विवरणसम्बन्धी पेजको 'पछाडि जानुहोस्' बटन</translation>
+<translation id="9008425116680857079">तपाईं साइन इन भएपछि Chrome ले तपाईंको पासवर्ड परिवर्तन गर्न सक्छ।</translation>
 <translation id="9008828754342192581">तपाईंले यसअघि <ph name="ORIGIN" /> मा सबै एक्स्टेन्सनलाई अनुमति दिनुभएको थियो</translation>
 <translation id="9009369504041480176">(<ph name="PROGRESS_PERCENT" />%) अपलोड गर्दै...</translation>
 <translation id="9009707268312089299">Windows बाट इम्पोर्ट गरिएका</translation>

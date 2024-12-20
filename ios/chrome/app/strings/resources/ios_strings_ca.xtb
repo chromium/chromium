@@ -501,7 +501,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3224641773458703735">Per exportar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="3235063766008841141">S'ha introduït en un lloc web enganyós i s'ha trobat en una violació de dades</translation>
-<translation id="3235083185359739322">Les pestanyes inactives t'ajuden a concentrar-te</translation>
 <translation id="3235242129752692527">Edita els detalls de l'esdeveniment i toca Desa.</translation>
 <translation id="3240426699337459095">S'ha copiat l'enllaç.</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -819,7 +818,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4766112107778026136">Discover i Seguint</translation>
 <translation id="4769198578611055647">T'ajuda a accedir a les claus d'accés desades en qualsevol dispositiu</translation>
 <translation id="4777866634702576038">Vols suprimir el grup de pestanyes?</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Les pestanyes obertes que no utilitzis durant un dia o més es mouran a Pestanyes inactives perquè et puguis centrar fàcilment en les pestanyes que més facis servir. Pots canviar aquesta opció en qualsevol moment a la configuració.}other{Les pestanyes obertes que no utilitzis durant {COUNT} dies o més es mouran a Pestanyes inactives perquè et puguis centrar fàcilment en les pestanyes que més facis servir. Pots canviar aquesta opció en qualsevol moment a la configuració.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vols obrir-ho en mode d'incògnit?</translation>
 <translation id="4792385443586519711">Nom de l'empresa</translation>
