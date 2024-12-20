@@ -916,7 +916,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                    .gpu_rasterization) {
     resource_ = CanvasResourceSwapChain::Create(
         size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-        alpha_type, SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
+        alpha_type,
+        SkColorSpaceToGfxColorSpace(
+            GetSkImageInfo().colorInfo().refColorSpace()),
         ContextProviderWrapper(), CreateWeakPtr());
     // CanvasResourceProviderSwapChain can only operate in a single buffered
     // mode so enable it as soon as possible.
