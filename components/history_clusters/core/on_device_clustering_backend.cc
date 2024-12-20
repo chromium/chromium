@@ -42,6 +42,8 @@ namespace history_clusters {
 
 namespace {
 
+constexpr int kEngagementScoreCacheSize = 100;
+
 void RecordBatchUpdateProcessingTime(base::TimeDelta time_delta) {
   base::UmaHistogramTimes(
       "History.Clusters.Backend.ProcessBatchOfVisits.ThreadTime", time_delta);
@@ -74,7 +76,7 @@ OnDeviceClusteringBackend::OnDeviceClusteringBackend(
                   ? continue_on_shutdown_best_effort_task_traits_
                   : best_effort_task_traits_)),
       engagement_score_cache_last_refresh_timestamp_(base::TimeTicks::Now()),
-      engagement_score_cache_(GetConfig().engagement_score_cache_size) {
+      engagement_score_cache_(kEngagementScoreCacheSize) {
   if (GetConfig().should_check_hosts_to_skip_clustering_for &&
       optimization_guide_decider) {
     optimization_guide_decider_ = optimization_guide_decider;

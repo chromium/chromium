@@ -190,22 +190,6 @@ Config::Config() {
             number_interesting_visits_filter_threshold);
   }
 
-  // The `kUseEngagementScoreCache` feature and child params.
-  {
-    use_engagement_score_cache =
-        base::FeatureList::IsEnabled(features::kUseEngagementScoreCache);
-
-    engagement_score_cache_size = GetFieldTrialParamByFeatureAsInt(
-        features::kUseEngagementScoreCache, "engagement_score_cache_size",
-        engagement_score_cache_size);
-
-    engagement_score_cache_refresh_duration =
-        base::Minutes(GetFieldTrialParamByFeatureAsInt(
-            features::kUseEngagementScoreCache,
-            "engagement_score_cache_refresh_duration_minutes",
-            engagement_score_cache_refresh_duration.InMinutes()));
-  }
-
   // The `kHistoryClustersVisitDeduping` feature and child params.
   {
     use_host_for_visit_deduping = GetFieldTrialParamByFeatureAsBool(

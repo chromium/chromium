@@ -191,20 +191,6 @@ struct Config {
   // on the zero state UI).
   size_t number_interesting_visits_filter_threshold = 1;
 
-  // The `kUseEngagementScoreCache` feature and child params.
-
-  // Whether to use a cache to store the site engagement scores per host. Used
-  // in both the old (OnDeviceClusteringBackend) and new
-  // (ContextClustererHistoryServiceObserver) clustering paths.
-  bool use_engagement_score_cache = true;
-
-  // The max number of hosts that should be stored in the engagement score
-  // cache.
-  int engagement_score_cache_size = 100;
-
-  // The max time a host should be stored in the engagement score cache.
-  base::TimeDelta engagement_score_cache_refresh_duration = base::Minutes(120);
-
   // The `kHistoryClustersVisitDeduping` feature and child params.
 
   // Use host instead of heavily-stripped URL as URL for deduping.
