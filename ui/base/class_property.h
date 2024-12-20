@@ -83,25 +83,36 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
 
   // Sets the `value` of the given unowned `property`. Setting to the default
   // value (e.g. null) removes the property. If `T` is a pointer, the lifetime
-  // of the underlying object is managed by the caller.
+  // of the underlying object is managed by the caller. For caller convenience
+  // (e.g. for tail calls), returns the new value.
   //
   // CAUTION: Do not use this to pass in a raw pointer for an owned property,
   // due to the risk of UAF/double-frees. Use the owned property setters below
   // that set `ClassProperty<T*>`s.
   template <typename T>
-  void SetProperty(const ClassProperty<T>* property, T value);
+  T SetProperty(const ClassProperty<T>* property, T value);
+
+  // Convenience wrapper for the above, for when the supplied value is not the
+  // same type as the property.
+  template <typename T, typename U>
+    requires(std::constructible_from<T, U &&> &&
+             !std::same_as<T, std::remove_cvref_t<U>>)
+  T SetProperty(const ClassProperty<T>* property, U&& value);
 
   // Sets the `value` of the given owned `property`. Setting to null removes the
   // property. Manages a heap allocation for any set value, so callers can
-  // mutate or destroy the supplied value without risk of UAF.
+  // mutate or destroy the supplied value without risk of UAF. For caller
+  // convenience (e.g. for tail calls), returns (a non-owning pointer to) the
+  // new value.
   template <typename T, typename U>
     requires(!std::same_as<T*, std::remove_cvref_t<U>> &&
              std::constructible_from<T, U &&> && std::assignable_from<T&, U &&>)
-  void SetProperty(const ClassProperty<T*>* property, U&& value);
+  T* SetProperty(const ClassProperty<T*>* property, U&& value);
 
   // As above, but for callers who already have a heap-allocated object.
-  template <typename T>
-  T* SetProperty(const ClassProperty<T*>* property, std::unique_ptr<T> value);
+  template <typename T, typename U>
+    requires(std::convertible_to<U*, T*>)
+  T* SetProperty(const ClassProperty<T*>* property, std::unique_ptr<U> value);
 
   // For unowned properties: Returns the value of the given `property`, or the
   // property-specific default value if the property is not currently set.
@@ -240,22 +251,29 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHelper {
 }  // namespace subtle
 
 template <typename T, typename U>
+  requires(std::constructible_from<T, U &&> &&
+           !std::same_as<T, std::remove_cvref_t<U>>)
+T PropertyHandler::SetProperty(const ClassProperty<T>* property, U&& value) {
+  return SetProperty(property, T(std::forward<U>(value)));
+}
+
+template <typename T, typename U>
   requires(!std::same_as<T*, std::remove_cvref_t<U>> &&
            std::constructible_from<T, U &&> && std::assignable_from<T&, U &&>)
-void PropertyHandler::SetProperty(const ClassProperty<T*>* property,
-                                  U&& value) {
+T* PropertyHandler::SetProperty(const ClassProperty<T*>* property, U&& value) {
   // Reuse any existing allocation.
   if (T* const old = subtle::PropertyHelper::Get<T*>(this, property, false)) {
     T temp = std::exchange(*old, std::forward<U>(value));
     AfterPropertyChange(property, ClassPropertyCaster<T*>::ToInt64(&temp));
-    return;
+    return old;
   }
-  SetProperty(property, std::make_unique<T>(std::forward<U>(value)));
+  return SetProperty(property, std::make_unique<T>(std::forward<U>(value)));
 }
 
-template <typename T>
+template <typename T, typename U>
+  requires(std::convertible_to<U*, T*>)
 T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
-                                std::unique_ptr<T> value) {
+                                std::unique_ptr<U> value) {
   DCHECK(property->deallocator);
   return subtle::PropertyHelper::Set<T*>(this, property, value.release());
 }
@@ -263,30 +281,30 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
 }  // namespace ui
 
 // Macros to declare the property getter/setter template functions.
-#define DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(EXPORT, T)                   \
-  namespace ui {                                                             \
-  template <>                                                                \
-  EXPORT void PropertyHandler::SetProperty(const ClassProperty<T>* property, \
-                                           T value);                         \
-  template <>                                                                \
-  EXPORT T                                                                   \
-  PropertyHandler::GetProperty(const ClassProperty<T>* property) const;      \
-  template <>                                                                \
-  EXPORT void PropertyHandler::ClearProperty(                                \
-      const ClassProperty<T>* property);                                     \
+#define DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(EXPORT, T)                \
+  namespace ui {                                                          \
+  template <>                                                             \
+  EXPORT T PropertyHandler::SetProperty(const ClassProperty<T>* property, \
+                                        T value);                         \
+  template <>                                                             \
+  EXPORT T                                                                \
+  PropertyHandler::GetProperty(const ClassProperty<T>* property) const;   \
+  template <>                                                             \
+  EXPORT void PropertyHandler::ClearProperty(                             \
+      const ClassProperty<T>* property);                                  \
   }  // namespace ui
 
 // Macros to instantiate the property getter/setter template functions.
 #define DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(EXPORT, T)                    \
   namespace ui {                                                             \
   template <>                                                                \
-  EXPORT void PropertyHandler::SetProperty(const ClassProperty<T>* property, \
-                                           T value) {                        \
+  EXPORT T PropertyHandler::SetProperty(const ClassProperty<T>* property,    \
+                                        T value) {                           \
     /* TODO(kylixrd, pbos): Once all the call-sites are fixed to only use */ \
     /* the unique_ptr version for owned properties, add the following */     \
     /* DCHECK to guard against passing raw pointers for owned properties. */ \
-    /* DCHECK(!std::is_pointer_v<T> || !property->deallocator); */           \
-    subtle::PropertyHelper::Set<T>(this, property, value);                   \
+    /* DCHECK(!std::is_pointer<T>::value || !property->deallocator); */      \
+    return subtle::PropertyHelper::Set<T>(this, property, value);            \
   }                                                                          \
   template <>                                                                \
   EXPORT T                                                                   \
