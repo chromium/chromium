@@ -146,6 +146,11 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
                           ash::kTilingWindowResizeAcceleratorData);
   }
 
+  if (ash::features::IsDoNotDisturbShortcutEnabled()) {
+    AppendAcceleratorData(accelerators,
+                          ash::kToggleDoNotDisturbAcceleratorData);
+  }
+
   // Debug accelerators.
   if (ash::debug::DebugAcceleratorsEnabled()) {
     AppendAcceleratorData(accelerators, ash::kDebugAcceleratorData);

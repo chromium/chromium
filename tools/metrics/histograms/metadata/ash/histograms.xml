@@ -156,6 +156,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ToggleClipboardHistory"/>
   <variant name="ToggleDictation"/>
   <variant name="ToggleDockedMagnifier"/>
+  <variant name="ToggleDoNotDisturb"/>
   <variant name="ToggleFloating"/>
   <variant name="ToggleFullscreen"/>
   <variant name="ToggleFullscreenMagnifier"/>

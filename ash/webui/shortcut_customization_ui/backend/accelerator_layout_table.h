@@ -295,6 +295,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kSwitchToNextUser,
     AcceleratorAction::kSwitchToPreviousUser,
     AcceleratorAction::kStartAssistant,
+    AcceleratorAction::kToggleDoNotDisturb,
 
     // General > Apps
     AcceleratorAction::kOpenFileManager,

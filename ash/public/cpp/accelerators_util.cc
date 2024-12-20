@@ -123,6 +123,7 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
           {ui::KeyboardCode::VKEY_CAPITAL, u"caps lock"},
           {ui::KeyboardCode::VKEY_ACCESSIBILITY, u"Accessibility"},
           {ui::KeyboardCode::VKEY_QUICK_INSERT, u"QuickInsert"},
+          {ui::KeyboardCode::VKEY_DO_NOT_DISTURB, u"DoNotDisturb"},
       }));
   return *key_display_map;
 }

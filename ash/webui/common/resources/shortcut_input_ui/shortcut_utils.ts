@@ -93,6 +93,7 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'BrowserRefresh': 'refresh',
   'BrowserSearch': 'browser-search',
   'ContextMenu': 'menu',
+  'DoNotDisturb': 'do-not-disturb',
   'EmojiPicker': 'emoji-picker',
   'EnableOrToggleDictation': 'dictation-toggle',
   'KeyboardBacklightToggle': 'keyboard-brightness-toggle',

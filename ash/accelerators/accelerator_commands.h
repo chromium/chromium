@@ -324,6 +324,9 @@ ASH_EXPORT void ToggleCapsLock();
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
 
+// Toggles do not disturb functionality.
+ASH_EXPORT void ToggleDoNotDisturb();
+
 // Toggles Quick Insert.
 // `accelerator_timestamp` is the timestamp associated with the accelerator that
 // triggered Quick Insert.

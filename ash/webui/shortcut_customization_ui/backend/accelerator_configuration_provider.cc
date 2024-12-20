@@ -455,6 +455,8 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
     case kTilingWindowResizeUp:
     case kTilingWindowResizeDown:
       return !features::IsTilingWindowResizeEnabled();
+    case kToggleDoNotDisturb:
+      return !features::IsDoNotDisturbShortcutEnabled();
     case kToggleMouseKeys:
       return !::features::IsAccessibilityMouseKeysEnabled();
     case kToggleGeminiApp:
