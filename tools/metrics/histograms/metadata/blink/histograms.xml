@@ -593,6 +593,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Blink.Canvas.ToDataURLCompressionRatio.PNG"
+    units="encoded bytes per 100 image bytes" expires_after="2025-06-08">
+  <owner>lukasza@chromium.org</owner>
+  <owner>danieldilan@google.com</owner>
+  <owner>fmalita@chromium.org</owner>
+  <owner>aaronhk@chromium.org</owner>
+  <summary>
+    Number of bytes of the encoded PNG per 100 bytes of the input image.
+
+    Note the numerator is the number of bytes of the encoded PNG **before** it
+    gets base64-encoding and converted into a data URI.
+
+    For example, an 8x8 image of RGBA8 pixels takes 256 bytes in memory. If such
+    image gets encoded as 192 bytes (i.e. 75% of 256 bytes), then the metrics
+    here will be 75.
+  </summary>
+</histogram>
+
 <histogram
     name="Blink.Canvas.ToDataURLScaledDuration{BlinkCanvasToDataURLMimeType}"
     units="microseconds/sqrt(pixels)" expires_after="2025-06-08">

@@ -36,8 +36,10 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -89,6 +91,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
@@ -104,6 +107,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
@@ -248,6 +252,52 @@ class TransferToGPUTextureInvokedSupplement final
  private:
   bool transfer_to_gpu_texture_was_invoked_ = false;
 };
+
+void UmaHistogramCompressionRatio(
+    std::string_view histogram_name,
+    const String& data_url,
+    const CanvasContextCreationAttributesCore& canvas_attrs,
+    const gfx::Size& image_size) {
+  constexpr int32_t kPrefixSize =
+      std::string_view("data:image/png;base64,").size();
+  base::ClampedNumeric<int32_t> size_of_data_uri = data_url.length();
+  if (size_of_data_uri <= kPrefixSize) {
+    // Don't log UMA after an encoding failure.
+    return;
+  }
+
+  // 4 base64 characters per 3 bytes.
+  base::ClampedNumeric<int32_t> encoded_bytes_count =
+      (size_of_data_uri - kPrefixSize) * 3 / 4;
+
+  // Assuming that canvas always uses RGBA (i.e. 4 channels).
+  constexpr int32_t kChannelsPerPixel = 4u;
+  int32_t bytes_per_pixel = 0u;
+  switch (canvas_attrs.pixel_format) {
+    case CanvasPixelFormat::kF16:
+      bytes_per_pixel = 2u * kChannelsPerPixel;
+      break;
+    case CanvasPixelFormat::kUint8:
+      bytes_per_pixel = 1u * kChannelsPerPixel;
+      break;
+  }
+
+  base::ClampedNumeric<int32_t> image_pixels_count = image_size.Area64();
+  base::ClampedNumeric<int32_t> image_bytes_count =
+      image_pixels_count * bytes_per_pixel;
+  base::ClampedNumeric<int32_t> encoded_bytes_per_100_image_bytes =
+      encoded_bytes_count * 100 / image_bytes_count;
+
+  // We are not just using `base::UmaHistogramPercentage` because the overhead
+  // of PNG metadata may result in `encoded_bytes_count` being more than 100% of
+  // `image_bytes_count`.  For example, a PNG encoding of an image with a single
+  // pixel will take at least 67 bytes, although below we ignore this extreme
+  // and only support buckets up to 120%.
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+      histogram_name, 1, 121, 60,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->Add(encoded_bytes_per_100_image_bytes);
+}
 
 }  // namespace
 
@@ -1214,6 +1264,12 @@ String HTMLCanvasElement::ToDataURLInternal(
     if (encoding_mime_type == kMimeTypePng) {
       UMA_HISTOGRAM_COUNTS_100000("Blink.Canvas.ToDataURLScaledDuration.PNG",
                                   scaled_time_int);
+      const CanvasRenderingContext* context = RenderingContext();
+      if (context) {
+        UmaHistogramCompressionRatio(
+            "Blink.Canvas.ToDataURLCompressionRatio.PNG", data_url,
+            context->CreationAttributes(), image_bitmap->Size());
+      }
     } else if (encoding_mime_type == kMimeTypeJpeg) {
       UMA_HISTOGRAM_COUNTS_100000("Blink.Canvas.ToDataURLScaledDuration.JPEG",
                                   scaled_time_int);
