@@ -4,8 +4,6 @@
 
 import '/strings.m.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
-
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {GlicApiHost} from './glic_api_impl/glic_api_host.js';
 
@@ -18,8 +16,8 @@ const webview =
 class GlicAppHostManager {
   host: GlicApiHost|undefined;
   constructor() {
-    webview.addEventListener('loadcommit', () => {
-      this.loadCommit();
+    webview.addEventListener('loadcommit', (e: any) => {
+      this.loadCommit(e.url, e.isTopLevel);
     });
     webview.addEventListener('contentload', () => {
       this.contentLoaded();
@@ -43,15 +41,17 @@ class GlicAppHostManager {
     event.stopPropagation();
   }
 
-  loadCommit() {
+  loadCommit(url: string, isTopLevel: boolean) {
+    if (!isTopLevel) {
+      return;
+    }
     if (this.host) {
       this.host.destroy();
       this.host = undefined;
     }
     if (webview.contentWindow) {
       this.host = new GlicApiHost(
-          browserProxy, webview.contentWindow,
-          new URL(loadTimeData.getString('glicGuestURL')).origin);
+          browserProxy, webview.contentWindow, new URL(url).origin);
     }
   }
 
