@@ -94,7 +94,6 @@ export class CellularInfoElement extends CellularInfoElementBase {
       case RoamingState.kHome:
         return this.i18n('networkRoamingStateHome');
     }
-    assertNotReached();
   }
 
   protected computeSimLockedText(): string {
