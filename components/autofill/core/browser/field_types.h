@@ -468,6 +468,13 @@ enum FieldType {
   // This is the first child of NAME_LAST.
   NAME_LAST_PREFIX = 166,
 
+  // Type to represent the core part of the last name.
+  // More technically it contains the last name without the prefix.
+  // NAME_LAST_CORE: NAME_LAST_FIRST + NAME_LAST_CONJUNCTION + NAME_LAST_SECOND.
+  // Don't use this type unless there is NAME_LAST_PREFIX present in the form.
+  // E.g. "Gogh" in "Vincent van Gogh".
+  NAME_LAST_CORE = 167,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -478,7 +485,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 167,
+  MAX_VALID_FIELD_TYPE = 168,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 

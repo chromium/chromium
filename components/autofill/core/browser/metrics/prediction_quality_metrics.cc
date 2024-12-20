@@ -293,6 +293,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case NOT_USERNAME:
         case ONE_TIME_CODE:
         case NAME_LAST_PREFIX:
+        case NAME_LAST_CORE:
         case NAME_LAST_FIRST:
         case NAME_LAST_CONJUNCTION:
         case NAME_LAST_SECOND:
