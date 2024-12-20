@@ -280,31 +280,22 @@ WebGPUSwapBufferProvider::GetContextProviderWeakPtr() const {
   return dawn_control_client_->GetContextProviderWeakPtr();
 }
 
-bool WebGPUSwapBufferProvider::PrepareTransferableResource(
-    viz::TransferableResource* out_resource,
+scoped_refptr<gpu::ClientSharedImage>
+WebGPUSwapBufferProvider::ExportCurrentSharedImage(
+    gpu::SyncToken& sync_token,
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(!neutered_);
   if (!current_swap_buffer_ || neutered_ || !GetContextProviderWeakPtr()) {
-    return false;
+    return nullptr;
   }
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image = GetCurrentSharedImage();
 
   ReleaseWGPUTextureAccessIfNeeded();
 
-  // Populate the output resource.
-  *out_resource = viz::TransferableResource::MakeGpu(
-      current_swap_buffer_->GetSharedImage(),
-      current_swap_buffer_->GetSharedImage()->GetTextureTarget(),
-      current_swap_buffer_->GetSyncToken(),
-      current_swap_buffer_->GetSharedImage()->size(),
-      current_swap_buffer_->GetSharedImage()->format(),
-      current_swap_buffer_->GetSharedImage()->usage().Has(
-          gpu::SHARED_IMAGE_USAGE_SCANOUT),
-      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
-  out_resource->color_space =
-      current_swap_buffer_->GetSharedImage()->color_space();
-  out_resource->hdr_metadata = hdr_metadata_;
-  out_resource->origin =
-      current_swap_buffer_->GetSharedImage()->surface_origin();
+  // NOTE: This must be populated *after* the above call as that call updates
+  // the current swap buffer's sync token.
+  sync_token = current_swap_buffer_->GetSyncToken();
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).
@@ -312,6 +303,30 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       WTF::BindOnce(&WebGPUSwapBufferProvider::MailboxReleased,
                     scoped_refptr<WebGPUSwapBufferProvider>(this),
                     std::move(current_swap_buffer_));
+
+  return shared_image;
+}
+
+bool WebGPUSwapBufferProvider::PrepareTransferableResource(
+    viz::TransferableResource* out_resource,
+    viz::ReleaseCallback* out_release_callback) {
+  gpu::SyncToken sync_token;
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      ExportCurrentSharedImage(sync_token, out_release_callback);
+  if (!shared_image) {
+    return false;
+  }
+
+  // Populate the output resource.
+  *out_resource = viz::TransferableResource::MakeGpu(
+      shared_image, shared_image->GetTextureTarget(), sync_token,
+      shared_image->size(), shared_image->format(),
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
+      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
+  out_resource->color_space = shared_image->color_space();
+  out_resource->hdr_metadata = hdr_metadata_;
+  out_resource->origin = shared_image->surface_origin();
 
   return true;
 }

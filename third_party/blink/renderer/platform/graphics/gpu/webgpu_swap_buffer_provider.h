@@ -104,7 +104,21 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   // be used with WebGPU will additionally be sent to the display.
   gpu::SharedImageUsageSet GetSharedImageUsagesForDisplay();
 
+  // Returns the SharedImage of the current swapbuffer.
   scoped_refptr<gpu::ClientSharedImage> GetCurrentSharedImage();
+
+  // Exports the SharedImage of the current swapbuffer for external usage:
+  // * Ends any ongoing WebGPU access on that SharedImage and populates
+  //   `sync_token` with a token that the external access should wait on before
+  //   accessing the SharedImage.
+  // * Moves the current swapbuffer into `out_release_callback` to ensure that
+  //   WebGPU does not continue to access that SharedImage while that
+  //   SharedImage is being accessed externally.
+  //   `out_release_callback` should be invoked when the SharedImage is
+  //   available for reuse by WebGPU after the external usage finishes.
+  scoped_refptr<gpu::ClientSharedImage> ExportCurrentSharedImage(
+      gpu::SyncToken& sync_token,
+      viz::ReleaseCallback* out_release_callback);
 
   gpu::Mailbox GetCurrentMailboxForTesting() const;
 
