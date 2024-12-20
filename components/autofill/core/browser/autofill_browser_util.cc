@@ -4,8 +4,8 @@
 
 #include "components/autofill/core/browser/autofill_browser_util.h"
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/security_interstitials/core/insecure_form_util.h"
 
 namespace autofill {

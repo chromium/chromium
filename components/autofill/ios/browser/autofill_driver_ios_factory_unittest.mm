@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "components/autofill/core/browser/test_autofill_client.h"
+#import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/test_matchers.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"

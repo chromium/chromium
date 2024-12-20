@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory_test_api.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"

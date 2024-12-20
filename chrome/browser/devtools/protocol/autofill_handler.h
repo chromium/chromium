@@ -10,7 +10,7 @@
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/browser/web_contents.h"
 

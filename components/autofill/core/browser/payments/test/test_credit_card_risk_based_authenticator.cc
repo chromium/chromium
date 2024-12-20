@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
 

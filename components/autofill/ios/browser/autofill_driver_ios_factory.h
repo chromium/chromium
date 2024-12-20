@@ -11,9 +11,9 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/types/pass_key.h"
-#import "components/autofill/core/browser/autofill_client.h"
-#import "components/autofill/core/browser/autofill_driver_factory.h"
-#import "components/autofill/core/browser/autofill_driver_router.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/foundations/autofill_driver_factory.h"
+#import "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"

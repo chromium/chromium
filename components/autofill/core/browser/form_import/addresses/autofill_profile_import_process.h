@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "url/origin.h"
 
 namespace autofill {

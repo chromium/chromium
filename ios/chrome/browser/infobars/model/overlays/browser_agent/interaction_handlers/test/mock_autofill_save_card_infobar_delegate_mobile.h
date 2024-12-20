@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"

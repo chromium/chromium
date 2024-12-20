@@ -5,10 +5,10 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

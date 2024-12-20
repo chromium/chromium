@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_COMPOSE_COMPOSE_TEXT_USAGE_LOGGER_H_
 #define CHROME_BROWSER_COMPOSE_COMPOSE_TEXT_USAGE_LOGGER_H_
 
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/signatures.h"
 #include "content/public/browser/document_user_data.h"
 

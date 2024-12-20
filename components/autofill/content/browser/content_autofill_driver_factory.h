@@ -13,8 +13,8 @@
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/browser/autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_driver_router.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 

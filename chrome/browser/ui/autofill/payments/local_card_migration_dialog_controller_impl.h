@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_dialog_controller.h"

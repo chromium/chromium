@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/browser/render_frame_host.h"

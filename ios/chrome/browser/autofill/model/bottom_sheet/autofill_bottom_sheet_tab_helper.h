@@ -7,8 +7,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_multi_source_observation.h"
-#import "components/autofill/core/browser/autofill_manager.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/browser/foundations/autofill_manager.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/plus_addresses/plus_address_types.h"

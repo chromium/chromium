@@ -5,7 +5,7 @@
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 void TestGenerationPopupObserver::OnPopupShown(
