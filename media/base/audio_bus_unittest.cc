@@ -134,6 +134,14 @@ class AudioBusTest : public testing::Test {
   }
 
  protected:
+  void AllocateDataPerChannel() {
+    data_.reserve(kChannels);
+    for (int i = 0; i < kChannels; ++i) {
+      data_.push_back(static_cast<float*>(base::AlignedAlloc(
+          sizeof(*data_[i]) * kFrameCount, AudioBus::kChannelAlignment)));
+    }
+  }
+
   std::vector<float*> data_;
 };
 
@@ -156,16 +164,14 @@ TEST_F(AudioBusTest, CreateUsingAudioParameters) {
 
 // Verify an AudioBus created via CreateWrapper(...) works as advertised.
 TEST_F(AudioBusTest, CreateWrapper) {
-  data_.reserve(kChannels);
-  for (int i = 0; i < kChannels; ++i) {
-    data_.push_back(static_cast<float*>(base::AlignedAlloc(
-        sizeof(*data_[i]) * kFrameCount, AudioBus::kChannelAlignment)));
-  }
+  AllocateDataPerChannel();
 
   std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
   bus->set_frames(kFrameCount);
-  for (int i = 0; i < bus->channels(); ++i)
-    bus->SetChannelData(i, data_[i]);
+  for (int i = 0; i < bus->channels(); ++i) {
+    bus->SetChannelData(i,
+                        base::span(data_[i], static_cast<size_t>(kFrameCount)));
+  }
 
   bool deleted = false;
   bus->SetWrappedDataDeleter(
@@ -177,6 +183,68 @@ TEST_F(AudioBusTest, CreateWrapper) {
   EXPECT_FALSE(deleted);
   bus.reset();
   EXPECT_TRUE(deleted);
+}
+
+TEST_F(AudioBusTest, AllChannels) {
+  AllocateDataPerChannel();
+
+  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
+  bus->set_frames(kFrameCount);
+  AudioBus::ChannelVector channels;
+  int value = 1;
+  for (float* data : data_) {
+    AudioBus::Channel channel(data, static_cast<size_t>(kFrameCount));
+
+    // Fill each channel with a different value.
+    std::ranges::fill(channel, value++);
+    channels.push_back(channel);
+  }
+
+  bus->SetAllChannels(channels);
+
+  VerifyChannelAndFrameCount(bus.get());
+
+  // Verify looping through `AllChannels()` is equivalent to getting each
+  // channel individually.
+  int current_channel = 0;
+  for (auto channel : bus->AllChannels()) {
+    EXPECT_EQ(channel, bus->channel_span(current_channel++));
+  }
+
+  EXPECT_EQ(current_channel, kChannels);
+}
+
+TEST_F(AudioBusTest, AllChannelsSubspan) {
+  AllocateDataPerChannel();
+
+  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
+  bus->set_frames(kFrameCount);
+  AudioBus::ChannelVector channels;
+  int value = 1;
+  for (float* data : data_) {
+    AudioBus::Channel channel(data, static_cast<size_t>(kFrameCount));
+
+    // Fill each sample with a different value.
+    for (float& sample : channel) {
+      sample = value++;
+    }
+
+    channels.push_back(channel);
+  }
+
+  bus->SetAllChannels(channels);
+
+  // Verify looping through `AllChannelsSubspan()` is equivalent to getting each
+  // channel individually and applying `subspan()` to them.
+  int current_channel = 0;
+  constexpr size_t kOffset = 3;
+  constexpr size_t kCount = 25;
+  for (auto channel : bus->AllChannelsSubspan(kOffset, kCount)) {
+    EXPECT_EQ(channel,
+              bus->channel_span(current_channel++).subspan(kOffset, kCount));
+  }
+
+  EXPECT_EQ(current_channel, kChannels);
 }
 
 // Verify an AudioBus created via wrapping a vector works as advertised.
@@ -203,8 +271,8 @@ TEST_F(AudioBusTest, WrapMemory) {
 
   // Fill the memory with a test value we can check for after wrapping.
   static const float kTestValue = 3;
-  std::fill(
-      data.get(), data.get() + data_size / sizeof(*data.get()), kTestValue);
+  std::fill(data.get(), data.get() + data_size / sizeof(*data.get()),
+            kTestValue);
 
   std::unique_ptr<AudioBus> bus = AudioBus::WrapMemory(params, data.get());
   // Verify the test value we filled prior to wrapping.
@@ -236,11 +304,7 @@ TEST_F(AudioBusTest, CopyTo) {
   {
     SCOPED_TRACE("Wrapped Vector");
     // Try a copy to an AudioBus wrapping a vector.
-    data_.reserve(kChannels);
-    for (int i = 0; i < kChannels; ++i) {
-      data_.push_back(static_cast<float*>(base::AlignedAlloc(
-          sizeof(*data_[i]) * kFrameCount, AudioBus::kChannelAlignment)));
-    }
+    AllocateDataPerChannel();
 
     bus2 = AudioBus::WrapVector(kFrameCount, data_);
     CopyTest(bus1.get(), bus2.get());
