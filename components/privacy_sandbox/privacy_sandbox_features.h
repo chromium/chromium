@@ -181,6 +181,10 @@ BASE_DECLARE_FEATURE(kIpProtectionUx);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionUserBypass);
 
+// Enables displaying ACT features in User Bypass.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kActUserBypassUx);
+
 // Enables TP settings page to display TRACKING_PROTECTION content settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingInSettings);
