@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/url_pattern.h"
 
 #include <stddef.h>
@@ -24,7 +19,7 @@ namespace {
 
 // See url_pattern.h for examples of valid and invalid patterns.
 
-static const int kAllSchemes =
+static constexpr int kAllSchemes =
     URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
     URLPattern::SCHEME_FILE | URLPattern::SCHEME_FTP |
     URLPattern::SCHEME_CHROMEUI | URLPattern::SCHEME_EXTENSION |
@@ -33,7 +28,7 @@ static const int kAllSchemes =
     URLPattern::SCHEME_UUID_IN_PACKAGE;
 
 TEST(ExtensionURLPatternTest, ParseInvalid) {
-  const struct {
+  static constexpr struct {
     const char* pattern;
     URLPattern::ParseResult expected_result;
   } kInvalidPatterns[] = {
@@ -52,11 +47,10 @@ TEST(ExtensionURLPatternTest, ParseInvalid) {
       {"http://bar", URLPattern::ParseResult::kEmptyPath},
       {"http://foo.*/bar", URLPattern::ParseResult::kInvalidHostWildcard}};
 
-  for (size_t i = 0; i < std::size(kInvalidPatterns); ++i) {
+  for (const auto& entry : kInvalidPatterns) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
-    EXPECT_EQ(kInvalidPatterns[i].expected_result,
-              pattern.Parse(kInvalidPatterns[i].pattern))
-        << kInvalidPatterns[i].pattern;
+    EXPECT_EQ(entry.expected_result, pattern.Parse(entry.pattern))
+        << entry.pattern;
   }
 
   {
@@ -95,19 +89,17 @@ TEST(ExtensionURLPatternTest, Ports) {
       {"http://*.foo/bar:1234", URLPattern::ParseResult::kSuccess, "*"},
       {"http://foo/bar:1234/path", URLPattern::ParseResult::kSuccess, "*"}};
 
-  for (size_t i = 0; i < std::size(kTestPatterns); ++i) {
+  for (const auto& entry : kTestPatterns) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
-    EXPECT_EQ(kTestPatterns[i].expected_result,
-              pattern.Parse(kTestPatterns[i].pattern))
-        << "Got unexpected result for URL pattern: "
-        << kTestPatterns[i].pattern;
-    EXPECT_EQ(kTestPatterns[i].expected_port, pattern.port())
-        << "Got unexpected port for URL pattern: " << kTestPatterns[i].pattern;
+    EXPECT_EQ(entry.expected_result, pattern.Parse(entry.pattern))
+        << "Got unexpected result for URL pattern: " << entry.pattern;
+    EXPECT_EQ(entry.expected_port, pattern.port())
+        << "Got unexpected port for URL pattern: " << entry.pattern;
   }
 }
 
 TEST(ExtensionURLPatternTest, IPv6Patterns) {
-  constexpr struct {
+  static constexpr struct {
     const char* pattern;
     const char* expected_host;
     const char* expected_port;
@@ -448,28 +440,26 @@ TEST(ExtensionURLPatternTest, NonwildcardDoesntMatchPathlessUrl) {
   EXPECT_FALSE(pattern.MatchesURL(GURL("javascript:")));
 }
 
-static const struct MatchPatterns {
+static constexpr struct MatchPatterns {
   const char* pattern;
   const char* matches;
 } kMatch13UrlPatternTestCases[] = {
-  {"about:*", "about:blank"},
-  {"about:blank", "about:blank"},
-  {"about:*", "about:version"},
-  {"chrome-extension://*/*", "chrome-extension://FTW"},
-  {"data:*", "data:monkey"},
-  {"javascript:*", "javascript:atemyhomework"},
+    {"about:*", "about:blank"},
+    {"about:blank", "about:blank"},
+    {"about:*", "about:version"},
+    {"chrome-extension://*/*", "chrome-extension://FTW"},
+    {"data:*", "data:monkey"},
+    {"javascript:*", "javascript:atemyhomework"},
 };
 
 // SCHEME_ALL and specific schemes.
 TEST(ExtensionURLPatternTest, Match13) {
-  for (size_t i = 0; i < std::size(kMatch13UrlPatternTestCases); ++i) {
+  for (const auto& entry : kMatch13UrlPatternTestCases) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
-    EXPECT_EQ(URLPattern::ParseResult::kSuccess,
-              pattern.Parse(kMatch13UrlPatternTestCases[i].pattern))
-        << " while parsing " << kMatch13UrlPatternTestCases[i].pattern;
-    EXPECT_TRUE(pattern.MatchesURL(
-        GURL(kMatch13UrlPatternTestCases[i].matches)))
-        << " while matching " << kMatch13UrlPatternTestCases[i].matches;
+    EXPECT_EQ(URLPattern::ParseResult::kSuccess, pattern.Parse(entry.pattern))
+        << " while parsing " << entry.pattern;
+    EXPECT_TRUE(pattern.MatchesURL(GURL(entry.matches)))
+        << " while matching " << entry.matches;
   }
 
   // Negative test.
@@ -586,32 +576,30 @@ TEST(ExtensionURLPatternTest, Match19) {
       GURL("filesystem:chrome-extension://ftw/t/file.txt")));
 }
 
-static const struct GetAsStringPatterns {
-  const std::string pattern;
-} kGetAsStringTestCases[] = {
-    {"http://www/"},
-    {"http://*/*"},
-    {content::GetWebUIURLString("*/*")},
-    {content::GetWebUIURLString("newtab/")},
-    {"about:*"},
-    {"about:blank"},
-    {"chrome-extension://*/*"},
-    {"chrome-extension://ftw/"},
-    {"data:*"},
-    {"data:monkey"},
-    {"javascript:*"},
-    {"javascript:atemyhomework"},
-    {"http://www.example.com:8080/foo"},
-};
-
 TEST(ExtensionURLPatternTest, GetAsString) {
-  for (size_t i = 0; i < std::size(kGetAsStringTestCases); ++i) {
+  const struct GetAsStringPatterns {
+    const std::string pattern;
+  } kGetAsStringTestCases[] = {
+      {"http://www/"},
+      {"http://*/*"},
+      {content::GetWebUIURLString("*/*")},
+      {content::GetWebUIURLString("newtab/")},
+      {"about:*"},
+      {"about:blank"},
+      {"chrome-extension://*/*"},
+      {"chrome-extension://ftw/"},
+      {"data:*"},
+      {"data:monkey"},
+      {"javascript:*"},
+      {"javascript:atemyhomework"},
+      {"http://www.example.com:8080/foo"},
+  };
+
+  for (const auto& entry : kGetAsStringTestCases) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
-    EXPECT_EQ(URLPattern::ParseResult::kSuccess,
-              pattern.Parse(kGetAsStringTestCases[i].pattern))
-        << "Error parsing " << kGetAsStringTestCases[i].pattern;
-    EXPECT_EQ(kGetAsStringTestCases[i].pattern,
-              pattern.GetAsString());
+    EXPECT_EQ(URLPattern::ParseResult::kSuccess, pattern.Parse(entry.pattern))
+        << "Error parsing " << entry.pattern;
+    EXPECT_EQ(entry.pattern, pattern.GetAsString());
   }
 }
 
@@ -745,96 +733,59 @@ TEST(ExtensionURLPatternTest, IgnoreMissingBackslashes) {
 }
 
 TEST(ExtensionURLPatternTest, Equals) {
-  const struct {
+  static constexpr struct {
     const char* pattern1;
     const char* pattern2;
     bool expected_equal;
   } kEqualsTestCases[] = {
-    // schemes
-    { "http://en.google.com/blah/*/foo",
-      "https://en.google.com/blah/*/foo",
-      false
-    },
-    { "https://en.google.com/blah/*/foo",
-      "https://en.google.com/blah/*/foo",
-      true
-    },
-    { "https://en.google.com/blah/*/foo",
-      "ftp://en.google.com/blah/*/foo",
-      false
-    },
+      // schemes
+      {"http://en.google.com/blah/*/foo", "https://en.google.com/blah/*/foo",
+       false},
+      {"https://en.google.com/blah/*/foo", "https://en.google.com/blah/*/foo",
+       true},
+      {"https://en.google.com/blah/*/foo", "ftp://en.google.com/blah/*/foo",
+       false},
 
-    // subdomains
-    { "https://en.google.com/blah/*/foo",
-      "https://fr.google.com/blah/*/foo",
-      false
-    },
-    { "https://www.google.com/blah/*/foo",
-      "https://*.google.com/blah/*/foo",
-      false
-    },
-    { "https://*.google.com/blah/*/foo",
-      "https://*.google.com/blah/*/foo",
-      true
-    },
+      // subdomains
+      {"https://en.google.com/blah/*/foo", "https://fr.google.com/blah/*/foo",
+       false},
+      {"https://www.google.com/blah/*/foo", "https://*.google.com/blah/*/foo",
+       false},
+      {"https://*.google.com/blah/*/foo", "https://*.google.com/blah/*/foo",
+       true},
 
-    // domains
-    { "http://en.example.com/blah/*/foo",
-      "http://en.google.com/blah/*/foo",
-      false
-    },
+      // domains
+      {"http://en.example.com/blah/*/foo", "http://en.google.com/blah/*/foo",
+       false},
 
-    // ports
-    { "http://en.google.com:8000/blah/*/foo",
-      "http://en.google.com/blah/*/foo",
-      false
-    },
-    { "http://fr.google.com:8000/blah/*/foo",
-      "http://fr.google.com:8000/blah/*/foo",
-      true
-    },
-    { "http://en.google.com:8000/blah/*/foo",
-      "http://en.google.com:8080/blah/*/foo",
-      false
-    },
+      // ports
+      {"http://en.google.com:8000/blah/*/foo",
+       "http://en.google.com/blah/*/foo", false},
+      {"http://fr.google.com:8000/blah/*/foo",
+       "http://fr.google.com:8000/blah/*/foo", true},
+      {"http://en.google.com:8000/blah/*/foo",
+       "http://en.google.com:8080/blah/*/foo", false},
 
-    // paths
-    { "http://en.google.com/blah/*/foo",
-      "http://en.google.com/blah/*",
-      false
-    },
-    { "http://en.google.com/*",
-      "http://en.google.com/",
-      false
-    },
-    { "http://en.google.com/*",
-      "http://en.google.com/*",
-      true
-    },
+      // paths
+      {"http://en.google.com/blah/*/foo", "http://en.google.com/blah/*", false},
+      {"http://en.google.com/*", "http://en.google.com/", false},
+      {"http://en.google.com/*", "http://en.google.com/*", true},
 
-    // all_urls
-    { "<all_urls>",
-      "<all_urls>",
-      true
-    },
-    { "<all_urls>",
-      "http://*/*",
-      false
-    }
-  };
+      // all_urls
+      {"<all_urls>", "<all_urls>", true},
+      {"<all_urls>", "http://*/*", false}};
 
-  for (size_t i = 0; i < std::size(kEqualsTestCases); ++i) {
-    std::string message = kEqualsTestCases[i].pattern1;
+  for (const auto& entry : kEqualsTestCases) {
+    std::string message = entry.pattern1;
     message += " ";
-    message += kEqualsTestCases[i].pattern2;
+    message += entry.pattern2;
 
     URLPattern pattern1(URLPattern::SCHEME_ALL);
     URLPattern pattern2(URLPattern::SCHEME_ALL);
 
-    pattern1.Parse(kEqualsTestCases[i].pattern1);
-    pattern2.Parse(kEqualsTestCases[i].pattern2);
-    EXPECT_EQ(kEqualsTestCases[i].expected_equal, pattern1 == pattern2)
-        << message;
+    pattern1.Parse(entry.pattern1);
+    pattern2.Parse(entry.pattern2);
+    EXPECT_EQ(entry.expected_equal, pattern1 == pattern2) << message;
   }
 }
 

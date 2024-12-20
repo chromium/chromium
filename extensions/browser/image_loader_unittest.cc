@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/image_loader.h"
 
 #include <stddef.h>
+
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -190,14 +191,16 @@ TEST_F(ImageLoaderTest, MultipleImages) {
   ASSERT_TRUE(extension.get() != nullptr);
 
   std::vector<ImageLoader::ImageRepresentation> info_list;
-  int sizes[] = {extension_misc::EXTENSION_ICON_BITTY,
-                 extension_misc::EXTENSION_ICON_SMALLISH, };
-  for (size_t i = 0; i < std::size(sizes); ++i) {
+  static constexpr int sizes[] = {
+      extension_misc::EXTENSION_ICON_BITTY,
+      extension_misc::EXTENSION_ICON_SMALLISH,
+  };
+  for (const auto& entry : sizes) {
     ExtensionResource resource = IconsInfo::GetIconResource(
-        extension.get(), sizes[i], ExtensionIconSet::Match::kExactly);
+        extension.get(), entry, ExtensionIconSet::Match::kExactly);
     info_list.push_back(ImageLoader::ImageRepresentation(
         resource, ImageLoader::ImageRepresentation::RESIZE_WHEN_LARGER,
-        gfx::Size(sizes[i], sizes[i]), 1.f));
+        gfx::Size(entry, entry), 1.f));
   }
 
   ImageLoader loader;
@@ -233,14 +236,14 @@ TEST_F(ImageLoaderTest, LoadImageFamily) {
   ASSERT_TRUE(extension.get() != nullptr);
 
   std::vector<ImageLoader::ImageRepresentation> info_list;
-  int sizes[] = {extension_misc::EXTENSION_ICON_BITTY,
-                 extension_misc::EXTENSION_ICON_SMALLISH, };
-  for (size_t i = 0; i < std::size(sizes); ++i) {
+  static constexpr int sizes[] = {extension_misc::EXTENSION_ICON_BITTY,
+                                  extension_misc::EXTENSION_ICON_SMALLISH};
+  for (int size : sizes) {
     ExtensionResource resource = IconsInfo::GetIconResource(
-        extension.get(), sizes[i], ExtensionIconSet::Match::kExactly);
+        extension.get(), size, ExtensionIconSet::Match::kExactly);
     info_list.push_back(ImageLoader::ImageRepresentation(
         resource, ImageLoader::ImageRepresentation::NEVER_RESIZE,
-        gfx::Size(sizes[i], sizes[i]), 1.f));
+        gfx::Size(size, size), 1.f));
   }
 
   // Add a second icon of 200P which should get grouped with the smaller icon's
@@ -269,9 +272,9 @@ TEST_F(ImageLoaderTest, LoadImageFamily) {
   EXPECT_EQ(1, image_loaded_count());
 
   // Check that all images were loaded.
-  for (size_t i = 0; i < std::size(sizes); ++i) {
-    const gfx::Image* image = image_family_.GetBest(sizes[i], sizes[i]);
-    EXPECT_EQ(sizes[i], image->Width());
+  for (int size : sizes) {
+    const gfx::Image* image = image_family_.GetBest(size, size);
+    EXPECT_EQ(size, image->Width());
   }
 
   // Check the smaller image has 2 representations of different scale factors.

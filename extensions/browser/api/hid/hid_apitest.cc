@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <iterator>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -178,12 +174,13 @@ class HidApiTest : public ShellApiTest {
                  std::string serial_number) {
     std::vector<uint8_t> report_descriptor;
     if (report_id) {
-      report_descriptor.insert(
-          report_descriptor.begin(), kReportDescriptorWithIDs,
-          kReportDescriptorWithIDs + sizeof(kReportDescriptorWithIDs));
+      report_descriptor.insert(report_descriptor.begin(),
+                               std::begin(kReportDescriptorWithIDs),
+                               std::end(kReportDescriptorWithIDs));
     } else {
-      report_descriptor.insert(report_descriptor.begin(), kReportDescriptor,
-                               kReportDescriptor + sizeof(kReportDescriptor));
+      report_descriptor.insert(report_descriptor.begin(),
+                               std::begin(kReportDescriptor),
+                               std::end(kReportDescriptor));
     }
 
     std::vector<device::mojom::HidCollectionInfoPtr> collections;

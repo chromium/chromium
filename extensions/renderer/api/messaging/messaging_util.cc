@@ -117,8 +117,6 @@ const char kOnUserScriptConnectEvent[] = "runtime.onUserScriptConnect";
 const char kOnConnectExternalEvent[] = "runtime.onConnectExternal";
 const char kOnConnectNativeEvent[] = "runtime.onConnectNative";
 
-const int kNoFrameId = -1;
-
 std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
                                        v8::Local<v8::Value> value,
                                        mojom::SerializationFormat format,

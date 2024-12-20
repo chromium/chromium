@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/socket/socket.h"
 
 #include "base/functional/bind.h"
@@ -59,9 +54,11 @@ void Socket::WriteData() {
   WriteRequest& request = write_queue_.front();
 
   DCHECK(request.byte_count >= request.bytes_written);
-  io_buffer_write_ = base::MakeRefCounted<net::WrappedIOBuffer>(
-      base::span(request.io_buffer->data(), request.byte_count)
-          .subspan(request.bytes_written));
+  auto span = request.io_buffer->span()
+                  .subspan(0u, request.byte_count)
+                  .subspan(request.bytes_written);
+  io_buffer_write_ =
+      base::MakeRefCounted<net::WrappedIOBuffer>(std::move(span));
   int result = WriteImpl(
       io_buffer_write_.get(), io_buffer_write_->size(),
       base::BindOnce(&Socket::OnWriteComplete, base::Unretained(this)));

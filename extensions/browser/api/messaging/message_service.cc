@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/messaging/message_service.h"
 
 #include <stdint.h>
@@ -165,7 +160,7 @@ std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
                   extended_lifetime_urls.size());
 
   // Add default values.
-  for (const std::string& default_value : kDefaultSWExtendedLifetimeList) {
+  for (const char* default_value : kDefaultSWExtendedLifetimeList) {
     url::Origin origin = url::Origin::Create(GURL(default_value));
     origins.push_back(std::move(origin));
   }

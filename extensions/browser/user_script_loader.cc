@@ -72,9 +72,12 @@ bool GetDeclarationValue(std::string_view line,
     return false;
   }
 
-  std::string temp(line.substr(index + prefix.length()));
-  if (temp.empty() || !base::IsAsciiWhitespace(temp[0]))
+  std::string_view temp = line.substr(index + prefix.length(),
+                                      line.length() - index - prefix.length());
+
+  if (temp.empty() || !base::IsAsciiWhitespace(temp[0])) {
     return false;
+  }
 
   base::TrimWhitespaceASCII(temp, base::TRIM_ALL, value);
   return true;
@@ -106,20 +109,21 @@ bool UserScriptLoader::ParseMetadataHeader(std::string_view script_text,
   size_t line_end = line_start;
   bool in_metadata = false;
 
-  static const std::string_view kUserScriptBegin("// ==UserScript==");
-  static const std::string_view kUserScriptEng("// ==/UserScript==");
-  static const std::string_view kNamespaceDeclaration("// @namespace");
-  static const std::string_view kNameDeclaration("// @name");
-  static const std::string_view kVersionDeclaration("// @version");
-  static const std::string_view kDescriptionDeclaration("// @description");
-  static const std::string_view kIncludeDeclaration("// @include");
-  static const std::string_view kExcludeDeclaration("// @exclude");
-  static const std::string_view kMatchDeclaration("// @match");
-  static const std::string_view kExcludeMatchDeclaration("// @exclude_match");
-  static const std::string_view kRunAtDeclaration("// @run-at");
-  static const std::string_view kRunAtDocumentStartValue("document-start");
-  static const std::string_view kRunAtDocumentEndValue("document-end");
-  static const std::string_view kRunAtDocumentIdleValue("document-idle");
+  static constexpr std::string_view kUserScriptBegin("// ==UserScript==");
+  static constexpr std::string_view kUserScriptEng("// ==/UserScript==");
+  static constexpr std::string_view kNamespaceDeclaration("// @namespace");
+  static constexpr std::string_view kNameDeclaration("// @name");
+  static constexpr std::string_view kVersionDeclaration("// @version");
+  static constexpr std::string_view kDescriptionDeclaration("// @description");
+  static constexpr std::string_view kIncludeDeclaration("// @include");
+  static constexpr std::string_view kExcludeDeclaration("// @exclude");
+  static constexpr std::string_view kMatchDeclaration("// @match");
+  static constexpr std::string_view kExcludeMatchDeclaration(
+      "// @exclude_match");
+  static constexpr std::string_view kRunAtDeclaration("// @run-at");
+  static constexpr std::string_view kRunAtDocumentStartValue("document-start");
+  static constexpr std::string_view kRunAtDocumentEndValue("document-end");
+  static constexpr std::string_view kRunAtDocumentIdleValue("document-idle");
 
   while (line_start < script_text.length()) {
     line_end = script_text.find('\n', line_start);
