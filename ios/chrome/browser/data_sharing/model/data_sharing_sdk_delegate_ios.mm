@@ -44,7 +44,6 @@ void DataSharingSDKDelegateIOS::ReadGroups(
   for (auto group_param : params.group_params()) {
     ShareKitReadGroupParamConfiguration* param =
         [[ShareKitReadGroupParamConfiguration alloc] init];
-    param.groupID = base::SysUTF8ToNSString(group_param.group_id());
     param.collabID = base::SysUTF8ToNSString(group_param.group_id());
     param.consistencyToken =
         base::SysUTF8ToNSString(group_param.consistency_token());
