@@ -889,7 +889,7 @@ test("components_unittests") {
 repack("components_tests_pak") {
   sources = [
     "$root_gen_dir/components/arc/input_overlay_resources.pak",
-    "$root_gen_dir/components/autofill/core/browser/autofill_address_rewriter_resources.pak",
+    "$root_gen_dir/components/autofill/core/browser/geo/autofill_address_rewriter_resources.pak",
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/metrics/metrics_server_urls.pak",
     "$root_gen_dir/components/omnibox/resources/omnibox_pedal_synonyms_en-US.pak",

@@ -919,7 +919,7 @@
   # END chromeos/ section.
 
   # START components/ section.
-  "components/autofill/core/browser/autofill_address_rewriter_resources.grd":{
+  "components/autofill/core/browser/geo/autofill_address_rewriter_resources.grd":{
     "META": {"align": 1000},
     "includes": [7000]
   },

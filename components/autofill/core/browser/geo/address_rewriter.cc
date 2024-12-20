@@ -12,7 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/grit/autofill_address_rewriter_resources_map.h"
+#include "components/autofill/core/browser/geo/grit/autofill_address_rewriter_resources_map.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"

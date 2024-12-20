@@ -15,14 +15,14 @@ if (is_android) {
 }
 
 grit("autofill_address_rewriter_resources") {
-  source = "autofill_address_rewriter_resources.grd"
+  source = "geo/autofill_address_rewriter_resources.grd"
   outputs = [
     "grit/autofill_address_rewriter_resources.h",
     "grit/autofill_address_rewriter_resources_map.cc",
     "grit/autofill_address_rewriter_resources_map.h",
     "autofill_address_rewriter_resources.pak",
   ]
-  output_dir = "$root_gen_dir/components/autofill/core/browser"
+  output_dir = "$root_gen_dir/components/autofill/core/browser/geo"
 }
 
 declare_args() {
@@ -65,8 +65,6 @@ proto_library("amount_extraction_heuristic_regexes_proto") {
 
 static_library("browser") {
   sources = [
-    "autofill_address_util.cc",
-    "autofill_address_util.h",
     "autofill_browser_util.cc",
     "autofill_browser_util.h",
     "autofill_client.cc",
@@ -546,6 +544,8 @@ static_library("browser") {
     "suggestions/suggestion_type.h",
     "suggestions/suggestions_context.cc",
     "suggestions/suggestions_context.h",
+    "ui/addresses/autofill_address_util.cc",
+    "ui/addresses/autofill_address_util.h",
     "ui/autofill_external_delegate.cc",
     "ui/autofill_external_delegate.h",
     "ui/autofill_image_fetcher_base.h",
@@ -1126,7 +1126,6 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "autofill_address_util_unittest.cc",
     "autofill_feedback_data_unittest.cc",
     "autofill_field_unittest.cc",
     "autofill_manager_unittest.cc",
@@ -1292,6 +1291,7 @@ source_set("unit_tests") {
     "studies/autofill_experiments_unittest.cc",
     "suggestions/addresses/address_suggestion_generator_unittest.cc",
     "suggestions/payments/payments_suggestion_generator_unittest.cc",
+    "ui/addresses/autofill_address_util_unittest.cc",
     "ui/autofill_external_delegate_unittest.cc",
     "ui/country_combobox_model_unittest.cc",
     "ui/payments/autofill_error_dialog_controller_impl_unittest.cc",
