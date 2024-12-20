@@ -960,12 +960,9 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
   if (new_scaled_safe_area != applied_safe_area_insets_ || force_update) {
     applied_safe_area_insets_ = new_scaled_safe_area;
 
-    // TODO: Need to account for the browser zoom factor here. Convert the
-    // safe area to CSS pixels instead of DIPs for SetSafeAreaEnvVariables().
-    float dip_scale = chrome_client_->GetScreenInfo(*DeprecatedLocalMainFrame())
-                          .device_scale_factor;
+    float zoom_factor = DeprecatedLocalMainFrame()->LayoutZoomFactor();
     gfx::Insets new_safe_area =
-        ToRoundedInsets(ScaleInsets(new_scaled_safe_area, 1.0f / dip_scale));
+        ToRoundedInsets(ScaleInsets(new_scaled_safe_area, 1.0f / zoom_factor));
     SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
   }
 }

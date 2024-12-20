@@ -33,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
@@ -426,6 +427,20 @@ TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollDown)) {
 
   EXPECT_FLOAT_EQ(0.f, web_view->GetBrowserControls().BottomShownRatio());
   EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
+}
+
+TEST_F(BrowserControlsTest, SafeAreaInsetAccountsForBrowserZoom) {
+  ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
+
+  WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
+  SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
+
+  web_view->MainFrameViewWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      0, 50.f, true);
+  CompositeForTest();
+  EXPECT_EQ("15px", ResolveSafeAreaInsetsBottom());
 }
 
 // Scrolling up should show browser controls.
