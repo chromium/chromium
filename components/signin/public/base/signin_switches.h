@@ -31,10 +31,6 @@ namespace switches {
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSkipCheckForAccountManagementOnSignin);
 
-// Feature flag to hide signin promo in settings page.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kHideSettingsSignInPromo);
-
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref);
 
