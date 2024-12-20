@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/forms/control_key.h"
 #include "third_party/blink/renderer/core/html/forms/file_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -37,10 +38,6 @@
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
-namespace blink {
-class ControlKey;
-}
 
 namespace blink {
 
@@ -115,50 +112,6 @@ FormControlState FormControlState::Deserialize(
     state.Append(state_vector[index++]);
   return state;
 }
-
-// ----------------------------------------------------------------------------
-
-class ControlKey {
- public:
-  ControlKey(const AtomicString& name, const AtomicString& type);
-  ControlKey(const ControlKey&);
-  ControlKey& operator=(const ControlKey&);
-
-  const AtomicString& GetName() const { return name_; }
-  const AtomicString& GetType() const { return type_; }
-
-  // Hash table deleted values, which are only constructed and never copied or
-  // destroyed.
-  ControlKey(WTF::HashTableDeletedValueType) : type_(g_star_atom) {}
-  bool IsHashTableDeletedValue() const { return type_ == g_star_atom; }
-
- private:
-  AtomicString name_;
-  AtomicString type_;
-
-  friend struct ControlKeyHashTraits;
-};
-
-ControlKey::ControlKey(const AtomicString& name, const AtomicString& type)
-    : name_(name), type_(type) {}
-
-ControlKey::ControlKey(const ControlKey& other)
-    : name_(other.GetName()), type_(other.GetType()) {
-}
-
-ControlKey& ControlKey::operator=(const ControlKey& other) {
-  name_ = other.GetName();
-  type_ = other.GetType();
-  return *this;
-}
-
-inline bool operator==(const ControlKey& a, const ControlKey& b) {
-  return a.GetName() == b.GetName() && a.GetType() == b.GetType();
-}
-
-struct ControlKeyHashTraits
-    : TwoFieldsHashTraits<ControlKey, &ControlKey::name_, &ControlKey::type_> {
-};
 
 // ----------------------------------------------------------------------------
 
@@ -240,14 +193,15 @@ void SavedFormState::SerializeTo(Vector<String>& state_vector) const {
 void SavedFormState::AppendControlState(const AtomicString& name,
                                         const AtomicString& type,
                                         const FormControlState& state) {
-  ControlKey key(name, type);
-  ControlStateMap::iterator it = state_for_new_controls_.find(key);
+  ControlStateMap::iterator it =
+      state_for_new_controls_.Find<ControlKeyTranslator, ControlKeyData>(
+          {name, type});
   if (it != state_for_new_controls_.end()) {
     it->value.push_back(state);
   } else {
     Deque<FormControlState> state_list;
     state_list.push_back(state);
-    state_for_new_controls_.Set(key, state_list);
+    state_for_new_controls_.Set(ControlKey(name, type), state_list);
   }
   control_state_count_++;
 }
@@ -257,7 +211,8 @@ FormControlState SavedFormState::TakeControlState(const AtomicString& name,
   if (state_for_new_controls_.empty())
     return FormControlState();
   ControlStateMap::iterator it =
-      state_for_new_controls_.find(ControlKey(name, type));
+      state_for_new_controls_.Find<ControlKeyTranslator, ControlKeyData>(
+          {name, type});
   if (it == state_for_new_controls_.end())
     return FormControlState();
   DCHECK_GT(it->value.size(), 0u);
