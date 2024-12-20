@@ -42,9 +42,22 @@ syncer::LocalDataDescription GetFakeLocalData(syncer::DataType type,
   for (int i = 0; i < item_count; ++i) {
     syncer::LocalDataItemModel item;
     item.id = syncer::LocalDataItemModel::DataId(base::ToString(i));
-    item.icon_url = type == syncer::DataType::PASSWORDS
-                        ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
-                        : GURL();
+
+    switch (type) {
+      case syncer::DataType::PASSWORDS:
+        item.icon = syncer::LocalDataItemModel::PageUrlIcon(
+            GURL("https://chromium.org"));
+        break;
+      case syncer::DataType::BOOKMARKS:
+        item.icon = syncer::LocalDataItemModel::FolderIcon();
+        break;
+      case syncer::DataType::CONTACT_INFO:
+        item.icon = syncer::LocalDataItemModel::NoIcon();
+        break;
+      default:
+        NOTREACHED();
+    }
+
     item.title =
         data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i));
     item.subtitle =

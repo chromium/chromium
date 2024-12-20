@@ -41,9 +41,28 @@ struct LocalDataItemModel {
   // Reprensents the id of the underlying data.
   DataId id;
 
-  // Icon url for the icon of the item model. If empty the the icon will be
-  // hidden.
-  GURL icon_url;
+  // The Icon class encapsulates the different representations of an icon to be
+  // displayed. It contains one of the following types.
+  //
+  // NoIcon:
+  //   No icon is displayed.
+  // PageUrlIcon:
+  //   A page URL for which a favicon should be displayed.
+  //   Example:
+  //   https://www.chromium.org
+  // FolderIcon:
+  //   The folder icon.
+  struct NoIcon {
+    bool operator==(const NoIcon& other) const = default;
+  };
+  using PageUrlIcon = GURL;
+  struct FolderIcon {
+    bool operator==(const FolderIcon& other) const = default;
+  };
+  using Icon = absl::variant<NoIcon, PageUrlIcon, FolderIcon>;
+
+  // This is default-constructed as the NoIcon variant.
+  Icon icon;
 
   // Used as the primary text of the item model.
   std::string title;

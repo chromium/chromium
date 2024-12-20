@@ -140,18 +140,14 @@ BookmarkLocalDataBatchUploader::DataItemModelFromNode(
 
   item.id = node->id();
   if (node->is_folder()) {
-    // TODO(crbug.com/380818406): set the static folder icon in item.icon_url.
+    item.icon = syncer::LocalDataItemModel::FolderIcon();
     item.title = base::UTF16ToUTF8(node->GetTitledUrlNodeTitle());
     item.subtitle = l10n_util::GetPluralStringFUTF8(
         IDS_BULK_UPLOAD_BOOKMARK_FOLDER_SUBTITLE, bookmarked_urls_count);
   } else {
     CHECK(node->is_url());
     CHECK_EQ(bookmarked_urls_count, 1);
-
-    // TODO(crbug.com/380818406): fallback to the default icon.
-    if (node->icon_url()) {
-      item.icon_url = *node->icon_url();
-    }
+    item.icon = syncer::LocalDataItemModel::PageUrlIcon(node->url());
     item.title = base::UTF16ToUTF8(node->GetTitle());
   }
 

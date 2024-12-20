@@ -29,6 +29,7 @@ using ::testing::Eq;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::VariantWith;
 
 // Checks whether the item matches a LocalDataItemModel for a bookmark with the
 // given title.
@@ -169,7 +170,11 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionOnlyHasLocalData) {
   EXPECT_EQ(std::get<int64_t>(item.id), local_node->id());
   EXPECT_EQ(item.title, "Local");
   EXPECT_THAT(item.subtitle, IsEmpty());
-  EXPECT_EQ(item.icon_url, GURL());
+  // This node does not have a favicon. As a fallback, the item bookmark has the
+  // icon URL set to the node's link target URL.
+  // The UI will use the default placeholder 'globe' icon.
+  EXPECT_THAT(item.icon, VariantWith<syncer::LocalDataItemModel::PageUrlIcon>(
+                             GURL("http://local.com/")));
 
   EXPECT_EQ(description.Get().item_count, 1u);
   EXPECT_EQ(description.Get().domain_count, 1u);
