@@ -347,8 +347,16 @@ void AXElementWrapper::SetAttributeValue(NSString* attribute, id value) const {
 }
 
 NSArray* AXElementWrapper::ActionNames() const {
-  if (IsNSAccessibilityElement())
+  // The NSAccessibility protocol implementation in AXPlatformNodeCocoa no
+  // longer exposes old-style actions. Instead, it provides
+  // the internalAccessibilityActionNames method for backward
+  // compatibility in testing.
+  if (IsNSAccessibilityElement()) {
+    if ([node_ isKindOfClass:[AXPlatformNodeCocoa class]]) {
+      return [node_ internalAccessibilityActionNames];
+    }
     return [node_ accessibilityActionNames];
+  }
 
   if (IsAXUIElement()) {
     base::apple::ScopedCFTypeRef<CFArrayRef> attributes_ref;

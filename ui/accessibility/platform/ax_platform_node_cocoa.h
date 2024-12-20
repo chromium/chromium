@@ -79,6 +79,9 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // the internal accessibility tree as opposed to the platform tree.
 - (ax::mojom::Role)internalRole;
 
+// Returns true if the given action is supported on the node.
+- (BOOL)hasAction:(ax::mojom::Action)action;
+
 // Returns all accessibility attribute names. This is analogous to the
 // deprecated NSAccessibility accessibilityAttributeNames method, which
 // functions identically when the migration flag is off (see
@@ -89,6 +92,8 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // Returns all accessibility parameterized attribute names, similar to
 // internalAccessibilityAttributeNames.
 - (NSMutableArray*)internalAccessibilityParameterizedAttributeNames;
+
+- (NSMutableArray*)internalAccessibilityActionNames;
 
 // Returns YES if `method` has been implemented in the transition to the new
 // accessibility API, and is supported by this node (based on its role).

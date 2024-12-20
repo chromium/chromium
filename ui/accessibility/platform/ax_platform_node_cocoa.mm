@@ -305,6 +305,18 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return dict;
 }
 
+// Similar to newAccessibilityAPIMethodToAttributeMap but for actions.
++ (NSDictionary*)newAccessibilityAPIMethodToActionMap {
+  static NSDictionary* dict = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dict = @{
+      @"accessibilityPerformPress" : NSAccessibilityPressAction,
+    };
+  });
+  return dict;
+}
+
 // Returns the set of attributes available through the new Cocoa
 // accessibility API.
 + (NSSet<NSString*>*)attributesAvailableThroughNewAccessibilityAPI {
@@ -318,12 +330,34 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return set;
 }
 
+// Returns the set of actions available through the new Cocoa
+// accessibility API.
++ (NSSet<NSString*>*)actionsAvailableThroughNewAccessibilityAPI {
+  static NSSet<NSString*>* set = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    set = [NSSet<NSString*>
+        setWithArray:[[self newAccessibilityAPIMethodToActionMap] allValues]];
+  });
+  return set;
+}
+
 // Returns YES if `attribute` is available through a method implemented for
 // the new accessibility API.
 + (BOOL)isAttributeAvailableThroughNewAccessibilityAPI:(NSString*)attribute {
   if (features::IsMacAccessibilityAPIMigrationEnabled()) {
     return [[self attributesAvailableThroughNewAccessibilityAPI]
         containsObject:attribute];
+  }
+  return NO;
+}
+
+// Returns YES if `action` is available through a method implemented for
+// the new accessibility API.
++ (BOOL)isActionAvailableThroughNewAccessibilityAPI:(NSString*)action {
+  if (features::IsMacAccessibilityAPIMigrationEnabled()) {
+    return [[self actionsAvailableThroughNewAccessibilityAPI]
+        containsObject:action];
   }
   return NO;
 }
@@ -367,6 +401,14 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
     attributeNames = [self internalAccessibilityParameterizedAttributeNames];
     return [attributeNames containsObject:attribute];
+  }
+
+  // Check whether the corresponding action is supported for this node.
+  NSString* action =
+      [[[self class] newAccessibilityAPIMethodToActionMap] objectForKey:method];
+  if (action) {
+    NSArray* actionNames = [self internalAccessibilityActionNames];
+    return [actionNames containsObject:action];
   }
 
   return NO;
@@ -971,6 +1013,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return ax::mojom::Role::kUnknown;
 }
 
+- (BOOL)hasAction:(ax::mojom::Action)action {
+  return _node->HasAction(action) || HasImplicitAction(*_node, action);
+}
+
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id {
   ui::AXPlatformNode* cell = _node->GetDelegate()->GetFromNodeID(id);
   if (cell)
@@ -1270,8 +1316,27 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 // called by AppKit internally and b) not implemented by NSAccessibilityElement,
 // so this class needs its own implementations.
 - (NSArray*)accessibilityActionNames {
-  if (!_node)
-    return @[];
+  TRACE_EVENT1("accessibility", "AXPlatformNodeCocoa::accessibilityActionNames",
+               "role=", ui::ToString([self internalRole]));
+
+  // Exclude actions available through the new accessibility API.
+  NSMutableArray* actions = [self internalAccessibilityActionNames];
+  if (features::IsMacAccessibilityAPIMigrationEnabled()) {
+    [actions
+        filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                              id evaluatedObject,
+                                              NSDictionary* bindings) {
+          return ![[[self class] actionsAvailableThroughNewAccessibilityAPI]
+              containsObject:evaluatedObject];
+        }]];
+  }
+  return actions;
+}
+
+- (NSMutableArray*)internalAccessibilityActionNames {
+  if (![self instanceActive]) {
+    return [NSMutableArray array];
+  }
 
   NSMutableArray* axActions = [NSMutableArray array];
   const ui::CocoaActionList& action_list = GetCocoaActionList();
@@ -1315,6 +1380,18 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   if (data.action != ax::mojom::Action::kNone)
     _node->GetDelegate()->AccessibilityPerformAction(data);
+}
+
+- (BOOL)accessibilityPerformPress {
+  ax::mojom::Action action = ax::mojom::Action::kDoDefault;
+  if (![self hasAction:action]) {
+    return NO;
+  }
+
+  ui::AXActionData data;
+  data.action = action;
+  _node->GetDelegate()->AccessibilityPerformAction(data);
+  return YES;
 }
 
 - (NSMutableArray*)internalAccessibilityAttributeNames {

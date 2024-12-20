@@ -2429,12 +2429,10 @@ bool ui::IsNSRange(id value) {
 }
 
 // Returns an array of action names that this object will respond to.
-- (NSArray*)accessibilityActionNames {
-  TRACE_EVENT1("accessibility",
-               "BrowserAccessibilityCocoa::accessibilityActionNames",
-               "role=", ui::ToString([self internalRole]));
-  if (![self instanceActive])
-    return nil;
+- (NSMutableArray*)internalAccessibilityActionNames {
+  if (![self instanceActive]) {
+    return [NSMutableArray array];
+  }
 
   NSMutableArray* actions = [NSMutableArray
       arrayWithObjects:NSAccessibilityShowMenuAction,
@@ -2707,6 +2705,7 @@ bool ui::IsNSRange(id value) {
   BrowserAccessibility* actionTarget = [self actionTarget];
   BrowserAccessibilityManager* manager = actionTarget->manager();
   if ([action isEqualToString:NSAccessibilityPressAction]) {
+    // LINT.IfChange(NSAccessibilityPressAction)
     ui::AXNode* node = actionTarget->node();
     if (!node || !actionTarget->HasDefaultAction()) {
       return;
@@ -2736,6 +2735,7 @@ bool ui::IsNSRange(id value) {
       data.SetCheckedState(newCheckedState);
     }
     node->SetData(data);  // Set the data back in the node.
+    // LINT.ThenChange(accessibilityPerformPress)
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
     manager->ShowContextMenu(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
@@ -2745,6 +2745,46 @@ bool ui::IsNSRange(id value) {
   } else if ([action isEqualToString:NSAccessibilityDecrementAction]) {
     manager->Decrement(*actionTarget);
   }
+}
+
+// LINT.IfChange(accessibilityPerformPress)
+- (BOOL)accessibilityPerformPress {
+  if (![self instanceActive]) {
+    return NO;
+  }
+
+  BrowserAccessibility* actionTarget = [self actionTarget];
+  ui::AXNode* node = actionTarget->node();
+  if (!node || !actionTarget->HasDefaultAction()) {
+    return NO;
+  }
+
+  BrowserAccessibilityManager* manager = actionTarget->manager();
+  manager->DoDefaultAction(*actionTarget);
+  if (actionTarget->GetData().GetRestriction() !=
+          ax::mojom::Restriction::kNone ||
+      ![self isCheckable]) {
+    return NO;
+  }
+
+  // Hack: preemptively set the checked state to what it should become,
+  // otherwise VoiceOver will very likely report the old, incorrect state to
+  // the user as it requests the value too quickly.
+  AXNodeData data(node->TakeData());  // Temporarily take data.
+  if (data.role == ax::mojom::Role::kRadioButton) {
+    data.SetCheckedState(ax::mojom::CheckedState::kTrue);
+  } else if (data.role == ax::mojom::Role::kCheckBox ||
+             data.role == ax::mojom::Role::kSwitch ||
+             data.role == ax::mojom::Role::kToggleButton) {
+    ax::mojom::CheckedState checkedState = data.GetCheckedState();
+    ax::mojom::CheckedState newCheckedState =
+        checkedState == ax::mojom::CheckedState::kFalse
+            ? ax::mojom::CheckedState::kTrue
+            : ax::mojom::CheckedState::kFalse;
+    data.SetCheckedState(newCheckedState);
+  }
+  node->SetData(data);  // Set the data back in the node.
+  return YES;
 }
 
 // Returns the description of the given action.
@@ -2758,6 +2798,7 @@ bool ui::IsNSRange(id value) {
 
   return NSAccessibilityActionDescription(action);
 }
+// LINT.ThenChange(NSAccessibilityPressAction)
 
 // Sets an override value for a specific accessibility attribute.
 // This class does not support this.
