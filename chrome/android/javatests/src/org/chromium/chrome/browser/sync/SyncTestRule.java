@@ -37,7 +37,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -267,14 +266,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                 mSigninTestRule.addTestAccountThenSigninAndEnableSync(/* syncService= */ null);
         SyncTestUtil.waitForSyncTransportActive();
         return accountInfo;
-    }
-
-    public void signinAndEnableSync(final CoreAccountInfo accountInfo) {
-        SigninTestUtil.signinAndEnableSync(accountInfo, mSyncService);
-        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
-        enableUKM();
-        SyncTestUtil.waitForSyncFeatureActive();
-        SyncTestUtil.triggerSyncAndWaitForCompletion();
     }
 
     public void signOut() {

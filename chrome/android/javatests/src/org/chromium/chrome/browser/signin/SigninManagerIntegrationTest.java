@@ -28,7 +28,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -274,10 +273,9 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
     public void testPrimaryAccountRemoval_signsOut() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        SigninTestUtil.signinAndEnableSync(TestAccounts.ACCOUNT1, /* syncService= */ null);
+        SigninTestUtil.signin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -298,10 +296,9 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
     public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        SigninTestUtil.signinAndEnableSync(TestAccounts.ACCOUNT1, /* syncService= */ null);
+        SigninTestUtil.signin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -321,7 +318,7 @@ public class SigninManagerIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC).getEmail(),
+                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail(),
                             renamedAccount.getEmail());
                     assertEquals(
                             SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),

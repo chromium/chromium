@@ -127,7 +127,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
@@ -142,11 +141,9 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.components.sync.SyncService;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
-import java.util.HashSet;
 
 /** Test for {@link MainSettings}. Main purpose is to have a quick confidence check on the xml. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -647,22 +644,6 @@ public class MainSettingsFragmentTest {
                         .getRootView();
         mRenderTestRule.render(
                 view, "main_settings_signed_in_identity_error_with_replace_sync_promos");
-    }
-
-    @Test
-    @SmallTest
-    public void testSyncRowSummaryWhenNoDataTypeSynced() {
-        CoreAccountInfo account = mSyncTestRule.addTestAccount();
-        final SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
-        SigninTestUtil.signinAndEnableSync(account, syncService);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    syncService.setSelectedTypes(false, new HashSet<>());
-                });
-
-        startSettings();
-
-        onView(withText(R.string.sync_data_types_off)).check(matches(isDisplayed()));
     }
 
     @Test
