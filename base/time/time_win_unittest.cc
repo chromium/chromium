@@ -187,14 +187,21 @@ TEST(TimeTicks, TimeGetTimeCaps) {
 }
 
 TEST(TimeTicks, QueryPerformanceFrequency) {
-  // Test some basic assumptions that we expect about QPC.
+  // Test some basic assumptions that we expect about QPF.
 
   LARGE_INTEGER frequency;
-  BOOL rv = QueryPerformanceFrequency(&frequency);
+  BOOL rv;
+  rv = QueryPerformanceFrequency(&frequency);
   EXPECT_EQ(TRUE, rv);
   EXPECT_GT(frequency.QuadPart, 1000000);  // Expect at least 1MHz
   printf("QueryPerformanceFrequency is %5.2fMHz\n",
          frequency.QuadPart / 1000000.0);
+
+  LARGE_INTEGER frequency_next;
+  rv = QueryPerformanceFrequency(&frequency_next);
+  EXPECT_EQ(TRUE, rv);
+  // Expect that the frequency doesn't change.
+  EXPECT_EQ(frequency_next.QuadPart, frequency.QuadPart);
 }
 
 TEST(TimeTicks, TimerPerformance) {

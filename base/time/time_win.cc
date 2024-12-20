@@ -174,6 +174,18 @@ int64_t QPCNowRaw() {
   return perf_counter_now.QuadPart;
 }
 
+#if !defined(ARCH_CPU_ARM64)
+// Returns the performance frequency.
+int64_t QPFRaw() {
+  LARGE_INTEGER perf_counter_frequency = {};
+  // According to the MSDN documentation for QueryPerformanceFrequency(), this
+  // will never fail on systems that run XP or later.
+  // https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency
+  ::QueryPerformanceFrequency(&perf_counter_frequency);
+  return perf_counter_frequency.QuadPart;
+}
+#endif
+
 bool SafeConvertToWord(int in, WORD* out) {
   CheckedNumeric<WORD> result = in;
   *out = result.ValueOrDefault(std::numeric_limits<WORD>::max());
@@ -791,6 +803,7 @@ double TSCTicksPerSecond() {
 
   static const uint64_t tsc_initial = __rdtsc();
   static const int64_t perf_counter_initial = QPCNowRaw();
+  static const int64_t perf_counter_frequency = QPFRaw();
 
   // Make a another reading of the TSC and the performance counter every time
   // that this function is called.
@@ -806,15 +819,10 @@ double TSCTicksPerSecond() {
   //   accurate the computed TSC frequency will be. The 50 ms value was
   //   chosen because local benchmarks show that it allows us to get a
   //   stddev of less than 1 tick/us between multiple runs.
-  // Note: According to the MSDN documentation for QueryPerformanceFrequency(),
-  //   this will never fail on systems that run XP or later.
-  //   https://msdn.microsoft.com/library/windows/desktop/ms644905.aspx
-  LARGE_INTEGER perf_counter_frequency = {};
-  ::QueryPerformanceFrequency(&perf_counter_frequency);
   DCHECK_GE(perf_counter_now, perf_counter_initial);
   const int64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
   const double elapsed_time_seconds =
-      perf_counter_ticks / static_cast<double>(perf_counter_frequency.QuadPart);
+      perf_counter_ticks / static_cast<double>(perf_counter_frequency);
 
   constexpr double kMinimumEvaluationPeriodSeconds = 0.05;
   if (elapsed_time_seconds < kMinimumEvaluationPeriodSeconds)
