@@ -41,6 +41,11 @@ typedef DWORD ULONG;
 typedef unsigned short WORD;
 typedef WORD UWORD;
 typedef WORD ATOM;
+#if defined(_WIN64)
+typedef int64_t PA_LONG_PTR, *PA_PLONG_PTR;
+#else
+typedef int32_t PA_LONG_PTR, *PA_PLONG_PTR;
+#endif
 
 // Forward declare some Windows struct/typedef sets.
 
@@ -52,6 +57,16 @@ typedef struct _FILETIME FILETIME;
 struct PA_CHROME_SRWLOCK {
   PVOID Ptr;
 };
+
+// Define some commonly used Windows constants. Note that the layout of these
+// macros - including internal spacing - must be 100% consistent with windows.h.
+
+// clang-format off
+
+#ifndef INVALID_HANDLE_VALUE
+// Work around there being two slightly different definitions in the SDK.
+#define INVALID_HANDLE_VALUE ((HANDLE)(PA_LONG_PTR)-1)
+#endif
 
 // The trailing white-spaces after this macro are required, for compatibility
 // with the definition in winnt.h.

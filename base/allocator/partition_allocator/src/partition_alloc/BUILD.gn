@@ -600,6 +600,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/debug/stack_trace.cc",
       "partition_alloc_base/debug/stack_trace.h",
       "partition_alloc_base/export_template.h",
+      "partition_alloc_base/files/platform_file.h",
       "partition_alloc_base/immediate_crash.h",
       "partition_alloc_base/log_message.cc",
       "partition_alloc_base/log_message.h",
