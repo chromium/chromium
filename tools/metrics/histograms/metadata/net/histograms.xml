@@ -411,6 +411,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.Experimental.Read.EntryContentSize" units="bytes"
+    expires_after="2025-05-17">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records the size of an HTTP cache entry's content section, every time the
+    content of the entry is read from the cache.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.Experimental.Read.EntryResponseInfoSize"
+    units="bytes" expires_after="2025-05-17">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records the size of an HTTP cache entry's response info section, every time
+    the content of the entry is read from the cache.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.Experimental.Read.EntryTotalSize" units="bytes"
+    expires_after="2025-05-17">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records the total size (header + content) of an HTTP cache entry, every time
+    the content of the entry is read from the cache.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.IsNoStore{Type}" enum="Boolean"
     expires_after="2025-04-27">
   <owner>bashi@chromium.org</owner>

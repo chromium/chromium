@@ -2542,6 +2542,8 @@ int HttpCache::Transaction::DoCacheReadData() {
                                read_buf_len_, io_callback_);
   }
 
+  RecordEntrySizeHistograms(*entry_->GetEntry());
+
   BeginDiskCacheAccessTimeCount();
   return entry_->GetEntry()->ReadData(kResponseContentIndex, read_offset_,
                                       read_buf_.get(), read_buf_len_,
@@ -4099,6 +4101,33 @@ void HttpCache::Transaction::EndDiskCacheAccessTimeCount(
       break;
   }
   last_disk_cache_access_start_time_ = TimeTicks();
+}
+
+void HttpCache::Transaction::RecordEntrySizeHistograms(
+    const disk_cache::Entry& entry) {
+  // The comment in Simple Cache's EntryMetadata::SetEntrySize specifies the max
+  // size of entries as 1/8th of the cache. There are multiple cache backends
+  // and some active experiments around cache sizes, so this could mean
+  // different max entry sizes in practice. The main goal of these histograms
+  // being to evaluate the prevalence of "large" vs "small" entries, and a rough
+  // estimate of entry size distributions, capping at 1/8th of the size under
+  // the latest `ChangeDiskCacheSize` experiment is reasonable.
+  static constexpr size_t kMaxEntrySize{160 * 1024 * 1024};
+
+  auto header_size = entry.GetDataSize(kResponseInfoIndex);
+  auto content_size = entry.GetDataSize(kResponseContentIndex);
+
+  // UMA histograms starting at 1 will automatically get a [0, 1[ underflow
+  // bucket. Use histogram macros instead of histogram functions since these
+  // will be recorded often.
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "HttpCache.Experimental.Read.EntryResponseInfoSize", header_size, 1,
+      kMaxEntrySize, 100);
+  UMA_HISTOGRAM_CUSTOM_COUNTS("HttpCache.Experimental.Read.EntryContentSize",
+                              content_size, 1, kMaxEntrySize, 100);
+  UMA_HISTOGRAM_CUSTOM_COUNTS("HttpCache.Experimental.Read.EntryTotalSize",
+                              header_size + content_size, 1, kMaxEntrySize,
+                              100);
 }
 
 }  // namespace net

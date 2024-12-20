@@ -583,6 +583,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void BeginDiskCacheAccessTimeCount();
   void EndDiskCacheAccessTimeCount(DiskCacheAccessType type);
 
+  void RecordEntrySizeHistograms(const disk_cache::Entry& entry);
+
   State next_state_{STATE_NONE};
 
   // Set when a HTTPCache transaction is pending in parallel with other IO.
