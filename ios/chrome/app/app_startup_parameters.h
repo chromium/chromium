@@ -14,7 +14,9 @@ enum class ApplicationModeForTabOpening {
   NORMAL,
   INCOGNITO,
   CURRENT,
-  UNDETERMINED
+  UNDETERMINED,
+  // An incognito mode setted by app switcher.
+  APP_SWITCHER_INCOGNITO,
 };
 
 enum TabOpeningPostOpeningAction {

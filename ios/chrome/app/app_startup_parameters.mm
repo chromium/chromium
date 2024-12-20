@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/public/provider/chrome/browser/application_mode_fetcher/application_mode_fetcher_api.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -50,7 +51,9 @@
     _externalURL = externalURL;
     _completeURL = completeURL;
     _applicationMode = mode;
-    _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+    _applicationModeRequestStatus =
+        forceApplicationMode ? ApplicationModeRequestStatus::kAvailable
+                             : ApplicationModeRequestStatus::kUnavailable;
     _forceApplicationMode = forceApplicationMode;
   }
   return self;
@@ -67,7 +70,9 @@
     _completeURL = completeURL;
     _sourceAppID = [sourceAppID copy];
     _applicationMode = mode;
-    _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+    _applicationModeRequestStatus =
+        forceApplicationMode ? ApplicationModeRequestStatus::kAvailable
+                             : ApplicationModeRequestStatus::kUnavailable;
     _forceApplicationMode = forceApplicationMode;
   }
   return self;
@@ -204,18 +209,25 @@
 - (void)requestApplicationModeWithBlock:(AppModeRequestBlock)block {
   switch (_applicationModeRequestStatus) {
     case ApplicationModeRequestStatus::kAvailable:
+      CHECK(!_pendingBlocks);
       block(_applicationMode);
       break;
     case ApplicationModeRequestStatus::kRequested:
-      NOTREACHED();
       CHECK(_pendingBlocks);
       [_pendingBlocks addObject:block];
       break;
     case ApplicationModeRequestStatus::kUnavailable: {
-      NOTREACHED();
       CHECK(!_pendingBlocks);
       _pendingBlocks = [[NSMutableArray alloc] init];
       [_pendingBlocks addObject:block];
+      __weak __typeof(self) weakSelf = self;
+      auto callback = base::BindOnce(
+          [](AppStartupParameters* startupParams, bool isAppSwitcherIncognito) {
+            [startupParams handleApplicationModeRequest:isAppSwitcherIncognito];
+          },
+          weakSelf);
+      ios::provider::FetchApplicationMode(_externalURL, _sourceAppID,
+                                          std::move(callback));
       break;
     }
   }
@@ -240,6 +252,18 @@
 - (ApplicationModeForTabOpening)applicationMode {
   CHECK(!base::FeatureList::IsEnabled(kChromeStartupParametersAsync));
   return _applicationMode;
+}
+
+- (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito {
+  _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+  if (isAppSwitcherIncognito) {
+    _applicationMode = ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO;
+  }
+
+  for (AppModeRequestBlock block in _pendingBlocks) {
+    block(_applicationMode);
+  }
+  _pendingBlocks = nil;
 }
 
 @end
