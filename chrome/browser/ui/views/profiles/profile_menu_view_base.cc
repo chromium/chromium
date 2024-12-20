@@ -284,11 +284,13 @@ class AvatarImageView : public views::ImageView {
                   const ui::ImageModel& management_badge,
                   const ProfileMenuViewBase* root_view,
                   int image_size,
-                  int border_size)
+                  int border_size,
+                  bool has_dotted_ring)
       : avatar_image_(avatar_image),
         management_badge_(management_badge),
         image_size_(image_size),
         border_size_(border_size),
+        has_dotted_ring_(has_dotted_ring),
         root_view_(root_view) {
     if (avatar_image_.IsEmpty()) {
       // This can happen if the account image hasn't been fetched yet, if there
@@ -304,24 +306,33 @@ class AvatarImageView : public views::ImageView {
     constexpr int kBadgePadding = 2;
     DCHECK(!avatar_image_.IsEmpty());
     gfx::ImageSkia sized_avatar_image;
-    if (border_size_ > 0) {
-      // Once `switches::IsImprovedSettingsUIOnDesktopEnabled()` is launched
-      // this code is be obsolete. It is only used by Guest and incognito
-      // profiles, which have outdated designs.
-      // TODO(crbug.com/385125246): Redesign incognito and guest menu, and
-      // cleanup code.
-      ui::ImageModel sized_avatar_image_without_border =
-          GetCircularSizedImage(avatar_image_, image_size_);
-      sized_avatar_image = gfx::CanvasImageSource::CreatePadded(
-          sized_avatar_image_without_border.Rasterize(GetColorProvider()),
-          gfx::Insets(border_size_));
+    if (has_dotted_ring_) {
+      const int size_with_border = image_size_ + 2 * border_size_;
+      sized_avatar_image = profiles::GetAvatarWithDottedRing(
+          avatar_image_, size_with_border, GetColorProvider());
+      // Dotted ring avatar does not support a border, as the border is already
+      // included with the dotted ring.
+      CHECK_EQ(border_size_, 0);
     } else {
-      sized_avatar_image =
-          profiles::GetSizedAvatarImageModel(avatar_image_, image_size_)
-              .Rasterize(GetColorProvider());
+      if (border_size_ > 0) {
+        // Once `switches::IsImprovedSettingsUIOnDesktopEnabled()` is launched
+        // this code is be obsolete. It is only used by Guest and incognito
+        // profiles, which have outdated designs.
+        // TODO(crbug.com/385125246): Redesign incognito and guest menu, and
+        // cleanup code.
+        ui::ImageModel sized_avatar_image_without_border =
+            GetCircularSizedImage(avatar_image_, image_size_);
+        sized_avatar_image = gfx::CanvasImageSource::CreatePadded(
+            sized_avatar_image_without_border.Rasterize(GetColorProvider()),
+            gfx::Insets(border_size_));
+      } else {
+        sized_avatar_image =
+            profiles::GetSizedAvatarImageModel(avatar_image_, image_size_)
+                .Rasterize(GetColorProvider());
+      }
+      sized_avatar_image = profiles::AddBackgroundToImage(sized_avatar_image,
+                                                          GetBackgroundColor());
     }
-    sized_avatar_image = profiles::AddBackgroundToImage(sized_avatar_image,
-                                                        GetBackgroundColor());
     gfx::Image circular_sized_avatar_image = profiles::GetSizedAvatarIcon(
         gfx::Image(sized_avatar_image), sized_avatar_image.size().width(),
         sized_avatar_image.size().height(),
@@ -359,6 +370,7 @@ class AvatarImageView : public views::ImageView {
   ui::ImageModel management_badge_;
   const int image_size_;
   const int border_size_;
+  const bool has_dotted_ring_;
   raw_ptr<const ProfileMenuViewBase> root_view_;
 };
 
@@ -624,7 +636,8 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
   auto avatar_image_view = std::make_unique<AvatarImageView>(
       image_model, management_badge, this,
-      ProfileMenuViewBase::kIdentityImageSize, kIdentityImageBorder);
+      ProfileMenuViewBase::kIdentityImageSize, kIdentityImageBorder,
+      /*has_dotted_ring=*/false);
 
 #if BUILDFLAG(IS_LINUX)
   // crbug.com/1161166: Orca does not read the accessible window title of the
@@ -760,7 +773,8 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
       views::Builder<views::View>(std::make_unique<AvatarImageView>(
                                       params.profile_image, ui::ImageModel(),
                                       this, kIdentityInfoImageSize,
-                                      /*border_size=*/0))
+                                      /*border_size=*/0,
+                                      params.has_dotted_ring))
           .SetProperty(views::kMarginsKey,
                        gfx::Insets().set_top(kAvatarTopMargin))
           .Build());

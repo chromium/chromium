@@ -114,6 +114,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
     // `profile_image` must not be empty. It does not need to be circular.
     ui::ImageModel profile_image;
+    bool has_dotted_ring = false;
 
     // Must not be empty.
     std::u16string title;

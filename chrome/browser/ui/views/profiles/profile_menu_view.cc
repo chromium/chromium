@@ -845,7 +845,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
                   vector_icons::kBusinessChromeRefreshIcon, ui::kColorIcon);
   }
 
-  // Sync error.
+  // Sync error, including "paused".
   if (error.has_value()) {
     params.subtitle =
         GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled);
@@ -853,6 +853,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
     params.button_action =
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
                             base::Unretained(this), error.value());
+    params.has_dotted_ring = true;
     return params;
   }
 
@@ -921,6 +922,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
           l10n_util::GetStringUTF16(IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE);
       params.button_text =
           l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
+      params.has_dotted_ring = true;
       break;
     case signin_util::SignedInState::kSyncPaused:
       // Sync paused is covered by the sync errors path.

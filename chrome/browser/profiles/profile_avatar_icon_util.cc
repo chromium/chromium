@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -35,6 +36,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/dotted_icon.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -261,6 +263,44 @@ class ImageWithBackgroundSource : public gfx::CanvasImageSource {
   const SkColor background_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+class ImageWithDottedCircleSource : public gfx::CanvasImageSource {
+ public:
+  ImageWithDottedCircleSource(const gfx::ImageSkia& image,
+                              int ring_radius,
+                              float ring_stroke_width,
+                              SkColor ring_color)
+      : gfx::CanvasImageSource(image.size()),
+        image_(image),
+        ring_size_(2 * ring_radius),
+        ring_stroke_width_(ring_stroke_width),
+        ring_color_(ring_color) {}
+
+  ImageWithDottedCircleSource(const ImageWithDottedCircleSource&) = delete;
+  ImageWithDottedCircleSource& operator=(const ImageWithDottedCircleSource&) =
+      delete;
+
+  ~ImageWithDottedCircleSource() override = default;
+
+  // gfx::CanvasImageSource override.
+  void Draw(gfx::Canvas* canvas) override {
+    canvas->DrawImageInt(image_, 0, 0);
+    float padding = (image_.width() - ring_size_) / 2;
+    PaintRingDottedPath(canvas,
+                        gfx::Rect(padding, padding, ring_size_, ring_size_),
+                        ring_color_,
+                        /*opacity_ratio=*/1,
+                        /*stroke_width=*/ring_stroke_width_);
+  }
+
+ private:
+  const gfx::ImageSkia image_;
+  const int ring_size_;
+  const float ring_stroke_width_;
+  const SkColor ring_color_;
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Returns icon with padding with no background.
 const gfx::ImageSkia CreatePaddedIcon(const gfx::VectorIcon& icon,
                                       int size,
@@ -427,6 +467,52 @@ ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size) {
   return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color_id(),
                                         size);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
+                                       int size_with_padding,
+                                       ui::ColorProvider* color_provider) {
+  DCHECK(!image.IsEmpty());
+  // Values are expressed as a proportion of `size`.
+  // Radius of the dotted ring.
+  constexpr float kAvatarDottedRingRadius = 0.29;
+  // Padding around the image to fit it inside the ring.
+  constexpr float kAvatarPaddingForRing = 0.3;
+  // The stroke is fully inside `kAvatarDottedRingRadius`.
+  constexpr float kAvatarRingStrokeWidth = 0.05;
+  // Sanity check: the dotted ring is smaller than the full image.
+  static_assert(kAvatarDottedRingRadius < 0.5);
+  // Sanity check: the avatar image fits inside the dotted ring (taking the ring
+  // stroke width into account).
+  static_assert(kAvatarDottedRingRadius >
+                0.5 - kAvatarPaddingForRing + kAvatarRingStrokeWidth);
+
+  const int avatar_padding =
+      std::nearbyint(kAvatarPaddingForRing * size_with_padding);
+  const int avatar_ring_radius =
+      std::nearbyint(kAvatarDottedRingRadius * size_with_padding);
+  const int avatar_size = size_with_padding - 2 * avatar_padding;
+  const float avatar_ring_stroke = kAvatarRingStrokeWidth * size_with_padding;
+
+  // Shrink the avatar to fit inside the dotted ring.
+  gfx::ImageSkia sized_avatar_image =
+      GetSizedAvatarImageModel(image, avatar_size).Rasterize(color_provider);
+  // Crop to a circle.
+  sized_avatar_image = CircleImageSource::CropCircle(sized_avatar_image);
+  // Add padding.
+  gfx::ImageSkia padded_image = gfx::CanvasImageSource::CreatePadded(
+      sized_avatar_image, gfx::Insets(avatar_padding));
+  // Add background color.
+  gfx::ImageSkia padded_image_with_background = AddBackgroundToImage(
+      padded_image, color_provider->GetColor(ui::kColorBubbleBackground));
+  // Add dotted ring.
+  return gfx::ImageSkia(
+      std::make_unique<ImageWithDottedCircleSource>(
+          padded_image_with_background, avatar_ring_radius, avatar_ring_stroke,
+          color_provider->GetColor(ui::kColorSysStateInactiveRing)),
+      gfx::Size(size_with_padding, size_with_padding));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 gfx::Image GetAvatarIconForWebUI(const gfx::Image& image) {
   return GetSizedAvatarIcon(image, kAvatarIconSize, kAvatarIconSize);

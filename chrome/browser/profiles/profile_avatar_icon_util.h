@@ -98,6 +98,14 @@ gfx::Image GetSizedAvatarIcon(const gfx::Image& image, int width, int height);
 // `AvatarShape::SHAPE_CIRCLE`.
 ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Returns a circular avatar with some padding and a dotted ring.
+// The returned image is square-shaped, and not cropped into a circle.
+gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
+                                       int size_with_padding,
+                                       ui::ColorProvider* color_provider);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Returns a version of |image| suitable for use in WebUI.
 gfx::Image GetAvatarIconForWebUI(const gfx::Image& image);
 
