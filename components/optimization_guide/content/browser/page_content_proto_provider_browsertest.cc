@@ -318,11 +318,9 @@ IN_PROC_BROWSER_TEST_P(
 // root scroller in the ancestor remote frame is not applied.
 #if !BUILDFLAG(IS_ANDROID)
   const auto& geometry = p.content_attributes().geometry();
-  if (!EnableCrossSiteFrames()) {
-    AssertRectsEqual(geometry.outer_bounding_box(),
-                     gfx::Rect(-20, -10, 100, 200));
-    AssertRectsEqual(geometry.visible_bounding_box(), gfx::Rect(0, 0, 80, 190));
-  }
+  AssertRectsEqual(geometry.outer_bounding_box(),
+                   gfx::Rect(-20, -10, 100, 200));
+  AssertRectsEqual(geometry.visible_bounding_box(), gfx::Rect(0, 0, 80, 190));
 #endif
 }
 

@@ -29,8 +29,9 @@ namespace blink {
 namespace {
 
 constexpr MapCoordinatesFlags kMapCoordinatesFlags =
-    kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform;
-constexpr VisualRectFlags kVisualRectFlags = kUseGeometryMapper;
+    kTraverseDocumentBoundaries | kApplyRemoteViewportTransform;
+constexpr VisualRectFlags kVisualRectFlags = static_cast<VisualRectFlags>(
+    kUseGeometryMapper | kVisualRectApplyRemoteViewportTransform);
 
 constexpr float kHeading1FontSizeMultiplier = 2;
 constexpr float kHeading3FontSizeMultiplier = 1.17;
@@ -591,10 +592,6 @@ void AIPageContentAgent::AddNodeGeometry(
   geometry.outer_bounding_box =
       object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
 
-  // TODO(crbug.com/381273397): Ensure that the clips/transforms from the remote
-  // ancestor are applied when computing this.
-  // See
-  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/dom/element.cc;l=2476;drc=1651676a30cd7abcd177975f7cd0e37bd945f663.
   gfx::RectF visible_bounding_box =
       object.LocalBoundingBoxRectForAccessibility();
   object.MapToVisualRectInAncestorSpace(nullptr, visible_bounding_box,
