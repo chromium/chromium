@@ -78,7 +78,9 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
   // extra resource requests with data URLs to avoid copy / initialization
   // overhead, which can be significant for large URLs.
   if (resource_url.empty() || resource_url.StartsWith("#") ||
-      ProtocolIs(resource_url, "data")) {
+      (ProtocolIs(resource_url, "data") &&
+       (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() ||
+        request_type != PreloadRequest::kRequestTypeLinkRelPreload))) {
     return nullptr;
   }
 
@@ -101,7 +103,11 @@ Resource* PreloadRequest::Start(Document* document) {
 
   const KURL& url = CompleteURL(document);
   // Data URLs are filtered out in the preload scanner.
-  DCHECK(!url.ProtocolIsData());
+  // If the PreloadLinkRelDataUrls feature is enabled, only data URLs that are
+  // not preloaded via the link element are filtered out in the preload scanner.
+  DCHECK(!url.ProtocolIsData() ||
+         (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
+          request_type_ == RequestType::kRequestTypeLinkRelPreload));
 
   ResourceRequest resource_request(url);
   resource_request.SetReferrerPolicy(referrer_policy_);
