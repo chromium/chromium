@@ -1644,82 +1644,47 @@ public class StripLayoutHelper
         }
     }
 
-    private void setTabContainerVisible(StripLayoutTab tab, boolean selected, boolean hovered) {
-        // Don't interrupt a hovered tab container visibility animation, this will be handled in the
-        // #onHover* methods.
-        if (hovered) return;
-
+    private void setTabContainerVisible(StripLayoutTab tab, boolean selected) {
         // The container will be visible if the tab is selected or is a placeholder tab.
         float containerOpacity =
                 selected || tab.getIsPlaceholder() ? TAB_OPACITY_VISIBLE : TAB_OPACITY_HIDDEN;
         tab.setContainerOpacity(containerOpacity);
     }
 
-    /**
-     * Called to show/hide dividers and the foreground/hovered tab container. Dividers are only
-     * necessary between tabs that both do not have a visible tab container (foreground or
-     * background).
-     */
     private void updateTabContainersAndDividers() {
-        if (mStripTabs.length < 1) return;
-
         int hoveredId = mLastHoveredTab != null ? mLastHoveredTab.getTabId() : Tab.INVALID_TAB_ID;
-
-        // Divider is never shown for the first tab.
-        if (mStripViews[0] instanceof StripLayoutTab tab) {
-            tab.setStartDividerVisible(false);
-            setTabContainerVisible(tab, isSelectedTab(tab.getTabId()), hoveredId == tab.getTabId());
-
-            boolean currContainerHidden = tab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
-            // End divider should only be shown if the following view is a group indicator.
-            boolean endDividerVisible =
-                    currContainerHidden
-                            && mStripViews.length > 1
-                            && mStripViews[1] instanceof StripLayoutGroupTitle;
-            tab.setEndDividerVisible(endDividerVisible);
-        }
-
-        for (int i = 1; i < mStripViews.length; i++) {
+        for (int i = 0; i < mStripViews.length; ++i) {
             if (!(mStripViews[i] instanceof StripLayoutTab currTab)) continue;
 
-            boolean currTabSelected = isSelectedTab(currTab.getTabId());
-            boolean currTabHovered = hoveredId == currTab.getTabId();
-
-            // Set container opacity.
-            setTabContainerVisible(currTab, currTabSelected, currTabHovered);
-
-            /*
-             * Start divider should be visible when: 1. prevTab is dragged off of the strip OR 2.
-             * currTab container is hidden and (a) prevTab has trailing margin (ie: currTab is start
-             * of group or an individual tab) OR (b) prevTab container is also hidden.
-             */
+            // 1. Set container visibility. Handled in a separate animation for hovered tabs.
+            if (hoveredId != currTab.getTabId()) {
+                setTabContainerVisible(currTab, isSelectedTab(currTab.getTabId()));
+            }
             boolean currContainerHidden = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
-            boolean startDividerVisible;
-            if (mStripViews[i - 1] instanceof StripLayoutTab prevTab) {
-                boolean prevTabNotLeftMostAndDraggedOffStrip = prevTab.isDraggedOffStrip() && i > 1;
+
+            // 2. Set start divider visibility.
+            if (i > 0 && mStripViews[i - 1] instanceof StripLayoutTab prevTab) {
                 boolean prevContainerHidden = prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
                 boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
-                startDividerVisible =
-                        prevTabNotLeftMostAndDraggedOffStrip
-                                || (currContainerHidden
-                                        && (prevContainerHidden || prevTabHasMargin));
+                boolean prevTabNotLeftMostAndDraggedOffStrip = prevTab.isDraggedOffStrip() && i > 1;
+                boolean startDividerVisible =
+                        (currContainerHidden && (prevContainerHidden || prevTabHasMargin))
+                                || prevTabNotLeftMostAndDraggedOffStrip;
+                currTab.setStartDividerVisible(startDividerVisible);
             } else {
-                startDividerVisible = false;
+                currTab.setStartDividerVisible(/* visible= */ false);
             }
-            currTab.setStartDividerVisible(startDividerVisible);
 
-            /*
-             * End divider should be applied when: 1. currTab container is hidden and (a) currTab's
-             * trailing margin > 0 (i.e. is last tab in group) OR (b) currTab is last tab in strip
-             * (as the last tab does not have trailing margin)
-             */
-            boolean currIsLastTab = i == (mStripViews.length - 1);
-            // End divider should be shown if the following view is a group indicator.
-            boolean endDividerVisible =
-                    currContainerHidden
-                            && (currIsLastTab
-                                    || mStripViews[i + 1] instanceof StripLayoutGroupTitle);
-            currTab.setEndDividerVisible(endDividerVisible);
+            // 3. Set end divider visibility. May be forced hidden for group reorder.
+            if (currTab.shouldForceHideEndDivider()) {
+                currTab.setEndDividerVisible(/* visible= */ false);
+            } else {
+                boolean isLastTab = i == (mStripViews.length - 1);
+                boolean endDividerVisible =
+                        (isLastTab || mStripViews[i + 1] instanceof StripLayoutGroupTitle)
+                                && currContainerHidden;
+                currTab.setEndDividerVisible(endDividerVisible);
+            }
         }
     }
 

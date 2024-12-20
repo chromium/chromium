@@ -889,6 +889,7 @@ public class ReorderDelegate {
         StripLayoutGroupTitle mInteractingGroupTitle;
         ArrayList<StripLayoutView> mInteractingViews = new ArrayList<>();
         StripLayoutTab mSelectedTab;
+        StripLayoutTab mLastTabInGroup;
 
         @Override
         public void startReorderMode(
@@ -899,9 +900,12 @@ public class ReorderDelegate {
             // Store the relevant interacting views. We'll update their offsets as we drag.
             mInteractingGroupTitle = (StripLayoutGroupTitle) interactingView;
             mInteractingViews.add(mInteractingGroupTitle);
-            mInteractingViews.addAll(
+            List<StripLayoutTab> groupedTabs =
                     StripLayoutUtils.getGroupedTabs(
-                            mModel, stripTabs, mInteractingGroupTitle.getRootId()));
+                            mModel, stripTabs, mInteractingGroupTitle.getRootId());
+            mLastTabInGroup = groupedTabs.get(groupedTabs.size() - 1);
+            mLastTabInGroup.setForceHideEndDivider(/* forceHide= */ true);
+            mInteractingViews.addAll(groupedTabs);
 
             // Foreground the interacting views as they will be dragged over top other views.
             for (StripLayoutView view : mInteractingViews) {
@@ -973,6 +977,9 @@ public class ReorderDelegate {
                                 view.setIsForegrounded(/* isForegrounded= */ false);
                             }
                             mInteractingViews.clear();
+
+                            mLastTabInGroup.setForceHideEndDivider(/* forceHide= */ false);
+                            mLastTabInGroup = null;
                         }
                     });
 

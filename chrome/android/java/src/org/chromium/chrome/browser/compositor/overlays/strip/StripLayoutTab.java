@@ -162,6 +162,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
     private boolean mEndDividerVisible;
+    private boolean mForceHideEndDivider;
     private float mBottomMargin;
     private float mContainerOpacity;
 
@@ -474,6 +475,16 @@ public class StripLayoutTab extends StripLayoutView {
      */
     public boolean isEndDividerVisible() {
         return mEndDividerVisible;
+    }
+
+    /** Sets if the end divider will be forced hidden for group reorder. */
+    void setForceHideEndDivider(boolean forceHide) {
+        mForceHideEndDivider = forceHide;
+    }
+
+    /** Returns {@code true} if the end divider will be forced hidden for group reorder. */
+    boolean shouldForceHideEndDivider() {
+        return mForceHideEndDivider;
     }
 
     @Override
