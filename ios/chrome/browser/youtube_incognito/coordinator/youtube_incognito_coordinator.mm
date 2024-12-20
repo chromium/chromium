@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 
+#import "ios/chrome/app/application_delegate/tab_opening.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet.h"
 
 namespace {
@@ -18,20 +21,17 @@ CGFloat const kHalfSheetCornerRadius = 20;
 }
 
 - (void)start {
-  _viewController = [[YoutubeIncognitoSheet alloc] init];
-  _viewController.sheetPresentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
-  _viewController.sheetPresentationController.preferredCornerRadius =
-      kHalfSheetCornerRadius;
-  _viewController.sheetPresentationController
-      .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  _viewController.sheetPresentationController
-      .prefersEdgeAttachedInCompactHeight = YES;
-  [self.baseViewController presentViewController:_viewController
-                                        animated:YES
-                                      completion:nil];
+  // TODO(crbug.com/374935670): Add the the case when incognito is unavailable
+  // and show toast when the view was presented already.
+  __weak YoutubeIncognitoCoordinator* weakSelf = self;
+  [self.tabOpener
+      dismissModalsAndMaybeOpenSelectedTabInMode:ApplicationModeForTabOpening::
+                                                     INCOGNITO
+                               withUrlLoadParams:self.urlLoadParams
+                                  dismissOmnibox:YES
+                                      completion:^{
+                                        [weakSelf presentViewController];
+                                      }];
 }
 
 - (void)stop {
@@ -46,6 +46,24 @@ CGFloat const kHalfSheetCornerRadius = 20;
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController = nil;
+}
+
+// Presents the YoutubeIncognitoCoordinator's view controller.
+- (void)presentViewController {
+  _viewController = [[YoutubeIncognitoSheet alloc] init];
+  _viewController.sheetPresentationController.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+  _viewController.sheetPresentationController.preferredCornerRadius =
+      kHalfSheetCornerRadius;
+  _viewController.sheetPresentationController
+      .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  _viewController.sheetPresentationController
+      .prefersEdgeAttachedInCompactHeight = YES;
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 @end
